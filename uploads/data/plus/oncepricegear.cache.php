@@ -1,0 +1,10 @@
+<?php 
+$oncepricegear_index=array('4','1','2','3')
+; 
+$oncepricegear_name=array('4'=>'7','1'=>'30','2'=>'60','3'=>'90')
+; 
+$oncepricegear_names=array('0'=>'7','1'=>'30','2'=>'60','3'=>'90')
+; 
+$oncepricegear_price=array('4'=>'7.00','1'=>'20.00','2'=>'45.00','3'=>'60.00')
+; 
+?>

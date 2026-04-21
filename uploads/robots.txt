@@ -1,0 +1,13 @@
+User-agent: *
+Disallow: /ad*/
+Disallow: /sit*/
+Disallow: /wapa*/
+Disallow: /ap*/
+Disallow: /da*/
+Disallow: /co*/
+Disallow: /in*/
+Disallow: /me*/
+Disallow: /ap*/
+Disallow: /j*/
+Disallow: /we*/
+Disallow: /er*/
