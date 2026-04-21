@@ -1,0 +1,175 @@
+{yun:}include file="$wapstyle/header_cont.htm"{/yun}
+<!--页面主结构开始-->
+<div id="apps">
+    <van-cell-group>
+        <van-cell  is-link @click="dhplacesShow=true">
+            <template #title>
+                <div class="redeemd_address_name">收货人：
+                    <em id="dhlinkman">{{linkman}}</em> 
+                    <span class="redeemd_address_tel">
+                        <em id="dhlinktel" >{{linktel}}</em>
+                    </span>
+                </div>
+                <div class="">收货地址：<em id="dhbody">{{city}}{{address}}</em></div>
+            </template>
+        </van-cell>
+    </van-cell-group>
+    
+    <!-- <van-cell-group> -->
+        <div class="redeemd_commodity mt15">
+            <div class="redeemd_commodity_pic">
+                <img class="dh_store_tit_pc" style="width:60px; height:60px;" src="{yun:}$row.pic{/yun}" />
+            </div>
+            <div class="redeemd_commodity_name">{yun:}$row.name{/yun}</div>
+            <div class="redeemd_commodity_money">
+                <span class="redeemd_commodity_money_n">{yun:}$row.integral{/yun}</span> {yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun} 
+                <span class="redeemd_commodity_n"> ×{yun:}$smarty.get.num{/yun}</span>
+            </div>
+        </div>
+        <div class="redeemd_commodity_number_box">
+            <span class="redeemd_commodity_number_box_name">留言备注</span>
+            <input type="text" id="other" v-model="other" value="" class="redeemd_commodity_number_text" placeholder="请提前与客服沟通确认">
+        </div>
+        <div class="redeemd_commodity_number_all">共 {yun:}$smarty.get.num{/yun} 件商品
+            <span class="redeemd_commodity_number_all_r">小计：
+                <span class="redeemd_commodity_number_all_n">{yun:}$integral{/yun}</span> {yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}
+            </span>
+        </div>
+        <input id='id' value='{yun:}$row.id{/yun}' type='hidden'>
+        <input id='num' value='{yun:}$smarty.get.num{/yun}' type='hidden'>
+        <div class="">
+            <a class="redeemd_commodity_bth" href="javascript:void(0)" @click="redeem_dh">立即支付</a>
+        </div>
+    <!-- </van-cell-group> -->
+
+    <van-popup  v-model="dhplacesShow"  position="right" :style="{ height: '100%',width:'100%'}">
+        <van-form @submit="dhplace" >
+            <!-- 第一种 -->
+            <div style="margin-top: 15%">
+                <van-field v-model="linkman" name="linkman" label="收货人" placeholder="收货人" ></van-field>
+                <van-field v-model="linktel" name="linktel" label="手机号码" placeholder="收货人" ></van-field>
+                <van-field v-model="city" name="city" label="配送城市" placeholder="请选择配送地址"  @click="showArea=true"></van-field>
+                <van-field v-model="address" name="address" label="详细地址" placeholder="请输入收货人地址" ></van-field>
+				<van-field v-model="password" name="password" label="账号密码" placeholder="请输入账号密码" type="password"></van-field>
+                <van-popup v-model="showArea" round position="bottom">
+                   <van-cascader
+                    v-model="areaValue"
+                    title="请选择地区"
+                    :options="areaList"
+                    @close="showArea = false"
+                    @finish="onAreaFinish"
+                   />
+                </van-popup>
+            </div>
+
+            <div style="margin: 16px;">
+                <van-button block type="info" native-type="submit">提交</van-button>
+            </div>
+        </van-form>
+    </van-popup>
+</div>
+{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+<script src="{yun:}$wap_style{/yun}/js/prefixfree.min.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/redeem.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$config.sy_weburl{/yun}/data/plus/city.cache.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/category.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script>
+    var cityParam={
+            sy_web_city_one:'{yun:}$config.sy_web_city_one{/yun}',
+            sy_web_city_two:'{yun:}$config.sy_web_city_two{/yun}',
+        };
+    var searchUrlObj = {};
+    '{yun:}if $searchUrlObj{/yun}'
+    searchUrlObj = JSON.parse('{yun:}$searchUrlObj{/yun}');
+    '{yun:}/if{/yun}'
+    var cityData    =   cityCategory(cityParam);
+
+    var vm = new Vue({
+        el: '#apps',
+        data:{
+            dhplacesShow:false,
+            areaValue:'',
+            linkman:'{yun:}$uinfo.linkman{/yun}',
+            address:'{yun:}$change.body{/yun}',
+            linktel:'{yun:}$uinfo.moblie{/yun}',
+            city:'',
+            showArea: false,
+            areaList: cityData,
+            id:$("#id").val(),
+            num:$("#num").val(),
+            dhbody:'',
+            body:'',
+            other:'',
+            password:'',
+        },
+        methods: {
+            dhplace(value, index) {
+                if(!value.linkman) {
+                    showToast('收件人不能为空！');
+                    return false;
+                } else if(!value.linktel) {
+                    showToast('手机号码不能为空！');
+                    return false;
+                } else if(value.linktel && !isjsMobile(value.linktel)) {
+                    showToast('手机号码格式错误！');
+                    return false;
+                } else if(!value.city) {
+                    showToast('请选择配送地址！');
+                    return false;
+                } else if(!value.address) {
+                    showToast('请填写详细地址！');
+                    return false;
+                }
+				else if(!value.password) {
+				    showToast('请填写账号密码！');
+				    return false;
+				}
+                this.dhplacesShow = false;
+            },
+            onAreaFinish({ selectedOptions }) {
+                this.city = selectedOptions.map((option) => option.text).join('/');
+                searchUrlObj.provinceid = searchUrlObj.cityid = searchUrlObj.three_cityid = '';
+
+                if(selectedOptions[0] && selectedOptions[0].value>0){
+                    searchUrlObj.provinceid = selectedOptions[0].value;
+                }
+                if(selectedOptions[1] && selectedOptions[1].value>0){
+                    searchUrlObj.cityid = selectedOptions[1].value;
+                }
+                if(selectedOptions[2] && selectedOptions[2].value>0){
+                    searchUrlObj.three_cityid = selectedOptions[2].value;
+                }
+
+                this.showArea = false;
+            },
+            redeem_dh(){
+				this.dhbody = this.city+this.address;
+				    
+				if(!this.linkman||!this.linktel||!this.dhbody){
+				    showToast('请填写收货人信息！');
+					return false;
+				}
+                if(this.dhbody!=''){
+                    this.body="收货地址："+this.dhbody;
+                }
+             
+                if(this.other!=''){
+                    this.body = this.body+" 用户留言："+this.other;
+                }
+				showLoading();
+                $.post(wapurl+"index.php?c=redeem&a=savedh",{linkman:this.linkman,linktel:this.linktel,id:this.id,num:this.num,body:this.body,password:this.password},function(data){
+                    var data=eval('('+data+')');
+       
+                    if(data.errcode==9){
+                        showToast(data.msg,2,function(){window.location.href=data.url});
+                    }else{
+                        showToast(data.msg);    
+                        return false;
+                    }
+                });
+            }
+        }
+    });
+
+</script>
+</body></html>

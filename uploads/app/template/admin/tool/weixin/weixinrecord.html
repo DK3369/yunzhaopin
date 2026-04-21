@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="用户登录日志" name="first" :lazy="true">
+                    <userrecord ref="first"></userrecord>
+                </el-tab-pane>
+                <el-tab-pane label="用户绑定记录" name="second" :lazy="true">
+                    <userbd ref="second"></userbd>
+                </el-tab-pane>
+                <el-tab-pane label="用户搜索关键词" name="third" :lazy="true">
+                    <usertag ref="third"></usertag>
+                </el-tab-pane>
+                
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#moduapp',
+            data: function () {
+                return {
+                    activeName: 'first',
+                }
+            },
+            components: {
+                'userrecord': httpVueLoader('./component/userrecord.vue'),
+                'userbd': httpVueLoader('./component/userbd.vue'),
+                'usertag': httpVueLoader('./component/usertag.vue'), 
+            },
+            methods: {
+                handleClick(tab, event) {
+                    this.$nextTick(() => {
+                        this.$refs[tab.name].doLayout();
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

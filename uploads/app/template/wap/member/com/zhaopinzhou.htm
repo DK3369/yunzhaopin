@@ -1,0 +1,219 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<div id="yunvue" v-show="!weekLoading && !tcLoading">
+    <div class="zaopinDataTop">
+        <div class="zapiDaTopFanh">
+            <span>招聘数据中心</span>
+        </div>
+        <div class="zapiDaTopInfo">
+            <div class="zapiDaTopFlex">
+                <div class="zapiDaTopTite">
+                    <div class="zapiDaTopTitMic">
+                        <span>我的招聘数据</span>
+                    </div>
+                    <div class="zapiDaTopTitLik">
+                        <a href="javascript:navigateTo('index.php?c=zhaopin');">
+                            <img src="{yun:}$wap_style{/yun}/images/zpda2.png" class="dopTitLiImg1" alt="">
+                            <span>今日数据</span>
+                            <img src="{yun:}$wap_style{/yun}/images/zpda3.png" class="dopTitLiImg2" alt="">
+                        </a>
+                    </div>
+                </div>
+                <div class="zapiDaTopImage">
+                    <img src="{yun:}$wap_style{/yun}/images/zpda1.png" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div v-if="zpdata_open">
+        <div class="zaopinDataCont">
+            <div class="zaopinDataCotTite">
+                <div class="zaopinDataCotMic">
+                    <span>周数据</span>
+                </div>
+                <div class="zaopinDatInFlex">
+                    <div class="zaopinDataCotZhiw" @click="dateShow = true">
+                        <div class="zaopinDataCotzwButn" style="width: 150px;">
+                            <span>{{weekData.dates}}</span>
+                            <img src="{yun:}$wap_style{/yun}/images/zpda4.png" alt="">
+                        </div>
+                    </div>
+                    <!--<div class="zaopinDataCotZhiw" style="margin-left: 8px;">-->
+                    <!--    <div class="zaopinDataCotzwButn">-->
+                    <!--        <span>全部职位</span>-->
+                    <!--        <img src="{yun:}$wap_style{/yun}/images/zpda4.png" alt="">-->
+                    <!--    </div>-->
+                    <!--</div>-->
+                </div>
+            </div>
+            <div class="zhouDataModes">
+                <div class="zhouDataModTite">
+                    <img src="{yun:}$wap_style{/yun}/images/zhodat1.png" alt="">
+                    <span>查看</span>
+                </div>
+                <ul>
+                    <li v-for="(litem, lkey) in weekData.lookData" :key="lkey" @click="navigateTo(litem.wap_url)">
+                        <div>
+                            <span>{{litem.num}}</span>
+                            <b>{{litem.title}}</b>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="zhouDataModes">
+                <div class="zhouDataModTite">
+                    <img src="{yun:}$wap_style{/yun}/images/zhodat2.png" alt="">
+                    <span>简历</span>
+                </div>
+                <ul>
+                    <li v-for="(ritem, rkey) in weekData.resumeData" :key="rkey" @click="ritem.title != '合计' ? navigateTo(ritem.wap_url) : ''">
+                        <div>
+                            <span>{{ritem.num}}</span>
+                            <b>{{ritem.title}}</b>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="zhouDataModes">
+                <div class="zhouDataModTite">
+                    <img src="{yun:}$wap_style{/yun}/images/zhodat3.png" alt="">
+                    <span>面试</span>
+                </div>
+                <ul>
+                    <li v-for="(mitem, mkey) in weekData.msData" :key="mkey" @click="navigateTo(mitem.wap_url)">
+                        <div>
+                            <span>{{mitem.num}}</span>
+                            <b>{{mitem.title}}</b>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="zainDatQuayiTite">
+                <span>剩余权益使用量</span>
+            </div>
+            <div class="zainDatQuaylis" v-loading="tcLoading">
+                <ul>
+                    <li v-for="(qitem, qkey) in tcList" :key="qkey">
+                        <div class="zainDatQuayMic">
+                            <span>{{qitem.title}}</span>
+                        </div>
+                        <div class="zainDatQuayNum">
+                            <span>{{qitem.num}}</span>
+                            <b>{{qitem.unit}}</b>
+                        </div>
+                        <div v-if="typeof qitem.tc_num !== 'undefined'" class="zainDatQuaysuz">
+                            <div class="zainDatQuaysuText">
+                                <span>{{qitem.num}}</span>/{{qitem.tc_num}}
+                            </div>
+                            <div class="zainDatQuaysuJidu">
+                                <span :style="'width: ' + qitem.width + '%;'"></span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="zainDatTuijian">
+                <div class="zainDatTuiTite">
+                    <span>为你推荐</span>
+                </div>
+                <div class="zainDatTuiButns">
+                    <ul>
+                        <li @click="navigateTo('index.php?c=job')">
+                            <div class="zainDatTuiOnes">
+                                <span>涨查看？</span>
+                                <b>去置顶</b>
+                            </div>
+                            <div class="zainDatTuiTwos">
+                                <img src="{yun:}$wap_style{/yun}/images/zpda8.png" alt="">
+                            </div>
+                        </li>
+                        <li @click="navigateTo('{yun:}url m=wap c=resume{/yun}')" style="background: #E6EBFE;">
+                            <div class="zainDatTuiOnes">
+                                <span>不满意？</span>
+                                <b>去搜索</b>
+                            </div>
+                            <div class="zainDatTuiTwos">
+                                <img src="{yun:}$wap_style{/yun}/images/zpda9.png" alt="">
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!--时间选择器-->
+        <van-popup v-model="dateShow" round position="bottom">
+            <van-picker show-toolbar :default-index="dateIndex" @cancel="dateShow = false" :columns="dateList" @confirm="bindDateChange"/>
+        </van-popup>
+    </div>
+    <div v-else class="weikaiSubDome">
+        <div class="weikaiSubDivs">
+            <img src="{yun:}$wap_style{/yun}/images/weikai.png" alt="">
+            <span>很抱歉，功能暂未开放</span>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var yunvue = new Vue({
+        el: '#yunvue',
+        data() {
+            return {
+                weekLoading: true,
+                zpdata_open: true,
+                search: {
+                    times: '1'
+                },
+                weekData: {
+                    lookData: [],
+                    resumeData: [],
+                    msData: []
+                },
+                tcLoading: true,
+                tcList: [],
+                dateShow: false,
+                dateIndex: 0,
+                dateList: [
+                    { text: '近一周', value: '1' },
+                    { text: '近两周', value: '2' },
+                    { text: '近三周', value: '3' },
+                    { text: '近一月', value: '4' },
+                ]
+            };
+        },
+        created() {
+            this.getWeekData();
+            this.getTcData();
+        },
+        methods: {
+            getWeekData: function () {
+                let that = this,
+                    params = that.search;
+
+                $.post('{yun:}url d=wxapp h=com m=zpdata c=getWeekData{/yun}', params, function (res) {
+                    if (res.error == 0) {
+                        that.weekData = res.data;
+                    }
+                    that.zpdata_open = res.error == 403 ? false : true;
+                    that.weekLoading = false;
+                    that.dateShow = false;
+                }, 'json')
+            },
+            getTcData: function () {
+                let that = this
+
+                $.get('{yun:}url d=wxapp h=com m=zpdata c=getTcData{/yun}', function (res) {
+                    if (res.error == 0) {
+                        that.tcList = res.data.list;
+                    }
+                    that.tcLoading = false;
+                }, 'json')
+            },
+            bindDateChange: function(e) {
+                this.search.times = e.value;
+                this.getWeekData();
+            },
+        }
+    })
+</script>
+</body>
+</html>

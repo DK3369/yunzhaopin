@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="hyfl" class="moduleElenAl">
+        <div class="moduleSeachs">
+            <div class="">
+                举报分类
+            </div>
+            <div class="nrtopbtn">
+                <el-button class="add_fl" size="mini" type="primary" icon="el-icon-document-add"
+                    @click="addVisible = true">添加举报原因</el-button>
+            </div>
+        </div>
+        <div class="moduleElTable">
+            <el-table :data="tableData" stripe border style="width: 100%;" height="100%"
+                :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" ref="multipleTable"
+                @selection-change="handleSelectionChange" v-loading="loading" :empty-text="emptytext">
+                <el-table-column type="selection" width="55"> </el-table-column>
+                <el-table-column prop="id" label="编号" width="180">
+                </el-table-column>
+                <el-table-column prop="name" label="标题(点击修改)">
+                    <template slot-scope="scope">
+                        <el-input v-if="scope.row[scope.column.property + 'isShow']"
+                            :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
+                            v-model="scope.row.name" @blur="alterData(scope)"></el-input>
+                        <span v-else>
+                            {{ scope.row.name }}<img @click="editData(scope)" class="editIcon"
+                                src="../../../admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14">
+                        </span>
+                    </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="80">
+                    <template slot-scope="scope">
+                        <div class="cz_button">
+                            <el-button type="danger" size="mini" @click="deleteRow(scope)">删除</el-button>
+                          </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="">
+                <div class="modulecz modulePagButn">
+                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">全选</el-checkbox>
+                    <el-button @click="deleteRow(null, true)" size="mini">批量删除</el-button>
+                </div>
+            </div>
+        </div>
+        <el-dialog title="举报原因" width="30%" :visible.sync="addVisible" :modal-append-to-body="false">
+            <div class="hydialog_item">
+                <span>原因：</span>
+                <el-input type="text" v-model="ruleForm.name" style="flex: 1;"></el-input>
+            </div>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="submitForm('ruleForm')" :disabled="submitLoading">添加</el-button>
+            </div>
+        </el-dialog>
+    </div>
+</body>
+<script>
+    const custoapp = new Vue({
+        el: '#hyfl',
+        data: function () {
+            return {
+                emptytext: '暂无数据',
+                loading: false,
+                tableData: [], //表格数据
+                checked: false,
+                isIndeterminate: false,// checkbox 的不确定状态
+                selectedItem: [],
+                oldData: null,
+                addVisible: false,
+                ruleForm: {
+                    name: '',
+                },
+                submitLoading: false,
+                
+            }
+        },
+        mounted() {
+            this.getList();
+        },
+        methods: {
+            handleSelectionChange(val) {
+                this.selectedItem = val;
+                if (this.selectedItem.length == 0) {
+                    this.isIndeterminate = false;
+                    this.checked = false;
+                } else {
+                    if (this.selectedItem.length == this.tableData.length) {
+                        this.isIndeterminate = false;
+                        this.checked = true;
+                    } else {
+                        this.isIndeterminate = true;
+                        this.checked = false;
+                    }
+                }
+            },
+            selectAllBottom(value) {
+                value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+            },
+            getList() {
+                let _this = this;
+                _this.loading = true;
+                _this.emptytext = "数据加载中";
+                httpPost('m=system&c=category_reason&a=index').then(function (response) {
+                    let res = response.data;
+                    _this.tableData = res.data;
+                    _this.loading = false;
+                    if (_this.tableData.length === 0){
+                        _this.emptytext = "暂无数据";
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            submitForm(formName) {
+                let _this = this;
+                let params = JSON.parse(JSON.stringify(this.ruleForm));
+                params.name = params.name.split("\n").join("-");
+
+                if (params.name == '') {
+                    message.error('举报原因不能为空！');
+                    return;
+                }
+                _this.submitLoading = true;
+                httpPost('m=system&c=category_reason&a=save', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        message.success('添加成功！');
+                        _this.getList();
+                        _this.clearForm();
+                        _this.addVisible = false;
+                    } else if (res.error === 1) {
+                        message.error('添加失败！');
+                    } else if (res.error === 2) {
+                        message.error('已有此类别，请重新输入！');
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                }).finally(function () {
+                    _this.submitLoading = false;
+                });
+            },
+            clearForm() {
+                this.ruleForm.name = '';
+            },
+            deleteRow(scope, isMore) {
+                let params = {};
+                if (isMore) {
+                    if (!this.selectedItem.length) {
+                        message.error('请选择要删除的数据');
+                        return false;
+                    }
+                    let list = [];
+                    for (let item of this.selectedItem) {
+                        list.push(item.id);
+                    }
+                    params.delType = 'all';
+                    params.del = list;
+                } else {
+                    // let index = scope.$index;
+                    // this.tableData.splice(index, 1);
+                    params.delType = 'one';
+                    params.delid = scope.row.id;
+                }
+
+                delConfirm(this, params, this.delete);
+            },
+            delete(params) {
+                let _this = this;
+                httpPost('m=system&c=category_reason&a=del', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        message.success('删除成功！');
+                        _this.getList();
+                    } else {
+                        message.error('删除失败！');
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            editData(scope) {
+                let index = scope.$index;
+                let row = scope.row;
+                let column = scope.column;
+                this.oldData = JSON.parse(JSON.stringify(row));
+                let copyRow = JSON.parse(JSON.stringify(row));
+                copyRow[column.property + "isShow"] = true;
+                this.$set(this.tableData, index, copyRow);
+                this.$nextTick(() => {
+                    let ref = column.property + index;
+                    $("#" + ref).focus();
+                });
+            },
+            alterData(scope) {
+                if (this.oldData == null) {
+                    return false;
+                }
+                let index = scope.$index;
+                let row = scope.row;
+                let column = scope.column;
+                let copyRow = JSON.parse(JSON.stringify(row));
+                copyRow[column.property + "isShow"] = false;
+                this.$set(this.tableData, index, copyRow);
+                if (row[column.property] === this.oldData[column.property]) {
+                    return false;
+                }
+                let _this = this;
+                let sendData = { id: row.id };
+                sendData[column.property] = row[column.property];
+                httpPost('m=system&c=category_reason&a=save', sendData, { hideloading: true }).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        message.success('修改成功');
+                    } else {
+                        message.error('修改失败');
+                    }
+                    _this.oldData = null;
+                    _this.getList();
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            }
+        }
+    });
+</script>
+
+</html>
+<style>
+    .cell span {
+        display: flex;
+        align-items: center;
+    }
+
+    .hydialog_item {
+        display: flex;
+    }
+
+    .editIcon {
+        padding-left: 5px;
+        cursor: pointer;
+    }
+	.el-table .el-table__cell {
+	    padding: 12px 0;
+	} 
+</style>

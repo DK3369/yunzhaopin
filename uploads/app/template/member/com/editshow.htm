@@ -1,0 +1,111 @@
+{yun:}include file="$comstyle/header.htm"{/yun}
+<div class="w1000">
+	<div class="admin_mainbody"> {yun:}include file="$comstyle/left.htm"{/yun}
+
+		<div class=right_box>
+			<div class="newmember_screenbox">
+				<div class="newmember_screen">
+					<div class="newmember_screenname"><a href="index.php?c=show" class="newcom_fh">返回 </a><span
+							class="newcom_fh_line">|</span>修改企业相册</div>
+				</div>
+			</div>
+			<div class=admincont_box>
+				<div class="com_body">
+					<div class="index_photo_new fltL mt10">
+						<div class="file_button" style="border:none">
+
+							<form class="layui-form">
+								<input type="hidden" name="id" value="{yun:}$id{/yun}" />
+
+								<div id="imgparent" class="com_hj_pic">
+									<img id="imgicon" src="{yun:}$picurl.picurl{/yun}" width="220" height="180">
+								</div>
+
+								<ul class="com_hj_list">
+									<li>
+										<div class="com_hj_listname">环境图片：</div>
+										<div class="com_hj_listr">
+											<button type="button" class="yun_bth_pic noupload"
+												lay-data="{imgid: 'imgicon',parentid: 'imgparent'}">上传图片</button>
+											<input type="hidden" id="laynoupload" value="1" />
+										</div>
+									</li>
+									<li>
+										<div class="com_hj_listname">标&nbsp;&nbsp;&nbsp;&nbsp;题：</div>
+										<div class="com_hj_listr">
+											<input class="file_button_edit_input" type="text" name="title" size="15"
+												value="{yun:}$picurl.title{/yun}" />
+										</div>
+									</li>
+									<li>
+										<div class="com_hj_listname">排&nbsp;&nbsp;&nbsp;&nbsp;序：</div>
+										<div class="com_hj_listr">
+											<input class="file_button_edit_input" type="text" name="showsort" size="15"
+												value="{yun:}$picurl.sort{/yun}"
+												onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" />
+											<em style=" margin-left:10px;">数值越大越靠前</em>
+										</div>
+									</li>
+									<li>
+										<div class="com_hj_listname">&nbsp;&nbsp;&nbsp;&nbsp;</div>
+										<div class="com_hj_listr">
+											<input class="btn_01" type="button" lay-filter="add" lay-submit=""
+												value="更新信息">
+										</div>
+									</li>
+								</ul>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="clear"></div>
+		</div>
+	</div>
+</div>
+<script>
+	layui.use(['form', 'layer'], function() {
+		var form = layui.form,
+			layer = layui.layer,
+			$ = layui.$;
+
+		form.on('submit(add)', function(data) {
+			if (data.field.title == '') {
+				layer.msg('标题不能为空', {
+					icon: 5
+				});
+				return false;
+			}
+			layer.load();
+			var formdata = new FormData();
+			formdata.append('title', data.field.title);
+			formdata.append('id', data.field.id);
+			formdata.append('showsort', data.field.showsort);
+			formdata.append('uimage', $("input[name=file]")[0].files[0]);
+			$.ajax({
+				data: formdata,
+				type: 'post',
+				dataType: 'json',
+				url: 'index.php?c=show&act=upshow',
+				processData: false,
+				contentType: false,
+				success: function(res) {
+					layer.closeAll('loading');
+					if (res.st == 9) {
+						layer.msg(res.msg, {
+							icon: 6
+						});
+					} else {
+						layer.msg(res.msg, {
+							icon: 5
+						});
+					}
+				}
+			})
+			return false;
+		})
+	})
+</script>
+<script src="{yun:}$config.sy_weburl{/yun}/js/layui.upload.js?v={yun:}$config.cachecode{/yun}" type='text/javascript'>
+</script>
+{yun:}include file="$comstyle/footer.htm"{/yun}

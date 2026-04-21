@@ -1,0 +1,358 @@
+{yun:}include file="$wapstyle/header.htm"{/yun}
+<style>
+body{ background:#fff}
+</style>
+<div id="yunvue" class="none">        
+    <!-- 页面头部返回按钮 -->
+    <div class="Back_to_the_previous_level"  >
+        <div class="login_back" onclick="goBack()">
+            <img src="{yun:}$wap_style{/yun}/images/return.png" alt=""  width="100%" height="100%">
+        </div>
+      </div>
+      <!-- 页面主体部分 -->
+   <div class="login_cont">
+		{yun:}if $wxid && ($wxnickname || $wxpic){/yun}
+		<div class="login_titlebox">
+			<div class="login_title_logo">
+				<img src="{yun:}$wxpic{/yun}" alt="" width="100%" height="100%">
+			</div>
+			<div class="login_title_info">您已登录微信账号</div>
+		</div>
+		{yun:}else{/yun}
+		<!-- 用户名注册 -->
+		<div class=" bottom_nav_bom"  style="padding-top: 0px; text-align: right;"><i class="bottom_nav_bom_word">已有账号，</i>
+		     <a href="{yun:}url m=wap c=login{/yun}" class="register_1">立即登录</a>
+		</div>
+         {yun:}if $config.reg_moblie=='1' && $type==2{/yun}
+          <div class="login_welcome">手机号注册</div>
+          {yun:}/if{/yun} 
+          {yun:}if $config.reg_email=='1' && $type==3{/yun}
+          <div class="login_welcome">邮箱注册</div>
+          {yun:}/if{/yun} 
+          {yun:}if $config.reg_user=='1' && $type==1{/yun}
+          <div class="login_welcome">用户名注册</div>
+          {yun:}/if{/yun}
+		{yun:}/if{/yun}
+
+           <!-- form表单区域 -->
+           <div class="The_login_subject">
+        <form id="reg_form">
+          <input name="regway" id="regway" type="hidden" value="{yun:}$type{/yun}" />
+          {yun:}if $config.reg_email=='1' && $type == 3{/yun}
+             <div class="login_textbox">
+            <input type="text" value="" placeholder="请输入邮箱" name="email" id="email" onBlur="check_email();" class="account_number">
+           </div>
+           <div class="login_textbox">
+            <input type="password" value="" placeholder="请输入密码 " id="password" name="password" onblur="check_password();" />
+
+
+           </div>{yun:}if $config.reg_pw_sp=='1' || $config.reg_pw_num=='1' || $config.reg_pw_zm=='1'{/yun}
+			<div class="zc_tip">
+			提示：密码须包含{yun:}if $config.reg_pw_num=='1'{/yun}数字{yun:}/if{/yun}
+			{yun:}if $config.reg_pw_zm=='1'{/yun},字母 {yun:}/if{/yun}
+			{yun:}if $config.reg_pw_sp=='1'{/yun},字符@!#.$-_{yun:}/if{/yun}
+			</div>
+			{yun:}/if{/yun}
+            {yun:}if $config.reg_passconfirm=='1'{/yun}
+            <div class="login_textbox">
+            <input type="password" value="" placeholder="请确认密码" name="passconfirm" id="passconfirm" />
+            
+           </div>
+           {yun:}/if{/yun}
+           {yun:}if strpos($config.code_web,"注册会员")!==false{/yun}
+           <div>
+              {yun:}if $config.code_kind>2{/yun}
+              <input type='hidden' id="noblur" value="1" />
+              <div class="gtdx-captcha">
+              {yun:}if $config.sy_msg_regcode==1 || $config.reg_real_name_check == 1{/yun}
+              <div id="bind-captcha" data-id='send_msg_tips' data-type='click'></div>
+              {yun:}else{/yun}
+              <div id="bind-captcha" data-id='login_bth' data-type='click'></div>
+              {yun:}/if{/yun}
+              
+              
+              <input type='hidden' id="verify_token"  name="verify_token" value="">
+			  {yun:}if $config.code_kind==6{/yun}
+              <input type='hidden' id="verify_str" name="verify_str" value="" />
+              {yun:}/if{/yun}
+              <input type='hidden' id="popup-submit"> 
+              <input type='hidden' id="bind-submit">
+            </div>
+            {yun:}else{/yun}
+           <div class="login_textbox">
+            <input class="inputitemtxt" placeholder="请输入图片验证码" onblur="check_code()" name="checkcode" id="checkcode" type="text" maxlength="6" />
+            <img id="vcode_img" class="authcode" src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php" onclick="checkCode('vcode_img');" />
+           </div>
+              {yun:}/if{/yun}
+            </div>
+           {yun:}/if{/yun}
+           {yun:}if $config.reg_real_name_check == 1{/yun}
+           <div class="login_textbox">
+            <input type="tel" value="" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"  placeholder="请输入手机号" name="moblie" id="moblie" onBlur="check_moblie();" class="account_number">
+           </div>
+           <div class="login_textbox">
+            <input type="text" value="" autocomplete="off"  placeholder="请输入验证码" name="moblie_code" id="moblie_code" />
+            <input type="password" id="login_code" style="display: none"/>
+            <div class="dx_yz_hq" id="send_msg_tips" onclick="sendmsg('vcode_img');"><span id="time">获取验证码</span></div>
+           </div>
+           {yun:}/if{/yun} 
+          {yun:}elseif $type==2 || $type == ''{/yun}
+            <div class="login_textbox">
+            <input type="tel" value="" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"  placeholder="请输入手机号" name="moblie" id="moblie" onBlur="check_moblie();" class="account_number">
+           </div>
+           {yun:}if strpos($config.code_web,"注册会员")!==false{/yun}
+           <div class="">
+              {yun:}if $config.code_kind>2{/yun}
+              <input type='hidden' id="noblur" value="1" />
+              <div class="gtdx-captcha">
+              {yun:}if $config.sy_msg_regcode==1 || $config.reg_real_name_check == 1{/yun}
+              <div id="bind-captcha" data-id='send_msg_tips' data-type='click'></div>
+              {yun:}else{/yun}
+              <div id="bind-captcha" data-id='login_bth' data-type='click'></div>
+              {yun:}/if{/yun}
+              
+              
+              <input type='hidden' id="verify_token"  name="verify_token" value="">
+			  {yun:}if $config.code_kind==6{/yun}
+              <input type='hidden' id="verify_str" name="verify_str" value="" />
+              {yun:}/if{/yun}
+              <input type='hidden' id="popup-submit"> 
+              <input type='hidden' id="bind-submit">
+            </div>
+            {yun:}else{/yun}
+           <div class="login_textbox">
+            <input class="inputitemtxt" placeholder="请输入图片验证码" onblur="check_code()" name="checkcode" id="checkcode" type="text" maxlength="6" />
+            <img id="vcode_img" class="authcode" src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php" onclick="checkCode('vcode_img');" />
+           </div>
+              {yun:}/if{/yun}
+            </div>
+           {yun:}/if{/yun}
+           <div class="login_textbox">
+            <input type="text" value="" autocomplete="off"  placeholder="请输入验证码" name="moblie_code" id="moblie_code" />
+            <input type="password" id="login_code" style="display: none"/>
+            <div class="dx_yz_hq" id="send_msg_tips" onclick="sendmsg('vcode_img');"><span id="time">获取验证码</span></div>
+           </div>
+            <div class="login_textbox">
+            <input type="password" value="" placeholder="请输入密码 " id="password" name="password" onblur="check_password();" />
+
+           </div>
+		   {yun:}if $config.reg_pw_sp=='1' || $config.reg_pw_num=='1' || $config.reg_pw_zm=='1'{/yun}
+		   <div class="zc_tip">提示：密码须包含{yun:}if $config.reg_pw_num=='1'{/yun}数字{yun:}/if{/yun}{yun:}if $config.reg_pw_zm=='1'{/yun},字母 {yun:}/if{/yun}{yun:}if $config.reg_pw_sp=='1'{/yun},字符@!#.$-_{yun:}/if{/yun}</div>{yun:}/if{/yun}
+            {yun:}if $config.reg_passconfirm=='1'{/yun}
+            <div class="login_textbox">
+            <input type="password" value="" placeholder="请确认密码" name="passconfirm" id="passconfirm" />
+            
+           </div>
+           {yun:}/if{/yun}
+          {yun:}elseif $type==1{/yun}
+           <div class="login_textbox">
+            <input type="text" placeholder="请输入用户名 {yun:}$config.sy_reg_nameminlen{/yun}-{yun:}$config.sy_reg_namemaxlen{/yun}位" name="username" id="username" class="account_number" onblur="check_username();">
+           </div>
+		   {yun:}if $config.reg_name_han=='1' || $config.reg_name_sp=='1' || $config.reg_name_num=='1' || $config.reg_name_zm=='1'{/yun}
+
+			<div class="zc_tip">提示：用户名须包含{yun:}if $config.reg_name_han=='1'{/yun}汉字 {yun:}/if{/yun}{yun:}if $config.reg_name_num=='1'{/yun}数字 {yun:}/if{/yun}{yun:}if $config.reg_name_zm=='1'{/yun},字母 {yun:}/if{/yun}{yun:}if $config.reg_name_sp=='1'{/yun},字符@!#.$-_{yun:}/if{/yun}</div>{yun:}/if{/yun}
+
+
+
+           <div class="login_textbox">
+            <input type="password" value="" placeholder="请输入密码 " id="password" name="password" onblur="check_password();" />
+
+           </div>
+		   {yun:}if $config.reg_pw_sp=='1' || $config.reg_pw_num=='1' || $config.reg_pw_zm=='1'{/yun}<div class="zc_tip">提示：密码须包含{yun:}if $config.reg_pw_num=='1'{/yun}数字{yun:}/if{/yun}{yun:}if $config.reg_pw_zm=='1'{/yun},字母 {yun:}/if{/yun}{yun:}if $config.reg_pw_sp=='1'{/yun},字符@!#.$-_{yun:}/if{/yun}</div>{yun:}/if{/yun}
+            {yun:}if $config.reg_passconfirm=='1'{/yun}
+            <div class="login_textbox">
+            <input type="password" value="" placeholder="请确认密码" name="passconfirm" id="passconfirm" />
+            
+           </div>
+           {yun:}/if{/yun}
+           {yun:}if strpos($config.code_web,"注册会员")!==false{/yun}
+            <div>
+              {yun:}if $config.code_kind>2{/yun}
+              <div class="gtdx-captcha">
+                  {yun:}if $config.reg_real_name_check == 1{/yun}
+                <div id="bind-captcha" data-id='send_msg_tips' data-type='click'></div>
+                {yun:}else{/yun}
+                <div id="bind-captcha" data-id='login_bth' data-type='click'></div>
+                {yun:}/if{/yun}
+                
+                <input type='hidden' id="verify_token"  name="verify_token" value="">
+				{yun:}if $config.code_kind==6{/yun}
+				<input type='hidden' id="verify_str" name="verify_str" value="" />
+				{yun:}/if{/yun}
+                <input type='hidden' id="popup-submit"> 
+                <input type='hidden' id="bind-submit">
+              </div>
+              {yun:}else{/yun}
+              <div class="login_textbox">
+                <input class="inputitemtxt" placeholder="请输入图片验证码" onblur="check_code()" name="checkcode" id="checkcode" type="text" maxlength="6" />
+                <img id="vcode_img" class="authcode" src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php" onclick="checkCode('vcode_img');" />
+              </div>
+              {yun:}/if{/yun}
+            </div>
+           {yun:}/if{/yun}
+           {yun:}if $config.reg_real_name_check == 1{/yun}
+           <div class="login_textbox">
+            <input type="tel" value="" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"  placeholder="请输入手机号" name="moblie" id="moblie" onBlur="check_moblie();" class="account_number">
+           </div>
+           <div class="login_textbox">
+            <input type="text" value="" autocomplete="off"  placeholder="请输入验证码" name="moblie_code" id="moblie_code" />
+            <input type="password" id="login_code" style="display: none"/>
+            <div class="dx_yz_hq" id="send_msg_tips" onclick="sendmsg('vcode_img');"><span id="time">获取验证码</span></div>
+           </div>
+           {yun:}/if{/yun} 
+           {yun:}/if{/yun}
+           <div class="login_xy">
+    <div class="login_xy_zx">
+                   <input type="checkbox" id="xieyicheck" value="1" checked onclick="choosexie(this)" />
+               </div>
+               
+               <i class="policy">我已同意</i>
+               <a href="{yun:}url m=wap c=protocol{/yun}" class="Privacy" class="Privacy">《用户协议》</a>
+               <i class="policy">和</i>
+               <a href="{yun:}url m=wap c=privacy{/yun}" class="Privacy">《隐私政策》</a>
+                
+              </div>
+           
+      <div class="login_bthbox">
+                <input type="hidden" id="send" name="send" value="0" />
+                <input type="hidden" id="isRealnameCheck" name="isRealnameCheck" value="{yun:}$config.reg_real_name_check{/yun}" />
+               <div id="login_bth" class="login_bth" onclick="checkRegUser()">注册</div>
+           </div>
+        </form>
+           </div>
+             <!-- 验证码 -->
+         <div class="login_otherfs">
+           {yun:}if $config.reg_moblie=='1' && $type!=2{/yun}
+				<a href="{yun:}url m=wap c=register  type=2{/yun}" class="{yun:}if $type != 2 && $type!=1{/yun}login_wjmm{yun:}/if{/yun}">手机号注册</a>
+			{yun:}/if{/yun} 
+			{yun:}if $config.reg_email=='1' && $type!=3{/yun}
+				<a href="{yun:}url m=wap c=register  type=3{/yun}" class="{yun:}if $type != 3&& $type!=2{/yun}login_wjmm{yun:}/if{/yun}">邮箱注册</a>
+			{yun:}/if{/yun} 
+			{yun:}if $config.reg_user=='1' && $type!=1{/yun}
+				<a href="{yun:}url m=wap c=register type=1{/yun}" class="{yun:}if $type != 1&& $type!=3{/yun}login_wjmm{yun:}/if{/yun}">用户名注册</a>
+			{yun:}/if{/yun}
+           </div>
+           <!-- 有账号 -->
+      </div>
+      <input type="hidden" id="zy_uid" value="" />
+      <input type="hidden" id="zy_mobile" value="" />
+      <input type="hidden" id="zy_email" value="" />
+
+      <van-popup v-model="checkmobileshow" round   closeable :style="{width: '80%'}">
+          <div id="written_off">
+			
+            <div class="reg_have_tipbox">
+                <div class="reg_have_tip">
+                    <div class="reg_have_tip_tit_name">温馨提示</div> 
+                    <div class="reg_have_tip_tit"><span id="zy_type">{{zy_type}}</span></div>
+                    <div class="reg_have_tip_zc" id="zy_name"><span class=reg_have_tip_comname>{{zy_name}}</span></div>
+                </div>
+                <div class="reg_have_tip_p">
+                     如果是你本人，但不记得密码，您可以找回密码<br><span class=""id="jcbind"> <span id="desc_toast"> {{desctoast}}</span></span><br>
+                 如有疑问可拨打客服服务热线：<br>{yun:}$config.sy_freewebtel{/yun}
+                </div>  <div class="reg_have_tip_bthbox">
+               <a href="{yun:}url m=wap c=forgetpw{/yun}" class="reg_have_tip_bth">找回密码</a>
+                    <a href="javascript:void(0);" onclick="CheckPW();" class="reg_have_tip_bth" id="jcbind">解除绑定</a>
+                 </div>
+                
+            </div>
+        </div>
+      </van-popup>
+      <van-popup v-model="checkPWshow" closeable round :style="{  width: '80%' }">
+         <div class="login_mmbshow">  <div class=reg_have_tip_tit_name>登录密码</div>
+        <div class=login_mmbox>
+          <input type="password" value="" id="login_password"placeholder="请输入登录密码" class="login_mm">
+          <div class=login_mmboxbth><input type="submit" value="确定" class=tiny_show_tckbox_bth1 onclick="post_pass();" /></div></div></div>
+      </van-popup>
+ </div>     
+    {yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+    <script src="{yun:}$wap_style{/yun}/js/reg_ajax.js?v={yun:}$config.cachecode{/yun}"></script>
+    {yun:}include file="$wapstyle/verify_js.htm"{/yun}
+</body>
+<script>
+    var wapurl = "{yun:}url m=wap{/yun}",
+        weburl = "{yun:}$config.sy_weburl{/yun}",
+        pricename = "{yun:}$config.integral_pricename{/yun}",
+        integral_pricename = "{yun:}$config.integral_pricename{/yun}",
+        code_web = '{yun:}$config.code_web{/yun}',
+        code_kind = '{yun:}$config.code_kind{/yun}',
+        sy_reg_type = '{yun:}$config.sy_reg_type{/yun}';
+    var yunvue =  new Vue({
+        el:"#yunvue",
+        data:{
+          checkmobileshow: false,
+          zy_name: '',
+          zy_type:'',
+          checkPWshow:false,
+          desctoast:'',
+        },
+        created() {   
+         this.getInfo();
+        },
+        methods: {
+          getInfo() {
+           
+               
+               $("#yunvue").css('display', 'block');
+          },
+          yinsi() {
+            this.yinsidata = true;
+          },
+        },
+
+    })
+    $(function(){
+        $("#moblie").focus(function(event) {
+          if ($(this).val()=='') {
+            $(this).attr("placeholder","");
+          }
+        });
+        $("#moblie").blur(function(event) {
+          if ($(this).val()=='') {
+            $(this).attr("placeholder","请输入手机号");
+          }
+        });
+        //账号部分
+          $("#username").focus(function(){
+            
+            if($(this).val()==''){
+            $(this).attr("placeholder","");
+             }
+         });
+         $("#username").blur(function(){
+             if($(this).val() == ""){
+             $(this).attr("placeholder","请输入用户名 长度{yun:}$config.sy_reg_nameminlen{/yun}-{yun:}$config.sy_reg_namemaxlen{/yun}位{yun:}if $config.reg_name_han=='1' || $config.reg_name_sp=='1' || $config.reg_name_num=='1' || $config.reg_name_zm=='1'{/yun}须包含{yun:}if $config.reg_name_han=='1'{/yun}汉字 {yun:}/if{/yun}{yun:}if $config.reg_ne_num=='1'{/yun},数字 {yun:}/if{/yun}{yun:}if $config.reg_name_zm=='1'{/yun},字母 {yun:}/if{/yun}{yun:}if $config.reg_name_sp=='1'{/yun},字符@!#.$-_{yun:}/if{/yun}{yun:}/if{/yun}");
+             }
+         });
+         // 密码部分
+        $('#password').focus(function(){
+        if($(this).val()==''){
+            $(this).attr("placeholder","")
+        }
+         });
+         $('#password').blur(function(){
+             var text_value = $(this).val();
+             if(text_value==""){
+                 $(this).attr("placeholder","填写密码{yun:}if $config.reg_pw_sp=='1' || $config.reg_pw_num=='1' || $config.reg_pw_zm=='1'{/yun}须包含{yun:}if $config.reg_pw_num=='1'{/yun}数字{yun:}/if{/yun}{yun:}if $config.reg_pw_zm=='1'{/yun},字母 {yun:}/if{/yun}{yun:}if $config.reg_pw_sp=='1'{/yun},字符@!#.$-_{yun:}/if{/yun}{yun:}/if{/yun}");
+             }
+             
+         });
+        //  确认密码部分
+        $('#passconfirm').focus(function(){
+        var text_value=$(this).val();
+        if(text_value == ""){
+            $(this).attr("placeholder","")
+        }
+         });
+         $('#passconfirm').blur(function(){
+             var text_value = $(this).val();
+             if(text_value==""){
+                 $(this).attr("placeholder","请确认密码");
+             }
+         });
+
+
+         
+    });
+</script>
+</html>

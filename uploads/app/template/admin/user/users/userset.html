@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+
+    
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="个人设置" name="first" :lazy="true">
+                    <userset_index></userset_index>
+                </el-tab-pane>
+                <el-tab-pane label="头像设置" name="second" :lazy="true">
+                    <userset_logo></userset_logo>
+                </el-tab-pane>
+               <el-tab-pane label="消费设置" name="third" :lazy="true">
+                   <userset_userspend></userset_userspend>
+               </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#moduapp',
+            data: function () {
+                return {
+                    activeName: 'first'
+                }
+            },
+            components: {
+                'userset_index': httpVueLoader('./component/userset_index.vue'),
+                'userset_logo': httpVueLoader('./component/userset_logo.vue'),
+                'userset_userspend': httpVueLoader('./component/userset_userspend.vue'),
+            },
+            methods: {
+                handleClick(tab, event) {
+                    console.log(tab, event);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

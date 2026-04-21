@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName">
+                <el-tab-pane label="短信设置" name="first">
+                    <messageshow></messageshow>
+                </el-tab-pane>
+                <el-tab-pane label="短信模板设置" name="second">
+                    <messagemb></messagemb>
+                </el-tab-pane>
+               
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#moduapp',
+            data: function () {
+                return {
+                    activeName: 'first'
+                }
+            },
+            components: {
+                'messageshow': httpVueLoader('./component/messageshow.vue'),
+                'messagemb': httpVueLoader('./component/messagemb.vue'),
+                 },
+            methods: {
+                
+            }
+        });
+    </script>
+</body>
+
+</html>

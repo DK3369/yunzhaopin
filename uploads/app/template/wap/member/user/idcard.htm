@@ -1,0 +1,116 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+<script src="{yun:}$wap_style{/yun}/js/compress.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/exif.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+
+<div  id="yunvue" class="wap_member_box none">
+	<form id="idcard_form"> 
+	<div class="com_cardlist">
+   <span v-if="status==0 &&  photo==''" class="sfyz_icon">未认证</span>
+   <span v-else-if="status==0 &&  photo!=''"  class="sfyz_icon">审核中</span>
+   <span v-else-if="status==1"  class="sfyz_icon">已认证</span>
+   <div v-else-if="status==2" class="">
+       <span  class="sfyz_icon">未通过</span><block v-if="statusbody!='' &&  status ==2">原因:{{statusbody}}</block>，请重新上传，如需有疑问，可拨打客服服务热线
+   </div>
+		   <div class="">
+        <div class="">身份证号</div>
+        <div class="sfyz_box">
+            <input type="idcard" name="idcard" :value="idcard" placeholder="请输入身份证号码" />
+        </div>      
+       <div class="idcard_box">
+		   
+		     <img :src="photo?photo:'{yun:}$wap_style{/yun}/images/add_newrenewal.png'" mode="aspectFit" id="previewimg" class="idcard_boximg"/>
+			 <div class="">
+               
+                <input type="file" id="pic" name="pic" onchange="previewImage(this,'preview')" accept="image/*" class="idcard_boxfile">
+                <input type='hidden' name='preview' value='' id='preview'>
+            </div>
+	   </div>
+      
+            <div class="sfyz_tip">上传本人的身份证人像页照片文字清晰，四角齐全,格式为 {{pic_type}} 不得超过{{maxsize}}M</div>
+                <div class="sfyz_tip">  身份证照片仅用于实名认证</div>
+     
+       
+  
+
+    </div>
+		
+	</div> <div class="new_m_bth" @click="saveIdcard">提交</div>
+
+        </form>
+</div>
+<script>  
+    var yunvue = new Vue({
+        el: '#yunvue',
+        data: {
+            photo: '',
+            statusbody: '',
+            uploaded: 1,
+            maxsize: 0,
+            status: 4,
+            idcard: '',
+            pic: '',
+            pic_type: ''
+        },
+        created() {   
+            this.getIdcard();
+        },
+        methods:{          
+            getIdcard:function(){
+                showLoading();
+                var that = this;
+                $.post('{yun:}url d=wxapp h=user m=set c=getidcard{/yun}',{rand:Math.random()},function(data){
+                    hideLoading();      
+                    if (data.error == 1) {
+                        
+                        that.photo = data.data.url;
+                        that.statusbody = data.data.statusbody;
+                        that.status = data.data.status ? data.data.status : '';
+                        that.idcard = data.data.idcard ? data.data.idcard : '';
+                        that.maxsize = data.data.file_maxsize ? data.data.file_maxsize : 0;
+                        that.pic_type = data.data.pic_type ? data.data.pic_type : '';
+                    } else {
+                        that.photo = '/static/image/idcard.png';
+                    }
+                    $("#yunvue").css('display', 'block');
+                },'json');            
+            },         
+            saveIdcard:function(){
+                var that = this;
+                var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+                var v = getFormValue('idcard_form');
+                if (v.preview == '') {
+                    return showToast('上传新身份证后才能修改');
+                } else if (v.idcard == '') {
+                    return showToast('请填写身份证号码');
+                } else if (reg.test(v.idcard) === false) {
+                    return showToast('身份证号格式错误');
+                } else {
+                    var formData = {
+                        idcard: v.idcard,
+                        preview: v.preview
+                    };
+                   
+                    
+                    showLoading('提交中...');
+                    $.post('{yun:}url d=wxapp h=user m=set c=saveidcard{/yun}',formData,function(data){
+                        hideLoading();      
+                        if (data.error == 1) {
+                            showToast(data.msg,2, function() {
+                                that.getIdcard();
+                            });
+                        } else {
+                            showToast(data.msg);
+                        }
+                    });
+                   
+                }
+            },
+            pageTo:function(url){
+                window.location.href = url;
+            }
+        } 
+      });
+        
+</script>
+</body>
+</html>

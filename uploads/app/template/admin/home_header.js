@@ -1,0 +1,10 @@
+document.writeln("<meta charset=\'UTF-8\'>");
+document.writeln("  <meta http-equiv=\'X-UA-Compatible\' content=\'IE=edge\'>");
+document.writeln("  <meta name=\'viewport\' content=\'width=device-width, initial-scale=1.0\'>");
+document.writeln("  <link rel=\'stylesheet\' href=\'../app/template/admin/js/element.css\'>");
+document.writeln("  <script src=\'../app/template/admin/js/vue.min.js\'></script>");
+document.writeln("  <script src=\'../app/template/admin/js/jquery.min.js\'></script>");
+document.writeln("  <script src=\'../app/template/admin/js/element.js\'></script>");
+document.writeln("  <script src=\'../app/template/admin/js/axios.min.js\'></script>");
+document.writeln("  <script src=\'../app/template/admin/js/api.js\'></script>");
+document.writeln("  <link rel=\'stylesheet\' href=\'../app/template/admin/adstyle/phpyun.css\'>");

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte" style="height: initial;">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="个人用户" name="usersall">
+                    <usersall ref="usersall"></usersall>
+                </el-tab-pane>
+                <el-tab-pane label="解绑记录" name="unbinding" lazy>
+                    <unbinding ref="unbinding"></unbinding>
+                </el-tab-pane>
+                <el-tab-pane label="个人日志" name="userlog" lazy>
+                    <userlog ref="userlog"></userlog>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+    const custoapp = new Vue({
+        el: '#moduapp',
+        data: function() {
+            return {
+                activeName: 'usersall'
+            }
+        },
+        components: {
+            'usersall': httpVueLoader('./component/usersall.vue'),
+            'unbinding': httpVueLoader('./component/unbinding.vue'),
+            'userlog': httpVueLoader('./component/userlog.vue'),
+        },
+		created: function () {
+		    var that = this
+			
+		},
+        methods: {
+            handleClick(tab, event) {
+                // this.$refs[tab.name].init();
+            }
+        }
+    });
+    </script>
+</body>
+
+</html>

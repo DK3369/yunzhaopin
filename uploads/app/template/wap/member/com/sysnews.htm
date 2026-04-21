@@ -1,0 +1,208 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<style>
+	body{ background-color: #fff;}
+</style>
+ 
+<div class="chatnewcardbg">  
+    <div class="chatnewcardheader">消息</div> 
+	
+	<div class="chatnewcard">
+        <ul>
+			<li data-url="hr" class="navigetali">
+				<div class="card_logo">
+					<img src="{yun:}$wap_style{/yun}/images/resume.png" alt="" width="100%" height="100%">
+					<div id="userid_jobnum" class="card_logo_circle" style="display: none;">
+						<span id="userid_jobnum_n" style="background: #f30; padding: 0.03rem 0.15rem;border-radius: 20px; color: #fff;"></span>
+					</div>
+				</div>
+				<i class="card_word">应聘简历</i>
+			</li>
+			<li data-url="attention_me" class="navigetali">
+				<div class="card_logo">
+					<img src="{yun:}$wap_style{/yun}/images/care_a_hang.png" alt="" width="100%" height="100%">
+				</div>
+				<i class="card_word">对我感兴趣</i>
+			</li>
+			{yun:}if $config.com_message{/yun}
+			<li data-url="msg" class="navigetali">
+				<div class="card_logo">
+					<img src="{yun:}$wap_style{/yun}/images/genius_consult.png" alt="" width="100%" height="100%">
+					<div id="jobnum" class="card_logo_circle" style="display: none;">
+						<span id="jobnum_n" style="background: #f30; padding: 0.03rem 0.15rem;border-radius: 20px; color: #fff;"></span>
+					</div>
+				</div>
+				<i class="card_word">求职咨询</i>
+			</li>
+			{yun:}/if{/yun}
+			<li data-url="sxnews" class="navigetali">
+				<div class="card_logo">
+					<img src="{yun:}$wap_style{/yun}/images/sixin.png" alt="" width="100%" height="100%">
+					<div id="sxnum" class="card_logo_circle" style="display: none;">
+						<span id="sxnum_n" style="background: #f30; padding: 0.03rem 0.15rem;border-radius: 20px; color: #fff;"></span>
+					</div>
+				</div>
+				<i class="card_word">系统消息</i>
+			</li>
+		</ul>
+    </div>
+</div>
+<!--  微信提示 -->
+<div class="chatnewtipbox" id="gzhTsDiv" style="display: none;">
+	<div class="chatnewtip" > 
+		<i class="chatnewtipicon"></i><div class="chatnewcard_gzhtip"> 
+		<span> 开启微信通知，不错过重要消息</span>
+		<span onclick="toSubscribe();" class="chatnewcard_gzhtip_set">  去设置></span>
+	</div></div>
+</div>
+<!--  提示 -->
+
+
+<div class="chatnewcard_bgpd  ">
+	<div class="dialog_box none" id="sysChatbox">
+		<!-- 关注公众号弹框 -->
+		<van-popup v-model="gzhShow" close-on-click-overlay="true" closeable="true" @close="closeGzhShow" round >
+			<div class="gzh_gzbox">
+				<div class="gzh_gzbox_n">关注公众号</div>
+				<img :src="gzhUrl" />
+				<div class="gzh_gzbox_p">长按识别二维码</div>
+				<div class="gzh_gzbox_p">随时随地查找好工作</div>
+			</div>
+		</van-popup>
+	</div>
+</div>
+<script src="{yun:}$wap_style{/yun}/js/jquery.min.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$wap_style{/yun}/js/vue.min.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$config_wapdomain{/yun}/js/vant/lib/vant.min.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$config_wapdomain{/yun}/js/vant/phpyun_vant.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$wap_style{/yun}/js/public.js?v={yun:}$config.cachecode{/yun}"></script>
+<script>
+	var isWeiXin = '{yun:}$isweixin{/yun}';
+	var loopVal = null;
+	var sysapp = new Vue({
+		el: '#sysChatbox',
+		data: {
+			allchat: [],
+			newchat: [],
+			oldchat: [],
+			chatCate: 'all',
+			looknum: 0,
+			newlook: {},
+			isWx: isWeiXin ? 1 : 2,
+			gzhShow: false,
+			gzhUrl: ''
+		},
+		created() {
+			this.getSysmsg();
+		},
+		methods:{
+			getSysmsg() {
+				var self = this;
+				$.post('{yun:}url d=wxapp h=com m=msg c=sysnews{/yun}', {rand: Math.random()}, function(data){
+					var res = data.data;
+					self.looknum = res.looknum;
+					self.newlook = res.newlook;
+					if(res.userid_jobnum > 0){
+						$("#userid_jobnum_n").text(res.userid_jobnum);
+						$("#userid_jobnum").css('display', 'flex');
+					}
+					if(res.jobnum > 0){
+						$("#jobnum_n").text(res.jobnum);
+						$("#jobnum").css('display', 'flex');
+					}
+					if(res.sxnum > 0){
+						$("#sxnum_n").text(res.sxnum);
+						$("#sxnum").css('display', 'flex');
+					}
+					if (res.subscribe != 1){
+						$('#gzhTsDiv').show();
+						self.gzhUrl = res.gzhurl ? res.gzhurl : '';
+					}
+				}, 'json');
+			},
+			topage(url){
+				window.location.href = url;
+			}
+		}
+	});
+	function toSubscribe() {
+		if (sysapp.$data.isWx == 1) {
+
+			sysapp.$data.gzhShow = true;
+			gzhBind();
+		} else {
+			window.location.href = '{yun:}url m=wap c=wxconnect login=1{/yun}';
+		}
+	}
+
+	var gzhConfirm = false,
+			gzhBox = false;
+
+	function isGzh() {
+		$.post('index.php?c=isgzh', {rand: Math.random()}, function (res) {
+			if (res.subscribe == 0 && !gzhConfirm) {
+				gzhBox = true;
+				sysapp.$data.gzhShow = true;
+			} else if (res.subscribe == 2 && !gzhConfirm) {
+				if (!gzhBox) {
+					sysapp.$data.gzhShow = true;
+					gzhBox = true;
+				} else {
+					gzhConfirm = true;
+					sysapp.$data.gzhShow = false;
+					showConfirm('本账号绑定的微信号，不是当前微信号，是否要换绑为当前微信号？', function () {
+						wxBindChange();
+					}, '否', '是');
+				}
+			} else if (res.subscribe == 1) {
+				if (gzhBox) {
+					window.location.reload();
+				}
+				$('#gzhTsDiv').hide();
+			}
+		}, 'json');
+	}
+
+	function closeGzhShow() {
+		clearTimeout(loopVal);
+		loopVal = null;
+	}
+
+	function gzhBind() {
+		loopVal = setInterval(function () {
+			isGzh();
+		}, 3000);
+	}
+
+	function wxBindChange() {
+		showLoading();
+		$.post('{yun:}url d=wxapp h=com m=index c=hbwx{/yun}', {rand: Math.random()}, function (res) {
+			hideLoading();
+			if (!res.error) {
+				showToast(res.msg);
+			}
+		}, 'json');
+	}
+	var wapurl = '{yun:}url m=wap{/yun}',
+			mine = {usertype:"{yun:}$usertype{/yun}"},
+			apage = 0,
+			npage = 0,
+			opage = 0,
+			newshow = false,
+			oldshow = false;
+
+	var needRefresh = window.sessionStorage.getItem("needRefresh");
+	if(needRefresh!='false' && needRefresh){
+		window.sessionStorage.setItem("needRefresh", false);
+		location.reload();
+	}
+	var mhurl = '{yun:}url d=wxapp m=chat c=getmh{/yun}';
+	$(function () {
+		typeof fetchData !== 'undefined' && fetchData();
+		// 消息页面-顶部导航点击
+		$(".navigetali").on("click", function() {
+			var url = $(this).attr('data-url');
+			window.location.href = wapurl + 'member/index.php?c=' + url + '&chat=1';
+		});
+	});
+</script>
+{yun:}include file="$wapstyle/footer.htm"{/yun}

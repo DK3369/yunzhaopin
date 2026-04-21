@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="yemanapp" class="moduleDome">
+       
+        <div class="moduleTable" style=" padding-top:15px;">
+            <table class="tableVue">
+                <thead>
+                    <tr align="left">
+                        <th width="200">名称</th>
+                        <th width="400">状态</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>
+                            <div class="TableTite">问答每日发布次数</div>
+                        </td>
+                        <td>
+                            <div class="TableInpt">
+                                <el-input placeholder="请输入" v-model="ruleForm.sy_day_ask_num"
+                                          @input="inputIntNumber($event, 'ruleForm', 'sy_day_ask_num')">
+                                </el-input>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                <span><i class="el-icon-warning"></i>提示：0为不限</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="TableTite">单IP每日发布次数</div>
+                        </td>
+                        <td>
+                            <div class="TableInpt">
+                                <el-input placeholder="请输入" v-model="ruleForm.sy_ip_ask_num"
+                                          @input="inputIntNumber($event, 'ruleForm', 'sy_ip_ask_num')">
+                                </el-input>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                <span><i class="el-icon-warning"></i>提示：0为不限</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="TableTite">问答发布审核</div>
+                        </td>
+                        <td>
+                            <div class="TableButn">
+                                <el-switch v-model="ruleForm.ask_check"
+                                           active-value="1" inactive-value="0">
+                              </el-switch>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                <span><i class="el-icon-warning"></i>开启后，发布的问题默认未审核。关闭审核则发布的问题默认审核通过。</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="TableTite">回复问答审核</div>
+                        </td>
+                        <td>
+                            <div class="TableButn">
+                                <el-switch v-model="ruleForm.answer_check"
+                                           active-value="0" inactive-value="1">
+                              </el-switch>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                <span><i class="el-icon-warning"></i>开启后，发布的回复默认未审核。关闭审核则发布的回复默认审核通过。</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="TableTite">评论回复审核</div>
+                        </td>
+                        <td>
+                            <div class="TableButn">
+                                <el-switch v-model="ruleForm.answer_review_check"
+                                           active-value="0" inactive-value="1">
+                                </el-switch>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                <span><i class="el-icon-warning"></i>开启后，对回复的评论默认未审核。关闭审核则默认审核通过。</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="TableTite">默认问答头像</div>
+                        </td>
+                        <td>
+                            <div class="TableUpload">
+                                <el-upload class="upload-demo" :accept="pic_accept"
+                                           list-type="picture"
+                                           action=""
+                                           :auto-upload="false"
+                                           :on-change="handleChangeLogo"
+                                           :show-file-list="false">
+                                    <el-button slot="trigger" size="small" type="primary">点击上传</el-button>
+                                    <img class="el-upload-list__item-thumbnail" width="100" height="100" style="padding-left: 5px;"
+                                         v-if="ruleForm.sy_friend_icon_n" :src="ruleForm.sy_friend_icon_n"/>
+                                </el-upload>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                <span></span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="setBasicButn" style="border: none;">
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">提交</el-button>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#yemanapp',
+            data: function () {
+                return {
+                    pic_accept: localStorage.getItem("pic_accept"),
+
+                    ruleForm: {},
+
+                    saveLoading: false,
+                }
+            },
+            created() {
+                this.getData();
+            },
+            methods: {
+                getData() {
+                    let that = this;
+                    httpPost('m=neirong&c=question&a=config').then(function (response) {
+                        let res = response.data,
+                            data = res.data;
+
+                        that.ruleForm = data.config;
+                    })
+                },
+
+                inputIntNumber(val, form, key) {
+                    this.$data[form][key] = val.replace(/[^0-9]/g,'');
+                },
+
+                // 上传时触发
+                handleChangeLogo(file, fileList) {
+                    this.$set(this.ruleForm, 'sy_friend_icon', file.raw);
+                    this.$set(this.ruleForm, 'sy_friend_icon_n', file.url);
+                },
+
+                save() {
+                    let that = this,
+                        ruleForm = that.ruleForm,
+                        formData = new FormData();
+
+                    if (that.saveLoading) {
+                        return false;
+                    }
+                    that.saveLoading = true;
+
+                    $.each(ruleForm, function(key, value){
+                        if (key != 'sy_friend_icon_n') {
+                            formData.append(key, value);
+                        }
+                    });
+
+                    httpPost('m=neirong&c=question&a=configSave', formData).then(function (response) {
+                        let res = response.data;
+
+                        if (res.error > 0) {
+                            message.error(res.msg, function () {
+                                that.saveLoading = false;
+                            });
+                        } else {
+                            message.success(res.msg, function() {
+                                // that.$set(that.ruleForm, 'sy_friend_icon', '');
+                                that.saveLoading = false;
+                                that.getData();
+                            });
+                        }
+                    })
+                },
+            }
+        });
+    </script>
+</body>
+
+</html>

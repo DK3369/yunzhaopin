@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+<body>
+    <div id="daohaapp" class="moduleElenAl">
+    	<div class="moduleSeachs">
+    	    <div class="">
+    	       单页面分类 
+    	    </div>
+    	    <div class="moduleSeachButn">
+    	       
+    	        <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addShow = true">添加单页面类别</el-button>
+    	    </div>
+    	</div>
+
+        <div class="moduleElTable">
+            <el-table ref="multipleTable" :data="tableData" border style="width: 100%" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" @selection-change="selectionChange" v-loading="loading" :empty-text="emptytext">
+                <el-table-column type="selection" width="55"></el-table-column>
+                <el-table-column prop="id" label="	序号" width="80"></el-table-column>
+				<el-table-column label="类别名称"  >
+				    <template slot-scope="scope">
+				        <div class="moduleElTaPax" v-if="editname_id==scope.row.id">
+                            <el-input id="inputref" placeholder="请输入内容" v-model="editname" :data-preval="scope.row.name" data-type="name" @blur="editChange" clearable></el-input>
+				        </div>
+                        <div class="moduleElTaPax" v-else>
+                            <span>{{scope.row.name}}</span>
+                            <img src="../../../admin/images/bine.png" @click="editcolumn('name',scope.row.name,scope.row.id)" alt="">
+                        </div>
+				    </template>
+				</el-table-column>
+				<el-table-column label="排序" >
+				    <template slot-scope="scope">
+                        <div class="moduleElTaPax" v-if="editsort_id==scope.row.id">
+                            <el-input id="inputref" placeholder="请输入内容" v-model="editsort" @input="inputIntNumber($event, 'editsort', '')" :data-preval="scope.row.sort" data-type="sort" @blur="editChange" clearable></el-input>
+                        </div>
+				        <div class="moduleElTaPax" v-else>
+				            <span>{{scope.row.sort}}</span>
+				            <img src="../../../admin/images/bine.png" @click="editcolumn('sort',scope.row.sort,scope.row.id)" alt="">
+				        </div>
+				    </template>
+				</el-table-column>
+                <el-table-column fixed="right" label="操作" width="80">
+                    <template slot-scope="scope">
+                        <div class="cz_button">
+						  <el-button size="mini" @click="deleteClass(scope.row.id)" type="danger">删除</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="modulecz modulePagButn">
+                <el-checkbox v-model="allchecked" @change="allcheckChange">全选</el-checkbox> 
+                <el-button @click="deleteClassAll" size="mini">批量删除</el-button>
+            </div>
+            <div class="modulePagNum">
+                <el-pagination background 
+                    @current-change="handleCurrentChange"
+                    :hide-on-single-page="true"
+                    :current-page="currentPage"
+                    :total="total"
+                    :page-size="perPage"
+                    layout="total,prev, pager, next, jumper">
+                </el-pagination>
+            </div>
+        </div>
+        <el-dialog title="添加类型"  width="30%" :visible.sync="addShow" :modal-append-to-body="false" @close="addclose">
+            <div class="hydialog_item">
+                <span>类型名称：</span>
+                <el-input type="textarea"  v-model="classname" style="flex: 1;"></el-input>
+            </div>
+            <i class="el-icon-info" style="margin-top: 10px;">说明：可以添加多条分类（请按回车Enter键换行，一行一个)</i>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="addclass">添加</el-button>
+            </div>
+        </el-dialog>
+    </div>
+    <!-- script -->
+    <script>
+        var timer = null;
+        const custoapp = new Vue({
+            el: '#daohaapp',
+            data: function () {
+                return {
+                    tableData: [],
+                    total:0,
+                    perPage:10,
+                    currentPage:1,
+                    prevPage: 0,
+                    editname_id:'',
+                    editsort_id:'',
+                    editname:'',
+                    editsort:'',
+
+                    addShow:false,
+                    classname:'',
+
+                    allchecked:false,
+                    choosedata:[],
+
+                    loading: true,
+					emptytext: '暂无数据',
+                }
+            },
+            components: {},
+            created: function () {
+                this.getList();
+            },
+            methods: {
+                inputIntNumber(val, form, key) {
+                    this.$data[form] = val.replace(/[^0-9]/g,'');
+                },
+                async getList() {
+                    let that = this;
+                    let params = {
+                        page: that.currentPage,
+                    }
+                    that.loading = true;
+                    that.emptytext = "数据加载中";
+                    httpPost('m=system&c=singleclass&a=index', params).then(function(result){
+                        var res = result.data
+                        if (res.error == 0) {
+                            that.tableData = res.data.list
+                            that.total = parseInt(res.data.total)
+                            that.perPage = parseInt(res.data.perPage)
+                            if (that.prevPage != that.currentPage) {
+                                that.prevPage = that.currentPage;
+                                that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                            }
+                            that.loading = false;
+							if (that.tableData.length === 0){
+                                that.emptytext = "暂无数据";
+                            }
+                        }
+                    }).catch(function(e){
+                        console.log(e)
+                    })
+                },
+                handleCurrentChange(val) {
+                    this.currentPage = val;
+                    this.getList();
+                },
+                editcolumn:function(type,def,id){
+                    
+                    this[`edit${type}_id`] = id;
+                    this[`edit${type}`] = def;
+
+                    this.$nextTick(() => {
+                        if (timer) {
+                             clearTimeout(timer);
+                        }
+                        timer = setTimeout(() => {
+                           document.getElementById('inputref').focus();
+                        }, 100);
+                    })
+                    
+                },
+                async editChange(e){
+
+                    var that = this;
+                    
+                    var preval = e.target.dataset.preval;
+                    var type = e.target.dataset.type;
+
+                    var val = this[`edit${type}`];
+                    var id = this[`edit${type}_id`];
+                    
+                    if(val==preval){
+                        
+                        this[`edit${type}_id`] = '';
+                        this[`edit${type}`] = '';
+
+                    }else{
+                        if(type=='name' && val==''){
+                            this[`edit${type}_id`] = '';
+                            message.error('类别名称不能为空！');return;
+                        }
+                        var param = {id:id};
+                        param[`${type}`] = val;
+
+                        httpPost('m=system&c=singleclass&a=ajax',param).then(function(result){
+                            
+                            for(let i in that.tableData){
+                                if(that.tableData[i].id==id){
+                                    that.tableData[i][`${type}`] = val;break;
+                                }
+                            }
+
+                            that[`edit${type}_id`] = '';
+                            that[`edit${type}`] = '';
+                            message.success('修改成功',function(){
+                                that.getList()
+                            });
+                        }).catch(function(e){
+                            console.log(e)
+                        })
+                    }
+                    
+                },
+                async addclass() {
+                    let that = this;
+
+                    var position = this.classname.split("\n");
+                    var name=position.join("-");
+
+                    if(name==''){
+                        message.error('类别名称不能为空！');return;
+                    }
+                    let params = {
+                        name: name,
+                    }
+                    
+                    httpPost('m=system&c=singleclass&a=add', params).then(function(result){
+                        
+                        var res = result.data;
+                        if(res.error==1){
+                            message.error('已有此类别，请重新输入！');return;
+                        }else if(res.error==2){
+                            message.success('添加成功！',function(){location.reload();});return;
+                        }else if(res.error==3){
+                            message.error('添加失败！',function(){location.reload();});return;
+                        }
+                    }).catch(function(e){
+                        console.log(e)
+                    })
+                },
+                addclose:function(){
+                    this.classname = '';
+                },
+                allcheckChange:function(){
+                   
+                    this.$refs.multipleTable.toggleAllSelection();
+                    
+                },
+                selectionChange:function(e){
+                    if(this.tableData.length != e.length){
+                        this.allchecked = false;
+                    }else{
+                        this.allchecked = true;
+                    }
+                    this.choosedata = e;
+                },
+                deleteClass:function(id){
+                    var _this = this;
+                    
+                    var params = {
+                        del:id
+                    };
+                    delConfirm(_this,params,this.deleteClassPost)
+                },
+                deleteClassAll:function(){
+                    var _this = this;
+                    var idarr = [];
+                    if(this.choosedata.length>0){
+                        for(let i in this.choosedata){
+                            idarr.push(this.choosedata[i].id);
+                        }
+                    }else{
+                        message.error('请选择要删除的数据！');return;
+                    }
+                    var params = {
+                        del:idarr
+                    };
+                    
+                    delConfirm(_this,params,this.deleteClassPost)
+                },
+                async deleteClassPost(params) {
+
+                    let that = this;
+
+                    httpPost('m=system&c=singleclass&a=del', params).then(function(result){
+                        
+                        var res = result.data;
+                        if(res.error==9){
+                            message.success(res.msg,function(){that.getList()});return;
+                        }else{
+                            message.error(res.msg);return;
+                        }
+                    }).catch(function(e){
+                        console.log(e)
+                    })
+                },
+            }
+        });
+    </script>
+</body>
+<style>
+		.el-table .el-table__cell { padding: 12px 0; }
+</style>
+</html>

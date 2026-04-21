@@ -1,0 +1,214 @@
+<script src="{yun:}$wap_style{/yun}/js/list_bottom.js?v={yun:}$config.cachecode{/yun}"></script>
+
+<div id="joblist_wx_vue" class="none">
+    <template v-if="skeletonLoading && mapjob=='1'">
+        <div class="map_job_list" v-for="(item,skeletonKey) in skeletonLen" :key="skeletonKey">
+            <div class="map_job_list_box">
+                <van-skeleton :row-width="['100%', '50%', '100%']" :row="3"></van-skeleton>
+            </div>
+        </div>
+    </template>
+    <template v-else>
+        <template v-for="item in joblist">
+            <div class="tab_card">
+                <div class="ptyhybox"  v-if="item.fact_status=='1'">
+                    <div class="ptyhy"><i class="ptyhy_icon"></i>实地核验 </div> 
+                </div>
+                <a v-bind:title="item.name" :data-href="item.wapjob_url" href="javascript:void(0)" onclick="toPage(this)">
+                    <div class="tab_card_top">
+                        <div class="tab_card_job">
+                            <i class="tab_card_job_name">
+                                <span style="color: red;" v-if="item.rec==1">{{item.name}}</span>
+                                <span v-else>{{item.name}}</span>
+                            </i>
+                            <i class="tab_card_new" v-if="item.newtime">new</i>
+                        </div>
+                        <i class="tab_card_pay">{{item.job_salary}}</i>
+                    </div>
+                    <div class="newjob_info">
+                        <span v-if="item.job_city_three">{{item.job_city_three}}</span>
+                        <span v-else-if="item.job_city_two">{{item.job_city_two}}</span>
+                        <span v-else>{{item.job_city_one}}</span>
+                        <i class="newjob_info_line" v-if="item.job_exp"></i><span v-if="item.job_exp" class="">{{item.job_exp}}经验</span>
+                        <i class="newjob_info_line" v-if="item.job_edu"></i><span v-if="item.job_edu" class="">{{item.job_edu}}学历</span>
+                        <span class="newjob_fw">
+							<img v-if="item.rec_n" src="{yun:}$wap_style{/yun}/images/icon_recommend.png" alt="">
+							<img v-if="item.urgent_n" src="{yun:}$wap_style{/yun}/images/jp.png" alt="">
+						</span>
+                    </div>
+                    <div v-if="item.welfare_n" class="welfare">
+                        <span class="welfare_n" v-for="welfare in item.welfare_n" :key="welfare">{{welfare}}</span>
+                    </div>
+                </a>
+                <a v-bind:title="item.com_name" :data-href="item.wapcom_url" href="javascript:void(0)" onclick="toPage(this)">
+                    <div class="tab_card_bottom">
+                        <div class="card_bottom_logo">
+                            <img v-bind:src="item.comlogo" alt="" style="width: 100%;">
+                        </div>
+                        <div class="card_bottom_word">{{item.com_name}}</div>
+                        <img v-if="item.hotlogo" src="{yun:}$config.sy_weburl{/yun}/app/template/wap/images/mq.png" alt="名企" class="png" width="14" style="vertical-align:middle">
+                        <img v-if="item.rating_logo" v-bind:src="item.rating_logo" style="vertical-align:middle; margin-left:3px;" width="14" height="14"/>
+                        <i v-if="item.yyzz_status==1" class="job_qy_rz_icon"></i>
+                        <i class="jl_name" v-if="item.dis">{{item.dis}}</i>
+						<i class="jl_name" v-if="item.xs == 1 && mapjob!='1'">置顶</i>
+                        <i class="jl_name" v-if="item.xs !='1' && mapjob!='1' && item.lastupdate_n">{{item.lastupdate_n}}</i>
+                    </div>
+                </a>
+            </div>
+        </template>
+    </template>
+    <div v-if="mapjob=='1' && joblist.length==0" class="nearby_position" id="nocom">
+        <div class="wap_member_no"> 您的附近没有相关职位！</div>
+    </div>
+</div>
+{yun:}if $config.map_key{/yun}
+<script type="text/javascript">
+    window._AMapSecurityConfig = {
+        securityJsCode:'{yun:}$config.map_secret{/yun}'
+    }
+</script>
+<script type="text/javascript" src="{yun:}$config.mapurl{/yun}"></script>
+{yun:}/if{/yun}
+<script type="text/javascript">
+	var map_key = '{yun:}$config.map_key{/yun}';
+    var app = new Vue({
+        el: '#joblist_wx_vue',
+        data: {
+            skeletonLoading: true,
+            skeletonLen: new Array(15).fill(''),
+            joblist: [],
+            mapjob: ''
+        }
+    });
+
+    var x = '{yun:}$smarty.get.mapx{/yun}';
+    var y = '{yun:}$smarty.get.mapy{/yun}';
+    //附近职位
+    if (mapjob == '1') {
+        var jobpage = 0;
+        app.$data.mapjob = '1';
+        if (app.$data.skeletonLoading) {
+            app.$nextTick(function () {
+                document.getElementById('listdiv').insertAdjacentHTML('beforeend', $("#joblist_wx_vue").html());
+            })
+        }
+        if ((x > 0 && y > 0) ||  map_key=='') {
+            fetchData_list();
+        } else {
+            get_current_loaction();
+        }
+    } else {
+        var jobpage = 0;
+        fetchData_list();
+    }
+
+    function get_current_loaction() {
+        AMap.plugin('AMap.Geolocation', function() {
+           var geolocation = new AMap.Geolocation();
+        
+          geolocation.getCurrentPosition(function(status,result){
+                if(status=='complete' && result.info == 'SUCCESS'){
+                    var position = result.position;
+                    x = position.lng;
+                    y = position.lat;
+                    fetchData_list();
+                }
+          });
+        });
+    }
+
+    //附近职位 end
+
+    function fetchData_list() {
+        jobpage++;
+
+        var searchurl = document.getElementById('searchurl').value;
+        var param = {searchurl: searchurl, page: jobpage};
+
+        // 缓存处理开始
+        let storageDetail = sessionStorage.getItem("storageDetail"),
+            storageCacheType = sessionStorage.getItem("storageCacheType"),
+            storageSearchurl = sessionStorage.getItem("storageSearchurl"),
+            storagePage = sessionStorage.getItem("storagePage"),
+            storageListStr = sessionStorage.getItem("storageList"),
+            storageList = storageListStr ? JSON.parse(storageListStr) : [],
+            storageLookIdsStr = sessionStorage.getItem("storageLookIds");
+
+        // 存在缓存内容 - 从详情返回才处理
+        if (storageCacheType && storageCacheType == 'job' &&
+            storageDetail && storageList.length > 0 && jobpage <= storagePage) {// 分页小于或等于缓存页数时，直接使用缓存
+            sessionStorage.removeItem("storageDetail"); // 清除掉详情返回的标识
+            storagePage = storagePage ? parseInt(storagePage) : 1;
+            jobpage = storagePage; // 直接修改分页为缓存对应页数
+            if (storageSearchurl) {
+                document.getElementById('searchurl').value = storageSearchurl; // 搜索条件赋值
+            }
+            app.$data.joblist = storageList; // 列表赋值
+            app.$nextTick(function () {
+                document.getElementById('listdiv').insertAdjacentHTML('beforeend', $("#joblist_wx_vue").html());
+            })
+            return; // 走缓存不执行后续
+        } else {
+            if (jobpage == 1) {
+                storageList = []; // 如果是重新加载，重新定义缓存数据列表
+            }
+        }
+        // 缓存处理结束
+
+        if (mapjob == '1') {
+            param.x = x;
+            param.y = y;
+        }
+
+        $.post(wapurl + 'index.php?c=job&a=ajaxLoad', param, function (res) {
+            if (document.getElementById('pageLoading')) {
+                document.getElementById('pageLoading').classList.add('none');
+            }
+
+            if (app.$data.skeletonLoading) {
+                app.$data.skeletonLoading = false;
+                if (mapjob == '1') {
+                    document.getElementById('listdiv').innerHTML = '';
+                }
+            }
+
+            if (res) {
+                var data = eval('(' + res + ')');
+
+                if (data.list.length > 0) {
+                    app.$data.joblist = data.list;
+
+                    sessionStorage.setItem("storageCacheType", "job");
+                    sessionStorage.setItem("storageSearchurl", searchurl);
+                    sessionStorage.setItem("storagePage", jobpage);
+                    storageList = storageList.concat(data.list)
+                    sessionStorage.setItem("storageList", JSON.stringify(storageList));
+
+                    app.$nextTick(function () {
+
+                        document.getElementById('listdiv').insertAdjacentHTML('beforeend', $("#joblist_wx_vue").html());
+                    })
+                } else {
+                    if (mapjob == '1') {
+
+                        if (param.page == 1) {
+                            app.$nextTick(function () {
+                                document.getElementById('listdiv').insertAdjacentHTML('beforeend', $("#joblist_wx_vue").html());
+                            })
+                        } else if (document.getElementById('pageNoMore')) {
+
+                            document.getElementById('pageNoMore').classList.remove('none');
+                        }
+                    } else if (document.getElementById('pageNoMore')) {
+                        document.getElementById('pageNoMore').classList.remove('none');
+                    }
+                }
+            }
+        });
+    }
+
+    function toPage(e) {
+        sessionStorage.setItem("storageDetail", 1);
+        window.location.href = $(e).data('href');
+    }
+</script>

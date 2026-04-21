@@ -1,0 +1,107 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+<div id="yunvue" class="none">
+<div class="mui-content">
+    <div class="privacy_title">
+        <p>提示：设置为公开时,企业才能搜索到默认简历</p>
+    </div>
+    <div class="privacy_body">
+        <ul class="privacy_body_card">
+            <li  @click="changeStatus(1)" value="1">
+                <a class="mui-navigate-right">
+                    <div class="privacy_body_card_title">简历公开</div>
+                     <span class="privacy_list_p">我正在找工作，希望企业关注我的简历</span>
+                </a>
+                    <div  class="mui-table-pitch-on"  v-if="status==1">
+                    <img src="{yun:}$wap_style{/yun}/images/table-view_yes.png" alt="" width="100%" height="100%">
+                </div>
+            </li>
+            <li  @click="changeStatus(3)" value="3">
+                <a class="mui-navigate-right">
+                    <div class="privacy_body_card_title">仅投递公司可见</div>
+                     <span class="privacy_list_p">可投递简历，仅投递公司可见</span>
+                </a>
+                    <div class="mui-table-pitch-on" v-if="status==3">
+                    <img src="{yun:}$wap_style{/yun}/images/table-view_yes.png" alt="" width="100%" height="100%">
+                </div>
+            </li>
+            <li  @click="changeStatus(2)" value="2">
+                <a class="mui-navigate-right">
+                    <div class="privacy_body_card_title">简历保密</div>
+                     <span class="privacy_list_p">不找工作，企业不能搜索到您的简历</span>
+               </a>
+                <div class="mui-table-pitch-on" v-if="status==2">
+                    <img src="{yun:}$wap_style{/yun}/images/table-view_yes.png" alt="" width="100%" height="100%">
+                </div>
+            </li>
+            <li class="privacy_list_af" @click="pageTo('index.php?c=blacklist')">
+               <div>
+                <div class="privacy_body_card_title">屏蔽企业 </div>
+                <span class="privacy_list_p">我不希望某些企业搜索到我的简历</span>
+               </div>
+                <div class="mui-table-pitch-on">
+                    <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="" width="100%" height="100%">
+                </div>
+            </li>
+        </ul>
+    </div>
+   
+</div>
+
+
+
+</div>
+<script type="text/javascript">  
+    var jobid = '{yun:}$smarty.get.jobid{/yun}';
+        jobid = jobid ? jobid : ''; 
+    var yunvue =  new Vue({
+        el: '#yunvue',
+        data() {
+            return {
+               status: 0
+            };
+        },        
+        created() {
+            this.privacy();
+        },
+        methods:{
+            privacy: function(){
+                showLoading();
+                let that = this;
+                $.post('{yun:}url d=wxapp h=user m=privacy c=privacy{/yun}', {rand:Math.random()}, function(data){
+                    hideLoading();
+                    if (data) {
+                        that.status = data.data;                       
+                    }
+                    $("#yunvue").css('display', 'block');
+                },'json');
+            },
+            pageTo:function(url){
+                window.location.href=url;
+            },
+            changeStatus:function(e){
+                var that = this;
+                var status = e;
+                var paramer = {                   
+                    status: status,
+                };
+                showLoading('设置中');
+                $.post('{yun:}url d=wxapp h=user m=privacy c=up{/yun}', paramer, function(data){
+                    hideLoading();
+                    if (data.error == 1) {
+                        var list = [];
+                        list = data.data;
+                        that.status = list.status;
+						window.localStorage.setItem("needRefresh", 1);
+                        showToast('操作成功');
+                        if(jobid){
+                            // 从职位详情页来的，修改后要刷新职位页面
+                            history.back();
+                        }
+                    }
+                },'json');
+            }
+        },
+    });
+</script> 
+</body>
+</html>

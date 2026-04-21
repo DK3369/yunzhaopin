@@ -1,0 +1,670 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<link href="{yun:}$wap_style{/yun}/js/swiper/swiper.min.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet" />
+<script src="{yun:}$wap_style{/yun}/js/swiper/swiper.min.js?v={yun:}$config.cachecode{/yun}"></script>
+
+<style>
+    .comheader {
+        display: none;
+    }
+
+    .ndbg img {
+        width: 6.533333rem;
+        height: 7.5rem;
+        border-radius: 0.213333rem;
+        position: fixed;
+        left: 50%;
+        top: 200px;
+        margin-left: -3.2rem;
+        z-index: 1000;
+    }
+
+    .ndbg_bg {
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        right: 0px;
+        bottom: 0px;
+        z-index: 999;
+    }
+
+    .hb_btn_hyz {
+        width: 6.906667rem;
+        height: .96rem;
+        line-height: .96rem;
+        background: #3a7bfe;
+        color: #fff;
+        display: inline-block;
+        border-radius: .08rem;
+        position: relative;
+        font-size: .373333rem;
+    }
+</style>
+<div id="yunvue" class="none">
+    <!-- 页面头部 -->
+    <div class="commemberheaderbg">
+        <div class="commemberheader commemberTops">
+
+            <div class="compauNamImgs">
+                <!--已签到-->
+                <img src="{yun:}$wap_style{/yun}/images/comtop2.png" alt="" v-if="signstate == 1">
+                <!--未签到-->
+                <img src="{yun:}$wap_style{/yun}/images/comtop22.png" alt="" v-else-if="signstate == 0"
+                    @click="sign">
+                <!--设置-->
+                <img src="{yun:}$wap_style{/yun}/images/comtop4.png" alt=""
+                    onclick="navigateTo('index.php?c=set')">
+            </div>
+            <!-- 公司名称 -->
+            <div class="company">
+                <div class="company_left" onclick="navigateTo('index.php?c=photo&t=1')">
+                    <img :src="info.logo" width="100%" height="100%">
+                </div>
+                <div class="company_left" v-else>
+                    <img :src="info.logo" width="100%" height="100%">
+                </div>
+                <div class="company_center">
+                    <div class="compauNamers" v-if="info.name">
+                        <div class="company_center_top">{{info.name}}</div>
+
+                    </div>
+                    <div class="company_center_top" v-else onclick="navigateTo('index.php?c=info')">编辑基本信息</div>
+
+                    <div class="company_center_bto"
+                        onclick="navigateTo('{yun:}url m=wap c=company a=show id=$uid{/yun}')">
+                        <i class="company_center_bto_name">企业信息</i>
+                        <img src="{yun:}$wap_style{/yun}/images/comtop1.png" class="company_center_bto_nav" alt="">
+                    </div>
+                </div>
+            </div>
+            <!-- 公司参数 -->
+            <div class="particulars_new">
+                <ul>
+                    <li onclick="navigateTo('index.php?c=hr')"><i class="particulars_number">{{msg.sqnum}}</i><i
+                            class="particulars_word">应聘简历</i></li>
+                    <li onclick="navigateTo('index.php?c=invite')"><i
+                            class="particulars_number">{{msg.invite_num}}</i><i class="particulars_word">面试邀请</i></li>
+                    <li onclick="navigateTo('index.php?c=look_job')"><i class="particulars_number">{{msg.hits}}</i> <i
+                            class="particulars_word">浏览量</i></li>
+                    <li><i class="particulars_number">{{msg.expoure}}</i> <i class="particulars_word">曝光量</i></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="comvipDaoBnagc">
+            <div class="comvip_nav comvipDaohang" v-if="sjtip == 1">
+                <div class="comvip_nav_left">
+                    <div class="comvipDaoText">
+                        <img src="{yun:}$wap_style{/yun}/images/comtop5.png" alt="">
+                        <span class="spancomva1">招聘效率太慢？快升级VIP</span>
+                    </div>
+                </div>
+                <div class="comvip_nav_right" onclick="navigateTo('index.php?c=server')">去升级</div>
+            </div>
+			<div class="comvip_nav comvipDaohang" v-if="sjtip == 0">
+				<div class="comvip_nav_left">
+                    <div class="comvipDaoText">
+                        <img src="{yun:}$wap_style{/yun}/images/comtop5.png" alt="">
+                        <span class="spancomva1">{{statis.rating_name}}</span>
+						<span class="spandates">{{info.vipetime_n}}</span>
+                    </div>
+                    <div class="comvipDaoTips">
+                        <span>合理利用会员权益，有效提升招聘效率</span>
+                    </div>
+                </div>
+                <div class="comvip_nav_right" onclick="navigateTo('index.php?c=server')">升级权益</div>
+            </div>
+            <div class="comvipDaoBorder">
+                <div style="overflow: hidden; position: relative;">
+                    <div class="comvipDaoOline">
+                        <div class="comvipDaineTite">
+                            <b>{{jobnums}}</b>
+                            <span>个在招职位</span>
+                        </div>
+                        <div class="comvipDaineLink">
+                            <a href="javascript:;" onclick="navigateTo('index.php?c=job')" v-if="jobnums > 0">
+                                <span>去管理</span>
+                                <img src="{yun:}$wap_style{/yun}/images/manager_more.png" alt="">
+                            </a>
+                            <a href="javascript:;" @click="jobAdd" v-else>
+                                <span>去发布</span>
+                                <img src="{yun:}$wap_style{/yun}/images/manager_more.png" alt="">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="Member_Center" style="padding-top:0.42rem;">
+                        <ul>
+                            <li onclick="navigateTo('index.php?c=job')">
+                                <div class="Member_Center_img">
+                                    <img src="{yun:}$wap_style{/yun}/images/yun_cy_icon6.png" alt="" width="100%" height="100%">
+                                </div>
+                                <i class="Member_Center_word">职位管理</i>
+                            </li>
+                            <li onclick="navigateTo('index.php?c=resumecolumn')">
+                                <div class="Member_Center_img">
+                                    <img src="{yun:}$wap_style{/yun}/images/yun_cy_icon5.png" alt="" width="100%" height="100%">
+                                </div>
+                                <i class="Member_Center_word">简历管理</i>
+                            </li>
+                            <li onclick="navigateTo('index.php?c=zhaopin')">
+                                <div class="Member_Center_img">
+                                    <img src="{yun:}$wap_style{/yun}/images/yun_cy_icon3.png" alt="" width="100%" height="100%">
+                                </div>
+                                <i class="Member_Center_word">招聘数据</i>
+                            </li>
+                            <li onclick="navigateTo('index.php?c=server')">
+                                <div class="Member_Center_img">
+                                    <img src="{yun:}$wap_style{/yun}/images/yun_cy_icon4.png" alt="" width="100%" height="100%">
+                                </div>
+                                <i class="Member_Center_word">会员服务</i>
+                                <span v-if="msg.couponNum>0" onclick="navigateTo('index.php?c=coupon_list')"
+                                    class="cy_box_tip">{{msg.couponNum}}张优惠券待使用</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="comzhtip" style="height: auto;" v-if="info.r_status != 1">
+
+        <div class="comzhtip_tit">温馨提示 </div>
+
+        <div v-if="info.r_status == 0">
+            <div class="comzhtip_p1">帐号审核中，发布的职位信息将在审核通过后展示</div>
+            <div class="comzhtip_p2">我们会24小时内进行审核请保持电话畅通，联系客服快速审核({{webtel}})</div>
+        </div>
+        <div class="" v-if="info.r_status == 2 || info.r_status == 4">
+            <div class="comzhtip_p1"> 帐号被锁定</div>
+            <div class="comzhtip_p2">联系客服快速解锁({{webtel}})</div>
+        </div>
+        <div class=" " v-else-if="info.r_status == 3">
+            <div class="comzhtip_p1">您的帐号未通过审核
+                <span v-if="info.lock_info">，原因：{{info.lock_info}}。</span><span v-else>。</span>
+            </div>
+            <div class="comzhtip_p2"> 欢迎随时与我们取得联系({{webtel}})</div>
+
+        </div>
+    </div>
+    <!-- 广告位开始 -->
+    <div class="wap_advertisement" style="display: none;">
+        <div class="swiper-container" id="imgswiper">
+            <div class="swiper-wrapper">
+                {yun:}adlist classid=501 item="lunbo" key=key{/yun}
+                <div class="swiper-slide" style="transform:translate3d(0,0,0);">
+                    <a href="{yun:}$lunbo.src{/yun}">
+                        <img src="{yun:}$lunbo.pic{/yun}" style="border-radius: 6px;" />
+                    </a>
+                </div>
+                {yun:}/adlist{/yun}
+            </div>
+        </div>
+    </div>
+    <!-- 结束 -->
+    <!-- 任务栏部分 -->
+    <div class="taskbar">
+        <div v-if="yrbtn==1" @click="getLastYearReport" class="djck"> <i class="djck_icon"></i> 亲，你的年度报告来了，请查收~ <span
+                class="djck_bth">查看></span></div>
+
+        <div class="taskbar_box" style="margin-top: 0px;;">
+            <div class="taskbar_enterprise" onclick="navigateTo('index.php?c=info');">
+                <div class="taskbar_datum">
+                    <div class="taskbar_datum_img">
+                        <img src="{yun:}$wap_style{/yun}/images/enterprise_data.png" alt="" width="100%" height="100%">
+                    </div>
+                    <div class="taskbar_datum_word">企业资料</div>
+                </div>
+                <div class="taskbar_nav">
+                    <div class="taskbar_nav_word">完善企业基本资料</div>
+                    <div class="taskbar_nav_img">
+                        <img src="{yun:}$wap_style{/yun}/images/my_more.png" alt="" width="100%" height="100%">
+                    </div>
+                </div>
+            </div>
+
+            <span onclick="navigateTo('index.php?c=finance');">
+                <div class="taskbar_enterprise">
+                    <div class="taskbar_datum">
+                        <div class="taskbar_datum_img">
+                            <img src="{yun:}$wap_style{/yun}/images/caiwuegl.png" alt="" width="100%" height="100%">
+                        </div>
+                        <div class="taskbar_datum_word">财务管理</div>
+                    </div>
+                    <div class="taskbar_nav">
+                        <div class="taskbar_nav_word" v-if="nofkorder>0">{{nofkorder}}个订单未付款</div>
+                        <div class="taskbar_nav_img">
+                            <img src="{yun:}$wap_style{/yun}/images/my_more.png" alt="" width="100%" height="100%">
+                        </div>
+                    </div>
+                </div>
+            </span>
+            <span @click="gwbox = true">
+                <div class="taskbar_enterprise">
+                    <div class="taskbar_datum">
+                        <div class="taskbar_datum_img">
+                            <img src="{yun:}$wap_style{/yun}/images/customer_service.png" alt="" width="100%" height="100%">
+                        </div>
+                        <div class="taskbar_datum_word">客户服务</div>
+                    </div>
+                    <div class="taskbar_nav">
+                        <div class="taskbar_nav_img">
+                            <img src="{yun:}$wap_style{/yun}/images/my_more.png" alt="" width="100%" height="100%">
+                        </div>
+                    </div>
+                </div>
+            </span>
+            <span onclick="navigateTo('index.php?c=jobcolumn')">
+                <div class="taskbar_enterprise">
+                    <div class="taskbar_datum">
+                        <div class="taskbar_datum_img">
+                            <img src="{yun:}$wap_style{/yun}/images/resume_index.png" alt="" width="100%" height="100%">
+                        </div>
+                        <div class="taskbar_datum_word">其他服务</div>
+                    </div>
+                    <div class="taskbar_nav">
+                        <div class="taskbar_nav_word">兼职，招聘会，专题 等</div>
+                        <div class="taskbar_nav_img">
+                            <img src="{yun:}$wap_style{/yun}/images/my_more.png" alt="" width="100%" height="100%">
+                        </div>
+                    </div>
+                </div>
+            </span>
+            <span onclick="navigateTo('index.php?c=set')">
+                <div class="taskbar_enterprise_last">
+                    <div class="taskbar_datum">
+                        <div class="taskbar_datum_img">
+                            <img src="{yun:}$wap_style{/yun}/images/sz.png" alt="" width="100%" height="100%">
+                        </div>
+                        <div class="taskbar_datum_word">账户设置</div>
+                    </div>
+                    <div class="taskbar_nav">
+
+                        <div class="taskbar_nav_img">
+                            <img src="{yun:}$wap_style{/yun}/images/my_more.png" alt="" width="100%" height="100%">
+                        </div>
+                    </div>
+                </div>
+            </span>
+        </div>
+
+        <div class="clear"></div>
+        <div class="zphb_show" v-show="isHb && hbNum > 0">
+            <a href="{yun:}url m=wap c=company a=whb id=$uid{/yun}">
+                <div class="zphb_show_c">
+                    <div class="zphb_show_tit">微海报</div>
+                    <div class="zphb_show_sp">一键生成招聘海报，分享到朋友圈</div>
+                </div>
+            </a>
+        </div>
+        <div class="companyDatapage">
+            <div class="companyDataTell" v-if="webtel">
+                <span>客服电话  {{webtel}} &nbsp; &nbsp;<span v-if="worktime">({{worktime}})</span></span>
+            </div>
+            <div class="companyDatazhiao">
+                <a href="{yun:}url m=wap c=rlzy{/yun}">人力资源服务许可证</a>
+                <span></span>
+                <a href="{yun:}url m=wap c=yyzz{/yun}">营业执照</a>
+            </div>
+        </div>
+    </div>
+    <!-- 提醒用户刷新职位遮罩层 -->
+    <div class="refresh_mask" id="jobTip">
+        <div class="refresh_mask_box">
+            <div class="refresh_mask_box_img">
+                <img src="{yun:}$wap_style{/yun}/images/refresh_title.png" alt="" width="100%">
+            </div>
+            <div class="refresh_mask_box_icon" @click="closeJobTip">
+                <div class="refresh_mask_box_del">
+                    <img src="{yun:}$wap_style{/yun}/images/refresh_del.png" alt="" width="100%">
+                </div>
+            </div>
+            <div class="refresh_mask_box_word"><i>尊敬的企业用户</i> <i>刷新职位可获得更多曝光机会</i></div>
+            <div class="refresh_mask_box_btn_q">
+                <div class="refresh_mask_box_btn" @click="jobRefreshAsk">立即刷新</div>
+            </div>
+        </div>
+    </div>
+    <!-- 添加客服微信弹框 memberwap.css -->
+    <van-popup v-model="gwbox" round>
+        <div class="service_mask_box">
+            <div class="service_mask_del" @click="gwbox = false">
+                <img src="{yun:}$wap_style{/yun}/images/refresh_del.png" alt="" width="100%" height="100%">
+            </div>
+            <div class="service_mask_title">{{guweninfo.ewm_n ? '添加下方客服微信' : ''}}</div>
+            <div class="service_mask_QRcode">
+                <img :src="guweninfo.ewm_n ? guweninfo.ewm_n : guweninfo.photo_n" alt="" width="100%" height="100%">
+            </div>
+            <div class="service_mask_information" @click="call" v-if="guweninfo.freewebtel">
+                <div class="service_mask_information_icon">
+                    <img src="{yun:}$wap_style{/yun}/images/icon_iphone.png" alt="" width="100%" height="100%">
+                </div>
+                <div class="service_mask_information_text">客服电话</div>
+            </div>
+            <a class="service_mask_information" v-if="guweninfo.qq" target="_blank" :href="'http://wpa.qq.com/msgrd?v=3&uin='+guweninfo.qq+'&site=qq&menu=yes'">
+                <div class="service_mask_information_icon">
+                    <img src="{yun:}$wap_style{/yun}/images/service_qq.png" alt="" width="100%" height="100%">
+                </div>
+                <div class="service_mask_information_text">客服QQ</div>
+            </a>
+        </div>
+    </van-popup>
+	<!-- 关注公众号弹框 -->
+	<van-popup v-model="gzhshow" :close-on-click-overlay="gzhclose" :closeable="gzhclose" round >
+		<div class="gzh_gzbox">
+			<div class="gzh_gzbox_n">关注公众号</div>
+				<img :src="gzhurl" @touchstart="gzhstart" @touchend="gzhend">
+			<div class="gzh_gzbox_p">长按识别二维码</div>
+			<div class="gzh_gzbox_p">随时随地查找好工作</div>
+		</div>
+	</van-popup>
+    <!-- 年度统计弹出来 -->
+    <van-popup v-model="yearReportShow" closeable round     :style="{ background:'none'}">
+        <div class=""  @click="getLastYearReport">  
+            <img :src="yrTip" alt="" width="280" height=" 310">
+        </div>
+    </van-popup>
+
+    <van-popup v-model="yrShow" round closeable :style="{height:'90%',width:'90%',background: 'none'}">
+        <div class="hb_tc">
+            <img :src="yrSrc" style="max-width: 100%;">
+            <div class="hb_tc_bth">
+                <div @click="yrShow=!yrShow" class="hb_btn_hyz">长按图片保存</div>
+            </div>
+        </div>
+    </van-popup>
+</div>
+<script src="{yun:}$wap_style{/yun}/js/jsMath.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/com.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script>
+
+var loopVal = null;
+var isweixin = '{yun:}$isweixin{/yun}';
+var uid = '{yun:}$uid{/yun}';
+var com_gzgzh = '{yun:}$config.com_gzgzh{/yun}';
+
+var yunvue = new Vue({
+    el: '#yunvue',
+    data: {
+        info: {},
+        msg: {},
+        statis: {},
+        jobnums: 0,
+        nofkorder: 0,
+        signstate: 0,
+        webtel: '',
+        worktime: '',
+        gwbox: false,
+        guweninfo: {},
+        isHb: false,
+        hbNum: 0,
+		config: {},
+		gzhshow: false,
+		gzhurl: '',
+		gzhclose: false,
+        isSubscribe: false,
+        yrSrc:'',
+        yrTip:'',
+        yrShow:false,
+        yearReportShow:false,
+        yrbtn:0,
+        paused: 0,
+		sjtip: 1,// 是否展示升级套餐提醒
+    },
+    created() {
+        this.getInfo();
+        if ($("#imgswiper").has('a').length > 0) { 
+            $(".wap_advertisement").css('display', 'block');
+        }
+    },
+    methods: {
+        getInfo: function() {
+            showLoading();
+            var self = this;
+            $.post('{yun:}url d=wxapp h=com m=index c=index{/yun}', { rand: Math.random() }, function(res) {
+                hideLoading();
+                var res = res.data;
+                self.info = res.info;
+                self.signstate = res.signstate;
+                self.isHb = res.ishb;
+                self.hbNum = parseInt(res.hbNum);
+                self.msg = res.msg;
+                self.statis = res.statis;
+                self.jobnums = res.jobnums;
+                self.webtel = res.webtel;
+                self.worktime = res.worktime;
+                self.guweninfo = res.guweninfo;
+				self.config = res.config;
+				self.gzhurl = res.gzhurl ? res.gzhurl : '';
+                self.paused = res.paused;
+				self.sjtip = res.sjtip;
+                if(res.yrshow==1){
+                    self.yrTip = res.yrTip;
+                    var yearReportStorage = localStorageGet('yearReportShow');
+                    if (!yearReportStorage) {
+                        self.yearReportShow = true;
+                        localStorageSet('yearReportShow', 1,720);
+                    } else {
+                        self.yearReportShow = false;
+                    }
+                }
+                
+                self.yrbtn = res.yrbtn;
+                if(!self.yearReportShow && com_gzgzh==1 && isweixin){
+                    isgzh()
+                }
+                if (parseInt(res.noRefreshNum) > 0) {
+                    var rj = null;
+                    if(rj){
+                        clearTimeout(rj);
+                    }
+                    
+                    rj = setTimeout(function() {
+                        self.storageFunc();
+                    },500);
+                    
+                }
+                $("#yunvue").css('display', 'block');
+				if ($("#imgswiper").has('a').length > 0) { 
+                    var mySwiper = new Swiper('#imgswiper', {
+                    direction: 'horizontal',
+        				autoplay: {
+        					disableOnInteraction: false
+        				},
+        				loop: true,
+        			});
+                }
+            }, 'json');
+        },
+        storageFunc: function() {
+            if(this.yearReportShow){
+
+            }else if(isweixin == '1' && !this.gzhshow && this.config.com_gzgzh && !this.isSubscribe){
+				
+			}else{
+				var storage = localStorageGet('jobRefresh');
+				if (!storage) {
+				    $('#jobTip').css('display', 'block');
+				    localStorageSet('jobRefresh', 1);
+				} else {
+				    $('#jobTip').css('display', 'none');
+				}
+			}
+        },
+        sign: function() {
+            showLoading();
+            var self = this;
+            $.post('{yun:}url d=wxapp h=com m=index c=sign{/yun}', { rand: Math.random() }, function(res) {
+                hideLoading();
+                if (res.error == 1) {
+                    showModal(res.msg, function() {
+                        self.signstate = 1;
+                    });
+                    self.getInfo();
+                } else {
+                    showModal(res.msg);
+                }
+            }, 'json');
+        },
+        jobAdd: function() {
+            var self = this;
+            var url = "{yun:}url d=wxapp h=com m=index c=addCheck{/yun}";
+            comjobAdd(url, { job: 'job' }, function(res) {
+                
+                if (res.error==1) {
+                    // 套餐不足
+                    modalVue.$data.mb_content = res.msg;
+                    modalVue.$data.cancelText = '不用了';
+                    modalVue.$data.confirmText = '去购买';
+                    modalVue.$data.yunModal = true;
+                    modalType = 'job';
+                } else if(res.error==2){
+                    modalVue.$data.mb_content = res.msg;
+                    modalVue.$data.cancelText = '取消';
+                    modalVue.$data.confirmText = '去发布';
+                    modalVue.$data.tourl = res.tourl;
+                    modalVue.$data.yunModal = true;
+                    modalType = 'toaddjob';
+                }else {
+                    // 强制操作
+                    certVue.$data.checked = res;
+                    certVue.$data.yunCert = true;
+                }
+            });
+        },
+        closeJobTip: function() {
+            $('#jobTip').css('display', 'none');
+        },
+        jobRefreshAsk: function() {
+            this.closeJobTip();
+            if (this.paused == 1){
+                showToast('当前账户会员权益已暂停，请联系客服开启服务~');
+                return;
+            }
+            if (this.jobnums > 0) {
+                this.jobTip = false;
+                if (parseInt(this.statis.upJobNum) >= parseInt(this.jobnums)) {
+                    modalVue.$data.mb_content = '本次刷新' + this.jobnums + '个在招职位，将扣除' + this.jobnums + '份套餐刷新量，当前余量' + this.statis.breakjob_num + '份，是否继续？';
+                    modalVue.$data.cancelText = '取消';
+                    modalVue.$data.confirmText = '确定';
+                    modalVue.$data.yunModal = true;
+                    modalType = 'askRefresh';
+                } else {
+                    this.jobrefresh();
+                }
+            } else {
+                showToast('您暂无可刷新职位');
+            }
+        },
+        jobrefresh: function() {
+            var self = this;
+            var url = "{yun:}url d=wxapp h=com m=job c=refresh{/yun}";
+            comjobRefresh(url, { jobid: '' , provider: 'wap'}, function(res) {
+                modalVue.$data.mb_content = res.msg;
+                modalVue.$data.cancelText = '不用了';
+                modalVue.$data.confirmText = '去购买';
+                modalVue.$data.yunModal = true;
+                modalType = 'refreshAll';
+            }, function () {
+                self.statis.upJobNum = parseInt(self.statis.upJobNum)-parseInt(self.jobnums);
+            });
+        },
+        call: function() {
+            window.location.href = 'tel:' + this.guweninfo.freewebtel
+        },
+		gzhstart: function(){
+			if(loopVal){
+				 //再次清空定时器，防止重复注册定时器
+				clearTimeout(loopVal);
+			}
+			var self = this;
+			loopVal = setTimeout(function() {
+				self.gzhclose = true;
+				gzhbd();
+			}.bind(this), 1000);
+		},
+		gzhend: function(){
+			 if(loopVal){
+				clearTimeout(loopVal);
+				loopVal = null;
+			}
+		},
+        getLastYearReport: function () {
+            var that = this;
+
+            showLoading('生成中...');
+
+            const src = wapurl + 'index.php?c=ajax&a=lastYearReport&uid='+uid;
+            that.yrSrc = src;
+
+            var hbImg = new Image();
+            hbImg.src = src;
+
+            hbImg.onload = function(){
+                hideLoading();
+                that.yrSrc = hbImg.src;
+                that.yrShow = true;
+                that.yearReportShow = false;
+            }
+        }
+    }
+});
+</script>
+{yun:}if $isweixin && $config.com_gzgzh == '1'{/yun}
+<script>
+	var gzhConfirm = false,
+		gzhBox = false;
+	
+	function isgzh(){
+		$.post('index.php?c=isgzh', { rand: Math.random() }, function(res) {
+            if(res.error==1){
+    			if (res.subscribe == 0 && !gzhConfirm) {
+    				gzhBox = true;
+    				yunvue.$data.gzhshow = true;
+    			}else if(res.subscribe == 2 && !gzhConfirm) {
+    				if(!gzhBox){
+    					// 页面首次查询，先弹出二维码弹窗
+    					yunvue.$data.gzhshow = true;
+    					gzhBox = true;
+    				}else{
+    					gzhConfirm = true;
+    					yunvue.$data.gzhshow = false;
+    					showConfirm('本账号绑定的微信号，不是当前微信号，是否要换绑为当前微信号？', function() {
+    						hbwx();
+    					},'否','是');
+    				}
+                }else if(res.subscribe == 1) {
+                    if (gzhBox){
+
+                        window.location.reload();
+                    }else{
+                        yunvue.$data.isSubscribe = true;
+                    }
+                }
+            }
+		}, 'json');
+	}
+	function gzhbd(){
+		setInterval(function(){
+			isgzh();
+		},3000);
+	}
+	function hbwx(){
+		showLoading();
+		$.post('{yun:}url d=wxapp h=com m=index c=hbwx{/yun}', { rand: Math.random() }, function(res) {
+			hideLoading();
+			if(!res.error){
+				showToast(res.msg);
+			}
+		}, 'json');
+	}
+</script>
+{yun:}/if{/yun}
+<!-- 余额不足提示 -->
+{yun:}include file="$wapstyle/publichtm/yun_modal.htm"{/yun}
+<!-- 强制操作提醒弹出框 -->
+{yun:}include file="$wapstyle/publichtm/yun_cert.htm"{/yun}
+{yun:}include file="$wapstyle/footer.htm"{/yun}

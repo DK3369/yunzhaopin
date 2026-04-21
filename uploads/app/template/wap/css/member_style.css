@@ -1,0 +1,47 @@
+
+.header_fx_search{width:70%; margin:0 auto}
+.header_p_z{height:30px; line-height:30px; overflow:hidden; margin:0 auto;text-overflow:ellipsis; white-space:nowrap; text-align:left; padding-left:40px }
+
+.yun_chat_new{width:45px;height:45px; background:#2778F8; position:fixed;right:10px;bottom:110px;border-radius:50%;    box-shadow:0px 2px 9px #2778F8; z-index:100  }
+.yun_chat_new_bth{width:100%; padding-top:24px; font-size:12px;color:#fff; text-align:center; display:inline-block; position:relative}
+.yun_chat_new_bth:after{width:20px;height:20px; background:url(../images/chat.png) no-repeat; background-size:100%;content:''; position:absolute;left:50%;top:4px; margin-left:-10px; display:inline-block}
+
+.mui-views,.mui-view,.mui-pages,.mui-page,.mui-page-content {position: absolute;left: 0;right: 0;top: 0;bottom: 0;width: 100%;height: 100%;background-color: #f2f2f2;touch-action: none;}
+.mui-pages {top:48px;height: auto;}
+.mui-scroll-wrapper,.mui-scroll {background-color: #f2f2f2;}
+.mui-page.mui-transitioning {-webkit-transition: -webkit-transform 300ms ease;transition: transform 300ms ease;}
+.mui-page-left {-webkit-transform: translate3d(0, 0, 0);transform: translate3d(0, 0, 0);}
+.mui-ios .mui-page-left {-webkit-transform: translate3d(-20%, 0, 0);transform: translate3d(-20%, 0, 0);}
+.mui-android .mui-navbar-inner.mui-navbar-left {opacity: 0;}
+.mui-ios .mui-navbar-left .mui-left,.mui-ios .mui-navbar-left .mui-center,.mui-ios .mui-navbar-left .mui-right {opacity: 0;}
+.mui-navbar .mui-btn-nav {-webkit-transition: none;transition: none;-webkit-transition-duration: .0s;transition-duration: .0s;}
+.mui-navbar .mui-bar .mui-title {display: inline-block;width: auto;}
+.mui-page-shadow {position: absolute;right: 100%;top: 0;width: 16px;height: 100%;z-index: -1;content: '';}
+.mui-page-shadow {background: -webkit-linear-gradient(left, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 10%, rgba(0, 0, 0, .01) 50%, rgba(0, 0, 0, .2) 100%);background: linear-gradient(to right, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 10%, rgba(0, 0, 0, .01) 50%, rgba(0, 0, 0, .2) 100%);}
+.mui-navbar-inner.mui-transitioning,.mui-navbar-inner .mui-transitioning {-webkit-transition: opacity 300ms ease, -webkit-transform 300ms ease;transition: opacity 300ms ease, transform 300ms ease;}
+.mui-page {display: none;}
+.mui-pages .mui-page {display: block;}
+.mui-page .mui-table-view:first-child {margin-top: 15px;}
+.mui-page .mui-table-view:last-child {margin-bottom: 30px;}
+.mui-table-view {}
+.mui-table-view span.mui-pull-right {color: #999;}
+.mui-table-view-divider {background-color: #efeff4;font-size: 14px;}
+.mui-table-view-divider:before,.mui-table-view-divider:after {height: 0;}
+.head {height: 40px;}
+.mui-fullscreen {position: fixed;z-index: 20;background-color: #000;}
+.mui-ios .mui-navbar .mui-bar .mui-title {position: static;}
+.mui-input-row input{ font-size:14px;}
+
+.yun_wap_share_tip_p{color:#fff; font-size:17px; padding-left:20px; padding-top:20px;  }
+.yun_wap_share_tip_icon{width:128px;height:128px; background:url(../images/yun_wap_fxicon.png) no-repeat; display:block; background-size:100%;right:0px;top:0px; }
+.yun_wap_share_tip_i{width:30px;height:30px; display:inline-block; background:url(../images/yun_wap_share_tip_fx.png) no-repeat; background-size:100%; vertical-align:middle; margin:0px 8px}
+.yun_wap_share_tip_i2{width:30px;height:30px; display:inline-block; background:url(../images/yun_wap_share_tip_fx2.png) no-repeat; background-size:100%; vertical-align:middle; margin:0px 8px;}
+.yun_wap_share_tip_i3{width:26px;height:26px; display:inline-block; background:url(../images/yun_wap_share_tip_fx3.png) no-repeat; background-size:100%; vertical-align:middle; margin:0px 8px;}
+.yun_wap_share_tip_i4{width:30px;height:30px; display:inline-block; background:url(../images/yun_wap_share_tip_fx4.png) no-repeat; background-size:100%; vertical-align:middle; margin:0px 8px;}
+.yun_wap_share_n{ font-style:italic; margin-right:5px; display:inline-block; font-family:Georgia,"Times New Roman",Times,serif; font-size:20px;}
+.yun_wap_share_tip_wxicon{width:90%;height:250px; background:url(../images/yun_wap_fxicon.png) no-repeat center center;background-size:100%; display:block; position:absolute;right:10px;top:10px;}
+.yun_wap_share_tip_wxicon_more{width:30px;height:30px; background:url(../images/yun_wap_share_more.png) no-repeat;background-size:100%; display:block; position:absolute;right:15px;top:10px}
+
+html {width: 100%;height: 100%;-webkit-text-size-adjust: none;-moz-text-size-adjust: none;-ms-text-size-adjust: none;-o-text-size-adjust: none;text-size-adjust: none;}
+body {width: 100%;height: 100%;margin: 0;padding: 0; font-size:0.9em}  
+.mui-page {display: none;}

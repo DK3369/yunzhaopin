@@ -1,0 +1,90 @@
+{yun:}include file="$wapstyle/header_cont.htm"{/yun}
+<style type="text/css">body{font-size: 14px !important;}</style>
+<link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/job.css?v={yun:}$config.cachecode{/yun}" type="text/css" />
+
+<!--结果-->
+<div class="evaluate_cjcont">
+<div class="evaluate_cjtit">测试结果分析</div>
+<div class="evaluate_cjzf"><span class="evaluate_cjzf_n">{yun:}$info.grade{/yun}</span> 分</div>
+<div class="evaluate_cjzf_c">您的测评得分</div>
+<div class="evaluate_cjzf_p">{yun:}$info.comment_n{/yun}</div>
+</div>
+<div class="evaluate_cjalltit">结果分析</div>
+ {yun:}foreach from=$exambase.result item=v key=key{/yun}
+<div class="evaluate_cjlist">
+<div class="">成绩：<font color="#FF3300">{yun:}$v.fromscore{/yun}-{yun:}$v.toscore{/yun}</font> 分</div>
+<div class="">分析：{yun:}$v.comment{/yun}</div>
+</div>
+{yun:}/foreach{/yun} 
+<div class="evaluate_cjalltit">发表留言</div>
+<form name="myform" id="myform" method="post">
+   <div class="evaluate_cjalltittt"> <textarea name="message" id="message" class="com_area" placeholder="输入发表内容" style="height:80px;"></textarea>
+    <input name='examid' type="hidden" value='{yun:}$exambase.id{/yun}'/>
+    <input name="submit" type="button" value="发表留言" style=" color: #fff;border: 1px solid #007aff;border: 1px solid #007aff;background-color: #007aff;padding: 6px 12px;border-radius: 3px;" onclick="gradely();"/>
+</div>
+</from>
+<div id="leaveMessageList" class="cp_call_qt01">
+       <div class="cp_plcont">
+        	{yun:}foreach from=$rows  item=rlist key=key{/yun}
+            <div class="cp_pllist">
+                <div class="cp_qttx">
+                {yun:}if $rlist.name&&$rlist.usertype{/yun}
+            					<a href="{yun:}url m=wap c=ask a=myquestion uid=$rlist.uid{/yun}"><img src="{yun:}$rlist.pic{/yun}" width="40" height="40" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_friend_icon{/yun}',2);"/></a>
+            				{yun:}else{/yun}
+            					<img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_friend_icon{/yun}" width="40" height="40" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_friend_icon{/yun}',2);"/>
+            				{yun:}/if{/yun}
+                            </div>
+              
+                <div class="cp_pl_name">{yun:}if $rlist.name&&$rlist.usertype{/yun}<a href="{yun:}url m=wap c=ask a=myquestion uid=$rlist.uid{/yun}">{yun:}$rlist.name{/yun}</a>{yun:}else{/yun}访客{yun:}/if{/yun}</div>
+                   <div class="cp_pl">{yun:}$rlist.message{/yun}</div>
+                <div class="cp_time">{yun:}$rlist.ctime|date_format:"%Y-%m-%d %H:%M"{/yun}</div>
+            </div>
+        	
+        	{yun:}foreachelse{/yun} 
+                <div class="wap_member_no">我来抢沙发~</div>
+        	{yun:}/foreach{/yun} 
+        	<div class="pages">{yun:}$pagenav{/yun}</div>
+        </div>
+</div>
+<div class="evaluate_cs_more_box"><a href="{yun:}url m=wap c=evaluate{/yun}">更多职业测评</a></div>
+<div class="evaluate_cs_fx_box">
+<a href="javascript:void(0);" id="shareClick"class="evaluate_cs_fx"> <i class="evaluate_cs_fx_icon"></i>  <span class="yun_job_footer_s">分享到朋友圈</span></a>
+</div>
+{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+<script>
+    var config = {
+        url: '{yun:}url m=wap c=evaluate a=show id=$exambase.id{/yun}',
+        title: '{yun:}$exambase.name{/yun}-{yun:}$config.sy_webname{/yun}',
+        desc: '',
+        img: '{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_sharelogo{/yun}',
+        img_title: '{yun:}$exambase.name{/yun}',
+        from: '{yun:}$config.sy_webname{/yun}'
+    };
+
+	function gradely(){
+        if($("#message").val()==''){
+            showToast("回复内容不能为空！");return false;
+        }
+
+        var gradeurl = "{yun:}url m=wap c=evaluate a=messages{/yun}";
+        var field = getFormValue('myform');
+        showLoading();
+        $.post(gradeurl, field, function(res){
+                if(res.msg && res.error == 0){
+                    showToast(res.msg, res.tm, function () {
+                        if (res.url) {
+                            location.href = res.url; 
+                        }  
+                    });
+
+                    return false; 
+                }else{
+                    location.href = res.url;
+                    return false; 
+                }
+        },'json');
+    }
+	
+</script>
+</body>
+</html>

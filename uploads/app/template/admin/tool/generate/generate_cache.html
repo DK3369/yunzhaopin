@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+<div id="daohaapp" class="moduleElenAl">
+    <div class="tableDome">
+        <div class="tableDome_tip">
+            <el-alert title="生成请确保/plus,/cache目录有可写权限，否则无法生成。生成所有的类别，时间较长，建议分批更新" type="success"
+                :closable="false">
+            </el-alert>
+        </div>
+
+        <div class="moduleTable">
+            <el-checkbox-group v-model="ruleForm.cache" @change="changeGroup">
+            <table class="tableVue">
+                <thead>
+                <tr align="left">
+                    <th width="100" colspan="5">
+                        <div class="tool_hc_tit"> 生成缓存</div>
+                    </th>
+                </tr>
+                </thead>
+                    <tbody>
+                    <template v-for="(item, index) in tableData">
+                        <template v-if="index%5==0">
+                            <tr></tr>
+                        </template>
+                        <td>
+                            <el-checkbox :label="item.id">{{ item.name }}</el-checkbox>
+                        </td>
+                    </template>
+                    </tbody>
+                <tbody>
+                </tbody>
+            </table>
+            </el-checkbox-group>
+        </div>
+        <div class="modulePaging">
+            <div class="modulecz modulePagButn">
+                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">全选</el-checkbox>
+            </div>
+            <div class="modulePagNum">
+            </div>
+        </div>
+        <div class="setBasicButn" style="border: none;">
+            <el-button type="primary" size="medium" @click="submitForm">生成缓存</el-button>
+        </div>
+        <div class="tool_hc_sm">
+            <div class=""><i class="el-icon-question"></i> 生成缓存说明</div>
+            <div> 1.能够大幅度减少数据的获取时间，特别是对于 sql 慢查询来讲，缓存机制可以明显的优化用户体验。</div>
+            <div> 2.减少获得数据的计算资源消耗，给其他服务腾出计算资源，对于计算过程比较漫长的所得出的结果来说，缓存也可以明显减少二次加载时间。</div>
+            <div> 3.可以降低服务器的性能要求，能够降低网站运行成本。</div>
+        </div>
+    </div>
+</div>
+<!-- script -->
+<script>
+    const custoapp = new Vue({
+        el: '#daohaapp',
+        data: function () {
+            return {
+                tableData: [],
+                checked: false, //全选
+                isIndeterminate: false, // checkbox 的不确定状态
+                submitLoading: false,
+                ruleForm: {
+                    madeall: '更新',
+                    cache: [],
+                },
+            }
+        },
+        created() {
+            this.getBaseData();
+        },
+        methods: {
+            selectAllBottom(value) {
+                let _this = this;
+                if (value) {
+                    this.checked = true;
+                    this.isIndeterminate = false;
+                    this.ruleForm.cache = [];
+                    _this.tableData.forEach(item => {
+                        _this.ruleForm.cache.push(item.id);
+                    });
+                } else {
+                    this.checked = false;
+                    this.isIndeterminate = false;
+                    this.ruleForm.cache = [];
+                }
+            },
+            changeGroup(value) {
+                if (value.length) {
+                    if (value.length == this.tableData.length) {
+                        this.isIndeterminate = false;
+                        this.checked = true;
+                    } else {
+                        this.isIndeterminate = true;
+                        this.checked = false;
+                    }
+                } else {
+                    this.isIndeterminate = false;
+                    this.checked = false;
+                }
+            },
+            getBaseData() {
+                let _this = this;
+                httpPost('m=tool&c=generate_cache&a=index', {}, {hideloading: true}).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        _this.tableData = res.data;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            submitForm() {
+                let _this = this;
+                let params = JSON.parse(JSON.stringify(this.ruleForm));
+                if (!params.cache.length) {
+                    message.error('至少选择一项');
+                    return false;
+                }
+                if (_this.submitLoading) {
+                    return false;
+                }
+                _this.submitLoading = true;
+                httpPost('m=tool&c=generate_cache&a=cache', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        message.success(res.msg);
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                }).finally(function () {
+                    _this.submitLoading = false;
+                });
+            },
+        }
+    });
+</script>
+</body>
+
+</html>

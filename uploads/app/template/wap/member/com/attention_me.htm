@@ -1,0 +1,102 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<div id="yunvue">
+    <div class="issue_post_body" v-show="islook">
+            <div class="body_card_content_box">
+                <div v-for="(item, infokey) in info" :key="infokey" class="card_content_box_particulars" @click="resumeShow(item.waprurl)">
+                    <div class="particulars_icon">
+                        <img :src="item.photo" alt="">
+                    </div>
+                    <div class="particulars_concise">
+                        <div class="particulars_concise_top">
+                            <div class="concise_top_name">{{item.username}}</div>
+                            <div class="concise_top_time">{{item.time_n}}</div>
+                        </div>
+                        <div class="particulars_concise_center">
+                            <ul>
+                                <li v-if="item.exp">{{item.exp}}·</li>
+                                <li v-if="item.edu">{{item.edu}}·</li>
+                                <li v-if="item.age">{{item.age}}岁</li>
+                            </ul>
+                        </div>
+						<div class="atn_me" v-if="item.jobname"><span class="atn_me_name">意向</span>{{item.jobname}}</div>
+                        
+                    </div>
+                </div>
+            <div v-if="count==2">
+                <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange"/>
+            </div>
+        </div>
+        <div v-show="islook&&count==0">
+            <div class="wap_member_no">暂无记录</div>
+        </div>
+    </div>
+
+</div>
+<script>
+    var yunvue = new Vue({
+        el: '#yunvue',
+        data() {
+            return {
+                info: [],
+                islook: false,
+
+                total: 0,
+                pageTotal: 0,
+                page: 1,
+                limit: 10,
+            };
+        },
+		computed: {
+		    count() {
+		        if (this.total > this.limit) {
+		            return 2;
+		        } else if (this.info.length == 0) {
+		            return 0;
+		        } else {
+		            return 1;
+		        }
+		    }
+		},
+        created() {
+            this.atnlist('refresh');
+        },
+        methods: {
+            atnlist: function (type) {
+                var that = this;
+                if (type && type == 'refresh') {
+                    that.page = 1;
+                    that.info = [];
+                    that.islook = false;
+                }
+                var paramer = {
+                    page: that.page,
+                    limit: that.limit
+                };
+
+                showLoading();
+                $.post('{yun:}url d=wxapp h=com m=resume c=attention_me{/yun}', paramer, function (data) {
+                    hideLoading();
+                    if (data) {
+                        let list = data.data.list;
+                        that.total = data.data.total;
+                        that.pageTotal = Math.ceil(data.data.total / that.limit);
+                        if (list && list.length > 0) {
+                            that.info = list;
+                        }
+                        that.islook = true;
+                    }
+                }, 'json')
+            },
+            pageChange: function (page) {
+                this.page = page;
+                this.atnlist('');
+            },
+            resumeShow: function (url) {
+                navigateTo(url)
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,217 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+<div class="none" id="yunvue">
+	<div class="m_cardbox">
+		<div class="m_cardbg">
+	<div class="transfer_ts">提示：账户分离后数据无法恢复，该账号下所有与当前身份相关的数据都将迁入新账户
+	</div>
+	<div v-if="info.userStatue || info.userStat || info.userSta">
+	<form id="transfer_form" onsubmit="return false;">	
+	<div class="transfer_stepbox">
+		<ul class="transfer_stepbox_list">
+			<li class="transfer_stepcur"><span class="transfer_stepbox_n">1</span><em class="transfer_stepbox_name">核对信息</em><i class="transfer_stepbox_line"></i></li>
+			<li><span class="transfer_stepbox_n">2</span><em class="transfer_stepbox_name">账号验证 </em><i class="transfer_stepbox_line"></i></li>
+			<li><span class="transfer_stepbox_n">ok<i class="transfer_stepbox_cgicon"></i></span><em class="transfer_stepbox_name">迁移成功</em></li>
+		</ul>
+	</div>
+	<div class="clear"></div>
+
+	<div class="transfer_textlistbox">
+		<div class="transfer_lxbox mt10">
+			<div class="transfer_textxz">
+				<div class="transfer_lx" v-for="(item, bdkey) in bdtypeAll" :key="bdkey" >
+					<div :class="item.type==1 ? 'transfer_lx_cur':''" @click="bindbdtypeChang" :data-index="bdkey">{{item.name}}<text
+						 class="choice_mode_icon"></text></div>
+				</div>
+				<input class="ask_input" name="bdtype" :value="bdtype?bdtype:''" hidden="true" />
+			</div>
+		</div>
+		<div class="transfer_textlist mt10">
+			<span class="transfer_textlist_n"> 当前账号密码 <font color="#f00">*</font> </span>
+			<input type="password" name="oldpass" value="" class="transfer_text" placeholder="请输入当前账户密码">
+		 </div>
+		<div class="transfer_textlist">
+			<span class="transfer_textlist_n"> 新账户用户名 <font color="#f00">*</font> </span>
+			<input type="text" name="username" value="" class="transfer_text"  placeholder="请输入新账户用户名">
+		</div>
+        <div class="tr_tip">{{regnameplaceholder}}</div>
+		<div class="transfer_textlist">
+			<span class="transfer_textlist_n">新账户密码 <font color="#f00">*</font> </span>
+			<input type="password" name="password" value="" class="transfer_text"  placeholder="请输入密码">
+		</div>
+        <div  class="tr_tip">{{regpwplaceholder}}</div>
+		<div class="transfer_tip">数据迁移后，可登录新账户，绑定手机、微信等</div>
+	</div>
+
+	<div class="mui-collapse-content">
+		<div class="yunset_bth_box">
+			<button class="mui-btn mui-btn-primary" type="button" @click="savetrsform">确认</button>&nbsp;&nbsp;
+		</div>
+	</div>
+	</form>	
+	</div>
+	<div class="wap_member_no" v-else>
+		<p>亲爱的用户</p>
+		<p>目前你的账号只有个人身份，无需账户分离</p>
+	</div>
+	
+</div></div></div>
+<script>
+    new Vue({
+        el: '#yunvue',
+        data: {
+            bdtypeAll: {
+				'moblie': {
+					'type': 0,
+					'name': '解绑手机'
+				},
+				'email': {
+					'type': 0,
+					'name': '解绑邮箱'
+				},
+				'wxid': {
+					'type': 0,
+					'name': '解绑微信'
+				},
+				'qqid': {
+					'type': 0,
+					'name': '解绑QQ'
+				},
+				'sinaid': {
+					'type': 0,
+					'name': '解绑微博'
+				}
+			},
+			bdtypes: [],
+			bdtype: '',
+			info: {},
+			regnameplaceholder:'',
+			regpwplaceholder:'',
+        },
+        created() {
+            this.getInfo();
+        },
+        methods:{
+        	savetrsform:function(){
+        		var self = this;
+				var formData = {};
+				var v = getFormValue('transfer_form');
+				var oldpass = v.oldpass;
+				var username = v.username;
+
+				var pass = v.password;
+
+				var bdtype = v.bdtype;
+				if (!oldpass) {
+					return showModal('请输入当前账户密码！');
+				}
+
+				if (!username) {
+					return showModal('请输入用户名！');
+				}
+				if (pass.length < 6 || pass.length > 20) {
+					return showModal('密码长度应该为6-20位！');
+				}
+				formData.oldpass = oldpass;
+				formData.password = pass;
+				formData.username = username;
+				formData.bdtypes = bdtype;
+				showLoading('数据迁移中...');
+				$.post('{yun:}url d=wxapp h=user m=set c=transfer{/yun}',formData,function(data){
+                    hideLoading();
+                    if (data.error == 1) {
+						showModal('账户分离成功，请使用新账户重新登录', function() {
+							window.localStorage.setItem("socketState", "2");
+							window.location.href = '{yun:}url m=wap{/yun}';
+						});
+					} else {
+						showModal(data.msg);
+					}
+                },'json');
+        	},
+            getInfo:function(){
+                showLoading();
+                var that = this;
+                $.post('{yun:}url d=wxapp h=user m=set c=transferInfo{/yun}',{rand: Math.random()},function(data){
+                    hideLoading();
+                    $("#yunvue").css('display', 'block');
+                    if(data){
+						that.info = data.data;
+						var con = data.data.config;
+						
+						var reg_namemaxlen 	= con.reg_namemaxlen,
+							reg_nameminlen 	= con.reg_nameminlen,
+							reg_name_sp 	= con.reg_name_sp,
+							reg_name_zm 	= con.reg_name_zm,
+							reg_name_num 	= con.reg_name_num,
+							reg_name_han 	= con.reg_name_han,
+							reg_pw_sp 		= con.reg_pw_sp,
+							reg_pw_zm 		= con.reg_pw_zm,
+							reg_pw_num 		= con.reg_pw_num;
+							
+						var regnameplaceholder = '用户名长度'+reg_nameminlen+'-'+reg_namemaxlen+'位';
+						if(reg_name_han=='1' || reg_name_sp=='1' || reg_name_num=='1' || reg_name_zm=='1'){
+							regnameplaceholder +='须包含';
+							if (reg_name_han=='1'){
+								regnameplaceholder +='汉字 ';
+							}
+							if (reg_name_num=='1'){
+								regnameplaceholder +='数字 ';
+							}
+							if (reg_name_zm=='1'){
+								regnameplaceholder +='字母 ';
+							}
+							if (reg_name_sp=='1'){
+								regnameplaceholder +='字符!@#.$-_';
+							}
+							
+						}
+						that.regnameplaceholder = regnameplaceholder;
+						
+						var regpwplaceholder = '密码';
+						if(reg_pw_sp=='1' || reg_pw_num=='1' || reg_pw_zm=='1'){
+							regpwplaceholder +='须包含';
+							
+							if (reg_pw_num=='1'){
+								regpwplaceholder +='数字 ';
+							}
+							if (reg_pw_zm=='1'){
+								regpwplaceholder +='字母 ';
+							}
+							if (reg_pw_sp=='1'){
+								regpwplaceholder +='其它字符!@#.$-_';
+							}
+							
+						}
+						that.regpwplaceholder = regpwplaceholder;
+					}   
+                   
+                },'json');
+            },
+            bindbdtypeChang: function(e) {
+				let that = this,
+					windex = '',
+					index = e.currentTarget.dataset.index,
+					bdtypeAll = that.bdtypeAll,
+					bdtypes = that.bdtypes;
+
+				if (bdtypeAll[index]['type'] != 1) {
+					bdtypeAll[index]['type'] = 1;
+					bdtypes.push(index);
+				} else {
+					bdtypeAll[index]['type'] = 0;
+
+					windex = bdtypes.indexOf(index);
+					if (windex > -1) {
+						bdtypes.splice(windex, 1);
+					}
+				}
+
+				that.bdtype = bdtypes.join(',');
+				that.bdtypes = bdtypes;
+				that.bdtypeAll = bdtypeAll;
+			},
+        }
+    })
+</script>
+</body>
+</html>

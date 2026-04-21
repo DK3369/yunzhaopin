@@ -1,0 +1,238 @@
+{yun:}include file="$wapstyle/header_cont.htm"{/yun}
+<style>
+    .footerbox{
+        margin-bottom: 1.5rem;
+    }
+</style>
+<section>
+    <div class="part_show_bg"></div>
+    <div class="jz_top_box ">
+        <div class="jz_top_box_tit"><h2>{yun:}$job.name{/yun}</h2>
+            <div class="jz_comname "> {yun:}$job.com_name{/yun}</div>
+            {yun:}if $job.is_recommend gt 0{/yun} <span class="part_hot">优选</span>{yun:}/if{/yun}
+            <div class="Part_jsfs">{yun:}$job.billing_cycle_n{/yun}</div>
+            <span class="part_box_ztt">{yun:}if $job.edate{/yun}短期{yun:}else{/yun}长期{yun:}/if{/yun}</span>
+            <div class="jz_top_box_xz">{yun:}$job.salary{/yun} <em class="jz_top_box_xz_dw">{yun:}$job.salary_type_n{/yun}</em></div>
+        </div>
+        <div class="yun_jzdata">
+            <span class="">更新：{yun:}$job.lastupdate|date_format:"%Y-%m-%d"{/yun}</span>
+            <span class="">浏览：{yun:}$job.hits{/yun} 次</span>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="mt10">
+        <div class="yun_newedition_jobshow_content ">
+            <div class="yun_newedition_showtit">基本信息</div>
+            <div class="jz_show_cont">
+                <ul class="user_contnet_ul user_contnet_ul_jz">
+
+                    <li><span class="user_contnet_info_n">工作类型：</span>{yun:}$job.type_n{/yun}</li>
+
+                    <li><span class="user_contnet_info_n">招聘人数： </span>{yun:}$job.number{/yun}人</li>
+                    {yun:}if $job.sex{/yun}
+                    <li><span class="user_contnet_info_n">性别要求： </span>{yun:}$job.sex_n{/yun}</li>
+                    {yun:}/if{/yun}
+                    <li><span class="user_contnet_info_n">有效期至： </span>{yun:}if $job.edate{/yun}{yun:}$job.edate|date_format:'%Y-%m-%d'{/yun}{yun:}else{/yun}长期招聘{yun:}/if{/yun}
+                    </li>
+                    <li>
+                        <table class="det-tab" width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                            <tr>
+                                <th height="28" align="center" valign="middle" class="fre-tab01">TIME</th>
+                                <th height="28" align="center" valign="middle" class="fre-tab02">周一</th>
+                                <th height="28" align="center" valign="middle" class="fre-tab03">周二</th>
+                                <th height="28" align="center" valign="middle" class="fre-tab04">周三</th>
+                                <th height="28" align="center" valign="middle" class="fre-tab05">周四</th>
+                                <th height="28" align="center" valign="middle" class="fre-tab06">周五</th>
+                                <th height="28" align="center" valign="middle" class="fre-tab07">周六</th>
+                                <th height="28" align="center" valign="middle" class="fre-tab08">周日</th>
+                            </tr>
+                            <tr>
+                                <td height="28" align="center" valign="middle" class="fre-tab09">上午</td>
+                                {yun:}foreach from=$part_morning item=v{/yun}
+                                <td height="28" align="center" valign="middle" {yun:}if in_array($v,$job.worktime_n){/yun}class="cut" {yun:}/if{/yun}><i></i></td>
+                                {yun:}/foreach{/yun}
+                            </tr>
+                            <tr>
+                                <td height="28" align="center" valign="middle" class="fre-tab10">下午</td>
+                                {yun:}foreach from=$part_noon item=v{/yun}
+                                <td height="28" align="center" valign="middle" {yun:}if in_array($v,$job.worktime_n){/yun}class="cut" {yun:}/if{/yun}><i></i></td>
+                                {yun:}/foreach{/yun}
+                            </tr>
+                            <tr>
+                                <td height="28" align="center" valign="middle" class="fre-tab11">晚上</td>
+                                {yun:}foreach from=$part_afternoon item=v{/yun}
+                                <td height="28" align="center" valign="middle" {yun:}if in_array($v,$job.worktime_n){/yun}class="cut" {yun:}/if{/yun}><i></i></td>
+                                {yun:}/foreach{/yun}
+                            </tr>
+                            </tbody>
+                        </table>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="mt10">
+        <div class="yun_newedition_jobshow_content ">
+            <div class="yun_newedition_showtit">联系方式</div>
+            <div class="jz_show_cont">
+                <ul>
+                    <li>联&nbsp;&nbsp;系&nbsp;&nbsp;人： {yun:}$job.linkman{/yun}</li>
+
+                    {yun:}if $config.com_link_look ==2 && $isweixin{/yun}
+                    <li>联系电话：
+                        {yun:}$job.linktel_n{/yun}
+                        <a href="javascript:void(0);" onclick="wxscanshowtel('{yun:}$job.id{/yun}')">查看</a>
+                    </li>
+                    {yun:}else{/yun}
+                    <li>联系电话：
+                        {yun:}if $job.link_tip==1 || $job.link_tip==2 || $job.link_tip==3{/yun}暂未开放联系方式
+                        {yun:}else if $job.link_tip==4{/yun}简历未审核，无法查看联系方式
+                        {yun:}else if $job.link_tip==5{/yun}创建简历，查看联系方式
+                        {yun:}else if $job.link_tip==6{/yun}报名兼职，查看联系方式
+                        {yun:}else if $job.link_tip==7{/yun}请先登录个人账号，查看联系方式
+                        {yun:}else{/yun}{yun:}$job.linktel_n{/yun}
+                        {yun:}/if{/yun}
+                    </li>
+                    {yun:}/if{/yun}
+
+                    <li>工作地点： {yun:}$job.cityname{/yun}</li>
+                    <li><span class="user_contnet_info_n">详细地址： </span>{yun:}$job.address{/yun}</li>
+                    {yun:}if $job.x&&$job.y&&$config.map_key{/yun}
+                    <li>
+                        <!---地图-->
+                        <section>
+                            <div class="con_map" id="company_baidu_map">
+                                <div id="maps_container" style="height:200px;min-width:300px;"></div>
+                            </div>
+                        </section>
+                        <!---地图-->
+                    </li>
+                    {yun:}/if{/yun}
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section style="padding-bottom: 1.8rem;">
+    <div class="mt10" id="con_link_per">
+        <div class="yun_newedition_jobshow_content ">
+            <div class="yun_newedition_showtit">具体要求</div>
+            <div class="jz_show_cont">
+                <div class="part_show_cont" id="partcontent">
+                    {yun:}$job.content{/yun}
+                </div>
+                <div class="job_jz_tips">提示：刷信誉、淘宝刷钻、YY网络兼职、加YY联系的职位都是骗子！收取费用或押金的都有欺诈嫌疑，请警惕！</div>
+                
+            </div>
+        </div>
+    </div>
+</section>
+<section class="makeAcallput">
+    {yun:}if $usertype==1{/yun}
+        {yun:}if $collect{/yun}
+        <div class="makeAcalShouc makeAcalYshouc" onclick="CancelCollect('{yun:}$collect.id{/yun}');">
+            <img src="{yun:}$wap_style{/yun}/images/yun_jobshow_ysc.png" alt="">
+            <span>已收藏</span>
+        </div>
+        {yun:}else{/yun}
+        <div class="makeAcalShouc" onclick="PartCollect('{yun:}$job.id{/yun}','{yun:}$job.uid{/yun}');">
+            <img src="{yun:}$wap_style{/yun}/images/yun_jobshow_ysc2.png" alt="">
+            <span>收藏</span>
+        </div>
+         {yun:}/if{/yun}
+    {yun:}else{/yun}
+        {yun:}if $uid{/yun}
+        <div class="makeAcalShouc" {yun:}if $config.sy_user_change==1{/yun}onclick="showToast('请先申请个人账户');" {yun:}else{/yun}onclick="showToast('只有个人用户才能收藏');" {yun:}/if{/yun}>
+            <img src="{yun:}$wap_style{/yun}/images/yun_jobshow_ysc2.png" alt="">
+            <span>收藏</span>
+        </div>
+        {yun:}else{/yun}
+        <div class="makeAcalShouc" onclick="pleaselogin('请先登录','{yun:}url m=wap c=login{/yun}')">
+            <img src="{yun:}$wap_style{/yun}/images/yun_jobshow_ysc2.png" alt="">
+            <span>收藏</span>
+        </div>
+        {yun:}/if{/yun}
+    {yun:}/if{/yun}
+    <div class="makeAcalBune">
+        <div class="makeAcalTell">
+            {yun:}if $job.link_tip==1 || $job.link_tip==2 || $job.link_tip==3{/yun}
+            <a href="javascript:void(0)" onclick="showToast('暂未开放联系方式')">拨打电话</a>
+            {yun:}else if $job.link_tip==4{/yun}
+            <a href="javascript:void(0)" onclick="showToast('简历未审核，无法查看联系方式')">拨打电话</a>
+            {yun:}else if $job.link_tip==5{/yun}
+            <a href="javascript:void(0)" onclick="showToast('创建简历，查看联系方式')">拨打电话</a>
+            {yun:}else if $job.link_tip==6{/yun}
+            <a href="javascript:void(0)" onclick="showToast('报名兼职，查看联系方式')">拨打电话</a>
+            {yun:}else if $job.link_tip==7{/yun}
+            <a href="javascript:void(0)" onclick="showToast('请先登录个人账号，查看联系方式')">拨打电话</a>
+            {yun:}else{/yun}
+            <a href="tel:{yun:}$job.linktel_n{/yun}" class="">拨打电话</a>
+            {yun:}/if{/yun}
+        </div>
+        <div class="makeAcalBaom">
+            {yun:}if is_array($apply){/yun}
+            <a href="javascript:void(0);">已报名</a>
+            {yun:}else{/yun}
+            {yun:}if $uid{/yun}
+            {yun:}if $usertype==1{/yun}
+            <a href="javascript:PartApply('{yun:}$job.id{/yun}');">我要报名</a>
+            {yun:}else{/yun}
+            <a onclick="showToast('只有个人用户才能申请报名', 2);" href="javascript:;">我要报名</a>
+            {yun:}/if{/yun}
+            {yun:}else{/yun}
+            <a onclick="pleaselogin('请先登录','{yun:}url m=wap c=login{/yun}')" href="javascript:;">我要报名</a>
+            {yun:}/if{/yun}
+            {yun:}/if{/yun}
+        </div>
+    </div>
+        
+</section>
+<div id="bg" style="display:none; z-index:1000000000"></div>
+
+<div id="telQrcodeBox" class="none">
+    <div class="job_tel_wx_cont">
+        <div class="job_tel_wx_tit">联系方式  <a href="javascript:void(0)" onclick="closeTelQrcodeBox()" class="job_tel_wx_gb"></a></div>
+        <div class="job_tel_wx_box">
+            <div id="tel_wxqrcode" class="job_tel_wx_zs" >正在获取二维码...</div>
+
+            <div class="job_tel_wx_p">长按识别二维码查看联系方式</div>
+        </div>
+    </div>
+</div>
+
+{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+<script src="{yun:}$wap_style{/yun}/js/prefixfree.min.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/part.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+{yun:}if $config.map_key{/yun}
+<script type="text/javascript" src="{yun:}$config.mapurl{/yun}" charset="utf-8"></script>
+{yun:}/if{/yun}
+<script>
+    var sy_weburl = '{yun:}$config.sy_weburl{/yun}';
+	{yun:}if $config.map_key{/yun}
+    var map = new AMap.Map("maps_container");
+    var point = new AMap.LngLat('{yun:}$job.x{/yun}', '{yun:}$job.y{/yun}');
+    map.setZoomAndCenter(15, point);
+    var marker = new AMap.Marker({
+        position: point
+    });
+    map.add(marker);
+    {yun:}/if{/yun}
+    function wxscanshowtel(id){
+        $('#tel_wxqrcode').html('<img src="{yun:}url m=wap{/yun}index.php?c=part&a=telQrcode&id='+id+'" width="120" height="120">');
+        $('#telQrcodeBox').show();
+        $('#bg').show();
+    }
+    function closeTelQrcodeBox(){
+        $('#telQrcodeBox').hide();
+        $('#bg').hide();
+    }
+</script>
+</body>
+</html>

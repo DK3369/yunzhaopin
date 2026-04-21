@@ -1,0 +1,192 @@
+{yun:}include file="$comstyle/header.htm"{/yun}
+<div class="w1000">
+    <div class="admin_mainbody"> {yun:}include file="$comstyle/left.htm"{/yun}
+        <div class=right_box>
+         
+            <div id="grow_freedom" class="grow_mod_wrap my_freedom" style="padding:0px;border:none;">
+                <iframe id="fdingdan" name="fdingdan" onload="returnmessage('fdingdan');" style="display:none"></iframe>
+          
+            <div class="newmember_tit">
+				<ul>
+					<li class="newmember_titcur"> <a href="index.php?c=right">会员服务</a></li>
+					<li> <a  href="index.php?c=pay" >充值服务</a></li>
+					<li> <a  href="index.php?c=paylogtc" class=" ">我的服务</a></li>
+					<li><a  href="index.php?c=integral">{yun:}$config.integral_pricename{/yun}管理</a></li>
+				</ul>
+			</div>
+			<div class="clear"></div> 
+            
+            <div class="newmember_screenbox">
+                <div class="newmember_screen">
+					<ul>
+						{yun:}if $config.com_vip_type==2{/yun}
+							<li><a href="index.php?c=right" >套餐会员</a></li>
+						{yun:}/if{/yun}
+					
+						{yun:}if $config.com_vip_type==1{/yun}
+							<li class="job_list_tit_cur"><a href="index.php?c=right&act=time" >时间会员</a></li>
+						{yun:}/if{/yun}
+					
+						{yun:}if $config.com_vip_type==0{/yun}
+							<li><a href="index.php?c=right" >套餐会员</a></li>
+							<li class="job_list_tit_cur"><a href="index.php?c=right&act=time" >时间会员</a></li>
+						{yun:}/if{/yun}
+					
+						{yun:}if $statis.rating_type != 2 && !$vipIsDown && $config.com_integral_online != 4 {/yun}
+						<li><a href="index.php?c=right&act=added" >增值包</a></li>
+						{yun:}/if{/yun}
+						</ul>
+				</div> 
+            </div>  
+                
+                
+                
+                <div class="clear"></div>
+                        
+                <div class=admincont_box>
+                         
+                            <div class="com_body">  
+                    <div class="com_new_tip">
+                            
+                                            <span class="com_new_tip_h">温馨小提示</span>{yun:}$statis.rating_name{/yun}
+                            服务到期为：
+                            {yun:}if $statis.vip_etime > $todayStart{/yun}
+                            {yun:}$statis.vip_stime|date_format:'%Y-%m-%d'{/yun} -
+                            {yun:}$statis.vip_etime|date_format:'%Y-%m-%d'{/yun}
+                            {yun:}else if $statis.vip_etime==0{/yun}
+                            {yun:}$statis.vip_stime|date_format:'%Y-%m-%d'{/yun} - 永久
+                            {yun:}else{/yun}
+                            {yun:}$statis.vip_stime|date_format:'%Y-%m-%d'{/yun} -
+                            <span class="comindex_money_pd_s">{yun:}$statis.vip_etime|date_format:'%Y-%m-%d'{/yun}</span>
+                            <a href="index.php?c=right" class="cblue">立即开通</a>
+                            {yun:}/if{/yun}      <!-- 开通企业套餐，尊享招聘特权-->
+                        </div>
+                        <div class="vip_box">
+                            {yun:}if $noPermission == 1 || $isPaused == 1{/yun}
+                            {yun:}include file="$temstyle/default/public_search/vipTips.htm"{/yun}
+                            {yun:}else{/yun}
+                            <div class="vip_box_db">套餐权益对比</div>
+                            <!--时间模式-->
+                            <div class="vip_timebox">
+                                <ul class="">
+                                    {yun:}foreach from=$times item=v{/yun}
+                                    <li class="vip_time_list">
+                                        <div class="vip_time_left">
+                                            <div class="vip_time_leftname">{yun:}$v.name{/yun}<i class="vip_box_left_name_line"></i></div>
+                                            <div class="vip_box_left_money_n">
+                                                {yun:}if $config.com_integral_online==3 && $meal !=1{/yun}
+                                                    <span id="need_integral{yun:}$v.id{/yun}">
+                                                        {yun:}if $v.time_start < time()&& $v.time_end > time(){/yun}
+                                                            {yun:}$v.yh_price * $config.integral_proportion{/yun} <i class="">{yun:}$v.service_price * $config.integral_proportion{/yun}</i>
+                                                            <span class="">{yun:}$config.integral_pricename{/yun}</span>
+                                                        {yun:}else{/yun}
+                                                            {yun:}$v.service_price * $config.integral_proportion{/yun}
+                                                            <span class="">{yun:}$config.integral_pricename{/yun}</span>
+                                                        {yun:}/if{/yun}
+                                                    </span>
+                                                {yun:}else{/yun}
+                                                    <span id="need_price{yun:}$v.id{/yun}">
+                                                        {yun:}if $v.time_start < time()&& $v.time_end > time(){/yun}
+                                                            {yun:}$v.yh_price{/yun} <i class="vip_yjg">￥{yun:}$v.service_price{/yun}</i>
+                                                        {yun:}else{/yun}
+                                                            {yun:}$v.service_price{/yun}
+                                                        {yun:}/if{/yun}
+                                                    </span>
+                                                {yun:}/if{/yun}
+                                            </div>
+                                            <div class="vip_box_left_money_yj">有效时间 {yun:}if $v.service_time>0{/yun}{yun:}$v.service_time{/yun}天{yun:}else{/yun}永久{yun:}/if{/yun}</div>
+                                            <div class="vip_time_leftbth"><a href="javascript:buyVip('{yun:}$v.id{/yun}');" class="vip_time_vipbuy">立即购买</a></div>
+                                        </div>
+                                        <div class="vip_box_c_box">
+                                            <div class="vip_box_timetable">
+                                                <table cellpadding="0" cellspacing="0">
+                                                    <tr>
+                                                        <td>
+                                                            <span class="vip_box_timename">上架职位数</span>
+                                                            <span class="vip_box_time">
+                                                                <span class="vip_box_time_n">{yun:}$v.job_num{/yun}</span>个
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <span class="vip_box_timename">刷新职位</span>
+                                                            <span class="vip_box_time">
+                                                                {yun:}if $v.breakjob_num > 0{/yun}每日最多<span class="vip_box_time_n">{yun:}$v.breakjob_num{/yun}</span>次/总数不限{yun:}else{/yun}-{yun:}/if{/yun}
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <span class="vip_box_timename">下载简历</span>
+                                                            <span class="vip_box_time">
+                                                                {yun:}if $v.resume > 0{/yun}每日最多<span class="vip_box_time_n">{yun:}$v.resume{/yun}</span>次/总数不限{yun:}else{/yun}-{yun:}/if{/yun}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="">
+                                                            <span class="vip_box_timename"> 职位置顶</span>
+                                                            <span class="vip_box_time"><span class="vip_box_time_n">{yun:}$v.top_num{/yun}</span>{yun:}if $v.top_num > 0{/yun}天{yun:}/if{/yun}</span>
+                                                        </td>
+                                                        <td class="">
+                                                            <span class="vip_box_timename">紧急招聘</span>
+                                                            <span class="vip_box_time"><span class="vip_box_time_n">{yun:}$v.urgent_num{/yun}</span>{yun:}if $v.urgent_num > 0{/yun}天{yun:}/if{/yun}</span>
+                                                        </td>
+                                                        <td class="">
+                                                            <span class="vip_box_timename">职位推荐</span>
+                                                            <span class="vip_box_time"><span class="vip_box_time_n">{yun:}$v.rec_num{/yun}</span>{yun:}if $v.rec_num > 0{/yun}天{yun:}/if{/yun}</span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <span class="vip_box_timename">邀请面试</span>
+                                                            <span class="vip_box_time">
+                                                                {yun:}if $v.interview > 0{/yun}每日最多<span class="vip_box_time_n">{yun:}$v.interview{/yun}</span>次/总数不限{yun:}else{/yun}-{yun:}/if{/yun}
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <span class="vip_box_timename">招聘会</span>
+                                                            <span class="vip_box_time">
+                                                                {yun:}if $v.zph_num > 0{/yun}每日最多<span class="vip_box_time_n">{yun:}$v.zph_num{/yun}</span>次/总数不限{yun:}else{/yun}-{yun:}/if{/yun}
+                                                            </span>
+                                                        </td>
+                                                        
+                                                    </tr>
+                                                    
+                                                </table>
+                                            </div>
+                                            <div class="vip_time_sm" style="padding-left:15px;;">
+                                                套餐说明 {yun:}if $v.explains{/yun}{yun:}$v.explains{/yun}{yun:}else{/yun}{yun:}$v.name{/yun}{yun:}/if{/yun}
+                                                {yun:}if $v.integral_buy>0{/yun}赠送{yun:}$v.integral_buy{/yun}{yun:}$config.integral_pricename{/yun}{yun:}/if{/yun}
+                                            </div>
+                                        </div>
+
+                                    </li>
+                                    {yun:}foreachelse{/yun}
+                                    <div class="msg_no">
+                                        <p>亲爱的用户，目前没有时间会员服务</p>
+                                    </div>
+                                    {yun:}/foreach{/yun}
+                                </ul>
+                            </div>
+                            {yun:}/if{/yun}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+        $(document).ready(function () {
+            $(".com_grade_smicon").hover(function () {
+                var pid = $(this).attr("pid");
+                $("#rating" + pid).show();
+                $("#ratingtu" + pid).show();
+            }, function () {
+                var pid = $(this).attr("pid");
+                $("#rating" + pid).hide();
+                $("#ratingtu" + pid).hide();
+            });
+
+        });
+
+    </script>
+    {yun:}include file="$comstyle/footer.htm"{/yun}

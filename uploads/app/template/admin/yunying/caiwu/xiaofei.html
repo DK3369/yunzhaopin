@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<script src="../../../admin/header.js"></script>
+	<script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+	<div id="daohaapp" class="moduleElenAl">
+		<div class="moduleSeachs">
+			<div class="moduleSeachleft">
+				<div class="moduleInptList">
+					<el-input placeholder="输入你要搜索的关键字" v-model="search.keyword" size="small" class="input-with-select" clearable>
+						<el-select v-model="search.type" slot="prepend" placeholder="请选择" >
+							<el-option label="消费单号" value="1"></el-option>
+							<el-option label="用户名" value="2"></el-option>
+							<el-option label="备注说明" value="3"></el-option>
+						</el-select>
+					</el-input>
+				</div>
+				<div class=" tableSeachInptsmall newsinput">
+					<el-select v-model="search.pay_state" size="small" slot="prepend" placeholder="消费状态" clearable
+						@change="doUserQuery">
+						<el-option v-for="item in payArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					</el-select>
+				</div>
+				<div class=" tableSeachInptsmall newsinput">
+					<el-select v-model="search.end" size="small" slot="prepend" placeholder="消费时间" clearable
+						@change="doUserQuery">
+						<el-option v-for="item in time" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					</el-select>
+				</div>
+				<div class="newsbtnbox">
+					<el-button type="primary" icon="el-icon-search" size="mini" @click="doUserQuery">查询</el-button>
+				</div>
+			</div>
+		</div>
+
+		<div class="moduleElTable">
+			<el-table :data="tableData" border style="width: 100%"
+					  @selection-change="selectChange"
+					  @sort-change="shortChange"
+					  ref="multipleTable"
+				:header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" v-loading="loading" :empty-text="emptytext">
+				<el-table-column type="selection" width="55">
+				</el-table-column>
+				<el-table-column prop="id" label="编号" width="80" sortable="custom">
+				</el-table-column>
+				<el-table-column prop="order_id" label="消费单号" width="160">
+				</el-table-column>
+				<el-table-column prop="username" label="用户名" min-width="160"></el-table-column>
+				<el-table-column prop="comname" label="企业名称(姓名)" min-width="160"></el-table-column>
+				<el-table-column prop="price_str" label="金额" width="150"></el-table-column>
+				<el-table-column prop="pay_remark" label="备注说明">
+				</el-table-column>
+				<el-table-column prop="pay_time" label="消费时间" width="180" align="center" sortable="custom">
+				</el-table-column>
+				<el-table-column prop="pay_state_n" label="状态" width="150" align="center">
+					<template slot-scope="scope">
+						<div v-html="scope.row.pay_state_n"></div>
+					</template>
+				</el-table-column>
+				<el-table-column fixed="right" label="操作" width="80" align="center">
+					<template slot-scope="scope">
+						<div class="cz_button">
+							<el-button type="danger" size="small " @click="del(scope.row)">删除</el-button>
+						</div>
+					</template>
+				</el-table-column>
+			</el-table>
+		</div>
+		<div class="modulePaging">
+			<div class="modulecz modulePagButn">
+				<el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
+				<el-button @click="batchDel" size="mini">批量删除</el-button>
+			</div>
+			<div class="modulePagNum">
+				<el-pagination :total="total" @current-change="userPageChange"
+							   :page-sizes="pageSizes"
+							   :page-size="pageSize" @size-change="userPageSizeChange"
+					:current-page.sync="page" layout="total, sizes, prev, pager, next, jumper">
+				</el-pagination>
+			</div>
+		</div>
+	</div>
+	<!-- script -->
+	<script>
+		const custoapp = new Vue({
+			el: '#daohaapp',
+			data: function () {
+				return {
+					loading: false,
+					emptytext: '暂无数据',
+					checkedAll:false,
+					search: {
+						pay_state: '',
+						type: '1',
+						searchVal: '',
+						end: ''
+					},
+					select: '',
+					value: true,
+					time: [{
+						value: 1,
+						label: "今天"
+					}, {
+						value: 3,
+						label: "最近三天"
+					}, {
+						value: 7,
+						label: "最近七天"
+					}, {
+						value: 15,
+						label: "最近半月"
+					}, {
+						value: 30,
+						label: "最近一个月"
+					}],
+					payArr: [{
+						value: 0,
+						label: "支付失败"
+					}, {
+						value: 1,
+						label: "等待付款"
+					}, {
+						value: 2,
+						label: "支付成功"
+					}, {
+						value: 3,
+						label: "等待确认"
+					}],
+					tableData: [],
+					total: 0,
+					page: 1,
+					idsArr: [],
+					pageSize: 0,
+					pageSizes:[],
+					uri: "m=yunying&c=",
+					prevPage:0
+				}
+			},
+			components: {
+				// 'navxiugai': httpVueLoader('./component/navxiugai.vue'),
+			},
+			created() {
+				this.getList();
+			},
+			methods: {
+				doUserQuery() {
+					this.page = 1
+					this.getList()
+				},
+				userPageChange(val) {
+					this.page = val
+					this.getList()
+				},
+				userPageSizeChange(val) {
+					this.pageSize = val
+					this.getList()
+				},
+				selectChange: function (val) {
+					this.idsArr = [];
+					let _this = this;
+					if (val.length) {
+						val.forEach(item => {
+							_this.idsArr.push(item.id);
+						});
+					}
+					if (_this.idsArr.length == 0) {
+						_this.checkedAll = false;
+					} else {
+						if (_this.idsArr.length == _this.tableData.length) {
+							_this.checkedAll = true;
+						} else {
+							_this.checkedAll = false;
+						}
+					}
+				},
+				getList() {
+					let _this = this;
+					let url = _this.uri + 'finance_company_pay&a=index';
+					this.search.page = this.page;
+					this.search.pageSize = this.pageSize;
+					_this.loading = true;
+					_this.emptytext = "数据加载中";
+					httpPost(url, _this.search, {hideloading: true}).then(function (response) {
+						let res = response.data;
+						if (res.error == 0) {
+							_this.tableData = res.data.data;
+							_this.total = res.data.total;
+							if(_this.prevPage != _this.page){
+								_this.prevPage = _this.page;
+								_this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+							}
+							_this.loading = false;
+							_this.pageSizes =res.data.pageSizes;
+							if (_this.tableData.length === 0){
+	                            _this.emptytext = "暂无数据";
+	                        }
+						}
+					})
+				},
+				handleSizeChange(val) {
+					console.log(`每页 ${val} 条`);
+				},
+				handleCurrentChange(val) {
+					console.log(`当前页: ${val}`);
+				},
+				del: function ($row) {
+
+					let url = this.uri + 'finance_company_pay&a=del'
+					let _this = this;
+					delConfirm(this, { id: $row.id }, function (params) {
+						httpPost(url, params).then(function(response) {
+							let res = response.data;
+							if (res.error == 0) {
+								message.success(res.msg, _this.getList());
+							} else {
+								message.error(res.msg);
+							}
+						})
+					}, '你确定要删除该消费记录吗？')
+				},
+				batchDel: function () {
+					let ids = this.idsArr;
+					if (!ids.length) {
+						message.error('请选择需要删除的消费记录');
+						return
+					}
+					let _this = this;
+					let url = this.uri + 'finance_company_pay&a=del'
+					delConfirm(this, { del: ids }, function (params) {
+						httpPost(url, params).then(function(response) {
+							let res = response.data;
+							if (res.error == 0) {
+								message.success(res.msg, _this.getList());
+							} else {
+								message.error(res.msg);
+							}
+						})
+					}, '你确定要删除选择的消费记录吗？')
+				},
+				selectAllBottom:function (value) {
+					value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+				},
+				shortChange(e) {
+					let orderMap = {ascending: 'asc', descending: 'desc'}
+					this.search.t = e.order ? e.prop : null;
+					this.search.order = orderMap[e.order];
+					this.page = 1;
+					this.getList();
+				},
+			}
+		});
+	</script>
+</body>
+
+</html>

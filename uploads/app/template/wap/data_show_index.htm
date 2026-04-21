@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{yun:}$year{/yun}{yun:}$title{/yun}-{yun:}$config.sy_webname{/yun}</title>
+    <link rel="stylesheet" href="{yun:}$wap_style{/yun}/data_show/css/aos.css?v={yun:}$config.cachecode{/yun}">
+    <link rel="stylesheet" href="{yun:}$wap_style{/yun}/data_show/css/styles.css?v={yun:}$config.cachecode{/yun}">
+    <link rel="stylesheet" href="{yun:}$wap_style{/yun}/data_show/css/size.css?v={yun:}$config.cachecode{/yun}">
+    <script src="{yun:}$wap_style{/yun}/js/jquery.min.js"></script>
+    <script src="{yun:}$wap_style{/yun}/data_show/js/echarts.min.js"></script>
+    <script src="{yun:}$wap_style{/yun}/data_show/js/aos.js"></script>
+    <script src="{yun:}$wap_style{/yun}/data_show/js/mychart.js"></script>
+    <!-- <script src="js/flexible.js"></script> -->
+    <script src="{yun:}$wap_style{/yun}/data_show/js/jquery.countup.js"></script>
+    <script src="{yun:}$wap_style{/yun}/data_show/js/jquery.waypoints.min.js"></script>
+</head>
+
+<body>
+    <section class="analyAlls">
+        <div class="analyTops">
+            <div class="analyTopData">
+                <div class="analyTopYear" data-aos="fade-down">
+                    <span>{yun:}$year{/yun}</span>
+                </div>
+                <div class="analyTopName" data-aos="flip-left">
+                    <span>{yun:}$datashowtitle{/yun}招聘</span>大数据
+                </div>
+                <div class="analyTopTips" data-aos="fade-right">
+                    <img class="tipsimg1" src="{yun:}$wap_style{/yun}/data_show/image/baog.png" alt="">
+                    <img class="tipsimg2" src="{yun:}$wap_style{/yun}/data_show/image/img2.png" alt="">
+                    <span>年度分析报告</span>
+                </div>
+            </div>
+            <div class="analyTopImgs">
+                <img src="{yun:}$wap_style{/yun}/data_show/image/img1.png" alt="">
+            </div>
+        </div>
+        <div class="analyConts">
+            <div class="analyTitle" data-aos="flip-up">
+                <div>
+                    <span>{yun:}$year{/yun}求职者数据</span>
+                    <b>RESUME INFORMATION</b>
+                    <i></i>
+                </div>
+            </div>
+            <div class="analyHuaxs" data-aos="flip-left">
+                <div class="analyHuaImg">
+                    <img src="{yun:}$wap_style{/yun}/data_show/image/yonghu.png" alt="">
+                </div>
+                <div class="analyHuaTxt">
+                    <span>求职者画像</span>
+                    <b>地区，年龄，经验，男女，学历</b>
+                </div>
+            </div>
+            <div class="analyEchatMap" data-aos="fade-up" aos-anchor-placement="bottom-bottom">
+                <div class="analyEchatTite">
+                    <span>地区分布</span>
+                </div>
+                <div id="main1" class="analyEchat1"></div>
+                <div class="analyEchaPaim analyDiqufeb">
+                    <ul>
+                        <li>
+                            <div class="paimNam">
+                                <span class="spanone">NO.1</span>
+                                <span id="city1" class="citys"></span>
+                            </div>
+                            <div class="paimNumr">
+                                <span id="city1rate" class="city_counter">20.23</span>%
+                            </div>
+                        </li>
+                        <li>
+                            <div class="paimNam">
+                                <span class="spanone">NO.2</span>
+                                <span id="city2" class="citys"></span>
+                            </div>
+                            <div class="paimNumr">
+                                <span id="city2rate" class="city_counter">10</span>%
+                            </div>
+                        </li>
+                        <li>
+                            <div class="paimNam">
+                                <span class="spanone">NO.3</span>
+                                <span id="city3" class="citys"></span>
+                            </div>
+                            <div class="paimNumr">
+                                <span id="city3rate" class="city_counter">8</span>%
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="analyEchatMap" data-aos="fade-up" aos-anchor-placement="bottom-bottom">
+                <div class="analyEchatTite">
+                    <span>年龄分布</span>
+                </div>
+                <div class="analyOlds">
+                    <div class="analyOldEchat" id="main2"></div>
+                    <div class="analyOldData">
+                        <div class="analyOldList">
+                            <div class="analyOldNam">
+                                <span id="age1"></span>岁
+                            </div>
+                            <div class="analyOldShuz">
+                                <span id="age1rate" class="age_counter"></span>%
+                            </div>
+                        </div>
+                        <div class="analyOldList">
+                            <div class="analyOldNam">
+                                <span id="age2"></span>岁
+                            </div>
+                            <div class="analyOldShuz">
+                                <span id="age2rate" class="age_counter"></span>%
+                            </div>
+                        </div>
+                        <div class="analyOldList">
+                            <div class="analyOldNam">
+                                <span id="age3"></span>岁
+                            </div>
+                            <div class="analyOldShuz">
+                                <span id="age3rate" class="age_counter"></span>%
+                            </div>
+                        </div>
+                        <div class="analyOldList">
+                            <div class="analyOldNam">
+                                <span id="age4"></span>岁
+                            </div>
+                            <div class="analyOldShuz">
+                                <span id="age4rate" class="age_counter"></span>%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="analyEchatExper" data-aos="fade-up" aos-anchor-placement="bottom-bottom">
+                <div class="analyEchatTite">
+                    <span>经验分布</span>
+                </div>
+                <div class="analyExperTub" id="main3"></div>
+            </div>
+            <div class="analySexMode" data-aos="flip-up">
+                <div class="analySexNan">
+                    <div class="analySexNanTxt">
+                        <span>男性求职者</span>
+                        <b>性别占比</b>
+                    </div>
+                    <div class="analySexNanNub">
+                        <span id="male_rate">58</span>
+                        <b>%</b>
+                    </div>
+                </div>
+                <div class="analySexNvs">
+                    <div class="analySexNvsNub">
+                        <span id="female_rate">42</span>
+                        <b>%</b>
+                    </div>
+                    <div class="analySexNvsTxt">
+                        <span>女性求职者</span>
+                        <b>性别占比</b>
+                    </div>
+                </div>
+            </div>
+            <div class="analyEchatMap" data-aos="fade-up" aos-anchor-placement="bottom-bottom">
+                <div class="analyEchatTite">
+                    <span>学历分布</span>
+                </div>
+                <div id="main4" class="analyEchat1"></div>
+                <div class="analyEchaPaim analyEchaFenbuer">
+                    <ul>
+                        <li>
+                            <div class="paimNam">
+                                <span>NO.1</span>
+                                <span id="edu1" class="citys">大专</span>
+                            </div>
+                            <div class="paimNumr">
+                                <span id="edu1rate" class="edu_counter">35.8</span>%
+                            </div>
+                        </li>
+                        <li>
+                            <div class="paimNam">
+                                <span>NO.2</span>
+                                <span id="edu2" class="citys">本科</span>
+                            </div>
+                            <div class="paimNumr">
+                                <span id="edu2rate" class="edu_counter">25.3</span>%
+                            </div>
+                        </li>
+                        <li>
+                            <div class="paimNam">
+                                <span>NO.3</span>
+                                <span id="edu3" class="citys">高中</span>
+                            </div>
+                            <div class="paimNumr">
+                                <span id="edu3rate" class="edu_counter">14.6</span>%
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="analyHuaxs analyConpany" data-aos="flip-left">
+                <div class="analyHuaImg">
+                    <img src="{yun:}$wap_style{/yun}/data_show/image/conpay.png" alt="">
+                </div>
+                <div class="analyHuaTxt">
+                    <span>求职者行为</span>
+                    <b>活跃趋势、行为趋势</b>
+                </div>
+            </div>
+            <div class="analyEchatMap analyTrend" data-aos="fade-up" aos-anchor-placement="bottom-bottom">
+                <div class="analyEchatTite">
+                    <span>1-12月活跃趋势</span>
+                </div>
+                <div class="analyTrendEchat" id="main5"></div>
+            </div>
+            <div class="analyEchatMap analyTrend" data-aos="fade-up" aos-anchor-placement="bottom-bottom">
+                <div class="analyEchatTite">
+                    <span>1-12月注册趋势</span>
+                </div>
+                <div class="analyTrendEchat" id="main6"></div>
+            </div>
+            <div class="analyTitle analyCompanyTite" data-aos="flip-up">
+                <div>
+                    <span>{yun:}$year{/yun}企业数据</span>
+                    <b>RESUME INFORMATION</b>
+                    <i></i>
+                </div>
+            </div>
+            <div class="analyHuaxs analyCompays" data-aos="flip-left">
+                <div class="analyHuaImg">
+                    <img src="{yun:}$wap_style{/yun}/data_show/image/compa.png" alt="">
+                </div>
+                <div class="analyHuaTxt">
+                    <span>企业画像</span>
+                    <b>公司地区，公司规模，公司性质</b>
+                </div>
+            </div>
+            <div class="analyEchatMap" data-aos="fade-up" aos-anchor-placement="bottom-bottom">
+                <div class="analyEchatTite">
+                    <span>公司地区分布</span>
+                </div>
+                <div id="main7" class="analyEchat1"></div>
+                <div class="analyEchaPaim analyDiqufeb">
+                    <ul>
+                        <li>
+                            <div class="paimNam">
+                                <span class="spanone">NO.1</span>
+                                <span id="comcity1" class="citys"></span>
+                            </div>
+                            <div class="paimNumr">
+                                <span id="comcity1rate" class="comcity_counter"></span>%
+                            </div>
+                        </li>
+                        <li>
+                            <div class="paimNam">
+                                <span class="spanone">NO.2</span>
+                                <span id="comcity2" class="citys"></span>
+                            </div>
+                            <div class="paimNumr">
+                                <span id="comcity2rate" class="comcity_counter"></span>%
+                            </div>
+                        </li>
+                        <li>
+                            <div class="paimNam">
+                                <span class="spanone">NO.3</span>
+                                <span id="comcity3" class="citys"></span>
+                            </div>
+                            <div class="paimNumr">
+                                <span id="comcity3rate" class="comcity_counter"></span>%
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="analyEchatMap analyCompanyFenb" data-aos="fade-up" aos-anchor-placement="bottom-bottom">
+                <div class="analyEchatTite">
+                    <span>公司规模分布</span>
+                </div>
+                <div class="analyOlds">
+                    <div class="analyOldEchat" id="main8"></div>
+                    <div class="analyOldData">
+                        <div class="analyOldList">
+                            <div class="analyOldNam">
+                                <span id="comgm1"></span>
+                            </div>
+                            <div class="analyOldShuz">
+                                <span id="comgm1rate" class="comgm_counter"></span>%
+                            </div>
+                        </div>
+                        <div class="analyOldList">
+                            <div class="analyOldNam">
+                                <span id="comgm2"></span>
+                            </div>
+                            <div class="analyOldShuz">
+                                <span id="comgm2rate" class="comgm_counter"></span>%
+                            </div>
+                        </div>
+                        <div class="analyOldList">
+                            <div class="analyOldNam">
+                                <span id="comgm3"></span>
+                            </div>
+                            <div class="analyOldShuz">
+                                <span id="comgm3rate" class="comgm_counter"></span>%
+                            </div>
+                        </div>
+                        <div class="analyOldList">
+                            <div class="analyOldNam">
+                                <span id="comgm4"></span>
+                            </div>
+                            <div class="analyOldShuz">
+                                <span id="comgm4rate" class="comgm_counter"></span>%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="analyEchatMap" data-aos="fade-up" aos-anchor-placement="bottom-bottom">
+                <div class="analyEchatTite">
+                    <span>公司性质分布</span>
+                </div>
+                <div id="main9" class="analyEchat1"></div>
+                <div class="analyEchaPaim analyEchaFenbuer">
+                    <ul>
+                        <li>
+                            <div class="paimNam">
+                                <span>NO.1</span>
+                                <span id="compr1" class="citys"></span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="paimNam">
+                                <span>NO.2</span>
+                                <span id="compr2" class="citys"></span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="paimNam">
+                                <span>NO.3</span>
+                                <span id="compr3" class="citys"></span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="analyHuaxs analyComXinw" data-aos="flip-left">
+                <div class="analyHuaImg">
+                    <img src="{yun:}$wap_style{/yun}/data_show/image/compa2.png" alt="">
+                </div>
+                <div class="analyHuaTxt">
+                    <span>企业行为</span>
+                    <b>登录趋势，发布岗位趋势</b>
+                </div>
+            </div>
+            <div class="analyEchatMap analyTrend" data-aos="fade-up" aos-anchor-placement="bottom-bottom">
+                <div class="analyEchatTite">
+                    <span>1-12月登录趋势</span>
+                </div>
+                <div class="analyTrendEchat" id="main10"></div>
+            </div>
+            <div class="analyEchatMap analyTrend" data-aos="fade-up" aos-anchor-placement="bottom-bottom">
+                <div class="analyEchatTite">
+                    <span>1-12月发布岗位趋势</span>
+                </div>
+                <div class="analyTrendEchat" id="main11"></div>
+            </div>
+            
+            <div class="analyBottom" data-aos="fade-up" aos-anchor-placement="bottom-bottom">
+                <div class="bottomOne">
+                    <span>谢谢您的观看</span>
+                </div>
+                <div class="bottomTwo">
+                    <span>THANKS！</span>
+                </div>
+                <div class="bottomThre">
+                    <span>以上数据由{yun:}$webname{/yun}提供，最终解释权归我司所有</span>
+                </div>
+            </div>
+
+            <div class="analyLinks" data-aos="zoom-in">
+                <a href="{yun:}url m=wap{/yun}">点击查看好工作</a>
+            </div>
+        </div>
+    </section>
+    <section class="analyBackImg">
+        <img class="dianzui1" src="{yun:}$wap_style{/yun}/data_show/image/dianzui1.png" alt="">
+        <img class="dianzui2" src="{yun:}$wap_style{/yun}/data_show/image/dianzui2.png" alt="">
+    </section>
+    <script>
+        // 初始化插件
+        AOS.init({
+            easing: 'ease-in-out-sine',
+            duration: 1000
+        });
+        function getSexData(){
+            $.get('index.php?c=ajax&a=sexData', function (res) {
+                var data = res.data;
+                if (data.length > 0) {
+                    $('#male_rate').text(data[0].rate)
+                    $('#female_rate').text(data[1].rate)
+                }
+            }, 'json')
+        }
+        $(function(){
+            setTimeout(function(){
+                getSexData()
+            }, 1000)
+        })
+        var config = {
+            url: '{yun:}$share_url{/yun}',
+            title: '{yun:}$title{/yun}',
+            desc: '{yun:}$description{/yun}',
+            img: '{yun:}$share_logo{/yun}',
+            img_title: '年度数据',
+            from: '{yun:}$config.sy_webname{/yun}'
+        };
+    </script>
+</body>
+{yun:}include file="$wapstyle/nativeshare.htm"{/yun}
+</html>

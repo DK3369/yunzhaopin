@@ -1,0 +1,258 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<div id="yunvue">
+    <div class="memberuser_nav">
+        <ul>
+            <li :class="type == 1 ? 'memberuser_nav_cur' : ''" onclick="resumeLoad(1)"><a>下载简历</a></li>
+            <li :class="type == 2 ? 'memberuser_nav_cur' : ''" onclick="resumeLoad(2)"><a>收藏简历</a></li>
+            <li :class="type == 3 ? 'memberuser_nav_cur' : ''" onclick="resumeLoad(3)"><a>浏览简历</a></li>
+        </ul>
+    </div>
+    <div id="vuebox" class="memberuser_pt none">
+        <div class="wap_member_box">
+
+            <div class="hr_userbox" v-if="type < 3" v-for="(item, llk) in list" :key="llk" @click="resumeShow(item.wapurl)">
+                <div class="hr_userlist">
+                    <div class="hr_userlist_pic"><img :src="item.photo" alt=""></div>
+                    <div class="hr_userlist_name">{{item.username}}</div>
+                    <div class="hr_userlist_info"><span v-if="item.exp">{{item.exp}}经验 · </span> <span>{{item.edu}} · </span> <span>{{item.age}}岁</span></div>
+                </div>
+                <div class="hr_userlist_p"><span class="hr_userlist_t" v-if="item.remark || item.status_n">简历备注</span> {{item.remark}}  {{item.status_n}}</div>
+                <div class="hr_userlist_p"><span class="hr_userlist_t">意向职位</span> {{item.jobname}}</div>
+                <div class="hr_userlist_p"><span class="hr_userlist_t">下载时间 </span> {{item.datetime_n}}</div>
+                <div class="hr_userlist_cz">
+                    <div class="hr_userlist_czicon" @click.stop="setRemark(item.uid, item.eid ,llk,type)"><img src="{yun:}$wap_style{/yun}/images/bz.png" alt=""></div>
+                    <div class="hr_userlist_czicon" @click.stop="delResume(item.id, llk)"><img src="{yun:}$wap_style{/yun}/images/resume_del.png" alt=""></div>
+                </div>
+            </div>
+
+			<div v-if="type==3">
+				<span v-for="(item, lk) in list" :key="lk">
+					<div class="memberuser_list">
+						<a :href="item.wapurl" class="memberuser_list_a">
+							<div class="memberuser_photo">
+								<img :src="item.photo" width="100%" height="100%">
+							</div>
+							<div class="memberuser_xb" v-if="item.sex == '男'">
+								<img src="{yun:}$wap_style{/yun}/images/set_man.png" width="100%" height="100%">
+							</div>
+							<div class="memberuser_xb" v-else>
+								<img src="{yun:}$wap_style{/yun}/images/set_woman.png" width="100%" height="100%">
+							</div>
+							<div class="memberuser_name">{{item.username}}{{item.height_status==2 ? '.优质人才简历' : ''}}</div>
+							<div class="memberuser_info"><span v-if="item.exp">{{item.exp}}经验·</span>{{item.edu}}学历·{{item.age}}岁</div>
+							<div class="memberuser_job">
+								意向 <span class="memberuser_jobname">{{item.jobname}}</span>
+							</div>
+						</a>
+						<span @click="delResume(item.id, lk)" class="memberuser_sc">
+							<img src="{yun:}$wap_style{/yun}/images/resume_del.png" width="100%" height="100%">
+						</span>
+						<span class="memberuser_time">{{item.datetime_n}}</span>
+					</div>
+				</span>
+			</div>
+        </div>
+        <div v-if="count ==2 && islook">
+            <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange"/>
+        </div>
+        <div class="bgboxpt" v-show="islook&&count==0">
+            <div class="wap_member_bgcar">
+                <div class="wap_member_no">
+                    <div class="wap_member_no_p1">暂无记录~</div>
+                </div>
+            </div>
+        </div>
+
+        <!--备注弹出-->
+        <van-popup v-model="remarkShow" position="bottom" round closeable>
+            <div class="job_tckpd">
+                <div class="job_tcktit">备注简历</div>
+                <div class="jobSelects jobSelectsnew"  @click.stop="select()" v-if="bzIndex">{{bz.name[bzIndex]}}</div>
+                <div class="jobSelects jobSelectsnew"  @click.stop="select()" v-else>请选择备注状态</div>
+                <div class="job_tcktextarea mt10">
+                    <textarea class="mt10"  v-model="remark"  placeholder="请输入备注内容"></textarea>
+                </div>
+                <div class="job_tckbth">
+                    <input class="" type="button" value="提交" @click="remarkResume" />
+                </div>
+            </div>
+        </van-popup>
+        <van-popup v-model="bzshow" position="bottom"/>
+        <van-picker show-toolbar :default-index="bzIndex" @cancel="bzshow = false" :columns="bz.name"  @confirm="bindbzChange" />
+        </van-popup>
+    </div>
+</div>
+
+<script src="{yun:}$plusstyle{/yun}/com.cache.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$wap_style{/yun}/js/comPicker.js?v={yun:}$config.cachecode{/yun}"></script>
+<script>
+    var pageType = parseInt('{yun:}$smarty.get.type{/yun}') || 1;
+    var currentPage = parseInt('{yun:}$smarty.get.page{/yun}') || 1;
+    var yunvue = new Vue({
+        el: '#yunvue',
+        data: {
+            list: [],
+            limit: 10,
+            total: 0,
+            type: pageType,
+            page: currentPage,
+            islook: false,
+            bzshow: false,
+            bzIndex: 0,
+            bz: {
+                id:[],
+                name: [
+                ]
+            },
+
+            remarkShow: false,
+            remark: '',
+            status: '',
+            status_n:'',
+
+            d_uid: '',
+            d_key: '',
+            d_eid: ''
+        },
+        computed: {
+            count() {
+                if (this.total > this.limit) {
+                    return 2;
+                } else if (this.list.length == 0) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+            }
+        },
+        created() {
+            this.bz = getremark();
+            this.bz.id.unshift(0)
+            this.bz.name.unshift('请选择简历状态')
+            this.getList();
+        },
+        methods: {
+            getList: function () {
+                showLoading();
+                var that = this;
+                var paramer = {};
+                paramer['page'] = this.page;
+                paramer['limit'] = this.limit;
+                if (this.type == 1) {
+                    var url = '{yun:}url d=wxapp h=com m=resume c=downlist{/yun}';
+                } else if (this.type == 2) {
+                    var url = '{yun:}url d=wxapp h=com m=resume c=talentpoollist{/yun}';
+                } else if (this.type == 3) {
+                    var url = '{yun:}url d=wxapp h=com m=resume c=look_resume{/yun}';
+                }
+                $.post(url, paramer, function (res) {
+                    hideLoading();
+                    that.list = res.data.list;
+                    that.total = res.data.total;
+                    that.islook = true;
+                    $("#vuebox").css('display', 'block');
+                }, 'json');
+            },
+            setRemark: function (ruid, eid, key) {
+                var that = this;
+                that.d_uid       =   ruid;
+                that.d_eid       =   eid;
+                that.d_key       =   key
+                that.remarkShow  =   true;
+                var url = '{yun:}url d=wxapp h=com m=resume c=remark{/yun}';
+                var paramer = {
+                    ruid:ruid,
+                    eid:eid
+                };
+                $.post(url,paramer,function(res) {
+                    if (res) {
+                        that.remark = res.data.remark;
+                        that.status = res.data.status;
+                    }else{
+                        that.remark = '';
+                        that.status = '';
+                    }
+                    let bzIndex = that.bz.id.indexOf(that.status ? parseInt(that.status) : 0);
+                    that.bzIndex = bzIndex < 0 ? 0 : bzIndex;
+                },'json');
+            },
+            remarkResume:function(){
+                var that = this;
+                var paramer = {
+                    ruid: that.d_uid,
+                    eid: that.d_eid,
+                    remark: that.remark,
+                    status: that.status
+                };
+                if (that.type == 1){
+                    var url = '{yun:}url d=wxapp h=com m=resume c=hrRemark{/yun}';
+                }else if(that.type == 2){
+                    var url = '{yun:}url d=wxapp h=com m=resume c=hrRemark{/yun}';
+                }
+                showLoading('设置中');
+                $.post(url, paramer, function (data) {
+                    hideLoading();
+                    if (data.error == 1) {
+                        that.list[that.d_key].status = that.status;
+                        that.list[that.d_key].remark = that.remark;
+                        that.list[that.d_key].status_n = that.status_n;
+                        showToast(data.msg);
+                        that.remarkShow = false;
+                    } else {
+
+                        showModal(data.msg);
+                    }
+                }, 'json')
+            },
+            delResume(id, key) {
+                var that = this;
+                var paramer = {ids: id};
+                if (this.type == 1) {
+                    var url = '{yun:}url d=wxapp h=com m=resume c=down_del{/yun}';
+                } else if (this.type == 2) {
+                    var url = '{yun:}url d=wxapp h=com m=resume c=talentpooldel{/yun}';
+                } else if (this.type == 3) {
+                    var url = '{yun:}url d=wxapp h=com m=resume c=look_resume_del{/yun}';
+                }
+
+                showConfirm('确定删除？', function () {
+                    showLoading('删除中');
+                    $.post(url, paramer, function (data) {
+                        if (data.error == 1) {
+                            that.list.splice(key, 1);
+                            showToast('删除成功');
+                        }
+                    }, 'json')
+                });
+            },
+            pageChange: function (e) {
+                location.href = 'index.php?c=resumecolumn&type=' + this.type + '&page=' + e;
+            },
+            resumeShow: function (url) {
+                navigateTo(url)
+            },
+            select:function(){
+                this.bzshow = true;
+            },
+            bindbzChange:function(value,index){
+                this.bzIndex = index;
+                this.status = this.bz.id[index];
+                this.status_n = this.bz.name[index]
+                this.bzshow = false;
+
+            }
+        }
+    })
+
+    function resumeLoad(type) {
+        yunvue.$data.type = type;
+        yunvue.$data.page = 1;
+        yunvue.$data.list = [];
+        yunvue.$data.islook = false;
+
+        yunvue.getList();
+        window.history.replaceState({}, "", '?c=resumecolumn&page=1&type=' + type);
+    }
+</script>
+</body>
+</html>

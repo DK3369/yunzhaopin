@@ -1,0 +1,245 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+<style>
+    .currcolor{color: #E3B36B;}
+</style>
+<div id="yunvue" class="none">
+	
+	<div class="pay_header">
+	<div class="pay_header_c">  
+	   
+			<div class="pay_header_p">
+				<div class="pay_header_icon">
+	            <img src="{yun:}$wap_style{/yun}/images/integral_notice.png" alt="" width="100%" >
+	        </div>   当前{{cache.name}}兑换比为1元={{cache.proportion}}{{cache.unit}}{{cache.name}} {{cache.min_recharge > 0 ?'，单次最低充值' + cache.min_recharge + cache.unit + cache.name :''}}。
+		  </div> 
+	  </div> 
+	
+	</div> 
+		<div class="pay_cont">
+	
+    <!-- 页面主题 -->
+    <div class="integral_body">
+        <div class="integral_body_card">
+            <ul>
+                <li :data-id="item.val" @click="setClass"  :data-can="item.canchoose" :class="choose_id==item.val?'discount_opt_for':'body_card_bumber'" v-for="(item, classkey) in class_index" :key="classkey">
+                    <i :class="choose_id==item.val?'currcolor':''" class="body_card_bumber">{{class_name[item.val]}}</i>
+                    <i :class="choose_id==item.val?'currcolor':''">{{cache.name}}</i>
+                    <div class="body_card_bumber_discount " v-if="class_discount[item.val]>0">{{class_discount[item.val]}}折</div>
+                </li>
+               
+                <li data-id="0" @click="setClass" :class="choose_id==0?'discount_opt_for':'body_card_bumber'">
+                    <i :class="choose_id==0?'currcolor':''" class="body_card_bumber">自定义</i>
+                    <i :class="choose_id==0?'currcolor':''">{{cache.name}}</i>
+                </li>
+            </ul>
+            <div class="integral_body_pay" v-if="zdy">
+                <div class="integral_body_pay_left">自定义充值</div>
+                <div class="integral_body_pay_right">
+                    <input type="number" v-model="zdyjf" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请输入要充值的数量" />
+                </div>
+            </div>
+            <div class="integral_body_pay">
+                <div class="integral_body_pay_left">应付金额</div>
+                <div class="integral_body_pay_right">
+                    <i class="pay_right_icon">￥</i>
+                    <i class="pay_right_number">{{price}}</i>
+                </div>
+            </div>
+            <!-- 支付方式 -->
+            <div class="dredge_body_pay" style="padding: 0rem;">
+                <div v-if="config.fkal">
+
+                    <div class="dredge_body_zfb" v-if="config.fkal && isweixin == 2">
+                    <div class="dredge_body_wx_box">
+                        <div class="wx_box_icon">
+                            <img src="{yun:}$wap_style{/yun}/images/dredge_zfb.png" alt="" width="100%" height="100%">
+                        </div>
+                        <div class="wx_box_name">支付宝支付</div>
+                    </div>
+                    <div  @click="change('fkal')">
+                        <div v-if="fktype=='fkal'" class="dredge_body_wx_icon">
+                        <img src="{yun:}$wap_style{/yun}/images/dredge_affirm.png" alt="" width="100%" height="100%" >
+                        </div>
+                        <div v-if="fktype!='fkal'" class="dredge_body_wx_icon">
+                        <img src="{yun:}$wap_style{/yun}/images/dredge_To_confirm.png" alt="" width="100%" height="100%">
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <div class="gb_tip" v-else>
+                    网站已关闭支付接口，请联系管理员
+                </div>
+            </div>
+        </div>
+        <!-- 确认按钮 -->
+        <div class="integral_body_btn" @click="dingdan" v-if="config.fkal">确认支付</div>
+    </div>
+
+</div>
+</div>
+<script>  
+    var class_price = null,
+        isweixin = '{yun:}$isweixin{/yun}';
+        
+      new Vue({
+        el: '#yunvue',
+        data: {
+            islook: false,
+            zdy: false,
+            class_index: [],
+            class_for: [],
+            class_name: [],
+            class_discount: [],
+            cache: {},
+            choosed: 0,
+            choose_id:'',
+            price: 0,
+            integralid: 0,
+            zdyval: '',
+            fktype: 'fkal',
+            config: {},
+            zdyjf: '',
+            isweixin: isweixin ? isweixin : 2
+        },
+        watch: {
+            zdyjf(curVal, oldVal){
+                var class_name = this.class_name,
+                    class_discount = this.class_discount,
+                    discountarr = [];
+                if (curVal) {
+                    for (var i in class_discount) {
+                        if (curVal >= parseInt(class_name[i])) {
+                            discountarr.push({
+                                'discount': class_discount[i],
+                                'id': i,
+                                'name' : class_name[i]
+                            });
+                        }
+                    }
+                }
+                discountarr.sort(function (a, b) {return a.name - b.name;});
+                if (discountarr.length > 0) {
+                    var discount = discountarr[discountarr.length - 1]['discount'];
+                    var couttre = discountarr[discountarr.length - 1]['id'];
+                }else{
+                    var couttre = 0;
+                }
+                if (parseInt(discount) > 0) {
+                    var price = (curVal / this.cache.proportion) * (discount / 100);
+                } else {
+                    var price = curVal / this.cache.proportion;
+                }  
+                price = Math.round(price * 100) / 100;
+                this.price = price;
+                this.choosed = couttre;
+                this.zdyjf = curVal;
+            }
+        },
+        created() {   
+         this.getclass();
+        },
+        methods:{
+            change:function(e){
+                this.fktype = e;
+            },
+            setClass:function(e){
+                var that = this;
+                var choosed = e.currentTarget.dataset.id,
+                    class_name = that.class_name,
+                    class_discount = that.class_discount;
+                that.choose_id = choosed;
+                if (choosed == 0) {
+
+                    that.choosed = choosed;
+                    that.zdy = true;
+                    that.price = 0;
+                    that.zdyval = '';
+
+                    that.zdyjf = '';
+                } else {
+                    var can = e.currentTarget.dataset.can;
+                    if(can=='1'){
+                        that.choosed = choosed;
+                        that.zdy = false;
+                        that.price = class_price[choosed];
+                        
+                        that.zdyjf = that.class_name[choosed];
+                    }else{
+                        
+                        showToast('最低充值:' + that.cache.min_recharge + that.cache.name);
+                    }
+                }
+            },
+            
+          getclass:function(){
+            showLoading();
+            var that = this;
+            $.post('{yun:}url d=wxapp h=user m=finance c=fkclass{/yun}',{rand:Math.random()},function(data){
+              hideLoading();      
+             
+              if (data) {
+                    let res = data.data;
+                    that.cache = res.config;
+                    that.class_index = res.class_index;
+                    let class_for_num = Math.ceil(res.class_index.length / 3);
+                    let class_for = [];
+                    for(var i = 0; i < class_for_num; i++){
+                        class_for.push(i*3);
+                    }
+                    that.class_for = class_for; //  外层循环
+                    that.class_name = res.class_name;
+                    that.class_discount = res.class_discount;
+                    that.choosed = res.first ? res.first : 0;
+                    that.choose_id = that.choosed;
+                    that.price = res.firstprice ? res.firstprice : 0;
+
+                    that.zdyjf = res.firstjf ? res.firstjf : 0;
+                    class_price = res.class_price;
+                    that.config = res.fktype;
+                    that.islook = true;                    
+                    $("#yunvue").css('display', 'block');
+                    if (parseInt(res.nopayorder) > 0) {
+                        showConfirm('您还有' + res.nopayorder + '个订单未付款，是否继续充值！', function() {
+                            window.location.href="index.php?c=paylog&type=paylog";
+                        }, '继续充值', '去付款');
+                    }
+
+                }
+               
+            },'json');
+          },               
+          dingdan:function(){
+            let that = this;          
+            if (parseInt(that.zdyjf) < parseInt(that.cache.min_recharge)){
+                return showToast('单次充值最低' + that.cache.min_recharge + that.cache.name);
+            }
+            if (parseInt(that.zdyjf) < 1 || that.zdyjf==''){
+                return showToast('请填写充值数量');
+            }
+            if (that.fktype == ''){
+                return showToast('请选择支付方式');
+            }
+            var paramer = {integralid: that.choosed,
+                    price_int: that.zdyjf,
+                    type:'wap',
+                    fktype: that.fktype};  
+                    showLoading();
+                    
+            $.post('{yun:}url d=wxapp h=user m=finance c=dingdan{/yun}',paramer,function(data){
+                hideLoading();      
+                if(data.msg == 'ok'){
+                    let res = data.data;
+                   window.location.href=res.url;
+                }else{
+                    showToast(data.msg);
+                }     
+       
+            },'json'); 
+
+          }
+        } 
+      });
+</script>
+{yun:}include file="$wapstyle//member/public/phptoast.htm"{/yun}
+</body>
+</html>

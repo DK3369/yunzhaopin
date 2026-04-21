@@ -1,0 +1,329 @@
+{yun:}include file="$wapstyle/header_cont.htm"{/yun}
+<link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/member/memberwap.css?v={yun:}$config.cachecode{/yun}" type="text/css" />
+
+<div id="yunvue" class="none">
+	<div class="Send_bg"></div>
+    <div class="Send_an_Interview_body">
+        <form onsubmit="return invitesave(this)">
+            <div class="Send_an_Interview_body_card">
+                <div class="Send_an_Interview_body_card_name">
+                    <div class="Send_an_Interview_body_card_name_left">
+                        <div class="Name_of_the_interview">{{user.name}}</div>
+                        <div class="skill_of_the_interview">
+                            <ul>
+                                <li>{{user.user_exp}}经验</li>
+                                <li> · {{user.useredu}}</li>
+                                <li>{{user.age?` · ${user.age}岁`:''}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="Send_an_Interview_body_card_name_right">
+                        <img :src="user.photo" alt="" width="100%" height="100%">
+                        <div class="Send_an_Interview_sex">
+                            <img v-if="user.sex=='1'" src="{yun:}$wap_style{/yun}/images/set_man.png" alt=""
+                                 width="100%"
+                                 height="100%">
+                            <img v-else src="{yun:}$wap_style{/yun}/images/set_woman.png" alt="" width="100%"
+                                 height="100%">
+                        </div>
+                    </div>
+                </div>
+                <div class="job_resume">
+                    <div class="job_resume_left">面试时间</div>
+                    <div class="job_resume_right_two" @click="dateShow = true">{{intertime == '' ? '请选择面试时间' :
+                        intertime}}
+                    </div>
+                    <div class="job_resume_nav">
+                        <img src="{yun:}$wap_style{/yun}/images/icon_more.png" alt="" width="100%" height="100%">
+                    </div>
+                </div>
+                <!--面试时间选择器-->
+                <van-popup v-model="dateShow" round position="bottom">
+                    <van-datetime-picker
+                            v-model="currentDate"
+                            type="datetime"
+                            title="选择面试时间"
+                            @cancel="dateShow = false"
+                            @confirm="dateConfirm"
+                    />
+                </van-popup>
+                <div class="job_resume">
+                    <div class="job_resume_left">面试职位</div>
+                    <div class="job_resume_right_two"  @click="jobShow = true">{{inviteMsg[jobnameIndex].name}}
+                    </div>
+                    <div class="job_resume_nav">
+                        <img src="{yun:}$wap_style{/yun}/images/icon_more.png" alt="" width="100%" height="100%">
+                    </div>
+                </div>
+                <!--面试职位选择器-->
+                <van-popup v-model="jobShow" round position="bottom">
+                    <van-picker
+                            show-toolbar
+                            :default-index="jobnameIndex"
+                            @cancel="jobShow = false"
+                            :columns="inviteMsg"
+                            value-key="name"
+                            @confirm="bindjobnameChange"
+                    />
+                </van-popup>
+
+                <div class="job_resume" v-if="yqmbShow">
+                    <div class="job_resume_left">邀请模板</div>
+                    <div class="job_resume_right_two" @click="openYqmbShow = true">{{yqmbData[yqmbIndex].name}}</div>
+                    <div class="job_resume_nav">
+                        <img src="{yun:}$wap_style{/yun}/images/icon_more.png" alt="" width="100%" height="100%">
+                    </div>
+                </div>
+                <!--邀请模板选择器-->
+                <van-popup v-model="openYqmbShow" round position="bottom">
+                    <van-picker
+                            show-toolbar
+                            :default-index="yqmbIndex"
+                            @cancel="openYqmbShow = false"
+                            :columns="yqmbData"
+                            value-key="name"
+                            @confirm="bindYqmbChange"
+                    />
+                </van-popup>
+                <div class="job_resume">
+                    <div class="job_resume_left">联系人</div>
+                    <div class="job_resume_right">
+                        <input type="text" name="linkman" v-model="inviteV.link_man" placeholder="请填写联系人">
+                    </div>
+
+                </div>
+                <div class="job_resume">
+                    <div class="job_resume_left">联系方式</div>
+                    <div class="job_resume_right">
+                        <input type="number" name="linktel" v-model="inviteV.link_moblie" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请填写联系电话">
+                    </div>
+                </div>
+                <div class="job_resume">
+                    <div class="job_resume_left">面试地址</div>
+                    <div class="job_resume_right">
+                        <input name="address" type="text" v-model="inviteV.address" placeholder="请填写面试地址">
+                    </div>
+                    <!--<div class="job_resume_right_two">江苏省南京市雨花台区小心路12栋 501室</div>-->
+                    <!--<div class="job_resume_nav">-->
+                    <!--    <img src="{yun:}$wap_style{/yun}/images/icon_more.png" alt="" width="100%" height="100%">-->
+                    <!--</div>-->
+                </div>
+                <div class="remark">
+                    <div class="remark_name">备注信息</div>
+                    <div class="remark_word">
+                        <div action="" class="remark_word_box">
+                        <textarea name="content" v-model="inviteV.content" class="remark_word_text" style="resize:none;"
+                                  placeholder="可告知求职者面试时所需材料,面试前的相关注意事项"></textarea>
+                            <!--<div class="expressions_bom">-->
+                            <!--    <i class="expressions_bom_new">0</i>-->
+                            <!--    <i class="expressions_bom_sum">/ 200</i>-->
+                            <!--</div>-->
+                        </div>
+                    </div>
+                </div>
+                <div class="bc_box ">
+                    <div class=" ">{{ymedit?'更新':'保存'}}邀请模板</div>
+                    <div class="bc_box_kg ">
+                        <van-switch v-model="ymchecked" active-color="#1989fa" inactive-color="#dcdee0" size="20"/>
+                    </div>
+                </div>
+
+            </div>
+            <!-- 保存按钮 -->
+            <input type="submit" value="发送面试邀请" class="Save_button"/>
+        </form>
+    </div>
+</div>
+<script src="{yun:}$wap_style{/yun}/js/jquery.min.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$wap_style{/yun}/js/public.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$wap_style{/yun}/js/vue.min.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$config_wapdomain{/yun}/js/vant/lib/vant.min.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$config_wapdomain{/yun}/js/vant/phpyun_vant.js?v={yun:}$config.cachecode{/yun}"></script>
+<script>
+	var ruid = '{yun:}$smarty.get.uid{/yun}';
+    var yunvue = new Vue({
+        el: '#yunvue',
+        data() {
+            return {
+                ruid: ruid,
+                jobnameIndex: 0,
+                inviteMsg: [{
+                    id: '',
+                    name: '',
+                    link_man: '',
+                    link_moblie: '',
+                    address: ''
+                }],
+                user: {},
+                jobid: 0,
+                jobname: '',
+                intertime: '',
+                
+                isTextarea: false,
+
+                dateShow: false,
+                currentDate: new Date(),
+                jobShow: false,
+                openYqmbShow: false,
+
+                yqmbIndex: 0,
+                yqmbData: [],
+                ymshow: false,
+                ymedit: false,
+                ymid: '',
+                ymchecked: false,
+
+
+                latitude: '',
+                longitude: '',
+
+                inviteV: {
+                    name: '',
+                    link_man: '',
+                    link_moblie: '',
+                    address: '',
+                    intertime: '',
+                    content: ''
+                }
+            };
+        },
+        created() {
+            var that = this;
+            that.invitemsg();
+        },
+        computed: {
+            yqmbShow: function () {
+                return (this.yqmbData.length > 1)
+            }
+        },
+        methods: {
+            invitemsg() {
+                let that = this;
+                try {
+                    let param = {}
+                    
+                    param.ruid = that.ruid;
+                   
+
+                    showLoading();
+                    $.post('{yun:}url d=wxapp m=resume c=inviteMsg{/yun}', param, function (data) {
+                        hideLoading();
+                        if (data) {
+                            let res = data.data;
+                            that.inviteMsg = res.joblist;
+                            that.user = res.user;
+                            that.jobnameIndex = res.jobnameIndex ? res.jobnameIndex : 0;
+                            that.jobid = res.joblist[that.jobnameIndex].id;
+                            that.jobname = res.joblist[that.jobnameIndex].name;
+
+                            that.inviteV = res.joblist[that.jobnameIndex];
+
+                            that.yqmbData = res.ymlist;
+                        }
+						$("#yunvue").css('display','block');
+                    }, 'json')
+                } catch (err) {
+                }
+            },
+            dateConfirm: function (e) {
+                this.intertime = e.getFullYear() + '-' + this.dateZero(e.getMonth() + 1) + '-' + this.dateZero(e.getDate()) + ' ' + this.dateZero(e.getHours()) + ':' + this.dateZero(e.getMinutes());
+                this.dateShow = false;
+            },
+            dateZero: function (val) {
+                return val < 10 ? '0' + val : val;
+            },
+
+            bindjobnameChange: function (e, index) {
+                let that = this;
+                that.jobnameIndex = index;
+                that.jobid = e.id;
+                that.jobname = e.name;
+                if (e.link_man && e.link_moblie) {
+                    that.inviteV = that.inviteMsg[index];
+                }
+                this.jobShow = false;
+            },
+            bindYqmbChange: function (e, index) {
+                let that = this;
+                that.yqmbIndex = index;
+
+                that.inviteV = that.yqmbData[index];
+
+                that.intertime = e.intertime;
+
+                that.ymchecked = false;
+
+                if (index == 0) {
+                    that.ymid = '';
+                    that.ymshow = that.ymcan == '1' ? true : false;
+                    that.ymedit = false;
+                } else {
+                    that.ymid = e.id;
+                    that.ymshow = true;
+                    that.ymedit = true;
+                }
+
+                this.openYqmbShow = false;
+            },
+        }
+    });
+
+    //邀请面试保存
+    function invitesave(e) {
+        let yd = yunvue.$data;
+        try {
+            if (yd.jobid < 1) {
+                showModal('请选择面试职位');
+            } else if (e.linkman.value == '') {
+                showModal('请填写联系人');
+            } else if (e.linktel.value == '') {
+                showModal('请填写联系电话');
+            } else if (isjsMobile(e.linktel.value) == false && isjsTell(e.linktel.value) == false) {
+                showModal('联系电话格式错误');
+            } else if (yd.intertime == '') {
+                showModal('请选择面试时间');
+            } else if (e.address.value == '') {
+                showModal('请填写面试地址');
+            } else {
+                var formData = {
+                    linkman: e.linkman.value,
+                    linktel: e.linktel.value,
+                    intertime: yd.intertime,
+                    address: e.address.value,
+                    content: e.content.value,
+                    save_yqmb: yd.ymchecked == true ? 1 : 0,
+                    ymid: yd.ymid,
+                    source: 'wap'
+                };
+
+                
+                formData.uid = yd.ruid;
+                formData.jobid = yd.jobid;
+                formData.jobname = yd.jobname;
+
+
+                showLoading('邀请中');
+                $.post('{yun:}url d=wxapp m=resume c=invitesave{/yun}', formData, function (data) {
+                    hideLoading();
+                    if (data.error == 3) {
+						window.localStorage.setItem("needRefresh", 1);
+                        showToast('邀请成功', 2, function () {
+                            
+                            history.go(-1)
+                        });
+                    } else if (data.error == 2) {
+                        showModal(data.msg, function () {
+                            navigateTo(wapurl+'index.php?c=server')
+                        });
+                    } else {
+                        showModal(data.msg);
+                    }
+                }, 'json')
+                
+            }
+        } catch (err) {}
+        return false;
+    }
+</script>
+</body>
+</html>

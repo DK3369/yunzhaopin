@@ -1,0 +1,183 @@
+{yun:}include file="$userstyle/header.htm"{/yun}
+<div class="yun_w1200">
+	{yun:}include file="$userstyle/left.htm"{/yun}
+	<div class="yun_m_rightsidebar">
+		<div class="user_new_tit"><span class="user_new_tit_n">面试通知</span><span class="user_new_tit_r">安全提醒：招聘企业无权收取任何费用，求职中请加强自我保护，避免上当受骗！</span></div>
+	<div class="yun_m_rightbox fltR mt20 re">
+
+		<div id="gms_showclew"></div>
+
+		<!-- 收到简历列表 -->
+        <iframe id="supportiframe" name="supportiframe" onload="returnmessage('supportiframe');" style="display:none"></iframe> 
+		<div class="resume_box_list">
+
+			{yun:}if !empty($rows){/yun}
+			<div class="user_new_listtit">
+					<div class=" user_new_job">面试职位</div>
+				<div class=" user_new_time">邀请时间</div>
+				<div class=" user_new_zt">面试状态</div>
+				<div class=" user_new_yqh">邀请函</div>
+				<div class=" user_new_cz">操作</div>
+			</div>
+			{yun:}/if{/yun}
+
+			{yun:}foreach item=log from=$rows{/yun}
+			<div class="jobnotice_list">
+				<div class=" user_new_job">
+								<div class="">
+					{yun:}if $log.type==0{/yun}
+						<a href="{yun:}url m=job c=comapply id='`$log.jobid`'{/yun}" target="_blank" class="user_new_jobname">{yun:}$log.jobname{/yun}</a>
+						{yun:}if $log.jobstatus !='0'{/yun}<span class="" style="color:red">已下架</span> {yun:}/if{/yun}
+					{yun:}/if{/yun}</div>
+						<div class="user_new_jobxz">{yun:}$log.salary{/yun}</div>
+						<div class="  user_new_comname"><a href="{yun:}url m=company c=show id='`$log.fid`'{/yun}" target="_blank" class="cor3">{yun:}$log.fname{/yun}</a></div>
+						
+				</div>
+                   
+				<div class="user_new_time"><span class="msg_zt_s">{yun:}$log.datetime|date_format:'%Y-%m-%d'{/yun}</span></div>
+
+				<div class="user_new_zt">
+
+					{yun:}if $log.is_browse=="1"{/yun}
+					<!--<span class="sg_zt_czw_zt">
+						<font color="#f60">尚未回复</font>
+					</span>-->
+					{yun:}elseif $log.is_browse=="2"{/yun}
+					<!--<span class="sg_zt_czw_zt">
+						<font color="#666">已查看</font>
+					</span>-->
+					{yun:}elseif $log.is_browse=="3"{/yun}
+					您已同意面试
+					{yun:}elseif $log.is_browse=="4"{/yun}
+					<span class="msg_zt_s">
+						<font color="#999">您已拒绝面试</font>
+					</span>
+					{yun:}/if{/yun}
+
+					{yun:}if $log.is_browse!="3"&&$log.is_browse!="4"{/yun}
+				
+						
+						{yun:}if $log.jobstatus=='0'{/yun}
+						<a href="javascript:void(0);" onclick="layer_del('确定要同意面试邀请？', 'index.php?c=invite&act=inviteset&id={yun:}$log.id{/yun}&browse=3')"
+						 class="user_new_bth">同意面试</a>
+						<a href="javascript:void(0);" onclick="remark('{yun:}$log.id{/yun}');" class="user_new_btjh">残忍拒绝</a>
+						
+						{yun:}/if{/yun}
+					
+					{yun:}/if{/yun}
+				</div>
+<div class=" user_new_yqh"><a href="javascript:getcont('{yun:}$log.id{/yun}');" class="user_new_yqh_a">邀请函</a> </div>
+				<div class=" user_new_cz"><a href="javascript:void(0);" onclick="layer_del('您确定要删除？', 'index.php?c=invite&act=del&id={yun:}$log.id{/yun}'); "
+						 class="user_new_yqh_sc">删除</a> </div>
+				
+
+
+			</div>
+			{yun:}foreachelse{/yun}
+			<div class="msg_no">
+				<p>亲爱的用户，目前您暂未收到面试通知，</p>
+				<p>想要获得更多的面试机会，立即投递简历，敬候佳音！</p>
+				<a href="{yun:}url m=job{/yun}" target="_blank" class="msg_no_sq uesr_submit">搜索职位</a>
+			</div>
+			{yun:}/foreach{/yun}
+
+
+			<div class="diggg">{yun:}$pagenav{/yun}</div>
+
+		
+		</div>
+
+	</div>
+</div>
+
+<div id="getcont" style="width:100%; display:none;">
+	<div class="aud_face">
+		<div class="audition_list"><span class="audition_list_span"></span></div>
+		<div style="padding:10px;">
+			<div class="invitation_user">尊敬的 <span class="invitation_user_name">{yun:}$realmsgname{/yun}</span> 您好!</div>
+			<div class="invitation_cont">
+				&nbsp;&nbsp;&nbsp;&nbsp;经过人力资源部的初步筛选,我们认为您基本具备 <i class="invitation_cont_job" id="jobname"></i>
+				岗位的任职资格，因此正式邀请您来我公司参加面试。
+			</div>
+			<div class="invitation_cont_tip">具体详见如下：</div>
+			<div class="invitation_cont_p">
+				<span class="invitation_cont_pn">【面试时间】</span><em class="audition_list_e" id="intertime"></em>
+			</div>
+			<div class="invitation_cont_p">
+				<span class="invitation_cont_pn">【面试地址】</span><em class="audition_list_e" id="address"></em>
+			</div>
+			<div class="invitation_cont_p nocontent">
+				<span class="invitation_cont_pn">【面试备注】</span><em class="" id="content"></em>
+			</div>
+			<div class="invitation_cont_p">
+				<span class="invitation_cont_pn">【联系方式】</span><em class="audition_list_e" id="linkman"></em>
+				( TEL：<em class="invitation_cont_tel" id="linktel"></em> )
+			</div>
+		</div>
+		<div class="invitation_cont_jy">
+			<div class="invitation_cont_d">特此邀请&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+			<div class="invitation_cont_d"><em class="" id="comname"></em>&nbsp;&nbsp;&nbsp;&nbsp;</div>
+			<div class="invitation_cont_d"><em class="" id="datetime"></em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+		</div>
+	</div>
+</div>
+<div class="" id="infobox" style="display:none; ">
+    <div>
+      <form action="index.php?c=invite&act=inviteset" method="post" id="formstatus" target="supportiframe">
+        <input name="id" value="0" type="hidden">
+        <input name="browse" value="4" type="hidden">
+        <div class="invite_no" >
+          <textarea id="remark" placeholder="请填写拒绝原因" name="remark" class="invite_notextarea"></textarea>
+       
+        <div class="invite_nobth" >
+          <button type="submit" name='submit' value='1' class="invite_nobth_bth" >确认</button>
+          
+        </div> </div>
+      </form>
+    </div>
+</div>
+<script>
+	function getcont(id) {
+		$.post("index.php?c=invite&act=ajax", {
+			id: id
+		}, function(data) {
+			var data = eval('(' + data + ')');
+			$("#comname").html(data.comname);
+			$("#jobname").html(data.jobname);
+			$("#linkman").html(data.linkman);
+			$("#linktel").html(data.linktel);
+			$("#intertime").html(data.intertime);
+			$("#address").html(data.address);
+			if (data.content) {
+				$("#content").html(data.content);
+			} else {
+				$(".nocontent").attr("style","display: none;");
+			}
+
+			$("#datetime").html(data.datetime);
+			$.layer({
+				type: 1,
+				title: '面试邀请函',
+				shade: [0],
+				closeBtn: [0, true],
+				border: [10, 0.3, '#000', true],
+				area: ['600px', 'auto'],
+				page: {
+					dom: "#getcont"
+				}
+			});
+		})
+	}
+	function remark(id){
+		$("input[name=id]").val(id);
+		$.layer({
+			type : 1,
+			title :'确认要拒绝面试邀请？', 
+			closeBtn : [0 , true],
+			border : [10 , 0.3 , '#000', true],
+			area : ['300px','auto'],
+			page : {dom :"#infobox"}
+		});
+	}
+</script>
+{yun:}include file="$userstyle/footer.htm"{/yun}

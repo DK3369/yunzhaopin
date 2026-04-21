@@ -1,0 +1,107 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<!--账号设置-->
+<div class="none" id="yunvue">
+    <!-- 页面整体部分 -->
+    <div class="issue_post_body_new">
+        <div class="issue_post_body_card" style="padding-top: 0px; margin-top: 0px;;">
+            <div class="com_set_list" onclick="navigateTo('index.php?c=info')">
+
+                <div class="com_set_listname">基本资料</div>
+                <div class="com_set_listp">完善企业基本资料</div>
+                <div class="com_set_listicon">
+                    <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="" width="100%" height="100%">
+                </div>
+            </div>
+
+            <div class="com_set_list" onclick="navigateTo('index.php?c=address')">
+
+                <div class="com_set_listname">地址管理</div>
+                <div class="com_set_listp">工作地址</div>
+                <div class="com_set_listicon">
+                    <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
+                </div>
+            </div>
+            <div class="com_set_list" onclick="navigateTo('index.php?c=ident')">
+                <div class="com_set_listname">认证与绑定</div>
+                <div class="com_set_listicon">
+                    <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
+                </div>
+            </div>
+            <div class="com_set_list" onclick="navigateTo('index.php?c=yqmb')">
+
+                <div class="com_set_listname">面试模板</div>
+                <div class="com_set_listp">模板管理</div>
+                <div class="com_set_listicon">
+                    <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
+                </div>
+            </div>
+            <div class="com_set_list" onclick="navigateTo('index.php?c=show')">
+
+                <div class="com_set_listname">公司相册</div>
+                <div class="com_set_listp">添加公司环境照片</div>
+                <div class="com_set_listicon">
+                    <img src="{yun:}$wap_style{/yun}/images/account_add.png" alt="" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="corporate_environment_box">
+                <ul>
+                    <li v-for="(item,index) in showList" :key="index">
+                        <img :src="item.picurl" alt=""width="100%" height="100%">
+                    </li>
+                </ul>
+            </div>
+
+            <div class="com_set_list" onclick="navigateTo('{yun:}url m=wap c=advice{/yun}')">
+                <div class="com_set_listname">意见反馈</div>
+                <div class="com_set_listicon">
+                    <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
+                </div>
+            </div>
+
+            <div class="com_set_list" onclick="navigateTo('index.php?c=safe')">
+                <div class="com_set_listname">账号与安全</div>
+                <div class="com_set_listicon">
+                    <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
+                </div>
+            </div>
+
+        </div>
+        <div class="logout_btn" onclick="islogout('{yun:}url m=wap c=loginout{/yun}','确认退出吗？');">退出</div>
+    </div>
+</div>
+<script>
+new Vue({
+    el: '#yunvue',
+    data: {
+        info: {},
+        showList: [],
+    },
+    created() {
+        this.getInfo();
+        this.getShowLis();
+    },
+    methods:{
+        getInfo:function(){
+            showLoading();
+            var self = this;
+            $.post('{yun:}url d=wxapp h=com m=info c=getinfo{/yun}',{rand: Math.random()},function(res){
+                hideLoading();
+
+                self.info = res.data;
+
+                $("#yunvue").css('display', 'block');
+            },'json');
+        },
+        getShowLis:function(){
+            var that = this;
+            $.post('{yun:}url d=wxapp h=com m=info c=show pageSize=2{/yun}',{rand: Math.random()},function(data){
+                if (data) {
+                    that.showList = data.data.list;
+                }
+            },'json');
+        }
+    }
+})
+</script>
+</body>
+</html>     

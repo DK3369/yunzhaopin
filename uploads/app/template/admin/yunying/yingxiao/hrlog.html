@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="HR报告" name="loglist">
+                    <loglist ref="loglist"></loglist>
+                </el-tab-pane>
+                <el-tab-pane label="区域报告" name="dataset" lazy>
+                    <dataset ref="dataset"></dataset>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#moduapp',
+            data: function () {
+                return {
+                    activeName: 'loglist'
+                }
+            },
+            components: {
+                'loglist': httpVueLoader('./component/hrlog_list.vue'),
+                'dataset': httpVueLoader('./component/hrlog_dataset.vue'),
+            },
+            methods: {
+                handleClick(tab, event) {
+                    // this.$refs[tab.name].init();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

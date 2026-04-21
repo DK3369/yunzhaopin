@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<script src="../../../admin/header.js"></script>
+	<script src="../../../admin/httpVueLoader.js"></script>
+	<script src="../../../../../js/clipboard/clipboard.min.js"></script>
+</head>
+
+<body>
+	<div id="daohaapp" class="moduleElenAl">
+		<div class="moduleSeachs">
+			<div class="moduleSeachleft">
+				<div class="tableSeachcascader  ">
+					<el-cascader v-model="searchForm.class_id" :options="classData" :props="{ emitPath: false }" :show-all-levels="false" size="small" placeholder="广告分类" clearable @change="handleSearch"></el-cascader>
+				</div>
+				<div class="tableSeachInptsmall newsinput">
+					<el-select v-model="searchForm.is_check" size="small" slot="prepend" placeholder="审核状态" clearable @change="handleSearch">
+						<el-option label="未审核" value="-1"></el-option>
+						<el-option label="已审核" value="1"></el-option>
+						<el-option label="已过期" value="2"></el-option>
+					</el-select>
+				</div>
+				<div class="tableSeachInptsmall newsinput">
+					<el-select v-model="searchForm.ad" size="small" slot="prepend" placeholder="广告类型" clearable @change="handleSearch">
+						<el-option label="文字广告" value="1"></el-option>
+						<el-option label="图片广告" value="2"></el-option>
+						<el-option label="FLASH广告" value="3"></el-option>
+					</el-select>
+				</div>
+				<div class="newsinput">
+					<el-input v-model="searchForm.name" placeholder="输入你要搜索的关键字" size="small" prefix-icon="el-icon-search" clearable></el-input>
+				</div>
+				<div class="newsbtnbox">
+					<el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">查询</el-button>
+				</div>
+			</div>
+			<div class="moduleSeachButn">
+				<el-button type="primary" icon="el-icon-document-add" size="mini" @click="handleAdd">添加广告</el-button>
+				<el-button type=" " icon="el-icon-folder-checked" size="mini" @click="handleCache">更新缓存</el-button>
+			</div>
+		</div>
+
+
+		<div class="moduleElTable">
+			<el-table :data="tableData" border style="width: 100%"
+				:header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" ref="multipleTable"
+				@selection-change="handleSelectionChange" @sort-change="shortChange" v-loading="loading">
+				<template slot="empty">
+					<p>{{dataText}}</p>
+				</template>
+				<el-table-column type="selection" width="55"></el-table-column>
+				<el-table-column prop="id" label="编号" sortable="custom" width="80"></el-table-column>
+				<el-table-column prop="ad_name" label="广告名称"></el-table-column>
+				<el-table-column prop="class_name" label="广告类别" width="220"></el-table-column>
+				<el-table-column prop="hits" align="right" header-align="center" label="点击量" width="80"></el-table-column>
+				<el-table-column label="图片" width="100">
+					<template slot-scope="scope">
+						<template v-if="scope.row.ad_type == 'pic'">
+							<div v-if="scope.row.pic_url_list" class="moduleElImage">
+								<el-image :src="scope.row.pic_url_list ? scope.row.pic_url_list[0] : ''" :preview-src-list="scope.row.pic_url_list ? scope.row.pic_url_list : []"></el-image>
+							</div>
+							<span v-else>无</span>
+						</template>
+						<template v-else>
+							{{scope.row.ad_typename}}
+						</template>
+					</template>
+				</el-table-column>
+				<el-table-column prop="time_end" label="结束时间" width="100"></el-table-column>
+				<el-table-column prop="d_title" label="范围" width="100"></el-table-column>
+				<el-table-column prop="sort" label="排序" sortable="custom" width="110">
+					<template slot-scope="scope">
+						<el-input type="number" v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index" v-model="scope.row.sort" @blur="alterData(scope)"></el-input>
+						<div v-else>{{ scope.row.sort }}  <el-button type="text" icon="el-icon-edit" @click="editData(scope)"></el-button></div>
+					</template>
+				</el-table-column>
+				<el-table-column label="状态" width="100">
+					<template slot-scope="scope">
+						<el-tag type="warning" size="mini" v-if="scope.row.is_open=='0'">已关闭</el-tag>
+						<el-tag type="danger" size="mini" v-else-if="scope.row.is_end == '1'">已过期</el-tag>
+						<el-tag type="success" size="mini" v-else-if="scope.row.is_check == '1'">已审核</el-tag>
+						<el-button type="text" size="mini" v-else @click="handleCheck(scope)">未审核<icon class="el-icon-edit el-icon--right"></icon></el-button>
+					</template>
+				</el-table-column>
+				<el-table-column fixed="right" label="操作" width="210" align="center">
+					<template slot-scope="scope">
+						<div class="cz_button">
+							<el-button size="small" @click="handlePreview(scope)">调用</el-button>
+							<el-button size="small" @click="editRow(scope)">修改</el-button>
+							<el-button type="danger" size="small" @click="deleteRow(scope)">删除</el-button>
+						</div>
+					</template>
+				</el-table-column>
+			</el-table>
+		</div>
+		<div class="modulePaging">
+			<div class="modulecz modulePagButn">
+				<el-checkbox :indeterminate="isIndeterminate" v-model="checked"
+					@change="selectAllBottom">全选</el-checkbox>
+				<el-button @click="deleteRow(null, true)" size="mini">批量删除</el-button>
+				<el-button @click="handleCtime(null, true)" size="mini">延期</el-button>
+			</div>
+			<div class="modulePagNum">
+				<el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+					:current-page.sync="searchForm.page" :page-size="searchForm.limit" :page-sizes="pageSizes"
+					layout="total, sizes, prev, pager, next, jumper" :total="total">
+				</el-pagination>
+			</div>
+		</div>
+		<!--添加 修改-->
+		<div class="modluDrawer">
+			<el-drawer :title="titleAddEdit" :visible.sync="addVisible" :modal-append-to-body="false" :show-close="true"
+				:destroy-on-close="true" size="70%">
+				<ad_edit :id="id" :class-data="classData" :domain-data="domainData" @child-event="handleAddClose">
+				</ad_edit>
+			</el-drawer>
+		</div>
+		<!--预览弹出框-->
+		<el-dialog title="信息" :visible.sync="previewVisible" :with-header="true" :modal-append-to-body="false"
+			:destroy-on-close="true" :show-close="true" width="400px">
+			<ad_preview :id="id" @child-event="handlePreviewClose"></ad_preview>
+		</el-dialog>
+		<!--批量延期-->
+		<el-dialog title="批量延期" width="30%" :visible.sync="ctimeVisible" :modal-append-to-body="false"
+			:destroy-on-close="true">
+			<ad_ctime :jobid="jobid" @child-event="handleCtimeClose"></ad_ctime>
+		</el-dialog>
+	</div>
+	<!-- script -->
+	<script>
+		const custoapp = new Vue({
+			el: '#daohaapp',
+			data: function () {
+				return {
+					loading: false,
+					dataText: '数据加载中',
+					searchForm: {
+						page: 1,
+						limit: null,
+						class_id: null, //广告类别
+						is_check: null, //审核状态
+						ad: null, //广告类型
+						name: null, //关键字
+					},
+					total: 0,
+					classData: [], //广告分类
+					domainData: [], //站点
+					tableData: [],
+					pageSizes: [],
+					checked: false, //全选
+					isIndeterminate: false, // checkbox 的不确定状态
+					selectedItem: [],
+					addVisible: false,
+					titleAddEdit: '添加广告',
+					id: 0,
+					oldData: null,
+					//批量延期
+					ctimeVisible: false,
+					jobid: '',
+					//调用
+					previewVisible: false,
+					prevPage:0
+				}
+			},
+			components: {
+				'ad_ctime': httpVueLoader('./component/ad_ctime.vue'),
+				'ad_edit': httpVueLoader('./component/ad_edit.vue'),
+				'ad_preview': httpVueLoader('./component/ad_preview.vue'),
+			},
+			created: function () {
+				this.getBaseData();
+				this.getList();
+			},
+			methods: {
+				handleSelectionChange(val) {
+					this.selectedItem = val;
+					if (this.selectedItem.length == 0) {
+						this.isIndeterminate = false;
+						this.checked = false;
+					} else {
+						if (this.selectedItem.length == this.tableData.length) {
+							this.isIndeterminate = false;
+							this.checked = true;
+						} else {
+							this.isIndeterminate = true;
+							this.checked = false;
+						}
+					}
+				},
+				selectAllBottom(value) {
+					value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable
+						.clearSelection();
+				},
+				shortChange(e) {
+					let orderMap = {
+						ascending: 'asc',
+						descending: 'desc'
+					}
+					this.searchForm.t = e.order ? e.prop : null;
+					this.searchForm.order = orderMap[e.order];
+					this.searchForm.page = 1;
+					this.getList();
+				},
+				handleSizeChange(val) {
+					this.searchForm.limit = val;
+					this.getList();
+				},
+				handleCurrentChange(val) {
+					this.searchForm.page = val;
+					this.getList();
+				},
+				handleSearch() {
+					this.searchForm.page = 1
+					this.getList()
+				},
+				getList() {
+					let _this = this;
+					let params = JSON.parse(JSON.stringify(this.searchForm));
+					for (let index in params) {
+						(params[index] === '') && (params[index] = null);
+					}
+					_this.loading = true;
+					httpPost('m=yunying&c=ad&a=index', params, {hideloading: true}).then(function (response) {
+						let res = response.data;
+						if (res.error === 0) {
+							_this.tableData = res.data.list;
+							_this.total = res.data.total;
+							_this.searchForm.limit = res.data.perPage;
+							_this.pageSizes = res.data.pageSizes;
+							if(_this.prevPage != _this.searchForm.page){
+								_this.prevPage = _this.searchForm.page;
+								_this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+							}
+							_this.loading = false;
+							if (_this.tableData.length === 0) {
+								_this.dataText = "暂无数据";
+							}
+						}
+					}).catch(function (error) {
+						console.log(error);
+					});
+				},
+				getBaseData() {
+					let _this = this;
+					httpPost('m=yunying&c=ad&a=get_base_data', {}, {
+						hideloading: true
+					}).then(function (response) {
+						let res = response.data;
+						_this.classData = Object.freeze(res.data.classData);
+						_this.domainData = Object.freeze(res.data.domainData);
+					}).catch(function (error) {
+						console.log(error);
+					});
+				},
+				handleAdd() {
+					this.titleAddEdit = '添加广告';
+					this.id = 0;
+					this.addVisible = true;
+				},
+				handleAddClose() {
+					this.addVisible = false;
+					this.getList();
+				},
+				editRow(scope) {
+					this.titleAddEdit = '修改广告';
+					this.id = parseInt(scope.row.id);
+					this.addVisible = true;
+				},
+				deleteRow(scope, isMore) {
+					let params = {};
+					if (isMore) {
+						if (!this.selectedItem.length) {
+							message.error('请选择要删除的数据');
+							return false;
+						}
+						let list = [];
+						for (let item of this.selectedItem) {
+							list.push(item.id);
+						}
+						params.delType = 'more';
+						params.del = list;
+					} else {
+						// let index = scope.$index;
+						// this.tableData.splice(index, 1);
+						params.delType = 'single';
+						params.id = scope.row.id;
+					}
+
+					delConfirm(this, params, this.delete);
+				},
+				delete(params) {
+					let _this = this;
+					httpPost('m=yunying&c=ad&a=del', params).then(function (response) {
+						let res = response.data;
+						if (res.error === 0) {
+							message.success('删除成功！');
+							_this.getList();
+						} else {
+							message.error('删除失败！');
+						}
+					}).catch(function (error) {
+						console.log(error);
+					});
+				},
+				handleCtime(scope, isMore) {
+					let params = {};
+					if (isMore) {
+						if (!this.selectedItem.length) {
+							message.error('您还未选择任何信息！');
+							return false;
+						}
+						let list = [];
+						for (let item of this.selectedItem) {
+							list.push(item.id);
+						}
+						params.type = 'all';
+						params.jobid = list.join(',');
+					} else {
+						// let index = scope.$index;
+						// this.tableData.splice(index, 1);
+						params.type = 'one';
+						params.jobid = scope.row.id;
+					}
+					this.jobid = params.jobid;
+					this.ctimeVisible = true;
+				},
+				handleCtimeClose() {
+					this.ctimeVisible = false;
+					this.getList();
+				},
+				editData(scope) {
+					let index = scope.$index;
+					let row = scope.row;
+					let column = scope.column;
+					this.oldData = JSON.parse(JSON.stringify(row));
+					let copyRow = JSON.parse(JSON.stringify(row));
+					copyRow[column.property + "isShow"] = true;
+					this.$set(this.tableData, index, copyRow);
+					this.$nextTick(() => {
+						let ref = column.property + index;
+						$("#" + ref).focus();
+					});
+				},
+				alterData(scope) {
+					if (this.oldData == null) {
+						return false;
+					}
+					let index = scope.$index;
+					let row = scope.row;
+					let column = scope.column;
+					let copyRow = JSON.parse(JSON.stringify(row));
+					copyRow[column.property + "isShow"] = false;
+					this.$set(this.tableData, index, copyRow);
+					if (row[column.property] === this.oldData[column.property]) {
+						return false;
+					}
+					let _this = this;
+					let sendData = {
+						id: row.id
+					};
+					sendData[column.property] = row[column.property];
+					httpPost('m=yunying&c=ad&a=upsort', sendData).then(function (response) {
+						let res = response.data;
+						if (res.error === 0) {
+							message.success('修改成功');
+						} else {
+							message.error('修改失败');
+						}
+						_this.oldData = null;
+						_this.getList();
+					}).catch(function (error) {
+						console.log(error);
+					});
+				},
+				handleCheck(scope) {
+					let _this = this;
+					let row = scope.row
+					let value = scope.row.is_check
+					let val = (value == '1' ? '0' : '1');
+					let params = {
+						id: row.id,
+						val: val
+					};
+					httpPost('m=yunying&c=ad&a=check', params).then(function (response) {
+						let res = response.data;
+						if (res.error === 0) {
+							message.success('修改成功');
+						} else {
+							message.error('修改失败');
+						}
+						_this.getList();
+					}).catch(function (error) {
+						console.log(error);
+					});
+				},
+				handleCache() {
+					httpPost('m=yunying&c=ad&a=cache_ad', {}).then(function (response) {
+						let res = response.data;
+						if (res.error === 0) {
+							message.success('广告更新成功！');
+						} else {
+							message.error('广告更新失败！');
+						}
+					}).catch(function (error) {
+						console.log(error);
+					});
+				},
+				handlePreview(scope) {
+					this.id = parseInt(scope.row.id);
+					this.previewVisible = true;
+				},
+				handlePreviewClose() {
+					this.previewVisible = false;
+				}
+			}
+		});
+	</script>
+</body>
+<style>
+
+</style>
+
+</html>

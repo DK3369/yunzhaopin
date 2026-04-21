@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{yun:}$title{/yun}</title>
+<meta name="keywords" content="{yun:}$keywords{/yun},wap" />
+<meta name="description" content="{yun:}$description{/yun}" />
+<meta content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,shrink-to-fit=no,user-scalable=no,minimal-ui" name="viewport"/>
+<meta name ="format-detection" content="telephone=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<!-- UC默认竖屏` UC强制全屏 -->
+<meta name="screen-orientation" content="portrait">
+<meta name="full-screen" content="yes"/>
+<meta name="browsermode" content="application"/>
+<!-- QQ强制竖屏` QQ强制全屏 -->
+<meta name="x5-orientation" content="portrait"/>
+<meta name="x5-fullscreen" content="true"/>
+<meta name="x5-page-mode" content="app"/>
+<link href="{yun:}$config_wapdomain{/yun}/js/vant/lib/index.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet" />
+<link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/css.css?v={yun:}$config.cachecode{/yun}" type="text/css" />
+<link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/zt_wap.css?v={yun:}$config.cachecode{/yun}" type="text/css" />
+<script src="{yun:}$wap_style{/yun}/js/jquery.min.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/flexible.js?v={yun:}$config.cachecode{/yun}"></script>
+</head>
+<body>
+<div class="body"> 
+  <!--导航-->
+	<header class="header_h">
+		  <div class="header_fixed">
+			  <div class="header">
+				  <div class="header_bg">
+					  <a class="hd-lbtn" href="javascript:goBack();"><i class="header_top_l"></i></a>
+					  <div class="header_h1">
+						  <div class="header_p_z"> {yun:}$headertitle{/yun}</div>
+					  </div>
+				  </div>
+			  </div>
+		  </div>
+	</header>
+	<div class="clear"></div>
+	<div class="header_box" style="background: url({yun:}$info.wapback{/yun}) no-repeat bottom; background-size:100%">
+	</div>
+    <div class="clear"></div>
+  <!--搜索-->
+  <div class="jobfair_search">
+    <div class="zt_search_text fs24">
+      <p class="search_s">职位类型</p>
+      <ul class="search_select">
+        <li data-type="zw" style="display: none;">职位名称</li>
+        <li data-type="qy">企业名称</li>
+      </ul>
+    </div>
+    <div class="zt_search_inpb">
+      <input name="type" type="hidden" id="search_type" value="zw">
+      <input type="text" id="search_key" class="zt_search_inp fs24" placeholder="请输入关键词">
+      <input name="" type="button" class="fs24 zt_search_but" value="搜 索">
+    </div>
+    <div class="clear"></div>
+  </div>
+  <div class="wite_box search_box none" id="searchResult">
+		<div class="search_tit">搜索结果</div>
+		<div class="search_list">
+			<ul id="searchlist">
+			</ul>
+	  </div>
+      <a href=" " class="search_czbth">重置</a>
+   </div>
+  <!--名企推荐-->
+  <div id="Recommend" class="Recommend_con"> <img src="{yun:}$config.sy_weburl{/yun}/app/template/wap/images/spe_gl/Recommend.png" class="zt_timg" alt="名企推荐">
+    <div class="zt_tit">名企推荐</div>
+    <p class="zt_t_des fs32">——<br>
+      在这里，和一众好公司并肩</p>
+    <div class="Recommend_box">
+      <div class="main_visual">
+        <div class="main_image">
+          <ul>
+		  {yun:}foreach from=$hotcom key=hjk item=hjv{/yun}
+            <li class="slider_item">
+              <div class="bg_{yun:}$hjk%5{/yun}">
+                <div class="r_com_content">
+                  <p class="r_com_log"><a href="{yun:}url m=wap c=company a=show id=$hjv.uid{/yun}"><img src="{yun:}$hjv.hot_pic{/yun}" alt="{yun:}$hjv.name{/yun}"></a></p>
+                  <h4 class="r_com_t"><a href="{yun:}url m=wap c=company a=show id=$hjv.uid{/yun}">{yun:}$hjv.name{/yun}</a></h4>
+                  <p class="r_com_i fs24"> <i>{yun:}$hjv.citystr{/yun}</i><i>{yun:}$hjv.pr_n{/yun}</i><i>{yun:}$hjv.hy_n{/yun}</i><i>{yun:}$hjv.mun_n{/yun}</i> </p>
+                  <p class="r_com_dis fs24">{yun:}$hjv.content{/yun}</p>
+                </div>
+                <div class="r_zw_box">
+                  <dl class="r_zw_list fs24">
+					{yun:}foreach from=$hjv.joblist item=job{/yun}
+                    <dd><a href="{yun:}url m=wap c=job a=comapply id=$job.id{/yun}"><em>{yun:}$job.job_salary{/yun}</em>
+                      <p>{yun:}$job.name{/yun}</p>
+                      </a></dd>
+					{yun:}/foreach{/yun}
+                  </dl>
+                </div>
+              </div>
+            </li>
+			{yun:}/foreach{/yun}
+          </ul>
+          <a href="javascript:;" id="btn_prev"></a> <a href="javascript:;" id="btn_next"></a> </div>
+        <div class="flicking_con"></div>
+      </div>
+    </div>
+    <div class="clear"></div>
+  </div>
+  
+  <!--企业精选-->
+  <div class="Enterprises_con" id="Enterprises"> <img src="{yun:}$config.sy_weburl{/yun}/app/template/wap/images/spe_gl/Enterprises.png" class="zt_timg" alt="企业精选">
+    <div class="zt_tit cfff">企业精选</div>
+    <p class="zt_t_des fs32 cfff">——<br>
+      在这里，和一众好公司并肩</p>
+    <div class="wite_box fs24">
+      <div class="zt_class Enterprises">
+        <div class="wrapper" id="Enterprises_teb">
+          <div class="scroller">
+            <ul class="clearfix">
+              <li data-jobclass="0"><a href="javascript:void(0)">所有分类</a></li>
+			  {yun:}foreach from=$comhy item=chv{/yun}
+			  <li data-jobclass="{yun:}$chv.id{/yun}"><a href="javascript:void(0)">{yun:}$chv.name{/yun}</a></li>
+			  {yun:}/foreach{/yun}
+            </ul>
+          </div>
+          <div class="zt_tb_move" > <i class="left_mis mis_no" data-move="left"></i> <i class="right_mis" data-move="right"></i> </div>
+        </div>
+      </div>
+      <div class="Enterprises_list">
+        <ul id="Enterprises_0">
+			
+        </ul>
+      </div>
+      <div class="clear"></div>
+      <div class="page fs24"> <a class="shouqi Enterprises_up"  data-box="Enterprises">收起</a>
+        <input name="type" type="hidden" id="Enterprise_page" class="input_page page_no" value="0" />
+        <a class="gengduo yes Enterprises_down"  data-box="Enterprises">查看更多</a> </div>
+    </div>
+  </div>
+  <!--职位精选-->
+  <div class="Position_con" id="Position"> <img src="{yun:}$config.sy_weburl{/yun}/app/template/wap/images/spe_gl/Position.png" class="zt_timg" alt="职位精选">
+    <div class="zt_tit cfff">职位精选</div>
+    <p class="zt_t_des fs32 cfff">——<br>
+      好职位尽在{yun:}$config.sy_webname{/yun}</p>
+    <div class="wite_box fs24">
+      <div class="zt_class Position">
+        <div class="wrapper" id="Position_teb">
+          <div class="scroller">
+            <ul class="clearfix">
+              <li data-jobclass="0"><a href="javascript:void(0)">所有分类</a></li>
+			  {yun:}foreach from=$jobhy item=jhv{/yun}
+			  <li data-jobclass="{yun:}$jhv.id{/yun}"><a href="javascript:void(0)">{yun:}$jhv.name{/yun}</a></li>
+			  {yun:}/foreach{/yun}
+            </ul>
+          </div>
+          <div class="zt_tb_move" > <i class="left_mis mis_no" data-move="left"></i> <i class="right_mis" data-move="right"></i> </div>
+        </div>
+      </div>
+      <div class="Position_list">
+        <ul id="Position_0">
+        </ul>
+      </div>
+      <div class="clear"></div>
+      <div class="page fs24"> <a class="shouqi Position_up" data-box="Position">收起</a>
+        <input name="type" type="hidden" id="job_page" class="input_page" value="0" />
+        <a class="gengduo yes Position_down" data-box="Position">查看更多</a> </div>
+    </div>
+  </div>
+</div>
+{yun:}if $info.com_bm==1{/yun}
+	{yun:}if !$isapply{/yun}
+		{yun:}if $isover !=1{/yun}
+		<div class="special_seniorpd_box">
+			<div class="special_seniorpd_cont">
+				<div class="special_box_bth_c special_box_bth_cw2" >
+					<input type='button' value="我是企业，我要报名" onclick="{yun:}if $uid{/yun}{yun:}if $usertype!='2'{/yun} showToast('只有企业用户才能参加报名');{yun:}else{/yun}comapply('{yun:}$info.id{/yun}','{yun:}$info.integral{/yun}','{yun:}url m=wap c=special a=apply{/yun}'){yun:}/if{/yun}{yun:}else{/yun}pleaselogin('您还未登录账号，是否登录？','{yun:}url m=wap c=login{/yun}'){yun:}/if{/yun}" class="special_box_bth"/>
+				</div>
+			</div>
+		</div>
+		{yun:}/if{/yun}
+	{yun:}else{/yun}
+	<div class="special_seniorpd_box">
+		<div class="special_seniorpd_cont">
+			<div class="special_box_bth_c">
+				{yun:}if $isapply.status=="0"{/yun}
+				<div class="zt_ybm" style="text-align: center;"  >报名审核中</div>
+				{yun:}elseif $isapply.status=="1"{/yun}
+				<div  class="zt_ybm" style="text-align: center;"  >已报名</div>
+				{yun:}else{/yun}
+				<div  class="zt_ybm" style="text-align: center;"  >请联系管理员</div>
+				{yun:}/if{/yun}
+			</div>
+		</div>
+	</div>
+	{yun:}/if{/yun}
+{yun:}/if{/yun}
+<script src="{yun:}$wap_style{/yun}/js/spe_gl/jquery.touchSlider.js" type="text/javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/spe_gl/iscroll.js" type="text/javascript"></script> 
+<script src="{yun:}$wap_style{/yun}/js/spe_gl/navbarscroll.js" type="text/javascript"></script> 
+<script src="{yun:}$wap_style{/yun}/js/spe_gl/rem.js"></script>
+<script src="{yun:}$wap_style{/yun}/js/vue.min.js?v={yun:}$config.cachecode{/yun}"></script> 
+<script src="{yun:}$config_wapdomain{/yun}/js/vant/lib/vant.min.js?v={yun:}$config.cachecode{/yun}"></script> 
+<script src="{yun:}$config_wapdomain{/yun}/js/vant/phpyun_vant.js?v={yun:}$config.cachecode{/yun}"></script> 
+<script src="{yun:}$wap_style{/yun}/js/public.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script type="text/javascript">
+	 var pricename = "{yun:}$config.integral_pricename{/yun}",
+         integral_pricename = "{yun:}$config.integral_pricename{/yun}";
+      var isover = '{yun:}$isover{/yun}';
+      var isstop = '{yun:}$info.com_bm{/yun}';
+	  var wapurl = "{yun:}url m=wap{/yun}";
+	function comapply(id,integral,url){
+		if(integral>0&&integral){
+			let msg = "参加专题招聘，将扣除您"+integral+pricename+"，审核不通过将退还，是否继续？";
+			showConfirm(msg,function(){			
+				showLoading();
+				$.post(url,{id:id},function(data){
+					hideLoading();
+					var data=eval('('+data+')');
+					if(data.url=='1'){ 
+						showModal(data.msg,function(){location.reload(true);});
+					}else{
+						showModal(data.msg,function(){location.href=data.url;});
+					}
+				});
+			},'取消', '继续');
+			
+		}
+	}
+	 $(function () {
+	 	if(isover != '' && isover==0){
+	 		showModal('该专题报名已结束！',function(){});
+	 	}
+	 });
+</script>
+<script type="text/javascript">
+var sid = '{yun:}$info.id{/yun}';
+$(document).ready(function(){
+	 //搜索类型选择
+	  $(".search_s").click(function () {
+		  var searchname = $(this).text()
+		  $(".search_select li").each(function () {
+			  if (searchname == $(this).text()) {
+				  $(this).hide();
+			  }
+		  })
+		  $(".search_select").toggle();
+	  })
+
+	  $(".search_select li").click(function () {
+		  $(".search_s").text($(this).text());
+		  $("#search_type").val($(this).data("type"))
+		  $(".search_select li").show();
+		  $(".search_select").hide();
+	  })
+	 //搜索传参
+		$(".zt_search_but").click(function () {
+			var type = $("#search_type").val();
+			var search_key = $.trim($("#search_key").val());
+			if (search_key.length>0&&search_key!=" "){
+				searchJob(search_key, type);
+			}
+		})
+	$('#Enterprises_teb').navbarscroll();
+	$('#Position_teb').navbarscroll(); 
+	//分类滑动效果
+	 $('.wrapper').bind('touchend',function(){
+		 var move = parseInt($(this).find('.scroller').css("transform").replace(/[^0-9\-,]/g,'').split(',')[4]);
+		 var wrapper_w = parseInt($(this).outerWidth(true));
+		 var scroller_w = parseInt($(this).find('.scroller').outerWidth(true));
+		 var frist = 0 -parseInt($(this).find('.scroller li').eq(0).outerWidth(true))/2;
+		 var move_max = wrapper_w-scroller_w;
+		 if (move>=frist){
+			 $(this).find(".left_mis").addClass("mis_no");
+		}else{
+			$(this).find(".left_mis").removeClass("mis_no");
+		}
+		if (move<=move_max){
+
+			 $(this).find(".right_mis").addClass("mis_no");
+		}else{
+			$(this).find(".right_mis").removeClass("mis_no");
+		}
+	});
+	//banner
+	
+	var _length=$(".slider_item").length
+	var flicking_html=""
+	for (var i=0;i<_length;i++){	
+		flicking_html += '<a href="javascript:;"></a>' 
+	}
+	$(".flicking_con").html(flicking_html)
+	
+	$dragBln = false;
+	
+	$(".main_image").touchSlider({
+		flexible : true,
+		speed : 200,
+		btn_prev : $("#btn_prev"),
+		btn_next : $("#btn_next"),
+		paging : $(".flicking_con a"),
+		counter : function (e){
+			$(".flicking_con a").removeClass("on").eq(e.current-1).addClass("on");
+		}
+	});
+	
+	$(".main_image").bind("mousedown", function() {
+		$dragBln = false;
+	});
+	
+	$(".main_image").bind("dragstart", function() {
+		$dragBln = true;
+	});
+	
+	$(".main_image a").click(function(){
+		if($dragBln) {
+			return false;
+		}
+	});
+	timer = setInterval(function(){
+		$("#btn_next").click();
+	}, 5000);
+	$(".main_visual").hover(function(){
+		clearInterval(timer);
+	},function(){
+		timer = setInterval(function(){
+			$("#btn_next").click();
+		},5000);
+	});
+	$(".main_image").bind("touchstart",function(){
+		clearInterval(timer);
+	}).bind("touchend", function(){
+		timer = setInterval(function(){
+			$("#btn_next").click();
+		}, 5000);
+	});
+	//企业精选tab
+		$(".Enterprises li").click(function () {
+			$(".Enterprises li").removeClass("select");
+			
+			$(this).addClass("select");
+			var jobclass = $(this).data("jobclass")
+			$("#Enterprise_page").val(0);
+			var page = 0;
+			var numb = 6;
+			Enterprisestab(jobclass, page, numb)
+		})
+		//职位精选tab
+		$(".Position li").click(function () {
+			$(".Position li").removeClass("select");
+			
+			$(this).addClass("select");
+			var jobclass = $(this).data("jobclass")
+			$("#job_page").val(0);
+			var page = 0;
+			var numb = 6;
+			Positiontab(jobclass, page, numb)
+		})
+	//收起隐藏
+	$(".shouqi").click(function(){
+		if (!$(this).hasClass("yes")){return false}
+		
+		$(this).closest(".page").find(".input_page").val(0);
+		$(this).closest(".page").find(".gengduo").addClass("yes");
+		var box = $(this).data("box")
+		$("."+box+"_list").find("ul").hide();
+		$("#"+box+"_0").show();
+		$(this).removeClass("yes")
+		$("html,body").animate({ scrollTop: $("#"+box).offset().top},100); 
+	})
+	//查看更多加载或显示
+	$(".gengduo").click(function () {
+		//最后一页后不执行翻页
+		if (!$(this).hasClass("yes")){return false}
+		
+		var that = $(this).closest(".page").find(".input_page")
+		var page = parseInt(that.val())
+		var numb = 6
+		var box = $(this).data("box")
+		var jobclass = $("." + box).find(".select").data("jobclass")
+		page += 1
+		
+		if (box == "Enterprises") { 
+			if ($("#Enterprises_"+page).length){
+				$("#Enterprises_"+page).show()
+				$(".Enterprises_up").addClass("yes")
+			}else{
+				Enterprisestab(jobclass, page, numb) 			
+			}
+		}
+		if (box == "Position") { 
+			if ($("#Position_"+page).length){
+				$("#Position_"+page).show()
+				$(".Position_up").addClass("yes")
+			}else{
+				Positiontab(jobclass, page, numb) 			
+			}
+		 }
+		that.val(page)
+	})
+	Enterprisestab('',0, 6);
+	Positiontab('', 0, 6);
+});
+
+
+//sid专题招聘id hy 行业id,page 页码
+function Enterprisestab(hy, page, numb) {
+	$.post(wapurl+"index.php?c=special&a=getComList", {sid: sid, hy: hy, page: page, numb: numb}, function (data) {
+		if (data) {
+			var companyhtml = "";
+			var res = eval('('+data+')');
+			var count = res.count;
+			var result = res.list;
+			
+			for (var i = 0; i < result.length; i++) {
+				
+				companyhtml += '<li>'
+				companyhtml += '<a href="' + result[i].wapurl + '">'
+				companyhtml += '<p class="E_com_log">'
+				companyhtml += '<img src="' + result[i].logo + '" alt="' + result[i].name + '"/>'
+				companyhtml += '</p>'
+				companyhtml += '<h4 class="E_com_t">' + result[i].name + '</h4>'
+				companyhtml += '<p class="E_com_i fs18">' + result[i].hy_n + ' | ' + result[i].mun_n + '</p>'
+				companyhtml += '<p class="E_com_dis fs18">' + result[i].content.substring(0,30) + '...</p>'
+				companyhtml += '</a>'
+				companyhtml += '</li>'
+			}
+			companyhtml = '<ul id="Enterprises_'+page+'">' + companyhtml + '</ul>'
+			if (page==0){
+				$(".Enterprises_list").html(companyhtml)
+				}else{
+				$(".Enterprises_list").append(companyhtml)
+				$(".Enterprises_up").addClass("yes")
+			}
+			if (count==1||count==(page+1)){
+				$(".Enterprises_down").removeClass("yes")
+			}else{
+				$(".Enterprises_down").addClass("yes")	
+			}
+		}
+		else {
+		   $(".Enterprises_down").removeClass("yes")
+		}
+	});
+}
+
+function Positiontab(hy, page, numb) {
+	$.post(wapurl+"index.php?c=special&a=getJobList", {sid: sid, hy: hy, page: page, numb: numb}, function (data) {
+		if (data) {
+			var jobhtml = "";
+			var res = eval('('+data+')');
+			var count = res.count;
+			var result = res.list;
+			for (var i = 0; i < result.length; i++) {
+
+				jobhtml += '<li>'
+				jobhtml += '<a href="' + result[i].wapurl + '" class="p_zw_box">'
+				jobhtml += '<div class="p_zw_top">'
+				jobhtml += '<div class="p_zw_name fs36">'
+				jobhtml += '<em class="fs32">' + result[i].job_salary + '</em>'
+				jobhtml += '<h4>' + result[i].name + '</h4>'
+				jobhtml += '</div>'
+				jobhtml += '<p class="p_com_i fs24">' + result[i].citystr + '/' + result[i].job_exp + '/' + result[i].job_edu +  '</p>'  
+				jobhtml += '</div>'
+				jobhtml += '<div class="p_zw_com">'
+				jobhtml += '<div class="p_com_log"><img src="' + result[i].comlogo + '" alt="' + result[i].com_name + '"></div>'
+				jobhtml += '<div class="p_com_r">'
+				jobhtml += '<h4 class="p_com_t">' + result[i].com_name + '</h4>'
+				jobhtml += '<p class="p_com_i fs24">' + result[i].citystr + '|' + result[i].job_pr + '|' + result[i].job_mun + '</p>'
+				jobhtml += '</div>'
+				jobhtml += '<div class="clear"></div>'
+				jobhtml += '</div>'
+				jobhtml += '</a>'
+				jobhtml += '</li>'	
+			}
+			jobhtml = '<ul id="Position_'+page+'">' + jobhtml + '</ul>'
+			if (page==0){
+				$(".Position_list").html(jobhtml)
+				}else{
+				$(".Position_list").append(jobhtml)
+				$(".Position_up").addClass("yes")
+			}
+			
+			if (count==1||count==(page+1)){
+				$(".Position_down").removeClass("yes")
+			}else{
+				$(".Position_down").addClass("yes")	
+			}
+		}else {
+			$(".Position_down").removeClass("yes")
+		}
+	});
+}
+function searchJob(keyword, type) {
+	$("#searchResult").show();
+	$("#Recommend").hide();
+	$("#Enterprises").hide();
+	$("#Position").hide();
+	$.post(wapurl+"index.php?c=special&a=getJobList", {sid: sid, keyword: keyword, type: type, page: 0, numb: 30}, function (data) {
+		if (data) {
+			var jobhtml = "";
+			var res = eval('('+data+')');
+			var result = res.list;
+			for (var i = 0; i < result.length; i++) {
+				jobhtml += '<li><div class="search_con">'
+				jobhtml += '<a href="' + result[i].wapurl + '" target="_blank">'
+				jobhtml += '<div class="search_zw"><em class="fs32">' + result[i].job_salary + '</em>'
+				jobhtml += '<h4 class="zw_tit fs36">'+result[i].name+'</h4></div>'
+				jobhtml += '<p class="search_dis fs24">' + result[i].citystr + '/' + result[i].job_exp + '/' + result[i].job_edu +   '</p>'
+				jobhtml += '</a>'
+				jobhtml += '<div class="search_m">'
+				jobhtml += '<a class="com_name" href="' + result[i].comurl + '" target="_blank">'+result[i].com_name+'</a>'
+				jobhtml += '</div>'
+				jobhtml += '</div></li>'
+			}
+			$("#searchlist").html(jobhtml)
+		}else {
+			$("searchlist").html('<div class="no_inforxx"><img src="' + nodataimg + '"/><p>抱歉，未搜索到相关信息！<p></div>')
+		}
+	});
+}
+/**
+ * 返回前一页（或关闭本页面）
+ * <li>如果没有前一页历史，则直接返回首页</li>
+ */
+function goBack(){
+	if (navigator.userAgent.indexOf('Firefox') >= 0 ||
+		navigator.userAgent.indexOf('Opera') >= 0 ||
+		navigator.userAgent.indexOf('Safari') >= 0 ||
+		navigator.userAgent.indexOf('Chrome') >= 0 ||
+		navigator.userAgent.indexOf('WebKit') >= 0){
+
+		if(window.history.length > 1){
+			window.history.go( -1 );
+		}else{
+			location.href = wapurl;
+		}
+	}else{ //未知的浏览器
+		window.history.go( -1 );
+	}
+}
+</script>
+</body>
+</html>

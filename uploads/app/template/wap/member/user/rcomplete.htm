@@ -1,0 +1,77 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+<div id="yunvue" class="none">
+    
+<!--有简历的情况-->
+    <div class="issue_post_body">
+        <div class="Resume_success_card">
+            <div class="issue_card_box">
+                <div class="issue_box_logo">
+                    <img src="{yun:}$wap_style{/yun}/images/issue_hint.png" alt="" width="100%" height="100%">
+                </div>
+                <div class="issue_box_hint">恭喜！简历发布成功</div>
+                <div class="issue_box_btns">
+                   <div class="box_btns_preview" onclick="navigateTo('{yun:}$url{/yun}')">预览简历</div>
+                   <div class="box_btns_seek" onclick="navigateTo('{yun:}url m=wap c=job{/yun}')">去找工作</div>
+                </div>
+            </div>
+            <div class="issue_card_matchingrate" v-if="joblist && joblist.length > 0">以下职位与你匹配度很高，投递试试吧</div>
+            <div class="issue_card_recommendbox">
+                <div class="issue_card_recommend" v-for="(job,jkey) in joblist" :key="jkey" @click="pageTo(job.wapjob_url)">
+                    <div class="Posted_card_top">
+                        <div class="Posted_card_name">{{job.name}}</div>
+                        <div class="Posted_card_pay">{{job.job_salary}}</div>
+                    </div>
+                    <div class="Posted_card_cen">
+                        <ul>
+                            <li v-if="job.citystr">{{job.citystr}}</li>
+                            <li v-if="job.job_edu">{{job.job_edu}}学历</li>
+                            <li v-if="job.job_exp">{{job.job_exp}}经验</li>
+                        </ul>
+                    </div>
+                    <div class="Posted_card_bom">
+                        <div class="Posted_bom_box">
+                            <div class="Posted_box_logo">
+                                <img :src="job.com_logo_n" alt="" width="100%" height="100%">
+                            </div>
+                            <div class="Posted_box_name">{{job.com_name}}</div>
+                        </div>
+                        <div class="Posted_bom_time">{{job.lastupdate_n}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript">
+    var eid = '{yun:}$smarty.get.id{/yun}';
+    var yunvue =  new Vue({
+        el:"#yunvue",
+        data:{
+           eid:eid,
+           joblist: []
+        },
+        created() {
+            this.getExpect();
+        },
+        methods: {
+            getExpect: function(){
+                var that = this;
+                showLoading();
+                $.post('{yun:}url d=wxapp h=user m=resume c=rcomplete{/yun}', {eid: that.eid}, function(data){
+                    hideLoading();
+                    if (data.error==1) {                        
+                        that.joblist = data.data;
+                    } 
+                    $("#yunvue").css('display', 'block');
+                });
+                            
+            },
+            pageTo:function(url){
+                window.location.href = url;
+            }
+        }
+    });
+</script>
+</body>
+</html>

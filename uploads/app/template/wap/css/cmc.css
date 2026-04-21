@@ -1,0 +1,487 @@
+/* grade */
+.yzxz_header {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.van-overflow-hidden {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+.Category-eject,
+.grade-eject {
+    -webkit-transition-duration: .4s
+}
+
+.Category-eject>ul,
+.grade-eject>ul {
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+    height: 100%;
+    width: 100%;
+    -webkit-transition-duration: .4s
+}
+
+.Category-eject>ul.Category-w,
+.grade-eject>ul.grade-w {
+    background: #fff;
+    position: absolute;
+    z-index: 1
+}
+
+.Category-eject>ul.Category-t,
+.grade-eject>ul.grade-t {
+    background: #f2f2f6;
+    position: absolute;
+    z-index: 2;
+    left: 100%
+}
+
+.Category-eject>ul>li,
+.grade-eject>ul>li {
+    padding: 0.4rem 0 0.4rem .4rem;
+    position: relative;
+    font-size: 0.4rem;
+}
+
+.Category-eject>ul.Category-s,
+.grade-eject>ul.grade-s {
+    background: #fff;
+    position: absolute;
+    z-index: 3;
+    left: 100%;
+    list-style-type: none
+}
+
+.citythree_pd {
+    padding-right: .6rem;
+    position: relative;
+    font-size: 0.32rem;
+}
+
+.citythreebox {
+    position: absolute;
+    left: -5px;
+    top: 0.346666rem
+}
+
+.checkAll {
+    position: absolute;
+    right: 5px;
+    top: 0.346666rem
+}
+
+.jobthreebox {
+    position: absolute;
+    left: 5px;
+    top: 0.346666rem
+}
+
+.Category-eject>ul.Category-s>li,
+.grade-eject>ul.grade-s>li {
+    font-size: 0.4rem;
+}
+
+.grade-w-roll {
+    overflow: hidden;
+    width: 100%;
+}
+
+.label_box {
+    overflow: hidden;
+    width: 100%;
+    font-size: .426667rem;
+    line-height: 180%
+}
+
+.jobthree>div {
+    position: relative;
+    font-size: 0.373333rem;
+}
+
+/* .Category-eject>ul>li:last-child,
+.grade-eject>ul>li:last-child {
+    padding-bottom: 5.333333rem;
+} */
+
+/*.grade-w-roll::after{position:fixed;content:"";width:100%;height:100%;display:block;background:rgba(0,0,0,.2)}*/
+.grade-w-rolls {
+    top: 0
+}
+
+.grade-w-rolls::after {
+    position: fixed;
+    content: "";
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: rgba(0, 0, 0, .2)
+}
+
+.yun_category_on {
+    background: #f2f2f6;
+    color: #2778f8
+}
+
+.yun_category_ons {
+    background: #fff;
+    color: #2778f8
+}
+
+.zn_search {
+    width: 100%;
+    height: 1.173333rem;
+}
+
+.zn_search_text_c {
+    padding: 6px 15px 0 15px;
+}
+
+.zn_search_text {
+    height: .88rem;
+    padding-left: 35px;
+    position: relative;
+    border: 1px solid #eee;
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.zn_search_text:after {
+    width: 18px;
+    height: 18px;
+    background: url(../images/yun_wap_fotnav_user.png) no-repeat;
+    background-size: 100%;
+    display: inline-block;
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 8px
+}
+
+.zn_search_text .zn_search_t {
+    width: 100%;
+    height: 0.8rem;
+    line-height: 0.8rem;
+    margin: 0;
+    padding: 0;
+    border: none;
+    font-size: 14px;
+    background: #fff;
+    border-radius: 3px;
+    vertical-align: top;
+}
+
+.zn_searchbox {
+    width: 100%;
+    padding: 0 0 8px 0;
+    background: #fff;
+    position: fixed;
+    left: 0;
+    z-index: 10;
+    height: 80%;
+    overflow: auto
+}
+
+.zn_search_two {
+    padding: 0.4rem 1.333333rem 0.4rem .4rem;
+    position: relative;
+    font-size: 0.4rem; border-bottom: 1px solid #eee;
+}
+
+.zn_search_list {
+    padding: 0 15px
+}
+
+.zn_search_three {
+    padding: 15px 15px;
+    border-bottom: 1px solid #eee;
+    position: relative; font-size:0.4rem;;
+}
+
+.zn_search_three label{
+    display: block;
+    width: 100%;
+}
+
+.zn_notip {
+    padding: 50px;
+    text-align: center;
+    color: #999
+}
+
+.grade_tit {
+    width: 100%;
+    font-weight: 700;
+    height: 40px;
+    line-height: 40px;
+    background: #fff;
+    position: fixed;
+    left: 0;
+    top: 86px;
+    text-indent: 10px;
+    display: none
+}
+
+.grade_chlose_boxfoot {
+    height: 150px;
+}
+
+.grade_chlose_box {
+    width: 100%;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    background: #fff;
+    z-index: 900;
+    padding: 0.266666rem 0 .533333rem 0;
+    font-size: 0.32rem;
+}
+
+.grade_chlose_box_c {
+    padding: 0px 0px 0px 0px;
+    position: relative;
+    overflow: auto;
+}
+.mui-scrollpouy{
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+.grade_chlose_box_wx {
+    width: 100%;
+    overflow: hidden
+}
+
+.grade_chlose_box_wx_b {
+    width: 1800px
+}
+
+.grade_chlose_box_c_name {
+    width: 40px;
+    display: inline-block;
+    position: absolute;
+    left: 10px;
+    top: 10px
+}
+
+.grade_chlose_box_a {
+    display: inline-block;
+    margin-left: 10px;
+    padding: 2px 20px 2px 10px;
+    background-color: rgba(0, 0, 0, .05);
+    color: #7b929f;
+    border-radius: 20px;
+    font-size: 12px;
+    position: relative;
+    margin-bottom: 0.266666rem;
+}
+
+.grade_chlose_box_a:after {
+    width: 8px;
+    height: 8px;
+    background: url(../images/opacitas_close.png) no-repeat;
+    background-size: 100%;
+    content: "";
+    display: inline-block;
+    position: absolute;
+    right: 6px;
+    top: 6px
+}
+
+.grade_chlose_box_name {
+    width: 40px;
+    height: 15px;
+    line-height: 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.grade_chlose_bth {
+    display: block;
+    height: 48px;
+    line-height: 48px;
+    font-size: 16px;
+    color: #fff;
+    text-align: center;
+    background: #2778f8;
+    border-radius: 1.333333rem;
+    margin: 0 .266666rem
+}
+
+#citythree li {
+    width: 4.4rem
+}
+.citythreeHinght{
+    height: 74% !important;
+}
+
+#jobthree li {
+    width: 4.4rem
+}
+
+@media (min-device-width : 175px) and (max-device-width : 320px) and (-webkit-min-device-pixel-ratio : 2) {
+    .grade-eject {
+        height: 59%;
+    }
+
+    #jobthree li {
+        width: 3.2rem;
+    }
+
+    #citythree li {
+        width: 3.2rem;
+    }
+}
+
+input {
+    line-height: normal
+}
+
+input[type=checkbox],
+input[type=radio] {
+    box-sizing: border-box;
+    padding: 0
+}
+
+.mui-input-row {
+    clear: left;
+    overflow: hidden
+}
+
+.mui-input-row input {
+    font-size: 14px
+}
+
+.mui-input-row label+input,
+.mui-input-row:last-child {
+    background: 0 0
+}
+
+.mui-input-row label {
+    ;
+}
+
+.mui-input-row label~input,
+    {}
+
+.mui-input-row:last-child:after,
+    {
+    height: 0
+}
+
+.mui-checkbox {
+    position: relative
+}
+
+.mui-checkbox label {
+    display: inline-block;
+    float: none;
+    width: 100%;
+    font-size: 0.4rem;
+}
+
+.mui-checkbox.mui-left input[type=checkbox],
+.mui-radio.mui-left input[type=radio] {
+    left: 20px
+}
+
+.mui-checkbox.mui-left label {
+    padding-right: 15px;
+    padding-left: 58px
+}
+
+.mui-checkbox input[type=checkbox] {
+    position: absolute;
+    top: 4px;
+    left: 3.466666rem;
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border: 0;
+    outline: 0 !important;
+    background-color: transparent;
+    -webkit-appearance: none
+}
+
+.mui-checkbox input[type=checkbox][disabled]:before {
+    opacity: .3
+}
+
+.mui-checkbox input[type=checkbox]:before {
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+}
+
+.two_check input[type=checkbox]:before{
+    margin-left: 220px !important;
+}
+
+
+.two_check_ipt[type=checkbox] {
+   left: 0 !important;
+}
+
+
+.mui-checkbox input[type=checkbox]:checked:before {
+    color: #007aff
+}
+
+.mui-checkbox label.mui-disabled,
+.mui-checkbox.mui-disabled label {
+    opacity: .4
+}
+
+/*.mui-checkbox input[type=checkbox]:before{content:'\e411'}*/
+.mui-checkbox input[type=checkbox]:checked:before {
+    content: '';
+    background: url(../images/table-view_yes.png) no-repeat;
+    background-size: 100%;
+}
+
+.mui-input-row label {
+    padding-left: 0
+}
+
+.zn_search_two .mui-checkbox input[type=checkbox] {
+    position: absolute;
+    top: 4px;
+    right: 0;
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border: 0;
+    outline: 0 !important;
+    background-color: transparent;
+    -webkit-appearance: none
+}
+
+.zn_search_two span {
+    display: block;
+    color: #999;
+    font-size: 0.373333rem;
+}
+
+.s_checkbox input {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+
+
+@font-face {
+    font-family: Muiicons;
+    font-weight: normal;
+    font-style: normal;
+
+    src: url('./fonts/mui.ttf') format('truetype');
+}
+
+/* 意向岗位选择 */

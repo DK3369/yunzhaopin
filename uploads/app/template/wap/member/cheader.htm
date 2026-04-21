@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta http-equiv="Cache-Control" content="no-transform">
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<title>{yun:}$config.sy_webname{/yun}</title>
+	<meta name="keywords" content="人才招聘,网络招聘,wap" />
+	<meta name="description" content="人才招聘网wap网站" />
+	<script src="{yun:}$wap_style{/yun}/js/flexible.js?v={yun:}$config.cachecode{/yun}"></script>
+	<link href="{yun:}$wap_style{/yun}/css/base.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet">
+	<link href="{yun:}$wap_style{/yun}/css/member/memberwap.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet">
+	<link href="{yun:}$wap_style{/yun}/css/member/memberuserwap.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet">
+    <script src="{yun:}$wap_style{/yun}/js/jquery.min.js?v={yun:}$config.cachecode{/yun}"></script>
+	<link href="{yun:}$config_wapdomain{/yun}/js/vant/lib/index.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet" />
+	<script src="{yun:}$wap_style{/yun}/js/vue.min.js?v={yun:}$config.cachecode{/yun}"></script>
+	<script src="{yun:}$config_wapdomain{/yun}/js/vant/lib/vant.min.js?v={yun:}$config.cachecode{/yun}"></script>
+	<script src="{yun:}$config_wapdomain{/yun}/js/vant/phpyun_vant.js?v={yun:}$config.cachecode{/yun}"></script>
+	<script src="{yun:}$wap_style{/yun}/js/public.js?v={yun:}$config.cachecode{/yun}"></script>
+	<link href="{yun:}$wap_style{/yun}/css/combase.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet">
+	<script>var wapurl = "{yun:}url m=wap{/yun}";</script>
+</head>
+<style type="text/css">
+	body{font-size: 14px !important;}
+</style>
+<!--企业头部-->
+<body>
+<!-- 发布职位-->
+{yun:}if $smarty.get.c=='job' || $smarty.get.c=='part'{/yun}
+<div class="more_position_header">
+	<div class="position_header_back">
+		<a href="{yun:}if $backurl{/yun}{yun:}$backurl{/yun}{yun:}else{/yun}javascript:goBack();{yun:}/if{/yun}" style="display: block">
+			<img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="">
+		</a>
+	</div>
+	<div class="position_header_serch">
+		<input type="search" id="jobSearch" placeholder="搜索职位">
+	</div>
+	{yun:}if $smarty.get.c=='part'{/yun}
+	<div onclick="partadd()" class="position_header_issue">
+		<div class="header_issue_icon">
+			<img src="{yun:}$wap_style{/yun}/images/job_issue.png" alt="">
+		</div>
+		<div class="header_issue_text">发布兼职</div>
+	</div>
+	{yun:}else{/yun}
+	<div onclick="jobadd()" class="position_header_issue">
+		<div class="header_issue_icon">
+			<img src="{yun:}$wap_style{/yun}/images/job_issue.png" alt="">
+		</div>
+		<div class="header_issue_text">发布职位</div>
+	</div>
+	{yun:}/if{/yun}
+</div>
+{yun:}elseif $smarty.get.c== 'finance'|| $smarty.get.c == 'pay' || $smarty.get.c == 'paylog'|| $smarty.get.c == 'integral'|| $smarty.get.c =='server'{/yun}
+<!-- 升级VIP -->
+<div class="m_backheader">
+	
+	<div class="m_header_c">
+			<div class="m_headericon"><a href="{yun:}if $backurl{/yun}{yun:}$backurl{/yun}{yun:}else{/yun}javascript:goBack();{yun:}/if{/yun}">
+				<img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
+			</a>	</div>
+	
+		<div class="m_header_cont">{yun:}$header_title{/yun}</div>
+	</div>	
+
+</div>
+{yun:}elseif $smarty.get.c=='hr'{/yun}
+<style>
+	img {
+		width: 100%;
+		height: 100%;
+		display: block !important;
+	}
+
+</style>
+
+<!-- 页面头部部分 -->
+
+<div class="m_header">
+				<div class="m_header_c">
+				<div class="m_headericon"><a href="{yun:}if $backurl{/yun}{yun:}$backurl{/yun}{yun:}else{/yun}javascript:goBack();{yun:}/if{/yun}">
+					<img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
+				</a>	</div>
+		
+			<div class="m_header_cont">{yun:}$header_title{/yun}</div>
+		</div>	</div>
+
+
+
+{yun:}elseif $smarty.get.c == 'invite' || $smarty.get.c == 'attention_me' || $smarty.get.c == 'look_job' || $smarty.get.c == 'jobadd'{/yun}
+
+
+<div class="m_header">
+				<div class="m_header_c">
+				<div class="m_headericon"><a href="{yun:}if $backurl{/yun}{yun:}$backurl{/yun}{yun:}else{/yun}javascript:goBack();{yun:}/if{/yun}">
+					<img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
+				</a>	</div>
+		
+			<div class="m_header_cont">{yun:}$header_title{/yun}</div>
+		</div>	</div>
+
+{yun:}else{/yun}
+<header>
+	<div class="comheader">
+
+		<a class="comheader_return comheaderBlack" href="{yun:}if $backurl{/yun}{yun:}$backurl{/yun}{yun:}else{/yun}javascript:goBack();{yun:}/if{/yun}"></a>
+
+		<div class="comheader_tit">{yun:}$header_title{/yun}</div>
+		
+		<!-- 创建邀请模板-->
+		{yun:}if $smarty.get.c=='yqmb'{/yun}
+		<div class="header_fa_add">
+			<a  href="javascript:;" onclick="addYqmb();" class="header_fa_add_p">添加</a>
+		</div>
+		{yun:}/if{/yun}
+	</div>
+</header>
+
+{yun:}/if{/yun}
+
+<script>
+	window.localStorage.removeItem("needRefresh");
+	window.addEventListener('pageshow', function(){
+		var storage = window.localStorage.getItem("needRefresh");
+		if(storage){
+			window.location.reload();
+		}
+	});
+</script>

@@ -1,0 +1,31 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun} 
+<!-- 页面头部部分 -->
+
+<!-- 页面主体部分 -->
+<div class="position_management_body">
+
+    <div class="management_body_card" style=" margin-top: 0rem;">
+        <ul>
+		  {yun:}if $config.sy_part_web==1{/yun}
+			<li onclick="navigateTo('index.php?c=partapply')">
+			    <div class="management_body_card_icon">
+			       <img src="{yun:}$wap_style{/yun}/images/com_icon1.png" alt="">
+			    </div>
+			    <div class="management_body_card_name">兼职管理</div>
+			</li>
+			{yun:}/if{/yun}
+			
+			{yun:}if $config.sy_ask_web==1{/yun}
+			<li onclick="navigateTo('{yun:}url m=wap c=ask{/yun}');">
+			    <div class="management_body_card_icon">
+			        <img src="{yun:}$wap_style{/yun}/images/com_icon9.png" alt="">
+			    </div>
+			    <div class="management_body_card_name">我的问答</div>
+			</li>
+			{yun:}/if{/yun}
+			
+        </ul>
+    </div>
+</div>
+</body>
+</html>

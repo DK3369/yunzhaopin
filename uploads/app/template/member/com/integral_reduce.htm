@@ -1,0 +1,112 @@
+{yun:}include file="$comstyle/header.htm"{/yun}
+<div class="w1000">
+	<div class="admin_mainbody">
+	 
+
+		{yun:}include file="$comstyle/left.htm"{/yun}
+        <div class=right_box>
+			<div class="newmember_tit">
+				<ul>
+					<li> <a href="index.php?c=right">会员服务</a></li>
+					<li > <a  href="index.php?c=pay" >充值服务</a></li>
+					<li> <a  href="index.php?c=paylogtc" class=" ">我的服务</a></li>
+					<li class="newmember_titcur"><a  href="index.php?c=integral">{yun:}$config.integral_pricename{/yun}管理</a></li>
+				</ul>
+			</div>
+			<div class="newmember_screenbox">
+				<div class="newmember_screen"> 
+					<ul class="">
+						<li {yun:}if $smarty.get.c=="integral" {/yun}class="job_list_tit_cur" {yun:}/if{/yun}>
+							<a href="index.php?c=integral">{yun:}$config.integral_pricename{/yun}任务</a>
+						</li>
+						<li {yun:}if $smarty.get.c=="integral_reduce" {/yun} class="job_list_tit_cur" {yun:}/if{/yun}>
+							<a href="index.php?c=integral_reduce">消费规则</a>
+						</li>
+						<li {yun:}if $smarty.get.c=="reward_list" {/yun} class="job_list_tit_cur" {yun:}/if{/yun}>
+							<a href="index.php?c=reward_list">{yun:}$config.integral_pricename{/yun}兑换</a>
+						</li>
+					</ul> 
+				</div>
+			</div> 			
+						
+       <div class="clear"></div>
+       <div class=admincont_box>
+        
+           <div class="com_body"> 
+						<table class="com_table" >
+                      <tr align="left">
+                      	<th>项目名称</th>
+                      	<th><span style="padding-left: 10px;">消费{yun:}$config.integral_pricename{/yun}</span></th>
+                      </tr>
+                    
+						 <tr><td>上架职位</td> 
+								<td><span class="integral_cont_list_span_c" style="border:none"> 消费 <b>{yun:}$config.integral_job{/yun}</b>  元/ 份 </span> </td> 
+							</tr>
+
+							 <tr><td>刷新职位</td> 
+								<td><span class="integral_cont_list_span_c" style="border:none"> 消费 <b>{yun:}$config.integral_jobefresh{/yun}</b>  元/ 份 </span> 
+							</td> 
+							</tr>
+
+							 <tr>
+								<td>发布兼职</td> 
+								<td>
+								<span class="integral_cont_list_span_c" style="border:none"> 消费 <b>{yun:}$config.integral_job{/yun}</b>  元/ 份 </span>
+								</td> 
+							</tr>
+
+							 <tr><td>刷新兼职</td> 
+								<td>
+								<span class="integral_cont_list_span_c" style="border:none"> 消费 <b>{yun:}$config.integral_jobefresh{/yun}</b>  元/ 份 </span> 
+							</td> 
+							</tr>
+					  
+							 <tr><td>下载人才简历</td> 
+								<td>
+								<span class="integral_cont_list_span_c" style="border:none"> 消费 <b>{yun:}$config.integral_down_resume{/yun}</b>  元/ 份 </span> 
+							</td> 
+							</tr>
+							
+							 <tr><td>发送面试人才</td> 
+								<td>
+								<span class="integral_cont_list_span_c" style="border:none"> 消费 <b>{yun:}$config.integral_interview{/yun}</b>  元/ 份 </span> 
+							</td> 
+							</tr>			
+							 <tr><td>发布紧急招聘</td> 
+								<td>
+								<span class="integral_cont_list_span_c" style="border:none"> 消费 <b>{yun:}$config.com_urgent{/yun}</b>  元/ 天 </span> 
+							</td> 
+							</tr>
+
+							 <tr><td>发布推荐招聘</td> 
+								<td>
+								<span class="integral_cont_list_span_c" style="border:none"> 消费 <b>{yun:}$config.com_recjob{/yun}</b>   元/ 天 </span> 
+							</td> 
+							</tr>
+							
+							 <tr><td>职位自动刷新</td> 
+								<td>
+								<span class="integral_cont_list_span_c" style="border:none"> 消费 <b>{yun:}$config.job_auto{/yun}</b>  元/ 天 </span> 
+							</td> 
+							</tr>
+							 <tr><td>发布置顶职位</td> 
+								<td>
+								<span class="integral_cont_list_span_c" style="border:none"> 消费 <b>{yun:}$config.integral_job_top{/yun}</b>  元/ 天 </span> 
+							</td> 
+							</tr>
+							 <tr><td>发布推荐兼职</td> 
+								<td>
+								<span class="integral_cont_list_span_c" style="border:none"> 消费 <b>{yun:}$config.com_recjob{/yun}</b>  元/ 天 </span> 
+							</td> 
+							</tr>
+                            </table>
+
+              <div class="integraButns">
+              	<a href="index.php?c=paylog&consume=ok">使用明细</a>
+              </div>
+					</div>
+				</div> 
+		</div>
+	</div>
+</div>
+{yun:}include file="$comstyle/footer.htm"{/yun}

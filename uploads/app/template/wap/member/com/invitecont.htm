@@ -1,0 +1,118 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<div id="yunvue" class="none">
+    <div class="ms_show"></div>
+    <div class="ms_showpd">
+        <div class="popular_body ">
+            <div class="popular_position">
+                <div class="popular_position_top" @click="pageTo(resume.wapurl)">
+                    <h3>{{resume.name}}</h3>
+                    <div style="color:#999">{{resume.sex_n}}·{{resume.exp_n}}经验·{{resume.edu_n}}学历·{{resume.age}}岁</div>
+                    <div style="color:#999; padding-top: 0.266666rem;" v-if="resume.living">居住地：{{resume.living}}</div>
+                </div>
+                <div class="popular_position_bottom">
+                    当前状态：
+                    <span v-if="show.is_browse==1 || show.is_browse==2">待接受</span>
+                    <span v-else-if="show.is_browse==3">
+                        <span v-if="show.over" style="color: #FF4200;">已结束</span>
+                        <span v-else>同意面试</span>
+                    </span>
+                    <span v-else-if="show.is_browse==4">拒绝面试</span>
+                    <span v-else style="color: #FF4200;">已面试</span>
+                </div>
+            </div>
+            <div class="popular_body_card">
+
+                <div class="popular_card_namebox">
+                    <div class="popular_card_logo"><img :src="show.com_logo_n" width="100%" height="100%"></div>
+                    <div class="popular_card_name">{{show.fname}}</div>
+                </div>
+                <div class="popular_card_line" style="margin-bottom: 0px;"></div>
+                <div class="invitecont_list">
+                    <div class="invitecont_list_name">面试时间</div>
+                    <div class="popular_template_a">{{show.intertime}}</div>
+                </div>
+                <div class="invitecont_list">
+                    <div class="invitecont_list_name">面试职位</div>
+                    <div class="popular_template_a">{{show.jobname}}</div>
+                </div>
+                <div class="invitecont_list">
+                    <div class="invitecont_list_name">联系人</div>
+                    <div class="popular_template_a">{{show.linkman}}</div>
+                </div>
+                <div class="invitecont_list">
+                    <div class="invitecont_list_name">联系电话</div>
+                    <div class="popular_template_a">{{show.linktel}}</div>
+                </div>
+                <div class="invitecont_list">
+                    <div class="invitecont_list_name">面试地址</div>
+                    <div class=" ">{{show.address}}</div>
+                </div>
+                <div class="popular_card_map" v-if="show.staticimg">
+                    <img :src="show.staticimg" alt="" width="100%" height="100%">
+                    <input type="hidden" id="map_x" :value="show.x"/>
+                    <input type="hidden" id="map_y" :value="show.y"/>
+                </div>
+                <div class="invitecont_list" v-if="show.content">
+                    <div class="invitecont_list_name">备注信息</div>
+                    <div class=" ">{{show.content}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var id = parseInt('{yun:}$smarty.get.id{/yun}');
+    new Vue({
+        el: '#yunvue',
+        data: {
+            show: {},
+            resume: {},
+            id: id,
+            islook: false,
+            browse: 2,
+            covers: [],
+            moreShow: false,
+        },
+        created() {
+            this.inviteshow();
+        },
+        methods: {
+            inviteshow: function () {
+                showLoading();
+                var that = this;
+                var paramer = {};
+                paramer['id'] = that.id;
+                $.post('{yun:}url d=wxapp h=com m=resume c=inviteshow{/yun}', paramer, function (data) {
+                    hideLoading();
+
+                    that.show = data.data ? data.data : {};
+                    that.resume = data.data.resume ? data.data.resume : {};
+                    that.covers = [{
+                        latitude: that.show.y,
+                        longitude: that.show.x,
+                        iconPath: '/static/image/member/mapdw.png',
+                        width: '60rpx',
+                        height: '60rpx',
+                        callout: {
+                            content: that.show.address
+                        }
+                    }];
+                    that.browse = that.show.is_browse;
+                    $("#yunvue").removeClass('none');
+                }, 'json');
+            },
+            pageTo: function (url) {
+                window.location.href = url;
+            }
+        }
+    });
+    function addtellog(obj) {
+        var jobid = $(obj).attr('data-jobid');
+        $.post(wapurl + "?c=ajax&a=addJobTelLog", {
+            jobid: jobid,
+        }, function (data) {
+        });
+    }
+</script>
+</body>
+</html>

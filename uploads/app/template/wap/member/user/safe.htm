@@ -1,0 +1,73 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<!--账号设置-->
+<div class="none" id="yunvue">
+    <!-- 页面整体部分 -->
+    <div class="issue_post_body">
+        <div class="issue_post_body_card">
+            <div class="issue_post_body_card" style="padding-top: 0px; margin-top: 0px;;">
+                <div onclick="navigateTo('index.php?c=setname')" class="post_body_card_job" v-if="info.setname>0">
+                    <div class="body_card_job_box">
+                        <div class="card_job_box_post">用户名修改</div>
+                        <div class="card_job_box_name">每人仅有一次修改机会</div>
+                    </div>
+                    <div class="body_card_job_icon">
+                        <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
+                    </div>
+                </div>
+                <div onclick="navigateTo('index.php?c=password')" class="post_body_card_job">
+                    <div class="body_card_job_box">
+                        <div class="card_job_box_post">密码设置</div>
+                    </div>
+                    <div class="body_card_job_icon">
+                        <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
+                    </div>
+                </div>
+                <div onclick="navigateTo('index.php?c=transfer')" class="post_body_card_job">
+                    <div class="body_card_job_box">
+                        <div class="card_job_box_post">账户分离</div>
+                        <div class="card_job_box_name">求职身份无缝迁移至新账户</div>
+                    </div>
+                    <div class="body_card_job_icon">
+                        <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
+                    </div>
+                </div>
+                <div onclick="navigateTo('index.php?c=logout')" class="post_body_card_job">
+                    <div class="body_card_job_box">
+                        <div class="card_job_box_post">注销账号</div>
+                    </div>
+                    <div class="body_card_job_icon">
+                        <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    new Vue({
+        el: '#yunvue',
+        data: {
+            info: {},
+            showList: [],
+        },
+        created() {
+            this.getInfo();
+        },
+        methods: {
+            getInfo: function () {
+                showLoading();
+                var self = this;
+                $.post('{yun:}url d=wxapp h=user m=set c=getInfo{/yun}', {rand: Math.random()}, function (res) {
+
+                    hideLoading();
+
+                    self.info = res.data;
+
+                    $("#yunvue").css('display', 'block');
+                }, 'json');
+            }
+        }
+    })
+</script>
+</body>
+</html>

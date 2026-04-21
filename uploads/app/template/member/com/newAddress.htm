@@ -1,0 +1,515 @@
+<style>
+    .layui-form-item { margin-bottom: 15px; clear: both }
+    .AddressBoxFlex{
+        overflow-y: auto;
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+    .layuiFromFlex{
+        overflow: hidden;
+        position: relative;
+        width: calc(100% - 33px);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .layuiFromFlex .layui-form-item{
+        position: relative;
+        width: calc(50% - 10px);
+    }
+    .layuiFromFlex .layui-form-item .layui-input-inline{
+        position: relative;
+        width: calc(100% - 110px);
+        margin: 0;
+    }
+    .layuiFromFlex .layui-form-item .layui-form-label{
+        border-right: none;
+    }
+</style>
+
+
+<div id="AddressBox" style="display:none;" class="AddressBoxFlex">
+    <div style="position:relative" style="width:740px;">
+        <form class="layui-form layui-form-pane" style="padding: 0 30px;">
+            <!-- <div class="layui-form-item">
+                <label class="layui-form-label">联系人</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="link_man" id="link_man" lay-verify="required" placeholder="请输入联系人" autocomplete="off" class="layui-input" onblur="notNumber(this)">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">手机号码</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="link_moblie" id="link_moblie" lay-verify="required" placeholder="请输入手机号码" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">固定电话</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="link_phone" id="link_phone" lay-verify="required" placeholder="请输入固定电话" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">联系邮箱</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="email" id="email" lay-verify="required" placeholder="请输入联系邮箱" autocomplete="off" class="layui-input">
+                </div>
+            </div> -->
+
+            <div class="layuiFromFlex">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">联系人</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="link_man" id="link_man" lay-verify="required" placeholder="请输入联系人" autocomplete="off" class="layui-input" onblur="notNumber(this)">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">固定电话</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="link_phone" id="link_phone" lay-verify="required" placeholder="请输入固定电话" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">手机号码</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="link_moblie" id="link_moblie" lay-verify="required" placeholder="请输入手机号码" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                
+                <div class="layui-form-item">
+                    <label class="layui-form-label">联系邮箱</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="email" id="email" lay-verify="required" placeholder="请输入联系邮箱" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="layui-form-item">
+                <label class="layui-form-label">所在区域</label>
+                <div class="layui-input-inline">
+                    <select name="provinceid" id="provinceid" lay-filter="citys">
+                        <option value="">请选择省</option>
+                        {yun:}foreach from=$city_index key=j item=v{/yun}
+                        <option value="{yun:}$v{/yun}">{yun:}$city_name[$v]{/yun}</option>
+                        {yun:}/foreach{/yun}
+                    </select>
+                </div>
+                <div class="layui-input-inline">
+                    <select name="cityid" id="cityid" lay-filter="citys">
+                        <option value="">请选择市</option>
+                    </select>
+                </div>
+                <div class="layui-input-inline">
+                    <select name="three_cityid" id="three_cityid" lay-filter="citys">
+                        <option value="">请选择县/区</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">详细地址</label>
+                <div class="layui-input-inline" style="width: 588px;">
+                    <input type="text" name="link_address" id="link_address" lay-verify="required" placeholder="建议格式：XX市XX县XX路" autocomplete="off" class="layui-input" onkeyup="addressKeyup();">
+                    {yun:}if $config.map_key{/yun}
+                    <i class="com_release_mapicon" onclick="localsearch();"></i>
+                    {yun:}/if{/yun}
+                    <div class="comEleaseMaps" id="poiSearch" style="display: none;"></div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-inline">
+                    {yun:}if $config.map_key{/yun}
+                    <script type="text/javascript">
+                        window._AMapSecurityConfig = {
+                            securityJsCode:'{yun:}$config.map_secret{/yun}'
+                        }
+                    </script>
+                    <script src="{yun:}$config.mapurl{/yun}"></script>
+                    <script type="text/javascript" src="{yun:}$config.sy_weburl{/yun}/js/map.js?v={yun:}$config.cachecode{/yun}"></script>
+                    <div id="map_container" style="width:698px;height:280px;"></div>
+                    {yun:}/if{/yun}
+                    <input type="hidden" name="map_x" id="map_x" value="" />
+                    <input type="hidden" name="map_y" id="map_y" value="" />
+                </div>
+            </div>
+            <input type="hidden" name="addressId" id="addressId" value="" />
+            <input type="hidden" name="addressLink" id="addressLink" value="" />
+            <div class="aisx_job_fot"><a href="javascript:;" onclick="saveAddress();" class="aisx_job_bth">保存地址</a></div>
+        </form>
+    </div>
+</div>
+
+<script language=javascript src='{yun:}$config.sy_weburl{/yun}/data/plus/city.cache.js?v={yun:}$config.cachecode{/yun}'></script>
+
+<script>
+
+    function notNumber(obj){
+        obj.value = obj.value.replace(/[-_ ]/g,'');// 去掉空格
+        if(!obj.value){
+            return ;
+        }
+        var  test = obj.value.replace(/[0-9]/g,'');
+        if (!test){
+            layer.msg('联系人不支持全数字', 2, 8);
+            obj.value = ''
+            $('#link_man').focus()
+            return false;
+        }else{
+            if(/\d/.test(obj.value)){
+                if(obj.value.length>8){
+                    // obj.value = obj.value.substring(0,8);
+                    layer.msg('联系人填写字数不能超过8个', 2, 8);
+                    obj.value = ''
+                    $('#link_man').focus()
+                    return false;
+                }
+            }
+        }
+    }
+
+    var weburl = "{yun:}$config.sy_weburl{/yun}";
+    var form, url = weburl + "/index.php?m=ajax&c=get_city_option";
+    var divheight = 0;
+    {yun:}if $config.map_key{/yun}
+    divheight = 640;
+    {yun:}else{/yun}
+    divheight = 470 ;
+    {yun:}/if{/yun}
+    layui.use(['form','layer'], function () {
+        form = layui.form;
+        var layer = layui.layer,
+            $ = layui.$;
+
+        form.render('select');
+
+        form.on('select(citys)', function (data) {
+
+            var html = "<option value=''>请选择市</option>";
+
+            if (data.value && ct[data.value] != undefined) {
+
+                $.each(ct[data.value], function (k, v) {
+
+                    html += "<option value='" + v + "'>" + cn[v] + "</option>";
+                });
+            }
+            if (data.elem.name == 'provinceid') {
+
+                $("#cityid").html(html);
+                $("#three_cityid").html('<option value="">请选择区/县</option>');
+            }
+            if (data.elem.name == 'cityid') {
+
+                $("#three_cityid").html(html);
+            }
+            form.render('select');
+        });
+    });
+
+    $(function () {
+
+        $('.newAddressBtn').click(function () {
+
+            var id = $(this).attr('data-id');
+
+            var provinceid = $(this).attr('data-provinceid');
+            var cityid = $(this).attr('data-cityid');
+            var three_cityid = $(this).attr('data-three_cityid');
+
+            if (parseInt(id) > 0 || id == -1){
+
+                var link_man = $(this).attr('data-link_man');
+                var link_moblie = $(this).attr('data-link_moblie');
+                var link_phone = $(this).attr('data-link_phone');
+                var email = $(this).attr('data-email');
+                var title = '更新工作地址';
+            }else{
+                var title = '新建工作地址';
+            }
+
+            var address = $(this).attr('data-address');
+            var map_x = $(this).attr('data-x');
+            var map_y = $(this).attr('data-y');
+
+            var is_link = $(this).attr('data-link');
+
+            var layerAddress = $.layer({
+                type : 1,
+                title : title,
+                closeBtn : [0 , true],
+                border : [10 , 0.3 , '#000', true],
+                area : ['790px',divheight+'px'],
+                page : {dom :"#AddressBox"}
+            });
+            {yun:}if $config.map_key{/yun}
+            var map =   getMap("map_container", '{yun:}$config.map_x{/yun}', '{yun:}$config.map_y{/yun}');
+
+            if(map_x && map_y){
+
+                setLocation('map_container',map_x,map_y,"map_x","map_y",map);
+            }else{
+                //根据IP到城市开始
+                AMap.plugin('AMap.CitySearch', function () {
+                    var citySearch = new AMap.CitySearch();
+                    citySearch.getLocalCity(function (status, result){
+                        map.setCity(result.city);
+                    })
+                });
+                //根据IP到城市结结束
+            }
+            {yun:}/if{/yun}
+            $("#link_man").val(link_man);
+            $("#link_moblie").val(link_moblie);
+            $("#link_phone").val(link_phone);
+            $("#email").val(email);
+            $("#addressId").val(id);
+            $("#addressLink").val(is_link);
+
+            $("#link_address").val(address);
+            $("#map_x").val(map_x);
+            $("#map_y").val(map_y);
+
+            var selPro = 'dd[lay-value=' + provinceid + ']';
+            $('#provinceid').siblings("div.layui-form-select").find('dl').find(selPro).click();
+
+            var selCity = 'dd[lay-value=' + cityid + ']';
+            $('#cityid').siblings("div.layui-form-select").find('dl').find(selCity).click();
+
+            var selThree = 'dd[lay-value=' + three_cityid + ']';
+            $('#three_cityid').siblings("div.layui-form-select").find('dl').find(selThree).click();
+
+        });
+
+        $('#AddressBox').click(function(){
+            $("#poiSearch").hide();
+        })
+    });
+    
+    var timeout = null;
+    function debounce(func, wait = 500) {
+        // 清除定时器
+        if (timeout !== null) clearTimeout(timeout);
+        timeout = setTimeout(function() {
+            typeof func === 'function' && func();
+        }, wait);
+    }
+    function addressKeyup(){
+        debounce(localsearch, 1000);
+    }
+    
+    function localsearch()
+    {
+        var address = $("#link_address").val().replace(/\s+/g,"");
+        var map = getMap("map_container", '{yun:}$config.map_x{/yun}', '{yun:}$config.map_y{/yun}');
+        map.clearMap();
+        if(address.length > 3){
+            $.post('index.php?m=ajax&c=poi', {address: address}, function(e){
+                if(e.status == '1' && e.tips.length > 0){
+                    var html = '';
+                    html +=  '<ul>';
+                    for(var i in e.tips){
+                        html +=  '<li data-id="' + i + '">';
+                        html += 	  '<div class="comEleaseMapTite">';
+                        html +=			  '<span>名称:</span>';
+                        html +=  		  '<b>' + e.tips[i].name + '</b>';
+                        html +=  	  '</div>';
+                        html +=  	  '<div class="comEleaseMapTipst">';
+                        html +=  		   '<span>地址:' + e.tips[i].address + '</span>';
+                        html +=  	   '</div>';
+                        html +=  '</li>';
+                    }
+                    html +=  '</ul>';
+
+                    $("#poiSearch").html(html);
+                    $("#poiSearch").show();
+
+                    setTimeout(function(){
+                        map.clearMap();
+                        $("#poiSearch li").on('click', function(){
+                            var id = $(this).attr('data-id');
+                            var location = e.tips[id].location;
+                            var c = location.split(',');
+                            document.getElementById("map_x").value = c[0];
+                            document.getElementById("map_y").value = c[1];
+                            // 设置marker
+                            var lngLat = new AMap.LngLat(c[0],c[1]);
+                            map.setZoomAndCenter(17,lngLat);
+                            var marker = new AMap.Marker({
+                                position: lngLat
+                            });
+                            map.add(marker);
+                            // 地图监听点击事件
+                            map.on("click",function(e){
+                                var lngLat = e.lnglat;
+                                document.getElementById("map_x").value = lngLat.lng;
+                                document.getElementById("map_y").value = lngLat.lat;
+                                map.clearMap();
+                                var marker = new AMap.Marker({
+                                    position: new AMap.LngLat(lngLat.lng, lngLat.lat)
+                                });
+                                map.add(marker);
+                            });
+
+                            $("#poiSearch").html('');
+                            $("#poiSearch").hide();
+                        })
+                    },200);
+                }
+            }, 'json');
+        }
+    }
+    function setLocation(id,x,y,xid,yid,map){
+        var data=get_map_config();
+        var config=eval('('+data+')');
+        if(!x && !y){x=config.map_x;y=config.map_y;}
+        map.setZoomAndCenter(17,[x,y]);
+        var marker = new AMap.Marker({
+            position: new AMap.LngLat(x, y)
+        });
+        map.add(marker);
+        map.on("click",function(e){
+            var lngLat = e.lnglat;
+            document.getElementById(xid).value=lngLat.lng;
+            document.getElementById(yid).value=lngLat.lat;
+            map.clearMap();
+            var marker = new AMap.Marker({
+                position: new AMap.LngLat(lngLat.lng, lngLat.lat)
+            });
+            map.add(marker);
+        });
+    }
+
+    function saveAddress() {
+
+        var link_man = $.trim($('#link_man').val());
+        var link_moblie = $.trim($('#link_moblie').val());
+        var link_phone = $.trim($('#link_phone').val());
+        var email = $.trim($('#email').val());
+        var provinceid = $.trim($('#provinceid').val());
+        var cityid = $.trim($('#cityid').val());
+        var three_cityid = $.trim($('#three_cityid').val());
+        var link_address = $.trim($('#link_address').val());
+        var x = $.trim($('#map_x').val());
+        var y = $.trim($('#map_y').val());
+
+        if (link_man == ''){
+            layer.msg('请填写联系人', 2, 8);
+            return false;
+        }else {
+            link_man = link_man.replace(/[-_ ]/g,'');// 去掉空格
+            if(!link_man){
+                return ;
+            }
+            var  test = link_man.replace(/[0-9]/g,'');
+            if (!test){
+                layer.msg('联系人不支持全数字', 2, 8);
+                return false;
+            }else{
+                if(/\d/.test(link_man)){
+                    if(link_man.length>8){
+                        // obj.value = obj.value.substring(0,8);
+                        layer.msg('联系人填写字数不能超过8个', 2, 8);
+                        return false;
+                    }
+                }
+            }
+        }
+        if (link_moblie == '' && link_phone == ''){
+
+            layer.msg('请填写联系电话', 2, 8);
+            return false;
+        }else if (link_moblie !='' && !isjsMobile(link_moblie)){
+
+            layer.msg('手机号码格式错误', 2, 8);
+            return false;
+        }
+
+        if (ct[provinceid]) {
+            if (cityid == 0) {
+                layer.msg('请选择所在区域二级城市', 2, 8);
+                return false;
+            }
+        }
+
+        if (link_address == ''){
+            layer.msg('请选择填写详细地址', 2, 8);
+            return false;
+        }
+        var id = $.trim($('#addressId').val());
+        var is_link = $.trim($('#addressLink').val());
+        loadlayer();
+        $.post("index.php?c=address&act=saveAddress",{id: id, link_man: link_man, link_moblie: link_moblie, link_phone: link_phone, email: email, provinceid: provinceid, cityid: cityid, three_cityid: three_cityid, link_address: link_address, x: x, y: y, is_link: is_link},function(data){
+            layer.closeAll();
+            var data = eval('(' + data + ')');
+
+            if(data.errcode==9){
+
+                layer.msg(data.msg,2,9, function () {
+
+                    if (parseInt(is_link) == 2){
+
+                        var html = '';
+                        var option_n = '';
+                        var linkstr = '';
+                        var defLink = data.defLink;
+                        if (defLink.link_moblie){
+                            linkstr = defLink.link_moblie+'-'
+                            
+                        }else if (defLink.link_phone){
+                            linkstr = defLink.link_phone+'-'
+                        }
+                        option_n = `${defLink.link_man}-${linkstr}${defLink.city}-${defLink.address}`;
+
+                        html   =  `<option id="link_id_-1" value="-1" data-provinceid="${defLink.provinceid}" data-cityid="${defLink.cityid}" data-three_cityid="${defLink.three_cityid}" data-address="${defLink.address}" data-x="${defLink.x}" data-y="${defLink.y}" data-link_man="${defLink.link_man}" data-link_moblie="${defLink.link_moblie}" data-link_phone="${defLink.link_phone}" data-email="${defLink.email}" >${option_n}(默认企业地址）</option>`;
+
+                        $.each(data.addressList, function (k, v) {
+
+                            option_n = '';
+                            linkstr = '';
+                            if (v.link_moblie){
+                                linkstr = v.link_moblie+'-'
+                                
+                            }else if (v.link_phone){
+                                linkstr = v.link_phone+'-'
+                            }
+
+                            option_n = `${v.link_man}-${linkstr}${v.city}-${v.link_address}`;
+
+                            html   +=  `<option id="link_id_${v.id}" value="${v.id}" data-provinceid="${v.provinceid}" data-cityid="${v.cityid}" data-three_cityid="${v.three_cityid}" data-address="${v.link_address}" data-x="${v.x}" data-y="${v.y}" data-link_man="${v.link_man}" data-link_moblie="${v.link_moblie}" data-link_phone="${v.link_phone}" data-email="${v.email}" >${option_n}</option>`;
+
+
+                        });
+
+                        $('#link_id').html(html);
+
+                        form.render('select');
+
+                        var selLinkId = 'dd[lay-value=' + data.link_id + ']';
+                        $('#link_id').siblings("div.layui-form-select").find('dl').find(selLinkId).click();
+                        // 更新修改按钮信息
+                        $('#editAddr').attr('data-id', data.link_id)
+                        $('#editAddr').attr('data-provinceid', provinceid)
+                        $('#editAddr').attr('data-cityid', cityid)
+                        $('#editAddr').attr('data-three_cityid', three_cityid)
+                        $('#editAddr').attr('data-address', link_address)
+                        $('#editAddr').attr('data-x', x)
+                        $('#editAddr').attr('data-y', y)
+                        $('#editAddr').attr('data-link_man', link_man)
+                        $('#editAddr').attr('data-link_moblie', link_moblie)
+                        $('#editAddr').attr('data-link_phone', link_phone)
+                        $('#editAddr').attr('data-email', email)
+
+                    }else{
+
+                        location.reload();
+                    }
+                })
+            }else{
+                layer.msg(data.msg, 2, 8);
+            }
+        });
+    }
+
+</script>

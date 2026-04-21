@@ -1,0 +1,432 @@
+{yun:}include file="$userstyle/header.htm"{/yun}
+<div class="yun_w1200">
+    {yun:}include file="$userstyle/left.htm"{/yun}
+    <div class="yun_m_rightsidebar">
+<div class="user_new_tit"><span class="user_new_tit_n">我的简历</span>
+{yun:}if $config.user_number>$expectnum || $config.user_number==''{/yun}
+                <a href="index.php?c=expect&act=add" class="user_cjbth" style="float: right; margin-top:7px; margin-right: 10px;">创建简历</a>   
+            {yun:}else{/yun}
+                <!--<a href="javascript:void(0)" onclick="layer.msg('你的简历数已经达到系统设置的简历数了',2,8);return false;" class="user_cjbth">创建简历</a>-->
+            {yun:}/if{/yun}
+ <div class="user_czbth_r" style="float: right; background-color: #fff; padding-top: 8px;">
+                <a href="index.php?c=privacy" class="user_czbth_ys user_czbth_line">隐私设置 </a>
+                <a href="index.php?c=likejob&id={yun:}$def_job{/yun}" class="user_czbth_pp user_czbth_line" resumeid="{yun:}$def_job{/yun}" type='pipei'>职位速配</a>
+
+                {yun:}if $maxnum > 0{/yun}
+                    <a href="index.php?c=expectq&add={yun:}$uid{/yun}" title="直接粘贴已有的个人简历" class="user_czbth_zt">在线粘贴简历</a>
+                {yun:}else{/yun}
+                    <a href="javascript:void(0)" onclick="layer.msg('你的简历数已经达到系统设置的简历数了',2,8);return false;" title="直接粘贴已有的个人简历" class="user_czbth_zt">在线粘贴简历</a>
+                {yun:}/if{/yun}
+            </div> 
+
+</div>
+       
+           
+           
+        </div>
+
+        <div class="yun_m_rightbox fltR mt20 re">
+            <div class="user_resume_list">
+                <div class="yun_m_index_resume_tit"><span class="yun_m_index_resume_span ">我的简历</span></div>
+                <div class="">
+                    <div class="clear"></div>
+                    {yun:}foreach item=expect from=$rows{/yun}
+
+                        {yun:}if $expect.id == $def_job{/yun}
+                            <div class="user_resume_box">
+                                <div class="user_resume_photo">
+                                    <a href="index.php?c=uppic">
+                                        {yun:}if $resume.sex==1{/yun}
+                                        <img src="{yun:}$resume.photo{/yun}" border="0" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_icon{/yun}',2);"/>
+                                        {yun:}else{/yun}
+                                        <img src="{yun:}$resume.photo{/yun}" border="0" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_iconv{/yun}',2);"/>
+                                        {yun:}/if{/yun}
+                                    </a>
+                                </div>
+                                <div class="user_resume_info">
+                                    <div class="user_resume_name">{yun:}$resume.name{/yun}<span class="user_resume_job">{yun:}$expect.name{/yun}</span><span class="user_resume_mr">默认</span></div>
+                                    <div class="user_resume_p">
+                                        {yun:}if $resume.age{/yun}{yun:}$resume.age{/yun}岁<span class="user_resume_line">|</span>{yun:}/if{/yun}
+                                        {yun:}if $resume.exp_n{/yun}{yun:}$resume.exp_n{/yun}经验<span class="user_resume_line">|</span>{yun:}/if{/yun}
+                                        {yun:}if $resume.edu_n{/yun}{yun:}$resume.edu_n{/yun}学历{yun:}/if{/yun}
+                                    </div>
+                                    <div class="user_resume_p2">
+                                        {yun:}$expectStatus.jobstatus_n{/yun} - {yun:}$expectStatus.report_n{/yun}
+                                    </div>
+                                </div>
+                                <div class="user_resume_c">
+                                    <div class="user_resume_wzd " id="tipid" rid="{yun:}$expect.id{/yun}">
+                                        <span class="user_resume_wzd_name">简历完整度：</span>
+                                        <div class="user_resume_wzd_b"><span class="user_resume_wzd_c" style="width:{yun:}$expect.integrity{/yun}% "></span></div>
+                                        <span class="user_resume_wzd_r">{yun:}$expect.integrity{/yun}% </span>
+                                    </div>
+                                    <div class="clear"></div>
+                                    <div class="user_resume_p user_resume_pd">更新日期：{yun:}$expect.lastupdate{/yun}</div>
+                                    <div class="user_resume_p">被浏览：{yun:}$expect.hits{/yun}</div>
+                                </div>
+                                <div class="user_resume_cz">
+                                    {yun:}if $expect.state=='1'{/yun}
+                                        <div class="user_resume_cz_p">
+                                            <a href="javascript:void(0)" onclick="resumetop('{yun:}$expect.id{/yun}','{yun:}if $expect.topdatetime gt 0{/yun}{yun:}$expect.topdate{/yun}{yun:}/if{/yun}','{yun:}$expect.name{/yun}')" class="user_resume_cz_a user_resume_cz_icon1">简历置顶</a>
+                                        </div>
+                                        <div class="user_resume_cz_p">
+                                            <a href="index.php?c=expect{yun:}if $expect.doc{/yun}q{yun:}/if{/yun}&e={yun:}$expect.id{/yun}" class="user_resume_cz_a user_resume_cz_icon3">修改简历</a>
+                                        </div>
+                                        <div class="user_resume_cz_p">
+                                            <a href="{yun:}url m=resume c=show id=$expect.id{/yun}" target="_blank" class="user_resume_cz_a user_resume_cz_icon4">预览简历</a>
+                                        </div>
+                                        <div class="user_resume_cz_p">
+                                        <a onclick="layer_del('确定要刷新？', 'index.php?c=resume&act=refresh&id={yun:}$expect.id{/yun}');" href="javascript:void(0)" class="user_resume_cz_a user_resume_cz_icon2">刷新简历</a>
+                                    </div>
+                                    {yun:}else{/yun}
+                                        <div class="user_resume_cz_p">
+                                            <a href="javascript:void(0)" onclick="layer_del('确定要删除？', 'index.php?c=resume&act=del&id={yun:}$expect.id{/yun}');" class="user_resume_cz_a user_resume_cz_icon5"> 删除简历</a>
+                                        </div>
+                                        <div class="user_resume_cz_p">
+                                            <a href="index.php?c=expect{yun:}if $expect.doc{/yun}q{yun:}/if{/yun}&e={yun:}$expect.id{/yun}" class="user_resume_cz_a user_resume_cz_icon3">修改简历</a>
+                                        </div>
+                                        <div class="user_resume_cz_p">
+                                            <a href="{yun:}url m=resume c=show id=$expect.id{/yun}" target="_blank" class="user_resume_cz_a user_resume_cz_icon4">预览简历</a>
+                                        </div>
+                                        <div class="user_resume_cz_p">
+                                            <a onclick="layer_del('确定要刷新？', 'index.php?c=resume&act=refresh&id={yun:}$expect.id{/yun}');" href="javascript:void(0)" class="user_resume_cz_a user_resume_cz_icon2">刷新简历</a>
+                                        </div>
+                                    {yun:}/if{/yun}
+                                </div>
+                            </div>
+                            {yun:}if $expect.state == 3{/yun}
+                            <div class="user_resume_boxtip">
+                                <div class="user_resume_boxtip_c">
+                                    <div class="user_resume_boxtip_h1">你的简历审核未通过！</div>
+                                    {yun:}if $expect.statusbody{/yun}<div class="user_resume_boxtip_p">原因：{yun:}$expect.statusbody{/yun}</div>{yun:}/if{/yun}
+                                    <div class="user_resume_boxtip_p">请修改简历信息，提交管理员审核</div>
+                                    <a href="index.php?c=expect&e={yun:}$expect.id{/yun}" class="user_resume_boxtip_bth" {yun:}if $expect.statusbody{/yun}style="margin-top: 15px;"{yun:}/if{/yun}>完善信息 </a>
+                                </div>
+                            </div>
+                            <!--未开启情况提示-->
+                            {yun:}else if $expectStatus.status ==2 || $expectStatus.status ==3{/yun}
+                            <div class="user_resume_boxtip">
+                                <div class="user_resume_boxtip_c">
+                                    <div class="user_resume_boxtip_h1">你的简历已隐藏，企业无法主动发现你！</div>
+                                    <div class="user_resume_boxtip_p">开启简历，好工作快速找你</div>
+                                    <a href="index.php?c=privacy" class="user_resume_boxtip_bth">公开简历 </a>
+                                </div>
+                            </div>
+                            <!--未完善情况提示-->
+                            {yun:}else if $expectStatus.integrity<100{/yun}
+                            <div class="user_resume_boxtip">
+                                <div class="user_resume_boxtip_c">
+                                    <div class="user_resume_boxtip_h1">
+                                        你的简历缺少{yun:}$expectStatus.wstitle{/yun}，会极大影响求职成功率哦！
+                                    </div>
+                                    <div class="user_resume_boxtip_p">
+                                        完善{yun:}$expectStatus.wstitle{/yun}，可以有效提高求职成功率
+                                    </div>
+                                    <a href="{yun:}$expectStatus.wspcurl{/yun}" class="user_resume_boxtip_bth">完善{yun:}$expectStatus.wstitle{/yun} </a>
+                                </div>
+                            </div>
+                            {yun:}/if{/yun}
+                        {yun:}else{/yun}
+                            <!--  备用简历-->
+                            <div class="myresume mt20" style="margin-left: 0px;">
+                                <span class="myresume_by">备用</span>
+                                <div class="myresume_left ">
+                                    <div class="myresume_name">
+                                        <a href="{yun:}url m=resume c=show id=$expect.id{/yun}">{yun:}$expect.name{/yun}</a>
+                                    </div>
+                                    <div class="user_resume_wzd " id="tipid" rid="1044751">
+                                        <span class="user_resume_wzd_name">简历完整度：</span>
+                                        <div class="user_resume_wzd_b"><span class="user_resume_wzd_c" style="width:{yun:}$expect.integrity{/yun}%"></span></div>
+                                        <span class="user_resume_wzd_r">{yun:}$expect.integrity{/yun}% </span>
+                                    </div>
+
+                                    <div class="myresume_type">
+                                        <span class="myresume_type_s">类型：{yun:}if $expect.doc=='1'{/yun}粘贴简历{yun:}else{/yun}标准简历{yun:}/if{/yun}</span>
+                                        <span class="myresume_type_s">更新时间：{yun:}$expect.lastupdate{/yun}</span>
+                                        <span class="myresume_type_s">被浏览：{yun:}$expect.hits{/yun}</span>
+                                        <span class="myresume_type_s">
+                                    状态：{yun:}if $expect.state=='1'{/yun}
+                                    <span class="myresume_state_ysh">已审核</span>{yun:}elseif $expect.state=='0'{/yun}
+                                    <span class="myresume_state_dsh">审核中</span>{yun:}elseif $expect.state=='3'{/yun}
+                                    <span class="myresume_state_btg">审核不通过</span> {yun:}if
+                                    $expect.statusbody{/yun}原因：{yun:}$expect.statusbody{/yun}{yun:}/if{/yun}{yun:}/if{/yun}
+                                </span>
+                                    </div>
+                                </div>
+                                <div class="myresume_right ">
+                                    <a href="javascript:void(0);" class="myresume_right_cz_fmr_a" onclick="layer_del('确认将该简历设置成默认简历？', 'index.php?c=resume&act=defaultresume&id={yun:}$expect.id{/yun}');">设为默认</a>
+                                    <span class="myresume_right_cz_fmr_line">|</span>
+                                    <a href="index.php?c=expect{yun:}if $expect.doc{/yun}q{yun:}/if{/yun}&e={yun:}$expect.id{/yun}" class="myresume_right_cz_fmr_a">修改简历 </a>
+                                    <span class="myresume_right_cz_fmr_line">|</span>
+                                    <a href="{yun:}url m=resume c=show id=$expect.id{/yun}" target="_blank" class="myresume_right_cz_fmr_a">预览简历</a>
+                                    <span class="myresume_right_cz_fmr_line">|</span>
+                                    <a href="javascript:void(0)" onclick="layer_del('确定要删除？', 'index.php?c=resume&act=del&id={yun:}$expect.id{/yun}');" class="myresume_right_cz_fmr_a">删除简历 </a>
+                                </div>
+                            </div>
+                        {yun:}/if{/yun}
+                    {yun:}foreachelse{/yun}
+                        <div class="msg_no">您还没有简历。</div>
+                    {yun:}/foreach{/yun}
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div class="myresume_cj"></div>
+            <div class="clear"></div>
+        </div>
+    </div>
+</div>
+<div id="wname" style="display:none; width: 380px; ">
+
+    <div class="myresume_senior">
+        <div class="sq_gjresume_hi">尊敬的用户你好！</div>
+        <div class="sq_gjresume_hi_t">申请优质人才你的简历需具备以下条件：</div>
+        <div class="">
+            {yun:}if $heightone==1{/yun}
+            <div class="sq_gjresume_tj">本科以上学历</div>
+            {yun:}else{/yun}
+            <div class="sq_gjresume_tjno">本科以上学历<span class="sq_gjresume_tjno_tip">(暂不符合)</span></div>
+            {yun:}/if{/yun}
+            {yun:}if $heighttwo==2{/yun}
+            <div class="sq_gjresume_tj">两年以上工作经验或三项以上工作经历</div>
+            {yun:}else{/yun}
+            <div class="sq_gjresume_tjno">两年以上工作经验或三项以上工作经历<span class="sq_gjresume_tjno_tip">(暂不符合)</span></div>
+            {yun:}/if{/yun}
+        </div>
+        <span class="myresume_button"><a class="myresume_senior_bth" href="javascript:void(0);">申请优质简历</a></span>
+        <span class="myresume_senior_tj mt10">温馨提示：</span>
+        <div class="myresume_senior_sm">成为优质人才以后，会有猎头中介主动联系您，请保持电话通畅。</div>
+    </div>
+</div>
+
+<div id="showmsg" style="display:none; width: 400px;">
+    <div id="infobox">
+        <div class="admin_Operating_sh" style="padding:10px; ">
+            <div class="admin_Operating_sh_h1" style="padding:5px;">审核说明：
+                <div class="user_Audit_box" id="msgs"></div>
+            </div>
+            <div class="admin_Operating_sub" style="margin-top:10px;">
+                &nbsp;&nbsp;<input type="button" onclick="layer.close($('#layindex').val());" class="com_pop_bth" value='确认'>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['layer', 'form', 'laydate'], function () {
+        var layer = layui.layer,
+            form = layui.form,
+            $ = layui.$;
+    });
+
+    function gourl() {
+        layer.confirm('确定要创建新的简历吗？', function () {
+            window.location.href = 'index.php?c=expect&act=add';
+            window.event.returnValue = false;
+            return false;
+        });
+    }
+
+    function reply_height_status(id) {
+        $("#wname .myresume_button").html(
+            "<a class=\"myresume_senior_bth\" href=\"javascript:void(0);\" onclick=\"layer_del('','index.php?c=resume&act=height&id=" +
+            id + "');\">申请</a>");
+        var layindex = $.layer({
+            type: 1,
+            title: '申请优质简历',
+            closeBtn: [0, true],
+            border: [10, 0.3, '#000', true],
+            area: ['380px', '350px'],
+            page: {
+                dom: '#wname'
+            }
+        });
+        $("#layindex").val(layindex);
+    }
+
+    function exite_height_status(id) {
+        var pytoken = $.trim($("#pytoken").val());
+        layer.confirm('确定要取消优质简历吗？', function () {
+            loadlayer();
+            $.post('index.php?c=resume&act=exite_height', {
+                id: id,
+                pytoken: pytoken
+            }, function (data) {
+                parent.layer.closeAll('loading');
+                if (data == "1") {
+                    layer.msg('取消成功！', 2, 9, function () {
+                        window.location.href = 'index.php?c=resume';
+                    });
+                } else {
+                    layer.msg('取消失败！', 2, 9, function () {
+                        window.location.href = 'index.php?c=resume';
+                    });
+                }
+            });
+
+        })
+    }
+
+    function app_height_status(id) {
+        $("#wname .myresume_button").html(
+            "<a class=\"myresume_senior_bth\" href=\"javascript:void(0);\" onclick=\"layer_del('','index.php?c=resume&act=height&id=" +
+            id + "');\">申请</a>");
+        $.layer({
+            type: 1,
+            title: '申请优质简历',
+            closeBtn: [0, true],
+            border: [10, 0.3, '#000', true],
+            area: ['380px', '360px'],
+            page: {
+                dom: '#wname'
+            }
+        });
+    }
+
+    function showmsg(msg) {
+        $("#msgs").html(msg);
+        $.layer({
+            type: 1,
+            title: '查看原因',
+            closeBtn: [0, true],
+            border: [10, 0.3, '#000', true],
+            area: ['400px', '200px'],
+            page: {
+                dom: "#showmsg"
+            }
+        });
+    }
+
+    function com_res() {
+        var loadi = layer.load('加载中…', 0);
+        $.get("index.php?c=com_res", function (msg) {
+            layer.closeAll();
+            if (msg == 1) {
+                layer.msg('您暂无公开简历！', 2, 8);
+                return false;
+            } else {
+                layer.close(loadi);
+                $(".result_class").remove();
+                $(".Commissioned_table").append(msg);
+                $.layer({
+                    type: 1,
+                    title: '委托简历',
+                    closeBtn: [0, true],
+                    border: [10, 0.3, '#000', true],
+                    area: ['548px', 'auto'],
+                    page: {
+                        dom: '.Commissioned_Resume_box'
+                    },
+                    close: function (index) {
+                        layer.close(index);
+                        $(".result_class").remove();
+                    }
+                });
+            }
+        });
+    }
+
+    function entr_resume_free(id) {
+        $.post("index.php?c=com_res&act=canceltrust", {
+            id: id
+        }, function (data) {
+            var data = eval('(' + data + ')');
+            if (data.url) {
+                layer.msg(data.msg, 2, Number(data.type), function () {
+                    window.location.href = data.url;
+                    window.event.returnValue = false;
+                    return false;
+                });
+                return false;
+            } else {
+                layer.msg(data.msg, 2, Number(data.type), function () {
+                    window.location.reload();
+                    window.event.returnValue = false;
+                    return false;
+                });
+                return false;
+            }
+        });
+    }
+
+    function entr_resume(id) {
+        layer.closeAll();
+        $("#server_eid").val(id);
+
+        $("#server").val('mywt');
+        $("#resumetop").hide();
+        $("#server_name").text('购买委托简历');
+        $("#server_name").show();
+        var price = $("#mywt").val();
+        $("#server_price").text(price);
+        $("#server_subject").val('委托简历金额');
+        $(".admin_Operating_sh").attr('style', 'padding-left:80px;');
+        $.layer({
+            type: 1,
+            title: '委托简历',
+            closeBtn: [0, true],
+            border: [10, 0.3, '#000', true],
+            area: ['500px', '320px'],
+            page: {
+                dom: '#user_server'
+            }
+        });
+    }
+
+    function entrust(msg, id) {
+        wait_result();
+        if (msg) {
+            layer.confirm(msg, {
+                    end: function () {
+                        layer.closeAll('loading');
+                    }
+                },
+                function () {
+                    $.post("index.php?c=com_res&act=canceltrust", {
+                        id: id
+                    }, function (data) {
+                        layer.closeAll('loading');
+                        var data = eval('(' + data + ')');
+                        if (data.url) {
+                            layer.msg(data.msg, 2, Number(data.type), function () {
+                                window.location.href = data.url;
+                                window.event.returnValue = false;
+                                return false;
+                            });
+                            return false;
+                        } else {
+                            layer.msg(data.msg, 2, Number(data.type), function () {
+                                window.location.reload();
+                                window.event.returnValue = false;
+                                return false;
+                            });
+                            return false;
+                        }
+                    });
+                }
+            );
+        } else {
+            $.post("index.php?c=com_res&act=canceltrust", {
+                id: id
+            }, function (data) {
+                layer.closeAll('loading');
+                var data = eval('(' + data + ')');
+                if (data.url) {
+                    layer.msg(data.msg, 2, Number(data.type), function () {
+                        window.location.href = data.url;
+                        window.event.returnValue = false;
+                        return false;
+                    });
+                    return false;
+                } else {
+                    layer.msg(data.msg, 2, Number(data.type), function () {
+                        window.location.reload();
+                        window.event.returnValue = false;
+                        return false;
+                    });
+                    return false;
+                }
+            });
+        }
+    }
+</script>
+{yun:}include file="$userstyle/server.htm"{/yun}
+{yun:}include file="$userstyle/footer.htm"{/yun}

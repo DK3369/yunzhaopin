@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="积分设置" name="first">
+                    <integset  :list="data" @get-list="getList" v-if="activeName == 'first'"></integset>
+                </el-tab-pane>
+                <el-tab-pane label="个人积分" name="second">
+                    <gerenjifen :list="data" @get-list="getList" v-if="activeName == 'second'"></gerenjifen>
+                </el-tab-pane>
+                <el-tab-pane label="企业积分" name="third">
+                    <comjifen :list="data" @get-list="getList"
+                              v-if="activeName == 'third'"></comjifen>
+                </el-tab-pane>
+                
+                <el-tab-pane label="积分优惠" name="sixth">
+                    <jifenyouhui v-if="activeName == 'sixth'"></jifenyouhui>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#moduapp',
+            data: function () {
+                return {
+                    activeName: 'first',
+                    data:{},
+                    uri: "m=system&c=",
+                    integral_ltcert:'',
+                    integral_px_banner:'',
+                }
+            },
+            created() {
+                this.getList();
+            },
+            components: {
+                'integset': httpVueLoader('./component/integset.vue'),
+                'gerenjifen': httpVueLoader('./component/gerenjifen.vue'),
+                'comjifen': httpVueLoader('./component/comjifen.vue'),
+                'peixunjifen': httpVueLoader('./component/peixunjifen.vue'),
+                'jifenyouhui': httpVueLoader('./component/jifenyouhui.vue'),
+            },
+            methods: {
+                handleClick(tab, event) {
+                    console.log(tab, event);
+                },
+                getList:function (){
+                    let _this = this;
+                    let url = _this.uri + 'set_integral&a=index';
+                    httpPost(url, {}).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            _this.data = res.data;
+                            _this.integral_ltcert = res.data.integral_ltcert
+                            _this.integral_px_banner = res.data.integral_px_banner
+                        }
+                    })
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

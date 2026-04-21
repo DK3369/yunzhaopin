@@ -1,0 +1,116 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<div id="yunvue">
+    <div class="issue_post_body" v-show="islook">
+        <div v-if="total">
+            <div class="body_card_content_box">
+                <div v-for="(item, infokey) in info" :key="infokey" class="card_content_box_particulars" @click="resumeShow(item.waprurl)">
+                    <div class="particulars_icon">
+                        <img :src="item.photo" alt="">
+                    </div>
+                    <div class="particulars_concise">
+                        <div class="particulars_concise_top">
+                            <div class="concise_top_name">{{item.name}}</div>
+                            <div class="concise_top_time">{{item.datetime_n}}</div>
+                        </div>
+                        <div class="particulars_concise_center">
+                            <ul>
+                                <li>{{item.exp}}·</li>
+                                <li>{{item.edu}}·</li>
+                                <li>{{item.age}}岁</li>
+                            </ul>
+                        </div>
+                        <div class="particulars_concise_bom">
+                            <div class="concise_bom_desired_position Intention_to_width">
+                                <div class="concise_bom_desired Intention_to_locate">意向</div>
+                                <div class="concise_bom_position  Intention_to_word">{{item.jobclassidname}}</div>
+                            </div>
+                            <div class="concise_bom_icon" @click.stop="delLookJob(item.id, infokey)">
+                                <img src="{yun:}$wap_style{/yun}/images/resume_del.png" alt="" width="100%" height="100%">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="total > limit" style="margin-top: .266667rem;">
+                <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange"/>
+            </div>
+        </div>
+        <div v-if="total==0">
+            <div class="wap_member_no">
+                您暂时还没有人才浏览您的职位
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var yunvue = new Vue({
+        el: '#yunvue',
+        data() {
+            return {
+                info: [],
+                islook: false,
+
+                total: 0,
+                pageTotal: 0,
+                page: 1,
+                limit: 10,
+            };
+        },
+        created() {
+            this.getlookjob('refresh');
+        },
+        methods: {
+            getlookjob: function (type) {
+                var that = this;
+                if (type && type == 'refresh') {
+                    that.page = 1;
+                    that.info = [];
+                    that.islook = false;
+                }
+                var paramer = {
+                    page: that.page,
+                    limit: that.limit
+                };
+                $.post('{yun:}url d=wxapp h=com m=resume c=look_job{/yun}', paramer, function (data) {
+                    hideLoading();
+                    if (data) {
+                        let list = data.data.list;
+                        that.total = data.data.total;
+                        that.pageTotal = Math.ceil(data.data.total / that.limit);
+                        if (list && list.length > 0) {
+                            that.info = list;
+                        }
+                        that.islook = true;
+                    }
+                }, 'json')
+            },
+            delLookJob(id, key) {
+                var that = this;
+                var paramer = {
+                    ids: id,
+                };
+                showConfirm('确定删除？', function () {
+                    showLoading('删除中');
+                    $.post('{yun:}url d=wxapp h=com m=resume c=look_job_del{/yun}', paramer, function (data) {
+                        hideLoading();
+                        if (data.error == 1) {
+                            showToast('删除成功', 2, function () {
+                                that.info.splice(key, 1);
+                            });
+                        }
+                    }, 'json')
+                });
+            },
+            pageChange: function (page) {
+                this.page = page;
+                this.getlookjob('');
+            },
+            resumeShow: function (url) {
+                navigateTo(url)
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

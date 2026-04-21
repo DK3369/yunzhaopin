@@ -1,0 +1,110 @@
+
+<script src="{yun:}$wap_style{/yun}/js/list_bottom.js?v={yun:}$config.cachecode{/yun}"></script>
+<div id="resumelist_wx_vue" class="none">
+    
+    <div class="yun_newedition_resumelist"  v-for="(item, rkey) in userlist" :key="item.id">
+        <a :data-href="item.wapurl" href="javascript:void(0)" onclick="toPage(this)">
+            <i v-if="item.newtime == 1" class="yunjoblist_newicon" title="新简历"> </i>
+            <div class="yun_newedition_resumepic">
+                <img v-bind:src="item.photo">
+                <span v-bind:class="item.sex==1?'user_xb':'user_xbn'"></span>
+            </div>
+            <div class="yun_newedition_resume_wantjob">
+                <span class="yun_newedition_resume_wantjob_n">{{item.name_n}}</span>
+                <span v-if="item.rec_resume==1" class="usertj"> </span>
+            </div>
+
+            <div class="new_userlist_info">{{item.exp_n?item.exp_n+'经验':''}} · {{item.edu_n}}学历 · {{item.age_n>0?item.age_n + '岁':'保密'}}</div>
+            <div class="new_userlist_p">求职期望 {{item.name}}，{{item.salary}}
+                <span v-if="item.top_day > 0 && rkey < 5" class="yun_newedition_resume_zd" >置顶</span>
+                <span v-else class="yun_newedition_resume_zd">{{item.lastupdate_n}}</span>
+            </div>
+
+            <div class="user_undergo_box" v-if="item.work_content || item.edu_content">
+                <div v-if="item.edu_content" class="user_undergo user_undergo_a">{{item.edu_content}}</div>
+                <div v-if="item.work_content" class="user_undergo user_undergo_b">{{item.work_content}}</div>
+            </div>
+
+            <div v-if="item.tag_arr" class="yun_tjresumebox">
+                <span v-for="tag in item.tag_arr" :key="tag" class="yun_tjresume">{{tag}}</span>
+            </div>
+
+            <div v-if="item.isLookEd == 1" class="resumeeye">
+                <img src="{yun:}$wap_style{/yun}/images/llg.png">
+            </div>
+        </a>
+    </div>
+</div>
+<script type="text/javascript">
+    var app = new Vue({
+      el: '#resumelist_wx_vue',
+      data: {
+        userlist:[]
+      }
+    });
+
+    var resumepage = 0;
+
+    function fetchData_list() {
+        resumepage++;
+        var searchurl = document.getElementById('searchurl').value;
+
+        // 缓存处理开始
+        let storageDetail = sessionStorage.getItem("storageDetail"),
+            storageCacheType = sessionStorage.getItem("storageCacheType"),
+            storageSearchurl = sessionStorage.getItem("storageSearchurl"),
+            storagePage = sessionStorage.getItem("storagePage"),
+            storageListStr = sessionStorage.getItem("storageList"),
+            storageList = storageListStr ? JSON.parse(storageListStr) : [];
+
+        // 存在缓存内容 - 从详情返回才处理
+        if (storageCacheType && storageCacheType == 'resume' && storageDetail && storageList.length > 0 && resumepage <= storagePage) {// 分页小于或等于缓存页数时，直接使用缓存
+            sessionStorage.removeItem("storageDetail"); // 清除掉详情返回的标识
+            storagePage = storagePage ? parseInt(storagePage) : 1;
+            resumepage = storagePage; // 直接修改分页为缓存对应页数
+            if (storageSearchurl) {
+                document.getElementById('searchurl').value = storageSearchurl; // 搜索条件赋值
+            }
+            app.$data.userlist = storageList; // 列表赋值
+            app.$nextTick(function(){
+                document.getElementById('listdiv').insertAdjacentHTML('beforeend',$("#resumelist_wx_vue").html());
+            })
+            return; // 走缓存不执行后续
+        } else {
+            if (resumepage == 1) {
+                storageList = []; // 如果是重新加载，重新定义缓存数据列表
+            }
+        }
+        // 缓存处理结束
+
+        $.post(wapurl + 'index.php?c=resume&a=ajaxLoad', {searchurl: searchurl,page: resumepage}, function(res){
+			document.getElementById('pageLoading').classList.add('none');
+            if(res){
+                var html = '';
+                var data = eval('(' + res + ')');
+                if(data.list.length > 0){
+                    app.$data.userlist = data.list;
+
+                    sessionStorage.setItem("storageCacheType", "resume");
+                    sessionStorage.setItem("storageSearchurl", searchurl);
+                    sessionStorage.setItem("storagePage", resumepage);
+                    storageList = storageList.concat(data.list)
+                    sessionStorage.setItem("storageList", JSON.stringify(storageList));
+
+					app.$nextTick(function(){
+						document.getElementById('listdiv').insertAdjacentHTML('beforeend',$("#resumelist_wx_vue").html());
+					})
+				}else{
+					document.getElementById('pageNoMore').classList.remove('none');
+				}
+            }
+        });
+    }
+
+    fetchData_list();
+
+    function toPage(e) {
+        sessionStorage.setItem("storageDetail", 1);
+        window.location.href = $(e).data('href');
+    }
+</script>

@@ -1,0 +1,266 @@
+{yun:}include file="$comstyle/header.htm"{/yun}
+<div class="w1000">
+    <div class="admin_mainbody">
+        {yun:}include file="$comstyle/left.htm"{/yun}
+        <div class="clear"></div>
+            <div class=right_box>
+        <div class="newmember_tit">
+        <ul>
+            <li> <a href="index.php?c=job&w=1" title="职位管理" class="   ">职位管理</a></li>
+            <li class="newmember_titcur"><a href="index.php?c=partok&w=1" title="兼职管理" class=" ">兼职管理</a></li>
+            <li><a href="index.php?c=zhaopin" title="招聘数据" class=" ">招聘数据</a></li>
+        </ul>
+        </div>
+        <div class="newmember_screenbox">
+        <div class="newmember_screen">
+        <ul class="">
+            <li {yun:}if $smarty.get.w=="1" {/yun}class="job_list_tit_cur" {yun:}/if{/yun}>
+                <a href="index.php?c=partok&w=1" title="招聘中的兼职">招聘中</a>
+            </li>
+        
+            <li {yun:}if $smarty.get.w=="0" {/yun} class="job_list_tit_cur" {yun:}/if{/yun}>
+                <a href="index.php?c=partok&w=0" title="待审核的兼职">待审核</a>
+            </li>
+        
+            <li {yun:}if $smarty.get.w=="3" {/yun} class="job_list_tit_cur" {yun:}/if{/yun}>
+                <a href="index.php?c=partok&w=3" title="未通过的兼职">未通过</a>
+            </li>
+        
+            <li {yun:}if $smarty.get.w=="4" {/yun} class="job_list_tit_cur" {yun:}/if{/yun}>
+                <a href="index.php?c=partok&w=4" title="已下架的兼职">已下架</a>
+            </li>
+        
+            <li {yun:}if $smarty.get.w=="2" {/yun} class="job_list_tit_cur" {yun:}/if{/yun}>
+                <a href="index.php?c=partok&w=2" title="过期的兼职">已过期</a>
+            </li>
+        
+            <li {yun:}if $smarty.get.c=="part" {/yun} class="job_list_tit_cur" {yun:}/if{/yun}>
+                <a href="index.php?c=part" title="全部兼职">全部兼职</a>
+            </li>
+        </ul>
+        
+        
+         
+            {yun:}if $rows{/yun}
+            <div class="com_topbth_box">
+                <input class="com_topbth" style="width:108px;border:none; text-align: left;" onclick="jobadd_url('{yun:}$addjobnum{/yun}','part');" type="button" value="发布兼职" name="input" style="margin-left:0px;">
+
+                {yun:}if $i_know_part == 0{/yun}
+                {yun:}if $statis.rating_type==1{/yun}
+                <div class="com_topbth_zh" id="i_know">
+                    <div class="com_topbth_zh_pd">
+                        你的账号，可上架 {yun:}if $statis.vip_etime>$todayStart || $statis.vip_etime=="0"{/yun}{yun:}$statis.job_num{/yun}{yun:}else{/yun}0{yun:}/if{/yun} 个职位
+                        {yun:}if !empty($jobNum) || !empty($partNum){/yun}
+                        <div class="">现已上架： <br/>
+                            {yun:}if !empty($jobNum){/yun}
+                            {yun:}$jobNum{/yun} 个全职职位<br/>
+                            {yun:}/if{/yun}
+                            {yun:}if !empty($partNum){/yun}
+                            {yun:}$partNum{/yun} 个兼职职位<br/>
+                            {yun:}/if{/yun}
+                            
+                        </div>
+                        {yun:}/if{/yun}
+                    </div>
+                    <div class="com_topbth_zh_bot"><a href="javascript:void(0);" onclick="i_know('part')">知道了</a></div>
+                </div>
+                {yun:}/if{/yun}
+                {yun:}/if{/yun}
+            </div>
+            {yun:}/if{/yun}
+        </div> </div>
+ 
+ <div class="clear"></div>
+            <div class=admincont_box>
+
+              
+
+                <div class="com_body">
+
+                    <iframe id="supportiframe" name="supportiframe" onload="returnmessage('supportiframe');" style="display:none"></iframe>
+                    <form action="index.php" name="myform" method="get" id='myform' target="supportiframe" class='layui-form'>
+                        <input type="hidden" name="c" value="part" />
+                        <input type="hidden" name="act" value="del" />
+                        <table class="com_table mt20">
+                            {yun:}if !empty($rows){/yun}
+                            <tr>
+                                <th>&nbsp;</th>
+                                <th>职位名称</th>
+                                <th>工作类型</th>
+                                <th>招聘人数</th>
+                                <th>薪水 </th>
+                                <th>截止日期</th>
+                                <th>审核状态</th>
+                                <th width="150">操作</th>
+                            </tr>
+                            {yun:}/if{/yun} 
+                            
+                            {yun:}foreach from=$rows item=list{/yun}
+                                <tr>
+                                    <td><input type="checkbox" name="del[]" value="{yun:}$list.id{/yun}" class="com_Release_job_check" lay-skin='primary'></td>
+    
+                                    <td align="center">
+                                        <a href="{yun:}url m=part c=show id='`$list.id`'{/yun}" class="com_Release_name" target="_blank">{yun:}$list.name{/yun}</a>
+                                    </td>
+                                    <td align="center">{yun:}$list.type_n{/yun}</td>
+                                    <td align="center">{yun:}$list.number{/yun}人 </td>
+                                    <td align="center">{yun:}$list.salary{/yun}{yun:}$list.salary_type_n{/yun}</td>
+                                    <td align="center">{yun:}$list.end_n{/yun}</td>
+                                    <td align="center">
+                                        {yun:}if ($list.edate lt time() && $list.edate>'0')||$list.state==2{/yun}
+                                        <font color=purple>已过期</font>
+                                        {yun:}elseif $list.state=="0"{/yun}
+                                        <font color=blue>等待审核</font>
+                                        {yun:}elseif $list.state=="1"{/yun}
+                                        <font color=green>已审核</font>
+                                        {yun:}elseif $list.state=="2"{/yun}
+                                        <font color=red>已结束</font>
+                                        {yun:}elseif $list.state=="3"{/yun}
+                                        <font color=red>未通过</font>
+                                        {yun:}if $v.statusbody{/yun}<br><em class="com_Release_job_span com_Release_job_em" style="_margin-left:15px;">未通过原因：{yun:}$list.statusbody{/yun} </em>{yun:}/if{/yun} {yun:}/if{/yun}
+                                    </td>
+
+                                    <td align="center">
+                                        <a href="index.php?c=partadd&id={yun:}$list.id{/yun}" class=" com_bth cblue">修改</a>
+                                        <a href="javascript:void(0)" onclick="layer_del('确定要删除该职位？','index.php?c=part&act=del&id={yun:}$list.id{/yun}'); " class=" com_bth cblue">删除</a>
+                                        {yun:}if $list.status=="1"{/yun}
+                                        {yun:}if $vipIsDown{/yun}
+                                        <a href="javascript:void('0');" onclick="ShowToast();" class="com_received_username_yqms" style="display:block; margin-top:10px;">上架职位</a>
+                                        {yun:}else{/yun}
+                                            {yun:}if $statis.vip_etime>$todayStart||$statis.vip_etime=="0"{/yun}
+                                                {yun:}if $statis.rating_type==1{/yun}
+                                                <a href="javascript:onstatus('{yun:}$list.id{/yun}','2','part', '您可上架职位{yun:}$statis.job_num{/yun}个，确认上架？');" class="com_received_username_yqms" style="display:block; margin-top:10px;">上架职位</a>
+                                                {yun:}else{/yun}
+                                                <a href="javascript:onstatus('{yun:}$list.id{/yun}','2','part', '确认上架？');" class="com_received_username_yqms" style="display:block; margin-top:10px;">上架职位</a>
+                                                {yun:}/if{/yun}
+                                            {yun:}else{/yun}
+                                                <a href="javascript:onstatus('{yun:}$list.id{/yun}','2','part');" class="com_received_username_yqms" style="display:block; margin-top:10px;">上架职位</a>
+                                            {yun:}/if{/yun}
+                                        {yun:}/if{/yun}
+                                        {yun:}/if{/yun}
+                                    </td>
+                                </tr>
+                            {yun:}foreachelse{/yun}
+                                <tr>
+                                    <td colspan="8" class="table_end">
+                                        <div class="msg_no">
+                                            <p>暂无相关兼职信息</p>
+                                            <a href="javascript:void(0)" onclick="jobadd_url('{yun:}$addjobnum{/yun}','part');" class="com_msg_no_bth com_submit">添加兼职职位</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {yun:}/foreach{/yun} 
+                            
+                            {yun:}if !empty($rows){/yun}
+                                <tr>
+                                    <td colspan="8" class="">
+                                        <div class="com_Release_job_bot">
+                                            <span class="com_Release_job_qx">
+                                                <input id='checkAll' type="checkbox" lay-filter='allcom' lay-skin='primary' class="com_Release_job_qx_check">全选 
+                                            </span>
+                                            {yun:}if $smarty.get.w=='4'{/yun}
+                                            {yun:}if $statis.vip_etime < strtotime('today') && $statis.vip_etime != '0'{/yun}
+                                            <input class="c_btn_02 c_btn_02_w110" type="button" value="一键上架招聘" onclick="ShowToast();" />
+                                            {yun:}else{/yun}
+                                            <input class="c_btn_02 c_btn_02_w110" type="button" value="一键上架招聘" onclick="return allonstatusopen('checkboxid[]');" />
+                                            {yun:}/if{/yun}
+                                            {yun:}/if{/yun}
+                                            <input class="c_btn_02 c_btn_02_w110" type="button" value="批量删除" onclick="return really('del[]');">
+                                        </div>   <div class="diggg">{yun:}$pagenav{/yun}</div>
+                                    </td>
+                                </tr>
+                            {yun:}/if{/yun}
+                            
+                        </table>
+                    </form>
+                    
+                    <div class="clear"></div>
+
+                    {yun:}if $rows{/yun}
+                        <div class="job_list_tip">
+                            <span class="job_list_tip_span">
+                            {yun:}if $statis.vip_etime>$todayStart||$statis.vip_etime=="0"{/yun}
+                                {yun:}if $statis.rating_type==1{/yun}
+                                贵公司共可上架（<span class="f60">{yun:}$statis.job_num{/yun}</span>）条职位信息
+                                {yun:}else{/yun}
+                                贵公司可发布（<span class="f60">}不限</span>）条职位信息
+                                {yun:}/if{/yun}
+                            {yun:}else{/yun}    
+                                贵公司共可上架（<span class="f60">0</span>）条职位信息
+                            {yun:}/if{/yun}
+                            </span>
+    
+                            <input class="fb_Com_xz" onclick="jobadd_url('{yun:}$addjobnum{/yun}','part');" type="button" value="新增兼职" name="input">
+                        </div>
+                    {yun:}/if{/yun}
+                   
+                    <div class="clear"></div>
+
+                    <div class="wxts_box wxts_box_mt30">
+                        <div class="wxts">温馨提示：</div>
+                            1、如贵公司要快速招聘人才，建议升级贵宾，获取更多的展示机会，以帮助您快速找到满意的人才。 <br> 2、请贵公司保证职位信息的真实性、合法性，并及时更新职位信息，如被举报或投诉，确认发布的信息违反相关规定后，本站将会关闭贵公司的招聘服务，敬请谅解！
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+function i_know(opt) {
+    $.post('index.php?c=job&act=i_know', {opt: opt}, function () {
+        $("#i_know").addClass("none")
+    });
+}
+layui.use(['form','layer'], function(){
+    var $ = layui.$,
+        form = layui.form,
+        layer = layui.layer;
+    
+    form.on('checkbox(allcom)', function (data) {
+        $("input[name='del[]']").each(function () {
+            this.checked = data.elem.checked;
+        });
+        form.render('checkbox');
+    });
+});
+
+function allonstatusopen() { //批量上架
+    var allid = [];
+    var i = 0;
+    $('input[name="del[]"]:checked').each(function () {
+        allid.push($(this).val());
+        i++;
+    });
+    if (allid.length == 0) {
+        layer.msg("请选择要上架的职位！", 2, 8);
+        return false;
+    } else {
+        {yun:}if $statis.rating_type==1{/yun}
+            onstatus(allid, '2', 'part', '您可上架职位{yun:}$statis.job_num{/yun}个，确认上架？');
+        {yun:}else{/yun}
+            onstatus(allid, '2', 'part', '确认上架？');
+        {yun:}/if{/yun}
+    }
+}
+
+function ShowToast() {
+
+    var uList = document.getElementById('rating_type');
+
+    firstTab();
+    var msglayer = layer.open({
+        type: 1,
+        title: '职位招聘',
+        closeBtn: 1,
+        border: [10, 0.3, '#000', true],
+        area: ['810px', 'auto'],
+        content: $("#tcmsg"),
+        cancel: function () {
+            window.location.reload();
+        }
+    });
+
+}
+</script>
+{yun:}include file="$comstyle/footer.htm"{/yun}

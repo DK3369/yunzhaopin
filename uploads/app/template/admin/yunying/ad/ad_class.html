@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+    <script src="../../../../../js/clipboard/clipboard.min.js"></script>
+</head>
+
+<body>
+<div id="daohaapp" class="moduleElenAl">
+    <div class="moduleSeachs">
+        <div class="moduleSeachleft">
+            <div class="moduleInptList">
+                <el-input placeholder="输入你要搜索的关键字" v-model="searchForm.keyword" size="small" class="input-with-select" clearable>
+                    <el-select v-model="searchForm.type" size="small" slot="prepend" placeholder="编号">
+                        <el-option label="编号" value="1"></el-option>
+                        <el-option label="名称" value="2"></el-option>
+                    </el-select>
+                </el-input>
+            </div>
+            <div class="newsbtnbox">
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">查询</el-button>
+            </div>
+        </div>
+        <div class="moduleSeachButn">
+            <el-button type="primary" icon="el-icon-document-add" size="mini" @click="handleAdd">添加类别</el-button>
+        </div>
+    </div>
+    <div class="moduleElTable">
+        <el-table :data="tableData" border style="width: 100%" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" ref="multipleTable" @selection-change="handleSelectionChange" @sort-change="shortChange" v-loading="loading">
+            <template slot="empty">
+                <p>{{dataText}}</p>
+            </template>
+            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column prop="id" label="编号" width="90"></el-table-column>
+            <el-table-column prop="class_name" label="分类名称"></el-table-column>
+            <el-table-column prop="place_n" label="广告位置" width="200"></el-table-column>
+            <el-table-column label="演示图片" width="100">
+                <template slot-scope="scope">
+                    <div v-if="scope.row.hrefn" class="moduleElImage">
+                        <el-image :src="scope.row.hrefn ? scope.row.hrefn : ''" :preview-src-list="scope.row.hrefn ? [scope.row.hrefn] : []"></el-image>
+                    </div>
+                    <span v-else>无</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="orders" label="排序" sortable="custom" width="100">
+                <template slot-scope="scope">
+                    <el-input type="number" v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index" v-model="scope.row.orders" @blur="alterData(scope)"></el-input>
+                    <span v-else>{{ scope.row.orders }}<img @click="editData(scope)" class="editIcon" src="../../../admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14"></span>
+                </template>
+            </el-table-column>
+            <el-table-column label="调用代码" width="120">
+                <template slot-scope="scope">
+                    <el-link type="primary" :underline="false" @click="handleCopy(scope)">内部调用</el-link>
+                </template>
+            </el-table-column>
+            <el-table-column prop="type" label="设为购买" width="130">
+                <template slot-scope="scope">
+                    <template v-if="scope.row.type == 1">
+                        <el-link type="primary" :underline="false" @click="handleDelbuy(scope)">取消</el-link>
+                    </template>
+                    <template v-else>
+                        <el-link type="primary" :underline="false" @click="handleBuy(scope)">设为购买</el-link>
+                    </template>
+                </template>
+            </el-table-column>
+            <el-table-column fixed="right" label="操作" width="130" align="center">
+                <template slot-scope="scope">
+                    <div class="cz_button">
+                        <el-button size="small" @click="editRow(scope)" type=" ">修改</el-button>
+                        <el-button type="danger" size="small " @click="deleteRow(scope)">删除</el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+    <div class="modulePaging">
+        <div class="modulecz modulePagButn">
+            <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">全选</el-checkbox>
+            <el-button @click="deleteRow(null, true)">批量删除</el-button>
+        </div>
+        <div class="modulePagNum">
+            <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="searchForm.page" :page-size="searchForm.limit" :page-sizes="pageSizes" layout="total, sizes, prev, pager, next, jumper" :total="total"></el-pagination>
+        </div>
+    </div>
+    <!--添加类别 修改-->
+    <div class="modluDrawer">
+        <el-drawer :title="titleAddEdit" :visible.sync="addVisible" :modal-append-to-body="false" :show-close="true" :before-close="handleClose" :destroy-on-close="true" size="35%">
+            <ad_class_edit :info="info" :integral_pricename="integral_pricename" :pic_maxsize="pic_maxsize" :pic_type="pic_type" :change-to-buy="changeToBuy" @child-event-list="handleCloseList"></ad_class_edit>
+        </el-drawer>
+    </div>
+    <!--内部调用-->
+    <el-dialog title="内部调用" width="40%" :visible.sync="copyVisible" :modal-append-to-body="false">
+        <div>
+            <el-input id="elementCode" type="textarea" rows="5" v-model="code"></el-input>
+            <i class="el-icon-info" style="margin-top: 10px;">复制内容并添加到模板中</i>
+            <i class="el-icon-info" style="margin-top: 10px;">limit=5 为调用数量，可自行修改，如调用6条，为limit=6</i>
+        </div>
+        <div slot="footer" class="dialog-footer">
+            <el-button id="copyBtn" type="primary" data-clipboard-action="copy" data-clipboard-target="#elementCode" @click="handleCopyValue">复制代码</el-button>
+        </div>
+    </el-dialog>
+</div>
+<!-- script -->
+<script>
+    const custoapp = new Vue({
+        el: '#daohaapp',
+        data: function () {
+            return {
+                loading: false,
+                dataText: '数据加载中',
+                searchForm: {
+                    type: '1',
+                    page: 1,
+                    limit: null,
+                },
+                total: 0,
+                tableData: [],
+                pageSizes: [],
+                checked: false,//全选
+                isIndeterminate: false,// checkbox 的不确定状态
+                selectedItem: [],
+                addVisible: false,
+                titleAddEdit: '添加广告类别',
+                info: {},
+                integral_pricename: '',
+                pic_maxsize: '',
+                pic_type: '',
+                copyVisible: false,
+                code: '',
+                changeToBuy: false,//设为可购买广告类别
+                prevPage:0
+            }
+        },
+        components: {
+            'ad_class_edit': httpVueLoader('./component/ad_class_edit.vue'),
+        },
+        created: function () {
+            this.getList();
+        },
+        methods: {
+            handleSelectionChange(val) {
+                this.selectedItem = val;
+                if (this.selectedItem.length == 0) {
+                    this.isIndeterminate = false;
+                    this.checked = false;
+                } else {
+                    if (this.selectedItem.length == this.tableData.length) {
+                        this.isIndeterminate = false;
+                        this.checked = true;
+                    } else {
+                        this.isIndeterminate = true;
+                        this.checked = false;
+                    }
+                }
+            },
+            selectAllBottom(value) {
+                value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+            },
+            shortChange(e) {
+                let orderMap = {ascending: 'asc', descending: 'desc'}
+                this.searchForm.t = e.order ? e.prop : null;
+                this.searchForm.order = orderMap[e.order];
+                this.searchForm.page = 1;
+                this.getList();
+            },
+            handleSizeChange(val) {
+                this.searchForm.limit = val;
+                this.getList();
+            },
+            handleCurrentChange(val) {
+                this.searchForm.page = val;
+                this.getList();
+            },
+            handleSearch() {
+                this.searchForm.page = 1;
+                this.getList();
+            },
+            getList() {
+                let _this = this;
+                let params = JSON.parse(JSON.stringify(this.searchForm));
+                for (let index in params) {
+                    (params[index] === '') && (params[index] = null);
+                }
+                _this.loading = true;
+                httpPost('m=yunying&c=ad_class&a=index', params, {hideloading: true}).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        _this.integral_pricename = res.data.integral_pricename;
+                        _this.pic_maxsize = res.data.pic_maxsize;
+                        _this.pic_type = res.data.pic_type;
+                        _this.tableData = res.data.list;
+                        _this.total = res.data.total;
+                        _this.searchForm.limit = res.data.perPage;
+                        _this.pageSizes = res.data.pageSizes;
+                        if(_this.prevPage != _this.searchForm.page){
+                            _this.prevPage = _this.searchForm.page;
+                            _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        }
+                        _this.loading = false;
+                        if (_this.tableData.length === 0) {
+                            _this.dataText = "暂无数据";
+                        }
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            handleAdd() {
+
+                this.titleAddEdit = '添加广告类别';
+                this.info = {};
+                this.addVisible = true;
+            },
+            handleCloseList() {
+                this.addVisible = false;
+                this.getList();
+            },
+            handleClose(done) {
+                done();
+                this.addVisible = false;
+                this.changeToBuy = false;
+            },
+            editRow(scope) {
+                this.titleAddEdit = '修改广告类别';
+                this.info = scope.row;
+                this.addVisible = true;
+            },
+            deleteRow(scope, isMore) {
+                let params = {};
+                if (isMore) {
+                    if (!this.selectedItem.length) {
+                        message.error('请选择要删除的数据');
+                        return false;
+                    }
+                    let list = [];
+                    for (let item of this.selectedItem) {
+                        list.push(item.id);
+                    }
+                    params.delType = 'more';
+                    params.del = list;
+                } else {
+                    // let index = scope.$index;
+                    // this.tableData.splice(index, 1);
+                    params.delType = 'single';
+                    params.id = scope.row.id;
+                }
+
+                delConfirm(this, params, this.delete);
+            },
+            delete(params) {
+                let _this = this;
+                httpPost('m=yunying&c=ad_class&a=del', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        message.success('删除成功！');
+                        _this.getList();
+                    } else {
+                        message.error(res.msg);
+                        
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            editData(scope) {
+                let index = scope.$index;
+                let row = scope.row;
+                let column = scope.column;
+                this.oldData = JSON.parse(JSON.stringify(row));
+                let copyRow = JSON.parse(JSON.stringify(row));
+                copyRow[column.property + "isShow"] = true;
+                this.$set(this.tableData, index, copyRow);
+                this.$nextTick(() => {
+                    let ref = column.property + index;
+                    $("#" + ref).focus();
+                });
+            },
+            alterData(scope) {
+                if (this.oldData == null) {
+                    return false;
+                }
+                let index = scope.$index;
+                let row = scope.row;
+                let column = scope.column;
+                let copyRow = JSON.parse(JSON.stringify(row));
+                copyRow[column.property + "isShow"] = false;
+                this.$set(this.tableData, index, copyRow);
+                if (row[column.property] === this.oldData[column.property]) {
+                    return false;
+                }
+                let _this = this;
+                let sendData = {id: row.id};
+                sendData[column.property] = row[column.property];
+                httpPost('m=yunying&c=ad_class&a=upsort', sendData).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        message.success('修改成功');
+                    } else {
+                        message.error('修改失败');
+                    }
+                    _this.oldData = null;
+                    _this.getList();
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            /**
+             * 内部调用
+             */
+            handleCopy(scope) {
+                let row = scope.row;
+                this.copyVisible = true;
+                this.code = '{yun\:}adlist classid=' + row.id + ' limit=5 item=adlist_' + row.id + '{/yun}\r\n{yun\:}$adlist_' + row.id + '.html{/yun}\r\n{yun\:}/adlist{/yun}';
+            },
+            /**
+             * 复制代码
+             */
+            handleCopyValue() {
+                let clipboard = new ClipboardJS('#copyBtn'); // 获取点击按钮的元素
+                /* 注意此事件监听是异步的   */
+                clipboard.on('success', (e) => {
+                    e.clearSelection();
+                    // 释放内存
+                    clipboard.destroy();
+                    message.success('复制成功');
+                });
+                // 复制失败
+                clipboard.on('error', (e) => {
+                    // 释放内存
+                    clipboard.destroy();
+                    message.error('该浏览器不支持自动复制');
+                });
+            },
+            /**
+             * 设为购买
+             */
+            handleBuy(scope) {
+                this.titleAddEdit = '设为可购买广告类别';
+                this.info = scope.row;
+                this.addVisible = true;
+                this.changeToBuy = true;
+            },
+            /**
+             * 取消购买
+             */
+            handleDelbuy(scope) {
+                let params = {};
+                params.id = scope.row.id;
+
+                delConfirm(this, params, this.delbuy, '确定要设置为不可购买？');
+            },
+            /**
+             * 取消购买
+             */
+            delbuy(params) {
+                let _this = this;
+                httpPost('m=yunying&c=ad_class&a=delbuy', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        message.success(res.msg);
+                        _this.getList();
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+        }
+    });
+</script>
+</body>
+<style>
+    .editIcon {
+        padding-left: 5px;
+        cursor: pointer;
+    } 
+		.el-table .el-table__cell { padding: 12px 0; }
+		</style>
+</html>

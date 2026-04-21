@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+<div id="moduapp" class="moduleDome">
+    <div class="setDomeAll setDomeInte">
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+            <el-tab-pane label="企业设置" name="first" :lazy="true">
+                <comset_index></comset_index>
+            </el-tab-pane>
+            <el-tab-pane label="头像设置" name="logo" :lazy="true">
+                <comset_logo></comset_logo>
+            </el-tab-pane>
+            <el-tab-pane label="消费设置" name="comspend" :lazy="true">
+                <comset_comspend></comset_comspend>
+            </el-tab-pane>
+            <el-tab-pane label="套餐设置" name="rating" :lazy="true">
+                <comset_rating></comset_rating>
+            </el-tab-pane>
+        </el-tabs>
+    </div>
+</div>
+
+<script>
+    const custoapp = new Vue({
+        el: '#moduapp',
+        data: function () {
+            return {
+                activeName: 'first'
+            }
+        },
+        components: {
+            'comset_index': httpVueLoader('./component/comset_index.vue'),
+            'comset_logo': httpVueLoader('./component/comset_logo.vue'),
+            'comset_comspend': httpVueLoader('./component/comset_comspend.vue'),
+            'comset_rating': httpVueLoader('./component/comset_rating.vue')
+        },
+        methods: {
+            handleClick(tab, event) {
+                console.log(tab, event);
+            }
+        }
+    });
+</script>
+</body>
+
+</html>

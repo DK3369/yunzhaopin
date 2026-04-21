@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<meta http-equiv="Cache-Control" content="no-cache" />
+		<meta http-equiv="X-UA-compatible" content="IE=edge" />
+		<title>{yun:}$title{/yun}</title>
+		<meta name="keywords" content="{yun:}$keywords{/yun},wap" />
+		<meta name="description" content="{yun:}$description{/yun}" />
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+		<meta http-equiv="Expires" content="0">
+		<meta name="format-detection" content="telephone=no,email=no" />
+		<script src="{yun:}$wap_style{/yun}/js/flexible.js?v={yun:}$config.cachecode{/yun}"></script>
+		<link rel="stylesheet"
+			href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/css.css?v={yun:}$config.cachecode{/yun}"
+			type="text/css" />
+		<link rel="stylesheet"
+			href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/base.css?v={yun:}$config.cachecode{/yun}"
+			type="text/css" />
+		<link rel="stylesheet"
+			href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/yunwap.css?v={yun:}$config.cachecode{/yun}"
+			type="text/css" />
+		<link href="{yun:}$config_wapdomain{/yun}/js/vant/lib/index.css?v={yun:}$config.cachecode{/yun}"
+			rel="stylesheet" />
+
+		<!--wxapp 引用页面控制，不需要此返回-->
+		{yun:}if !$wxapp{/yun}
+
+		<script>
+			var weburl = "{yun:}$config.sy_weburl{/yun}",
+				wapurl = "{yun:}url m=wap{/yun}",
+				code_web = '{yun:}$config.code_web{/yun}',
+				code_kind = '{yun:}$config.code_kind{/yun}';
+		</script>
+		{yun:}/if{/yun}
+	</head>
+
+	<body>
+
+		<!-- 邀请面试页面头部分 -->
+		{yun:}if $smarty.get.c == 'resume' && $smarty.get.a == 'invite'{/yun}
+		<div class="header">
+			<div class="header_fixed">
+				<div class="header_bg">
+					<div class="header_cont">
+						<a href="{yun:}if $backurl{/yun}{yun:}$backurl{/yun}{yun:}else{/yun}javascript:goBack();{yun:}/if{/yun}"
+							class="header_back hd-lbtn ">
+						</a>
+						<div class="header_h1">{yun:}$headertitle{/yun}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!--wxapp 引用页面控制，不需要标题栏-->
+		{yun:}elseif !$wxapp{/yun}
+
+		<div class="header header_count">
+			<div class="header_fixed">
+				<div class="header_bg">
+					<div class="header_cont">
+						<a class="header_back hd-lbtn {yun:}if ($smarty.get.c=='tiny' && $smarty.get.a=='add') || ($smarty.get.c=='once' && $smarty.get.a=='add'){/yun}mui-action-back{yun:}/if{/yun}"
+							href="{yun:}if $backurl{/yun}{yun:}$backurl{/yun}{yun:}else{/yun}javascript:goBack();{yun:}/if{/yun}"></a>
+						<div class="header_h1">
+
+							{yun:}if $topplaceholder{/yun}
+							<div class="header_search">
+								<form method="get" action="{yun:}$config_wapdomain{/yun}/index.php">
+									<input type="hidden" name="c" value="{yun:}$smarty.get.c{/yun}" />
+									<div class="header_search_text">
+										<input type="text" value="{yun:}$smarty.get.keyword{/yun}" name="keyword" class="input_search" placeholder="{yun:}$topplaceholder{/yun}">
+									</div>
+									<input type="submit" value=" " class="header_search_bth ">
+								</form>
+							</div>
+							{yun:}else{/yun}
+							<div class="header_words"> {yun:}$headertitle{/yun}</div>
+							{yun:}/if{/yun}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		{yun:}/if{/yun}

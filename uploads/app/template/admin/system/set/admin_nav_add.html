@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="adminnav" class="moduleDome">
+        <div class="moduleHeadr">
+            <el-page-header @back="goBack" :content="id ? '修改' : '添加'">
+            </el-page-header>
+        </div>
+        <el-form :model="ruleForm" ref="ruleForm" label-width="130px" class="create-ruleForm">
+            <div class="moduleTable">
+                <table class="tableVue">
+                    <thead>
+                        <tr align="left">
+                            <th width="200">名称</th>
+                            <th width="400">状态</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="TableTite">导航类别</div>
+                            </td>
+                            <td>
+                                <div class="TableSelect" style="display: flex;align-items: center;">
+                                    <el-cascader v-model="ruleForm.keyid" placeholder="请选择" :options="navList"
+                                        :props="navProps" filterable>
+                                    </el-cascader>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>选择导航的上级类别</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">导航名称</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-input v-model="ruleForm.name"></el-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>导航名称</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">后端路由</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-input v-model="ruleForm.url"></el-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>接口地址，如：index.php?m=admin_nav</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">前端路由</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-input v-model="ruleForm.path"></el-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>前端页面地址，取router.js中的path，如：/admin_nav</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">图标类名</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-input v-model="ruleForm.classname"></el-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>菜单对应的CLASS类名</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">排　　序</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-input v-model="ruleForm.sort"></el-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>数字越小，权重越高</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <!--<tr>-->
+                        <!--    <td>-->
+                        <!--        <div class="TableTite">是否快捷</div>-->
+                        <!--    </td>-->
+                        <!--    <td>-->
+                        <!--        <div class="TableButn">-->
+                        <!--            <el-switch-->
+                        <!--                    v-model="ruleForm.menu"-->
+                        <!--                    active-color="#1890FF"-->
+                        <!--                    inactive-color="#B8BDC9"-->
+                        <!--                    active-value="2"-->
+                        <!--                    inactive-value="1">-->
+                        <!--            </el-switch>-->
+                        <!--        </div>-->
+                        <!--    </td>-->
+                        <!--    <td>-->
+                        <!--        <div class="TableShuom">-->
+                        <!--            <span>是否显示</span>-->
+                        <!--        </div>-->
+                        <!--    </td>-->
+                        <!--</tr>-->
+                        <tr>
+                            <td>
+                                <div class="TableTite">显　　示</div>
+                            </td>
+                            <td>
+                                <div class="TableButn">
+                                    <el-switch v-model="ruleForm.display" active-color="#1890FF"
+                                        inactive-color="#B8BDC9" active-value="0" inactive-value="1">
+                                    </el-switch>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>是否显示</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">分站显示</div>
+                            </td>
+                            <td>
+                                <div class="TableButn">
+                                    <el-switch v-model="ruleForm.dids" active-color="#1890FF" inactive-color="#B8BDC9"
+                                        active-value="1" inactive-value="0">
+                                    </el-switch>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>是否显示</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="setBasicButn" style="border: none;">
+                <el-button type="primary" size="medium" @click="submitForm('ruleForm')">提交</el-button>
+            </div>
+        </el-form>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#adminnav',
+            data: function () {
+                return {
+                    navList: [],
+                    navProps: {
+                        label: 'name',
+                        value: 'id',
+                        checkStrictly: true,
+                        emitPath: false
+                    },
+                    id: '',
+                    ruleForm: {
+                        keyid: '0',
+                        name: '',
+                        url: '',
+                        classname: '',
+                        sort: '',
+                        // menu: '1',
+                        display: '0',
+                        dids: '0'
+                    },
+                }
+            },
+            created: function () {
+                this.getList();
+                let query = getUrlParams();
+
+                if (query && query.id) {
+                    this.id = query.id;
+                    this.getInfo();
+                }
+            },
+            methods: {
+                async getList() {
+                    let that = this;
+
+                    let res = await httpPost('m=system&c=admin_nav&a=index', { type: 'add' });
+                    if (res.data.error == 0) {
+                        that.navList = res.data.data.list;
+                    }
+                },
+                async getInfo() {
+                    let res = await httpPost('m=system&c=admin_nav&a=info', { id: this.id });
+                    if (res.data.error == 0) {
+                        let info = res.data.data.info;
+                        info.menu = parseInt(info.menu);
+
+                        this.ruleForm = info;
+                    }
+                },
+                submitForm(formName) {
+                    let that = this;
+
+                    let params = that.ruleForm;
+                    if (this.id) {
+                        params.id = this.id;
+                    }
+
+                    httpPost('m=system&c=admin_nav&a=add', params).then(function (res) {
+                        if (res.data.error == 0) {
+                            that.$message.success({
+                                message: res.data.msg,
+                                onClose: function () {
+                                    window.location.href = './admin_nav.html';
+                                }
+                            });
+                        } else {
+                            that.$message.error(res.data.msg);
+                        }
+                    });
+                },
+                goBack() {
+                    history.go(-1);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="tableDome">
+        <div class="tableDome_tip">
+            <el-alert title="如果是想关闭功能模块，请进入系统 > 导航管理里面设置" type="success" show-icon>
+            </el-alert>
+        </div>
+        <div class="moduleTable">
+            <table class="tableVue">
+                <thead>
+                    <tr align="left">
+                        <th width="100">模块名称</th>
+                        <th width="100">状态</th>
+                        <th>二级域名（默认HTTP，未绑定则留空）</th>
+                        <th width="220">指向目录</th>
+                        <th width="160">综合设置</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(item, index) in list" :key="index">
+                        <td>
+                            <div class="TableTite">{{item.value}}</div>
+                        </td>
+                        <td>
+                            <div class="TableButn">
+                                <el-checkbox v-model="item.web" true-label="1" false-label="2">{{item.web=='1'?'开启':'关闭'}}</el-checkbox>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableDoma">
+                                <el-input placeholder="" v-model="item.domain" class="input-with-select">
+                                    <el-select v-model="item.ssl" slot="prepend">
+                                        <el-option label="https://" value="1"></el-option>
+                                        <el-option label="http://" value="0"></el-option>
+                                    </el-select>
+                                </el-input>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableInpt">
+                                <el-input v-model="item.dir" disabled placeholder="目录名"></el-input>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableLink seolinksGai" v-if="index != 'error'">
+                                <el-link type="primary" @click="openNavset(index, item.value)">导航设置</el-link>
+                                <el-link type="primary" @click="openSeoshezhi(index, item.value)">SEO设置</el-link>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="setBasicButn" style="border: none;">
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">保存</el-button>
+        </div>
+        <!-- 抽屉弹窗 -->
+        <div class="modluDrawer">
+            <el-drawer title="设置导航" :visible.sync="drawer1" :modal-append-to-body="false" :show-close="true" :with-header="true" size="35%">
+                <navset @child-event="closeNavset" :config="detail.config" :name="detail.name"></navset>
+            </el-drawer>
+        </div>
+        <div class="modluDrawer">
+            <el-drawer title="SEO设置" :visible.sync="drawer2" :append-to-body="true" :show-close="true" :with-header="true" size="50%">
+                <seoshezhi @child-event="closeSeoshezhi" call="module" :config="detail.config"></seoshezhi>
+            </el-drawer>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+    const custoapp = new Vue({
+        el: '#moduapp',
+        data: function() {
+            return {
+                list: [],
+
+                drawer1: false,
+                drawer2: false,
+
+                detail: {},
+                saveLoading: false
+            }
+        },
+        components: {
+            'jibenset': httpVueLoader('./component/jibenset.vue'),
+            'navset': httpVueLoader('./component/navset.vue'),
+            'seoshezhi': httpVueLoader('./component/seoshezhi.vue'),
+        },
+        created: function() {
+            this.getModule();
+        },
+        methods: {
+            async getModule() {
+                let res = await httpPost('m=system&c=set_module',{},{hideloading: true})
+                let data = res.data.data;
+
+                this.list = data.module;
+            },
+            save() {
+                let that = this;
+                that.saveLoading = true;
+                httpPost('m=system&c=set_module&a=save', that.list,{hideloading: true}).then(function(res) {
+                    if (res.data.error > 0) {
+                        message.error(res.data.msg);
+                    } else {
+                        message.success(res.data.msg);
+                    }
+                }).finally(function () {
+                    setTimeout(function () {
+                        that.saveLoading = false;
+                    }, 2000);
+                });
+            },
+            openNavset(config, name) {
+                this.detail = {
+                    config: config,
+                    name: name
+                };
+
+                this.drawer1 = true;
+            },
+            closeNavset() {
+                this.drawer1 = false;
+            },
+            openSeoshezhi(config, name) {
+                this.detail = {
+                    config: config,
+                    name: name
+                };
+
+                this.drawer2 = true;
+            },
+            closeSeoshezhi() {
+                this.drawer2 = false;
+            },
+        }
+    });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,973 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+
+<!-- 页面整体部分 -->
+<div id="yunvue">
+    <div class="none" v-bind:class="{show: islook}">
+        <div class="issue_post_body">
+            <form onsubmit="return formSubmit(this);">
+                <div class="yun_createbox">
+                    <div class="yun_createlist">
+                            <div class="yun_create_name"><span class="m_bt">*</span>兼职名称</div>
+                            <div class="yun_create_text">
+                                <input name="name" placeholder="请输入兼职名称" v-model="info.name"/>
+                            </div>
+                    </div>
+                    <div class="yun_createlist">
+                            <div class="yun_create_name"><span class="m_bt">*</span>兼职类别</div>
+                            <div class="yun_create_select" @click="typeShow = true">
+                                {{type.name[typeIndex]}}
+                                <input hidden="true" name="type" :value="info.type"/>
+                            </div>
+                       <div class="yun_create_fx">
+                       	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                       </div>
+                    </div>
+                    <!--兼职类别选择器-->
+                    <van-popup v-model="typeShow" round position="bottom">
+                        <van-picker
+                                show-toolbar
+                                :default-index="typeIndex"
+                                @cancel="typeShow = false"
+                                :columns="type.name"
+                                @confirm="bindtypeChange"
+                        />
+                    </van-popup>
+                    <div class="yun_createlist">
+                     
+                            <div class="yun_create_name"><span class="m_bt">*</span>招聘人数</div>
+                            <div class="yun_create_text">
+                                <input type="number" name="number" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请输入招聘人数" v-model="info.number"/>
+                            </div>
+                       
+                    </div>
+                    <div class="yun_createlist">
+                            <div class="yun_create_name"><span class="m_bt">*</span>兼职薪资</div>
+                            <div class="yun_create_text">
+                                <input type="number" name="salary" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请输入薪水" v-model="info.salary"/>
+                            </div>
+                     
+                    </div>
+                    <div class="yun_createlist">
+                            <div class="yun_create_name"><span class="m_bt">*</span>薪资类型</div>
+                            <div class="yun_create_select" @click="salarytypeShow = true">
+                                {{salarytype.name[salarytypeIndex]}}
+                                <input hidden="true" name="salarytype" :value="info.salary_type"/>
+                            </div>
+                        <div class="yun_create_fx">
+                        	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                        </div>
+                    </div>
+                    <!--薪资类型选择器-->
+                    <van-popup v-model="salarytypeShow" round position="bottom">
+                        <van-picker
+                                show-toolbar
+                                :default-index="salarytypeIndex"
+                                @cancel="salarytypeShow = false"
+                                :columns="salarytype.name"
+                                @confirm="bindsalarytypeChange"
+                        />
+                    </van-popup>
+                    <div class="yun_createlist">
+                            <div class="yun_create_name"><span class="m_bt">*</span>结薪方式</div>
+                            <div class="yun_create_select" @click="billingcycleShow = true">
+                                {{billingcycle.name[billingcycleIndex]}}
+                                <input hidden="true" name="billing_cycle" :value="info.billing_cycle"/>
+                            </div>
+                        <div class="yun_create_fx">
+                        	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                        </div>
+                    </div>
+                    <!--结薪方式选择器-->
+                    <van-popup v-model="billingcycleShow" round position="bottom">
+                        <van-picker
+                                show-toolbar
+                                :default-index="billingcycleIndex"
+                                @cancel="billingcycleShow = false"
+                                :columns="billingcycle.name"
+                                @confirm="bindbillingcycleChange"
+                        />
+                    </van-popup>
+                    <div class="yun_createlist">
+                            <div class="yun_create_name">性别要求</div>
+                            <div class="yun_create_select" @click="sexShow = true">
+                                {{sex.name[sexIndex]}}
+                                <input hidden="true" name="sex" :value="info.sex"/>
+                            </div>
+                       <div class="yun_create_fx">
+                       	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                       </div>
+                    </div>
+                    <!--性别要求选择器-->
+                    <van-popup v-model="sexShow" round position="bottom">
+                        <van-picker
+                                show-toolbar
+                                :default-index="sexIndex"
+                                @cancel="sexShow = false"
+                                :columns="sex.name"
+                                @confirm="bindsexChange"
+                        />
+                    </van-popup>
+                    <div class="yun_createlist">
+                            <div class="yun_create_name"><span class="m_bt">*</span>兼职时效</div>
+                            <div class="yun_create_text_p" @click="recruitmentMethodShow = true">
+                                <span v-if="timetypeIndex == 1 && info.sdate_n">{{timetype.name[timetypeIndex]}}，开始时间：{{info.sdate_n}}</span>
+                                <span v-else-if="timetypeIndex == 0 && info.sdate_n && info.edate_n">{{info.sdate_n}}至{{info.edate_n}}</span>
+                                <span v-else>请选择兼职时效</span>
+                            </div>
+                        <div class="yun_create_fx">
+                        	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                        </div>
+                    </div>
+                    <!--地图标注时用来控制显示隐藏，避免标注地点不准确-->
+                    <div v-show="!mapshow" >
+                        <div class="yun_create_jztime">
+                                <div class="yun_create_jztip"><span class="m_bt">*</span>兼职时间 </div>
+                                
+                           
+                           
+                 
+
+                        <table class="tjob_timetable " cellpadding="1" cellspacing="1">
+                            <tr>
+                                <th>&nbsp;</th>
+                                <th>周一</th>
+                                <th>周二</th>
+                                <th>周三</th>
+                                <th>周四</th>
+                                <th>周五</th>
+                                <th>周六</th>
+                                <th>周日</th>
+                            </tr>
+                            <tr>
+                                <th>上午</th>
+                                <td v-for="(item, morningkey) in morning" :key="morningkey">
+                                    <van-checkbox v-model="item.checked" name="item.name" shape="square"
+                                                  @click="bindworktime(item.name, item.checked)">
+                                    </van-checkbox>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>下午</th>
+                                <td v-for="(item, noonkey) in noon" :key="noonkey">
+                                    <van-checkbox v-model="item.checked" name="item.name" shape="square"
+                                                  @click="bindworktime(item.name, item.checked)">
+                                    </van-checkbox>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>晚上</th>
+                                <td v-for="(item, nightkey) in night" :key="nightkey">
+                                    <van-checkbox v-model="item.checked" name="item.name" shape="square"
+                                                  @click="bindworktime(item.name, item.checked)">
+                                    </van-checkbox>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="8" align="center">
+                                    <van-checkbox v-model="selectall" shape="square"
+                                                  @click="bindworktimeallChange(selectall)" style="width:1.6rem; margin: 0 auto;">
+                                        <i class="bindworktimea">全选</i>
+                                    </van-checkbox>
+                                </td>
+                            </tr>
+                        </table>
+       </div>
+                        <div class="yun_createlist yun_createlist_pr">
+                                <div class="yun_create_name"><span class="m_bt">*</span>兼职内容</div>
+                                <div class="yun_create_text_p" @click="opendesc">{{info.content_t ? info.content_t :
+                                    '简阐兼职内容~'}}
+                                </div>
+                            <div class="yun_create_fx">
+                            	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                            </div>
+                        </div>
+                        <div class="yun_createlist">
+                                <div class="yun_create_name"><span class="m_bt">*</span>联系人</div>
+                                <div class="yun_create_text">
+                                    <input name="linkman" placeholder="请输入联系人" v-model="info.linkman"/>
+                                </div>
+                          
+                        </div>
+                        <div class="yun_createlist">
+                                <div class="yun_create_name"><span class="m_bt">*</span>联系电话</div>
+                                <div class="yun_create_text">
+                                    <input type="number" name="linktel" placeholder="请输入联系电话" v-model="info.linktel" oninput="value=value.replace(/^0|[\^d]/g,'')" maxlength="11"/>
+                                </div>
+                            
+                        </div>
+                        <div class="yun_createlist">
+                          
+                                <div class="yun_create_name"><span class="m_bt">*</span>工作区域</div>
+                                <div class="yun_create_select" @click="areaShow = true">
+                                    {{city}}
+                                    <input hidden="true" name="province" :value="provinceid"/>
+                                    <input hidden="true" name="city" :value="cityid"/>
+                                    <input hidden="true" name="threecity" :value="threecityid"/>
+                                </div>
+                          
+                          <div class="yun_create_fx">
+                          	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                          </div>
+                        </div>
+                        <!--工作地点选择-->
+                        <van-popup v-model="areaShow" round position="bottom">
+                            <van-cascader
+                                    v-model="areaValue"
+                                    title="请选择工作区域"
+                                    :options="areaOptions"
+                                    @close="areaShow = false"
+                                    @finish="onAreaFinish"
+                            />
+                        </van-popup>
+
+                        <div class="yun_createlist" style="border-bottom:none">
+                            <div class="yun_create_name"><span class="m_bt">*</span>工作地址</div>
+                            <div class="yun_create_text">
+                                <input name="address" placeholder="请输入具体工作地址" v-model="address"/>
+                            </div>
+                            <div class="yun_create_fx" @click="chooseLocation" v-if="map_key!=''">
+                                <img src="{yun:}$wap_style{/yun}/images/issue_location.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+				<div class="yun_create_bthbox">
+                <input v-show="!mapshow" type="submit" value="提交" class="yun_create_bth"/>
+				</div>
+            </form>
+        </div>
+        <!--兼职时效-->
+        <van-popup v-model="recruitmentMethodShow" position="right" :style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
+            <!-- 页面头部部分 -->
+            <div class="comheader">
+                <span class="comheader_return" @click="recruitmentMethodShow = false"></span>
+                <div class="comheader_tit">兼职时效</div>
+            </div>
+            <!--主体部分-->
+            <div class="issue_post_body">
+                <div class="issue_post_body_card">
+                    <div class="post_body_card_job">
+                        <div class="body_card_job_box">
+                            <div class="card_job_box_post">兼职时效</div>
+                            <div class="card_job_box_name" @click="timetypeShow = true">{{timetype.name[timetypeIndex]}}</div>
+                        </div>
+                      <div class="yun_create_fx">
+                      	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                      </div>
+                    </div>
+                    <!--兼职时效选择器-->
+                    <van-popup v-model="timetypeShow" round position="bottom">
+                        <van-picker show-toolbar :default-index="timetypeIndex" @cancel="timetypeShow = false" :columns="timetype.name" @confirm="bindtimetypeChang"/>
+                    </van-popup>
+                    <div class="post_body_card_job">
+                        <div class="body_card_job_begin">
+                            <div class="body_card_job_begin_top">开始时间</div>
+                            <div class="body_card_job_begin_bom" @click="sdateShow = true">
+                                {{info.sdate_n?info.sdate_n:'请选择'}}
+                            </div>
+                        </div>
+                        <div class="body_card_job_to">至</div>
+                        <div class="body_card_job_begin">
+                            <div class="body_card_job_begin_top">结束时间</div>
+                            <div class="body_card_job_begin_bom" @click="edateShow = true">
+                                <span v-if="timetypeIndex">长期</span>
+                                <span v-else>{{info.edate_n?info.edate_n:'请选择'}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!--开始时间选择器-->
+                    <van-popup v-model="sdateShow" round position="bottom">
+                        <van-datetime-picker
+                                v-model="sdateCurrentDate"
+                                type="date"
+                                title="选择开始时间"
+                                :min-date="minDate"
+                                :max-date="maxDate"
+                                @confirm="sdateConfirm"
+								@cancel="sdateShow = false"
+                        />
+                    </van-popup>
+                    <!--结束时间选择器-->
+                    <van-popup v-model="edateShow" round position="bottom">
+                        <van-datetime-picker
+                                v-model="edateCurrentDate"
+                                type="date"
+                                title="选择结束时间"
+                                :min-date="minDate"
+                                :max-date="maxDate"
+                                @confirm="edateConfirm"
+								@cancel="edateShow = false"
+                        />
+                    </van-popup>
+                </div>
+                <div class="issue_post_body_btn" @click="recruitmentMethodShow = false">确定</div>
+            </div>
+        </van-popup>
+
+        <!--兼职内容弹出-->
+        <van-popup v-model="descshow" position="right"
+                   :style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
+            <div class="comheader">
+                <a class="comheader_return" @click="descshow = false"></a>
+                <div class="comheader_tit">兼职内容</div>
+            </div>
+            <div class="issue_post_body">
+             <div class="yun_createbox">
+             	<div class="yun_create_bjtip">不能填写电话，QQ，微信等联系方式及特殊符号，性别歧视等内容  </div>
+                    <textarea id="content" placeholder="简阐兼职内容~" maxlength="-1" style="width:100%;height: 500px;"
+                              name="description" :value="info.description"></textarea>
+                </div>
+                <div class="security_bth">
+                    <button type="submit" class="security_bth_but" @click="upDesc">保 存</button>
+                </div>
+            </div>
+        </van-popup>
+        <van-popup v-model="mapshow" position="bottom">
+            <div class="issue_post_body">
+                <div class="comWapMapSubct">
+                    <div class="comWapMapOnes">
+                        <div class="comWapMapTwos" v-if="map_key!=''">
+                            <div class="body_card_job_box">
+                                请单击下方地图完成地址标记
+                            </div>
+                            <div id="map_container"  style="width:100%;height:280px;overflow: hidden;margin:0;font-family:'微软雅黑';" v-if="map_key!=''"></div>
+                        </div>
+                        <div class="comWapMapShows">
+                            <div class="comWapMapEatel">
+                                <div class="yun_createlist">
+                                    <div class="yun_create_name">详细地址</div>
+                                    <div class="yun_create_text">
+                                        <input placeholder="请输入详细地址" v-model="address" name="address"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="comWapMapTishi" v-if="poi.length > 0">
+                                <span>可以选择搜索结果设置企业位置</span>
+                            </div>
+                            <ul>
+                                <li v-for="(item,pk) in poi" :key="pk">
+                                    <div @click="poiClick(pk)">
+                                        <span>{{item.name}}</span>
+                                        <b>{{item.address}}</b>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="security_bth" style="padding-top: 0;">
+                    <button class="security_bth_but" @click="closemap">确 定</button>
+                </div>
+            </div>
+        </van-popup>
+    </div>
+</div>
+<link rel="stylesheet"
+      href="{yun:}$wap_style{/yun}/js/umeditor/themes/default/css/umeditor.min.css?v={yun:}$config.cachecode{/yun}"
+      type="text/css"/>
+<script src="{yun:}$wap_style{/yun}/js/umeditor/umeditor.config.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$wap_style{/yun}/js/umeditor/umeditor.min.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$plusstyle{/yun}/city.cache.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$plusstyle{/yun}/part.cache.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$wap_style{/yun}/js/partPicker.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$wap_style{/yun}/js/category.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+{yun:}if $config.map_key{/yun}
+<script type="text/javascript">
+    window._AMapSecurityConfig = {
+        securityJsCode:'{yun:}$config.map_secret{/yun}'
+    }
+</script>
+<script type="text/javascript" src="{yun:}$config.mapurl{/yun}"></script>
+{yun:}/if{/yun}
+<script>
+    var map_key = '{yun:}$config.map_key{/yun}';
+    var cityParam = {
+        one_all: false,
+    };
+    var cityData = cityCategory(cityParam);
+    let myDate = new Date();
+    var citydefault = '请选择工作区域',
+        year = myDate.getFullYear(),
+        month = myDate.getMonth(),
+        day = myDate.getDate();
+    var map = null;
+    var umeditor = {};
+    var yunvue = new Vue({
+        el: '#yunvue',
+        data() {
+            return {
+                islook: false,
+                info: {
+                    sdate_n: '',
+                    edate_n: '',
+                    content: '',
+                },
+                type: {
+                    name: [],
+                    id: []
+                },
+                typeIndex: 0,
+                sex: {
+                    name: [],
+                    id: []
+                },
+                sexIndex: 0,
+                salarytype: {
+                    name: [],
+                    id: []
+                },
+                salarytypeIndex: 0,
+                billingcycle: {
+                    name: [],
+                    id: []
+                },
+                billingcycleIndex: 0,
+                timetype: {
+                    name: [],
+                    id: []
+                },
+                timetypeIndex: 1,
+
+                selectall: false,
+                selectarr: [],
+                morning: [],
+                noon: [],
+                night: [],
+
+                mapshow: false,
+                
+                latitude: '',
+                longitude: '',
+
+                city: citydefault,
+                provinceid: 0,
+                cityid: 0,
+                threecityid: 0,
+                editorCtx: null,
+                canEditor: false,
+                sdateCur: true,
+                sdateArr: [0, 0, 0],
+                edateCur: true,
+                edateArr: [0, 0, 0],
+                areaCode: [0, 0, 0],
+                nowtype: '',
+                isTextarea: false,
+                editorReady: false,
+
+                descshow: false,
+
+                // 工作地点选择
+                areaShow: false,
+                areaValue: 0,
+                areaOptions: cityData,
+
+                // 选择器弹框
+                typeShow: false,
+                salarytypeShow: false,
+                billingcycleShow: false,
+                sexShow: false,
+                timetypeShow: false,
+                recruitmentMethodShow: false, // 招聘方式
+                sdateShow: false,
+                edateShow: false,
+
+                // 日期选择
+                minDate: new Date(year, month, day), // 今天
+                maxDate: new Date(year + 5, 12, 31),
+                sdateCurrentDate: new Date(year, month, day),
+                edateCurrentDate: new Date(year, month, day),
+
+				map_key: map_key,
+                address: '',
+                poi:[]
+            };
+        },
+        created() {
+            let that = this,
+                partid = getUrlKey('id');
+
+            that.sex = getSex(); // 获取性别要求
+            that.billingcycle = getBillingcycle(); // 获取结薪方式
+            that.salarytype = getSalarytype(); // 获取薪资类型
+            that.type = getType();// 获取兼职类型
+            that.morning = getMorning(); // 兼职时间-早
+            that.noon = getNoon();// 兼职时间-中
+            that.night = getAfternoon();// 兼职时间-晚
+            that.timetype = getTimetype(); // 兼职时效
+
+            if (partid) {
+                that.partid = partid;
+                that.partinfo();
+            } else {
+                that.islook = true;
+            }
+        },
+        watch: {
+            address: function (value) {
+                if (value) {
+                    this.info.address = value;
+                    if (this.map_key !='' && this.mapshow){
+                        debounce(this.localsearch(),1000);
+                    }
+                }
+            },
+        },
+        methods: {
+            // 工作区域选择
+            onAreaFinish({selectedOptions}) {
+                this.provinceid = 0;
+                this.cityid = 0;
+                this.threecityid = 0;
+
+                let cityStr = '';
+
+                if (selectedOptions[0] && selectedOptions[0].value > 0) {
+                    if (selectedOptions[0]) {
+                        this.provinceid = selectedOptions[0].value;
+                        cityStr += selectedOptions[0].text;
+                    }
+
+                }
+                if (selectedOptions[1] && selectedOptions[1].value > 0) {
+                    if (selectedOptions[1]) {
+                        this.cityid = selectedOptions[1].value;
+                        cityStr += ' ' + selectedOptions[1].text;
+                    }
+                }
+                if (selectedOptions[2] && selectedOptions[2].value > 0) {
+                    if (selectedOptions[1]) {
+                        this.threecityid = selectedOptions[2].value;
+                        cityStr += ' ' + selectedOptions[2].text;
+                    }
+                }
+                this.city = cityStr ? cityStr : citydefault;
+                this.areaShow = false;
+            },
+            partinfo: function () {
+                if (this.partid) {
+                    let that = this,
+                        param = {
+                            id: that.partid,
+                            source: 'wap'
+                        };
+
+                    showLoading();
+                    $.post('{yun:}url d=wxapp h=com m=part c=partedit{/yun}', param, function (data) {
+                        hideLoading();
+                        let res = data.data;
+                        if (res.x && res.y) {
+                            that.longitude = res.x;
+                            that.latitude = res.y;
+                        }
+                        that.info = res;
+                        that.address = that.info.address
+
+                        that.provinceid = res.provinceid ? parseInt(res.provinceid) : 0;
+                        that.cityid = res.cityid ? parseInt(res.cityid) : 0;
+                        that.threecityid = res.three_cityid ? parseInt(res.three_cityid) : 0;
+
+                        // 处理兼职时间
+                        if (res.sdate_n) {
+                            let sdateArr = res.sdate_n.split("-");
+                            if (sdateArr.length == 3) {
+                                that.sdateCurrentDate = new Date(sdateArr[0], parseInt(sdateArr[1]) - 1, sdateArr[2]);
+                            }
+                        }
+                        if (res.edate_n) {
+                            let edateArr = res.edate_n.split("-");
+                            if (edateArr.length == 3) {
+                                that.edateArr = edateArr;
+                                that.edateCurrentDate = new Date(edateArr[0], parseInt(edateArr[1]) - 1, edateArr[2])
+                            }
+                        }
+
+                        that.city = res.cityname;
+                        if (that.threecityid > 0) {
+                            that.areaValue = that.threecityid
+                        } else if (that.cityid > 0) {
+                            that.areaValue = that.cityid
+                        } else {
+                            that.areaValue = that.provinceid;
+                        }
+
+                        if (res.worktime_n.length == 21) {
+                            that.selectall = true;
+                        }
+                        that.morning = getMorning(res.worktime_n); // 兼职时间-早
+                        that.noon = getNoon(res.worktime_n);// 兼职时间-中
+                        that.night = getAfternoon(res.worktime_n);// 兼职时间-晚
+                        that.selectarr = res.worktime_n;
+
+                        // 下标赋值
+                        that.timetypeIndex = (res.edate && res.edate > 0) ? 0 : 1;
+                        let billingcycleIndex = that.billingcycle.id.indexOf(res.billing_cycle ? parseInt(res.billing_cycle) : 0);
+                        that.billingcycleIndex = billingcycleIndex < 0 ? 0 : billingcycleIndex;
+                        let salarytypeIndex = that.salarytype.id.indexOf(res.salary_type ? parseInt(res.salary_type) : 0);
+                        that.salarytypeIndex = salarytypeIndex < 0 ? 0 : salarytypeIndex;
+                        let sexIndex = that.sex.id.indexOf(res.sex ? parseInt(res.sex) : 0);
+                        that.sexIndex = sexIndex < 0 ? 0 : sexIndex;
+                        let typeIndex = that.type.id.indexOf(res.type ? parseInt(res.type) : 0);
+                        that.typeIndex = typeIndex < 0 ? 0 : typeIndex;
+
+                        that.islook = true;
+                    }, 'json')
+                } else {
+                    this.info.content = '';
+                }
+            },
+            bindtypeChange: function (value, index) {
+                this.typeIndex = index;
+                this.info.type = this.type.id[index];
+                this.typeShow = false;
+            },
+            bindsalarytypeChange: function (value, index) {
+                this.salarytypeIndex = index;
+                this.info.salary_type = this.salarytype.id[index];
+                this.salarytypeShow = false;
+            },
+            bindsexChange: function (value, index) {
+                this.sexIndex = index;
+                this.info.sex = this.sex.id[index];
+                this.sexShow = false;
+            },
+            bindbillingcycleChange: function (value, index) {
+                this.billingcycleIndex = index;
+                this.info.billing_cycle = this.billingcycle.id[index];
+                this.billingcycleShow = false;
+            },
+            bindtimetypeChang: function (value, index) {
+                this.timetypeIndex = index;
+                if (index) {
+                    this.info.edate_n = '';
+                }
+                this.timetypeShow = false;
+            },
+            sdateConfirm(e) {
+                this.info.sdate_n = e.getFullYear() + '-' + (e.getMonth() + 1) + '-' + (e.getDate() < 10 ? '0' + e.getDate() : e.getDate());
+                this.sdateShow = false;
+            },
+            edateConfirm(e) {
+                this.info.edate_n = e.getFullYear() + '-' + (e.getMonth() + 1) + '-' + (e.getDate() < 10 ? '0' + e.getDate() : e.getDate());
+                this.edateShow = false;
+            },
+            bindworktime: function (value, checked) {
+                if (checked) {
+                    this.selectarr.push(value);
+                } else {
+                    let idx = this.selectarr.indexOf(value)
+                    if (idx >= 0) {
+                        this.selectarr.splice(idx, 1);
+                    }
+                }
+                if (this.selectarr.length == 21) {
+                    this.selectall = true;
+                } else {
+                    this.selectall = false;
+                }
+            },
+            bindworktimeallChange: function (checked) {
+                let that = this,
+                    morning = [],
+                    noon = [],
+                    night = [],
+                    selectarr = [];
+                for (let m = 0; m < that.morning.length; m++) {
+                    morning.push({
+                        name: that.morning[m]['name'],
+                        checked: checked
+                    });
+                    checked ? selectarr.push(that.morning[m]['name']) : '';
+                }
+                for (let n = 0; n < that.noon.length; n++) {
+                    noon.push({
+                        name: that.noon[n]['name'],
+                        checked: checked
+                    });
+                    checked ? selectarr.push(that.noon[n]['name']) : '';
+                }
+                for (let j = 0; j < that.night.length; j++) {
+                    night.push({
+                        name: that.night[j]['name'],
+                        checked: checked
+                    });
+                    checked ? selectarr.push(that.night[j]['name']) : '';
+                }
+                that.morning = morning;
+                that.noon = noon;
+                that.night = night;
+                that.selectarr = checked ? selectarr : [];
+            },
+            localsearch: function () {
+                var that = this;
+                if(that.info.address.length > 3){
+                    $.post('index.php?c=poi', {address: that.info.address}, function(e){
+                        if(e.status == '1' && e.tips.length > 0){
+                            that.poi = e.tips;
+                        }
+                    }, 'json');
+                }
+            },
+            poiClick: function(key){
+                map.clearMap();
+                var location = this.poi[key].location;
+                var lngLat = location.split(',');
+                this.longitude = lngLat[0];
+                this.latitude = lngLat[1];
+                var point = new AMap.LngLat(lngLat[0], lngLat[1]);
+                map.setZoomAndCenter(17, point);
+                var marker = new AMap.Marker({
+                    position: point
+                });
+                map.add(marker);
+            },
+            chooseLocation: function () {
+                let that = this;
+                that.mapshow = true;
+
+                setTimeout(() => {
+                    if (!map) {
+                        map = new AMap.Map("map_container");
+                    }else{
+                        map.clearMap();
+                    }
+                    var mapx = that.longitude,
+                        mapy = that.latitude;
+                    if (mapx && mapy) {
+                        this.setLocation(mapx, mapy);
+                    } else {
+                    
+                        AMap.plugin('AMap.Geolocation', function() {
+                           var geolocation = new AMap.Geolocation();
+                        
+                          geolocation.getCurrentPosition(function(status,result){
+                                if(status=='complete' && result.info == 'SUCCESS'){
+                                    var position = result.position;
+                                    that.longitude = position.lng;
+                                    that.latitude = position.lat;
+                                    
+                                    that.setLocation(position.lng, position.lat);
+                                }
+                          });
+                        });
+                    }
+                }, 300)
+            },
+
+            setLocation: function (x, y) {
+                let that = this;
+                if (!x && !y) {
+                    x = '116.404';
+                    y = '39.915';
+                }
+                var point = new AMap.LngLat(x, y);
+                map.setZoomAndCenter(15, point);
+                var marker = new AMap.Marker({
+                    position: point
+                });
+                map.add(marker);
+                // 解决移动端 click事件点击无效
+                map.on("touchmove", function (e) {
+                    map.setStatus({
+                        dragEnable: true
+                    });
+                });
+                //  触摸结束时触发次此事件  此时开启禁止拖动
+                map.on("touchend", function (e) {
+                    map.setStatus({
+                        dragEnable: false
+                    });
+                });
+                // 初始化地图 禁止拖动   注：虽禁止拖动，但是可以出发拖动事件
+                map.setStatus({
+                    dragEnable: false
+                });
+                map.on("click", function (e) {
+                    var lngLat = e.lnglat;
+                    that.longitude = lngLat.lng;
+                    that.latitude = lngLat.lat;
+                    map.clearMap();
+                    var marker = new AMap.Marker({
+                        position: new AMap.LngLat(lngLat.lng, lngLat.lat)
+                    });
+                    map.add(marker);
+                });
+            },
+
+            closemap: function () {
+                // this.longitude = this.geolocation.x;
+                // this.latitude = this.geolocation.y;
+                this.mapshow = false
+            },
+
+            opendesc: function () {
+                this.descshow = true;
+                umeditor = UM.getEditor('content', {
+                    toolbar: false,
+                    elementPathEnabled: false,
+                    wordCount: false,
+                    autoHeightEnabled: false
+                });
+
+                let that = this;
+                umeditor.addListener('ready', function () {
+                    umeditor.setContent(that.info.content)
+                })
+            },
+            upDesc: function () {
+                let that = this;
+                var content = umeditor.getContent();
+                if (content != "") {
+                    that.info.content = content;
+                    that.info.content_t = content.replace(/<[^>]+>/g, "");
+                    if (that.info.content_t == '') {
+                        showModal('请填写兼职内容');
+                        return false;
+                    }
+                } else {
+                    that.info.content = '';
+                    that.info.content_t = '';
+                }
+                that.descshow = false;
+            },
+        }
+    });
+
+    function formSubmit(e) {
+        var yd = yunvue.$data,
+            worktime = yd.selectarr;
+        try {
+            if (worktime) {
+                worktime = worktime.toString();
+            }
+
+            if (e.name.value.length == 0) {
+                showModal('请填写兼职名称');
+                return false;
+            }
+
+            if (e.type.value.length == 0) {
+                showModal('请选择兼职类别');
+                return false;
+            }
+            if (e.number.value.length == 0) {
+                showModal('请填写招聘人数');
+                return false;
+            }
+            if (e.salary.value.length == 0) {
+                showModal('请填写兼职薪资');
+                return false;
+            }
+            if (e.salarytype.value.length == 0) {
+                showModal('请选择兼职薪资类型');
+                return false;
+            }
+
+            if (e.billing_cycle.value.length == 0) {
+                showModal('请选择结薪方式');
+                return false;
+            }
+            if (yd.info.sdate_n.length == 0) {
+                showModal('请选择兼职开始时间');
+                return false;
+            }
+            if (yd.timetypeIndex != 1) {
+                if (!yd.info.edate_n) {
+                    showModal('请选择兼职结束时间');
+                    return false;
+                }
+            }
+            if (worktime.length == 0) {
+                showModal('请选择兼职时间');
+                return false;
+            }
+
+            let content = yd.info.content.replace(/<[^>]+>/g, "");
+            if (content.trim() == '') {
+                showModal('请输入兼职内容');
+                return false;
+            }
+
+            if (e.linkman.value.length == 0) {
+                showModal('请输入兼职联系人');
+                return false;
+            }
+
+            if (e.linktel.value.length == 0) {
+                showModal('请输入兼职联系电话');
+                return false;
+            }
+
+            if (e.linktel.value.length > 0) {
+                if (isjsMobile(e.linktel.value) == false) {
+                    showModal('请输入正确的手机号码');
+                    return false;
+                }
+            }
+
+            if (e.province.value.length == 0 || e.province.value == 0) {
+                showModal('请选择工作区域');
+                return false;
+            }
+            if (ct[e.province.value]) {
+                if (e.city.value.length == 0 || e.city.value == 0) {
+                    showModal('工作区域请选择二级类别');
+                    return false;
+                }
+            }
+
+            if (e.address.value.length == 0) {
+                showModal('请输入具体工作地址');
+                return false;
+            }
+
+            if (yd.map_key !='') {
+                if (yd.longitude == '' || yd.latitude == '') {
+                    showModal('请在地图上标注');
+                    return false;
+                }
+            }
+            var formData = {
+                name: e.name.value,
+                type: e.type.value,
+                number: e.number.value,
+                worktime: worktime.toString(),
+                sdate: yd.info.sdate_n,
+                edate: yd.info.edate_n,
+                sex: e.sex.value,
+                salary: e.salary.value,
+                salary_type: e.salarytype.value,
+                billing_cycle: e.billing_cycle.value,
+                provinceid: e.province.value,
+                cityid: e.city.value,
+                three_cityid: e.threecity.value,
+                address: e.address.value,
+                x: yd.longitude,
+                y: yd.latitude,
+                linkman: e.linkman.value,
+                linktel: e.linktel.value,
+                source: 'wap'
+            };
+            if (yd.info.id) {
+                formData.id = yd.info.id;
+            }
+            formData.content = yd.info.content;
+
+            showLoading('提交中');
+            $.post('{yun:}url d=wxapp h=com m=part c=partsave{/yun}', formData, function (data) {
+                hideLoading();
+                if (data.error == 1) {
+                    window.localStorage.setItem("needRefresh", 1);
+                    showModal(data.msg, function () {
+                        history.go(-1);
+                    });
+                } else {
+                    showModal(data.msg);
+                }
+            }, 'json')
+        } catch (err) {}
+
+        return false;
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<!-- 页面头部部分 -->
+
+<div id="yunvue">
+    <div class=" none"  v-bind:class="{show: islook}">
+        <div class="m_cardbox">
+            <div v-if="total">
+                <div v-for="(item, infokey) in info" :key="infokey" class="m_cardbg" v-on:click="pageTo('index.php?c=invitecont&id='+item.id)">
+                    <div class="invitation_card_name">
+                        <div class="card_name_box">
+                            <div class="card_name_box_head">
+                                <div class="card_name_box_set">
+                                    <img v-if="item.sex == '男'" src="{yun:}$wap_style{/yun}/images/set_man.png" alt="">
+                                    <img v-else src="{yun:}$wap_style{/yun}/images/set_woman.png" alt="">
+                                </div>
+                                <img :src="item.photo" alt="">
+                            </div>
+                            <div class="card_name_box_synthesize">
+                                <div class="box_synthesize_name" >{{item.name}}</div>
+                                <div class="box_synthesize_require"><span v-if="item.exp">{{item.exp}}经验·</span><span v-if="item.edu">{{item.edu}}学历·</span>{{item.age}}岁
+                                </div>
+                            </div>
+                        </div>
+                        <div v-if="item.is_browse < 3" class="card_name_state">待接受</div>
+                        <div v-else-if="item.is_browse == 3" class="card_name_accepted">
+                            <div v-if="item.over == 1">已结束</div>
+                            <div v-else>已接受</div>
+                        </div>
+                        <div v-else-if="item.is_browse == 4" class="card_name_refused">无法面试</div>
+                    </div>
+                    <div class="invitation_card_time">
+                        <div class="invitation_card_time_q">面试时间</div>
+                        <div class="invitation_card_time_a">{{item.ms_time}}</div>
+                    </div>
+                    <div class="invitation_card_job">
+                        <div class="invitation_card_time_q">面试职位</div>
+                        <div class="invitation_card_time_a">{{item.jobname}}</div>
+                    </div>
+                    <div class="invitation_card_contact" v-show="item.down=='1'">
+                        <div class="invitation_card_contact_box">
+                            <div class="invitation_card_time_q">联系方式</div>
+                            <div class="invitation_card_time_a">{{item.telphone}}</div>
+                        </div>
+                    </div>
+                    <div class="invitation_card_job" v-show="item.remark!=''">
+                        <div class="invitation_card_time_q">拒绝原因</div>
+                        <div class="invitation_card_time_a">{{item.remark}}</div>
+                    </div>
+					
+					<div class="m_card_del" @click.stop="delInvite(item.id, infokey)">
+					    <img src="{yun:}$wap_style{/yun}/images/resume_del.png" alt="">
+					</div>
+					<div class="m_card_bj"  v-if="item.is_pl!=0 && item.is_pl" @click.stop="navigateTo('index.php?c=pl&id='+item.is_pl)">
+					    <img src="{yun:}$wap_style{/yun}/images/pj.png" alt="">
+					</div>
+				
+                </div>
+
+                <div v-if="total > limit">
+                    <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange"/>
+                </div>
+            </div>
+
+            <div v-else>
+                <van-empty image="search" description="很抱歉,暂无邀请面试人才！"/></van-empty>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var yunvue = new Vue({
+        el: '#yunvue',
+        data() {
+            return {
+                info: [],
+                browse: ['', '未查看', '已查看', '已同意', '已拒绝'],
+                islook: false,
+
+                total: 0,
+                pageTotal: 0,
+                page: 1,
+                limit: 10,
+            };
+        },
+        created() {
+            this.getinvite('refresh');
+        },
+        methods: {
+            getinvite(type) {
+                var that = this;
+                if (type && type == 'refresh') {
+                    that.page = 1;
+                    that.info = [];
+                    that.islook = false;
+                }
+
+                var paramer = {
+                    page: that.page,
+                    limit: that.limit
+                };
+
+                showLoading();
+                $.post('{yun:}url d=wxapp h=com m=resume c=invitelist{/yun}', paramer, function (data) {
+                    hideLoading();
+                    let list = data.data.list;
+                    if (list && list.length > 0) {
+                        that.total = data.data.total;
+                        that.pageTotal = Math.ceil(data.data.total/that.limit);
+                        that.info = list;
+                    }
+                    that.islook = true;
+                    
+                }, 'json')
+            },
+            pageChange: function(page){
+                this.page = page;
+                this.getinvite('');
+            },
+            delInvite(id, key) {
+                var that = this;
+                var paramer = {
+                    ids: id
+                };
+                showConfirm('确定删除？', function () {
+                    showLoading('删除中');
+                    $.post('{yun:}url d=wxapp h=com m=resume c=invite_del{/yun}', paramer, function (data) {
+                        hideLoading();
+                        if (data.error == 1) {
+                            showToast('删除成功',2, function () {
+                                that.info.splice(key, 1);
+                            });
+                        }
+                    }, 'json')
+                });
+            },
+            pageTo(url){
+                window.location.href = url;
+            }
+        }
+    });
+</script>
+</body>
+
+</html>

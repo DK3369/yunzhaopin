@@ -1,0 +1,107 @@
+<div class="sidebar">
+	<div class="left_box">
+		<ul class="left_nav_ul">
+			<li class="{yun:}if $leftCur==1{/yun}left_nav_newcur{yun:}/if{/yun}">
+				<span>
+					<a href="index.php" title="首页" class="new_com_nav_a"><i class="com_left_icon com_left_icon1"></i>企业中心</a>
+				</span>
+			</li>
+			{yun:}if $company.is_nav == 1{/yun}
+			<li class="{yun:}if $leftCur==2{/yun}left_nav_newcur{yun:}/if{/yun}">
+                    <span>
+                        <a href="index.php?c=job&w=1" title="发布中的职位" class="new_com_nav_a"><i class="com_left_icon com_left_icon2"></i>职位管理</a>
+                    </span>
+			</li>
+			<li class="{yun:}if $leftCur==3{/yun}left_nav_newcur{yun:}/if{/yun}">
+                    <span>
+                        <a href="index.php?c=hr" title="简历管理" class="new_com_nav_a"><i class="com_left_icon com_left_icon4"></i>简历管理{yun:}if $newResumeNum> 0{/yun}<i class="com_icon com_icon_new">{yun:}$newResumeNum{/yun}</i>{yun:}/if{/yun}</a>
+                    </span>
+			</li>
+			<li class="{yun:}if $leftCur==4{/yun}left_nav_newcur{yun:}/if{/yun}">
+                    <span>
+                        <a href="index.php?c=invite" title="面试管理" class="new_com_nav_a"><i class="com_left_icon com_left_icon10"></i>面试管理</a>
+                    </span>
+			</li>
+			
+			<li class="{yun:}if $leftCur==9{/yun}left_nav_newcur{yun:}/if{/yun}">
+                    <span>
+                        <a href="index.php?c=right" class="new_com_nav_a"><i class="com_left_icon com_left_icon7"></i>会员服务</a>
+                    </span>
+			</li>
+			<li class="{yun:}if $leftCur==5{/yun}left_nav_newcur{yun:}/if{/yun}">
+			        <span>
+			            <a href="index.php?c=resume" class="new_com_nav_a"><i class="com_left_icon com_left_icon3"></i>人才库</a>
+			        </span>
+			</li>
+			<li class="{yun:}if $leftCur==7{/yun}left_nav_newcur{yun:}/if{/yun}">
+			        <span>
+			            <a href="index.php?c=zhaopinhui" class="new_com_nav_a"><i class="com_left_icon com_left_icon12"></i>招聘会</a>
+			        </span>
+			</li>
+			<li class="{yun:}if $leftCur==10{/yun}left_nav_newcur{yun:}/if{/yun}">
+                    <span>
+                        <a href="index.php?c=info" title="企业资料" class="new_com_nav_a"><i class="com_left_icon com_left_icon8"></i>企业资料</a>
+                    </span>
+			</li>
+			<li class="{yun:}if $leftCur==11{/yun}left_nav_newcur{yun:}/if{/yun}">
+                    <span>
+                        <a href="index.php?c=binding" title="账号设置" class="new_com_nav_a"><i class="com_left_icon com_left_icon11"></i>账号设置</a>
+                    </span>
+			</li>
+			<li class="more_box {yun:}if $leftCur==12{/yun}left_nav_newcur{yun:}/if{/yun}" style="position: relative; z-index: 100;" onMouseOver="leftmoreShow('show')" onMouseOut="leftmoreShow('hide')">
+				<span><a title="更多服务" class="new_com_nav_a"><i class="com_left_icon com_left_icon9"></i>更多服务</a></span>
+				<div class="user_more" style="display: none;">
+					
+					<div class="user_more_list">
+						<span class="user_more_name">人才管理 ></span>
+						<a href="index.php?c=record" class="user_more_a">推送简历</a>
+						<a href="index.php?c=finder" class="user_more_a">人才搜索器</a>
+					</div>
+					<div class="user_more_list">
+						<span class="user_more_name">其他服务 ></span>
+						{yun:}if $config.sy_special_web == 1{/yun}<a href="index.php?c=special" class="user_more_a">专题招聘</a>{yun:}/if{/yun}
+						<a href="index.php?c=report&act=show" title="投诉记录" class="user_more_a">投诉记录</a>
+						{yun:}if $config.sy_ask_web == 1{/yun}<a href="{yun:}url m=ask c=friend a=myquestion uid=$uid{/yun}" target="_blank" title="我的问答" class="user_more_a">我的问答</a>{yun:}/if{/yun}
+						<a href="index.php?c=customize" class="user_more_a">导航自定义</a>
+					</div>
+				</div>
+			</li>
+			{yun:}else{/yun}
+			{yun:}foreach from=$leftNav item=nav key=nk{/yun}
+			{yun:}if $nav.show == 1{/yun}
+			<li class="{yun:}if $leftCur==2 && $nav.url=='job' || $leftCur==3 && $nav.url=='hr' || $leftCur==4 && $nav.url=='invite' || $leftCur==5 && $nav.url=='resume'|| $leftCur==7 && $nav.url=='zhaopinhui'|| $leftCur==9 && $nav.url=='right' || $leftCur==10 && $nav.url=='info' || $leftCur==11 && $nav.url=='binding'{/yun}left_nav_newcur{yun:}/if{/yun}">
+                    <span>
+                        <a href="index.php?c={yun:}$nav.url{/yun}{yun:}if $nav.url=='job'{/yun}&w=1{yun:}/if{/yun}" title="{yun:}$nav.name{/yun}" class="new_com_nav_a"  {yun:}if $nav.target==2{/yun}target="_blank"{yun:}/if{/yun}>
+                            <i class="com_left_icon com_left_icon{yun:}$nav.icon{/yun}"></i>{yun:}$nav.name{/yun}
+                            {yun:}if $nav.url == hr && $newResumeNum > 0{/yun}<i class="com_icon com_icon_new">{yun:}$newResumeNum{/yun}</i>{yun:}/if{/yun}
+                        </a>
+                    </span>
+			</li>
+			{yun:}/if{/yun}
+			{yun:}/foreach{/yun}
+			<li class="more_box {yun:}if $leftCur==12{/yun}left_nav_newcur{yun:}/if{/yun}" style="position: relative; z-index: 100;" onMouseOver="leftmoreShow('show')" onMouseOut="leftmoreShow('hide')">
+				<span><a title="更多服务" class="new_com_nav_a"><i class="com_left_icon com_left_icon9"></i>更多服务</a></span>
+				<div class="user_more" style="display: none;">
+					
+					<div class="user_more_list">
+						<span class="user_more_name">人才管理 ></span>
+						<a href="index.php?c=record" class="user_more_a">推送简历</a>
+						<a href="index.php?c=finder" class="user_more_a">人才搜索器</a>
+					</div>
+					<div class="user_more_list">
+						<span class="user_more_name">其他服务 ></span>
+						{yun:}foreach from=$hideNav item=hv key=hk{/yun}
+						<a href="index.php?c={yun:}$hv.url{/yun}" class="user_more_a">{yun:}$hv.name{/yun}</a>
+						{yun:}/foreach{/yun}
+						{yun:}if $config.sy_special_web == 1{/yun}<a href="index.php?c=special" class="user_more_a">专题招聘</a>{yun:}/if{/yun}
+						<a href="index.php?c=report&act=show" title="投诉记录" class="user_more_a">投诉记录</a>
+						{yun:}if $config.sy_ask_web == 1{/yun}<a href="{yun:}url m=ask c=friend a=myquestion uid=$uid{/yun}" target="_blank" title="我的问答" class="user_more_a">我的问答</a>{yun:}/if{/yun}
+						<a href="index.php?c=customize" class="user_more_a">导航自定义</a>
+						
+					</div>
+				</div>
+			</li>
+			{yun:}/if{/yun}
+		</ul>
+	</div>
+</div>

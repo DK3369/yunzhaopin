@@ -1,0 +1,676 @@
+@CHARSET "GBK";
+
+body {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    width: 100%;
+    height: 100%;
+    background: #145dff;
+    font-family: "microsoft yahei"
+}
+button,
+input {
+    border: none;
+    outline: none;
+    background: none;
+}
+
+input::-ms-clear {
+    display: none;
+}
+
+button {
+    cursor: pointer;
+}
+
+.adminDomeAll {
+    overflow: hidden;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+
+.logoinLogo {
+
+    position: absolute;
+    width: auto;
+    top: 21px;
+    left: 48px;
+    z-index: 1;
+}
+
+.logoinLogo img {
+
+    height: auto;
+}
+
+
+/*定位图*/
+.logoinBlock1 {
+    overflow: hidden;
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    z-index: 1;
+}
+
+.logoinBlock2 {
+    overflow: hidden;
+    position: absolute;
+    bottom: 50px;
+    right: 50px;
+    z-index: 1;
+}
+
+.logoinBlock3 {
+    overflow: hidden;
+    position: absolute;
+    top: 13%;
+    right: 20%;
+    z-index: 1;
+}
+
+
+.loginCont {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loginBoxs {
+    width: 400px;
+    min-height: 410px;
+    background: #fff;
+    overflow: hidden;
+    border-radius: 6px;
+    position: relative;
+    z-index: 55;
+}
+
+.logoinRight {
+    width: calc(100% - 60px);
+    overflow: hidden;
+    padding: 50px 30px;
+}
+
+.logoinName {
+    overflow: hidden;
+    font-size: 24px;
+    color: #141516;
+    text-align: center;
+}
+
+.loginIptbox {
+    overflow: hidden;
+    margin: 0;
+}
+
+
+.logoinList {
+    overflow: hidden;
+    position: relative;
+    padding-top: 15px;
+    padding: 15px 0 0 0;
+    margin: 0;
+}
+
+.logoinList li {
+    overflow: hidden;
+    padding: 12px 0;
+}
+
+.adminLogins {
+    overflow: hidden;
+    height: 50px;
+    border-radius: 26px;
+    border: 1px solid #E5E5E5;
+    background: url(./lo_user.png) 15px center no-repeat;
+}
+
+.adminLoginTwo {
+    background: url(./lo_mm.png) 15px center no-repeat;
+}
+
+.adminLogins input {
+    width: calc(100% - 38px);
+    border: none;
+    height: 50px;
+    border-radius: 26px;
+    background: none;
+    padding-left: 38px;
+    font-size: 14px;
+    color: #999;
+}
+
+.adminLoginsButton {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.adminLogiSub {
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    display: block;
+    border-radius: 26px;
+    font-size: 16px;
+    font-weight: 500;
+    background: #145DFF;
+    color: #fff;
+    cursor: pointer;
+}
+
+.loginMessage {
+    overflow: hidden;
+    height: 50px;
+    border-radius: 26px;
+    border: 1px solid #E5E5E5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: url(./mesuy.png) 15px center no-repeat;
+}
+
+.loginMessage img {
+    margin: 0 10px 0 0;
+    border-radius: 10px;
+}
+
+.loginMessage input {
+    margin-left: 10px;
+    border-radius: 10px;
+    padding-left: 28px;
+    border: none;
+    font-size: 14px;
+    color: #999;
+    background: none;
+}
+
+
+
+.logoinContImg {
+    overflow: hidden;
+    width: 620px;
+    height: 480px;
+    margin-right: 40px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 33;
+}
+
+.logoinContImg .logoinBacimg1 {
+    overflow: hidden;
+    position: relative;
+    z-index: 22;
+    padding-bottom: 77px;
+}
+
+.logoinContImg .logoinBacimg2 {
+    overflow: hidden;
+    position: absolute;
+    top: 20px;
+    left: -24px;
+    z-index: 1;
+}
+
+.logoinContImg .logoinBacimg3 {
+    overflow: hidden;
+    position: absolute;
+    bottom: 0;
+    left: 62px;
+    z-index: 1;
+}
+
+.logoinContImg .logoinBacimg4 {
+    overflow: hidden;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+}
+
+.logoinContImg .logoinBacimg5 {
+    overflow: hidden;
+    position: absolute;
+    top: 50px;
+    right: 65px;
+    z-index: 1;
+}
+
+.logoinContImg .logoinBacimg6 {
+    overflow: hidden;
+    position: absolute;
+    top: 246px;
+    left: 0;
+    z-index: 1;
+}
+
+.logoinContImg .logoinBacimg7 {
+    overflow: hidden;
+    position: absolute;
+    bottom: 0;
+    left: 190px;
+    z-index: 1;
+}
+
+.logoinContImg .logoinBacimg8 {
+    overflow: hidden;
+    position: absolute;
+    bottom: 18px;
+    left: 332px;
+    z-index: 1;
+}
+
+.logoinContImg .logoinBacimg9 {
+    overflow: hidden;
+    position: absolute;
+    top: 220px;
+    right: 95px;
+    z-index: 1;
+}
+
+.logoinContImg .logoinBacimg10 {
+    overflow: hidden;
+    position: absolute;
+    top: 172px;
+    right: 355px;
+    z-index: 33;
+}
+
+.logoinContImg .logoinBacimg100 {
+    overflow: hidden;
+    position: absolute;
+    top: 175px;
+    right: 357px;
+    z-index: 34;
+    -webkit-animation: weixindt 1.8s linear infinite;
+    animation: weixindt 1.8s linear infinite;
+}
+
+@-webkit-keyframes weixindt {
+    25% {
+        -webkit-transform: translateY(-5px);
+    }
+
+    50%,
+    100% {
+        -webkit-transform: translateY(0);
+    }
+
+    75% {
+        -webkit-transform: translateY(5px);
+    }
+}
+
+/*--------------------*/
+.logoinContImg .logoinBacimg11 {
+    overflow: hidden;
+    position: absolute;
+    top: 255px;
+    right: 370px;
+    z-index: 33;
+}
+
+.logoinContImg .logoinBacimg110 {
+    overflow: hidden;
+    position: absolute;
+    top: 255px;
+    right: 372px;
+    z-index: 34;
+    -webkit-animation: xiaochengx 1.6s linear infinite;
+    animation: xiaochengx 1.6s linear infinite;
+}
+
+@-webkit-keyframes xiaochengx {
+    25% {
+        -webkit-transform: translateY(-4px);
+    }
+
+    50%,
+    100% {
+        -webkit-transform: translateY(0);
+    }
+
+    75% {
+        -webkit-transform: translateY(4px);
+    }
+}
+
+/*--------------------*/
+.logoinContImg .logoinBacimg12 {
+    overflow: hidden;
+    position: absolute;
+    top: 263px;
+    right: 235px;
+    z-index: 33;
+}
+
+.logoinContImg .logoinBacimg120 {
+    overflow: hidden;
+    position: absolute;
+    top: 263px;
+    right: 237px;
+    z-index: 34;
+    -webkit-animation: douyins 1.7s linear infinite;
+    animation: douyins 1.7s linear infinite;
+}
+
+@-webkit-keyframes douyins {
+    25% {
+        -webkit-transform: translateY(-4px);
+    }
+
+    50%,
+    100% {
+        -webkit-transform: translateY(0);
+    }
+
+    75% {
+        -webkit-transform: translateY(4px);
+    }
+}
+
+/*--------------------*/
+.logoinContImg .logoinBacimg13 {
+    overflow: hidden;
+    position: absolute;
+    top: 180px;
+    right: 215px;
+    z-index: 33;
+}
+
+.logoinContImg .logoinBacimg130 {
+    overflow: hidden;
+    position: absolute;
+    top: 180px;
+    right: 217px;
+    z-index: 34;
+    -webkit-animation: baiduse 2s linear infinite;
+    animation: baiduse 2s linear infinite;
+}
+
+@-webkit-keyframes baiduse {
+    25% {
+        -webkit-transform: translateY(-6px);
+    }
+
+    50%,
+    100% {
+        -webkit-transform: translateY(0);
+    }
+
+    75% {
+        -webkit-transform: translateY(6px);
+    }
+}
+
+/*++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+.logoinContImg .logoinBacimg14 {
+    overflow: hidden;
+    position: absolute;
+    top: 135px;
+    left: 277px;
+    width: 14px;
+    height: 94px;
+    z-index: 40;
+}
+
+.logoinContImg .logoinBacimg14 img {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    animation: fireToop1 4s linear infinite;
+}
+
+@keyframes fireToop1 {
+    0% {
+        bottom: 140px;
+    }
+
+    100% {
+        bottom: -10px;
+    }
+}
+
+/*++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+.logoinContImg .logoinBacimg15 {
+    overflow: hidden;
+    position: absolute;
+    top: 135px;
+    left: 277px;
+    width: 14px;
+    height: 70px;
+    z-index: 40;
+}
+
+.logoinContImg .logoinBacimg15 img {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    animation: fireToop2 6s linear infinite;
+}
+
+@keyframes fireToop2 {
+    0% {
+        bottom: 120px;
+    }
+
+    100% {
+        bottom: -10px;
+    }
+}
+
+/*++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+.logoinContImg .logoinBacimg16 {
+    overflow: hidden;
+    position: absolute;
+    top: 153px;
+    left: 303px;
+    width: 14px;
+    height: 70px;
+    z-index: 40;
+}
+
+.logoinContImg .logoinBacimg16 img {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    animation: fireToop3 6s linear infinite;
+}
+
+@keyframes fireToop3 {
+    0% {
+        bottom: 120px;
+    }
+
+    100% {
+        bottom: -10px;
+    }
+}
+
+.logoinContImg .logoinBacimg17 {
+    overflow: hidden;
+    position: absolute;
+    top: 153px;
+    left: 303px;
+    width: 14px;
+    height: 70px;
+    z-index: 40;
+}
+
+.logoinContImg .logoinBacimg17 img {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    animation: fireToop4 3s linear infinite;
+}
+
+@keyframes fireToop4 {
+    0% {
+        bottom: 120px;
+    }
+
+    100% {
+        bottom: -10px;
+    }
+}
+
+/*++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+.logoinContImg .logoinBacimg18 {
+    overflow: hidden;
+    position: absolute;
+    top: 173px;
+    left: 333px;
+    width: 14px;
+    height: 70px;
+    z-index: 40;
+}
+
+.logoinContImg .logoinBacimg18 img {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    animation: fireToop6 7s linear infinite;
+}
+
+@keyframes fireToop6 {
+    0% {
+        bottom: 120px;
+    }
+
+    100% {
+        bottom: -10px;
+    }
+}
+
+.logoinContImg .logoinBacimg19 {
+    overflow: hidden;
+    position: absolute;
+    top: 173px;
+    left: 333px;
+    width: 14px;
+    height: 70px;
+    z-index: 40;
+}
+
+.logoinContImg .logoinBacimg19 img {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    animation: fireToop7 4s linear infinite;
+}
+
+.weixnLogins{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 8px;
+}
+.weixnLogins div{
+    overflow: hidden;
+    position: relative;
+    width: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #67c23a;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid #67c23a;
+    padding: 3px 0;
+    border-radius: 14px;
+    background: #f0f9eb;
+}
+.weixnLogins div img{
+    overflow: hidden;
+    display: block;
+    width: 18px;
+    height: auto;
+    margin: 2px 4px 0 0;
+}
+.weixinsapoyis{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-top: 25px;
+}
+.weixinsapImg{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.weixinsapImg img{
+    overflow: hidden;
+    display: block;
+    width: 180px;
+    height: auto;
+}
+.weixinsapTxte{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-top: 15px;
+    padding-bottom: 10px;
+}
+.weixinsapTxte span{
+    overflow: hidden;
+    position: relative;
+    width: 200px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f1f1f1;
+    border-radius: 21px;
+    font-size: 14px;
+    color: #555;
+}
+
+
+.loginTabse{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+
+@keyframes fireToop7 {
+    0% {
+        bottom: 120px;
+    }
+
+    100% {
+        bottom: -10px;
+    }
+}

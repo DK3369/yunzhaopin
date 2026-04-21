@@ -1,0 +1,126 @@
+<body>
+
+<div class="user_header">
+    <div class="w1200">
+        <div class="user_headerlogo ">
+            <a href="{yun:}$config.sy_weburl{/yun}" target="_blank" title='返回网站首页'>
+                <img alt="{yun:}$config.sy_webname{/yun}" src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_logo{/yun}">
+            </a>
+        </div>
+<div class="user_headerright ">
+        <a href="{yun:}$config.sy_weburl{/yun}" target="_blank" title='返回网站首页' class="user_m_fanh">返回首页</a>
+
+        <div class="yun_m_headermsg" onMouseOver="tzmsgNumShow('show')" onMouseOut="tzmsgNumShow('hide')">
+            <i class="yun_m_headermsg_icon"></i>通知中心<span class="yun_m_headermsg_n" id="msgNum" style="display:none">0</span>
+            <div class="yun_m_headermsg_box" style="display:none">
+                <div class="yun_m_headermsg_list">
+                    <a href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=invite">面试通知 <em class="yun_m_headermsg_list_n" id="userid_msgNum"></em></a>
+                </div>
+                <div class="yun_m_headermsg_list">
+                    <a href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=sysnews">系统消息 <em class="yun_m_headermsg_list_n" id="sysmsgNum"></em></a>
+                </div>
+                <div class="yun_m_headermsg_list">
+                    <a href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=commsg">企业回复咨询 <em class="yun_m_headermsg_list_n" id="usermsgNum"></em></a>
+                </div>
+            </div>
+        </div>
+        <div class="header_m_navright">
+
+            <div class="header_m_navright_tip" style="display:none;">
+                <div class="header_m_navright_tip_box">7 项资料未完善, <a href="###" class="cblue">立即完善</a><a href="###" class="header_m_navright_tip_close"></a></div>
+            </div>
+            <div class="yun_m_indexinfo_user_qd"><i class="yun_m_indexinfo_user_qd_icon"></i>{yun:}sign{/yun}</div>
+            <div class="yun_m_headertx">
+                <a href="index.php?c=uppic" class="yun_m_headertxa">
+                    {yun:}if $resume.sex==1{/yun}
+                    <img src="{yun:}$resume.photo{/yun}" border="0" height="30" width="30" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_icon{/yun}',2);"/>
+                    {yun:}else{/yun}
+                    <img src="{yun:}$resume.photo{/yun}" border="0" height="30" width="30" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_iconv{/yun}',2);"/>
+                    {yun:}/if{/yun}
+                </a>
+
+                <div class="yun_m_headertx_hi">{yun:}$resume.name{/yun}</div>
+
+                <div class="yun_m_header_info" style="display:none;">
+
+                    <div class="user_tc_tit">我的{yun:}$config.integral_pricename{/yun}</div>
+                    <div class="user_t_jf">
+                        <span class="yun_m_index_pay_n">{yun:}$statis.integral{/yun}</span>
+                        {yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}
+                        <a href="index.php?c=pay" class="yun_m_index_pay_a">充值</a>
+                        {yun:}if $config.sy_redeem_web==1{/yun}
+                        <a href="{yun:}url m=redeem{/yun}" class="yun_m_index_pay_a" target="_blank">兑换礼品</a>
+                        {yun:}/if{/yun}
+                        <a href="index.php?c=integral" class="yun_m_index_pay_a">赚{yun:}$config.integral_pricename{/yun}</a>
+                    </div>
+
+                    <div class="user_tc_tit">我的认证</div>
+                    <div class="yun_m_indexinfo_user_bding">
+                        <div class="yun_m_indexinfo_user_bding_p">
+                            <a href="index.php?c=passwd">
+                                {yun:}if $resume.moblie_status!='1'{/yun}
+                                <span class="yun_user_rz_box yun_user_rz_sj"><i class="yun_user_rz_no_icon"></i><em class="yun_user_rz_no">手机未认证</em></span>
+                                {yun:}else{/yun}
+                                <span class="yun_user_rz_box yun_user_rz_sj"><i class="yun_user_rz_yes_icon"></i><em class="yun_user_rz_yes">手机已认证</em></span>
+                                {yun:}/if{/yun}
+                            </a>
+                        </div>
+                        <div class="yun_m_indexinfo_user_bding_p">
+                            <a href="index.php?c=passwd">
+                                {yun:}if $resume.idcard_status!='1'{/yun}
+                                    <span class="yun_user_rz_box yun_user_rz_sf"><i class="yun_user_rz_no_icon"></i><em class="yun_user_rz_no">身份未认证</em></span>
+                                {yun:}else{/yun}
+                                    <span class="yun_user_rz_box yun_user_rz_sf"><i class="yun_user_rz_yes_icon"></i><em class="yun_user_rz_yes">身份已认证</em></span>
+                                {yun:}/if{/yun}
+                            </a>
+                        </div>
+
+                        {yun:}if $config.wx_author == '1'{/yun}
+                        <div class="yun_m_indexinfo_user_bding_p">
+                            <a href="index.php?c=binding">
+                                {yun:}if $member.unionid!="" || $member.wxid!=''{/yun}
+                                    <span class="yun_user_rz_box yun_user_rz_wx"><i class="yun_user_rz_yes_icon"></i><em class="yun_user_rz_yes">微信认证</em></span>
+                                {yun:}else{/yun}
+                                    <span class="yun_user_rz_box yun_user_rz_wx"><i class="yun_user_rz_no_icon"></i><em class="yun_user_rz_no">微信未认证</em></span>
+                                {yun:}/if{/yun}
+                            </a>
+                        </div>
+                        {yun:}/if{/yun}
+
+                        <div class="yun_m_indexinfo_user_bding_p">
+                            <a href="index.php?c=passwd">
+                                {yun:}if $resume.email_status!='1'{/yun}
+                                    <span class="yun_user_rz_box yun_user_rz_yx"><i class="yun_user_rz_no_icon"></i><em class="yun_user_rz_no">邮箱未认证</em></span>
+                                {yun:}else{/yun}
+                                    <span class="yun_user_rz_box yun_user_rz_yx"><i class="yun_user_rz_yes_icon"></i><em class="yun_user_rz_yes">邮箱认证</em></span>
+                                {yun:}/if{/yun}
+                            </a>
+                        </div>
+
+                    </div>
+
+                    <div class="user_tc_tit">其他设置</div>
+                    <div class="user_tc_tset">
+                        <a href="index.php?c=passwd" class="user_set_bth"><i class="user_set_icon user_set_icon1"></i>账户设置</a>
+                        <a href="index.php?c=transfer" target="_blank" class="user_set_bth"><i class="user_set_icon user_set_icon2"></i>账户分离</a>
+                        <a href="index.php?c=logout" class="user_set_bth"><i class="user_set_icon user_set_icon4"></i>账户注销</a>
+                    </div>
+                    <div class="user_tcdl">
+                        <a href="javascript:void(0)" onClick="logout('index.php?act=logout')" title="退出登录" class="user_tcdlbth" style="border:none;">退出登录</a>
+                    </div>
+                </div>
+            </div>
+            <span class="user_headertel">求职咨询电话：<span class="user_headertel_n">{yun:}$config.sy_freewebtel{/yun}</span></span>
+        </div>
+    </div></div>
+</div>
+<div class="clear"></div>
+
+<script>
+    $(".yun_m_headertx").hover(function () {
+        $(".yun_m_header_info").show();
+    }, function () {
+        $(".yun_m_header_info").hide();
+    });
+</script>
+<div class="clear"></div>

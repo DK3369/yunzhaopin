@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+    <script src="../../../../../data/plus/city.cache.js?v={yun:}$config.cachecode{/yun}"
+        type="text/javascript"></script>
+</head>
+
+<body>
+    <div id="daohaapp" class="moduleElenAl">
+        <div class="moduleSeachs">
+            <div style="overflow: hidden; position: relative; width: calc(100% - 130px); display: flex; flex-wrap: wrap; align-items: center;">
+                <div class="moduleSeachInpt" style="margin-right: 8px;">
+                    <el-input placeholder="请输入搜索内容" v-model="keyword" class="input-with-select" size="small" clearable>
+                        <el-select v-model="search_type" slot="prepend">
+                            <el-option label="网站名称" value="1"></el-option>
+                            <el-option label="链接地址" value="2"></el-option>
+                        </el-select>
+                    </el-input>
+                </div>
+                <div class="tableSeachInpt" style="margin-bottom: 0px;">
+                    <el-select size="small" v-model="ctype" clearable placeholder="链接类型" @change="search">
+                        <el-option label="站内链接" value="1"></el-option>
+                        <el-option label="原链接" value="2"></el-option>
+                    </el-select>
+                </div>
+                <div class="tableSeachInpt" style="margin-bottom: 0px;">
+                    <el-select size="small" v-model="eject" clearable placeholder="弹出窗口" @change="search">
+                        <el-option label="新窗口" value="1"></el-option>
+                        <el-option label="原窗口" value="2"></el-option>
+                    </el-select>
+                </div>
+                <div class="tableSeachInpt" size="small" style="margin-bottom: 0px;">
+                    <el-select size="small" v-model="display" clearable placeholder="显示状态" @change="search">
+                        <el-option label="是" value="1"></el-option>
+                        <el-option label="否" value="2"></el-option>
+                    </el-select>
+                </div>
+                <div class="tableSeachInpt" style="margin-bottom: 0px;">
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                </div>
+                <!-- <div class="tableSeachInpt" style="margin-bottom: 0px; margin-left: auto;">
+                    <el-button type="primary" icon="el-icon-document-add" size="mini" @click="add">添加网站地图</el-button>
+                </div> -->
+            </div>
+            <div class="moduleSeachButn">
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="add">添加网站地图</el-button>
+            </div>
+        </div>
+        <div class="moduleElTable moduleElTableSizes">
+            <el-table :data="tableData" border style="width: 100%"
+                :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%"
+                @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
+                <el-table-column type="selection" width="55">
+                </el-table-column>
+                <el-table-column prop="id" label="编号" width="80">
+                </el-table-column>
+                <el-table-column prop="name" label="名称">
+                </el-table-column>
+                <el-table-column prop="typename" label="类别">
+                </el-table-column>
+                <el-table-column prop="url" label="链接地址">
+                </el-table-column>
+                <el-table-column label="类型">
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.type == '1'">站内链接</span>
+                        <span v-else>原链接</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="sort" label="排序">
+                </el-table-column>
+                <el-table-column label="弹出窗口">
+                    <template slot-scope="scope">
+                        <span @click="ejectchange(scope.row)" v-if="scope.row.eject == '1'">新窗口</span>
+                        <span @click="ejectchange(scope.row)" v-else>原窗口</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="显示">
+                    <template slot-scope="scope">
+                        <el-switch v-model="scope.row.display_n" @change="displayChange($event, scope.row)"></el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="140">
+                    <template slot-scope="scope">
+                        <div class="cz_button">
+                            <el-button size="mini" @click="edit(scope.row)">修改</el-button>
+                            <el-button size="mini" type="danger" @click="delrow(scope.row)">删除</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="modulecz modulePagButn">
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
+                <el-button size="mini" @click="delAllBottom">批量删除</el-button>
+            </div>
+            <div class="modulePagNum">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                    :current-page="currentPage" :page-sizes="pageSizes" :page-size="perPage"
+                    layout="total, sizes, prev, pager, next, jumper" :total="total">
+                </el-pagination>
+            </div>
+        </div>
+        <!-- 抽屉弹窗 -->
+        <div class="modluDrawer">
+            <el-drawer :title="title" :visible.sync="showadd" :modal-append-to-body="false" :show-close="true"
+                :with-header="true" size="40%">
+                <div class="drawerModInfo" style="max-height: calc(100% - 80px); overflow-y: auto;">
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>类别</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-select v-model="info.nid" placeholder="请选择类别">
+                                <el-option v-for="item in type" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>名称</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="info.name" placeholder="请输入名称"></el-input>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>链接地址</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="info.url" placeholder="请输入链接地址"></el-input>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>伪静态地址</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="info.furl" placeholder="请输入伪静态地址"></el-input>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>链接类型</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-select v-model="info.type" placeholder="请选择链接类型">
+                                <el-option v-for="item in link_types" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                        <div class="drawerModTips">
+                            <el-alert title="站内链接如：http://www.phpyun.com
+											原链接如：index.php?m=com" type="info" show-icon :closable="false">
+                            </el-alert>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>排序</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="info.sort" @input="inputIntNumber($event, 'info', 'sort')" placeholder="请输入排序"></el-input>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>弹出窗口</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-radio v-model="info.eject" label="1">新窗口</el-radio>
+                            <el-radio v-model="info.eject" label="0">原窗口</el-radio>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>显示</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-switch v-model="info.display_n" active-text="是" inactive-text="否"></el-switch>
+                        </div>
+                    </div>
+                </div>
+                <div class="setBasicButn" style="border: none;">
+                    <el-button type="primary" size="medium" :loading="save_load" @click="submitForm">提交</el-button>
+                </div>
+            </el-drawer>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#daohaapp',
+            data: function () {
+                return {
+                    emptytext: '暂无数据',
+                    loading: false,
+                    showadd: false,
+                    currentPage: 1,
+                    prevPage: 0,
+                    perPage: 0,
+                    pageSizes: [],
+                    total: 0,
+                    checkedAll: false,
+                    selectedItem: [],
+                    tableData: [],
+                    info: null,
+                    title: '添加网站地图',
+                    link_types: [
+                        { label: '站内链接', value: '1' },
+                        { label: '原链接', value: '2' },
+                    ],
+                    type: [],
+                    search_type: '1',
+                    keyword: '',
+                    
+					ctype:'',
+					eject:'',
+					display:'',
+					save_load:false,
+				}
+            },
+            components: {
+                // 'jibenset': httpVueLoader('./component/jibenset.vue'),
+            },
+            created: function () {
+                var that = this
+                that.initData()
+                that.getList();
+            },
+            methods: {
+                inputIntNumber(val, form, key) {
+                    this.$data[form][key] = val.replace(/[^0-9]/g,'');
+                },
+                submitxianshi(params) {
+                    var that = this
+                    httpPost('m=system&c=set_navmap&a=nav_xianshi', params).then(function (res) {
+                        if (res.data.error == 0) {
+                            if (params.type == 'eject') {
+                                that.tableData.forEach(item => {
+                                    if (item.id == params.id) {
+                                        item.eject = params.rec
+                                    }
+                                })
+                            }
+                        }
+                    });
+                },
+                displayChange(val, row) {
+                    var params = { type: 'display', id: row.id }
+                    if (val == true) {
+                        params.rec = 1
+                    } else {
+                        params.rec = 0
+                    }
+                    this.submitxianshi(params);
+                },
+                ejectchange(row) {
+                    var params = { type: 'eject', id: row.id }
+                    if (row.eject == '1') {
+                        params.rec = 0
+                    } else {
+                        params.rec = 1
+                    }
+                    this.submitxianshi(params);
+                },
+                search() {
+                    this.currentPage = 1;
+                    this.getList();
+                },
+                handleSelectionChange(val) {
+                    this.selectedItem = [];
+                    let _this = this;
+                    if (val.length) {
+                        val.forEach(item => {
+                            _this.selectedItem.push(item.id);
+                        });
+                    }
+                    if (_this.selectedItem.length == 0) {
+                        _this.checkedAll = false;
+                    } else {
+                        if (_this.selectedItem.length == _this.tableData.length) {
+                            _this.checkedAll = true;
+                        } else {
+                            _this.checkedAll = false;
+                        }
+                    }
+                },
+                selectAllBottom(value) {
+                    value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+                },
+                // 初始化用户信息
+                initData(row = null) {
+                    var that = this
+                    if (row) {
+                        that.title = '修改网站地图'
+                        that.info = row
+                        if (that.info.nid == '0') {
+                            that.info.nid = ''
+                        }
+						if (that.info.type == '0') {
+						    that.info.type = ''
+						}
+                    } else {
+                        that.title = '添加网站地图'
+                        this.info = {
+                            id: '',
+                            nid: '',
+                            name: '',
+                            url: '',
+                            furl: '',
+                            type: '',
+                            sort: '',
+                            eject: '0',
+                            display_n: false
+                        }
+                    }
+                },
+                add() {
+                    var that = this
+                    that.getTypes();
+                    that.initData();
+                    that.showadd = true;
+                },
+                edit(row) {
+                    var that = this
+                    that.getTypes();
+                    that.initData(row);
+                    that.showadd = true;
+                },
+                handleSizeChange(val) {
+                    this.perPage = val;
+                    this.getList()
+                },
+                handleCurrentChange(val) {
+                    this.currentPage = val;
+                    this.getList();
+                },
+                async getList() {
+                    let that = this;
+                    let params = {
+                        page: that.currentPage,
+                        pageSize: that.perPage
+                    }
+                    if (that.search_type) {
+                        params.type = that.search_type
+                    }
+                    if (that.keyword) {
+                        params.keyword = that.keyword
+                    }
+					params.ctype = that.ctype;
+					params.eject = that.eject;
+					params.display = that.display;
+                    that.loading = true;
+                    that.emptytext = "数据加载中";
+                    httpPost('m=system&c=set_navmap&a=index', params).then(function (result) {
+                        var res = result.data
+                        if (res.error == 0) {
+                            that.tableData = res.data.list
+                            that.perPage = parseInt(res.data.perPage)
+                            that.pageSizes = res.data.pageSizes
+                            that.total = parseInt(res.data.total);
+                            if (that.prevPage != that.currentPage) {
+                                that.prevPage = that.currentPage;
+                                that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                            }
+                            that.loading = false;
+                            if (that.tableData.length === 0){
+                                that.emptytext = "暂无数据";
+                            }
+                        }
+                    }).catch(function (e) {
+                        console.log(e)
+                    })
+                },
+                async getTypes() {
+                    let that = this;
+                    httpPost('m=system&c=set_navmap&a=getTypes', {}).then(function (result) {
+                        var res = result.data
+                        if (res.error == 0) {
+                            that.type = res.data.type
+                        }
+                    }).catch(function (e) {
+                        console.log(e)
+                    })
+                },
+                submitForm() {
+                    let that = this;
+                    if (!that.info.name) {
+                        message.error('请填写导航名称');
+                        return false;
+                    }
+                    if (!that.info.url) {
+                        message.error('请填写链接地址');
+                        return false;
+                    }
+                    if (!that.info.sort) {
+                        message.error('请填写导航排序');
+                        return false;
+                    }
+                    var params = that.info
+                    params.submit = 1
+                    if (params.display_n == true) {
+                        params.display = 1
+                    } else {
+                        params.display = 0
+                    }
+					that.save_load = true;
+                    httpPost('m=system&c=set_navmap&a=save', params).then(function (res) {
+						that.save_load = false;
+                        if (res.data.error == 0) {
+                            that.$message.success({
+                                message: res.data.msg,
+                                onClose: function () {
+                                    that.showadd = false
+                                    that.getList()
+                                }
+                            });
+                        } else {
+                            that.$message.error(res.data.msg);
+                        }
+                    });
+                },
+                delrow(row) {
+                    delConfirm(this, row.id, this.delete);
+                },
+                delAllBottom() {
+                    if (!this.selectedItem.length) {
+                        this.$message({ showClose: true, message: '请选择要删除的数据', type: 'warning' });
+                        return false;
+                    }
+                    delConfirm(this, this.selectedItem, this.delete);
+                },
+                async delete(id) {
+                    let that = this;
+                    let params = {
+                        del: id
+                    };
+                    httpPost('m=system&c=set_navmap&a=del', params).then(function (response) {
+                        if (response.data.error == 0) {
+                            message.success('操作成功');
+                            that.getList();
+                        } else {
+                            message.error(response.data.msg);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                },
+            }
+        });
+    </script>
+</body>
+<style>
+	.el-table .el-table__cell {
+    padding: 12px 0;
+}
+</style>
+</html>

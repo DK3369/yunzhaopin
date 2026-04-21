@@ -1,0 +1,99 @@
+  
+{yun:}include file="$askstyle/header.htm"{/yun}  
+<div class="answer_con">
+	<div class="content con_answer"> 
+		<div class="content_hot ">
+			<div class="left left_con"style="width:950px;">
+               {yun:}include file="$askstyle/nav.htm"{/yun} 
+        <div class="answer_content fl">
+          <div class="answer_content_top fl"><span>{yun:}if $uid && ($smarty.get.uid=='' || $smarty.get.uid==$uid){/yun} 我的回答{yun:}elseif $smarty.get.uid{/yun}他的回答{yun:}/if{/yun}</span></div>
+		  <div class="">
+		   <div class=" ">
+			<div class="">
+					<!--回答开始-->
+                    <div class="wt_content_t fl">
+						{yun:}foreach from=$rows item=alist{/yun}
+						<div class="ask_anwser_items fl">
+						<div class="ask_anwser_title fl"><a href="{yun:}url m=ask c=content id='`$alist.qid`'{/yun}" target="_blank">{yun:}$alist.title{/yun}</a>
+					</div>
+						<div class="ask_anwser_on_t">
+						<div class="ask_anwser_tra"></div>
+						{yun:}$alist.content{/yun}<font color="#999" style="padding-left:30px;">{yun:}$alist.add_time|date_format:"%Y-%m-%d"{/yun}</font>
+						{yun:}if $uid==$alist.uid{/yun}
+
+						{yun:}if $alist.status==0{/yun}
+						<span class="answer_zt">审核中</span>
+						{yun:}elseif $alist.status==2{/yun}
+						<span class="answer_zt answer_wtg">审核未通过</span>
+							{yun:}if $alist.statusbody{/yun}
+							<span class="com_m_line">|</span>
+                            <a href="javascript:;" onclick="show_msg('{yun:}$alist.statusbody{/yun}')">查看原因</a>
+                            {yun:}/if{/yun}
+						{yun:}/if{/yun}
+
+						<span class="friend_delect" style="float:right"><a href="javascript:void(0)" onclick="layer_del('确定要删除该提问？','{yun:}url m=ask c=friend a=delask type=1 id=$alist.id{/yun}')">删除</a></span>
+						{yun:}/if{/yun}
+						</div>
+						</div>
+						{yun:}foreachelse{/yun}  
+						<div class="noresult">
+						<span>
+						<a class="noresult_cr" href="{yun:}url m=ask c=index{/yun}#answer">暂无数据！</a>
+						</span>
+						</div>
+						{yun:}/foreach{/yun}  
+                    </div>
+                    <!--回答结束-->
+					<div class="clear"></div>
+					<div class="pages">{yun:}$pagenav{/yun}</div> 
+				</div>	
+		     </div>
+	         </div>
+            </div>
+			</div>
+			{yun:}include file="$askstyle/right.htm"{/yun}
+		</div>
+	</div>
+</div>  
+{yun:}include file="$tplstyle/jquery/jquery_js.htm"{/yun}
+<link href="{yun:}$config.sy_weburl{/yun}/js/layui/css/layui.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet" type="text/css" /><script src="{yun:}$config.sy_weburl{/yun}/js/layui/layui.js?v={yun:}$config.cachecode{/yun}"></script><script src="{yun:}$config.sy_weburl{/yun}/js/layui/phpyun_layer.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$ask_style{/yun}/js/question.js?v={yun:}$config.cachecode{/yun}" type="text/javascript"></script>
+<script src="{yun:}$config.sy_weburl{/yun}/js/public.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<!--[if IE 6]>
+<script src="{yun:}$config.sy_weburl{/yun}/js/png.js?v={yun:}$config.cachecode{/yun}"></script>
+<script>
+DD_belatedPNG.fix('.png,.attention .watch_gz');
+</script>
+<![endif]-->
+<iframe id="supportiframe" name="supportiframe" onload="returnmessage('supportiframe');" style="display:none"></iframe>
+<script type="text/javascript">
+	function show_msg(msg) {
+        $("#msgs").html(msg);
+        var layindex = $.layer({
+            type: 1,
+            title: '审核说明',
+            closeBtn: [0, true],
+            border: [10, 0.3, '#000', true],
+            area: ['400px', '210px'],
+            page: {
+                dom: "#showmsg"
+            }
+        });
+    }
+</script>
+<div id="showmsg" style="display:none; width: 400px;">
+    <div>
+        <div id="infobox">
+            <div class="admin_Operating_sh" style="padding:10px; ">
+                <div class="admin_Operating_sh_h1" style="padding:5px;">
+                    <div style="height:80px;overflow:auto;" id="msgs"></div>
+                </div>
+                <div class="admin_Operating_sub" style="margin-top:10px;"> &nbsp;&nbsp;
+                    <input type="button" onClick="layer.closeAll();" class="cancel_btn" value='确认'>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{yun:}include file="$askstyle/footer.htm"{/yun}   
+

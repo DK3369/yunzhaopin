@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="全职刷新日志" name="first" :lazy="true">
+                    <company_job_refresh_log :type="1"></company_job_refresh_log>
+                </el-tab-pane>
+                <el-tab-pane label="兼职刷新日志" name="second" :lazy="true">
+                    <company_job_refresh_log :type="2"></company_job_refresh_log>
+                </el-tab-pane>
+                <el-tab-pane label="高级职位刷新日志" name="third" :lazy="true">
+                    <company_job_refresh_log :type="3"></company_job_refresh_log>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#moduapp',
+            data: function () {
+                return {
+                    activeName: 'first'
+                }
+            },
+            components: {
+                'company_job_refresh_log': httpVueLoader('./component/company_job_refresh_log.vue'),
+            },
+            methods: {
+                handleClick(tab, event) {
+                    console.log(tab, event);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,126 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun} 
+<div id="yunvue" class="none">
+<div class="blacklist_tip">被屏蔽的企业将无法查看你的简历</div>
+<div class="blacklist_box" style="position:relative">
+	<div class="sw_list">
+	
+		<div class="blacklist_p" v-for="(item, blkey) in blinfo" :key="blkey">
+			<div @click="pageTo(item.wapcom_url)">{{item.com_name}}</div>
+			<div @click="del(item.id,blkey)" class="blacklist_pdel"> <img src="{yun:}$wap_style{/yun}/images/resume_del.png" alt="" width="100%" height="100%"></div>				
+		</div>
+		<div v-if="count" class="blacklist_tip_bth"><span @click="pageTo('index.php?c=blacklistadd')" class="blacklist_tip_bth_a_tj">添加屏蔽</span>
+			<div class="blacklist_tip_qkbox"  @click="delAll">清空所有屏蔽企业</div>	
+		</div>
+
+		<div v-if="count==2">
+        <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange" /> 
+        </div>
+    	
+	
+	</div>
+
+    
+
+
+  <div class="blacklist_tip_bth" v-if="count==0" @click="pageTo('index.php?c=blacklistadd')">
+  	<span class="blacklist_tip_bth_a_tj">添加企业</span></div>
+
+</div>
+</div>
+<script type="text/javascript">	
+	var currentPage = parseInt('{yun:}$smarty.get.page{/yun}');   
+	var yunvue =  new Vue({
+		el: '#yunvue',
+		data() {
+		    return {
+				blinfo: [],
+				page: currentPage ? currentPage : 1,
+				showview: null,
+				limit: 10,
+				total:0,				
+		    };
+		},
+		computed: {
+			count(){
+				if(this.total > this.limit){
+	              return 2;
+	            }else if(this.blinfo.length==0){
+	              return 0;
+	            }else{
+	                return 1;
+	            }
+        	}
+    	},
+		created() {
+			this.getBlacklist();
+		},
+		methods:{
+			getBlacklist: function(){
+				showLoading();
+				var that = this;
+				var paramer = {};
+				paramer['page'] = that.page;
+				paramer['limit'] = that.limit;
+				$.post('{yun:}url d=wxapp h=user m=privacy c=blacklist{/yun}', paramer, function(data){
+					hideLoading();				
+					if (data.error == 1) {
+						let list = data.data;
+						that.blinfo = list;
+						that.total = data.total;
+          				that.page = currentPage ? currentPage : 1;
+						that.showview = true;
+					} else {
+						that.showview = false;
+					}
+					$("#yunvue").css('display', 'block');
+				},'json');
+			},
+			pageTo:function(url){
+				window.location.href=url;
+			},
+			del:function(id,key){
+				var that = this;
+				var paramer = {
+					id:id,					
+				};
+
+				showConfirm('确定删除？', function(){
+					showLoading('删除中...');
+					$.post('{yun:}url d=wxapp h=user m=privacy c=del{/yun}', paramer, function(data){
+						hideLoading();					
+						let k = key;
+						if (data.error == 1) {
+							showToast('删除成功',2, function() {
+								that.blinfo.splice(k, 1);
+							});
+						} else {
+							showToast('删除失败');
+						}
+					},'json');
+				});
+			},
+			delAll:function(){
+				var that = this;
+				showConfirm('确定清空？', function(){
+					showLoading('清空中...');
+					$.post('{yun:}url d=wxapp h=user m=privacy c=delall{/yun}', {rand:Math.random()}, function(data){
+						hideLoading();					
+						if (data.error == 1) {
+							showToast('清空成功',2, function() {
+								that.blinfo = [];
+								that.showview = false;
+							});
+						} else {
+							showToast('清空失败');
+						}
+					},'json');
+				})
+			},
+			pageChange:function(e){
+				window.location.href='index.php?c=blacklist&page='+e;
+			},
+		},
+	});
+</script>  
+</body>
+</html>

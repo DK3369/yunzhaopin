@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="schollfl" class="moduleElenAl">
+        <div class="moduleSeachs">
+            <div class="">
+                工具箱类别
+            </div>
+            <div class="nrtopbtn">
+                <el-button size="mini" type="primary" icon="el-icon-document-add" @click="openAdd('')">添加类别</el-button>
+            </div>
+        </div>
+        <div class="moduleElTable">
+            <el-table :data="list" stripe border style="width: 100%;" ref="multipleTable"
+                @selection-change="handleSelectionChange"
+                :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" v-loading="loading" :empty-text="emptytext">
+                <el-table-column type="selection" width="55"> </el-table-column>
+                <el-table-column prop="id" label="编号" width="180">
+                </el-table-column>
+                <el-table-column label="名称" prop="name">
+                </el-table-column>
+                <el-table-column label="略缩图" prop="img">
+                    <template slot-scope="scope">
+                        <img :src="scope.row.pic" width="40" height="40" />
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" width="140" fixed="right">
+                    <template slot-scope="scope">
+                        <div class="cz_button">
+                            <el-button size="mini" plain @click="openAdd(scope.row)">修改</el-button>
+                            <el-button type="danger" size="mini"  @click="del(scope.$index)">删除</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="">
+                <div class="">
+                    <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate"
+                        @change="checkAll">全选</el-checkbox>
+                    <el-button @click="batch('del')" size="mini">批量删除</el-button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modluDrawer">
+            <el-dialog :title="ruleForm.id ? '修改工具箱类别' : '添加工具箱类别'" width="500px" :visible.sync="dialogAdd"
+                :modal-append-to-body="false">
+                <div class="toolClasDia">
+                    <div class="toolClasList">
+                        <div class="toolClasTite">
+                            <span>类别名称：</span>
+                        </div>
+                        <div class="toolClasCont">
+                            <el-input v-model="ruleForm.name" placeholder="请输入类别名称"></el-input>
+                        </div>
+                    </div>
+                    <div class="toolClasList">
+                        <div class="toolClasTite">
+                            <span>类别简介：</span>
+                        </div>
+                        <div class="toolClasCont">
+                            <el-input type="textarea" :rows="2" placeholder="请输入类别简介" v-model="ruleForm.content">
+                            </el-input>
+                        </div>
+                    </div>
+                    <div class="toolClasList">
+                        <div class="toolClasTite">
+                            <span>缩 略 图：</span>
+                        </div>
+                        <div class="toolClasCont">
+                            <el-upload class="avatar-uploader" list-type="picture" action="" :auto-upload="false"
+                                :on-change="handleChangePic" :show-file-list="false" :accept="pic_accept">
+                                <img v-if="ruleForm.pic_n" :src="ruleForm.pic_n" class="avatar">
+                                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                            </el-upload>
+                        </div>
+                    </div>
+                </div>
+                <div slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="save" :disabled="saveLoading">{{ruleForm.id ? '修改' : '添加'}}</el-button>
+                </div>
+            </el-dialog>
+        </div>
+    </div>
+</body>
+<script>
+    const custoapp = new Vue({
+        el: '#schollfl',
+        data: function () {
+            return {
+                pic_accept: localStorage.getItem("pic_accept"),
+                emptytext: '暂无数据',
+                loading: false,
+                // 列表
+                list: [],
+
+                checkedAll: false, // 全选
+                checkedAllIndeterminate: false,
+                multipleSelection: [], // 多选值存储
+                idArr: [],
+
+                detail: {},
+
+                saveLoading: false,
+
+                // 添加
+                dialogAdd: false,
+                ruleForm: {},
+            }
+        },
+        created() {
+            this.getList();
+        },
+        methods: {
+            getList() {
+                let that = this;
+                that.loading = true;
+                that.emptytext = "数据加载中";
+                httpPost('m=neirong&c=toolbox_class',{}, {hideloading: true}).then(function (response) {
+                    let res = response.data,
+                        data = res.data;
+
+                    that.list = data.list;
+                    that.loading = false;
+                    if (that.list.length === 0){
+                        that.emptytext = "暂无数据";
+                    }
+                })
+            },
+
+            // 批量操作
+            handleSelectionChange(val) {
+                if (val.length == 0) {
+                    this.checkedAll = false;
+                    this.checkedAllIndeterminate = false;
+                } else {
+                    if (val.length === this.list.length) {
+                        this.checkedAll = true;
+                        this.checkedAllIndeterminate = false;
+                    } else {
+                        this.checkedAll = false;
+                        this.checkedAllIndeterminate = true;
+                    }
+                }
+                this.multipleSelection = val;
+            },
+            batch(type) {
+                if (this.multipleSelection.length == 0) {
+                    message.error('请选择要删除的数据项');
+                    return false;
+                }
+
+                let idArr = [];
+                this.multipleSelection.forEach(function (item) {
+                    idArr.push(item.id);
+                })
+                this.idArr = idArr;
+
+                if (type == 'del') {
+                    this.del();
+                }
+            },
+            checkAll(val) {
+                val ? this.checkedAllIndeterminate = false : '';
+                this.$refs.multipleTable.toggleAllSelection();
+            },
+
+            del(idx) {
+                let that = this,
+                    params = {},
+                    msg = '';
+
+                if (typeof idx == 'undefined') { // 批量删除
+                    params.del = this.idArr;
+                    msg = '你确定要删除选中项吗？';
+                } else {// 单个删除
+                    params.del = that.list[idx].id;
+                    msg = '你确定要删除当前项吗？';
+                }
+
+                delConfirm(this, params, function (params) {
+                    httpPost('m=neirong&c=toolbox_class&a=del', params).then(function (res) {
+                        if (res.data.error > 0) {
+                            message.error(res.data.msg);
+                        } else {
+                            that.getList();
+                            message.success(res.data.msg, function () {
+                                that.$refs.multipleTable.clearSelection();
+                            });
+                        }
+                    })
+                }, msg)
+            },
+
+            openAdd(row) {
+                let that = this;
+
+                if (row != '') {
+                    that.detail = row;
+                    that.ruleForm = {
+                        id: row.id,
+                        name: row.name,
+                        content: row.content,
+                        pic_n: row.pic
+                    };
+                } else {
+                    that.detail = {};
+                    that.ruleForm = {};
+                }
+
+                that.dialogAdd = true;
+            },
+
+            // 上传时触发
+            handleChangePic(file, fileList) {
+                this.$set(this.ruleForm, 'pic', file.raw);
+                this.$set(this.ruleForm, 'pic_n', file.url);
+            },
+
+            save() {
+                let that = this,
+                    ruleForm = that.ruleForm,
+                    formData = new FormData();
+
+                if (!ruleForm.name) {
+                    message.warning('请输入类别名称');
+                    return false;
+                }
+
+                if (!ruleForm.content) {
+                    message.warning('请输入类别简介');
+                    return false;
+                }
+
+                if (!ruleForm.pic_n) {
+                    message.warning('请上传缩略图');
+                    return false;
+                }
+
+                if (that.saveLoading) {
+                    return false;
+                }
+
+                that.saveLoading = true;
+
+                $.each(ruleForm, function (key, value) {
+                    if (key != 'pic_n') {
+                        formData.append(key, value);
+                    }
+                });
+
+                httpPost('m=neirong&c=toolbox_class&a=save', formData).then(function (response) {
+                    let res = response.data;
+
+                    if (res.error > 0) {
+                        message.error(res.msg, function () {
+                            that.saveLoading = false;
+                        });
+                    } else {
+                        that.dialogAdd = false;
+                        that.getList();
+                        message.success(res.msg, function () {
+                            that.saveLoading = false;
+                        });
+                    }
+                })
+            },
+        }
+    });
+</script>
+
+</html>
+<style>
+    .cell span {
+        display: flex;
+        align-items: center;
+    }
+
+    /* 上传样式开始 */
+    .avatar-uploader .el-upload {
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .avatar-uploader .el-upload:hover {
+        border-color: #409EFF;
+    }
+
+    .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 148px;
+        height: 148px;
+        line-height: 148px;
+        text-align: center;
+    }
+
+    .avatar {
+        width: 148px;
+        height: 148px;
+        display: block;
+    }
+
+    /* 上传样式结束 */
+</style>

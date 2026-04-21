@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../header.js"></script>
+    <script src="../../httpVueLoader.js"></script>
+</head>
+<body>
+<div id="databaseApp" class="moduleDome">
+    <div class="setDomeAll setDomeInte">
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+            <el-tab-pane label="备份数据" name="first" :lazy="true">
+                <back_up></back_up>
+            </el-tab-pane>
+            <el-tab-pane label="已备份数据" name="second" :lazy="true">
+                <backd_up :need="need"></backd_up>
+            </el-tab-pane>
+            <el-tab-pane label="优化数据" name="three" :lazy="true">
+                <db_optimize :optimize="optimize"></db_optimize>
+            </el-tab-pane>
+            <el-tab-pane label="数据清理" name="four" :lazy="true">
+                <db_clear></db_clear>
+            </el-tab-pane>
+        </el-tabs>
+    </div>
+</div>
+<!-- script -->
+<script>
+    const databaseApp = new Vue({
+        el: '#databaseApp',
+        data: function () {
+            return {
+                activeName: 'first',
+                need: 0,
+                optimize: 0
+            }
+        },
+        components: {
+            'back_up': httpVueLoader('./component/backUp.vue'),
+            'backd_up': httpVueLoader('./component/backdUp.vue'),
+            'db_optimize': httpVueLoader('./component/dbOptimize.vue'),
+            'db_clear': httpVueLoader('./component/dbClear.vue'),
+        },
+        methods: {
+            handleClick(tab, event) {
+                let that = this
+                if (tab._props.name == 'second'){
+
+                    that.need++;
+                } else if (tab._props.name == 'three'){
+
+                    that.optimize++;
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

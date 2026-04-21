@@ -1,0 +1,2145 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+
+<!-- 页面主体部分 -->
+<div id="yunvue" class="none">
+
+    <div class=" m_taball category">
+        <div class="m_taballbox">
+            <ul>
+                <li @click="tabChange(1)" :class="stype==1 ? 'm_taballactive' : ''">
+                    招聘中
+                    <span v-if="zp_num > 0 && zp_num < 100"class="zp_num">{{zp_num}}</span>
+                    <span v-else-if="zp_num > 99"class="zp_num">99+</span>
+                </li>
+                <li @click="tabChange(2)" :class="stype==2 ? 'm_taballactive' : ''">
+                    待审核
+                    <span v-if="ds_num > 0 && ds_num < 100"class="zp_num"> {{ds_num}}</span>
+                    <span v-else-if="ds_num >99"class="zp_num">99+</span>
+                </li>
+                <li @click="tabChange(3)" :class="stype==3 ? 'm_taballactive' : ''">
+                    已下架
+                    <span v-if="xj_num > 0 && xj_num < 100"class="zp_num">{{xj_num}}</span>
+                    <span v-else-if="xj_num >99"class="zp_num">99+</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="more_position_body">
+        <div v-if="stype==1" @click.stop="moreKey=0">
+            <div v-if="count">
+                <div class="position_body_card" v-for="(item, infokey) in info" :key="infokey">
+
+                    <div class="position_body_card_top">
+                        <div class="body_card_top_name" @click="topage(item.wapjob_url)">{{item.name}}</div>
+                        <div class="body_card_top_icon" v-if="item.rec_n">
+                            <img src="{yun:}$wap_style{/yun}/images/icon_recommend.png" alt="">
+                        </div>
+                        <div class="body_card_top_icon" v-if="item.urgent_n">
+                            <img src="{yun:}$wap_style{/yun}/images/job_anxious.png" alt="">
+                        </div>
+                        <div class="body_card_top_icon" v-if="item.xs">
+                            <img src="{yun:}$wap_style{/yun}/images/jobhunter_top.png" alt="">
+                        </div>
+                        <div class="body_card_top_icon" v-if="item.xstype">
+                            <img src="{yun:}$wap_style{/yun}/images/ds.png" alt="">
+                        </div>
+                        <div class="body_card_top_icon" v-if="item.auto_n || item.is_reserve == 1">
+                            <img src="{yun:}$wap_style{/yun}/images/jobhunter_refresh.png" alt="">
+                        </div>
+                    </div>
+
+                    <div class="position_body_card_center">
+                        <div class="body_card_center_left">
+                            <div class="more_position_quantity">
+                                <div class="position_quantity_exposure">
+                                    <div class="quantity_exposure_q">曝光量：</div>
+                                    <div class="quantity_exposure_a">{{item.jobexpoure}}</div>
+                                </div>
+                                <div class="position_quantity_exposure">
+                                    <div class="quantity_exposure_q">浏览量：</div>
+                                    <div class="quantity_exposure_a">{{item.jobhits}}</div>
+                                </div>
+                            </div>
+                            <div class="more_position_new_time">
+                                <div class="quantity_exposure_q">更新时间：</div>
+                                <div class="quantity_exposure_a">{{item.lastupdate_n}}</div>
+                            </div>
+                        </div>
+                        <div class="body_card_center_right" @click="topage('index.php?c=hr&jobid=' + item.id)">
+                            <div class="more_position_deliver_number">{{item.jobnum}}</div>
+                            <div class="more_position_deliver">投递简历</div>
+                        </div>
+                    </div>
+
+                    <div class="position_body_card_bom">
+                        <ul>
+                            <li @click="showJobRecommend(item.id, infokey, item.reserve_status, item.reserve_interval, item.reserve_end, item.s_time, item.e_time)">
+
+                                <div class="body_card_bom_icon">
+                                    <img src="{yun:}$wap_style{/yun}/images/job_promotion.png" alt="">
+                                </div>
+                                <div class="body_card_bom_name">职位推广</div>
+                                <div class="body_card_bom_hot">
+                                    <img src="{yun:}$wap_style{/yun}/images/job_hot.png" alt="">
+                                </div>
+                            </li>
+                            <li @click="jobRefresh(item.id, infokey)">
+                                <div class="body_card_bom_icon">
+                                    <img src="{yun:}$wap_style{/yun}/images/job_refresh.png" alt="">
+                                </div>
+                                <div class="body_card_bom_name">刷新</div>
+                            </li>
+                            <li @click="statusChange(item.id, 1, infokey)">
+                                <div class="body_card_bom_icon">
+                                    <img src="{yun:}$wap_style{/yun}/images/job_up_down.png" alt="">
+                                </div>
+                                <div class="body_card_bom_name">下架</div>
+                            </li>
+                            <li @click="shareShow(item.id)">
+                                <div class="body_card_bom_icon">
+                                    <img src="{yun:}$wap_style{/yun}/images/job_share.png" alt="">
+                                </div>
+                                <div class="body_card_bom_name">分享</div>
+                            </li>
+                            <li>
+                                <div class="body_card_bom_icon" @click.stop="moreClick(item.id)">
+                                    <img src="{yun:}$wap_style{/yun}/images/job_add.png" alt="">
+                                </div>
+                                <div class="body_card_bom_name" @click.stop="moreClick(item.id)">更多</div>
+
+                                    <div class="job_czmore" v-if="moreKey==item.id">
+                                        <span @click="topage('index.php?c=jobadd&id=' + item.id)" class=" job_czmore_a job_czmore_xg">修改</span>
+                                        <span @click="delJob(item.id, infokey)" class="job_czmore_a job_czmore_sc">删除</span>
+                                        <div v-if="config.tg_back==1 && (item.xs || item.rec_n || item.urgent_n)">
+                                            <span @click="showCancelPromote(item.id, infokey, item)" class="job_czmore_a job_czmore_gb">关闭推广</span>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                <div v-if="total > limit">
+                    <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange"/>
+                </div>
+            </div>
+
+            <div class="none_position_body" v-else>
+                <div class="none_position_body_img">
+                    <img src="{yun:}$wap_style{/yun}/images/none_position.png" alt="">
+                </div>
+                <div class="none_position_body_text">您还没有招聘中职位哦~</div>
+            </div>
+        </div>
+
+        <div v-if="stype==2">
+            <div v-if="count">
+                <div class="" v-for="(item, shkey) in info" :key="shkey">
+                    <div class="position_body_card">
+                        <div class="position_body_card_top wtg_top">
+                            <div class="card_topleft">
+                                <div class="body_card_top_name">{{item.name}}</div>
+                                <div class="body_card_top_icon"></div>
+                            </div>
+                            <div class="card_topright">
+                                <div v-if="item.state==0">未审核</div>
+                                <div v-else-if="item.state==3">未通过</div>
+                            </div>
+                        </div>
+                        <div class="position_body_card_center">
+                            <div class="body_card_center_left">
+                                <div class="more_position_quantity">
+                                    <div class="position_quantity_exposure">
+                                        <div class="quantity_exposure_q">曝光量：</div>
+                                        <div class="quantity_exposure_a">{{item.jobexpoure}}</div>
+                                    </div>
+                                    <div class="position_quantity_exposure">
+                                        <div class="quantity_exposure_q">浏览量：</div>
+                                        <div class="quantity_exposure_a">{{item.jobhits}}</div>
+                                    </div>
+                                </div>
+                                <div class="more_position_new_time">
+                                    <div class="quantity_exposure_q">更新时间：</div>
+                                    <div class="quantity_exposure_a">{{item.lastupdate_n}}</div>
+                                </div>
+                            </div>
+                            <div class="body_card_center_right" @click="topage('index.php?c=hr&jobid=' + item.id)">
+                                <div class="more_position_deliver_number">{{item.jobnum}}</div>
+                                <div class="more_position_deliver">投递简历</div>
+                            </div>
+                        </div>
+                        <div class="position_body_card_bom">
+                            <ul>
+                                <li @click="topage('index.php?c=jobadd&id=' + item.id)">
+                                    <div class="body_card_bom_icon">
+                                        <img src="{yun:}$wap_style{/yun}/images/edit.png" alt="">
+                                    </div>
+                                    <div class="body_card_bom_name" @click="topage('index.php?c=jobadd&id=' + item.id)">修改</div>
+                                </li>
+                                <li @click="delJob(item.id, shkey)">
+                                    <div class="body_card_bom_icon">
+                                        <img src="{yun:}$wap_style{/yun}/images/delete.png" alt="">
+                                    </div>
+                                    <div class="body_card_bom_name">删除</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="wtg_info" v-if="item.state==3 && item.statusbody !=''">
+                        原因：{{item.statusbody}}
+                    </div>
+                </div>
+                <div v-if="total > limit">
+                    <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange"/>
+                </div>
+            </div>
+            <div class="none_position_body" v-else>
+                <div class="none_position_body_img">
+                    <img src="{yun:}$wap_style{/yun}/images/none_position.png" alt="">
+                </div>
+                <div class="none_position_body_text">您还没有待审核职位哦~</div>
+            </div>
+        </div>
+
+        <div v-if="stype==3">
+            <div v-if="count">
+                <div class="position_body_card" v-for="(item, xjkey) in info" :key="xjkey">
+                    <div class="position_body_card_top">
+                        <div class="body_card_top_name">{{item.name}}</div>
+                    </div>
+                    <div class="position_body_card_center">
+                        <div class="body_card_center_left">
+                            <div class="more_position_quantity">
+                                <div class="position_quantity_exposure">
+                                    <div class="quantity_exposure_q">曝光量：</div>
+                                    <div class="quantity_exposure_a">{{item.jobexpoure}}</div>
+                                </div>
+                                <div class="position_quantity_exposure">
+                                    <div class="quantity_exposure_q">浏览量：</div>
+                                    <div class="quantity_exposure_a">{{item.jobhits}}</div>
+                                </div>
+                            </div>
+                            <div class="more_position_new_time">
+                                <div class="quantity_exposure_q">更新时间：</div>
+                                <div class="quantity_exposure_a">{{item.lastupdate_n}}</div>
+                            </div>
+                        </div>
+                        <div class="body_card_center_right">
+                            <div class="more_position_deliver_number">{{item.jobnum}}</div>
+                            <div class="more_position_deliver">投递简历</div>
+                        </div>
+                    </div>
+                    <div class="position_body_card_bom">
+                        <ul>
+                            <li @click="statusChange(item.id, 2, xjkey)">
+                                <div class="body_card_bom_icon">
+                                    <img src="{yun:}$wap_style{/yun}/images/job_up_down.png" alt="">
+                                </div>
+                                <div class="body_card_bom_name">上架</div>
+                            </li>
+                            <li @click="topage('index.php?c=jobadd&id=' + item.id)">
+                                <div class="body_card_bom_icon">
+                                    <img src="{yun:}$wap_style{/yun}/images/edit.png" alt="">
+                                </div>
+                                <div class="body_card_bom_name">修改</div>
+                            </li>
+                            <li @click="delJob(item.id, xjkey)">
+                                <div class="body_card_bom_icon">
+                                    <img src="{yun:}$wap_style{/yun}/images/delete.png" alt="">
+                                </div>
+                                <div class="body_card_bom_name">删除</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div v-if="total > limit">
+                    <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange"/>
+                </div>
+            </div>
+            <div class="none_position_body" v-else>
+                <div class="none_position_body_img">
+                    <img src="{yun:}$wap_style{/yun}/images/none_position.png" alt="">
+                </div>
+                <div class="none_position_body_text">您还没有已下架职位哦~</div>
+            </div>
+        </div>
+    </div>
+
+    <!--职位推广弹出-->
+    <van-popup v-model="job_recommend" position="bottom">
+        <div>
+            <div class="job_box_title">
+                <img src="{yun:}$wap_style{/yun}/images/job_setting.png" alt="">
+            </div>
+            <div class="job_box_body">
+                <ul>
+
+                        <li class="top_set" @click="showJobTg('top')">
+                            <div class="job_box_body_left">
+                                <div class="job_box_body_left_icon">
+                                    <img src="{yun:}$wap_style{/yun}/images/dredge_top.png" alt="">
+                                </div>
+                                <div class="job_box_body_left_word">
+                                    <div class="body_left_word_title">置顶</div>
+                                    <div class="body_left_word_connect">锁定前排好位置，坐享牛人滚滚来</div>
+                                </div>
+                            </div>
+                            <div class="job_box_body_right">
+                                <img src="{yun:}$wap_style{/yun}/images/dredge_add.png" alt="">
+                            </div>
+                        </li>
+                        <li @click="showJobTg('urgent')">
+                            <div class="job_box_body_left">
+                                <div class="job_box_body_left_icon">
+                                    <img src="{yun:}$wap_style{/yun}/images/job_Help_wanted.png" alt="">
+                                </div>
+                                <div class="job_box_body_left_word">
+                                    <div class="body_left_word_title">急聘</div>
+                                    <div class="body_left_word_connect">快速提高招聘效率，享受更多服务</div>
+                                </div>
+                            </div>
+                            <div class="job_box_body_right">
+                                <img src="{yun:}$wap_style{/yun}/images/dredge_add.png" alt="">
+                            </div>
+                        </li>
+                        <li @click="showJobTg('rec')">
+                            <div class="job_box_body_left">
+                                <div class="job_box_body_left_icon">
+                                    <img src="{yun:}$wap_style{/yun}/images/job_recommend.png" alt="">
+                                </div>
+                                <div class="job_box_body_left_word">
+                                    <div class="body_left_word_title">推荐</div>
+                                    <div class="body_left_word_connect">享特殊标识，提高曝光机会</div>
+                                </div>
+                            </div>
+                            <div class="job_box_body_right">
+                                <img src="{yun:}$wap_style{/yun}/images/dredge_add.png" alt="">
+                            </div>
+                        </li>
+                        {yun:}if $config.com_job_reserve == 1{/yun}
+                        <li class="refresh_btn" @click="showJobReserve">
+                            <div class="job_box_body_left">
+                                <div class="job_box_body_left_icon">
+                                    <img src="{yun:}$wap_style{/yun}/images/dredge_refresh.png" alt="">
+                                </div>
+                                <div class="job_box_body_left_word">
+                                    <div class="body_left_word_title">刷新</div>
+                                    <div class="body_left_word_connect">每天预约刷新，牛人主动来寻</div>
+                                </div>
+                            </div>
+                            <div class="job_box_body_right">
+                                <img src="{yun:}$wap_style{/yun}/images/dredge_add.png" alt="">
+                            </div>
+                        </li>
+                        {yun:}else{/yun}
+                        <li class="refresh_btn" @click="showJobTg('auto')">
+                            <div class="job_box_body_left">
+                                <div class="job_box_body_left_icon">
+                                    <img src="{yun:}$wap_style{/yun}/images/dredge_refresh.png" alt="">
+                                </div>
+                                <div class="job_box_body_left_word">
+                                    <div class="body_left_word_title">刷新</div>
+                                    <div class="body_left_word_connect">每天自动刷新，牛人主动来寻</div>
+                                </div>
+                            </div>
+                            <div class="job_box_body_right">
+                                <img src="{yun:}$wap_style{/yun}/images/dredge_add.png" alt="">
+                            </div>
+                        </li>
+                        {yun:}/if{/yun}
+                        
+                    </ul>
+                    <input id="jobid" :value="jobid" type="hidden"/>
+                </div>
+                <div class="job_box_cancel" @click="closeJobRecommend">取消</div>
+            </div>
+        </van-popup>
+
+    <!--职位推广设置弹出-->
+    <van-popup v-model="tc_server" position="bottom">
+        <div class="top_set_box" style="position: unset; display: block">
+            <div class="top_set_box_title">
+                <div class="box_title_left">{{promote_title}}</div>
+                <div class="box_title_right" @click="closeTc">
+                    <img src="{yun:}$wap_style{/yun}/images/job.dell.png" alt="">
+                </div>
+            </div>
+            <div class="top_set_box_bnner">
+                <span @click="topage('index.php?c=server')"><img src="{yun:}$wap_style{/yun}/images/job_bnner.png" alt=""></span>
+            </div>
+            <div class="top_set_box_day" v-if="promote_tc">{{promote_tc}}</div>
+            <div class="top_set_box_day" v-else>
+                <div class="set_box_day_left">{{package_allowance}}</div>
+                <div class="set_box_day_right">{{days_remaining}}天</div>
+            </div>
+            <div class="top_set_box_setday">
+                <div class="box_setday_left">{{promote_day_title}}</div>
+                <div class="box_setday_right">
+                    <input type="number" v-model='promote_day' @input="dayCheck" oninput="value=value.replace(/^0|[\^d]/g,'')" maxlength='3' placeholder="请设置天数" autocomplete="off">
+                </div>
+            </div>
+            <input type="hidden" v-model="promote_jobid" />
+            <input type="hidden" v-model="promote_type" />
+            <div class="top_set_box_btn" @click="setJobPromote">确定</div>
+        </div>
+    </van-popup>
+
+        <van-popup v-model="single_server" position="bottom">
+            <div class="top_set_deficiency_box" style="position: unset; display: block">
+                <div class="top_set_box_title">
+                    <div class="box_title_left">{{server.name}}</div>
+                    <div class="box_title_right" @click="closeSingle">
+                        <img src="{yun:}$wap_style{/yun}/images/job.dell.png" alt="">
+                    </div>
+                </div>
+                <div class="top_set_box_bnner">
+                    <span @click="topage('index.php?c=server')"><img src="{yun:}$wap_style{/yun}/images/job_bnner.png" alt=""></span>
+                </div>
+                <div class="top_set_box_setday">
+                    <div class="box_setday_left">{{server.name}}天数</div>
+                    <div class="box_setday_right">
+                        <input type="number" v-model='server.days' @input="checkDay" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请设置天数" autocomplete="off">
+                    </div>
+                </div>
+            <div class="top_set_box_discounts" v-if="dkShow">
+                <div class="select_discounts_text">
+                    <div class="discounts_text_top">{{config.integral_pricename}}抵扣</div>
+                    <div class="discounts_text_bom">你当前有<i class="text_bom_integral">{{statis.integral}}</i>{{config.integral_pricename}}（1元={{config.integral_proportion}}{{config.integral_pricename}}）</div>
+                </div>
+                <div class="select_discounts_icon">
+                    <van-switch v-model="server.switchChecked" active-color="#DEAC65" inactive-color="#dcdee0" @change="integralSwitchChange"></van-switch>
+                </div>
+            </div>
+            <div class="top_set_box_discounts" v-if="isDk">
+                <div class="box_setday_left">抵扣数量</div>
+                <div class="box_setday_right">
+                    <input type="number" v-model='server.dkNum' @input="dkCheck" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请输入抵扣数量" autocomplete="off" />
+                </div>
+            </div>
+
+                <div class="position_card_pay" v-if="payTypeShow">
+                    <div class="position_card_pay_box" v-if="fktype.fkal && isweixin == 2" @click="chosePayType(2)">
+                        <div class="card_pay_box_left">
+                            <div class="pay_box_left_icon">
+                                <img src="{yun:}$wap_style{/yun}/images/dredge_zfb.png" alt="">
+                            </div>
+                            <div class="pay_box_left_name">支付宝支付</div>
+                        </div>
+                        <div class="card_pay_box_icon">
+                            <img  :src="src_alipay" alt="">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="deficiency_box_btn" v-if="payStyle == 'price'">
+                    <div class="deficiency_box_btn_left">
+                        <div class="box_btn_left_pay">应付金额：</div>
+                        <div class="box_btn_left_center">￥</div>
+                        <div class="box_btn_left_monye">{{order_price}}</div>
+                    </div>
+                    <div class="deficiency_box_btn_right" @click="buyByPrice">立即购买</div>
+                </div>
+
+                <div class="deficiency_box_btn" v-if="payStyle == 'integral'">
+                    <div class="deficiency_box_btn_left">
+                        <div class="box_btn_left_pay">支付{{config.integral_name}}：</div>
+                        <div class="box_btn_left_center"></div>
+                        <div class="box_btn_left_monye">{{order_integral}}</div>
+                    </div>
+                    <div class="deficiency_box_btn_right" @click="buyByIntegral">立即购买</div>
+                </div>
+
+             
+
+            </div>
+        </van-popup>
+
+    <!--预约刷新弹出-->
+    <van-popup v-model="reserveJob" position="bottom">
+        <div class="refresh_box" style="position: unset; display: block">
+            <div class="top_set_box_title">
+                <div class="box_title_left">刷新设置</div>
+                <div class="box_title_right" @click="closeJobReserve">
+                    <img src="{yun:}$wap_style{/yun}/images/job.dell.png" alt="">
+                </div>
+            </div>
+            <div class="top_set_box_bnner">
+                <span onclick="navigateTo('index.php?c=server')"><img src="{yun:}$wap_style{/yun}/images/job_bnner.png" alt=""></span>
+            </div>
+            <div class="refresh_list">
+                <div class="refresh_listname">刷新状态</div>
+                <div class="refresh_listname_zt">
+                    <van-switch v-model="switchChecked" @change="switchChange" active-color="#2778f8" inactive-color="#dcdee0" size="20"/></van-switch>
+                    <input type="hidden" v-model="status"/>
+                </div>
+            </div>
+            <div class="refresh_list">
+                <div class="refresh_listname">刷新间隔</div>
+                <div class="refresh_text" @click="interval_popup = true;">
+                    <span>{{interval_name}}</span>
+                    <div class="refresh_timeicon">
+                        <img src="{yun:}$wap_style{/yun}/images/yun_wap_partdate.png" alt="">
+                    </div>
+                </div>
+                <div class="refresh_text" style="margin-top: 0.23rem;" v-show="intervalDiv">
+                    <input type="number" v-model="space" @blur="checkInterval" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="0">
+                    <span class="refresh_time">分钟</span>
+                </div>
+            </div>
+            <div class="refresh_list">
+                <div class="refresh_listname">截止日期</div>
+                <div class="refresh_text">
+                    <div class=" " @click="showDatePopup">{{formatDate ? formatDate : '不限'}}</div>
+
+                    <div class="refresh_timeicon">
+                        <img src="{yun:}$wap_style{/yun}/images/yun_wap_partdate.png" alt="">
+                    </div>
+                    <input type="hidden" v-model="currentDate"/>
+                </div>
+            </div>
+
+            <div class="refresh_list">
+                <div class="refresh_listname">刷新时间段</div>
+                <div class="refresh_list_sd" @click="showSTimePopup">{{s_time ? s_time : '09:00'}}</div>
+                <div class="refresh_list_sd" @click="showETimePopup">{{e_time ? e_time : '17:00'}}</div>
+                <input type="hidden" v-model="s_time"/>
+                <input type="hidden" v-model="e_time"/>
+            </div>
+            <div class="refresh_list_gz">
+                <div class="refresh_list_gz_t">刷新规则:</div>
+                <div>剩余刷新资源 <span class="refresh_list_gz_n">{{statis.upJobNum}}</span> 份&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;单职位可预约<span class="refresh_list_gz_n"> {{reserveNum}} </span>次自动刷新</div>
+                <div>1.截止日期不得设置今天，超过截止日期，自动关闭预约设置</div>
+                <div>2.刷新资源不足，将自动停止，购买后需重新设置</div>
+            </div>
+
+            <div class="top_set_box_btn" @click="setReserveRefreshJob">确定</div>
+        </div>
+    </van-popup>
+
+    <van-popup v-model:show="interval_popup" round position="bottom">
+        <van-picker show-toolbar :columns="intervalArr" value-key="name" :default-index="intervalIndex" title="刷新间隔" @cancel="interval_popup=false" @confirm="confirmInterval"/>
+    </van-popup>
+
+    <van-popup v-model="date_popup" position="bottom">
+        <van-datetime-picker v-model="currentDate" type="date" title="请选择截止日期" :min-date="minDate" @cancel="cancelDate" @confirm="confirmDate"/>
+    </van-popup>
+
+    <van-popup v-model="s_time_popup" position="bottom">
+        <van-datetime-picker v-model="s_time" type="time" title="请选择开始时间" @cancel="cancelSTime" @confirm="confirmSTime"/>
+    </van-popup>
+
+    <van-popup v-model="e_time_popup" position="bottom">
+        <van-datetime-picker v-model="e_time" type="time" title="请选择截止时间" @cancel="cancelETime" @confirm="confirmETime"/>
+    </van-popup>
+
+    <!--取消职位推广弹出-->
+    <van-popup v-model="cancel_popup" position="bottom">
+        <div>
+            <div class="job_box_title">
+                <img src="{yun:}$wap_style{/yun}/images/job_setting.png" alt="">
+            </div>
+            <div class="job_box_body">
+                <ul>
+
+                    <li class="top_set" v-if="closeArr.top_n" @click="closePromote('top')">
+                        <div class="job_box_body_left">
+                            <div class="job_box_body_left_icon">
+                                <img src="{yun:}$wap_style{/yun}/images/dredge_top.png" alt="">
+                            </div>
+                            <div class="job_box_body_left_word">
+                                <div class="body_left_word_title">取消置顶</div>
+                                <div class="body_left_word_connect">锁定前排好位置，坐享牛人滚滚来</div>
+                            </div>
+                        </div>
+                        <div class="job_box_body_right">
+                            <img src="{yun:}$wap_style{/yun}/images/dredge_add.png" alt="">
+                        </div>
+                    </li>
+                    <li v-if="closeArr.urgent_n" @click="closePromote('urgent')">
+                        <div class="job_box_body_left">
+                            <div class="job_box_body_left_icon">
+                                <img src="{yun:}$wap_style{/yun}/images/job_Help_wanted.png" alt="">
+                            </div>
+                            <div class="job_box_body_left_word">
+                                <div class="body_left_word_title">取消急聘</div>
+                                <div class="body_left_word_connect">快速提高招聘效率，享受更多服务</div>
+                            </div>
+                        </div>
+                        <div class="job_box_body_right">
+                            <img src="{yun:}$wap_style{/yun}/images/dredge_add.png" alt="">
+                        </div>
+                    </li>
+                    <li v-if="closeArr.rec_n" @click="closePromote('rec')">
+                        <div class="job_box_body_left">
+                            <div class="job_box_body_left_icon">
+                                <img src="{yun:}$wap_style{/yun}/images/job_recommend.png" alt="">
+                            </div>
+                            <div class="job_box_body_left_word">
+                                <div class="body_left_word_title">取消推荐</div>
+                                <div class="body_left_word_connect">享特殊标识，提高曝光机会</div>
+                            </div>
+                        </div>
+                        <div class="job_box_body_right">
+                            <img src="{yun:}$wap_style{/yun}/images/dredge_add.png" alt="">
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="job_box_cancel" @click="closeCancelPromote">取消</div>
+        </div>
+    </van-popup>
+
+    <!--分享面板-->
+    <van-share-sheet v-model="share_popup" title="分享到" :options="shareOptions" @select="shareSelect"></van-share-sheet>
+
+    <!--海报弹出-->
+    <van-popup v-model="jobHbShow" round :style="{height:'100%',width:'100%',background:'none'}">
+        <div class="boisuyeAll">
+            <img :src="hbSrc" style="max-width: 100%;">
+        </div>
+        <div class="posterWapAll">
+            <div class="goBackDo" @click="jobHbShow = false">
+                <van-icon name="arrow-left"/>
+            </div>
+            <template v-if="hbShow">
+                <van-swipe :loop="false" :width="150">
+                    <template v-for="(item, hbKey) in hbList" :key="hbKey">
+                        <van-swipe-item @click="getNewJobHb(item.id)">
+                            <div class="swipeItems">
+                                <div class="swipeItemImg" :class="hb == item.id ? 'swipeItemImgColor' : ''">
+                                    <img :src="item.pic_n" style="max-width: 100%;">
+                                </div>
+                                <div class="swipeItemText" v-if="hb == item.id">
+                                    <img src="{yun:}$wap_style{/yun}/images/come-through.png" alt="">
+                                </div>
+                            </div>
+                        </van-swipe-item>
+                    </template>
+                </van-swipe>
+            </template>
+            <div class="directionOptyte">
+                <p>点击海报查看大图，长按保存后进行分享</p>
+                <div class="directionAll" @click="hbShow = !hbShow">
+                    <div class="directiTou" v-if="hbShow">
+                        <van-icon name="arrow-up"/>
+                    </div>
+                    <div class="directiTou" v-else>
+                        <van-icon name="arrow-down"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </van-popup>
+
+    <!--复制文本弹出-->
+    <van-dialog v-model="copyBoxShow" :show-confirm-button="false" close-on-click-overlay>
+        <div class="job_tckpd">
+            <div class="job_tcktit">复制文本</div>
+            <div class="">
+                <div class="job_tckwb" id="copyBoxText" v-html="wxpubtemp_html"></div>
+                <div class="job_tckbth"> <a href="javascript:;" class="fzwb" data-clipboard-action="copy" data-clipboard-target="#copyBoxText">复制文本</a> </div>
+            </div>
+        </div>
+    </van-dialog>
+
+    <div class="copyUrl none" :data-clipboard-text="jobLink" data-clipboard-action="copy"></div>
+    <div class="none" id="shareClick" :data-url='jobLink'></div>
+</div>
+
+<script src="{yun:}$wap_style{/yun}/js/jsMath.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/com.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$config.sy_weburl{/yun}/js/clipboard/clipboard.min.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+
+</body>
+<script>
+    var isweixin = '{yun:}$isweixin{/yun}';
+    var yunvue = new Vue({
+        el: '#yunvue',
+        data() {
+            return {
+
+                job_recommend: false,   //  职位推广弹出框
+                cancel_popup: false,    //  取消推广弹出
+
+                tc_server: false,         //  推广套餐设置弹出
+                single_server: false,      //  推广消费设置弹出
+
+                reserveJob: false,      //  预约刷新弹出
+
+                promote_title: '',
+                package_allowance: '',
+                days_remaining: 0,
+                promote_tc: '',
+                promote_day: '',
+                promote_day_title: '',
+
+
+                jobid: 0,               //  推广设置职位ID
+                jobkey: 0,              //  职位所在key
+
+                promote_jobid: 0,
+                promote_type: '',
+
+                date_popup: false,      //  预约刷新截止日期弹出
+                minDate: new Date(),
+                currentDate: '',
+                formatDate: '',
+
+                s_time_popup: false,    //  预约刷新时间段开始
+                s_time: '09:00',
+
+                e_time_popup: false,    //  预约刷新时间段截止
+                e_time: '17:00',
+
+                info: [],
+                searchContent: '',
+
+                iscert: false,
+                isname: false,
+                istel: false,
+                isemail: false,
+                isyyzz: false,
+                isxy: false,
+                isgzh: false,
+
+                limit: 10,
+                page: 1,
+                pageTotal: 0,
+                total: 0,
+
+                isFromSearch: true,
+
+                iosfk: 1,
+                fktype: '',
+
+                src_weixin: '{yun:}$wap_style{/yun}/images/dredge_To_confirm.png',
+                src_alipay: '{yun:}$wap_style{/yun}/images/dredge_To_confirm.png',
+
+                statis: [],
+                config: [],
+
+                server: {
+                    dkNum: ''
+                },
+                integral: {},
+
+               
+                dkShow: false,      //  抵扣
+                isDk: false,        //  填写积分抵扣
+
+                payTypeShow: false,
+                payStyle: 'price',
+                order_price: 0,
+                order_integral: 0,
+                only: 0,
+                tgPrice: 0,
+
+                key: '',
+
+                reserve: 1, //	预约刷新
+
+
+                reserveNum: 0,
+                interval: 0,
+                proportion: 1,
+                serviceId: '',
+                space: 0,
+                status: 0,
+                switchChecked: false,
+
+                interval_popup: false,
+                intervalId: '',
+                intervalIndex: 0,
+                interval_name: '请选择刷新间隔',
+                intervalArr: [
+                    {value: 60, name: '每隔1小时刷新'},
+                    {value: 120, name: '每隔2小时刷新'},
+                    {value: 180, name: '每隔3小时刷新'},
+                    {value: 240, name: '每隔4小时刷新'},
+                    {value: 300, name: '每隔5小时刷新'},
+                    {value: 360, name: '每隔6小时刷新'},
+                    {value: 420, name: '每隔7小时刷新'},
+                    {value: 480, name: '每隔8小时刷新'},
+                    {value: 1, name: '自定义刷新间隔'}
+                ],
+                intervalDiv: false,
+
+                stype: 1, //tab栏
+
+                mb_content: '',
+                moreKey: 0,
+
+
+                closeArr: {},
+
+                share_popup: false,
+                shareOptions: [
+                    {
+                        name: '微信',
+                        icon: 'wechat',
+                        className: 'wechat'
+                    },
+                    {
+                        name: '复制文本',
+                        icon: '{yun:}$wap_style{/yun}/images/fx_wb.png',
+                        className: 'copytxt'
+                    },
+                    {
+                        name: '复制链接',
+                        icon: '{yun:}$wap_style{/yun}/images/fx_lj.png',
+                        className: 'link'
+                    }
+                ],
+                jobHbShow: false,
+                jobHbNext: 0,
+                jobHb: '',
+                jobHbTipShow: true,
+                copyBoxShow: false,
+                jobLink: '',
+
+                ishb: false,
+                hbList: [],
+                hb: 0,
+                hbSrc: '',
+                hbShow: true,
+
+                wxpubtemp_html: '',
+
+                sd: {},
+
+                // tab数量显示
+                zp_num: 0,
+                ds_num: 0,
+                xj_num: 0,
+
+                isweixin: isweixin ? isweixin : 2
+            };
+        },
+        created() {
+            this.getjob('refresh');
+            this.getjobNum();
+        },
+		computed: {
+			count() {
+				return (this.info.length > 0)
+			}
+		},
+        methods: {
+
+            //  发布职位
+            jobadd: function () {
+                var url = "{yun:}url d=wxapp h=com m=index c=addCheck{/yun}";
+                comjobAdd(url, {job: 'job'}, function (res) {
+					if (res.error==1) {
+                        // 套餐不足
+                        modalVue.$data.mb_content = res.msg;
+                        modalVue.$data.cancelText = '不用了';
+                        modalVue.$data.confirmText = '去购买';
+                        modalVue.$data.yunModal = true;
+                        modalType = 'job';
+                    } else if(res.error==2){
+                        modalVue.$data.mb_content = res.msg;
+                        modalVue.$data.cancelText = '取消';
+                        modalVue.$data.confirmText = '去发布';
+                        modalVue.$data.tourl = res.tourl;
+                        modalVue.$data.yunModal = true;
+                        modalType = 'toaddjob';
+                    }else {
+                        // 强制操作
+                        certVue.$data.checked = res;
+                        certVue.$data.yunCert = true;
+                    }
+                });
+            },
+
+            tabChange: function (e) {
+                this.stype = e;
+                this.getjob('refresh');
+            },
+
+            getjob(type) {
+                showLoading();
+                var that = this;
+                if (type == 'refresh') {
+                    $("#yunvue").css('display', 'none');
+                    that.page = 1;
+                    that.info = [];
+                }
+                var param = {
+                    name: that.searchContent,
+                    page: that.page,
+                    limit: that.limit,
+                    stype: that.stype,
+                };
+                try {
+                    $.post('{yun:}url d=wxapp h=com m=job c=joblist{/yun}', param, function (data) {
+                        hideLoading();
+                        $("#yunvue").css('display', 'block');
+                        let res = data.data;
+                        that.pageTotal = Math.ceil(res.total / that.limit);
+
+                        if (res.list.length > 0) {
+                            that.info = that.isFromSearch ? res.list : that.info.concat(res.list);
+                        }
+                        that.total = res.total;
+
+                        that.statis = res.statis;
+                        that.config = res.config;
+                        that.fktype = res.fktype;
+
+                        if(that.fktype.fkwx){
+                            that.chosePayType(1);
+                        }else if(that.fktype.fkal){
+                            that.chosePayType(2);
+                        }
+
+                        if (res.iosfk && res.iosfk == 2) {
+                            that.iosfk = 2;
+                        }
+
+                        if (typeof res.reserve !== 'undefined') {
+                            that.reserve = res.reserve;
+
+                            if (res.reserve == 1) {
+
+                                that.reserve = 1;
+                                that.interval = res.interval;
+                                that.space = res.interval;
+                                that.proportion = res.proportion;
+                                that.serviceId = res.serviceId;
+                            }
+                        }
+
+                        if (res.reserveNum && res.reserveNum > 0) {
+                            that.reserveNum = res.reserveNum;
+                        }
+                    }, 'json')
+                } catch (err) {
+                }
+            },
+            getjobNum: function () {
+                let that = this;
+                var param = {
+                    name: that.searchContent,
+                };
+
+                $.post('{yun:}url d=wxapp h=com m=job c=jobnum{/yun}', param, function (data) {
+                    if(data.error == 0){
+                        let count = data.data.count;
+                        that.zp_num = parseInt(count.zp);
+                        that.ds_num = parseInt(count.ds);
+                        that.xj_num = parseInt(count.xj);
+                    }
+                }, 'json')
+            },
+
+            // 刷新操作
+            jobRefresh(id, key) {
+                var that = this;
+                var url = "{yun:}url d=wxapp h=com m=job c=refresh{/yun}";
+                comjobRefresh(url, {jobid: id,provider:'wap'}, function (res) {
+					modalVue.$data.singleid = id;
+                    modalVue.$data.mb_content = res.msg;
+                    modalVue.$data.cancelText = '不用了';
+                    modalVue.$data.confirmText = '去购买';
+                    modalVue.$data.yunModal = true;
+                    modalType = 'jobrefresh';
+                }, function () {
+                    var date = new Date();
+                    var hours = date.getHours()+1 > 9 ? date.getHours() : '0'+date.getHours();
+                    var minute = date.getMinutes() > 9 ? date.getMinutes() : '0'+date.getMinutes();
+                    that.info[key].lastupdate_n = hours+':'+minute;
+                });
+            },
+
+            /** 上下架 Start */
+            statusChange(id, status, key) {
+                var that = this,
+                    paramer = {
+                        id: id,
+                        status: status,
+                    };
+                if (status == 1) {
+                	var msg = '下架后重新上架将消耗上架职位数量，确认下架？';
+                    showConfirm(msg, function () {
+                        that.statusSave(paramer, key);
+                    }, '取消', '确定');
+                } else {
+                    if (this.statis.rating_type == 1 || this.statis.rating_type == 2) {
+                        var msg = '您可上架职位' + this.statis.job_num + '个，确认上架？';
+                    } else {
+                        that.statusSave(paramer, key);
+                        return;
+                    }
+                    showConfirm(msg, function () {
+                        that.statusSave(paramer, key);
+                    }, '取消', '确定');
+                }
+            },
+            statusSave(paramer, key) {
+                var that = this;
+                showLoading('设置中');
+                $.post('{yun:}url d=wxapp h=com m=job c=ztjob{/yun}', paramer, function (data) {
+                    hideLoading();
+                    if (data.error == 0) {
+						that.info.splice(key, 1)
+                        that.getjobNum();
+                        showToast('设置成功');
+                    } else if(data.error == 8){
+                        modalVue.$data.mb_content = data.msg;
+                        modalVue.$data.cancelText = '不用了';
+                        modalVue.$data.confirmText = '去购买';
+                        modalVue.$data.yunModal = true;
+                        modalType = 'job';
+                    }else {
+                        showModal(data.msg);
+                    }
+                }, 'json');
+            },
+            /** 上下架 End */
+
+            /** 分享Start */
+            shareShow(id){
+                showLoading();
+                var that = this;
+                that.jobid = id;
+                var param = {
+                    provider: 'wap',
+                    id: id
+                };
+                try {
+                    $.post('{yun:}url d=wxapp h=com m=job c=getJobShare{/yun}', param, function (data) {
+                        hideLoading();
+                        let res = data.data;
+                        that.wxpubtemp_html = res.wxpubtemp_html;
+                        that.ishb = res.ishb;
+                        that.hbList = res.hbList ? res.hbList : [];
+                        that.jobLink = config.url = res.jobLink;
+
+                        if (res.ishb && res.hbList.length > 0){
+                            if (that.shareOptions.length == 3){
+                                that.shareOptions.splice(1, 0, {
+                                    name: '分享海报',
+                                    icon: '{yun:}$wap_style{/yun}/images/fx_hb.png',
+                                    className: 'poster'
+                                });
+                            }
+                        }else{
+                            if (that.shareOptions.length == 4){
+                                that.shareOptions.splice(1, 1);
+                            }
+                        }
+                        that.share_popup = true;
+						if(typeof wx !== 'undefined'){
+							// 微信内分享
+							wx.ready(function () {
+							    var shareData = {
+							        title: res.shareTitle,
+							        desc: res.shareDesc,
+							        link: res.jobLink,
+							        imgUrl: res.shareLogo,
+							        success: function () {
+							
+							        }
+							    };
+							    wx.updateAppMessageShareData(shareData);
+							    wx.updateTimelineShareData(shareData);
+							});
+							wx.error(function (res) {
+							    console.log(res.errMsg);
+							});
+						}else{
+							// 其他分享
+							config.url = res.jobLink;
+							config.title = res.shareTitle;
+							config.desc = res.shareDesc;
+							config.img = res.shareLogo;
+							config.img_title = res.shareTitle;
+						}
+                    }, 'json')
+                } catch (err) {
+                }
+            },
+            shareSelect: function(e) {
+                var that = this;
+                var classname = e.className;
+                this.share_popup = false;
+                if (classname == 'wechat') {
+                    $('#shareClick').click();
+                } else if (classname == 'poster') {
+                    that.getJobHb();
+                } else if (classname == 'copytxt') {
+                    that.copyBoxShow = true;
+                } else if (classname == 'link') {
+                    $('.copyUrl').click();
+                }
+            },
+            getJobHb: function() {
+                var that = this;
+                showLoading();
+                $.post(wapurl + "?c=job&a=getHbList", {rand: Math.random()}, function (data) {
+                    var data = eval('(' + data + ')');
+                    hideLoading();
+
+                    if (data.errcode == 1){
+
+                        that.hbList = data.hbList;
+                        that.hb = data.hbList[0].id;
+
+                        var src = wapurl + '?c=ajax&a=getJobHb&id=' + that.jobid + '&hb=' + that.hb;
+                        var hbImg = new Image();
+                        hbImg.src = src;
+
+                        hbImg.onload = function(){
+                            that.hbSrc = hbImg.src;
+                            that.jobHbShow = true;
+                        }
+                    }else{
+                        showToast(data.errmsg);
+                        return false;
+                    }
+                });
+            },
+            getNewJobHb: function(hb){
+
+                var that = this;
+                if (hb != that.hb){
+                    showLoading('生成中...');
+                    that.hb = hb;
+                    var src = wapurl + '?c=ajax&a=getJobHb&id=' + that.jobid + '&hb=' + hb;
+                    var hbImg = new Image();
+                    hbImg.src = src;
+
+                    hbImg.onload = function(){
+                        that.hbSrc = hbImg.src;
+                        hideLoading();
+                    }
+                }
+            },
+            /** 分享End */
+
+            // 翻页
+            pageChange: function (page) {
+                this.page = page;
+                this.getjob('');
+            },
+
+            topage: function (url) {
+                location.href = url;
+            },
+
+            //  职位推广Show
+            showJobRecommend(id, key, status, interval, end, s_time, e_time) {
+                let sy_interval = this.interval ? parseInt(this.interval) : 0;
+                this.jobid = id;
+                this.jobkey = key;
+
+                if (this.reserve == 1){
+                    let intervalArr = this.intervalArr.filter(function (item) {
+                        if (item.value == 1) {
+                            return true;
+                        } else {
+                            return item.value >= sy_interval;
+                        }
+                    })
+                    this.intervalArr = intervalArr;
+
+                    this.status = parseInt(status) == 0 ? 0 : status;
+                    this.switchChecked = parseInt(status) == 0 ? false : true;
+					if(typeof interval!='undefined'){
+
+                        var intervalA= ['60', '120', '180', '240', '300', '360', '420', '480'];
+                        intervalA = intervalA.filter(function (value) {
+                            return parseInt(value) >= sy_interval;
+                        })
+
+                        if (intervalA.indexOf(interval) >= 0){
+                            this.intervalIndex = intervalA.indexOf(interval);
+                            this.intervalId = interval;
+
+                            intervalArr.forEach(item => {
+                                if (item.value == interval){
+
+                                    this.interval_name = item.name;
+                                }
+                            })
+
+                            this.intervalDiv = false;
+                        }else{
+                            this.intervalIndex = intervalA.length - 1;
+                            this.intervalId = 1;
+                            this.interval_name = '自定义刷新间隔';
+                            this.intervalDiv = true;
+                        }
+						this.space = interval;
+					}
+                    this.currentDate = this.formatDate = end;
+                    this.s_time = s_time;
+                    this.e_time = e_time;
+                }
+
+                this.job_recommend = true;
+            },
+
+            //  职位推广Close
+            closeJobRecommend() {
+                this.job_recommend = false;
+            },
+
+            showJobTg: function(type){
+
+                var self = this;
+                var isTc = 0;
+
+                if (type === 'top'){
+
+                    self.tgPrice = parseFloat(self.config.topPrice);
+                    var num = parseInt(self.statis.top_num);
+
+                    isTc = self.tgPrice === 0 || num > 0 ? 1: 0;
+                }else if (type === 'rec'){
+
+                    self.tgPrice = parseFloat(self.config.recPrice);
+                    var num = parseInt(self.statis.rec_num);
+                    isTc = self.tgPrice === 0 || num > 0 ? 1: 0;
+                }else if (type === 'urgent'){
+
+                    self.tgPrice = parseFloat(self.config.urgentPrice);
+                    var num = parseInt(self.statis.urgent_num);
+                    isTc = self.tgPrice === 0 || num > 0 ? 1: 0;
+                }else if (type === 'auto'){
+                    self.tgPrice = parseFloat(self.config.autoPrice);
+                    isTc =  self.tgPrice=== 0 ? 1: 0;
+                }
+
+                if (isTc === 1){
+
+                    self.showTc(type, num);
+                }else{
+                    if (type != 'auto') {
+                        self.sendRatingNotice(type);
+                    }
+                    self.showSingle(type);
+                }
+
+                self.job_recommend = false;
+            },
+
+            showTc(type, num){
+                var self = this;
+                self.promote_jobid  =   self.jobid; // 推广职位ID
+                self.promote_day = '';
+
+                if (type === 'auto') {
+
+                    self.promote_title = '自动刷新';
+                    if (self.tgPrice === 0) {
+                        self.promote_tc = '限时福利：自动刷新金额 0 元';
+                    }
+                    self.promote_type = 'autojob';
+                } else if (type === 'top') {
+
+                    self.promote_title = '职位置顶';
+                    if (self.tgPrice === 0 ) {
+                        self.promote_tc = '限时福利：职位置顶金额 0 元';
+                    } else {
+                        self.package_allowance = '您的职位置顶套餐剩余';
+                        self.days_remaining = num;
+                    }
+                    self.promote_day_title = '置顶天数';
+                    self.promote_type = 'top';
+                } else if (type === 'rec') {
+
+                    self.promote_title = '职位推荐';
+                    if (self.tgPrice === 0) {
+                        self.promote_tc = '限时福利：职位推荐金额 0 元';
+                    } else {
+                        self.package_allowance = '您的职位推荐套餐剩余';
+                        self.days_remaining = num;
+                    }
+                    self.promote_day_title = '推荐天数';
+                    self.promote_type = 'rec';
+                } else if (type === 'urgent') {
+
+                    self.promote_title = '职位紧急招聘';
+                    if (self.tgPrice === 0) {
+                        self.promote_tc = '限时福利：紧急招聘金额 0 元';
+                    } else {
+                        self.package_allowance = '您的职位紧急招聘套餐剩余';
+                        self.days_remaining = num;
+                    }
+                    self.promote_day_title = '急聘天数';
+                    self.promote_type = 'urgent';
+                }
+
+                self.tc_server = true;
+            },
+
+            sendRatingNotice(type){
+
+                var that = this;
+                var formData = {
+                    type: type
+                };
+                try {
+                    $.post('{yun:}url d=wxapp h=com m=job c=sendRatingNotice{/yun}', formData, function (data) {
+
+                    }, 'json');
+                } catch (err) {
+                }
+            },
+
+            dayCheck:function(){
+                var that = this;
+                debounce(that.setCkDays);
+            },
+
+            setCkDays: function(){
+                var that = this;
+
+                if (that.promote_type == 'top'){
+                    if (parseInt(that.statis.top_num) < parseInt(that.promote_day) && parseFloat(that.config.topPrice) > 0){
+                        that.promote_day = that.statis.top_num;
+                    }
+                } else if (that.promote_type == 'rec'){
+                    if (parseInt(that.statis.rec_num) < parseInt(that.promote_day) && parseFloat(that.config.recPrice) > 0){
+                        that.promote_day = that.statis.rec_num;
+                    }
+                } else if (that.promote_type === 'urgent'){
+                    if (parseInt(that.statis.urgent_num) < parseInt(that.promote_day) && parseFloat(that.config.urgentPrice) > 0){
+                        that.promote_day = that.statis.urgent_num;
+                    }
+                }
+            },
+
+            setJobPromote(){
+                var that = this;
+                if (that.promote_day === '' || that.promote_day === 'undefined') {
+                    return showToast('请填写职位推广天数！');
+                }
+                var formData = {
+                    days: that.promote_day,
+                    jobid: that.promote_jobid,
+                    type: that.promote_type
+                };
+                showLoading();
+                try {
+                    $.post('{yun:}url d=wxapp h=com m=job c=setJobPromote{/yun}', formData, function (data) {
+
+                        hideLoading();
+                        showModal(data.msg);
+
+                        if (data.error === 1){
+
+                            that.tc_server = false;
+
+                            if (that.jobkey >= 0 ){
+
+                                if (that.promote_type === 'top'){
+
+                                    that.info[that.jobkey].xs = 1;
+
+                                    if(parseInt(that.promote_day) > 0){
+
+                                        that.statis.top_num =	that.config.topPrice > 0 ? accSub(parseInt(that.statis.top_num), that.promote_day) : that.statis.top_num;
+
+                                        that.info[that.jobkey].top_day = accAdd(that.info[that.jobkey].top_day , accSub(that.promote_day, 1));
+                                    }
+                                }else if (that.promote_type === 'rec'){
+
+                                    that.info[that.jobkey].rec_n = 1;
+
+                                    if(parseInt(that.promote_day) > 0){
+
+                                        that.statis.rec_num =	that.config.recPrice > 0 ? accSub(parseInt(that.statis.rec_num), that.promote_day) : that.statis.rec_num;
+
+                                        that.info[that.jobkey].rec_day = accAdd(that.info[that.jobkey].rec_day , accSub(that.promote_day, 1));
+                                    }
+                                }else if (that.promote_type === 'urgent'){
+
+                                    that.info[that.jobkey].urgent_n = 1;
+
+                                    if(parseInt(that.promote_day) > 0){
+
+                                        that.statis.urgent_num =	that.config.urgentPrice > 0 ? accSub(parseInt(that.statis.urgent_num), that.promote_day) : that.statis.urgent_num;
+
+                                        that.info[that.jobkey].urgent_day = accAdd(that.info[that.jobkey].urgent_day , accSub(that.promote_day, 1));
+                                    }
+                                }
+                            }
+                        }
+
+                    }, 'json')
+                } catch (err) {
+                };
+
+            },
+
+            closeTc: function(){
+                this.tc_server = false;
+                this.job_recommend = true;
+            },
+
+            showSingle(type){
+
+                var self = this;
+
+                if (type === 'top'){
+                    if(self.config.topJob === '2'){
+                        self.toServer();
+                        self.single_server = false;
+                    }else{
+                        self.server.name = '职位置顶';
+                        self.only = self.config.onlyTop;
+                        self.promote_type = 'jobtop';
+                        self.single_server = true;
+                    }
+                } else if(type === 'rec'){
+                    if(self.config.recJob === '2'){
+                        self.toServer();
+                        self.single_server = false;
+                    }else{
+                        self.server.name = '职位推荐';
+                        self.only = self.config.onlyRec;
+                        self.promote_type = 'jobrec';
+                        self.single_server = true;
+                    }
+                } else if(type === 'urgent'){
+                    if(self.config.urgentJob === '2'){
+                        self.toServer();
+                        self.single_server = false;
+                    }else{
+                        self.server.name = '紧急招聘';
+                        self.only = self.config.onlyUrgent;
+                        self.promote_type = 'joburgent';
+                        self.single_server = true;
+                    }
+                }else if(type === 'auto'){
+                    self.server.name = '自动刷新';
+					self.only=2;
+                    self.promote_type = 'autojob';
+                    self.single_server = true;
+                }
+
+
+            },
+            checkDay:function(){
+
+                var that = this;
+
+
+                that.dkShow = false;
+                that.server.switchChecked = false;
+                that.isDk = false;
+                that.server.dkNum = '';
+                that.order_integral = '';
+
+                that.order_price = 0;
+
+                that.payStyle = 'price';
+                if (parseInt(that.server.days) > 0){
+                    that.payTypeShow = true;
+                    debounce(that.setTgDays);
+                }else{
+                    that.payTypeShow = false;
+                }
+            },
+
+            setTgDays:function(){
+
+                var that = this;
+
+                if (that.server.days.length>3){
+                    that.server.days = that.server.days.slice(0, 3);
+                }
+
+                var price = accMul(that.server.days, that.tgPrice);
+
+                if (that.config.online == 3 && that.only == 2){     //  积分消费模式 && 不强制金额消费
+
+                 
+
+                    that.dkShow = false;
+                    that.server.dkNum = 0;
+
+                    var integral_need   =   accMul(parseFloat(price), that.config.integral_proportion);
+                    var integral_sub    =   accSub(integral_need, parseInt(that.statis.integral));
+
+                    that.order_integral =   integral_need;
+
+                    if (parseInt(integral_sub) <= 0 ){  //  积分充足
+
+                        that.payStyle   =   'integral';
+                        that.payTypeShow = false;
+                    }else{
+
+                        var integral_pay    =   parseInt(integral_sub) < parseInt(that.config.integral_min) ? parseInt(that.config.integral_min) : parseInt(integral_sub);
+                        that.server.price_int   = integral_pay;
+                        that.order_price    =   accDiv(integral_pay, that.config.integral_proportion);
+                        that.payStyle       =   'price';
+                        that.payTypeShow    =   true;
+                    }
+
+                }else{
+
+                    that.order_price = price;
+                    that.payStyle = 'price';
+                    that.payTypeShow = true;
+
+                    if (parseInt(that.config.online) == 1 && parseInt(that.only) == 2){ //  抵扣消费模式 && 不强制金额消费
+                        that.dkShow = true;
+                    }else{
+
+
+                        that.dkShow = false;
+                        that.server.dkNum = 0;
+                    }
+                }
+            },
+
+            
+            
+            integralSwitchChange:function(e){
+                var that = this;
+                that.isDk = e;
+
+                if (e === false){
+                    // TODO
+                    debounce(that.resetIntegral);
+                }
+            },
+
+            checkIntegral:function(){
+
+                var that = this;
+
+                if (parseInt(that.server.dkNum) > 0){
+
+                    debounce(that.setIntegral);
+                }else{
+                    // TODO
+                    debounce(that.resetIntegral);
+                }
+            },
+
+            setIntegral:function(){
+
+                var that = this;
+
+
+                var price = accMul(that.server.days, that.tgPrice);
+
+              
+
+                var integral_need   =   parseInt(accMul(price, that.config.integral_proportion));
+
+
+                if (parseInt(that.statis.integral) > integral_need){  //  积分充足
+
+                    if (parseInt(that.server.dkNum) >= integral_need){
+
+                        that.server.dkNum = integral_need;
+                        that.order_integral = integral_need;
+                        that.payStyle = 'integral';
+                        that.payTypeShow = false;
+                    }else{
+
+                        price = accSub(price, accDiv(parseInt(that.server.dkNum), that.config.integral_proportion));
+                        that.order_price = parseFloat(price);
+                        that.payStyle = 'price';
+                        that.payTypeShow = true;
+                    }
+                }else{
+
+                    if (parseInt(that.server.dkNum) > parseInt(that.statis.integral)){
+
+                        that.server.dkNum = that.statis.integral;
+
+                        that.order_price = accSub(price, accDiv(parseInt(that.statis.integral), that.config.integral_proportion));
+                        that.payStyle = 'price';
+                        that.payTypeShow = true;
+                    }else{
+
+                        that.order_price = accSub(price, accDiv(parseInt(that.server.dkNum), that.config.integral_proportion));
+                        that.payStyle = 'price';
+                        that.payTypeShow = true;
+                    }
+                }
+            },
+
+            resetIntegral:function(){
+                var that = this;
+
+                var price = accMul(that.server.days, that.tgPrice);
+
+                
+                that.order_price = price;
+
+                that.dkShow = that.config.online == 1 && that.only!=1 ? true : false;
+                that.order_integral = 0;
+                that.payStyle = 'price';
+                that.payTypeShow = true;
+                that.server.dkNum = '';
+            },
+            
+            chosePayType:function(e){
+                var that = this;
+                if (e == 2){
+
+                    that.server.paytype = 'alipay';
+                    that.src_weixin = '{yun:}$wap_style{/yun}/images/dredge_To_confirm.png';
+                    that.src_alipay = '{yun:}$wap_style{/yun}/images/dredge_affirm.png';
+                }
+            },
+
+            buyByPrice:function(){
+                var that = this;
+
+                var param = {
+                    server : that.promote_type,
+                    single_id: that.jobid,
+                    days: that.server.days,
+                    paytype: that.server.paytype,
+                    integral_dk: that.server.dkNum,
+                    price_int: that.server.price_int,
+                   
+                    from: 'wap'
+                };
+
+                showLoading();
+                try {
+                    $.post('{yun:}url d=wxapp h=com m=fk c=getOrder{/yun}', param, function (data) {
+
+                        hideLoading();
+                        if(data.msg == 'ok' && data.error == 0){
+                            let res = data.data;
+                            window.location.href=res.url;
+                        }else{
+                            showToast(data.msg);
+                        }
+
+                    }, 'json')
+                } catch (err) {
+                };
+            },
+
+            buyByIntegral:function(){
+
+                var that = this;
+
+                var param = {
+                    server : that.promote_type,
+                    days: that.server.days,
+         
+                };
+                if (that.promote_type == 'jobtop'){
+
+                    param.zdjobid = that.jobid;
+                }else if(that.promote_type == 'jobrec'){
+
+                    param.recjobid = that.jobid;
+                }else if(that.promote_type == 'joburgent'){
+
+                    param.ujobid = that.jobid;
+                }else if(that.promote_type == 'autojob'){
+
+                    param.jobautoids = that.jobid;
+                }
+
+                showLoading();
+                try {
+                    $.post('{yun:}url d=wxapp h=com m=fk c=dkzf{/yun}', param, function (data) {
+
+                        hideLoading();
+                        showModal(data.msg);
+
+                        if (data.error === 0){
+
+                            that.single_server = false;
+
+                            if (that.jobkey >= 0 ){
+
+                                that.statis.integral =	accSub(parseInt(that.statis.integral), parseInt(that.server.dkNum));
+
+                                if (that.promote_type === 'jobtop'){
+
+                                    that.info[that.jobkey].xs = 1;
+                                    that.info[that.jobkey].top_day = accAdd(that.info[that.jobkey].top_day , accSub(that.server.days, 1));
+                                }else if (that.promote_type === 'jobrec'){
+
+                                    that.info[that.jobkey].rec_n = 1;
+                                    that.info[that.jobkey].rec_day = accAdd(that.info[that.jobkey].rec_day , accSub(that.server.days, 1));
+                                }else if (that.promote_type === 'joburgent'){
+
+                                    that.info[that.jobkey].urgent_n = 1;
+                                    that.info[that.jobkey].urgent_day = accAdd(that.info[that.jobkey].urgent_day , accSub(that.server.days, 1));
+                                }else if (that.promote_type === 'autojob'){
+
+                                    that.info[that.jobkey].auto_n = 1;
+                                }
+                            }
+                        }
+
+                    }, 'json')
+                } catch (err) {
+                };
+            },
+
+
+            closeSingle: function(){
+                var that = this;
+                that.server.days  =   '';
+                that.checkDay();
+                that.single_server = false;
+                that.job_recommend = true;
+            },
+
+            toServer:function(){
+                modalVue.$data.mb_content = '套餐已用完，购买会员更优惠';
+                modalVue.$data.cancelText = '不用了';
+                modalVue.$data.confirmText = '去购买';
+                modalVue.$data.yunModal = true;
+                modalType = 'vip';
+            },
+
+            /** 预约刷新 Start */
+            showJobReserve(){
+                var ajaxUrl ='{yun:}url d=wxapp h=com m=job c=getRefresh{/yun}';
+                let pData = {job_id:this.jobid};
+                let refreshStatus;
+                let that = this;
+                if(this.status != 1){
+                    $.ajaxSettings.async=false
+                    $.post(ajaxUrl, pData, function(data) {
+                        if (data.error == 0) {
+                            refreshStatus = data.data.refreshStatus?data.data.refreshStatus:'';
+                            if (refreshStatus == 0){
+                                that.space = '60'
+                                that.interval_name = '每隔1小时刷新';
+                                that.switchChecked = false;
+                                that.status = 2;
+                                that.intervalIndex = 0;
+                                that.intervalId = 60;
+                            }else{
+                                that.switchChecked = refreshStatus == 1 ? true : false;
+                                that.status = 2;
+                                if(data.data.interval){
+                                    that.space = data.data.interval== 0?'60':data.data.interval;
+                                }
+                                let interval  = data.data.interval;
+                                if(typeof interval!='undefined'){
+                                    let sy_interval = that.interval ? parseInt(that.interval) : 0;
+                                    var intervalA= ['60', '120', '180', '240', '300', '360', '420', '480'];
+                                    intervalA = intervalA.filter(function (value) {
+                                        return parseInt(value) >= parseInt(sy_interval);
+                                    })
+
+                                    if (intervalA.indexOf(interval) >= 0){
+                                        that.intervalIndex = intervalA.indexOf(interval);
+                                        that.intervalId = interval;
+
+                                        that.intervalArr.forEach(item => {
+                                            if (item.value == interval){
+                                                that.interval_name = item.name;
+                                            }
+                                        })
+                                        that.intervalDiv = false;
+                                    }else{
+                                        that.intervalIndex = intervalA.length - 1;
+                                        that.intervalId = 1;
+                                        that.interval_name = '自定义刷新间隔';
+                                        that.intervalDiv = true;
+                                    }
+                                }
+                                if (data.data.s_time){
+                                    that.s_time = data.data.s_time;
+                                }
+                                if (data.data.e_time){
+                                    that.e_time = data.data.e_time;
+                                }
+                            }
+
+                        }
+                    });
+                }
+                this.reserveJob = true;
+                this.job_recommend = false;
+            },
+            closeJobReserve(){
+                this.reserveJob = false;
+                this.job_recommend = true;
+            },
+
+            switchChange:function(value){
+                this.switchChecked = value;
+                this.status = value == true ? 1 : 2;
+            },
+            showIntervalPopup(){
+                this.interval_popup = true;
+            },
+            closeIntervalPopup(){
+                this.interval_popup = false;
+            },
+            confirmInterval(e){
+
+                this.intervalId = e.value;
+                this.interval_name = e.name;
+
+                if (e.value == 1){
+
+                    this.space = '';
+                    this.intervalDiv = true;
+                }else{
+
+                    this.space = e.value;
+                    this.intervalDiv = false;
+                }
+
+                this.interval_popup = false;
+            },
+            checkInterval: function(e) {
+                const space = e.target.value;
+                if (parseInt(space) < parseInt(this.interval)){
+                    this.space = this.interval;
+                }
+            },
+
+            showDatePopup() {
+                this.date_popup = true;
+            },
+            cancelDate() {
+                this.date_popup = false;
+            },
+            confirmDate(e) {
+
+                let year = e.getFullYear();
+                let month = parseInt(e.getMonth() + 1);
+                let day = parseInt(e.getDate());
+                month = month < 10 ? '0' + month : month;
+                day = day < 10 ? '0' + day : day;
+                this.formatDate = year + '-' + month + '-' + day;
+                this.date_popup = false;
+            },
+
+            showSTimePopup() {
+                this.s_time_popup = !this.s_time_popup;
+            },
+            cancelSTime() {
+                this.s_time_popup = false;
+            },
+            confirmSTime(e) {
+                this.s_time = e;
+                this.s_time_popup = false;
+            },
+
+            showETimePopup() {
+                this.e_time_popup = !this.e_time_popup;
+            },
+            cancelETime() {
+                this.e_time_popup = false;
+            },
+            confirmETime(e) {
+                this.e_time = e;
+                this.e_time_popup = false;
+            },
+
+            setReserveRefreshJob() {
+
+                var self = this;
+
+                if (self.jobid == '' || self.jobid == 0 || self.jobid == undefined) {
+                    showToast('参数错误');
+                    return false;
+                }
+
+                if (self.status == 1 ) {
+                    if (self.space == 0) {
+                        showToast('请填写刷新时间间隔');
+                        return false;
+                    }
+                }
+
+                if (self.s_time!='' && self.s_time!=undefined && self.e_time!=''&& self.e_time!=undefined){
+
+                    var stime = self.s_time.split(':');
+                    var etime = self.e_time.split(':');
+                    if (parseInt(stime[0]) > parseInt(etime[0]) || (parseInt(stime[0]) === parseInt(etime[0]) && parseInt(stime[1]) >= parseInt(etime[1])) ){
+                        showToast('请合理设置刷新时间段');
+                        return false;
+                    }
+                }
+
+                showLoading();
+
+                var formData = {
+                    status: self.status,
+                    end_time: self.formatDate,
+                    interval: self.space,
+                    s_time: self.s_time,
+                    e_time: self.e_time,
+                    job_id: self.jobid
+                };
+
+                try {
+                    $.post('{yun:}url d=wxapp h=com m=job c=reserveUp{/yun}', formData, function (data) {
+                        hideLoading();
+                        showToast(data.msg,2,function(){
+                            if(data.error === -1){
+                                navigateTo('index.php?c=server&serviceId={yun:}$config.sy_reserve_service_id{/yun}');
+                            }
+                        });
+                        if (data.error === 1) {
+
+                            self.reserveJob = false;
+                            // 处理列表状态显示
+                            if (formData.status === 1) {
+
+                                self.info.forEach((value, index) => {
+                                    if (value.id === formData.job_id) {
+                                        self.info[self.jobkey].is_reserve = 1;
+                                        self.info[self.jobkey].reserve_status = formData.status;
+                                        self.info[self.jobkey].reserve_interval = formData.interval;
+                                        self.info[self.jobkey].reserve_end = formData.end_time;
+                                        self.info[self.jobkey].s_time = formData.s_time;
+                                        self.info[self.jobkey].e_time = formData.e_time;
+                                    }
+                                });
+                            } else if (formData.status === 2) {
+                                self.info.forEach((value, index) => {
+                                    if (value.id === formData.job_id) {
+                                        self.info[self.jobkey].is_reserve = 0;
+
+
+                                        self.status = 2;
+                                        self.switchChecked = false;
+                                        self.space = self.interval;
+                                        self.formatDate = '';
+                                        self.currentDate = '';
+                                        self.s_time = '';
+                                        self.e_time = '';
+                                    }
+                                })
+                            }
+                        }
+                    }, 'json')
+                } catch (err) {
+                }
+            },
+            /** 预约刷新 End */
+
+            // 删除职位
+            delJob(id, key) {
+                let that = this,
+                    param = {
+                        ids: id,
+                    };
+                var key = key;
+                showConfirm('确定删除？', function () {
+                    showLoading('刪除中')
+                    $.post('{yun:}url d=wxapp h=com m=job c=deljob{/yun}', param, function (data) {
+                        hideLoading();
+                        if (data.error == 1) {
+                            showToast('删除成功', 2, function () {
+                                that.info.splice(key, 1);
+                                that.getjobNum();
+                            });
+                        } else {
+                            showModal(data.msg);
+                        }
+                    }, 'json');
+                })
+            },
+
+            /** 取消推广 Start */
+            showCancelPromote(id, key, job){
+
+                var self = this;
+
+                self.closeArr.jobid = id;
+                self.closeArr.key = key;
+
+                if(job.rec_day >= 0 && job.rec_n === 1){
+                    self.closeArr.rec_day = job.rec_day;
+                    self.closeArr.rec_n = job.rec_n;
+                }else{
+                    self.closeArr.rec_day = '';
+                    self.closeArr.rec_n = '';
+                }
+                if(job.top_day >= 0 && job.xs === 1){
+                    self.closeArr.top_day = job.top_day;
+                    self.closeArr.top_n = job.xs;
+                }else{
+                    self.closeArr.top_day = '';
+                    self.closeArr.top_n = '';
+                }
+                if(job.urgent_day >= 0 && job.urgent_n === 1){
+                    self.closeArr.urgent_day = job.urgent_day;
+                    self.closeArr.urgent_n = job.urgent_n;
+                }else{
+                    self.closeArr.urgent_day = '';
+                    self.closeArr.urgent_n = '';
+                }
+
+                self.cancel_popup = true;
+            },
+
+            closeCancelPromote(){
+                var that = this;
+                that.cancel_popup = false;
+            },
+
+            closePromote(type){
+
+                var that = this;
+                if (type == 'top'){
+                    var msg = that.closeArr.top_day > 0 ? '职位置顶剩余'+that.closeArr.top_day+'天，' : '';
+                    msg	=	msg + '确定取消职位置顶?'
+                }else if (type == 'rec'){
+                    var msg = that.closeArr.rec_day > 0 ? '职位推荐剩余'+that.closeArr.rec_day+'天，' : '';
+                    msg	=	msg + '确定取消职位推荐？';
+                }else if (type == 'urgent'){
+                    var msg = that.closeArr.urgent_day > 0 ? '紧急招聘剩余'+that.closeArr.urgent_day+'天，' : '';
+                    msg	=	msg + '确定取消紧急招聘？';
+                }
+                that.closeArr.type = type;
+                showConfirm(msg, function () {
+                    that.setJobPromoteClose();
+                });
+            },
+
+            setJobPromoteClose() {
+                var that = this;
+                var formData = {
+                    jobid: that.closeArr.jobid,
+                    type: that.closeArr.type
+                };
+                showLoading();
+                try {
+                    $.post('{yun:}url d=wxapp h=com m=job c=setJobPromoteClose{/yun}', formData, function (data) {
+                        hideLoading();
+                        showToast(data.msg);
+                        if (data.error === 1) {
+
+                            that.cancel_popup = false;
+
+                            if (that.closeArr.type === 'top') {
+                                that.info[that.closeArr.key].xs = 0;
+                                that.info[that.closeArr.key].top_day = 0;
+                                if(parseInt(that.closeArr.top_day) > 0){
+                                    that.statis.top_num =	accAdd(parseInt(that.statis.top_num), that.closeArr.top_day);
+                                }
+                            }
+                            if (that.closeArr.type === 'rec') {
+                                that.info[that.closeArr.key].rec_n = 0;
+                                that.info[that.closeArr.key].rec_day = 0;
+                                if(parseInt(that.closeArr.rec_day) > 0){
+                                    that.statis.rec_num =	accAdd(parseInt(that.statis.rec_num), that.closeArr.rec_day);
+                                }
+                            }
+                            if (that.closeArr.type === 'urgent') {
+                                that.info[that.closeArr.key].urgent_n = 0;
+                                that.info[that.closeArr.key].urgent_day = 0;
+                                if(parseInt(that.closeArr.urgent_day) > 0){
+                                    that.statis.urgent_num =	accAdd(parseInt(that.statis.urgent_num), that.closeArr.urgent_day);
+                                }
+                            }
+                        }
+                    }, 'json')
+                } catch (err) {
+                }
+            },
+            /** 取消推广 End */
+			moreClick: function(id){
+				if(!this.moreKey){
+					this.moreKey = id;
+				}else{
+					this.moreKey = '';
+				}
+			}
+        }
+    });
+
+    $(function() {
+        var clipboard = new ClipboardJS(".copyUrl");
+        clipboard.on('success', function(e) {
+            showToast('复制成功！');
+            e.clearSelection();
+        });
+        clipboard.on('error', function(e) {});
+
+        var clipboard2 = new ClipboardJS(".fzwb");
+        clipboard2.on('success', function(e) {
+            showToast('复制成功！');
+            yunvue.copyBoxShow = false;
+            e.clearSelection();
+        });
+        clipboard2.on('error', function(e) {});
+
+    })
+
+    var config = {
+        url: '',
+        title: '',
+        desc: '',
+        img: '{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_sharelogo{/yun}',
+        img_title: '',
+        from: '{yun:}$config.sy_webname{/yun}'
+    };
+
+    function jobadd() {
+        yunvue.jobadd();
+    }
+
+    $("#jobSearch").keydown(function (e) {
+        if (e.keyCode == 13) {
+            yunvue.searchContent = $("#jobSearch").val();
+            yunvue.getjob('refresh');
+            yunvue.getjobNum();
+        }
+    })
+    $("#jobSearch").on('input', function (e) {
+        let val = $(e.currentTarget).val();
+        if(val == ''){
+            if(yunvue.searchContent != ''){
+                yunvue.searchContent = '';
+                yunvue.getjob('refresh');
+                yunvue.getjobNum();
+            }
+        }
+    })
+
+    var show_more = false;
+
+    $(function () {
+
+        $('.job_czmore').hide();
+
+        $('body').click(function () {
+            hideMore()
+        })
+    })
+
+    function showMore(id) {
+        show_more = false;
+        $('.job_czmore').hide();
+        $('.job_czmore_' + id).show();
+        setTimeout(function () {
+            show_more = true;
+        }, 500)
+    }
+
+    function hideMore() {
+        if (show_more) {
+            $('.job_czmore').hide();
+            show_more = false;
+        }
+    }
+
+</script>
+<!-- 余额不足提示 -->
+{yun:}include file="$wapstyle/publichtm/yun_modal.htm"{/yun}
+<!-- 强制操作提醒弹出框 -->
+{yun:}include file="$wapstyle/publichtm/yun_cert.htm"{/yun}
+{yun:}include file="$wapstyle/nativeshare.htm"{/yun}
+</html>

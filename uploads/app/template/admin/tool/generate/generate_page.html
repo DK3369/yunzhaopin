@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+<div id="daohaapp" class="moduleElenAl">
+    <div class="tableDome">
+        <div class="tableDome_tip">
+            <template>
+                <el-alert
+                    title="静态页面"
+                    type="success"
+                    description="静态页面是把动态数据按要求生成静态页面，打开网页时不用去读取数据库。 区别：
+                    1、动态站点网页打开相对静态页面要慢很多；
+                    2、静态页面更容易搜索引挚的抓取，权重也比动态页面高。
+                    3、动态页面容易有sql注入危险，静态页面不存在" :closable="false">
+                </el-alert>
+            </template>
+        </div>
+        <div class="tool_boxall">
+            <div class="tool_box">
+                <el-card class="box-card">
+                    <div class="tool_name"><i class="el-icon-folder"></i> 首页生成</div>
+                    <div class="tool_tip">生成静态html页面，提升访问速度</div>
+                    <div class="tool_but">
+                        <el-button type="primary" size=" " icon="el-icon-folder" @click="indexVisible = true">点击生成首页</el-button>
+                    </div>
+                </el-card>
+            </div>
+            <div class="tool_box">
+                <el-card class="box-card">
+                    <div class="tool_name"><i class="el-icon-folder-opened"></i> 新闻首页</div>
+                    <div class="tool_tip">生成静态html页面，提升访问速度</div>
+                    <div class="tool_but">
+                        <el-button type="primary" size=" " icon="el-icon-folder-opened" @click="newsVisible = true">点击生成新闻首页</el-button>
+                    </div>
+                </el-card>
+            </div>
+            <div class="tool_box">
+                <el-card class="box-card">
+                    <div class="tool_name"><i class="el-icon-reading"></i> 新闻详细页</div>
+                    <div class="tool_tip">生成静态html页面，提升访问速度</div>
+                    <div class="tool_but">
+                        <el-button type="primary" size=" " icon="el-icon-reading" @click="archiveVisible = true">点击生成新闻详细页</el-button>
+                    </div>
+                </el-card>
+            </div>
+            <div class="tool_box">
+                <el-card class="box-card">
+                    <div class="tool_name"><i class="el-icon-tickets"></i> 单页面生成</div>
+                    <div class="tool_tip">生成静态html页面，提升访问速度</div>
+                    <div class="tool_but">
+                        <el-button type="primary" size=" " icon="el-icon-tickets" @click="onceVisible = true">点击生成单页面</el-button>
+                    </div>
+                </el-card>
+            </div>
+        </div>
+        <div class="tool_boxall">
+            <div class="tool_box">
+                <el-card class="box-card">
+                    <div class="tool_name"><i class="el-icon-tickets"></i> 新闻类别</div>
+                    <div class="tool_tip">生成静态html页面，提升访问速度</div>
+                    <div class="tool_but">
+                        <el-button type="primary" size=" " icon="el-icon-tickets" @click="newsclassVisible = true">点击生成新闻类别</el-button>
+                    </div>
+                </el-card>
+            </div>
+            <div class="tool_box">
+                <el-card class="box-card">
+                    <div class="tool_name"><i class="el-icon-tickets"></i> 一键更新</div>
+                    <div class="tool_tip">生成静态html页面，提升访问速度</div>
+                    <div class="tool_but">
+                        <el-button type="primary" size=" " icon="el-icon-tickets" @click="allVisible = true">一键更新</el-button>
+                    </div>
+                </el-card>
+            </div>
+            <div class="tool_box">
+            </div>
+            <div class="tool_box">
+            </div>
+        </div>
+    </div>
+    <!--生成首页-->
+    <div class="modluDrawer">
+        <el-dialog title="生成首页" :visible.sync="indexVisible" :with-header="true" :modal-append-to-body="false"
+            :show-close="true" width="500px">
+            <div class="yunyinDialog">
+                <div class="tableDoAlert">
+                    生成请确保目录有可写权限，否则无法生成。
+                    <br>
+                    添加导航的时候，链接可以填写 {{ sy_weburl }}/ 保存路径
+                </div>
+                <div class="yunyinDiaList">
+                    <div class="yunyinDiaTite">
+                        <span>首页保存路径</span>
+                    </div>
+                    <div class="yunyinDiaInpt">
+                        <el-input v-model="ruleFormIndex.make_index_url" placeholder="请输入首页保存路径"></el-input>
+                    </div>
+                </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="indexVisible = false">取 消</el-button>
+                <el-button type="primary" @click="submitFormIndex">确 定</el-button>
+            </span>
+        </el-dialog>
+    </div>
+    <!--生成新闻首页-->
+    <div class="modluDrawer">
+        <el-dialog title="生成新闻首页" :visible.sync="newsVisible" :with-header="true" :modal-append-to-body="false"
+            :show-close="true" width="500px">
+            <div class="yunyinDialog">
+                <div class="tableDoAlert">
+                    生成请确保目录有可写权限，否则无法生成。
+                    <br>
+                    添加导航的时候，链接可以填写 {{ sy_weburl }}/ 保存路径
+                </div>
+                <div class="yunyinDiaList">
+                    <div class="yunyinDiaTite">
+                        <span>新闻首页保存路径</span>
+                    </div>
+                    <div class="yunyinDiaInpt">
+                        <el-input v-model="ruleFormNews.make_new_url" placeholder="请输入新闻首页保存路径"></el-input>
+                    </div>
+                </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="newsVisible = false">取 消</el-button>
+                <el-button type="primary" @click="submitFormNews">确 定</el-button>
+            </span>
+        </el-dialog>
+    </div>
+    <!--生成新闻详细页-->
+    <div class="modluDrawer">
+        <el-drawer title="生成新闻详细页" :visible.sync="archiveVisible" :modal-append-to-body="false" :show-close="true"
+            :destroy-on-close="false" size="700px">
+            <div class="drawerModlue">
+                <div class="tableDome_tip tableDoAlert">
+                    <div class="shiTopAllTips">
+                        <p>生成请确保目录有可写权限，否则无法生成。</p>
+                        <p>添加导航的时候，链接可以填写 {{ sy_weburl }}/ 保存路径</p>
+                    </div>
+                </div>
+                <div class="moduleTable" style="margin-top:10px;">
+                    <table class="tableVue">
+                        <thead>
+                        <tr align="left">
+                            <th width="100">名称</th>
+                            <th width="300">内容</th>
+                            <th width=" ">说明</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <div class="TableTite">选择栏目</div>
+                            </td>
+                            <td>
+                                <div class="TableSelect">
+                                    <el-select v-model="ruleFormArchive.group" placeholder="">
+                                        <el-option label="全部" value="0"></el-option>
+                                        <el-option
+                                            v-for="item in news_group_list"
+                                            :key="item.id"
+                                            :label="item.name"
+                                            :value="item.id">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>  </span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">发布时间</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-date-picker v-model="ruleFormArchive.time" type="daterange" range-separator="至" start-placeholder="开始日期"
+                                        end-placeholder="结束日期" value-format="yyyy-MM-dd">
+                                    </el-date-picker>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span></span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">开始编号</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-input v-model="ruleFormArchive.startid" @input="inputIntNumber($event, 'ruleFormArchive', 'startid')" placeholder="请输入数字"></el-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>0从头开始</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">结束编号</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-input v-model="ruleFormArchive.endid" @input="inputIntNumber($event, 'ruleFormArchive', 'endid')" placeholder="请输入数字"></el-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>0到最后一条</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="TableTite">每页生成</div>
+                            </td>
+                            <td>
+                                <div class="TableInpt">
+                                    <el-input v-model="ruleFormArchive.limit" @input="inputIntNumber($event, 'ruleFormArchive', 'limit')" placeholder="请输入数字"></el-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="TableShuom">
+                                    <span>页生成数不要设置太大</span>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="setBasicButn" style="border: none;">
+                    <el-button type="primary" size="medium" @click="submitFormArchive" :disabled="submitLoadingArchive">提交</el-button>
+                </div>
+            </div>
+        </el-drawer>
+    </div>
+    <!--生成单页面-->
+    <div class="modluDrawer">
+        <el-dialog title="生成单页面" :visible.sync="onceVisible" :with-header="true" :modal-append-to-body="false"
+            :show-close="true" width="500px">
+            <div class="yunyinDialog">
+                <div class="tableDoAlert">
+                    生成请确保目录有可写权限，否则无法生成。
+                    <br>
+                    添加导航的时候，链接可以填写 {{ sy_weburl }}/ 保存路径
+                </div>
+                <div class="yunyinDiaList">
+                    <div class="yunyinDiaTite">
+                        <span>选择栏目</span>
+                    </div>
+                    <div class="yunyinDiaInpt">
+                        <el-select v-model="ruleFormOnce.group" placeholder="">
+                            <el-option label="全部" value="0"></el-option>
+                            <el-option
+                                v-for="item in description_list"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </div>
+                </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="onceVisible = false">取 消</el-button>
+                <el-button type="primary" @click="submitFormOnce">确 定</el-button>
+            </span>
+        </el-dialog>
+    </div>
+    <!--生成新闻类别-->
+    <div class="modluDrawer">
+        <el-dialog title="生成新闻类别" :visible.sync="newsclassVisible" :with-header="true" :modal-append-to-body="false"
+            :show-close="true" width="500px">
+            <div class="yunyinDialog">
+                <div class="tableDoAlert">
+                    生成请确保目录有可写权限，否则无法生成。
+                    <br>
+                    添加导航的时候，链接可以填写 {{ sy_weburl }}/ 保存路径
+                </div>
+                <div class="yunyinDiaList">
+                    <div class="yunyinDiaTite">
+                        <span>选择栏目</span>
+                    </div>
+                    <div class="yunyinDiaInpt">
+                        <el-select v-model="ruleFormNewsclass.group" placeholder="请选择">
+                            <el-option
+                                v-for="item in news_group_list"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </div>
+                </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="newsclassVisible = false">取 消</el-button>
+                <el-button type="primary" @click="submitFormNewsclass">确 定</el-button>
+            </span>
+        </el-dialog>
+    </div>
+    <!--  一键更新-->
+    <div class="modluDrawer">
+        <el-dialog title="一键更新" :visible.sync="allVisible" :with-header="true" :modal-append-to-body="false"
+            :show-close="true" width="500px">
+            <div class="yunyinDialog">
+                <div class="tableDoAlert">
+                    生成请确保目录有可写权限，否则无法生成。
+                    <br>
+                    添加导航的时候，链接可以填写 {{ sy_weburl }}/ 保存路径
+                </div>
+                <div class="yunyinDiaList">
+                    <div class="yunyinDiaTite">
+                        <span>首页保存路径</span>
+                    </div>
+                    <div class="yunyinDiaInpt">
+                        <el-input v-model="ruleFormAll.make_index_url" placeholder="请输入首页保存路径"></el-input>
+                    </div>
+                </div>
+                <div class="yunyinDiaList">
+                    <div class="yunyinDiaTite">
+                        <span>新闻首页保存路径</span>
+                    </div>
+                    <div class="yunyinDiaInpt">
+                        <el-input v-model="ruleFormAll.make_new_url" placeholder="请输入新闻首页保存路径"></el-input>
+                    </div>
+                </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="allVisible = false">取 消</el-button>
+                <el-button type="primary" @click="submitFormAll">确 定</el-button>
+            </span>
+        </el-dialog>
+    </div>
+</div>
+<!-- script -->
+<script>
+    const custoapp = new Vue({
+        el: '#daohaapp',
+        data: function () {
+            return {
+                submitLoading: false,
+                sy_weburl: localStorage.getItem("sy_weburl"),
+                config: {},
+                news_group_list: [],
+                description_list: [],
+                //生成首页
+                indexVisible: false,
+                ruleFormIndex: {
+                    make_index_url: '',
+                    madeall: '更新首页',
+                },
+                //生成新闻首页
+                newsVisible: false,
+                ruleFormNews: {
+                    make_new_url: '',
+                    madeall: '更新新闻首页',
+                },
+                //生成新闻详细页
+                archiveVisible: false,
+                ruleFormArchive: {
+                    action: 'makearchive',
+                    group: '0',
+                    time: null,
+                    stime: '',
+                    etime: '',
+                    startid: '0',
+                    endid: '0',
+                    limit: '20',
+                },
+                submitLoadingArchive: false,
+                //生成单页面
+                onceVisible: false,
+                ruleFormOnce: {
+                    make: 1,
+                    group: '0',
+                },
+                //生成新闻类别
+                newsclassVisible: false,
+                ruleFormNewsclass: {
+                    action: 'makeclass',
+                    group: null,
+                },
+                submitLoadingNewsclass: false,
+                //一键更新
+                allVisible: false,
+                ruleFormAll: {
+                    action: 'makeall',
+                    make_index_url: '',
+                    make_new_url: '',
+                    type: 'cache',
+                    value: 0,
+                },
+            }
+        },
+        created(){
+            this.getBaseData();
+        },
+        methods: {
+            getBaseData() {
+                let _this = this;
+                httpPost('m=tool&c=generate_page&a=baseData', {}).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        _this.config = res.data.config;
+                        _this.ruleFormIndex.make_index_url = _this.config.make_index_url;
+                        _this.ruleFormAll.make_index_url = _this.config.make_index_url;
+                        _this.ruleFormNews.make_new_url = _this.config.make_new_url;
+                        _this.ruleFormAll.make_new_url = _this.config.make_new_url;
+                        _this.news_group_list = res.data.news_group_list;
+                        _this.description_list = res.data.description_list;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            inputIntNumber(val, form, key) {
+                this.$data[form][key] = val.replace(/[^0-9]/g,'');
+                // console.log(this[form])
+                // this.$set(this[form], key, val.replace(/[^0-9]/g,''))
+            },
+            submitFormIndex() {
+                let _this = this;
+                let params = JSON.parse(JSON.stringify(this.ruleFormIndex));
+                if (_this.submitLoading) {
+                    return false;
+                }
+                _this.submitLoading = true;
+                httpPost('m=tool&c=generate_page&a=index', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        message.success(res.msg);
+                        _this.indexVisible = false;
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                }).finally(function () {
+                    _this.submitLoading = false;
+                });
+            },
+            submitFormNews() {
+                let _this = this;
+                let params = JSON.parse(JSON.stringify(this.ruleFormNews));
+                if (_this.submitLoading) {
+                    return false;
+                }
+                _this.submitLoading = true;
+                httpPost('m=tool&c=generate_page&a=news', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        message.success(res.msg);
+                        _this.newsVisible = false;
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                }).finally(function () {
+                    _this.submitLoading = false;
+                });
+            },
+            submitFormArchive() {
+                let _this = this;
+                let params = JSON.parse(JSON.stringify(this.ruleFormArchive));
+                if (Array.isArray(params.time)) {
+                    params.stime = params.time[0];
+                    params.etime = params.time[1];
+                }
+                delete params.time;
+
+                this.submitLoadingArchive = true;
+                message.success('正在获取新闻总数');
+                this.makearchive(params, "archive", 0, '正在获取新闻总数');
+            },
+            /**
+             * @param params  JSON: action, group, stime, etime, startid, endid, limit
+             * @param type
+             * @param value
+             * @param msg
+             */
+            makearchive(params, type, value, msg) {
+                if (type != 'ok') {
+                    let _this = this;
+                    params.type = type;
+                    params.value = value
+                    httpPost('m=tool&c=generate_page&a=archive', params).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            message.success(res.msg);
+                            _this.makearchive(params, res.data.type, res.data.value, res.msg);
+                        } else {
+                            message.error(res.msg);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                        message.error(error.msg);
+                    })
+                } else {
+                    this.newsVisible = false;
+                    this.submitLoadingArchive = false;
+                }
+            },
+            submitFormOnce() {
+                let _this = this;
+                let params = JSON.parse(JSON.stringify(this.ruleFormOnce));
+                if (_this.submitLoading) {
+                    return false;
+                }
+                _this.submitLoading = true;
+                httpPost('m=tool&c=generate_page&a=once', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        message.success(res.msg);
+                        _this.onceVisible = false;
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                }).finally(function () {
+                    _this.submitLoading = false;
+                });
+            },
+            submitFormNewsclass() {
+                let _this = this;
+                let params = JSON.parse(JSON.stringify(this.ruleFormNewsclass));
+                if (!params.group) {
+                    params.group = 'all'
+                }
+                _this.submitLoadingNewsclass = true;
+                message.success('正在获取新闻类别信息');
+                this.makenewsclass(params, "class", 0, '正在获取新闻类别信息');
+            },
+            /**
+             * @param params JSON action, group
+             * @param type
+             * @param value
+             * @param msg
+             */
+            makenewsclass(params, type, value, msg) {
+                if(type != 'ok'){
+                    let _this = this;
+                    params.type = type;
+                    params.value = value
+                    httpPost('m=tool&c=generate_page&a=newsclass', params).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            message.success(res.msg);
+                            _this.makenewsclass(params, res.data.type, res.data.value, res.msg);
+                        } else {
+                            message.error(res.msg);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                        message.error(error.msg);
+                    })
+                } else {
+                    this.newsclassVisible = false;
+                    this.submitLoadingNewsclass = false;
+                }
+            },
+            submitFormAll() {
+                let _this = this;
+                let params = JSON.parse(JSON.stringify(this.ruleFormAll));
+
+                _this.submitLoading = true;
+                this.make_all(params, "cache", 0, '正在生成区域');
+            },
+            make_all(params, type, value, msg) {
+                if(type != 'ok'){
+                    let _this = this;
+                    params.type = type;
+                    params.value = value
+                    httpPost('m=tool&c=generate_page&a=all', params).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            message.success(res.msg);
+                            _this.make_all(params, res.data.type, res.data.value, res.msg);
+                        } else {
+                            res.msg ? message.error(res.msg) : message.error('未知异常，请联系管理员！');
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                        message.error(error.msg);
+                    })
+                } else {
+                    this.allVisible = false;
+                    this.submitLoading = false;
+                }
+            },
+        }
+    });
+</script>
+</body>
+<style>
+    .yunyinDiaTite {
+        width: 125px;
+    }
+</style>
+</html>

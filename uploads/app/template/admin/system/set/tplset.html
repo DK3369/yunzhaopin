@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleElenAl">
+        <div class="setDomeAll">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="网站模板" name="first" :lazy="true">
+                    <mobanone ref="first" ></mobanone>
+                </el-tab-pane>
+                <el-tab-pane label="企业模板" name="second" :lazy="true">
+                    <mobantwo ref="second" ></mobantwo>
+                </el-tab-pane>
+                <el-tab-pane label="简历模板" name="three" :lazy="true">
+                    <mobanthree ref="three"></mobanthree>
+                </el-tab-pane>
+                <el-tab-pane label="首页主题" name="fourth" :lazy="true">
+                    <mobanfour ref="fourth" ></mobanfour>
+                </el-tab-pane>
+
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#moduapp',
+            data: function () {
+                return {
+                    activeName: 'first'
+                }
+            },
+            components: {
+                'mobanone': httpVueLoader('./component/mobanone.vue'),
+                'mobantwo': httpVueLoader('./component/mobantwo.vue'),
+                'mobanthree': httpVueLoader('./component/mobanthree.vue'),
+                'mobanfour': httpVueLoader('./component/mobanfour.vue'),
+                'mobanfive': httpVueLoader('./component/mobanfive.vue'),
+            },
+            methods: {
+                handleClick(tab, event) {
+                    
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

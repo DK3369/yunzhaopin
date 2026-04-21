@@ -1,0 +1,218 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+<div style="background-color: #ffff;" id="yunvue" class="none"> 
+<div class="financial_management_header">
+    <div class="management_header_card">
+        <div class="management_card_data">
+            <div class="management_data_top">可用{{integral_pricename}}</div>
+            <div class="management_data_cen">{{statis.integral}}</div>            
+            <div class="management_data_bom" onclick="navigateTo('index.php?c=reward_list&s=1')">兑换记录</div>
+        </div>
+        <div class="management_card_data">
+            <div class="management_data_top">已用{{integral_pricename}}</div>
+            <div class="management_data_cen">{{statis.allprice}}</div>           
+            <div class="management_data_bom" onclick="navigateTo('index.php?c=paylog')">使用明细</div>           
+        </div>
+    </div>    
+    <div class="management_card_btn" onclick="navigateTo('index.php?c=pay')">立即充值</div>
+      
+</div> 
+<!-- 页面整体 -->
+<div class="financial_management_body">
+   
+   <div class="management_task_center">
+        <!-- 任务中心 -->
+    <div class="min_body_task">
+        <div class="body_task_header">
+         	<div class="min_body_header">任务中心</div>        
+        	<div class="task_header_nav" onclick="navigateTo('index.php?c=integral')">
+	            <i class="task_header_nav_text">全部任务</i>
+	            <div class="task_header_icon">
+	                <img src="{yun:}$wap_style{/yun}/images/vip_nav.png" alt="" width="100%" height="100%">
+	            </div>
+        	</div>        
+        </div>
+        <div class="body_task_subject">
+            <ul>
+                <li>
+                    <div class="task_subject_box">
+                         <div class="task_subject_icon">
+                             <img src="{yun:}$wap_style{/yun}/images/vip_sign_in.png" alt="" width="100%" height="100%">
+                         </div>
+                         <div class="task_subject_init">
+                             <div class="subject_init_top">完成签到</div>
+                             <div class="subject_init_bom">+{{integral_signin}}{{integral_pricename}}</div>
+                         </div>
+                    </div>                   
+                    <div class="task_subject_box_btn" v-if="!tasklist.signin" @click="sign">立即签到</div>
+                    <div class="task_subject_box_btn_accomplish" v-else>已签到</div>                 
+                </li>
+                <li>
+                 <div class="task_subject_box">
+                      <div class="task_subject_icon">
+                          <img src="{yun:}$wap_style{/yun}/images/vip_register.png" alt="" width="100%" height="100%">
+                      </div>
+                      <div class="task_subject_init">
+                          <div class="subject_init_top">邀请好友注册</div>
+                          <div class="subject_init_bom">+{{integral_invite_reg}}{{integral_pricename}}</div>
+                      </div>
+                 </div>                 
+                 <div class="task_subject_box_btn" @click="getInviteRegHb()">立即邀请</div>
+             </li>
+             <li>
+                 <div class="task_subject_box">
+                      <div class="task_subject_icon">
+                          <img src="{yun:}$wap_style{/yun}/images/vip_datum.png" alt="" width="100%" height="100%">
+                      </div>
+                      <div class="task_subject_init">
+                          <div class="subject_init_top">完善基本资料</div>
+                          <div class="subject_init_bom">+{{integral_userinfo}}{{integral_pricename}}</div>
+                      </div>
+                 </div>
+                 <div class="task_subject_box_btn_accomplish" v-if="tasklist.baseInfo">已完善</div>
+                 <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=info')">立即完善</div>             
+             </li>
+            </ul>
+        </div>
+     </div>
+   </div>
+</div>
+	<!--  邀请注册海报  -->
+    <van-popup v-model="inviteRegHbShow" round closeable :style="{height:'90%',width:'90%',background:'none'}">
+        <div class="hb_tc">
+            <img :src="inviteRegHb" style="max-width: 100%;">
+            <div class="hb_tc_bth">
+                <div @click="getInviteRegHb()" class="hb_tc_hyz">换一张</div>
+                <div class="hb_tc_bchb"> <span class="hb_tc_bchb_c" @click="inviteRegHbTipShow=!inviteRegHbTipShow" v-if="inviteRegHbTipShow"> <i class="hb_tc_bchbicon"></i>长按图片保存 </span></div>
+            </div>
+        </div>
+    </van-popup>
+</div>
+
+<script> 
+	var wapurl = "{yun:}url m=wap{/yun}";
+    var invite_reg_hbids = [];
+	new Vue({
+        el: '#yunvue',
+        data: {
+          statis: {
+			'integral': 0,
+			'packfk': 0,
+			'freeze_n': 0
+		},
+		integral_pricename: '',
+		tasklist: [],
+		integral_userinfo: 0,
+		integral_invite_reg: 0,
+		integral_signin: 0,
+		integral_avatar:0,
+		integral_mobliecert:0,
+		inviteRegHbTipShow: true,
+		inviteRegHbShow: false,
+		inviteRegHbNext: 0,
+		inviteRegHb: '',
+		islook :false
+        },
+        computed: {
+          count(){
+           
+          }
+        },
+        created() {   
+         this.getstatis();
+        },
+        methods:{
+          getstatis:function(){
+            showLoading();
+            var that = this;
+            $.post('{yun:}url d=wxapp h=user m=finance c=getStatis{/yun}',{rand:Math.random()},function(data){
+              	hideLoading();
+	            if (data.error == 1) {
+					var list = data.data;
+					that.integral_pricename = list.integral_pricename;
+					that.statis = list.statis.integral >= 0 ? list.statis : {
+						'integral': 0,
+						'packfk': 0,
+						'freeze_n': 0
+					};
+					that.tasklist = list.task;
+					that.integral_signin = list.integral_signin;
+					that.integral_invite_reg = list.integral_invite_reg;
+					that.integral_userinfo = list.integral_userinfo;
+					that.integral_avatar = list.integral_avatar;
+					that.integral_mobliecert = list.integral_mobliecert;
+					$("#yunvue").removeClass('none');
+				}
+               
+            },'json');
+          },     
+          sign:function(){
+          	showLoading('签到中...');
+            var that = this;
+            $.post('{yun:}url d=wxapp h=user m=index c=sign{/yun}',{rand:Math.random()},function(data){
+              	hideLoading();      
+              	if (data.error == 1) {
+					showToast(data.msg,2, function() {
+						that.getstatis();
+					});
+				} else {
+					showToast(data.msg);
+				}
+               
+            },'json');
+          },
+		   getInviteRegHbList: function() {
+                let lr = false;
+                $.ajax({
+                    type: 'post',
+                    url: wapurl + '?c=ajax&a=getInviteRegHbList',
+                    async: false,
+                    dataType: 'json',
+                    success: function(res){
+                        if(res && res.list && res.list.length > 0){
+                            res.list.forEach(item => {
+                                invite_reg_hbids.push(item.id);
+                            })
+
+                            lr = true;
+                        }
+                    }
+                })
+                return lr;
+            },
+            getInviteRegHb: function() {
+                let that = this;
+                var hbNum = invite_reg_hbids.length;
+                var hb = that.inviteRegHbNext;
+
+                if(hbNum == 0){
+                    var lr = that.getInviteRegHbList();
+                    if(!lr){
+                        showToast("功能无法使用，请联系网站客服", 2);
+                        return false;
+                    }
+                    hbNum = invite_reg_hbids.length; // 重新分配海报数量
+                }
+
+                showLoading('生成中...');
+                const src = wapurl + '?c=ajax&a=getInviteRegHb&hb=' + invite_reg_hbids[hb];
+                if (hb < (parseInt(hbNum) - 1)) {
+                    var next = hb + 1;
+                } else {
+                    var next = 0;
+                }
+
+                var hbImg = new Image();
+                hbImg.src = src;
+
+                hbImg.onload = function(){
+                    hideLoading();
+                    that.inviteRegHbNext = next;
+                    that.inviteRegHb = hbImg.src;
+                    that.inviteRegHbShow = true;
+                }
+            }
+        } 
+      });
+</script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+
+<script src="{yun:}$wap_style{/yun}/js/list_bottom.js?v={yun:}$config.cachecode{/yun}"></script>
+<div id="company_wx_vue" class="none">
+    
+    <div class="com_list_box" v-for="item in comlist" :key="item.name">
+        <div class="ptyhybox" style="position: relative;"  v-if="item.fact_status=='1'">
+            <div class="ptyhy"><i class="ptyhy_icon"></i>实地核验 </div> 
+        </div> 
+        <a :data-href="item.wapurl" href="javascript:void(0)" onclick="toPage(this)" class="job_list">
+            <div class="com_list_t_box">
+                <div class="com_list_logo_box"><img v-bind:src="item.logo"
+                     onerror="if($(this).attr('load')!='1'){$(this).attr('load',1);this.src='{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_unit_icon{/yun}';}"></div>
+                <div class="com_list_box_c">
+                    <h3>{{item.name}}
+                       
+                    </h3>
+                    <img v-if="item.rating_logo" v-bind:src="item.rating_logo" width="12" height="12" />
+                    <img v-if="item.hotlogo" src="{yun:}$style{/yun}/images/firm_icon.png" />
+                    <i v-if="item.yyzz_status=='1'" class="job_qy_rz_icon"></i>
+                </div>
+                <div class="com_list_box_js">
+                  <span class="com_list_box_js_n">  {{item.job_city_one?item.job_city_one:''}}-{{item.job_city_two?item.job_city_two:''}}</span>
+                  <span class="com_list_box_js_n">  50-200</span>
+                 <span class="com_list_box_js_n">   {{item.pr_n?item.pr_n:''}}</span>
+                </div>
+            </div>
+           <!-- <div class="com_list_t_box_bq" v-if="item.jobname">
+                
+                <span class="com_list_box_joblist_a"  v-for="(job,index) in item.jobname" :key="index">{{job}}</span>
+                
+            </div>-->
+        </a>
+        
+        <a v-if="item.jobnum>0" :data-href="item.wapurl_showjob" href="javascript:void(0)" onclick="toPage(this)">
+            <div class="com_list_box_joblist">
+                <span class="com_list_box_jobzs"><em class="com_list_box_jobncor">{{item.jobnum}}</em>个在招职位</span>
+                <i class="com_list_box_jobzs_more"></i>
+            </div>
+        </a>
+        
+    </div>
+</div>
+<script type="text/javascript">
+    var app = new Vue({
+      el: '#company_wx_vue',
+      data: {
+        comlist:[]
+      }
+    });
+
+    var compage = 0;
+
+    function fetchData_list() {
+        compage++;
+        var searchurl = document.getElementById('searchurl').value;
+
+        // 缓存处理开始
+        let storageDetail = sessionStorage.getItem("storageDetail"),
+            storageCacheType = sessionStorage.getItem("storageCacheType"),
+            storageSearchurl = sessionStorage.getItem("storageSearchurl"),
+            storagePage = sessionStorage.getItem("storagePage"),
+            storageListStr = sessionStorage.getItem("storageList"),
+            storageList = storageListStr ? JSON.parse(storageListStr) : [];
+
+        // 存在缓存内容 - 从详情返回才处理
+        if (storageCacheType && storageCacheType == 'company' &&
+            storageDetail && storageList.length > 0 && compage <= storagePage) {// 分页小于或等于缓存页数时，直接使用缓存
+            sessionStorage.removeItem("storageDetail"); // 清除掉详情返回的标识
+            storagePage = storagePage ? parseInt(storagePage) : 1;
+            compage = storagePage; // 直接修改分页为缓存对应页数
+            if (storageSearchurl) {
+                document.getElementById('searchurl').value = storageSearchurl; // 搜索条件赋值
+            }
+            app.$data.comlist = storageList; // 列表赋值
+            app.$nextTick(function(){
+                document.getElementById('listdiv').insertAdjacentHTML('beforeend',$("#company_wx_vue").html());
+            })
+            return; // 走缓存不执行后续
+        } else {
+            if (compage == 1) {
+                storageList = []; // 如果是重新加载，重新定义缓存数据列表
+            }
+        }
+        // 缓存处理结束
+
+        $.post(wapurl + 'index.php?c=company&a=ajaxLoad', {searchurl: searchurl,page: compage}, function(res){
+			document.getElementById('pageLoading').classList.add('none');
+            if(res){
+                var data = eval('(' + res + ')');
+
+                if(data.length > 0){
+                    app.$data.comlist = data;
+
+                    sessionStorage.setItem("storageCacheType", "company");
+                    sessionStorage.setItem("storageSearchurl", searchurl);
+                    sessionStorage.setItem("storagePage", compage);
+                    storageList = storageList.concat(data)
+                    sessionStorage.setItem("storageList", JSON.stringify(storageList));
+
+					app.$nextTick(function(){
+					    document.getElementById('listdiv').insertAdjacentHTML('beforeend',$("#company_wx_vue").html());
+					})
+                }else{
+					document.getElementById('pageNoMore').classList.remove('none');
+				}
+            }
+        });
+    }
+
+    fetchData_list();
+
+    function toPage(e) {
+        sessionStorage.setItem("storageDetail", 1);
+        window.location.href = $(e).data('href');
+    }
+</script>

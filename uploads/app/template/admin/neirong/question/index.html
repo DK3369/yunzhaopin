@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+    <link rel="stylesheet" href="../../../admin/js/wangeditor/index.css">
+    <script src="../../../admin/js/wangeditor/index.js"></script>
+</head>
+
+<body>
+<div id="cityfl" class="moduleElenAl">
+    <div class="moduleSeachs">
+        <div class="moduleSeachleft">
+
+
+            <div class="tableSeackellsd" style="padding: 2px 0;">
+                <el-input placeholder="请输入搜索内容" size="small" v-model="searchForm.keyword" class="input-with-select" clearable>
+                    <el-select v-model="searchForm.type" slot="prepend" placeholder="请选择">
+                        <el-option label="标题" value="1"></el-option>
+                        <el-option label="提问者昵称" value="2"></el-option>
+                    </el-select>
+                </el-input>
+            </div>
+            <div class="tableSeachInptsmall newsinput" v-for="(searchItem, searchIndex) in searchList">
+                <el-select v-model="searchForm[searchItem.param]" size="small" slot="prepend" :clearable="true" :placeholder="searchItem.name" @change="search">
+                    <el-option v-for="(searchLabel, searchValue) in searchItem.value" :label="searchLabel" :value="searchValue"></el-option>
+                </el-select>
+            </div>
+
+            <div class="newsbtnbox" style="margin-bottom: 0px;;">
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+            </div>
+        </div>
+    </div>
+
+    <div class="moduleElTable">
+        <el-table :data="list" :default-sort="{prop: 'date', order: 'descending'}" stripe border
+                  ref="multipleTable" @selection-change="handleSelectionChange" @sort-change="sortChange" :empty-text="emptytext"
+                  style="width: 100%;" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" v-loading="loading">
+            <el-table-column type="selection" width="55"> </el-table-column>
+            <el-table-column prop="id" label="编号" width="90" sortable="custom">
+            </el-table-column>
+            <el-table-column label="标题" min-width="190">
+                <template slot-scope="scope">
+                    <el-link :href="scope.row.ask_url" target="_blank" type="primary" :underline="false">{{scope.row.title}}</el-link>
+                </template>
+            </el-table-column>
+            <el-table-column label="问题类别" width="140">
+                <template slot-scope="scope">
+                    <div class="admin_state">
+                        <span v-if="scope.row.classname">{{scope.row.classname}}</span>
+                        <span v-else class="admin_state2">类别已被删除</span>
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column label="提问者昵称" min-width="180">
+                <template slot-scope="scope">
+                    <div>
+                        <span v-if="scope.row.nickname">{{scope.row.nickname}}</span>
+                        <span v-else>{{scope.row.username}}</span>
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column label="回答数" width="110" prop="answer_num" sortable="custom">
+                <template slot-scope="scope">
+                    <div style="padding-top: 10px;">
+                        <el-badge v-if="scope.row.answer_num > 0" :value="scope.row.answer_num" :max="99" class="item">
+                            <a href="javascript:void(0)" @click="openAnswer(scope.row)">查看</a>
+                        </el-badge>
+                        <span v-else>暂无</span>
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column label="是否推荐" width="100">
+                <template slot-scope="scope">
+                    <el-switch v-model="scope.row.is_recom" active-color="#13ce66" inactive-color="#ccc"
+                               active-value="1" inactive-value="0" @change="bindRec($event, scope.row)">
+                    </el-switch>
+                </template>
+            </el-table-column>
+            <el-table-column label="提问时间" prop="add_time" sortable="custom" min-width="180">
+                <template slot-scope="scope">
+                    <div>{{scope.row.add_time_n}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="zt" label="状态" width="100">
+                <template slot-scope="scope">
+                    <div class="admin_state">
+                        <span v-if="scope.row.state == 1" class="admin_state1">已审核</span>
+                        <span v-else-if="scope.row.state == 2" class="admin_state2">未通过</span>
+                        <!--<span class="admin_state3">已锁定</span>-->
+                        <!--<span class="admin_state4">待审核</span>-->
+                        <span v-else class="admin_state5">未审核</span>
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column label="操作" width="200" fixed="right">
+                <template slot-scope="scope">
+                    <div class="cz_button">
+                        <el-button size="small " plain @click="openAudit(scope.row)">审核</el-button>
+                        <el-button size="small " plain @click="openEdit(scope.row)">修改</el-button>
+                        <el-button type="danger" size="mini" @click="del(scope.$index)">删除</el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+    <div class="modulePaging">
+        <div class="">
+            <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">全选</el-checkbox>
+            <el-button @click="batch('del')" size="mini">批量删除</el-button>
+            <el-button @click="batch('audit')" size="mini">批量审核</el-button>
+        </div>
+        <div class="modulePagNum">
+            <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                           :current-page="page" :page-sizes="pageSizes" :page-size="limit"
+                           layout="total, sizes, prev, pager, next, jumper" :total="total">
+            </el-pagination>
+        </div>
+    </div>
+
+    <div class="modluDrawer">
+        <el-dialog title="问答审核" width="500px" :visible.sync="dialogAudit" :modal-append-to-body="false">
+            <div class="toolClasDia fenpeizhand">
+                <div class="toolClasList">
+                    <div class="toolClasTite">
+                        <span>审核：</span>
+                    </div>
+                    <div class="toolClasCont">
+                        <el-radio v-model="ruleFormAudit.status" label="1">正常</el-radio>
+                        <el-radio v-model="ruleFormAudit.status" label="2">未通过</el-radio>
+                    </div>
+                </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogAudit = false">取 消</el-button>
+                <el-button type="primary" @click="saveAudit">确 定</el-button>
+            </span>
+        </el-dialog>
+    </div>
+    <div class="modluDrawer">
+        <el-drawer title="修改问答" :visible.sync="drawerEdit" append-to-body :show-close="true"
+                   :with-header="true" size="700px">
+            <edit :id="detail.id" @child-event="closeEdit"></edit>
+        </el-drawer>
+        <el-drawer title="回答列表" :visible.sync="drawerAnswer" append-to-body :show-close="true"
+                   :with-header="true" size="80%">
+            <answer :id="detail.id" :status="status.answer" @child-event="closeAnswer"></answer>
+        </el-drawer>
+        <el-drawer title="评论列表" :visible.sync="drawerReview" append-to-body :show-close="true"
+                   :with-header="true" size="70%">
+            <review :status="status.comment" @child-event="closeReview"></review>
+        </el-drawer>
+    </div>
+</div>
+</body>
+<script>
+    const custoapp = new Vue({
+        el: '#cityfl',
+        data: function () {
+            return {
+                emptytext: '暂无数据',
+                loading: false,
+                // 搜索筛选项
+                searchList: [],
+                searchForm: {
+                    type: '1'
+                },
+
+                // 列表
+                page: 1,
+                limit: 0,
+                list: [],
+                total: 0,
+                pageSizes: [],
+
+                // 列表排序
+                t: '',
+                order: '',
+
+                checkedAll: false, // 全选
+                checkedAllIndeterminate: false,
+                multipleSelection: [], // 多选值存储
+                idArr: [],
+
+                detail: {},
+
+                saveLoading: false,
+
+                // 审核
+                dialogAudit: false,
+                ruleFormAudit: {},
+
+                // 修改
+                drawerEdit: false,
+
+                // 回答列表
+                drawerAnswer: false,
+
+                // 评论列表
+                drawerReview: false,
+                prevPage:0,
+                status: {
+                    answer: '',
+                    comment: '',
+                }, // 待处理消息跳转过来使用
+            }
+        },
+        components: {
+            'edit': httpVueLoader('./component/question_edit.vue'),
+            'answer': httpVueLoader('./component/question_answer.vue'),
+            'review': httpVueLoader('./component/question_review.vue'),
+        },
+        created() {
+            var that = this
+            let query = window.parent.homeapp.$route.query;
+
+            if (query.drawer) { // 有指定弹出，走指定弹出逻辑
+                if (query.drawer == 'answer') {
+                    that.drawerAnswer = true;
+                } else if (query.drawer == 'comment') {
+                    that.drawerReview = true;
+                }
+                if (query.status) {
+                    that.status[query.drawer] = parseInt(query.status);
+                }
+            } else {
+                if (query.status) {
+                    that.$set(that.searchForm, 'status', parseInt(query.status));
+                }
+            }
+            this.getGroup();
+            this.getList();
+        },
+        methods: {
+            getGroup(){
+                let that = this;
+
+                httpPost('m=neirong&c=question&a=getGroup', {}, {hideloading: true}).then(function (response) {
+                    let res = response.data,
+                        data = res.data;
+                    that.searchList = data.search_list;
+                })
+            },
+            handleSizeChange(val) {
+                this.limit = val;
+                this.getList();
+            },
+            handleCurrentChange(val) {
+                this.page = val;
+                this.getList();
+            },
+            sortChange(event) {
+                this.t = event.order ? event.prop : '';
+                this.order = event.order ? event.order == 'descending' ? 'desc' : 'asc' : '';
+                this.search();
+            },
+            search() {
+                this.page = 1;
+                this.getList();
+            },
+            getList() {
+                let that = this,
+                    searchForm = that.searchForm,
+                    params = {
+                        page: that.page,
+                        limit: that.limit,
+                        t: that.t,
+                        order: that.order,
+                    };
+                    that.loading = true;
+                    that.emptytext = "数据加载中";
+                httpPost('m=neirong&c=question', {...params, ...searchForm}, {hideloading: true}).then(function (response) {
+                    let res = response.data,
+                        data = res.data;
+                    that.list = data.list;
+                    that.total = parseInt(data.total);
+                    that.pageSizes = data.page_sizes;
+                    if (that.limit === 0) {
+                        that.limit = parseInt(data.limit); // 取系统配置默认数量
+                    }
+                    if (that.page > data.page) {
+                        that.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+                    }
+                    if(that.prevPage != that.page){
+                        that.prevPage = that.page;
+                        that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                    }
+                    that.loading = false;
+                    if (that.list.length === 0){
+                        that.emptytext = "暂无数据";
+                    }
+                })
+            },
+
+            // 批量操作
+            handleSelectionChange(val) {
+                if (val.length == 0) {
+                    this.checkedAll = false;
+                    this.checkedAllIndeterminate = false;
+                } else {
+                    if (val.length === this.list.length) {
+                        this.checkedAll = true;
+                        this.checkedAllIndeterminate = false;
+                    } else {
+                        this.checkedAll = false;
+                        this.checkedAllIndeterminate = true;
+                    }
+                }
+                this.multipleSelection = val;
+            },
+            batch(type) {
+                if (this.multipleSelection.length == 0) {
+                    let msg = '请选择要操作的数据项'
+                    if (type == 'del') {
+                        msg = '请选择要删除的数据项'
+                    } else if (type == 'audit') {
+                        msg = '请选择要审核的数据项'
+                    }
+                    message.error(msg);
+                    return false;
+                }
+
+                let idArr = [];
+                this.multipleSelection.forEach(function(item) {
+                    idArr.push(item.id);
+                })
+                this.idArr = idArr;
+
+                if (type == 'del') {
+                    this.del();
+                } else if (type == 'audit') {
+                    this.openAudit();
+                }
+            },
+            checkAll(val) {
+                val ? this.checkedAllIndeterminate = false : '';
+                this.$refs.multipleTable.toggleAllSelection();
+            },
+
+            del(idx) {
+                let that = this,
+                    params = {},
+                    msg = '';
+
+                if (typeof idx == 'undefined') { // 批量删除
+                    params.del = this.idArr;
+                    msg = '你确定要删除选中项吗？';
+                } else {// 单个删除
+                    params.id = that.list[idx].id;
+                    msg = '你确定要删除当前项吗？';
+                }
+
+                delConfirm(this, params, function (params) {
+                    httpPost('m=neirong&c=question&a=del', params).then(function(res) {
+                        if (res.data.error > 0) {
+                            message.error(res.data.msg);
+                        } else {
+                            that.getList();
+                            message.success(res.data.msg, function () {
+                                that.$refs.multipleTable.clearSelection();
+                            });
+                        }
+                    })
+                }, msg)
+            },
+
+            bindRec(val, data) {
+                let that = this;
+
+                httpPost('m=neirong&c=question&a=recommend', {id: data.id, rec: val}).then(function (response) {
+                    let res = response.data;
+
+                    if (res.error > 0) {
+                        message.error(res.msg);
+                    }
+                })
+            },
+
+            openAudit(row) {
+                this.dialogAudit = true;
+                this.ruleFormAudit = {
+                    id: typeof row == 'undefined' ? this.idArr : row.id
+                };
+            },
+
+            saveAudit() {
+                let that = this,
+                    params = that.ruleFormAudit;
+
+                if (typeof params.status == 'undefined' || params.status === '') {
+                    message.warning('请选择审核状态');
+                    return false;
+                }
+
+                if (that.saveLoading) {
+                    return false;
+                }
+                that.saveLoading = true;
+
+                httpPost('m=neirong&c=question&a=status', params).then(function(res) {
+                    that.saveLoading = false;
+
+                    if (res.data.error > 0) {
+                        message.error(res.data.msg);
+                    } else {
+                        that.dialogAudit = false;
+                        that.getList();
+                        message.success(res.data.msg, function () {
+                            that.$refs.multipleTable.clearSelection();
+                        });
+                    }
+                })
+            },
+
+            openEdit(row) {
+                this.drawerEdit = true;
+                this.detail = row;
+            },
+
+            closeEdit() {
+                this.drawerEdit = false;
+                this.getList();
+            },
+
+            openAnswer(row) {
+                this.drawerAnswer = true;
+                this.detail = row;
+            },
+
+            closeAnswer() {
+                this.drawerAnswer = false;
+                this.getList();
+            },
+
+            closeReview() {
+                this.drawerReview = false;
+                this.getList();
+            },
+        }
+    });
+</script>
+
+</html>
+<style>
+    .cell span {
+        display: flex;
+        align-items: center;
+    }
+</style>

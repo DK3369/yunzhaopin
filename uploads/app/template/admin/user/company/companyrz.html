@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+<div id="moduapp" class="moduleDome">
+    <div class="setDomeAll setDomeInte">
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+            <el-tab-pane label="企业认证审核" name="renzheng" :lazy="true">
+                <companyrz_renzheng :status="status.renzheng"></companyrz_renzheng>
+            </el-tab-pane>
+            <el-tab-pane label="企业LOGO审核" name="logo" :lazy="true">
+                <companyrz_pic_logo :status="status.logo"></companyrz_pic_logo>
+            </el-tab-pane>
+            <el-tab-pane label="企业环境审核" name="show" :lazy="true">
+                <companyrz_pic_show :status="status.show"></companyrz_pic_show>
+            </el-tab-pane>
+            <el-tab-pane label="企业横幅审核" name="banner" :lazy="true">
+                <companyrz_pic_banner :status="status.banner"></companyrz_pic_banner>
+            </el-tab-pane>
+            <el-tab-pane label="企业产品审核" name="product" :lazy="true">
+                <companyrz_product :status="status.product"></companyrz_product>
+            </el-tab-pane>
+            <el-tab-pane label="企业新闻审核" name="news" :lazy="true">
+                <companyrz_news :status="status.news"></companyrz_news>
+            </el-tab-pane>
+        </el-tabs>
+    </div>
+</div>
+<!-- script -->
+<script>
+    const custoapp = new Vue({
+        el: '#moduapp',
+        data: function () {
+            return {
+                activeName: 'renzheng',
+                status: {
+                    renzheng: '',
+                    logo: '',
+                    show: '',
+                    banner: '',
+                    product: '',
+                    news: '',
+                },
+            }
+        },
+        components: {
+            'companyrz_renzheng': httpVueLoader('./component/companyrz_renzheng.vue'),
+            'companyrz_pic_logo': httpVueLoader('./component/companyrz_pic_logo.vue'),
+            'companyrz_pic_show': httpVueLoader('./component/companyrz_pic_show.vue'),
+            'companyrz_pic_banner': httpVueLoader('./component/companyrz_pic_banner.vue'),
+            'companyrz_product': httpVueLoader('./component/companyrz_product.vue'),
+            'companyrz_news': httpVueLoader('./component/companyrz_news.vue'),
+        },
+        created: function () {
+            var that = this
+            let query = window.parent.homeapp.$route.query;
+            if (query.tabs) {
+                that.activeName = query.tabs;
+            }
+            if (query.status) {
+                that.status[that.activeName] = query.status;
+            }
+        },
+        methods: {
+            handleClick(tab, event) {
+                console.log(tab, event);
+            }
+        }
+    });
+</script>
+</body>
+
+</html>

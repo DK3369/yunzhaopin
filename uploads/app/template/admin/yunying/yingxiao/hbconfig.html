@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="海报设置" name="set">
+                    <hb_set ref="set"></hb_set>
+                </el-tab-pane>
+                <el-tab-pane label="职位海报" name="job" lazy>
+                    <hb_job ref="job"></hb_job>
+                </el-tab-pane>
+                <el-tab-pane label="企业海报" name="com" lazy>
+                    <hb_com ref="com"></hb_com>
+                </el-tab-pane>
+                <el-tab-pane label="邀请注册" name="invite_reg" lazy>
+                    <hb_invite_reg ref="invite_reg"></hb_invite_reg>
+                </el-tab-pane>
+                <el-tab-pane label="公招海报" name="gongzhao" lazy>
+                    <hb_gongzhao ref="gongzhao"></hb_gongzhao>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#moduapp',
+            data: function () {
+                return {
+                    activeName: 'set'
+                }
+            },
+            components: {
+                'hb_set': httpVueLoader('./component/hb_set.vue'),
+                'hb_job': httpVueLoader('./component/hb_job.vue'),
+                'hb_com': httpVueLoader('./component/hb_com.vue'),
+                'hb_invite_reg': httpVueLoader('./component/hb_invite_reg.vue'),
+                'hb_gongzhao': httpVueLoader('./component/hb_gongzhao.vue'),
+            },
+            methods: {
+                handleClick(tab, event) {
+                    // this.$refs[tab.name].init();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

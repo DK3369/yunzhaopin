@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="adminnav" class="moduleElenAl">
+        <div class="moduleElTable">
+            <el-table :data="list" border style="width: 100%" row-key="id" :default-expand-all="false" lazy 
+                ref="tableref" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%"
+                :tree-props="{children: 'children', hasChildren: 'hasChildren'}" v-loading="loading" :empty-text="emptytext">
+                <el-table-column prop="version" label="版本号" width="200">
+                </el-table-column>
+                <el-table-column prop="ctime_n" label="升级时间" width="200">
+                </el-table-column>
+            </el-table>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#adminnav',
+            data: function () {
+                return {
+                   
+                    list: [],
+                    
+                    emptytext: '数据加载中',
+                    loading: true,
+                }
+            },
+            created: function () {
+                this.getList();
+            },
+            methods: {
+                async getList() {
+                    let that = this;
+                    let res = await httpPost('m=system&c=admin_nav&a=version', { });
+                    if (res.data.error == 0) {
+                        that.list = res.data.data.list;
+                        that.loading = false;
+                        if (that.list.length === 0){
+                            that.emptytext = "暂无数据";
+                        }
+                    }
+
+                },
+            }
+        });
+    </script>
+</body>
+
+</html>

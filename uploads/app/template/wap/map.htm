@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta http-equiv="Cache-Control" content="no-cache"/>
+    <title>{yun:}$title{/yun}</title>
+    <meta name="keywords" content="{yun:}$keywords{/yun},wap"/>
+    <meta name="description" content="{yun:}$description{/yun}"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width" initial-scale="1"/>
+    <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=2.0, user-scalable=no, width=device-width"/>
+	<script src="{yun:}$wap_style{/yun}/js/flexible.js?v={yun:}$config.cachecode{/yun}"></script>
+    <link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/css.css?v={yun:}$config.cachecode{/yun}" type="text/css"/>
+    <link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/job.css?v={yun:}$config.cachecode{/yun}" type="text/css"/>
+    <link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/map.css?v={yun:}$config.cachecode{/yun}" type="text/css"/>
+	<link rel="stylesheet"href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/base.css?v={yun:}$config.cachecode{/yun}" type="text/css" />
+	<link href="{yun:}$config_wapdomain{/yun}/js/vant/lib/index.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet" />
+</head>
+
+<body>
+<header>
+    <div class="header" style="background: #3b7cff">
+        <div class="header_bg {yun:}if $tplmoblie.color{/yun}bg{yun:}$tplmoblie.color{/yun}{yun:}/if{/yun}">	
+			<div class="header_cont">
+				<a class="header_back hd-lbtn" href="javascript:goBack();"> </a>
+				<div class="header_map">{yun:}$headertitle{/yun}</div>
+			</div>
+		</div>
+	</div>
+</header>
+
+
+
+<div class="yun_map_tit">
+    <ul>
+        <li class="yun_map_cur">
+            <a href="{yun:}url m=wap c=map x=$smarty.get.x y=$smarty.get.y{/yun}">列表</a>
+        </li>
+        {yun:}if $config.map_key{/yun}
+        <li>
+            <a href="{yun:}url m=wap c=map a=maplist x=$smarty.get.x y=$smarty.get.y{/yun}" class="tcq_mune_msgnews_box">地图</a>
+        </li>
+        {yun:}/if{/yun}
+    </ul>
+</div>
+
+<!--公司-->
+<div class="" id="com">
+</div>
+<div id="pageVue" class="none">
+    <van-pagination v-model="currentPage" :total-items="total" :items-per-page="perpage" force-ellipses @change="pageChange" />
+</div>
+
+<input type="hidden" name="x" id="mapx" value="{yun:}$mapx{/yun}"/>
+<input type="hidden" name="y" id="mapy" value="{yun:}$mapy{/yun}"/>
+
+<div class="wap_member_no" id="nocom" style="display: none;">
+    您的附近没有相关职位！
+</div>
+<script src="{yun:}$config.sy_weburl{/yun}/app/template/wap/js/prefixfree.min.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+{yun:}if $config.map_key{/yun}
+<script type="text/javascript">
+    window._AMapSecurityConfig = {
+        securityJsCode:'{yun:}$config.map_secret{/yun}'
+    }
+</script>
+<script type="text/javascript" src="{yun:}$config.mapurl{/yun}"></script>
+{yun:}/if{/yun}
+{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+
+<script type="text/javascript">
+	var map_key = '{yun:}$config.map_key{/yun}';
+    var wapurl = '{yun:}url m=wap{/yun}';
+
+    var currentPage = parseInt('{yun:}$smarty.get.page{/yun}') ? parseInt('{yun:}$smarty.get.page{/yun}') : 1;
+    var total = 0;
+
+    var x = $("#mapx").val();
+    var y = $("#mapy").val();
+
+    var res;
+
+    if ((x > 0 && y > 0) || map_key == '') {
+        get_com_list(x, y);
+    } else {
+        get_current_loaction();
+    }
+
+    function get_current_loaction() {
+        AMap.plugin('AMap.Geolocation', function() {
+           var geolocation = new AMap.Geolocation();
+        
+          geolocation.getCurrentPosition(function(status,result){
+                if(status=='complete' && result.info == 'SUCCESS'){
+                    var position = result.position;
+                    x = position.lng;
+                    y = position.lat;
+                    $('#x').val(x);
+                    $('#y').val(y);
+                    get_com_list(x, y);
+                }
+          });
+        })
+    }
+
+    function get_com_list(x, y) {
+        $.post(wapurl +'index.php?c=map&a=joblist', {
+            x: x,
+            y: y,
+            page: currentPage
+        }, function (data) {
+
+            if (data) {
+                res = eval('(' + data + ')');
+                if (res.list.length > 0) {
+
+                    var joblist_html = '';
+                    for (var i = 0; i < res.list.length; i++) {
+                        joblist_html += '<div class="map_job_list mt10"> ';
+                        joblist_html += '<div class="map_job_list_box">';
+                        joblist_html += '<div class="map_job_top">';
+                        joblist_html += '<div class="map_job_topname">';
+                        joblist_html += '<a href="' + res.list[i].joburl + '" >' + res.list[i].name + '</a>';
+                        joblist_html += '</div>';
+                        joblist_html += '<span class="map_job_xz">' + res.list[i].salary_n + '</span>';
+                        joblist_html += '<div class="map_job_info"></div>';
+                        joblist_html += '<div class="map_job_com"><a href="' + res.list[i].comurl + '">' + res.list[i].com_name + '</a></div>';
+                        if (res.list[i].lastupdate) {
+                            joblist_html += '<div class="map_job_com">更新时间：<span class="">' + res.list[i].lastupdate + '</span></div>';
+                        }
+                        if (res.list[i].welfare) {
+                            joblist_html += '<div class="map_job_fl">';
+                            for (var k = 0; k < res.list[i].welfare.length; k++) {
+                                joblist_html += '<span class="map_job_fl_s">' + res.list[i].welfare[k] + '</span>';
+                            }
+                            joblist_html += '</div>';
+                        }
+                        joblist_html += '</div>';
+                        joblist_html += '</div>';
+                        joblist_html += '<div class="com_map"><a href="' + res.list[i].addressurl + '"><span class="com_map_name">地址</span>' + res.list[i].address + '<em>' + res.list[i].dis + '</em><i class="com_map_name_icon"></i></a></div>';
+                        joblist_html += '</div>';
+                    }
+                    $('#com').html(joblist_html);
+                } else {
+                    $('#nocom').show();
+                }
+
+                if (res.total > 10) {
+
+                    pageVue.$data.currentPage = currentPage;
+                    pageVue.$data.total = res.total;
+                    $('#pageVue').css('display', 'block');
+                }
+            }
+        });
+    }
+
+    var pageVue =  new Vue({
+        el: '#pageVue',
+        data: {
+            currentPage:currentPage,
+            total:total,
+            perpage:10,
+        },
+        methods:{
+            pageChange:function(e){
+                currentPage = e;
+                get_com_list(x, y);
+            }
+        }
+
+    })
+</script>
+</body>
+</html>

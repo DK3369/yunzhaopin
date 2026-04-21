@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="../../header.js"></script>
+    <script src="../../httpVueLoader.js"></script>
+</head>
+<body>
+<div id="recycleApp" class="moduleElenAl">
+    <div class="moduleSeachs">
+        <div class="moduleSeachleft">
+            <div class="tableSeachInpt" style="margin-bottom: 0px;;">
+                <el-input placeholder="请输入操作人用户名" v-model="search.username" size="small" clearable></el-input>
+                <el-input placeholder="请输入数据内容关键词" v-model="search.keyword" size="small" clearable></el-input>
+                <el-input placeholder="请输入数据表表名" v-model="search.table" size="small" clearable></el-input>
+                <el-date-picker v-model="search.time" style="width: 230px;" type="daterange" size="small" align="right" unlink-panels range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" :picker-options="pickerOptions" value-format="timestamp" @change="handelSearch"></el-date-picker>
+            </div>
+            <div class="tableSeachInpt" style="margin-bottom: 0px;;">
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="handelSearch" style="margin-left: 8px">查询</el-button>
+                <el-button icon="el-icon-back" size="mini" @click="handelBack" style="margin-left: 8px" v-if="identShow">返回</el-button>
+            </div>
+        </div>
+    </div>
+    <div class="moduleElTable">
+        <div class="tableDome_tip">
+            <el-alert title="删除数据可通过回收站功能进行“恢复”操作，综合恢复指同一次操作下删除的关联数据，可以一次性批量恢复 " :closable="false" type="info"></el-alert>
+        </div>
+        <el-table :data="tableData" border style="width: 100%" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" @selection-change="handleSelectionChange" ref="recycleTable" v-loading="loading" :empty-text="emptytext">
+            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column prop="id" label="编号" width="80"></el-table-column>
+            <el-table-column prop="username" label="操作人"></el-table-column>
+            <el-table-column prop="tablename" label="数据表名"></el-table-column>
+            <el-table-column prop="time_n" label="时间"></el-table-column>
+            <el-table-column fixed="right" label="操作" width="310" align="center">
+                <template slot-scope="scope">
+                    <div class="cz_button">
+                        <el-button size="small" type="info" plain @click="detail(scope.row)">查看数据</el-button>
+                        <el-button size="small" @click="recoverRecycle(scope)">恢复</el-button>
+                        <el-button size="small" @click="handelIdentList(scope)">综合恢复</el-button>
+                        <el-button size="small" type="danger" @click="delRecycle(scope)">永久删除</el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+    <div class="modulePaging">
+        <div class="modulecz" style="margin-left: 10px;">
+            <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+            <el-button size="mini" plain @click="recoverRecycleSel">批量恢复</el-button>
+            <el-button size="mini" plain v-if="identShow"  @click="recoverAll">一键恢复</el-button>
+            <el-button size="mini" plain @click="delRecycleSel">批量删除</el-button>
+            <el-button size="mini" @click="truncateRecycle">清空数据</el-button>
+        </div>
+        <div class="modulePagNum">
+            <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size.sync="pageSize" :page-sizes="pageSizes" layout="total, sizes, prev, pager, next, jumper" :total="total" :pager-count="pagerCount"></el-pagination>
+        </div>
+    </div>
+    <div class="modluDrawer">
+        <el-drawer title="回收站数据详情" :visible.sync="recycleDetail" :modal-append-to-body="false" size="50%">
+            <div class="moduleSchools">
+                <div class="drawerModLis" v-for="(item, key) in info" :key="key">
+                    <div class="drawerModTite" style="width:30%">
+                        <span>字段名： {{key}}</span>
+                    </div>
+                    <div class="drawerModInpt" style="width:60%">
+                        数据： {{item}}
+                    </div>
+                </div>
+            </div>
+        </el-drawer>
+    </div>
+</div>
+<script>
+    const recycleApp = new Vue({
+        el: '#recycleApp',
+        data: function () {
+            return {
+                loading: false,
+                pagerCount: 5,
+                emptytext: '暂无数据',
+                search: {
+                    username: '',
+                    keyword: '',
+                    table: '',
+                    time: '',
+                    ident: ''
+                },
+                pickerOptions: {
+                    shortcuts: [{
+                        text: '昨天',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24);
+                            end.setTime(end.getTime() - 3600 * 1000 * 24);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '今天',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '本周',
+                        onClick(picker) {
+                            const start = new Date(new Date().setHours(0, 0, 0) - (new Date().getDay() - 1) * 24 * 60 * 60 * 1000);
+                            const end = new Date();
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '上周',
+                        onClick(picker) {
+                            const start = new Date(new Date().setHours(0, 0, 0) - (new Date().getDay() + 6) * 24 * 60 * 60 * 1000);
+                            const end = new Date(new Date().setHours(0, 0, 0) + (0 - new Date().getDay()) *24 * 60 * 60 *1000);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '本月',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 1).setHours(0, 0, 0));
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '上月',
+                        onClick(picker) {
+                            const end = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 0).setHours(23, 59, 59, 59));
+                            const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).setHours(0, 0, 0));
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }]
+                },
+
+                tableData: [],
+
+                total: 0,
+                currentPage: 1,
+				prevPage:0,
+                pageSize: 0,
+                pageSizes: [],
+
+                // 批量选择
+                checkAll: false,
+                isIndeterminate: false,
+                selectedItem: [],
+
+                identShow: false,
+
+                info: [],
+                recycleDetail: false
+            }
+        },
+        created: function () {
+            this.getRecycleList();
+        },
+        methods: {
+            detail(row) {
+                this.info = row.body_n;
+                this.recycleDetail = true;
+            },
+            getRecycleList() {
+                var that = this;
+                var params = JSON.parse(JSON.stringify(this.search));
+                params.pageSize = that.pageSize;
+                params.page = that.currentPage;
+                that.loading = true;
+                that.emptytext = "数据加载中";
+                httpPost('m=tool&c=dataRecycle', params, {hideloading: true}).then(function (res) {
+                    let data = res.data.data;
+                    that.tableData = data.list;
+                    that.total = data.total;
+                    that.pageSize = parseInt(data.pageSize);
+                    that.pageSizes = data.pageSizes;
+                    that.loading = false;
+
+					if(that.prevPage != that.currentPage){
+						that.prevPage = that.currentPage;
+						that.$refs.recycleTable.bodyWrapper.scrollTop = 0;
+					}
+                    if (that.tableData.length === 0) {
+                        that.emptytext = "暂无数据";
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+
+            handelSearch: function () {
+                this.currentPage = 1
+                this.getRecycleList();
+            },
+            handelIdentList(scope) {
+                let that = this;
+                that.currentPage = 1
+                that.search.ident = scope.row.ident;
+                that.identShow = true;
+                that.getRecycleList();
+            },
+            handelBack: function () {
+                let that = this;
+                that.search.ident = '';
+                that.identShow = false;
+                that.getRecycleList();
+            },
+            handleSelectionChange(val) {
+                this.selectedItem = val;
+                if (this.selectedItem.length == 0) {
+                    this.isIndeterminate = false;
+                    this.checkAll = false;
+                } else {
+                    if (this.selectedItem.length == this.tableData.length) {
+                        this.isIndeterminate = false;
+                        this.checkAll = true;
+                    } else {
+                        this.isIndeterminate = true;
+                        this.checkAll = false;
+                    }
+                }
+            },
+            handleCheckAllChange(val) {
+                val ? this.$refs.recycleTable.toggleAllSelection() : this.$refs.recycleTable.clearSelection();
+            },
+
+            recoverRecycle(scope, isMore) {
+                let _this = this;
+                let idArr = [];
+                let params = {};
+                if (isMore) {
+                    this.selectedItem.forEach((item) => {
+                        idArr.push(item.id);
+                    });
+                    params.id = idArr;
+                } else {
+                    params.id = scope.row.id;
+                }
+                _this.$confirm('确定要恢复回收站数据？', '温馨提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'info'
+                }).then(() => {
+                    httpPost('m=tool&c=dataRecycle&a=recover', params).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            message.success(res.msg, function () {
+                                _this.getRecycleList();
+                            });
+                        } else {
+                            message.error(res.msg);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+                });
+            },
+
+            recoverRecycleSel() {
+                let that = this;
+                if (!that.selectedItem.length) {
+
+                    message.error('请选择要恢复的数据');
+                    return;
+                }
+                this.recoverRecycle(null, true);
+            },
+            recoverAll() {
+                let _this = this;
+                _this.$confirm('确定要一键恢复已删除数据？', '温馨提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'info'
+                }).then(() => {
+                    httpPost('m=tool&c=dataRecycle&a=recoverAll', {ident: _this.search.ident}).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            message.success(res.msg, function () {
+                                _this.getRecycleList();
+                            });
+                        } else {
+                            message.error(res.msg);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+                });
+            },
+
+            delRecycle(scope, isMore) {
+                var that = this;
+                let idArr = [];
+                let params = {};
+                if (isMore) {
+                    this.selectedItem.forEach((item) => {
+                        idArr.push(item.id);
+                    });
+                    params.id = idArr;
+                } else {
+                    params.id = scope.row.id;
+                }
+                delConfirm(this, params, this.delete, '删除后无法恢复，请谨慎操作,您确定要删除回收站数据吗？');
+            },
+            delRecycleSel() {
+                var that = this;
+                if (!that.selectedItem.length) {
+                    message.error('请选择要删除的数据');
+                    return;
+                }
+                this.delRecycle(null, true);
+            },
+            delete(params) {
+                var self = this;
+                httpPost('m=tool&c=dataRecycle&a=delRecycle', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        message.success(res.msg, function () {
+                            self.getRecycleList();
+                        });
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+
+            truncateRecycle() {
+                let _this = this;
+                _this.$confirm('确定要清空数据回收站？', '温馨提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    httpPost('m=tool&c=dataRecycle&a=tuncateRecycle', {recycle: 'tuncate'}).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            message.success(res.msg, function () {
+                                self.getRecycleList();
+                            });
+                        } else {
+                            message.error(res.msg);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }).catch(() => {
+                });
+            },
+            handleSizeChange(val) {
+
+                console.log(`每页 ${val} 条`);
+                this.pageSize = val;
+                this.getRecycleList();
+            },
+            handleCurrentChange(val) {
+
+                console.log(`当前页: ${val}`);
+                this.currentPage = val;
+                this.getRecycleList();
+            },
+        }
+    });
+</script>
+</body>
+</html>

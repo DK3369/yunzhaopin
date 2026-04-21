@@ -1,0 +1,181 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<div class="none" id="yunvue">
+	<!-- 页面整体部分 -->
+	<div class="issue_post_body">
+		<div class="issue_post_body_card">
+			<div class="comshowtip">上传公司环境照片，可提升企业曝光率</div>
+			<div class="company_photo_box">
+				<van-uploader v-model="showList" :before-delete="beforedel" :after-read="afterRead"
+					:before-read="beforeRead" :max-size="5242880" />
+			</div>
+
+		</div>
+		<div class="Save_button" @click="showSave">{{btext}}</div>
+	</div>
+</div>
+<script src="{yun:}$wap_style{/yun}/js/compressor.min.js?v={yun:}$config.cachecode{/yun}"></script>
+<script>
+	var uploadArr = [];
+	var uploadErr = false;
+	new Vue({
+		el: '#yunvue',
+		data: {
+			picDel: [],
+			picAdd: [],
+			picList: [],
+			picViewNum: [],
+			btext: '保存',
+			showList: [],
+
+		},
+		created() {
+			this.getList();
+		},
+		methods: {
+			getList: function() {
+				showLoading();
+				var self = this;
+				$.post('{yun:}url d=wxapp h=com m=info c=show{/yun}', {
+					rand: Math.random()
+				}, function(data) {
+					hideLoading();
+
+					if (data) {
+
+						let list = data.data.list
+						self.picList = list;
+
+						if (list && list.length > 0) {
+							let picViewNum = []
+							for (let i = 0; i < list.length; i++) {
+								picViewNum.push(i) // 只是个计数器，没其它作用，每个盒子展示两个图片，顾出来个这o(*￣︶￣*)o
+								let temp = {
+									'url': list[i].picurl,
+									'id': list[i].id
+								};
+								self.showList.push(temp);
+							}
+							self.picViewNum = picViewNum
+						}
+					}
+
+					$("#yunvue").css('display', 'block');
+				}, 'json');
+			},
+			beforedel(file, detail) {
+				var self = this;
+				var noupload = true;
+				self.picAdd.forEach(function(val,index){
+					if(val.index == detail.index){
+						// 删除的是本次选择的，不是已经上传的
+						noupload = false;
+						self.picAdd.splice(index, 1);
+					}
+				});
+				if(noupload){
+					// 删除已经上传的，需要记录
+					self.picDel.push(file);
+				}
+				return true;
+			},
+			beforeRead(file) {
+				return new Promise((resolve) => {
+					// compressorjs 默认开启 checkOrientation 选项
+					// 会将图片修正为正确方向
+					// 图片压缩
+					new Compressor(file, {
+						quality: 0.6,
+						success: resolve,
+						error(err) {}
+					});
+				});
+			},
+			afterRead(file,detail) {
+				//保存添加图片的上传信息
+				//拼接个对象进去
+
+				let obj = {
+					error: true,
+					url: file.content,
+					index: detail.index
+				};
+				this.picAdd.push(obj);
+
+			},
+			showSave: function() {
+				let that = this;
+				let showAdd = that.picAdd;
+				let showDel = that.picDel;
+				let saveErr = false;
+				if (showAdd.length > 0) {
+					uploadArr = showAdd;
+					showLoading('上传中...');
+					that.uploadAjax();
+					return false;
+				}
+				if (showDel.length > 0) {
+					var formData = {};
+					formData.id = [];
+					for (let i = 0; i < showDel.length; i++) {
+						if (showDel[i].id) {
+							formData.id.push(showDel[i].id);
+						}
+					}
+					showLoading('删除中...');
+					$.post('{yun:}url d=wxapp h=com m=info c=showdel{/yun}', formData, function(data) {
+						if (data.error != 1) {
+							saveErr = true;
+						}
+					});
+				}
+				
+				if (saveErr) {
+					that.btext = "重新上传";
+					showToast('保存失败');
+				} else {
+					showToast("保存成功", 2, function() {
+						history.back();
+					});
+				}
+			},
+			uploadAjax(key = 0){
+				var that = this;
+				if(key < uploadArr.length){
+					var formData = {
+						wappic: 1,
+						uimage: uploadArr[key].url
+					};
+					$.post("{yun:}url d=wxapp h=com m=info c=showSave{/yun}", formData, function(data){
+						if (data.error == 1) {
+							uploadArr[key].error = false;
+										
+						} else {
+							uploadArr[key].error = true;
+							uploadErr = true;
+						}
+						key++
+						that.uploadAjax(key);
+					})
+				}else{
+					// 上传完毕
+					this.picAdd = [];
+					if(this.picDel.length > 0){
+						// 有需要删除的图片，再处理删除
+						this.showSave();
+					}else{
+						if (uploadErr) {
+							this.btext = "重新上传";
+							showToast('保存失败');
+						} else {
+							showToast("保存成功", 2, function() {
+								history.back();
+							});
+						}
+					}
+				}
+			}
+		}
+	})
+</script>
+</body>
+</html>

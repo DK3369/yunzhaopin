@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="jihuaapp" class="moduleElenAl">
+        <div class="setDomeAll">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="计划任务" name="cron">
+                    <crontask ref="cron"></crontask>
+                </el-tab-pane>
+                <el-tab-pane label="任务日志" name="log">
+                    <tasklog ref="log"></tasklog>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+    const custoapp = new Vue({
+        el: '#jihuaapp',
+        data: function() {
+            return {
+                activeName: 'cron'
+            }
+        },
+        components: {
+            'crontask': httpVueLoader('./component/crontask.vue'),
+            'tasklog': httpVueLoader('./component/tasklog.vue'),
+        },
+        created: function() {
+            var that = this
+            let query = getUrlParams();
+            if (query && query.topage) {
+                if (query.topage == 2) {
+                    that.activeName = 'log'
+                }
+            }
+            setTimeout(() => {
+                if (that.activeName == 'cron') {
+                    this.$refs.cron.getList();
+                } else {
+                    this.$refs.log.getList();
+                }
+            }, 500)
+        },
+        methods: {
+            handleClick(tab) {
+                if (tab.name == 'cron') {
+                    this.$refs.cron.getList();
+                } else if (tab.name == 'log') {
+                    this.$refs.log.getList();
+                }
+            }
+        }
+    });
+    </script>
+</body>
+
+</html>

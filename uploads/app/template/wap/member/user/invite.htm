@@ -1,0 +1,152 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun} 
+
+<!-- 页面主体 -->
+<div id="yunvue" class="none">
+
+
+<div class="m_tab"  v-if="islook">
+  <div class="m_tabbox category">
+  <ul>
+    <li :class="status == 0 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=invite&status=0')">全部</li>
+    <li :class="status == 1 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=invite&status=1')">未查看</li>
+    <li :class="status == 2 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=invite&status=2')">已查看</li>
+    <li :class="status == 3 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=invite&status=3')">待面试</li>
+    <li :class="status == 4 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=invite&status=4')">已拒绝</li>
+  </ul>
+</div></div>
+  <div class="m_cardbox"> 
+    <div class="m_cardbgbox">
+    <div class="Posted_body_card" v-for="(item, invitekey) in list" :key="invitekey">
+      <div class="Posted_card_top" v-on:click="pageTo('index.php?c=invitecont&id='+item.id)">
+        <div class="Posted_card_name"><i class="m_ms_new" v-if="item.is_browse==1">NEW</i>{{item.fname}}</div>
+        <div class="Posted_card_pay" v-if="item.is_browse==1">未查看</div>
+        <div class="Posted_card_pay" v-else-if="item.is_browse==2">已查看</div>
+        <div class="Posted_card_pay" v-else-if="item.is_browse==3">
+			<span v-if="item.over">已结束</span>
+			<span v-else>待面试</span>
+		</div>
+        <div class="Posted_card_pay" v-else-if="item.is_browse==4">已拒绝</div>
+      </div>
+      <div class="interview_time_box" v-on:click="pageTo('index.php?c=invitecont&id='+item.id)">
+        <div class="card_interview_text">面试时间</div>
+        <div class="card_interview_time">{{item.intertime}}</div>
+      </div>
+      <div class="interview_job_box">
+        <div class="interview_box_post" v-on:click="pageTo('index.php?c=invitecont&id='+item.id)">
+          <div class="card_interview_text">面试职位</div>
+          <div class="card_interview_time">{{item.jobname}}</div>
+        </div>
+        
+        <div class="interview_box_icons">
+          <div class="interview_box_icon" v-if="item.pj" @click="pageTo('index.php?c=comment&id='+item.id)"> <img src="{yun:}$wap_style{/yun}/images/pj.png" alt="" width="100%" height="100%"> </div>
+          <div class="interview_box_icon" @click="delInvite(invitekey)"> <img src="{yun:}$wap_style{/yun}/images/resume_del.png" alt="" width="100%" height="100%"> </div>
+        </div>
+      </div>
+    </div>
+   <div v-if="count==2">
+    <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange" /> 
+   </div><div class="wap_member_bgcar"v-show="islook&&count==0">
+    <div class="wap_member_no" >
+		
+      <div class="wap_member_no_p1"> 目前您暂未收到面试通知
+        <div><a class="wap_member_no_submit" href="{yun:}url m=wap c=job{/yun}">搜索职位</a></div>
+      </div> </div>
+    </div>
+  </div>
+</div>
+</div></div>
+
+<script>  
+  var currentPage = parseInt('{yun:}$smarty.get.page{/yun}');   
+  var status = '{yun:}$smarty.get.status{/yun}';
+   status = status ? status : '0';
+      new Vue({
+        el: '#yunvue',
+        data: {
+          list: [],
+          limit:20,
+          status: status,          
+          total:0,
+          page: currentPage ? currentPage : 1,
+          islook :false
+        },
+        computed: {
+          count(){
+             if(this.total > this.limit){
+              return 2;
+            }else if(this.list.length==0){
+              return 0;
+            }else{
+                return 1;
+            }
+          }
+        },
+        created() {   
+         this.chatShow(status);
+        },
+        methods:{
+          chatShow:function(e){
+            this.page=1;
+            this.list=[];
+            this.islook=false;
+            this.status = e;
+            this.getInvite();
+          },
+          getInvite:function(){
+            showLoading();
+            var that = this;
+            var paramer = {};
+                paramer['page'] = that.page;
+                paramer['limit'] = that.limit;
+                paramer['status'] = that.status;      
+            $.post('{yun:}url d=wxapp h=user m=job c=invitelist{/yun}',paramer,function(res){
+              hideLoading();      
+             
+              that.list = res.data.list;
+              that.total = res.data.total;
+              that.page = currentPage ? currentPage : 1;
+              that.islook = true ;
+              that.status = status; 
+              $("#yunvue").css('display', 'block');
+            },'json');
+          },
+          pageChange:function(e){
+          
+            location.href = 'index.php?c=invite&status='+this.status+'&page='+e;
+          },
+          delInvite:function(e){
+            
+             showConfirm('您确定要删除该邀请？', () => {
+              this.delfuc('del', e);
+            })
+
+          },
+          delfuc:function(type,index){
+              let that = this
+              let param = {
+                id: that.list[index].id,
+                type: type
+              };
+             showLoading('删除中...')
+             
+            $.post('{yun:}url d=wxapp h=user m=job c=invitedel{/yun}', param, function(data){
+              hideLoading();
+              if (data.error == 1) {
+                showToast('删除成功',2, function() {
+                  that.list.splice(index, 1);         
+                });
+              } else {
+                showToast('删除失败');
+              }
+            });
+                
+             
+          },
+          pageTo:function(url){
+              window.location.href = url;
+          }
+        } 
+      });
+</script>
+</body>
+</html>

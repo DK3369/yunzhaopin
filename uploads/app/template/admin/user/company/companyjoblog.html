@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+<div id="moduapp" class="moduleDome">
+    <div class="setDomeAll setDomeInte">
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+            <el-tab-pane label="职位申请记录" name="first" :lazy="true">
+                <comlog_index ref="first" v-bind:apply_tab="applyTab" :searchjobid="searchJobId"></comlog_index>
+            </el-tab-pane>
+            <el-tab-pane label="邀请面试记录" name="useridmsg" :lazy="true">
+                <comlog_useridmsg ref="useridmsg"></comlog_useridmsg>
+            </el-tab-pane>
+            <el-tab-pane label=" 职位浏览记录" name="lookjob" :lazy="true">
+                <comlog_lookjob ref="lookjob"></comlog_lookjob>
+            </el-tab-pane>
+            <el-tab-pane label="职位收藏记录" name="favjob" :lazy="true">
+                <comlog_favjob ref="favjob"></comlog_favjob>
+            </el-tab-pane>
+            <el-tab-pane label="拨号记录" name="jobtellog" :lazy="true">
+                <comlog_jobtellog ref="jobtellog"></comlog_jobtellog>
+            </el-tab-pane>
+            <el-tab-pane label="兼职报名记录" name="partapply" :lazy="true">
+                <comlog_partapply ref="partapply"></comlog_partapply>
+            </el-tab-pane>
+        </el-tabs>
+    </div>
+</div>
+
+<script>
+    const custoapp = new Vue({
+        el: '#moduapp',
+        data: function () {
+            return {
+                activeName: '',
+                applyTab: 1,
+                searchJobId: ''
+            }
+        },
+        components: {
+            'comlog_index': httpVueLoader('./component/comlog_index.vue'),
+            'comlog_useridmsg': httpVueLoader('./component/comlog_useridmsg.vue'),
+            'comlog_lookjob': httpVueLoader('./component/comlog_lookjob.vue'),
+            'comlog_favjob': httpVueLoader('./component/comlog_favjob.vue'),
+            'comlog_jobtellog': httpVueLoader('./component/comlog_jobtellog.vue'),
+            'comlog_partapply': httpVueLoader('./component/comlog_partapply.vue'),
+        },
+        mounted(){
+			var that = this;
+            let params = window.parent.homeapp.$route.params;
+			let query = window.parent.homeapp.$route.query;
+            if (params.tab == 'apply'){
+
+                this.userTab = 0;
+                this.activeName = 'first';
+                if (params.job_id){
+                    this.searchJobId = params.job_id;
+                }
+                if (params.com_id){
+                    this.searchComId = params.com_id;
+                }
+            }else if(typeof params.tab!='undefined' && params.tab){
+				this.activeName = params.tab;
+			}else if(typeof query.tab!='undefined' && query.tab){
+				this.activeName = query.tab;
+			}else{
+                this.activeName = 'first';
+            }
+			
+        },
+        methods: {
+            handleClick(tab, event) {
+                if (tab._props.name == 'first') {
+                    this.applyTab++;
+                }
+            }
+        }
+    });
+</script>
+</body>
+
+</html>

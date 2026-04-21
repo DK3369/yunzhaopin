@@ -1,0 +1,118 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<link rel="stylesheet" type="text/css" href="{yun:}$wap_style{/yun}/js/webapppic/cropper.css?v={yun:}$config.cachecode{/yun}" />
+
+<script src="{yun:}$wap_style{/yun}/js/alloy/transform.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/alloy/alloy-finger.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/alloy-crop.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/compress.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/exif.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<div id="yunvue">
+    <div class="clear"></div>
+    <div class="verify">
+        <div class="photo_i_box_v">
+            <div class="photo_i_box_v_c">
+                <div id="showResult">
+                    <div id="changeAvatar" class="photo_i_box">
+                        <img :src="info.logo"
+                             onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_unit_icon{/yun}',2);"
+                             width="120" height="120">
+                    </div>
+                    <div class="clear"></div>
+                    <div class="photo_xz">
+                        <input id="image" type="file" accept="image/*" onchange="photoChange(this)"/> 选择上传logo
+
+                    </div>
+                    <div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>选择上传logo点击提交按钮即可上传
+                        <span v-if="info.logo_n">
+                            (
+                            <font v-if="logo_status == '1'" color="#909399">审核中</font>
+                            <font v-else-if="logo_status == '2'" color="#F56C6C">未通过</font>
+                            <font v-else color="#67C23A">已审核</font>
+                            )
+                        </span>
+                    </div>
+                </div>
+
+                <input type="hidden" value="" id="preview">
+            </div>
+            <div class="photo_tj">
+                <input name="submit" type="button" onclick="photo()" value="提交" class="yunset_bth"/>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var yunvue = new Vue({
+        el: '#yunvue',
+        data() {
+            return {
+                logo_status: '',
+                info: {},
+            };
+        },
+        created() {
+            let that = this;
+            $.post('{yun:}url d=wxapp h=com m=info c=getinfo{/yun}', {rand: Math.random()}, function (data) {
+                hideLoading();
+                let res = data.data;
+                that.logo_status = res.logo_status;
+                that.info=res;
+            }, 'json')
+        }
+    });
+	// 裁剪logo
+	function toAlloyCrop(pic) {
+		new AlloyCrop({
+			image_src: pic,
+			width: 200,
+			height: 200,
+			output: 1,
+			ok: function (base64, canvas) {
+				yunvue.$data.info.logo = base64;
+				$("#preview").val(base64);
+				// $('#showResult').fadeIn();
+			},
+			cancel: function () {
+				// $('#showResult').fadeIn();
+			},
+			ok_text: '确定',
+			cancel_text: '取消'
+		});
+	}
+    // 上传logo
+    function photo() {
+        let yd = yunvue.$data;
+        var uimage = $("#preview").val();
+        if (uimage == '') {
+            showToast('请选择图片后再提交');
+            return false;
+        } else {
+            var regS = new RegExp("\\+", "gi");
+            uimage = uimage.replace(regS, "#");
+            showLoading('上传中');
+            $.ajax({
+                type: 'POST',
+                url: '{yun:}url d=wxapp h=com m=info c=savephoto{/yun}',
+                cache: false,
+                dataType: 'json',
+                data: {
+                    uimage: uimage,
+                    source: 'wap'
+                },
+                success: function (data) {
+                    hideLoading();
+                    if (data.error == 1) {
+                        showToast(data.msg, 2, function () {
+                            $("#preview").val('')
+                            // yd.photoShow = false;
+                        });
+                    } else {
+                        showModal(data.msg);
+                    }
+                }
+            });
+        }
+    }
+</script>
+</body>
+</html>

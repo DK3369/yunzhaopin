@@ -1,0 +1,132 @@
+{yun:}include file="$wapstyle/header.htm"{/yun}
+
+<link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/css.css?v={yun:}$config.cachecode{/yun}" type="text/css">
+<link href="{yun:}$config_wapdomain{/yun}/js/vant/lib/index.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet" />
+
+<header class="nav_bar">
+	<div class="header_bg">
+		<a class="hd-lbtn" href="javascript:goBack();"><i class="header_top_l iconfont"></i></a>
+		<div class="header_h1" style=" line-height:30px">{yun:}$headertitle{/yun}</div>
+	</div>
+</header>
+
+<div id="app" class="none">
+	<van-search v-model="searchKey" placeholder="搜索分站" ></van-search>
+
+	<van-index-bar :index-list="indexList" :sticky='false'>
+
+		<van-cell v-show="allShow">
+			<a href="javascript:void(0)" onclick="setsite('-1','')">{yun:}$config.sy_indexcity{/yun}</a>
+		</van-cell>
+		<template v-if="cityShow">
+			<template :index="cityKey" v-for="(cityValue,cityKey) in filterTex(searchKey, 1)">
+				<div>
+					<van-index-anchor v-if="cityValue != ''">{{cityKey}}</van-index-anchor>
+					<van-cell :index="item.name" v-for="(item,index) in cityValue" @click="setsite(item.id)">
+						{{item.name}}
+					</van-cell>
+				</div>
+			</template>
+		</template>
+
+
+		<div v-show="hyShow">
+			<van-index-anchor >行业分站</van-index-anchor>
+			<van-cell :index="hyKey" v-for="(item,hyKey) in filterTex(searchKey, 2)" @click="setsite(item.id)">
+				{{item.hyname}}
+			</van-cell>
+		</div>
+	</van-index-bar>
+</div>
+
+<script>var weburl="{yun:}$config.sy_weburl{/yun}",wapurl="{yun:}url m=wap{/yun}";</script>
+{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+<script type="text/javascript" charset="utf-8">
+
+	function setsite(id){
+		$.post("{yun:}url m=wap c=site a=domain{/yun}",{id:id},function(data){
+			window.location.href=wapurl;
+		});
+	}
+	var arr = {};
+
+	var vm = new Vue({
+		el: '#app',
+		name:"list",
+		data: {
+			cityList:[],
+			indexList:[],
+			hyList:[],
+			searchKey:'',
+			cityShow:true,
+			hyShow:true,
+			allShow:true,
+		},
+		created() {
+			this.getSite()
+		},
+		methods: {
+			getSite(){
+				let self = this;
+				$.post(wapurl+'index.php?c=site&a=cache',{rand: Math.random()}, function(res){
+					self.cityList = res.city;
+					self.hyList = res.hy;
+					$.each(res.city, function(index, item){
+						self.indexList.push(index);
+					});
+					$('#app').css('display','block');
+				},'json');
+			},
+			filterTex(indexKey, flag){
+				var $this=this;
+				var isReturn = false;
+				let newCityArray = newHyArray = {};
+				$this.allShow = indexKey ? false : true;
+				if (flag == 1) {
+					if (indexKey) {
+						$.each(this.cityList, function(index, citys){
+							newCityArray[index] = citys.filter(function(item, index){
+								if (item.name.includes(indexKey)) {
+									return item;
+								}
+							})
+						});
+						$.each(newCityArray, function(index, item){
+							if (item != '') {
+								isReturn = true;
+								return;
+							}
+						});
+
+						if (isReturn) {
+							$this.hyShow = false;
+							return newCityArray;
+						}
+					} else {
+						$this.hyShow = true;
+						return $this.cityList;
+					}
+				} else {
+					if (indexKey) {
+						newHyArray = this.hyList.filter(function(item){
+							if (item.hyname.includes(indexKey)) {
+								return item;
+							}
+						});
+						$this.hyShow = newHyArray != '' ? true : false;
+						if (newHyArray) {
+							return newHyArray;
+						}
+					} else {
+						$this.cityShow = true;
+						return $this.hyList;
+					}
+				}
+			}
+		}
+	});
+
+</script>
+
+</body>
+</html>

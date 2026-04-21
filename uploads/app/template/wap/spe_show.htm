@@ -1,0 +1,133 @@
+{yun:}include file="$wapstyle/header_cont.htm"{/yun}
+<div class="special_banner">{yun:}if $info.wapback{/yun}
+    <img src=" {yun:}$info.wapback{/yun}" alt="{yun:}$info.title{/yun}" />
+    {yun:}/if{/yun}</div>
+<div class="special_rules_box">
+    <div class="special_rules">
+        <div class="job-hd mobile">
+            <div class="title title-sm">
+                <div class="title-hd"> Description</div>
+                <div class="title-bd">
+                    <i class="blue md start" style="margin-right: 20px;"></i>
+                    <i class="yellow sm end" style="margin-right: 20px;"></i>
+                    <h1>活动说明</h1>
+                    <i class="orange md end" style="margin-left: 20px;"></i>
+                    <i class="green sm start" style="margin-left: 20px;"></i>
+                </div>
+            </div>
+        </div>
+        <div class="special_rules_c">{yun:}$info.intro{/yun}</div>
+        <div class="special_rules_time">活动时间：{yun:}$info.ctime|date_format: "%Y年%m月%d日"{/yun} ~{yun:}$info.etime|date_format: "%Y年%m月%d日"{/yun} </div>
+    </div>
+</div>
+<div class="special_rules_combox">
+    <div class="zt_qy_box">
+        <div class="title title-sm">
+            <div class="title-hd"> selected</div>
+            <div class="title-bd">
+                <i class="blue md start" style="margin-right: 20px;"></i>
+                <i class="yellow sm end" style="margin-right: 20px;"></i>
+                <h1>精选企业</h1>
+                <i class="orange md end" style="margin-left: 20px;"></i>
+                <i class="green sm start" style="margin-left: 20px;"></i>
+            </div>
+        </div>
+        {yun:}specialcom id='auto.id' namelen=10 jobnamelen=16 item=clist{/yun}
+        {yun:}if $clist.jobs{/yun}
+        <div class="special_rules_comlist">
+            <div class="special_rules_cominfo">
+                <div class="special_rules_comlogo"><a href="{yun:}url m=wap c=company a=show id=$clist.uid{/yun}">
+                        <img src="{yun:}$clist.logo{/yun}" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_unit_icon{/yun}',2);" /></a></div>
+                <div class="special_rules_comname"><a href="{yun:}url m=wap c=company a=show id=$clist.uid{/yun}">{yun:}$clist.name_n{/yun}</a></div>
+                <div class="special_rules_comhy">{yun:}$clist.hyname{/yun} . {yun:}$clist.pr{/yun} . {yun:}$clist.mun{/yun}</div>
+            </div>
+            {yun:}foreach from=$clist.jobs key=key item=jlist{/yun}
+            {yun:}if $key<3 {/yun} <div class="special_rules_comjoblist">
+                <div class="special_rules_comjobname"><a href="{yun:}url m=wap c=job a=comapply id=$jlist.id{/yun}" class="">{yun:}$jlist.name_n{/yun}</a></div>
+                <div class="special_rules_jobxz">{yun:}$jlist.job_salary{/yun}</div>
+        </div>
+        {yun:}/if{/yun}
+        {yun:}/foreach{/yun}
+        <div class="zt_morebox"><a href="{yun:}url m=wap c=company a=show id=$clist.uid{/yun}" class="zt_more">查看更多职位</a> </div>
+    </div>
+</div>
+{yun:}/if{/yun}
+{yun:}specialcomelse{/yun}
+<!--<div class="" style="color:#fff; text-align:center">我们期待您的参与~</div> -->
+{yun:}/specialcom{/yun}
+{yun:}if $info.com_bm==1{/yun}
+{yun:}if !$isapply{/yun}
+{yun:}if $isover !=1{/yun}
+<div class="special_seniorpd_box">
+    <div class="special_seniorpd_cont">
+        <div class="special_box_bth_c">
+            <input type='button' value="我是企业，我要报名" onclick="{yun:}if $uid{/yun}{yun:}if $usertype!='2'{/yun} showToast('只有企业用户才能参加报名');{yun:}else{/yun}comapply('{yun:}$info.id{/yun}','{yun:}$info.integral{/yun}','{yun:}url m=wap c=special a=apply{/yun}');{yun:}/if{/yun}{yun:}else{/yun}pleaselogin('您还未登录账号，是否登录？','{yun:}url m=wap c=login{/yun}'){yun:}/if{/yun}" class="special_box_bth" />
+        </div>
+    </div>
+</div>
+{yun:}/if{/yun}
+{yun:}else{/yun}
+<div class="special_seniorpd_box">
+    <div class="special_seniorpd_cont">
+        <div class="special_box_bth_c">
+            {yun:}if $isapply.status=="0"{/yun}
+            <div class="zt_ybm">报名审核中</div>
+            {yun:}elseif $isapply.status=="1"{/yun}
+            <div class="zt_ybm">已报名</div>
+            {yun:}else{/yun}
+            <div class="zt_ybm">请联系管理员</div>
+            {yun:}/if{/yun}
+        </div>
+    </div>
+</div>
+{yun:}/if{/yun}
+{yun:}/if{/yun}
+</div>
+{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+<style>
+    .yun_footer{ display:none;}
+</style>
+<script type="text/javascript">
+var pricename = "{yun:}$config.integral_pricename{/yun}",
+    integral_pricename = "{yun:}$config.integral_pricename{/yun}";
+var isover = '{yun:}$isover{/yun}';
+var isstop = '{yun:}$info.com_bm{/yun}';
+
+function comapply(id, integral, url) {
+    if (integral > 0 && integral) {
+        let msg = "参加专题招聘，将扣除您" + integral + pricename + "，审核不通过将退还，是否继续？";
+        showConfirm(msg, function() {
+            showLoading();
+            $.post(url, { id: id }, function(data) {
+                hideLoading();
+                var data = eval('(' + data + ')');
+                if (data.url == '1') {
+                    showModal(data.msg, function() { location.reload(true); });
+                } else {
+                    showModal(data.msg, function() { location.href = data.url; });
+                }
+            });
+        }, '取消', '继续');
+
+    }else{
+		showLoading();
+		$.post(url,{id:id},function(data){
+			hideLoading();
+			var data=eval('('+data+')');
+			if(data.url=='1'){ 
+				showModal(data.msg,function(){location.reload(true);});
+			}else{
+				showModal(data.msg,function(){location.href=data.url;});
+			}
+		});
+	}
+}
+$(function() {
+    if (isover != '' && isover == 0) {
+        showModal('该专题报名已结束！', function() {});
+    }
+});
+</script>
+</body>
+
+</html>

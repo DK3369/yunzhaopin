@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<meta http-equiv="Cache-Control" content="no-cache" />
+		<meta http-equiv="X-UA-compatible" content="IE=edge" />
+		<title>{yun:}$title{/yun}</title>
+		<meta name="keywords" content="{yun:}$keywords{/yun},wap" />
+		<meta name="description" content="{yun:}$description{/yun}" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+		<meta http-equiv="Expires" content="0">
+		<meta name="format-detection" content="telephone=no,email=no" />
+		<script src="{yun:}$wap_style{/yun}/js/flexible.js?v={yun:}$config.cachecode{/yun}"></script>
+		<link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/base.css?v={yun:}$config.cachecode{/yun}" type="text/css" />
+		<style>
+			body{ background:#fff}
+			.aboyt_cont{ padding:0.4rem; line-height:0.666666rem; font-size:0.373333rem}
+		</style>
+	</head>
+
+	<body>
+		<!--wxapp 引用页面控制，不需要标题栏-->
+		{yun:}if !$wxapp{/yun}
+		<div class="header header_count">
+			<div class="header_fixed">
+				<div class="header_bg">
+					<div class="header_cont">
+						<a class="header_back hd-lbtn" href="javascript:goBack();"></a>
+						<div class="header_h1">
+							<div class="header_words"> {yun:}$headertitle{/yun}</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		{yun:}/if{/yun}
+
+		{yun:}if $smarty.get.c == 'miniContact'{/yun}
+		<!--小程序浮动客服-->
+		<div class="telkf_box_c"><div class="telkf_box"></div></div>
+		<div class="telkf">
+			<div class="telkf_c">
+				<div class="">{yun:}$content.content{/yun}</div>
+			</div>
+		</div>
+		{yun:}else{/yun}
+		<div class="aboyt_cont">{yun:}$content.content{/yun}</div>
+		{yun:}/if{/yun}
+		
+		<script>
+		function goBack(){
+			if (navigator.userAgent.indexOf('Firefox') >= 0 ||
+				navigator.userAgent.indexOf('Opera') >= 0 ||
+				navigator.userAgent.indexOf('Safari') >= 0 ||
+				navigator.userAgent.indexOf('Chrome') >= 0 ||
+				navigator.userAgent.indexOf('WebKit') >= 0){
+
+				if(window.history.length > 1){
+					window.history.go( -1 );
+				}else{
+					location.href = wapurl;
+				}
+			}else{ //未知的浏览器
+				window.history.go( -1 );
+			}
+		}
+		</script>
+	</body>
+</html>

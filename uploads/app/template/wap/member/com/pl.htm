@@ -1,0 +1,151 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<link rel="stylesheet"
+	href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/style.css?v={yun:}$config.cachecode{/yun}"
+	type="text/css" />
+
+<div class="m_cardbox none" id="yunvue">
+	<div class="m_cardbg">
+		<div class="evaluate_com_mypj_zt">
+			<div class="evaluate_com_mypj">总体评价</div>
+			<ul class="evaluate_com_mypj_list">				
+				<li :class="item.show==1?'evaluate_changetag evaluate_changetag_cur':'evaluate_changetag'" 
+                    v-for="(item,index) in totalname" :key="index"><em>{{item.name}}</em></li>            
+			</ul>
+		</div>
+
+		<div class="evaluate_com_pjbox">
+			<div class="evaluate_com_mypj">我的评分</div>
+			<div class="evaluate_com_pjlist">
+				<div class="evaluate_com_pjtit">企业描述 </div>
+				<div class="com_pjia_liststar">
+					<div tabindex="0" role="radiogroup" class="van-rate">
+						<van-rate v-model="desscore" :size="25" color="#ffd21e" void-icon="star" void-color="#eee" :readonly="!control"/>
+					</div>
+				</div>
+			</div>
+			<div class="evaluate_com_pjlist">
+				<div class="evaluate_com_pjtit">企业环境 </div>
+				<div class="com_pjia_liststar">
+					<div tabindex="0" role="radiogroup" class="van-rate">
+						<van-rate v-model="comscore" :size="25" color="#ffd21e" void-icon="star" void-color="#eee" :readonly="!control"/>
+					</div>
+				</div>
+			</div>
+			<div class="evaluate_com_pjlist">
+				<div class="evaluate_com_pjtit">面试官态度 </div>
+				<div class="com_pjia_liststar">
+					<div tabindex="0" role="radiogroup" class="van-rate">
+						<van-rate v-model="hrscore" :size="25" color="#ffd21e" void-icon="star" void-color="#eee" :readonly="!control"/>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="evaluate_com_mypj">心得体会</div>		
+		<div class="evaluate_textareashow">{{content}}</div>
+
+		<div class="evaluate_com_mypj">公司印象</div>
+		<div class="evaluate_textareashow">{{othercontent}}</div>		
+	</div>
+	<div class="m_cardbg">
+		<div class="evaluate_com_mypj">我的回复</div>
+		<div class="evaluate_com_msbox">	
+			<div class="evaluate_com_msbox">
+				<textarea class="textAreaMsg tip contenttext" name="reply" v-model="reply" id="reply"
+							placeholder="请输入回复内容">{{reply}}</textarea>
+			</div>
+
+		</div>
+		<div class="evaluate_bthall">
+		    <input type="submit" name='submit' value="提交" @click="savecomment" class="evaluate_bth">
+		</div>
+	</div>
+</div> 
+
+<script type="text/javascript">
+    var id = '{yun:}$smarty.get.id{/yun}';
+        id = id ? id : '0';
+    new Vue({
+        el: '#yunvue',
+        data: {
+            id: id,
+            score: 0,
+            count: 0,
+            othercontent: '',
+            content: '',
+            desscore: 1,
+            comscore: 1,
+            hrscore: 1,
+            msgInfo: [],
+            totalname: [],
+            jobtag: [],
+            isnmval: 2,
+            islook: false,
+            control: true,
+            starshow: false,
+            reply:'',
+        },
+        created() {
+            this.getcomment();
+        },
+        methods:{            
+            getcomment:function(){
+                showLoading();
+                var that = this,
+                    param = {                        
+                        id: that.id,
+                    };
+                $.post('{yun:}url d=wxapp h=com m=job c=comment{/yun}',param,function(data){
+                    hideLoading();
+                    if (data.error == 0) {
+                        that.islook = true;
+                        that.msgInfo = data.data.msgInfo;
+                        that.totalname = data.data.totalname;
+                        that.desscore = that.msgInfo.desscore?parseInt(that.msgInfo.desscore):1;
+                        that.hrscore = that.msgInfo.hrscore?parseInt(that.msgInfo.hrscore):1;
+                        that.comscore = that.msgInfo.comscore?parseInt(that.msgInfo.comscore):1;
+                        that.content = that.msgInfo.content;
+                        that.othercontent = that.msgInfo.othercontent;
+                        if (that.msgInfo.id > 0) {
+                            that.control = false; // 暂时关闭禁用功能
+                            that.isnmval = that.msgInfo.isnm;
+                            that.reply = that.msgInfo.reply;
+                        }
+                        setTimeout(function() {
+                            that.starshow = true;
+                        }, 500);
+                    } else {
+                        showModal(data.msg, function() {
+                           goBack();
+                        });
+                    }
+                    $("#yunvue").css('display', 'block');
+                },'json');
+            },            
+            savecomment:function(){
+                var that = this;
+                var formData = {};
+                if (that.reply == '') {
+                	showModal('请填写回复信息');
+                	return false;
+                }                
+                formData.id = that.id;
+                formData.reply = that.reply;
+                showLoading('保存中...');
+                $.post('{yun:}url d=wxapp h=com m=job c=commentsave{/yun}',formData,function(data){
+                    hideLoading();
+                    if (data.error == 1) {
+
+                        showModal(data.msg, function() {
+                            goBack();
+                        });
+
+                    } else {
+                        showModal(data.msg);
+                    }
+                },'json');
+            },
+        },
+    });
+</script>
+</body>
+</html>

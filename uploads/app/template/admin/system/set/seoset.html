@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="tableDome">
+        <div class="seosetSubject">
+            <div class="tableDome_tip">
+                <el-alert title="SEO设置标题，关键词，网站描述的设置可以使您的网页更容易被搜索到哦~" type="success" :closable="false">
+                </el-alert>
+            </div>
+            <template>
+                <el-tabs :tab-position="tabPosition" v-model="curTab">
+                    <el-tab-pane v-for="(item, index) in seomodel" :key="index" :label="item" :name="index">
+                        <seotab :ref="index" :action="curTab" v-if="curTab==index"></seotab>
+                    </el-tab-pane>
+                </el-tabs>
+            </template>
+        </div>
+        <div class="modluDrawer">
+            <el-drawer :title="detail.id ? 'SEO修改' : 'SEO添加'" :visible.sync="drawerSeoshezhi" :append-to-body="true" :show-close="true" :with-header="true" size="45%">
+                <seoshezhi @child-event="closeSeoshezhi" call="seo" :seoid="detail.id" :detail="detail"></seoshezhi>
+            </el-drawer>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+    const custoapp = new Vue({
+        el: '#moduapp',
+        data: function() {
+            return {
+                tabPosition: 'left',
+
+                curTab: '',
+                seomodel: {},
+
+                drawerSeoshezhi: false,
+                detail: {},
+            }
+        },
+        components: {
+            'seotab': httpVueLoader('./component/seotab.vue'),
+            'seoshezhi': httpVueLoader('./component/seoshezhi.vue'),
+        },
+        created: function() {
+            this.getSeomodel();
+        },
+        methods: {
+            async getSeomodel() {
+                let res = await httpPost('m=system&c=set_seo')
+                let data = res.data.data;
+
+                this.seomodel = data.seomodel;
+
+                for (let key in this.seomodel) {
+                    this.curTab = key; // 赋值默认tab
+                    break;
+                }
+            },
+            openSeoshezhi(data) {
+                this.detail = data;
+
+                this.drawerSeoshezhi = true;
+            },
+            closeSeoshezhi() {
+                this.drawerSeoshezhi = false;
+            },
+            seotabRefresh() {
+                let refs = this.$refs[this.curTab];
+                if (refs.length > 0) {
+                    refs[0].getList();
+                }
+            },
+        },
+    });
+    </script>
+</body>
+
+</html>

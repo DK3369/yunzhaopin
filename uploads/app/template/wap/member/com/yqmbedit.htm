@@ -1,0 +1,188 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<div id="mbVue" class="issue_post_body none" style="margin-top: 0px;">
+
+    <div class=" ">
+       <div class=" yun_createbox">
+       
+           <div class="yun_createlist">
+               
+                   <div class="yun_create_name"><span class="m_bt">*</span>模板名称</div>
+                <div class="yun_create_text">
+                    <input type="text" v-model="info.name" placeholder="请输入模板名称">
+                </div>  
+        </div>
+         <div class="yun_createlist" @click="showTimePicker">
+         <div class="yun_create_name"><span class="m_bt">*</span>面试时间</div>
+                <div class="yun_create_text_p" v-if="info.intertime">{{info.intertime}}</div>
+			   <div class="yun_create_text_p"style="color:#cecccc;" v-else>请选择面试时间</div>
+				
+          
+            <div class="yun_create_fx">
+                <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
+            </div>
+        </div>
+          <div class="yun_createlist">
+              <div class="yun_create_name"><span class="m_bt">*</span>联系人</div>
+                <div class="yun_create_text">
+                    <input type="text" v-model="info.linkman" placeholder="请填写姓名">
+                </div>  
+        </div>
+          <div class="yun_createlist">
+               <div class="yun_create_name"><span class="m_bt">*</span>联系方式</div>
+                <div class="yun_create_text">
+                    <input type="number" v-model="info.linktel" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请输入手机号" />
+                </div>
+             
+        </div>
+          <div class="yun_createlist">
+              <div class="yun_create_name"><span class="m_bt">*</span>面试地址</div>
+                <div class="yun_create_text">
+                    <input type="text" v-model="info.address" placeholder="输入具体工作地址" />
+                </div> 
+
+        </div>
+        <div class="remark" style="padding: 10px 15px;">
+           <div class=" "> 备注信息</div>
+            <div class="remark_word">
+                <form action="" class="remark_word_box">
+                    <textarea name="description" style="resize:none;color:#000; font-size: 0.426666rem;" class="remark_word_text" v-model="info.content"
+                              placeholder="请输入告知牛人的其他内容，例如所需材料"></textarea>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="issue_post_body_btn" @click="saveMb">保存</div>
+
+    <van-popup v-model="timeShow" position="bottom"/>
+        <van-datetime-picker v-model="currentDate" type="datetime" title="选择面试时间" @cancel="timeShow=false" :min-date="minDate"  @confirm="setInterTime" />
+    </van-popup>
+</div>
+
+
+<script>
+    var yid = '{yun:}$smarty.get.yid{/yun}';
+    var mbVue = new Vue({
+        el: '#mbVue',
+        data: {
+            islook: false,
+            info: {
+                name: '',
+                intertime: '',
+                linkman: '',
+                linktel: '',
+                address: '',
+                content: ''
+            },
+
+            timeShow: false,
+            currentDate: new Date(),
+            minDate: new Date(),
+        },
+        created() {
+            if (parseInt(yid) > 0) {
+
+                this.getMbInfo();
+            }else{
+                $('#mbVue').css('display', 'block');
+            }
+        },
+        methods: {
+
+            getMbInfo: function () {
+
+                var that = this,
+                    paramer = {
+                        yid: yid
+                    };
+                showLoading('加载中');
+                $.post('{yun:}url d=wxapp h=com m=set c=yqmbedit{/yun}', paramer, function (data) {
+                    hideLoading();
+                    if (data.error == 1) {
+                        let info = data.data;
+                        that.info = info;
+                    } else {
+                        showModal(data.msg, function () {
+                            history.back();
+                        })
+                    }
+                    $('#mbVue').css('display', 'block');
+                }, 'json');
+            },
+
+            showTimePicker(){
+                var that = this;
+                if (that.info.intertime){
+
+                    that.currentDate = new Date(that.info.time);
+                }
+                that.timeShow = true;
+            },
+
+            setInterTime:function (value) {
+
+                var that = this;
+
+                var y = value.getFullYear()
+                var m = value.getMonth() + 1
+                m = m < 10 ? '0' + m : m
+                var d = value.getDate()
+                d = d < 10 ? '0' + d : d
+                var h = value.getHours()
+                h = h < 10 ? '0' + h : h
+                var minute = value.getMinutes()
+                minute = minute < 10 ? '0' + minute : minute
+                var second = value.getSeconds()
+                second = second < 10 ? '0' + second : second
+                that.info.intertime =y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
+                that.timeShow = false;
+            },
+
+            saveMb:function(){
+                var that = this;
+
+                if (that.info.name.length == 0){
+                    return showToast('模板名称不能为空');
+                }
+                if (that.info.intertime.length == 0){
+                    return showToast('面试时间不能为空');
+                }
+                if (that.info.linkman.length == 0){
+                    return showToast('联系人不能为空');
+                }
+                if (that.info.linktel.length == 0){
+                    return showToast('联系电话不能为空');
+                }
+                if (that.info.address.length == 0){
+                    return showToast('面试地址不能为空');
+                }
+
+                var paramer = {
+                    name: that.info.name,
+                    intertime: that.info.intertime,
+                    linkman: that.info.linkman,
+                    linktel: that.info.linktel,
+                    address: that.info.address,
+                    content: that.info.content
+                };
+                if (parseInt(yid)>0){
+                    paramer.yid = yid;
+                }
+                showLoading('修改中');
+                $.post('{yun:}url d=wxapp h=com m=set c=yqmbeditsave{/yun}', paramer, function (data) {
+                    hideLoading();
+                    if (data.error == 1) {
+                        showToast(data.msg, 2, function () {
+                            window.localStorage.setItem("needRefresh", 1);
+                            history.back();
+                        });
+                    } else {
+                        return showModal(data.msg)
+                    }
+                }, 'json');
+            }
+
+        }
+    });
+</script>
+</body>
+</html>

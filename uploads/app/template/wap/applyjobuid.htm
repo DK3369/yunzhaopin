@@ -1,0 +1,1044 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<meta http-equiv="Cache-Control" content="no-cache" />
+		<title>{yun:}$title{/yun}</title>
+		<meta name="keywords" content="{yun:}$keywords{/yun},wap" />
+		<meta name="description" content="{yun:}$description{/yun}" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="X-UA-compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width" initial-scale="1" />
+		<meta name="viewport"
+			content="width=device-width,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
+		<meta name="format-detection" content="telephone=no,email=no" />
+		<meta name="viewport"
+			content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=2.0, user-scalable=no, width=device-width" />
+		<script src="{yun:}$wap_style{/yun}/js/flexible.js?v={yun:}$config.cachecode{/yun}"></script>
+		<link href="{yun:}$wap_style{/yun}/css/base.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet">
+		<link href="{yun:}$wap_style{/yun}/css/yunwap.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet">
+		<link href="{yun:}$config_wapdomain{/yun}/js/vant/lib/index.css?v={yun:}$config.cachecode{/yun}"
+			rel="stylesheet" />
+	</head>
+
+	<body>
+		<!-- 头部 -->
+
+		<div class="fast_box_header">
+			<div class="fast_box_headericon" onclick="goBack()">
+				<img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
+			</div>
+			<div class="fast_box_r">已有账号，直接 <a href="{yun:}url m=wap c=login{/yun}">登录</a></div>
+		</div>
+		<div class="fast_box">
+
+			<div class="fast_tit">创建我的简历</div>
+			<div class="fast_p">完成以下信息可生成简历</div>
+			<div class="fast_picbox"><img src="{yun:}$wap_style{/yun}/images/resume_title.png" alt="" width="100%" height="100%"></div>
+		</div>
+
+		<!-- 主体部分 -->
+		<div id="yunvue" class="none">
+
+
+			<div class="fast_show">
+				<div class="fast_show_c">
+
+					<form id="firstSubmit">
+
+						<div class="fast_text">
+							<div class="fast_name"><span class="fast_bt">*</span>姓<span class="jm_nbsp">名</span></div>
+							<div class="fast_input">
+								<input type="text" name="uname" v-model="info.uname" placeholder="请输入姓名" />
+							</div>
+						</div>
+						<div class="fast_text fast_select" @click="sexShow = true">
+							<div class="fast_name"><span class="fast_bt">*</span>性<span class="jm_nbsp">别</span></div>
+							<div class="fast_selectbox" v-if="info.sex_n">{{info.sex_n}}</div>
+							<div class="fast_selectbox" style="color:#cecccc;" v-else>请选择性别</div>
+							<input type="hidden" name="sex" :value="info.sex">
+						</div>
+						<div class="fast_text fast_select" onclick="birthdayPicker()">
+
+							<div class="fast_name"><span class="fast_bt">*</span>出生年月</div>
+							<div class="fast_selectbox"  v-if="info.birthYear">{{info.birthYear}}</div>
+							<div class="fast_selectbox" style="color:#cecccc;" v-else>请选择出生年月</div>
+							<input type="hidden"name="birthday" :value="info.birthday" />
+						</div>
+						<div class="fast_text fast_select" @click="eduPicker">
+							<div class="fast_name"><span class="fast_bt">*</span>最高学历</div>
+							<div class="fast_selectbox" v-if="info.edu_n">{{info.edu_n}}</div>
+							<div class="fast_selectbox" style="color:#cecccc;" v-else>请选择最高学历</div>
+							<input type="hidden" id="edu"name="edu" :value="info.edu" />
+						</div>
+						<div class="fast_text fast_select" @click="expPicker">
+							<div class="fast_name"><span class="fast_bt">*</span>工作经验</div>
+							<div class="fast_selectbox" v-if="info.exp_n">{{info.exp_n}}</div>
+							<div class="fast_selectbox" style="color:#cecccc;" v-else>请选择工作经验</div>
+							<input type="hidden" id="exp"name="exp" :value="info.exp" />
+						</div>
+
+						<div class="fast_text">
+							<div class="fast_name"><span class="fast_bt">*</span>手机号</div>
+							<div class="fast_input">
+								<input type="number" name="telphone" v-model="info.telphone" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请输入手机号" />
+							</div>
+						</div>
+
+
+						{yun:}if strpos($config.code_web,"注册会员")!==false{/yun}
+						{yun:}if $config.code_kind > 2{/yun}
+						<div class="gtdx-captcha">
+							<input type='hidden' id="verify_token" name="verify_token" value="">
+							{yun:}if $config.code_kind == 6{/yun}
+							<input type='hidden' id="verify_str" name="verify_str" value="">
+							{yun:}/if{/yun}
+							<input type='hidden' id="popup-submit">
+							<input type='hidden' id="bind-submit">
+						</div>
+
+						{yun:}else{/yun}
+						<div class="fast_text fast_text_tpyz">
+							<div class="fast_name"><span class="fast_bt">*</span>验证码</div>
+							<div class="fast_input">
+								<input type="text" name="authcode" v-model="info.authcode" placeholder="请输入验证码" />
+								<div class="">
+									<img id="vcode_img" class="authcode" src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php" onclick="checkCode('vcode_img');" />
+								</div>
+							</div>
+						</div>
+						{yun:}/if{/yun}
+						{yun:}/if{/yun}
+
+
+						{yun:}if $config.sy_msg_isopen==1 && $config.reg_real_name_check==1 &&
+						$config.sy_msg_regcode==1{/yun}
+						<div class="fast_text">
+							<div class="fast_name"><span class="fast_bt">*</span>短信验证</div>
+							<div class="fast_input fast_input_dx">
+								<input type="number" name="checkcode" oninput="value=value.replace(/^0|[\^d]/g,'')" v-model="info.checkcode" placeholder="请输入短信验证码" />
+								<div id="send_msg_tip" class="fast_input_dx_bth" @click="getcode" v-if="codeview">获取验证码</div>
+								<div class="fast_input_dx_bth" v-else>{{flag}}</div>
+							</div>
+						</div>
+						{yun:}/if{/yun}
+
+
+						<div class="fast_text">
+							<div class="fast_name"><span class="fast_bt">*</span>登录密码</div>
+							<div class="fast_input">
+								<input type="password" name="password" v-model="info.password" placeholder="请输入登录密码" />
+							</div>
+						</div>
+						<div class="fast_tip">
+							{yun:}if $config.reg_pw_sp=='1' || $config.reg_pw_num=='1' ||
+							$config.reg_pw_zm=='1'{/yun}提示：密码须包含{yun:}if
+							$config.reg_pw_num=='1'{/yun}数字{yun:}/if{/yun}{yun:}if $config.reg_pw_zm=='1'{/yun},字母
+							{yun:}/if{/yun}{yun:}if $config.reg_pw_sp=='1'{/yun},字符@!#.$-_{yun:}/if{/yun}{yun:}/if{/yun}
+						</div>
+				</div>
+				<div class="fast_bth" @click="firstSubmit">
+					{yun:}if $config.resume_kstd_req != 2 && ($config.resume_create_project==1 || $config.resume_create_exp==1 || $config.resume_create_edu==1){/yun}
+					<div id="nextadd" class="fast_bth_sub">下一步</div>
+					{yun:}else{/yun}
+					<div id="applybtn" class="fast_bth_sub">立即申请</div>
+					{yun:}/if{/yun}
+				</div>
+				</form>
+			</div>
+			<div class="Create_resume_body">
+
+			</div>
+			<van-popup v-model="birthdayShow" round position="bottom">
+				<van-datetime-picker v-model="currentYear" type="year-month" :min-date="minYear" :max-date="maxYear"
+					@cancel="birthdayShow = false" @confirm="birthdayConfirm" />
+			</van-popup>
+			<van-popup v-model="sexShow" round position="bottom">
+				<van-picker show-toolbar :columns="sex" :default-index="sexIndex" @cancel="sexShow = false"
+					@confirm="sexConfirm" />
+			</van-popup>
+			<van-popup v-model="eduShow" round position="bottom">
+				<van-picker show-toolbar :columns="edu" :default-index="eduIndex" @cancel="eduShow = false"
+					@confirm="eduConfirm" />
+			</van-popup>
+			<van-popup v-model="expShow" round position="bottom">
+				<van-picker show-toolbar :columns="exp" :default-index="expIndex" @cancel="expShow = false"
+					@confirm="expConfirm" />
+			</van-popup>
+			<!--开始、结束时间选择器-->
+			<van-popup v-model="timeBox" round position="bottom">
+				<van-picker show-toolbar :columns="timeData" @cancel="timeBox = false" @confirm="timeConfirm"
+					@change="timeChange" />
+			</van-popup>
+			<!--描述-->
+			<van-popup v-model="contentBox" position="right"
+				:style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
+				<!-- 页面头部 -->
+				<div class="fast_box_header">
+					<div class="fast_box_headericon" @click="contentSubmit">
+						<img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
+					</div>
+					<div class="fast_box_header_p">{{contentTitle}}</div>
+				</div>
+				<div class="fast_textarea">
+					<div class="fast_textarea_c">
+						<textarea v-model="content" placeholder="请输入描述" class="fast_textarea_text"></textarea>
+					</div>
+					<div class="fast_bth" @click="contentSubmit">
+						<div class="fast_bth_sub">确认</div>
+					</div>
+				</div>
+			</van-popup>
+			{yun:}if $config.resume_create_exp=='1'{/yun}
+			<!--工作经历-->
+			<van-popup v-model="workBox" position="right"
+				:style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
+				<!-- 页面头部 -->
+
+				<div class="fast_box_header">
+					<div class="fast_box_header_c">
+						<div class="fast_box_headericon" @click="workBox = false">
+							<img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%"
+								height="100%">
+						</div>
+						<div class="fast_box_header_p">工作经历</div>
+						<div class="fast_box_header_tg" @click="skipPage('work')" v-if="info.iscreateexpshow">跳过</div>
+					</div>
+				</div>
+
+				<div id="workBox" class="fast_resumebox">
+					<form id="workSubmit">
+						<div class="fast_resumeshow">
+							<span v-for="(item, wk) in workList" :key="wk">
+								<div class="fast_card">
+									<div class="fast_text">
+										<div class="fast_name"><span class="fast_bt">*</span>公司名称</div>
+										<div class="fast_inputmc">
+											<input type="text" :name="'workname_' + wk" value="" placeholder="请输入公司名称">
+										</div>
+									</div>
+									<div class="fast_text">
+										<div class="fast_name"><span class="fast_bt">*</span>担任职位</div>
+										<div class="fast_input">
+											<input type="text" :name="'worktitle_' + wk" value="" placeholder="请输入担任职位">
+										</div>
+									</div>
+									<div class="fast_text fast_select">
+										<div class="fast_name">工作内容</div>
+										<div class="fast_inputnrbox">
+											<div class="fast_inputnr" @click="showContent('workList', wk)" v-if="item.content">{{item.content}}</div>
+											<div class="fast_inputnr" @click="showContent('workList', wk)" style="color:#cecccc;" v-else>请填写工作内容</div>
+										</div>
+									</div>
+									<div class="fast_card_zy">
+										<div class="fast_card_z" @click="timeShow('workList', wk, 'sdate')">
+											<ul>
+												<li class="fast_card_zyname"><span class="timefast_bt">*</span>入职时间</li>
+												<li class="fast_card_time" v-if="item.sdate">{{item.sdate}}</li>
+												<li class="fast_card_time" style="color:#cecccc;" v-else>请选择</li>
+											</ul>
+											<input type="hidden" :name="'worksdate_' + wk" :value="item.sdate">
+										</div>
+										<div class="fast_card_zy_z">至</div>
+										<div class="fast_card_y" @click="timeShow('workList', wk, 'edate')">
+											<ul>
+												<li class="fast_card_zyname"><span class="timefast_bt">*</span>离职时间</li>
+												 
+												<li class="fast_card_time" v-if="item.edate">{{item.edate}}</li>
+												<li class="fast_card_time" style="color:#cecccc;" v-else>请选择</li>
+											</ul>
+											<input type="hidden" :name="'workedate_' + wk" :value="item.edate">
+											<input type="hidden" :name="'totoday_' + wk" :value="item.totoday">
+										</div>
+									</div>
+								</div>
+								<div class="fast_card_line"></div>
+							</span>
+						</div>
+						<div id="workButton" class="fast_bth" @click="workSubmit">
+							<span v-if="info.resume_create_edu!=1 && info.resume_create_project!=1" id="applybtn" class="fast_bth_sub">立即申请</span>
+							<span v-else class="fast_bth_sub">下一步</span>
+						</div>
+					</form>
+				</div>
+			</van-popup>
+			{yun:}/if{/yun}
+			{yun:}if $config.resume_create_edu=='1'{/yun}
+			<!--教育经历-->
+			<van-popup v-model="eduBox" position="right"
+				:style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
+				<!-- 页面头部 -->
+				<div class="fast_box_header">
+					<div class="fast_box_header_c">
+						<div class="fast_box_headericon" @click="eduBox = false">
+							<img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
+						</div>
+						<div class="fast_box_header_p">教育经历</div>
+						<div class="fast_box_header_tg" @click="skipPage('edu')" v-if="info.iscreateedushow">跳过</div>
+					</div>
+				</div>
+				<div id="eduBox" class="fast_resumebox">
+					<form id="eduSubmit">
+						<div class="fast_resumeshow">
+							<span v-for="(item, ek) in eduList" :key="ek">
+								<div class="fast_card">
+									<div class="fast_text">
+										<div class="fast_name"><span class="fast_bt">*</span>学校名称</div>
+										<div class="fast_inputmc">
+											<input type="text" :name="'eduname_' + ek" value="" placeholder="请输入学校名称">
+										</div>
+									</div>
+									<div class="fast_text">
+										<div class="fast_name">专业名称</div>
+										<div class="fast_inputmc">
+											<input type="text" :name="'specialty_' + ek" value="" placeholder="请输入专业名称">
+										</div>
+									</div>
+									<div class="fast_text fast_select" @click="eduPicker(ek)">
+										<div class="fast_name">毕业学历</div>
+										<div class="fast_selectbox" v-if="item.edu">{{item.edu}}</div>
+										<div class="fast_selectbox" style="color:#cecccc;" v-else>请选择毕业学历</div>
+										<input type="hidden" :name="'eduid_' + ek" :value="item.eduid">
+									</div>
+									<div class="fast_card_zy">
+										<div class="fast_card_z" @click="timeShow('eduList', ek, 'sdate')">
+											<ul>
+												<li class="fast_card_zyname"><span class="timefast_bt">*</span>入学时间</li>
+												<li class="fast_card_time" v-if="item.sdate">{{item.sdate}}</li>
+												<li class="fast_card_time" style="color:#cecccc;" v-else>请选择</li>
+											</ul>
+											<input type="hidden" :name="'edusdate_' + ek" :value="item.sdate">
+										</div>
+										<div class="fast_card_zy_z">至</div>
+										<div class="fast_card_y" @click="timeShow('eduList', ek, 'edate')">
+											<ul>
+												<li class="fast_card_zyname"><span class="timefast_bt">*</span>离校时间</li> 
+												<li class="fast_card_time" v-if="item.edate">{{item.edate}}</li>
+												<li class="fast_card_time" style="color:#cecccc;" v-else>请选择</li>
+											</ul>
+											<input type="hidden" :name="'eduedate_' + ek" :value="item.edate">
+										</div>
+									</div>
+								</div>
+								<div class="fast_card_line"></div>
+							</span>
+						</div>
+						<div id="eduButton" class="fast_bth" @click="eduSubmit">
+							<span v-if="info.resume_create_project!=1" id="applybtn" class="fast_bth_sub">立即申请</span>
+							<span v-else class="fast_bth_sub">下一步</span>
+						</div>
+					</form>
+				</div>
+			</van-popup>
+			{yun:}/if{/yun}
+			{yun:}if $config.resume_create_project=='1'{/yun}
+			<!--项目经历-->
+			<van-popup v-model="projectBox" position="right"
+				:style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
+				<!-- 页面头部 -->
+				<div class="fast_box_header">
+					<div class="fast_box_header_c">
+						<div class="fast_box_headericon" @click="projectBox = false">
+							<img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%"
+								height="100%">
+						</div>
+						<div class="fast_box_header_p">项目经历</div>
+						<div class="fast_box_header_tg" @click="skipPage('pro')" v-if="info.iscreateproshow">跳过</div>
+					</div>
+				</div>
+
+				<div id="projectBox" class="fast_resumebox">
+
+					<form id="projectSubmit">
+						<div class="fast_resumeshow">
+							<span v-for="(item, pk) in projectList" :key="pk">
+								<div class="fast_card">
+									<div class="fast_text">
+										<div class="fast_name"><span class="fast_bt">*</span>项目名称</div>
+										<div class="fast_inputmc">
+											<input type="text" :name="'projectname_' + pk" value=""
+												placeholder="请输入项目名称">
+										</div>
+										<!--<div v-if="1 > pk > 0 " class="fast_tjicon" @click="addNewHtml('project')">-->
+											<!--<img src="{yun:}$wap_style{/yun}/images/addition.png" alt="" width="100%"-->
+												<!--height="100%">-->
+										<!--</div>-->
+										<div v-if="pk > 0" class="fast_tjicon" @click="delNewHtml('project', pk)">
+											<img src="{yun:}$wap_style{/yun}/images/delete.png" alt="" width="100%"
+												height="100%">
+										</div>
+									</div>
+									<div class="fast_text">
+										<div class="fast_name"><span class="fast_bt">*</span>担任职位</div>
+									<div class="fast_inputmc">
+											<input type="text" :name="'projecttitle_' + pk" value=""
+												placeholder="请输入担任职位">
+										</div>
+									</div>
+									<div class="fast_text fast_select">
+										<div class="fast_name">项目内容</div>
+										
+										<div class="fast_inputnrbox">
+											 <div class="fast_inputnr" @click="showContent('projectList', pk)" v-if="item.content">{{item.content}}</div>
+											<div class="fast_inputnr"@click="showContent('projectList', pk)"style="color:#cecccc;" v-else>请填写项目内容</div>
+									</div></div>
+									<div class="fast_card_zy">
+										<div class="fast_card_z" @click="timeShow('projectList', pk, 'sdate')">
+											<ul>
+												<li class="fast_card_zyname"><span class="timefast_bt">*</span>开始时间</li>
+												 
+												<li class="fast_card_time" v-if="item.sdate">{{item.sdate}}</li>
+												<li class="fast_card_time" style="color:#cecccc;" v-else>请选择</li>
+											</ul>
+											<input type="hidden" :name="'projectsdate_' + pk" :value="item.sdate">
+										</div>
+										<div class="fast_card_zy_z">至</div>
+										<div class="fast_card_y" @click="timeShow('projectList', pk, 'edate')">
+											<ul>
+												<li class="fast_card_zyname"><span class="timefast_bt">*</span>结束时间</li>
+												 
+												<li class="fast_card_time" v-if="item.edate">{{item.edate}}</li>
+												<li class="fast_card_time" style="color:#cecccc;" v-else>请选择</li>
+											</ul>
+											<input type="hidden" :name="'projectedate_' + pk" :value="item.edate">
+										</div>
+									</div>
+								</div>
+								<div class="fast_card_line"></div>
+							</span>
+						</div>
+
+						<div id="projectButton" class="fast_bth" @click="projectSubmit">
+							<span id="applybtn" class="fast_bth_sub">立即申请</span>
+						</div>
+					</form>
+				</div>
+			</van-popup>
+			{yun:}/if{/yun}
+			<van-popup v-model="yzmBox" position="center" round closeable :style="{  width:'65%' }">
+				<div class="yzm_box">
+					<div class="yzm_tit">验证码</div>
+					<div class="yzm_input">
+						<input type="text" @input="yzmInput" placeholder="请输入下方验证码" />
+					</div>
+					<div class="yzm_input_img">
+						<img id="vcode_imgs" src="" onclick="checkCode('vcode_imgs');" />
+					</div>
+				</div>
+			</van-popup>
+		</div>
+		{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+
+		{yun:}if strpos($config.code_web,"注册会员")!==false{/yun}
+			{yun:}if $config.code_kind>2{/yun}
+				{yun:}if $config.resume_kstd_req != 2 && ($config.resume_create_project==1 || $config.resume_create_exp==1 || $config.resume_create_edu==1){/yun}
+					{yun:}if $config.sy_msg_isopen==1 && $config.sy_msg_regcode==1 && $config.reg_real_name_check==1{/yun}
+					<div id="bind-captcha" data-id='send_msg_tip' data-type='click'></div>
+					{yun:}else{/yun}
+					<div id="bind-captcha" data-id='nextadd' data-type='click'></div>
+					{yun:}/if{/yun}
+				{yun:}else{/yun}
+					{yun:}if $config.sy_msg_isopen==1 && $config.sy_msg_regcode==1 && $config.reg_real_name_check==1{/yun}
+					<div id="bind-captcha" data-id='send_msg_tip' data-type='click'></div>
+					{yun:}else{/yun}
+					<div id="bind-captcha" data-id='applybtn' data-type='click'></div>
+					{yun:}/if{/yun}
+				{yun:}/if{/yun}
+			{yun:}/if{/yun}
+		{yun:}/if{/yun}
+		{yun:}include file="$wapstyle/verify_js.htm"{/yun}
+		<script>
+			var wapurl = "{yun:}url m=wap{/yun}",
+				code_web = '{yun:}$config.code_web{/yun}',
+				code_kind = '{yun:}$config.code_kind{/yun}',
+				code_strlength = '{yun:}$config.code_strlength{/yun}',
+				jobid = '{yun:}$smarty.get.jobid{/yun}';
+			var jobClassId	=	'{yun:}$jobClassId{/yun}';
+			var sexData = [];
+			'{yun:}foreach item=v key=key from=$sexData{/yun}';
+			sexData.push({
+				value: '{yun:}$key{/yun}',
+				text: '{yun:}$v{/yun}'
+			});
+			'{yun:}/foreach{/yun}';
+			var yzmcode = '';
+			var pickerType = '';
+			var pickerKey = 0;
+			var expectData = {};
+			var formData = {};
+			var timestamp = new Date();
+			var year = timestamp.getFullYear();
+			var workObj = {
+				name: '',
+				title: '',
+				content: '',
+				sdate: '',
+				edate: '',
+				totoday: 0
+			};
+			var eduObj = {
+				name: '',
+				specialty: '',
+				sdate: '',
+				edate: '',
+				edu: '',
+				eduid: 0
+			};
+			var projectObj = {
+				name: '',
+				title: '',
+				content: '',
+				sdate: '',
+				edate: ''
+			};
+			var formDisabled = false;
+			var yunvue = new Vue({
+				el: '#yunvue',
+				data() {
+					return {
+						info: {
+							resume_kstd_req: '{yun:}$config.resume_kstd_req{/yun}',
+							resume_create_exp: '{yun:}$config.resume_create_exp{/yun}',
+							resume_create_edu: '{yun:}$config.resume_create_edu{/yun}',
+							resume_create_project: '{yun:}$config.resume_create_project{/yun}',
+							expcreate: '{yun:}$config.expcreate{/yun}',
+							educreate: '{yun:}$config.educreate{/yun}',
+							jobClassCreate: '{yun:}$config.sy_resume_job_classid{/yun}'
+						},
+						codeview: true,
+						flag: 120,
+						sexShow: false,
+						sex: sexData,
+						sexIndex: 0,
+						eduShow: false,
+						eduIndex: 0,
+						edu: [],
+						expShow: false,
+						expIndex: 0,
+						exp: [],
+						birthdayShow: false,
+						currentYear: new Date(1990, 0),
+						minYear: new Date(1960, 0),
+						maxYear: new Date(year-16,11),
+						jobShow: false,
+						cityShow: false,
+						workBox: false,
+						workList: [],
+						eduList: [],
+						projectList: [],
+						contentBox: false,
+						contentTitle: '',
+						content: '',
+						eduBox: false,
+						projectBox: false,
+						timeData: [],
+						timeBox: false,
+						yzmBox: false,
+						isShow: false,
+						verify_token: '',
+						varify_token: ''
+					};
+				},
+				created() {
+					$('#yunvue').removeClass('none');
+					this.loadJs();
+				},
+				methods: {
+					sexConfirm(e) {
+						this.sexShow = false;
+						this.info.sex = e.value;
+						this.info.sex_n = e.text;
+					},
+					birthdayConfirm(e) {
+						this.birthdayShow = false;
+						this.info.birthYear = timeFormat(e, 'month');
+						this.info.birthday = timeFormat(e, 'month');
+					},
+					eduPicker: function(key) {
+						if (typeof(key) === 'number') {
+							// 教育经历中的picker
+							pickerType = 'eduList';
+							pickerKey = key;
+							eduPicker(this.eduList[key].eduid);
+						} else {
+							pickerType = '';
+							eduPicker(this.info.edu);
+						}
+					},
+					eduConfirm(e) {
+						this.eduShow = false;
+						if (pickerType == 'eduList') {
+							// 教育经历中的picker
+							this[pickerType][pickerKey].edu = e.text;
+							this[pickerType][pickerKey].eduid = e.value;
+						} else {
+							this.info.edu = e.value;
+							this.info.edu_n = e.text;
+						}
+					},
+					expPicker: function() {
+						expPicker(this.info.exp);
+					},
+					expConfirm(e) {
+						this.expShow = false;
+						this.info.exp = e.value;
+						this.info.exp_n = e.text;
+					},
+					// 初始化验证码校验
+					initYzmCheck: function(){
+                        var that = this;
+                        var codesear = new RegExp('注册会员');
+                        if (codesear.test(code_web)) {
+                            if (code_kind == 1) {
+                                if (!this.info.authcode) {
+                                    showToast('请填写图片验证码');
+                                    return false;
+                                }
+                            } else if (code_kind > 2) {
+                                that.verify_token = $('input[name="verify_token"]').val();
+                                if (that.verify_token == '') {
+                                    if (code_kind == 6) {
+                                        $("#bind-captcha").trigger("click");
+                                    } else {
+                                        $("#bind-submit").trigger("click");
+                                    }
+                                    return false;
+                                }
+                                that.verify_str = $('input[name="verify_str"]').val();
+                            }
+                        }
+                        return true;
+					},
+					getcode: function() {
+						if (!this.info.telphone) {
+							return showToast('请输入手机号');
+						} else if (isjsMobile(this.info.telphone) == false) {
+							return showToast('请填写正确的手机号');
+						}
+						var self = this;
+                        if (!self.initYzmCheck()) {// 防止弹出验证弹框时继续向下执行
+                            return false;
+                        }
+						var obj = {
+							moblie: this.info.telphone,
+							code: this.info.authcode,
+							verify_token: self.verify_token,
+							verify_str: self.verify_str,
+							noblur: 1
+						};
+						showLoading();
+						$.post(wapurl + "?c=ajax&a=regcodeks", obj, function(res) {
+							hideLoading();
+							if (res.errcode) {
+								pleaselogin('手机号已注册账号，您可直接登录？', '{yun:}url m=wap c=login{/yun}')
+								checkCode('vcode_img');
+							} else {
+								if (res.error != 1) {
+									showModal(res.msg);
+									self.codeview = true;
+									checkCode('vcode_img');
+								} else {
+									self.countdown();
+								}
+							}
+						}, 'json');
+					},
+					countdown: function() {
+						var that = this;
+						if (that.flag > 0) {
+							that.codeview = false;
+							setTimeout(function() {
+								that.flag = that.flag - 1;
+								that.countdown();
+							}, 1000);
+						} else {
+							that.codeview = true;
+							that.flag = 120;
+						}
+					},
+					firstSubmit: function() {
+						var evalue = getFormValue('firstSubmit');
+						var that = this;
+
+						if (!evalue.uname) {
+							showToast('请填写姓名');
+							return false;
+						} else {
+							var resumename = '{yun:}$config.sy_resumename_num{/yun}';
+							if (parseInt(resumename) && parseInt(resumename) > 0 && !isChinaName(evalue.uname)) {
+								showToast('姓名请输入2-6位汉字');
+								return false;
+							}
+						}
+						if (!evalue.sex) {
+							showToast('请选择性别');
+							return false;
+						}
+						if (!evalue.birthday) {
+							showToast('请选择出生年月');
+							return false;
+						}
+						if (!evalue.edu) {
+							showToast('请选择学历');
+							return false;
+						}
+						if (!evalue.exp) {
+							showToast('请选择工作经验');
+							return false;
+						}
+						if (!evalue.telphone) {
+							showToast('请填写手机号码');
+							return false;
+						}
+						if (isjsMobile(evalue.telphone) == false) {
+							showToast('手机号码格式错误');
+							return false;
+						}
+						if (!evalue.password) {
+							showToast('请填写登录密码');
+							return false;
+						}
+						if (!that.initYzmCheck()) {// 防止弹出验证弹框时继续向下执行
+                            return false;
+						}
+						formData = evalue;
+						formData.verify_token = that.verify_token;
+						formData.verify_str = that.verify_str;
+						if (this.info.resume_kstd_req == 2 || (this.info.resume_create_edu != 1 && this.info.resume_create_exp != 1 && this.info.resume_create_project != 1)) {
+							this.saveForm();
+						} else {
+							/* 新增必填项判断Start */
+							ji.forEach(one => {
+								if (jobClassId == one) {
+									if (that.info.jobClassCreate.indexOf(one) > -1) {
+										that.isShow = true;
+									}
+								}
+								if (typeof (jt[one]) != 'undefined') {
+
+									jt[one].forEach(two => {
+										if (jobClassId == two) {
+
+											if (that.info.jobClassCreate.indexOf(two) > -1) {
+												that.isShow = true;
+											}
+										}
+
+										if (typeof (jt[two]) != 'undefined') {
+
+											jt[two].forEach(three => {
+												if (jobClassId == three) {
+
+													if (that.info.jobClassCreate.indexOf(three) > -1) {
+														that.isShow = true;
+													}
+												}
+											})
+										}
+									});
+								}
+							});
+							/* 新增必填项判断End */
+							if (this.info.resume_create_exp == 1) {
+								// 工作经历必填
+								if (this.info.expcreate.includes(formData.exp) || this.isShow) {
+									// 工作经历可以跳过
+									this.info.iscreateexpshow = true;
+								} else {
+									this.info.iscreateexpshow = false;
+								}
+								this.workBox = true;
+								if (this.workList.length == 0) {
+									this.workList.push(deepClone(workObj));
+								}
+							} else if (this.info.resume_create_edu == 1) {
+								// 教育经历必填
+								if (this.info.educreate.includes(formData.edu) || this.isShow) {
+									// 教育经历可以跳过
+									this.info.iscreateedushow = true;
+								} else {
+									this.info.iscreateedushow = false;
+								}
+								this.eduBox = true;
+								if (this.eduList.length == 0) {
+									this.eduList.push(deepClone(eduObj));
+								}
+							} else if (this.info.resume_create_project == 1) {
+								// 项目经历必填
+								if (this.info.expcreate.includes(formData.exp) || this.isShow) {
+									// 工作经历可以跳过
+									this.info.iscreateproshow = true;
+								} else {
+									this.info.iscreateproshow = false;
+								}
+								this.projectBox = true;
+								if (this.projectList.length == 0) {
+									this.projectList.push(deepClone(projectObj));
+								}
+							}
+						}
+					},
+					saveForm: function() {
+						var self = this;
+						if (!formDisabled) {
+							showLoading();
+							formData.source = 12;
+							formData.jobid = jobid;
+							formData.verify_token = self.verify_token;
+							formData.verify_str = self.verify_str;
+							formData.worklist = self.workList
+							$.post(wapurl + "?c=ajax&a=temporaryresume", formData, function(data) {
+								if (data.url) {
+									// 跳转前，阻止再次提交，防止重复提交
+									formDisabled = true;
+									showToast(data.msg, 2, function() {
+										location.href = data.url;
+									});
+								} else {
+									showToast(data.msg, 2, function() {
+										if (data.error && data.error == 106) {
+											// 图片验证码错误
+											if ($config.resume_kstd_req != 2 && (self.info.resume_create_edu == 1 || self.info.resume_create_exp == 1 || self.info.resume_create_project == 1)) {
+												// 需要填工作经历等，图片验证码，不需要返回到第一步，直接在弹出框填写
+												self.yzmBox = true;
+												setTimeout(function() {
+													$("#vcode_imgs").attr('src',
+														'{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php'
+														);
+												}, 100);
+											} else {
+												checkCode('vcode_img');
+											}
+										} else if (data.error && data.error == 107) {
+											$("#bind-submit").trigger("click");
+										}
+									});
+								}
+							}, 'json');
+						}
+					},
+					showContent: function(type, key) {
+						pickerType = type;
+						pickerKey = key;
+						if (type == 'workList') {
+							this.contentTitle = '工作内容';
+							this.content = this.workList[key].content;
+						} else if (type == 'projectList') {
+							this.contentTitle = '项目内容';
+							this.content = this.projectList[key].content;
+						}
+						this.contentBox = true;
+					},
+					contentSubmit: function() {
+						this[pickerType][pickerKey]['content'] = this.content;
+						this.contentBox = false;
+					},
+					skipPage: function(type) {
+						// 跳过
+						if (type == 'work') {
+							this.skipOrSubmitOfWork();
+						} else if (type == 'edu') {
+							this.skipOrSubmitOfEdu();
+						} else if (type == 'pro') {
+							this.skipOrSubmitOfPro();
+						}
+					},
+					workSubmit: function() {
+						// 工作经历下一步
+						var field = getFormValue('workSubmit');
+						for (var i = 0; i < this.workList.length; i++) {
+							var st = Date.parse(field['worksdate_' + i]) / 1000,
+								ed = Date.parse(field['workedate_' + i]) / 1000;
+							if (!field['workname_' + i]) {
+								showModal('请填写第' + (i + 1) + '份工作经历的公司名称');
+								return false;
+							} else if (!field['worktitle_' + i]) {
+								showModal('请填写第' + (i + 1) + '份工作经历的担任职位');
+								return false;
+							} else if (!field['worksdate_' + i]) {
+								showModal('请选择第' + (i + 1) + '份工作经历的入职时间');
+								return false;
+							} else if (!field['workedate_' + i] && parseInt(field['totoday_' + i]) == 0) {
+								showModal('请选择第' + (i + 1) + '份工作经历的离职时间');
+								return false;
+							} else if (field['worksdate_' + i] && field['workedate_' + i] && st > ed) {
+								showModal('第' + (i + 1) + '份工作经历的离职时间不能小于入职时间');
+								return false;
+							}
+							field['workcontent_' + i] = this.workList[i].content;
+
+						}
+						field['iscreateexp'] = 1;
+						Object.assign(formData, field);
+						this.skipOrSubmitOfWork();
+					},
+					skipOrSubmitOfWork: function() {
+						if (this.info.resume_create_edu != 1 && this.info.resume_create_project != 1) {
+							this.saveForm();
+						} else {
+							if (this.info.resume_create_edu == 1) {
+								// 教育经历必填
+								if (this.info.educreate.includes(formData.edu) || this.isShow) {
+									// 教育经历可以跳过
+									this.info.iscreateedushow = true;
+								} else {
+									this.info.iscreateedushow = false;
+								}
+								this.eduBox = true;
+								if (this.eduList.length == 0) {
+									this.eduList.push(deepClone(eduObj));
+								}
+							} else if (this.info.resume_create_project == 1) {
+								// 项目经历必填
+								if (this.info.expcreate.includes(formData.exp) || this.isShow) {
+									// 项目经历可以跳过
+									this.info.iscreateproshow = true;
+								} else {
+									this.info.iscreateproshow = false;
+								}
+								this.projectBox = true;
+								if (this.projectList.length == 0) {
+									this.projectList.push(deepClone(projectObj));
+								}
+							}
+						}
+					},
+					eduSubmit: function() {
+						// 教育经历下一步
+						var field = getFormValue('eduSubmit');
+						for (var i = 0; i < this.eduList.length; i++) {
+							var st = Date.parse(field['edusdate_' + i]) / 1000,
+								ed = Date.parse(field['eduedate_' + i]) / 1000;
+							if (!field['eduname_' + i]) {
+								showModal('请填写第' + (i + 1) + '份教育经历的学校名称');
+								return false;
+							} else if (!field['eduid_' + i] || parseInt(field['eduid_'+i]) == 0) {
+								showModal('请填写第' + (i + 1) + '份教育经历的学历');
+								return false;
+							} else if (!field['edusdate_' + i]) {
+								showModal('请选择第' + (i + 1) + '份教育经历的入学时间');
+								return false;
+							} else if (!field['eduedate_' + i]) {
+								showModal('请选择第' + (i + 1) + '份教育经历的毕业时间');
+								return false;
+							} else if (field['edusdate_' + i] && field['eduedate_' + i] && st > ed) {
+								showModal('第' + (i + 1) + '份教育经历的毕业时间不能小于入学时间');
+								return false;
+							}
+						}
+						field['iscreateedu'] = 1;
+						Object.assign(formData, field);
+						this.skipOrSubmitOfEdu();
+					},
+					skipOrSubmitOfEdu: function() {
+						if (this.info.resume_create_project != 1) {
+							this.saveForm();
+						} else {
+							// 项目经历必填
+							if (this.info.expcreate.includes(formData.exp) || this.isShow) {
+								// 项目经历可以跳过
+								this.info.iscreateproshow = true;
+							} else {
+								this.info.iscreateproshow = false;
+							}
+							this.projectBox = true;
+							if (this.projectList.length == 0) {
+								this.projectList.push(deepClone(projectObj));
+							}
+						}
+					},
+					projectSubmit: function() {
+						var field = getFormValue('projectSubmit');
+						for (var i = 0; i < this.projectList.length; i++) {
+							var st = Date.parse(field['projectsdate_' + i]) / 1000,
+								ed = Date.parse(field['projectedate_' + i]) / 1000;
+							if (!field['projectname_' + i]) {
+								showModal('请填写第' + (i + 1) + '份项目经历的项目名称');
+								return false;
+							} else if (!field['projecttitle_' + i]) {
+								showModal('请填写第' + (i + 1) + '份项目经历的担任职位');
+								return false;
+							} else if (!field['projectsdate_' + i]) {
+								showModal('请选择第' + (i + 1) + '份项目经历的开始时间');
+								return false;
+							} else if (!field['projectedate_' + i]) {
+								showModal('请选择第' + (i + 1) + '份项目经历的结束时间');
+								return false;
+							} else if (field['projectsdate_' + i] && field['projectedate_' + i] && st > ed) {
+								showModal('第' + (i + 1) + '份项目经历的结束时间不能小于开始时间');
+								return false;
+							}
+							field['projectcontent_' + i] = this.projectList[i].content;
+						}
+						field['iscreatepro'] = 1;
+						Object.assign(formData, field);
+						this.skipOrSubmitOfPro();
+					},
+					skipOrSubmitOfPro: function(){
+						this.saveForm();
+					},
+					loadJs: function() {
+						let a = document.createElement('script');
+						a.src = "{yun:}$plusstyle{/yun}/user.cache.js?v={yun:}$config.cachecode{/yun}";
+						document.body.appendChild(a);
+
+						let b = document.createElement('script');
+						b.src = "{yun:}$wap_style{/yun}/js/userPicker.js?v={yun:}$config.cachecode{/yun}";
+						document.body.appendChild(b);
+						
+						let c = document.createElement('script');
+						c.src = "{yun:}$plusstyle{/yun}/job.cache.js?v={yun:}$config.cachecode{/yun}";
+						document.body.appendChild(c);
+					},
+					// 时间picker显示
+					timeShow(type, key, time) {
+						pickerType = type;
+						pickerKey = key;
+						pickerTime = time;
+
+						this.timeData = timePicker(type, time, this[pickerType][pickerKey][pickerTime]);
+						let self = this;
+						setTimeout(function() {
+							self.timeBox = true;
+						})
+					},
+					// 时间picker滚动
+					timeChange: function(e) {
+						var f = e.getValues();
+						if (f[0] == '至今') {
+							this.timeData[1].values = [];
+						} else {
+							this.timeData[1].values = workMonth;
+						}
+					},
+					// 时间picker确认
+					timeConfirm: function(e) {
+						this.timeBox = false;
+						if (e[0] == '至今') {
+							var date = e[0];
+							this[pickerType][pickerKey]['totoday'] = 1;
+						} else {
+							var date = e.join('-');
+							if (pickerType == 'workList' && pickerTime == 'edate') {
+								this[pickerType][pickerKey]['totoday'] = 0;
+							}
+						}
+						this[pickerType][pickerKey][pickerTime] = date;
+						this.timeData = [];
+					},
+					// 验证码输入检测，达到长度就提交
+					yzmInput(e) {
+						yzmcode += e.data;
+						if (yzmcode.length == code_strlength) {
+							this.yzmBox = false;
+							formData.authcode = yzmcode;
+							yzmcode = '';
+							$("#applybtn").click();
+						}
+					}
+				}
+			});
+		</script>
+	</body>
+</html>

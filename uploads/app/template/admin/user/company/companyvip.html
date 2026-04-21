@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="套餐设置" name="first" :lazy="true">
+                    <comrating_index ref="first"></comrating_index>
+                </el-tab-pane>
+                <el-tab-pane label="增值服务" name="second" :lazy="true">
+                    <comrating_server ref="second"></comrating_server>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+    <script>
+    const custoapp = new Vue({
+        el: '#moduapp',
+        data: function() {
+            return {
+                activeName: 'first'
+            }
+        },
+        components: {
+            'comrating_index': httpVueLoader('./component/comrating_index.vue'),
+            'comrating_server': httpVueLoader('./component/comrating_server.vue'),
+        },
+        methods: {
+            handleClick(tab, event) {
+                this.$nextTick(() => {
+                    this.$refs[tab.name].doLayout();
+                });
+            }
+        }
+    });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,370 @@
+{yun:}include file="$wapstyle/header_cont.htm"{/yun}
+<link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/style.css?v={yun:}$config.cachecode{/yun}" type="text/css"/>
+<style type="text/css">
+	body{font-size: 14px !important;}
+	[v-cloak] {display: none;}
+</style>
+
+<!--页面主结构结束-->
+<!--单页面开始-->
+<div id="main" style="display:none">
+	<!--页面主内容区开始-->
+	<ul class="yun_newwap_box mt15">
+		<li class="yun_newwap_text">
+			<span class="yun_newwap_text_name"> <i>*</i>姓名</span >
+			<span class="yun_newwap_text_box">
+				<input type="text" name="username" id="username"  value="{yun:}$row.username{/yun}" placeholder="请输入姓名">
+				<input type="hidden" name="id" id="id"  value="{yun:}$row.id{/yun}">
+			</span>
+		</li> 
+		<li><span class="yun_newwap_text_name"><i>*</i>性别</span><span class="yun_newwap_text_box">
+		<button id='sexPicker' type='button' data-sex="{yun:}$row.sex{/yun}" v-cloak @click="sexShow=true">{{sexTex}}</button>
+		<input type="hidden" id="sex" name="sex"  v-bind:value="sex">
+		</span></li>
+		<li><span class="yun_newwap_text_name"><i>*</i>工作年限</span><span class="yun_newwap_text_box">
+		<button id='expPicker' type='button' placeholder="请选择" data-exp="{yun:}$row.exp{/yun}" @click="expShow=true" v-cloak>{{expTex ? expTex : '请选择工作年限'}}</button>
+		<input type="hidden" id="exp" name="exp" :value="expValue">
+		</span></li>
+		<li>
+			<span class="yun_newwap_text_name"><i>*</i>工作地区</span>
+			<span class="yun_newwap_text_box" @click="showArea=true">
+				<button id='cityPicker' type='button' v-cloak>{{city  ? city : '请填写工作地区'}}</button>
+				<input type="hidden" id="provinceid" name="provinceid" v-model="provinceid">
+                <input type="hidden" id="cityid" name="cityid" v-model="cityid">
+                <input type="hidden" id="three_cityid" name="three_cityid" v-model="three_cityid">
+			</span>
+		</li>
+		<li><span class="yun_newwap_text_name"><i>*</i>自我介绍</span>
+		<div class="yun_newwap_text_js" @click="onProduc">
+			<span id="productionshow" v-cloak>{{production ? production : '请填写'}}</span>
+		</div>
+		<textarea style="display:none" id="production" :value="production"></textarea>
+		</li>
+	</ul>
+	<ul class="yun_newwap_box mt15">
+		<li class="yun_newwap_text"><span class="yun_newwap_text_name">理想工作</span><span class="yun_newwap_text_box">
+			<input type="text" name="job"  id="job" value="{yun:}$row.job{/yun}" placeholder="填写工作名称，如：服装厂操作工">
+		</span></li>
+		<li class="yun_newwap_text"><span class="yun_newwap_text_name"><i>*</i>联系手机</span><span class="yun_newwap_text_box">
+		<input type="text" name="mobile" id="mobile" value="{yun:}$row.mobile{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" class="" placeholder="请填写联系手机" >
+		</span></li>
+		{yun:}if strpos($config.code_web,"普工简历")!==false{/yun}
+			{yun:}if $config.code_kind == 1{/yun}
+			<li class="yun_newwap_text"><span class="yun_newwap_text_name">验证码</span>
+				<div class="yun_newwap_yz">
+					<input type="text" id="checkcode" name="checkcode" id="checkcode" value="" placeholder="请输入图片验证码">
+					<div class="yun_newwap_yz_img">
+						<img id="vcode_img" class="" src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php" onclick="checkCode('vcode_img');" />
+					</div>
+				</div>
+			</li>
+			{yun:}/if{/yun}
+		{yun:}/if{/yun}
+		{yun:}if $config.sy_msg_isopen==1{/yun}
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name"><i>*</i>短信验证码</span>
+            <div class="yun_newwap_text_box yun_newwap_text_sjyz" style="padding-right:120px;">
+       			<input type="text" style="background: none !important;" id="moblie_code" class="inputitem_w input" name="moblie_code" placeholder="填写验证码"><a href="javascript:;" id="send_msg_tip" onclick="send_msg('{yun:}url m=wap c=tiny a=sendmsg{/yun}')" class="yun_newwap_text_sjyz_send" style="width:">获取验证码</a>
+            </div>
+        </li>
+		{yun:}/if{/yun}
+		
+		
+		{yun:}if $row.id==''{/yun} 
+		<li class="yun_newwap_text"><span class="yun_newwap_text_name"><i>*</i>设置密码</span><span class="yun_newwap_text_box">
+		<input type="password" name="password" id="password" value="" onkeyup="this.value=this.value.replace(/^ +| +$/g,'')" class=" "placeholder="请输入密码" >
+		</span></li>
+		{yun:}else{/yun}
+		<li class="yun_newwap_text"><span class="yun_newwap_text_name">密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码</span><span class="yun_newwap_text_box">
+		<input type="password" name="password" id="password" value="" onkeyup="this.value=this.value.replace(/^ +| +$/g,'')" class=" "placeholder="请输入密码">
+		</span></li>
+		{yun:}/if{/yun}			
+		<div class="yun_newwap_box_ts">提示：密码用于刷新/修改/删除此信息</div>		
+	</ul>
+	<div class="yun_newwap_bth">
+		<button id="oncesubmit" class="mui-btn mui-btn-block mui-btn-primary" onclick="oncesubmit()">保 存</button>
+	</div>
+    
+	<van-popup v-model="sexShow" position="bottom"  >
+	    <van-picker 
+	        show-toolbar 
+	        :columns="sexData" 
+	        @confirm="onSexConfirm" 
+	        @cancel="sexShow=false" 
+	        :default-index=sexDefault>   
+	    </van-picker>
+	</van-popup>
+	<van-popup v-model="expShow" position="bottom"  >
+	    <van-picker 
+	        show-toolbar 
+	        :columns="expData" 
+	        @confirm="expConfirm" 
+	        @cancel="expShow=false" 
+	        >   
+	    </van-picker>
+	</van-popup>
+	<van-popup v-model="showArea" round position="bottom">
+       <van-cascader
+        v-model="areaValue"
+        title="请选择地区"
+        :options="areaList"
+        @close="showArea = false"
+        @finish="onAreaFinish"
+       />
+    </van-popup>
+
+
+	{yun:}if strpos($config.code_web,"普工简历")!==false{/yun}
+		{yun:}if $config.code_kind>2{/yun}
+			<div class="gtdx-captcha">
+				<div id="bind-captcha" data-id='oncesubmit' data-type='click'></div>
+				<input type='hidden' id="verify_token"  name="verify_token" value="">
+				{yun:}if $config.code_kind==6{/yun}
+				<input type='hidden' id="verify_str" name="verify_str" value="" />
+				{yun:}/if{/yun}
+				<input type='hidden' id="popup-submit">	
+				<input type='hidden' id="bind-submit">
+			</div>
+		{yun:}/if{/yun}
+	{yun:}/if{/yun}
+
+
+	<!--单页面结束-->
+	<van-popup v-model="productionhtml" position="right" :style="{ height: '100%',width:'100%'}">
+		<header>
+	    <div class="header">
+	        <div class="header_fixed">
+	            <div class="header_bg"> 
+	                <div class="header_cont"> 
+	                    <a @click="cancelProduc" class="header_back hd-lbtn mui-action-back"></a>
+	                    <div class="header_h1"> 
+	                        <div class="header_words"> {yun:}$headertitle{/yun}</div>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	  </header>
+		<div id="productionhtml">
+			<div class="yun_wap_info_brief">
+              	
+				<div class="yun_wap_info_brief_tit"> 自我介绍 </div>
+					<div class="yun_wap_info_brief_c"><textarea class="  tip contenttext" name="production" placeholder="请填写自我介绍" v-model="production"></textarea>
+				</div>
+			    <div class="yunset_bth_box" @click="cancelProduc">
+			     	<a class="yun_wap_info_brief_tit_bc mui-action-back" >保存</a>
+			    </div>
+			</div>	
+		</div>
+	</van-popup>
+</div>
+<script>weburl="{yun:}$config.sy_weburl{/yun}";</script>
+<script src="{yun:}$wap_style{/yun}/js/prefixfree.min.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+{yun:}include file="$wapstyle/verify_js.htm"{/yun}
+
+<script src="{yun:}$config.sy_weburl{/yun}/data/plus/city.cache.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/tiny_add.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/category.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script>
+	var code_kind = "{yun:}$config.code_kind{/yun}";
+	var code_web = "{yun:}$config.code_web{/yun}";
+	var Timer;
+	var smsTimer_time = 120; //倒数 120
+	var smsTimer_flag = 120; //倒数 120
+	var smsTime_speed = 1000; //速度 1秒钟
+
+	//发送手机短信
+	function send_msg(url) {
+		var moblie = $('#mobile').val();
+		var code;
+	
+		var verify_token;
+		var verify_str;
+		if(moblie == "" || moblie == "请输入手机号码") {
+
+			showToast("请输入手机号码！");
+			return false;
+		} else {
+
+			if(!isjsMobile(moblie)) {
+				showToast('手机格式错误！');
+				return false;
+			}
+		}
+		var codesear = new RegExp('普工简历');
+
+		if(codesear.test(code_web) && exitsid("moblie_code")) {
+			if(code_kind == 1) {
+				code = $.trim($("#checkcode").val());
+				if(!code) {
+					showToast('请填写图片验证码！');
+					return false;
+				}
+			} else if(code_kind > 2) {
+
+			
+				verify_token = $('input[name="verify_token"]').val();
+
+				if(verify_token == '') {
+					$("#bind-captcha").attr('data-id','send_msg_tip');
+					$("#bind-captcha").attr('data-type','click');
+					if (code_kind == 6) {
+                        $("#bind-captcha").trigger("click");
+                    } else {
+                        $("#bind-submit").trigger("click");
+                    }
+					return false;
+				}
+				verify_str = $('input[name="verify_str"]').val();
+			}
+		}
+		//$("#popup-submit").trigger("click");
+
+		if(smsTimer_time == smsTimer_flag) {
+			Timer = setInterval("smsTimer($('#send_msg_tip'))", smsTime_speed);
+			showLoading();
+			$.post(url, {
+				moblie: moblie,
+				authcode: code,
+				verify_token:verify_token,
+				verify_str:verify_str
+			}, function(data) {
+				hideLoading();
+				if(data){
+					var res = JSON.parse(data);
+					if(res.error != 1){
+						clearInterval(Timer);
+					}
+					showToast(res.msg, 2, function(){
+						if(res.error != 1){
+							if(code_kind == 1) {
+								checkCode('vcode_img');
+								
+							} else if(code_kind >2) {
+								$("#popup-submit").trigger("click");
+							}
+						}
+					});
+				}
+			})
+		} else {
+			showToast('请勿重复发送！', 2);
+			return false;
+		}
+	}
+	
+	//倒计时
+	function smsTimer(obj) {
+		if(smsTimer_flag > 0) {
+			$(obj).html('重新发送(' + smsTimer_flag + 's)');
+			$(obj).attr({
+				'style': ''
+			});
+			smsTimer_flag--;
+		} else {
+			$(obj).html('重新发送');
+			$(obj).attr({
+				'style': ''
+			});
+			smsTimer_flag = smsTimer_time;
+			clearInterval(Timer);
+		}
+	}
+</script>
+<script language="javascript">
+
+	var sexData=[];
+	'{yun:}foreach from=$user_sex key=j item=v{/yun}'
+		sexData.push({
+			value : '{yun:}$j{/yun}',
+			text : '{yun:}$v{/yun}'
+		}) 
+	'{yun:}/foreach{/yun}'
+	var expData=[];
+	'{yun:}foreach from=$userdata.user_word key=j item=v{/yun}'
+		expData.push({
+			value : '{yun:}$v{/yun}',
+			text : '{yun:}$userclass_name[$v]{/yun}'
+		}) 
+	'{yun:}/foreach{/yun}'
+
+	var cityParam={
+            sy_web_city_one:'{yun:}$config.sy_web_city_one{/yun}',
+            sy_web_city_two:'{yun:}$config.sy_web_city_two{/yun}',
+        };
+    var searchUrlObj = {};
+    '{yun:}if $searchUrlObj{/yun}'
+    searchUrlObj = JSON.parse('{yun:}$searchUrlObj{/yun}');
+    '{yun:}/if{/yun}'
+    var cityData    =   cityCategory(cityParam);
+	var sexTex = '{yun:}if $row.sex==1{/yun}男{yun:}elseif $row.sex==2{/yun}女{yun:}else{/yun}请选择性别{yun:}/if{/yun}'
+    var sexDefault = sexTex == '女' ? 1 : 0;
+
+    var vm = new Vue({
+        el: '#main',
+        data:{
+            sexShow:false,
+            showArea: false,
+            areaValue:'',
+            city:'{yun:}if $row.city_n{/yun}{yun:}$row.city_n{/yun}{yun:}/if{/yun}',
+            areaList: cityData,
+            production:'{yun:}$row.production{/yun}',
+            sexTex:sexTex,
+            sex:'{yun:}$row.sex{/yun}',
+            sexDefault:sexDefault,
+            sexData:sexData,
+            expShow:false,
+            expData:expData,
+            expValue:'{yun:}$row.exp{/yun}',
+            expTex:'{yun:}if $row.exp{/yun}{yun:}$userclass_name[$row.exp]{/yun}{yun:}/if{/yun}',
+            provinceid:'{yun:}$row.provinceid{/yun}',
+            cityid:'{yun:}$row.cityid{/yun}',
+            three_cityid:'{yun:}$row.three_cityid{/yun}',
+            productionhtml:false,
+   
+        },
+		created(){
+			$('#main').show();
+		},
+        methods: {
+            onSexConfirm(value, index) {
+                this.sexTex = value.text;
+                this.sex = value.value;
+                this.sexShow = false;
+            }, 
+            expConfirm(value, index){
+            	this.expTex = value.text;
+                this.expValue = value.value;
+                this.expShow = false;
+            },
+            onAreaFinish({ selectedOptions }) {
+                this.city = selectedOptions.map((option) => option.text).join('-');
+                searchUrlObj.provinceid = searchUrlObj.cityid = searchUrlObj.three_cityid = '';
+
+                if(selectedOptions[0] && selectedOptions[0].value>0){
+                    searchUrlObj.provinceid = selectedOptions[0].value;
+                    this.provinceid = selectedOptions[0].value;
+                }
+                if(selectedOptions[1] && selectedOptions[1].value>0){
+                    searchUrlObj.cityid = selectedOptions[1].value;
+                    this.cityid = selectedOptions[1].value;
+                }
+                if(selectedOptions[2] && selectedOptions[2].value>0){
+                    searchUrlObj.three_cityid = selectedOptions[2].value;
+                    this.three_cityid = selectedOptions[2].value;
+                }
+                this.showArea = false;
+            },
+            onProduc(){
+                this.productionhtml = true;
+                $('.header_count').css('display',"none");
+            },
+            cancelProduc(){
+                this.productionhtml = false;
+                $('.header_count').css('display',"block");
+            },
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="个人登录日志" name="first" :lazy="true">
+                    <grlogin :typelist="typeArr"></grlogin>
+                </el-tab-pane>
+                <el-tab-pane label="企业登录日志" name="second" :lazy="true">
+                    <qylogin :typelist="typeArr"></qylogin>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+    const custoapp = new Vue({
+        el: '#moduapp',
+        data: function() {
+            return {
+                activeName: 'first',
+                typeArr: [{
+                    value: '1',
+                    label: "用户名"
+                }, {
+                    value: '2',
+                    label: "内容"
+                }, {
+                    value: '3',
+                    label: "用户ID"
+                }],
+            }
+        },
+        components: {
+            'grlogin': httpVueLoader('./component/grlogin.vue'),
+            'qylogin': httpVueLoader('./component/qylogin.vue'),
+        },
+        methods: {
+            handleClick(tab, event) {
+                console.log(tab, event);
+            }
+        }
+    });
+    </script>
+</body>
+
+</html>

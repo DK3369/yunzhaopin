@@ -1,0 +1,64 @@
+<!-- yun_modal.htm  企业公共套餐购买提示-->
+<style>
+	.enterprise_mask_box{width:6.933333rem;height:5.333333rem;background:#fff;padding:.8rem .666667rem .666667rem .666667rem;display:flex;flex-direction:column;justify-content:space-between}
+	.mask_box_top{font-size:.48rem;font-weight:700;color:#181818;display:flex;align-items:center;justify-content:center}
+	.mask_box_cen{font-size:.4rem;font-weight:500;color:#666;display:flex;align-items:center;justify-content:center}
+	.mask_box_bom>ul{display:flex}
+	.mask_box_bom>ul>li{width:2.666667rem;height:.906667rem}
+	.box_bom_cancel{border:.013333rem solid #2778f8;border-radius:.453333rem;margin-right:.266667rem;display:flex;align-items:center;justify-content:center;font-size:.4rem;font-weight:500;color:#228af7}
+	.box_bom_ensure{background:linear-gradient(90deg,#34acfb,#1c80f6);border-radius:.453333rem;display:flex;align-items:center;justify-content:center;font-size:.4rem;font-weight:500;color:#fff}
+</style>
+<!-- 余额不足提示 -->
+<div id="modalVue" class="none">
+	<van-popup v-model="yunModal" round>
+		<div class="enterprise_mask_box">
+			<div class="mask_box_top">温馨提示</div>
+			<div class="mask_box_cen">{{mb_content}}</div>
+			<div class="mask_box_bom">
+				<ul>
+					<li class="box_bom_cancel" @click="yunModal = false">{{cancelText}}</li>
+					<li class="box_bom_ensure" @click="toServer()">{{confirmText}}</li>
+				</ul>
+			</div>
+		</div>
+	</van-popup>
+</div>
+<script>
+var modalType = '';
+var modalVue = new Vue({
+        el: '#modalVue',
+        data: {
+			singleid: '',
+			yunModal: false,
+			mb_content: '',
+			cancelText: '取消',
+			confirmText: '确定',
+			tourl:''
+		},
+		mounted(){
+			document.getElementById('modalVue').style.display = 'block';
+		},
+		methods:{
+			toServer: function(){
+				this.yunModal = false;
+				var url = wapurl || '';
+				if(modalType == 'job' || modalType == 'part'){
+					navigateTo(url + 'member/index.php?c=server&server=issuejob');
+				}else if (modalType == 'askRefresh'){
+					yunvue.jobrefresh();
+				}else if (modalType == 'refreshAll'){
+					navigateTo(url + 'member/index.php?c=server&server=sxjob&id=all');
+				}else if(modalType == 'jobrefresh'){
+					navigateTo(url + 'member/index.php?c=server&server=sxjob&id=' + this.singleid);
+				}else if(modalType == 'partrefresh'){
+					navigateTo(url + 'member/index.php?c=server&server=sxpart&id=' + this.singleid);
+				}else if(modalType == 'vip'){
+					navigateTo(url + 'member/index.php?c=server');
+				}else if(modalType == 'toaddjob'){
+					
+					navigateTo(this.tourl);
+				}
+			}
+		}
+	});
+</script>

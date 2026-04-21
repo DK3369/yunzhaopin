@@ -1,0 +1,167 @@
+{yun:}include file="$wapstyle/header.htm"{/yun}
+<link href="{yun:}$wap_style{/yun}/css/style.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet">
+{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+<script src="{yun:}$plusstyle{/yun}/city.cache.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$plusstyle{/yun}/job.cache.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/category.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script type="text/javascript">var wapurl = "{yun:}url m=wap{/yun}";</script>
+<div id="app">
+    <div id="changeutype">
+        <div class="job_header">
+            <a class="job_header_left" href="{yun:}if $backurl{/yun}{yun:}$backurl{/yun}{yun:}else{/yun}javascript:goBack(){yun:}/if{/yun}">
+                <img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" style="width: 100%;">
+            </a>
+            <div class="job_header_center">
+                <input type="text" readonly class="searchnew" value="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}/if{/yun}" placeholder="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}else{/yun}搜索人才{yun:}/if{/yun}">
+            </div>
+
+            <input type="hidden" id="searchurl" value="{yun:}$searchurl{/yun}" />
+            <input type="hidden" id="waptype" value="1" />
+        </div>
+
+        <div class="job_header_nav resumeAdeFlex">
+            <div class="job_header_nav_left category">
+                <ul>
+                    <li class="{yun:}if !$smarty.get.recg{/yun}active{yun:}/if{/yun}">
+                        <a href="{yun:}searchurl m=wap c=resume recg=0 untype='recg'{/yun}">最新</a>
+                    </li>
+                    <li class="{yun:}if $smarty.get.recg{/yun}active{yun:}/if{/yun}">
+                        <a href="{yun:}searchurl m=wap c=resume recg=1 untype='recg'{/yun}">推荐</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="job_header_nav_right">
+                <ul>
+                    <li onclick="areashow();">
+                        {yun:}if $config.three_cityid&&$config.sy_web_site=='1'{/yun}
+                            {yun:}$city_name[$config.three_cityid]{/yun}
+                        {yun:}else if $config.cityid&&$config.sy_web_site=='1'{/yun}
+                            {yun:}$city_name[$config.cityid]{/yun}
+                        {yun:}else{/yun}
+                            {yun:}if $city_name[$smarty.get.cityid] || $city_name[$smarty.get.provinceid]{/yun}
+                                {yun:}$city_name[$smarty.get.cityid]{/yun}{yun:}$city_name[$smarty.get.provinceid]{/yun}
+                            {yun:}elseif $city_name[$smarty.get.threecityid]{/yun}
+                                {yun:}$city_name[$smarty.get.threecityid]{/yun}
+                            {yun:}else{/yun}
+                                区域
+                            {yun:}/if{/yun}
+                        {yun:}/if{/yun}
+                        <i class="nav_right_open"></i>
+                    </li>
+                    <li onclick="jobshow();">
+                        {yun:}if $smarty.get.job1{/yun}
+                            {yun:}$job_name[$smarty.get.job1]{/yun}
+                        {yun:}elseif $smarty.get.job1son{/yun}
+                            {yun:}$job_name[$smarty.get.job1son]{/yun}
+                        {yun:}elseif $smarty.get.jobpost{/yun}
+                            {yun:}$job_name[$smarty.get.jobpost]{/yun}
+                        {yun:}else{/yun}
+                            意向
+                        {yun:}/if{/yun}
+                        <i class="nav_right_open"></i>
+                    </li>
+                    <li onclick="resumemoreShow();">筛选
+                        <i class="nav_right_open"></i>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+
+        <div class="yun_newedition_resume" style="padding-top: 2.4rem;">
+            <!--广告-->
+            {yun:}adlist classid=505 item="lunbo" key=key random=1{/yun}
+            <div class="resumezd_banner">{yun:}$lunbo.html{/yun}</div>
+            {yun:}/adlist{/yun}
+            <!--广告-->
+
+            <!-- 简历列表 -->
+            <!-- 判断后台配置是否公开简历 -->
+            {yun:}if $config.com_search == 1{/yun}
+                {yun:}if !$uid{/yun}
+                    {yun:}include file="$wapstyle/resume_topthree.htm"{/yun}
+                    <div class="nologintip">
+                        <div class="nologinbox">
+                            <div class="nologintit">成为企业会员，高效挑选人才！</div>
+                            <div class="nologin_p">登录可以查看更多简历信息~</div>
+                            <dl class="nologin_wx">
+                                <dt><img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}" width="130" height="130">
+                                </dt>
+                                <dd>扫一扫，让招聘更轻松</dd>
+                            </dl>
+                            <div class="nologin_bth">
+                                <a href="{yun:}url m=wap c=login{/yun}" class="nologin_bth_a">登录</a>
+                                <a href="{yun:}url m=wap c=register{/yun}" class="nologin_bth_a">注册</a>
+                            </div>
+                            <div class="nologin_tel">如有需要任何贴心的服务：{yun:}$config.sy_comwebtel{/yun}</div>
+                        </div>
+                    </div>
+                {yun:}else{/yun}
+                    {yun:}if $usertype==1{/yun}
+                        {yun:}if $config.sy_user_visit_resume==1{/yun}
+                            {yun:}include file="$wapstyle/resumelist.htm"{/yun}
+                        {yun:}else{/yun}
+                            {yun:}include file="$wapstyle/resume_topthree.htm"{/yun}
+                            <div class="nologintip">
+                                <div class="nologinbox">
+                                    <div class="nologintit">成为企业会员，高效挑选人才！</div>
+                                    <div class="nologin_p">登录可以查看更多简历信息~</div>
+                                    <dl class="nologin_wx">
+                                        <dt><img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}" width="130" height="130">
+                                        </dt>
+                                        <dd>扫一扫，让招聘更轻松</dd>
+                                    </dl>
+                                    <div class="nologin_bth">
+                                        <a href="javascript:void(0);" onclick="logoutAsk('{yun:}url m=wap c=loginout{/yun}')" class="nologin_bth_a">登录企业</a>
+                                    </div>
+                                    <div class="nologin_tel">如有需要任何贴心的服务：{yun:}$config.sy_comwebtel{/yun}</div>
+                                </div>
+                            </div>
+                        {yun:}/if{/yun}
+                    {yun:}else{/yun}
+                        <!-- 判断后台配置是否已审核会员查看简历 -->
+                        {yun:}if $config.com_status_search == 1 && $userInfo.r_status != 1{/yun}
+                            {yun:}include file="$wapstyle/resume_topthree.htm"{/yun}
+                            <div class="nologintip">
+                                <div class="nologinbox">
+                                    <div class="nologintit">身份尚未审核，无法挑选人才！</div>
+                                    <dl class="nologin_wx">
+                                        <dt><img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}" width="130" height="130"></dt>
+                                        <dd>扫一扫，让招聘更轻松</dd>
+                                    </dl>
+                                    <div class="nologintit">联系客服，加快审核，高效挑选人才</div>
+                                    <div class="nologin_tel">如有需要任何贴心的服务：{yun:}$config.sy_comwebtel{/yun}</div>
+                                </div>
+                            </div>
+                        {yun:}else{/yun}
+                            {yun:}include file="$wapstyle/resumelist.htm"{/yun}
+                        {yun:}/if{/yun}
+                    {yun:}/if{/yun}
+                {yun:}/if{/yun}
+            {yun:}else{/yun}
+                {yun:}include file="$wapstyle/resumelist.htm"{/yun}
+            {yun:}/if{/yun}
+        </div>
+
+    </div>
+</div>
+{yun:}include file="$wapstyle/publichtm/public_city_search.htm"{/yun}
+<script type="text/javascript">
+
+  var jobData   = jobCategory();
+  var cityChoosed = parseInt('{yun:}$cityChoosed{/yun}');
+  var jobChoosed  = parseInt('{yun:}$jobChoosed{/yun}');
+
+	function logoutAsk(url){
+		showConfirm('确认退出登录，前往登录企业吗？',function(){
+			window.localStorage.setItem("socketState", "2");
+			showLoading('退出中');
+			$.get(url, function(){
+				window.location.href = wapurl+'index.php?c=login';
+			})
+		});
+	}
+</script>
+{yun:}include file="$wapstyle/publichtm/publictwo.htm"{/yun}
+{yun:}include file="$wapstyle/publichtm/search.htm"{/yun}
+{yun:}include file="$wapstyle/footer.htm"{/yun}

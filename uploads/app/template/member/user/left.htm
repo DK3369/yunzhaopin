@@ -1,0 +1,76 @@
+<script>
+    $(document).ready(function () {
+        $(".left_sidebar_icon").click(function () {
+            var aid = $(this).attr("aid");
+            var style = $("#leftlist" + aid).attr("style");
+            if ($(this).hasClass("left_sidebar_icon")) {
+                $(this).parent().prev().find('li.overflow').show();
+                $(this).attr("class", "left_sidebar_icon1");
+                $(this).parent().prev().prev().height($(this).parent().prev().find('ul li').length * 30);
+            } else {
+                $(this).parent().prev().find('li.overflow').hide();
+                $(this).attr("class", "left_sidebar_icon");
+                $(this).parent().prev().prev().height(($(this).parent().prev().find('ul li').length - $(this).parent().prev().find('ul li.overflow').length) * 30);
+            }
+        })
+    });
+</script>
+<div class="yun_m_leftsidebar">
+<div class="yun_m_leftsidebar_box">
+	<ul class="yun_m_leftsidebar_list">
+		    <li  {yun:}if $smarty.get.c=='' {/yun}class="yun_m_left_cur"{yun:}/if{/yun}><a href="index.php" class="nava"><i class="left_navicon left_navicon_i1"></i><span>个人中心</span><b></b></a></li>
+		  <li  {yun:}if $smarty.get.c=='resume' {/yun}class="yun_m_left_cur"{yun:}/if{/yun}><a href="index.php?c=resume" class="nava"><i class="left_navicon left_navicon_i2"></i><span>我的简历</span><b></b></a></li>
+		 	  
+					
+						
+			 <li {yun:}if $smarty.get.c=='invite' {/yun}class="yun_m_left_cur"{yun:}/if{/yun}><a  href="index.php?c=invite" class="nava"><i class="left_navicon left_navicon_i4"></i><span>面试通知</span><b></b>{yun:}if $msgnum{/yun}<i class="left_sidebar_msg_icon">{yun:}$msgnum{/yun}</i>{yun:}/if{/yun}</a></li>
+		        
+			<li {yun:}if $smarty.get.c=='job' {/yun}class="yun_m_left_cur"{yun:}/if{/yun}><a href="index.php?c=job" class="nava"><i class="left_navicon left_navicon_i5"></i><span>申请的职位</span><b></b></a></li>
+		   <li {yun:}if $smarty.get.c=='look' {/yun}class="yun_m_left_cur"{yun:}/if{/yun}><a href="index.php?c=look" class="nava"><i class="left_navicon left_navicon_i6"></i><span>对我感兴趣</span><b></b></a></li>
+			
+		    <li  {yun:}if $smarty.get.c=='favorite' {/yun}class="yun_m_left_cur"{yun:}/if{/yun}><a href="index.php?c=favorite" class="nava"><i class="left_navicon left_navicon_i7"></i><span>我的收藏</span><b></b></a></li>
+			 
+			 <li  {yun:}if $smarty.get.c=='look_job' {/yun}class="yun_m_left_cur"{yun:}/if{/yun}><a href="index.php?c=look_job"class="nava" ><i class="left_navicon left_navicon_i8"></i><span>我的足迹</span><b></b></a></li>
+			 					    
+			  <li style="position: relative; z-index: 100;" onMouseOver="leftmoreShow('show')" onMouseOut="leftmoreShow('hide')">
+			  <a href="###" class="nava"><i class="left_navicon left_navicon_i9"></i><span>更多功能</span><b></b></a>
+			  <div class="user_more" style="display: none;">
+			  <div class="user_more_list"><span class="user_more_name">简历管理</span>    
+			    <a  href="index.php?c=resumeout" class="user_more_a">简历外发</a>
+			   <a href="index.php?c=resumetpl" class="user_more_a">简历模板</a></div>
+			   <div class="user_more_list"><span class="user_more_name">求职管理 </span> 
+			   {yun:}if $config.sy_part_web == 1{/yun}<a href="index.php?c=partapply" class="user_more_a">我的兼职</a>{yun:}/if{/yun}
+			   
+			   <a  href="index.php?c=finder" class="user_more_a">职位搜索器</a> 
+			   </div>
+			   <div class="user_more_list"><span class="user_more_name">财务管理</span>  
+			   
+			   <a href="index.php?c=integral" class="user_more_a">{yun:}$config.integral_pricename{/yun}管理</a>
+			   
+			   <a  href="javascript:void(0);" onclick="getInviteRegHb(0);" class="user_more_a">邀请注册</a>
+			   <a  href="index.php?c=paylist" class="user_more_a"> 财务明细 </a> </div>
+				{yun:}if $config.sy_train_web == 1 || $config.sy_reward_web == 1 || $config.sy_ask_web == 1{/yun}
+			   <div class="user_more_list">
+			   <span class="user_more_name">其他管理</span>
+			   {yun:}if $config.sy_ask_web == 1{/yun}<a href="{yun:}url m=ask c=friend a=myquestion uid=$uid{/yun}" target="_blank" class="user_more_a">我的提问</a>{yun:}/if{/yun}
+			   </div>
+			   {yun:}/if{/yun}
+			  </div>
+			  
+			  
+			  </li>
+		 </ul>
+</div>
+{yun:}if $config.sy_wx_qcode!=''{/yun}
+<div class="left_wx_box">
+<div class="left_wx_box_tip">简历投递实时追踪</div>
+<dl class="left_wx_box_dl">
+<dt><img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}" width="150" height="150"></dt>
+<dd class="left_wx_box_tit">关注公众号</dd>
+</dl>
+
+</div>
+{yun:}/if{/yun}
+
+
+</div>

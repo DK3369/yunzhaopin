@@ -1,0 +1,33 @@
+{yun:}include file="$wapstyle/header_cont.htm"{/yun}
+<div class="news_in_body">
+    <section class="news_in_cont" id="fontshow">
+        {yun:}gongzhao limit=20 ispage=1 item=alist t_len=28{/yun}
+        <a href="{yun:}url m=wap c=gongzhao a=show id=$alist.id{/yun}">
+            <div class="news_in_list">
+                <div class="news_in_list_box_left">
+					{yun:}if $alist.pic_n{/yun}
+					<img src="{yun:}$alist.pic_n{/yun}"> 
+					{yun:}/if{/yun}
+                    <h2>{yun:}$alist.title{/yun}</h2>
+                </div>
+            </div>
+        </a>
+        {yun:}/gongzhao{/yun}
+        {yun:}if $total <=0{/yun}
+        <div class="wap_member_no">暂无公招
+            <div>
+                <a class="wap_mb_no_sr" href="{yun:}url m=wap c='gongzhao'{/yun}">重新搜索</a>
+            </div>
+        </div>
+        {yun:}else{/yun}
+            {yun:}if $pagenav{/yun}
+            <div class="pages">
+                {yun:}$pagenav{/yun}
+            </div>
+            {yun:}/if{/yun}
+        {yun:}/if{/yun}
+    </section>
+</div>
+{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+</body>
+</html>

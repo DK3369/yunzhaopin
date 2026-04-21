@@ -1,0 +1,250 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+
+<script src="{yun:}$wap_style{/yun}/js/compress.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/exif.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+
+<div id="certVue" class="none">
+
+    <div class="wap_member_box">
+
+        <!--状态提示语句-->
+        <div v-if="status==-1" class="security">未认证，当前未上传相关企业资质</div>
+        <div v-else-if="status==0" class="security">企业资质正在审核中，如需快速审核，请拨打客服服务热线：{yun:}($config.sy_comwebtel!='')?$config.sy_comwebtel:$config.sy_freewebtel{/yun}</div>
+        <div v-else-if="status==1" class="security">企业资质已成功认证，若需修改则需要重新审核</div>
+        <div v-else-if="status==2" class="security">审核未通过，{{statusBody ? '原因：'+statusBody+'，' : ''}}请重新上传。如有疑问可拨打服务热线：{yun:}($config.sy_comwebtel!='')?$config.sy_comwebtel:$config.sy_freewebtel{/yun}</div>
+
+
+        <form id="certFrom">
+
+            <ul class="security">
+                <li>
+                    <span class="security_anme">企业全称</span>
+                    <div class="security_text"><input type="text" v-model="comName" class="security_text_t"></div>
+                </li>
+                <li v-if="com_social_credit == 1">
+                    <span class="security_anme">信用代码</span>
+                    <div class="security_text"><input type="text" v-model="social_credit" class="security_text_t" placeholder="输入统一社会信用代码"></div>
+                </li>
+            </ul>
+
+            <div class="yunset_identity_box">
+
+                <div class="yunset_identity">
+                    <div align="center" class="yunset_identity_pic_img" id="checkshow" :class="photo? '' : 'none'">
+                        <img :src="photo" id="checkimg"  />
+                    </div>
+
+                    <div class="yunset_identity_pic">
+                        <input type="file" onchange="previewImage(this,'check')" accept="image/*" class="yunset_identity_pic_file">
+                        <input type='hidden' name='check' value='' id='check'>
+                    </div>
+
+                    <i class="yunset_identity_pic_tj"></i>
+                    <div class="yunset_identity_tip" style="padding-top:10px;">上传营业执照/组织机构代码证</div>
+                    <span class="yunset_identity_tip_a">选择上传图片</span>
+                </div>
+            </div>
+
+            <div class="yunset_identity_box" v-if="com_cert_owner == 1">
+
+                <div class="yunset_identity">
+                    <div align="center" class="yunset_identity_pic_img" id="owner_certshow" :class="photo_owner_cert? '' : 'none'">
+                        <img :src="photo_owner_cert" id="owner_certimg" />
+                    </div>
+                    <div class="yunset_identity_pic">
+
+                        <input type="file" onchange="previewImage(this,'owner_cert')" accept="image/*" class="yunset_identity_pic_file">
+                        <input type='hidden' name='owner_cert' value='' id='owner_cert'>
+                    </div>
+                    <i class="yunset_identity_pic_tj"></i>
+                    <div class="yunset_identity_tip" style="padding-top:10px;">上传经办人身份证</div>
+                    <span class="yunset_identity_tip_a">选择上传图片</span>
+                </div>
+            </div>
+
+            <div class="yunset_identity_box" v-if="com_cert_wt == 1">
+                <div class="yunset_identity">
+                    <div align="center" class="yunset_identity_pic_img" id="wt_certshow" :class="photo_wt_cert? '' : 'none'">
+                        <img :src="photo_wt_cert" id="wt_certimg"/>
+                    </div>
+                    <div class="yunset_identity_pic">
+
+                        <input type="file" onchange="previewImage(this,'wt_cert')" accept="image/*" class="yunset_identity_pic_file">
+                        <input type='hidden' name='wt_cert' value='' id='wt_cert'>
+                    </div>
+                    <i class="yunset_identity_pic_tj"></i>
+                    <div class="yunset_identity_tip" style="padding-top:10px;">上传委托书/承诺函</div>
+                    <span class="yunset_identity_tip_a">选择上传图片</span>
+                </div>
+
+                <div class="yunset_identity_tip_c" style="padding-top:10px;" v-if="exa_cert_wt">委托书/承诺函范本
+                    <a href="javascript:void(0);" @click="downFb" style="color:#3b7cff; text-decoration:underline">查看范本</a>
+                </div>
+            </div>
+
+            <div class="yunset_identity_box" v-if="com_cert_other==1">
+                <div class="yunset_identity">
+                    <div align="center" class="yunset_identity_pic_img" id="other_certshow" :class="photo_other_cert? '' : 'none'">
+                        <img :src="photo_other_cert" id="other_certimg"/>
+                    </div>
+                    <div class="yunset_identity_pic">
+                        <input type="file" onchange="previewImage(this,'other_cert')" accept="image/*" class="yunset_identity_pic_file">
+                        <input type='hidden' name='other_cert' value='' id='other_cert'>
+                    </div>
+                    <i class="yunset_identity_pic_tj"></i>
+                    <div class="yunset_identity_tip" style="padding-top:10px;">上传其他证明材料（选填）</div>
+                    <span class="yunset_identity_tip_a">选择上传图片</span>
+                </div>
+
+                <div class="yunset_identity_tip_c" style="padding-top:10px;">执照中的文字、图片、章印等需清晰可辨别，否则不能通过认证。</div>
+                <div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>格式为 {{pic_type}} 不得超过{{file_maxsize}}M</div>
+
+            </div>
+
+            <div class="yunset_bth_box yunset_bth_zzbox">
+                <input type="button" value="保存" class="yunset_bth" @click="saveCert">
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    var certVue = new Vue({
+        el: '#certVue',
+        data() {
+            return {
+
+                status: '',
+                statusBody: '',
+
+                comName: '',
+                social_credit: '',
+
+                photo: '',
+                photo_owner_cert: '',
+                photo_wt_cert: '',
+                photo_other_cert: '',
+
+                com_social_credit: 0,
+                com_cert_owner: 0,
+                com_cert_wt: 0,
+                com_cert_other: 0,
+
+                exa_cert_wt: '',
+                pic_type: '',
+                file_maxsize: ''
+
+            }
+        },
+        created() {
+            this.getCert();
+        },
+        methods: {
+            getCert: function () {
+                var that = this;
+                var param = {
+                    rand: Math.random()
+                };
+                showLoading();
+                $.post('{yun:}url d=wxapp h=com m=set c=getCert{/yun}', param, function (data) {
+                    hideLoading();
+                    if (data) {
+                        let res = data.data;
+                        that.status = res.status;
+                        that.statusBody = res.statusbody;
+
+                        that.comName = res.comname;
+
+                        if (data.error == 1) {
+
+                            that.social_credit = res.social_credit;
+                            that.photo = res.url;
+                            that.photo_owner_cert = res.ocurl ? res.ocurl : '';
+                            that.photo_wt_cert = res.wturl ? res.wturl : '';
+                            that.photo_other_cert = res.otherurl ? res.otherurl : '';
+                        }
+
+
+                        that.com_social_credit = res.com_social_credit;
+                        that.com_cert_owner = res.com_cert_owner;
+                        that.com_cert_wt = res.com_cert_wt;
+                        that.com_cert_other = res.com_cert_other;
+
+                        that.exa_cert_wt = res.exa_cert_wt ? res.exa_cert_wt : '';
+
+                        that.pic_type = res.pic_type;
+                        that.file_maxsize = res.file_maxsize;
+
+                        $('#certVue').css('display', 'block');
+                    }
+                }, 'json')
+            },
+            saveCert:function () {
+                var that = this;
+                var v = getFormValue('certFrom');
+
+                if (that.comName == ''){
+
+                    return showToast('请填写企业全称');
+                }else if (that.social_credit == '' && that.com_social_credit == 1){
+
+                    return showToast('请填写统一社会信用代码');
+                }else if (v.check == '' && that.photo == '') {
+
+                    return showToast('请上传营业执照');
+                } else if (v.owner_cert == '' && that.photo_owner_cert=='' && that.com_cert_owner == 1) {
+
+                    return showToast('请上传经办人身份证');
+                } else if (v.wt_cert == '' && that.photo_wt_cert=='' && that.com_cert_wt == 1) {
+
+                    return showToast('请上传委托书/承诺函');
+                }else {
+
+                    var formData = {
+                        name: that.comName,
+                        social_credit: that.social_credit
+                    };
+                    if (v.check){
+                        formData.base   =   v.check;
+                    }else{
+                        formData.check  =   that.photo;
+                    }
+                    if (v.owner_cert){
+                        formData.base_owner_cert    =   v.owner_cert;
+                    }else{
+                        formData.owner_cert         =   that.photo_owner_cert;
+                    }
+                    if (v.wt_cert){
+                        formData.base_wt_cert       =   v.wt_cert;
+                    }else{
+                        formData.wt_cert            =   that.photo_wt_cert;
+                    }
+                    if (v.other_cert){
+                        formData.base_other_cert    =   v.other_cert;
+                    }else{
+                        formData.other_cert         =   that.photo_other_cert;
+                    }
+
+                    showLoading('提交中...');
+                    $.post('{yun:}url d=wxapp h=com m=set c=saveCert{/yun}', formData, function (data) {
+                        hideLoading();
+                        if (data.error == 1) {
+                            showToast(data.msg, 2, function () {
+                                that.getCert();
+                            });
+                        } else {
+                            showToast(data.msg);
+                        }
+                    });
+
+                }
+            },
+			downFb:function(){
+				window.location.href = this.exa_cert_wt;
+			}
+        }
+    })
+</script>
+</body>
+</html>

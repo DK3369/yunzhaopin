@@ -1,0 +1,16 @@
+<!--首页模板专用-->
+{yun:}if strpos($config.code_web,"前台登录")!==false{/yun}
+	{yun:}if $config.code_kind == 3{/yun}
+	<script src="{yun:}$config.sy_weburl{/yun}/js/geetest/gt.js?v={yun:}$config.cachecode{/yun}"></script>
+	{yun:}elseif $config.code_kind == 4{/yun}
+	<script src="https://cdn.dingxiang-inc.com/ctu-group/captcha-ui/index.js"></script>
+	<script>var dxappid = "{yun:}$config.sy_dxappid{/yun}";</script>
+	{yun:}elseif $config.code_kind == 5{/yun}
+	<script src="https://v.vaptcha.com/v3.js"></script>
+	<script>var vaptchaid = "{yun:}$config.sy_vaptcha_vid{/yun}";</script>
+	{yun:}elseif $config.code_kind == 6{/yun}
+	<!--<script src="https://turing.captcha.qcloud.com/TCaptcha.js"></script>-->
+	<script>var tecentappid = "{yun:}$config.sy_tecentappid{/yun}",web_url = "{yun:}$config.sy_weburl{/yun}";</script>
+	<script src="{yun:}$config.sy_weburl{/yun}/js/tecent/pc.js?v={yun:}$config.cachecode{/yun}" type="text/javascript"></script>
+	{yun:}/if{/yun}
+{yun:}/if{/yun}

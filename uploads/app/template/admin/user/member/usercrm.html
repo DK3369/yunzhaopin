@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="全部用户" name="first" :lazy="true">
+                    <alluser ref="first"></alluser>
+                </el-tab-pane>
+                <el-tab-pane label="会员注销记录" name="three" :lazy="true">
+                    <logoff ref="three" :status="status.three"></logoff>
+                </el-tab-pane>
+                <el-tab-pane label="账号申诉记录" name="four" :lazy="true">
+                    <shensu ref="four" :status="status.four"></shensu>
+                </el-tab-pane>
+
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#moduapp',
+            data: function () {
+                return {
+                    activeName: 'first',
+                    status: {
+                        three: '',
+                        four: '',
+                    },
+                }
+            },
+            components: {
+                'alluser': httpVueLoader('./component/alluser.vue'),
+                'logoff': httpVueLoader('./component/logoff.vue'),
+                'shensu': httpVueLoader('./component/shensu.vue'),
+            },
+            created: function () {
+                var that = this
+                let query = window.parent.homeapp.$route.query;
+                if (query.tabs) {
+                    that.activeName = query.tabs;
+                }
+                if (query.status) {
+                    that.status[that.activeName] = query.status;
+                }
+				
+            },
+            methods: {
+                handleClick(tab, event) {
+                    console.log(tab, event);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

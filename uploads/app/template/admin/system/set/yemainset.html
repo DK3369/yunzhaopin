@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+<body>
+<div id="yemanapp" class="tableDome">
+    <div class="tableDome_tip">
+        <el-alert title="实现“伪静态设置、前台列表最大展示数量、外部链接”等进行设置！伪静态可以增强网站收录友好度！运营者大部分都是开启的" type="success" :closable="false"></el-alert>
+    </div>
+    <div class="moduleTable">
+        <table class="tableVue">
+            <thead>
+            <tr align="left">
+                <th width="200">名称</th>
+                <th width="500">状态</th>
+                <th>说明</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <div class="TableTite">伪静态设置</div>
+                </td>
+                <td>
+                    <div class="TableButn">
+                        <el-radio-group v-model="list.sy_seo_rewrite">
+                            <el-radio label="1">开启</el-radio>
+                            <el-radio label="0">关闭</el-radio>
+                        </el-radio-group>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>修改伪静态之前要先根据服务器添加伪静态规则</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">头部浮动导航</div>
+                </td>
+                <td>
+                    <div class="TableButn">
+                        <el-radio-group v-model="list.sy_header_fix">
+                            <el-radio label="1">开启</el-radio>
+                            <el-radio label="0">关闭</el-radio>
+                        </el-radio-group>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>PC端浮动导航能够帮助用户快速到达页面</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">首页底部浮动提示条</div>
+                </td>
+                <td>
+                    <div class="TableButn">
+                        <el-radio-group v-model="list.sy_footer_fix">
+                            <el-radio label="1">开启</el-radio>
+                            <el-radio label="0">关闭</el-radio>
+                        </el-radio-group>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>底部悬浮提示条引导用户注册</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">友情链接申请</div>
+                </td>
+                <td>
+                    <div class="TableButn">
+                        <el-radio-group v-model="list.sy_linksq">
+                            <el-radio label="1">开启</el-radio>
+                            <el-radio label="0">关闭</el-radio>
+                        </el-radio-group>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>开启后首页才有申请通道</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">手机端自动跳转到wap</div>
+                </td>
+                <td>
+                    <div class="TableButn">
+                        <el-radio-group v-model="list.sy_wap_jump">
+                            <el-radio label="1">开启</el-radio>
+                            <el-radio label="0">关闭</el-radio>
+                        </el-radio-group>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>手机浏览器访问网址跳转到WAP端显示</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">PC端允许访问WAP端</div>
+                </td>
+                <td>
+                    <div class="TableButn">
+                        <el-radio-group v-model="list.sy_pc_jump_wap">
+                            <el-radio label="1">开启</el-radio>
+                            <el-radio label="0">关闭</el-radio>
+                        </el-radio-group>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>PC可以访问手机站链接</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">H5分享</div>
+                </td>
+                <td>
+                    <div class="TableButn">
+                        <el-radio-group v-model="list.sy_h5_share">
+                            <el-radio label="1">开启</el-radio>
+                            <el-radio label="0">关闭</el-radio>
+                        </el-radio-group>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>手机版分享H5画面</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">意见反馈手机号验证</div>
+                </td>
+                <td>
+                    <div class="TableButn">
+                        <el-radio-group v-model="list.sy_advice_mobilecode">
+                            <el-radio label="1">开启</el-radio>
+                            <el-radio label="0">关闭</el-radio>
+                        </el-radio-group>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>意见反馈需手机号验证后才可以反馈</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">微信浏览器列表形式</div>
+                </td>
+                <td>
+                    <div class="TableButn">
+                        <el-radio-group v-model="list.sy_wxwap_list">
+                            <el-radio label="1">分页</el-radio>
+                            <el-radio label="2">上拉加载</el-radio>
+                        </el-radio-group>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>微信访问列表的展现形式</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">WAP端企业详情页模板</div>
+                </td>
+                <td>
+                    <div class="TableButn">
+                        <el-radio-group v-model="list.sy_wap_comtpl">
+                            <el-radio label="0">浅色</el-radio>
+                            <el-radio label="1">深色</el-radio>
+                        </el-radio-group>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>wap端企业展示页模板样式</span>
+                    </div>
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    <div class="TableTite">新闻显示形式</div>
+                </td>
+                <td>
+                    <div class="TableButn">
+                        <el-radio-group v-model="list.sy_news_rewrite">
+                            <el-radio label="1">动态</el-radio>
+                            <el-radio label="2">静态</el-radio>
+                        </el-radio-group>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>修改为静态，访问时显示静态页内容，提升效率</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">数据分享二维码形式</div>
+                </td>
+                <td>
+                    <div class="TableButn">
+                        <el-select v-model="list.sy_ewm_type" placeholder="请选择二维码形式">
+                            <el-option label="默认" value="wap"></el-option>
+                            <el-option label="场景码 ①（公众号图文）" value="weixin"></el-option>
+                        </el-select>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>功能支持：海报、职位、简历、企业、兼职、资讯、公告、公招。</span><br>
+                        <span>默认形式：扫码默认打开手机端链接</span><br>
+                        <span>场景码①：扫码（关注公众号）自动回复图文</span><br>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <div class="TableTite">找人才页面默认显示类别</div>
+                </td>
+                <td>
+                    <div class="TableButn">
+                        <el-radio-group v-model="list.sy_default_userclass">
+                            <el-radio label="1">是</el-radio>
+                            <el-radio label="2">否</el-radio>
+                        </el-radio-group>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>若选择"否"，则直接显示简历列表</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">找工作页面默认显示类别</div>
+                </td>
+                <td>
+                    <div class="TableButn">
+                        <el-radio-group v-model="list.sy_default_comclass">
+                            <el-radio label="1">是</el-radio>
+                            <el-radio label="2">否</el-radio>
+                        </el-radio-group>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>若选择"否"，则直接显示职位列表</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">薪资单位</div>
+                </td>
+                <td>
+                    <div class="TableSelect">
+                        <el-select v-model="list.resume_salarytype" placeholder="请选择">
+                            <el-option v-for="item in salary" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                        </el-select>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>薪资单位，该设置可以改变薪资显示单位</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">前台列表最大展示数量</div>
+                </td>
+                <td>
+                    <div class="TableInpt">
+                        <el-input placeholder="请输入内容" type="number" v-model="list.sy_indexpage" autocomplete="off" min="0"></el-input>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>0为不限</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">简历数据周期</div>
+                </td>
+                <td>
+                    <div class="TableInpt">
+                        <el-input placeholder="请输入内容" v-model="list.sy_datacycle" type="number" autocomplete="off" min="0">
+                            <span slot="suffix" class="slotspan">天</span>
+                        </el-input>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>简历仅展示N天内更新的数据，以解决数据冗余问题，0为不限</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">职位数据周期</div>
+                </td>
+                <td>
+                    <div class="TableInpt">
+                        <el-input placeholder="请输入内容" v-model="list.sy_datacycle_job" type="number" autocomplete="off" min="0">
+                            <span slot="suffix" class="slotspan">天</span>
+                        </el-input>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>职位仅展示N天内更新的数据，以解决数据冗余问题，0为不限</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">企业数据周期</div>
+                </td>
+                <td>
+                    <div class="TableInpt">
+                        <el-input placeholder="请输入内容" v-model="list.sy_datacycle_com" autocomplete="off" type="number" min="0">
+                            <span slot="suffix" class="slotspan">天</span>
+                        </el-input>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>企业仅展示N天内更新的数据，以解决数据冗余问题，0为不限</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">登录时长</div>
+                </td>
+                <td>
+                    <div class="TableInpt">
+                        <el-input placeholder="请输入内容" v-model="list.sy_logintime" autocomplete="off" type="number" min="0">
+                            <span slot="suffix" class="slotspan">天</span>
+                        </el-input>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>登录状态保持天数，默认1天</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">默认登录方式</div>
+                </td>
+                <td>
+                    <div class="TableButn">
+                        <el-radio-group v-model="list.sy_login_type">
+                            <el-radio label="1">用户名登录</el-radio>
+                            <el-radio label="2">短信登录</el-radio>
+                        </el-radio-group>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>短信登录需要在短信设置中开启短信功能，并在短信模板设置中开启短信验证码登录</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">未登录用户可访问简历数量</div>
+                </td>
+                <td>
+                    <div class="TableInpt">
+
+                        <el-input placeholder="请输入内容" v-model="list.sy_resume_visitors" autocomplete="off" type="number" min="0">
+                            <span slot="suffix" class="slotspan">条</span>
+                        </el-input>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>0为不限</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">同一IP点击广告记录间隔</div>
+                </td>
+                <td>
+                    <div class="TableInpt">
+
+                        <el-input placeholder="请输入内容" v-model="list.sy_adclick" autocomplete="off" type="number" min="0">
+                            <span slot="suffix" class="slotspan">小时</span>
+                        </el-input>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>0为不限，其他数字为期限内只记录一次</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">每天推荐职位/简历最大次数</div>
+                </td>
+                <td>
+                    <div class="TableInpt">
+
+                        <el-input placeholder="请输入内容" v-model="list.sy_recommend_day_num" autocomplete="off" type="number" min="0">
+                            <span slot="suffix" class="slotspan">次</span>
+                        </el-input>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>0为关闭</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">推荐职位/简历最小时间间隔</div>
+                </td>
+                <td>
+                    <div class="TableInpt">
+
+                        <el-input placeholder="请输入内容" v-model="list.sy_recommend_interval" type="number" min="0">
+                            <span slot="suffix" class="slotspan">秒</span>
+                        </el-input>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>0为不限</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">每天简历外发最大次数</div>
+                </td>
+                <td>
+                    <div class="TableInpt">
+
+                        <el-input placeholder="请输入内容" autocomplete="off" v-model="list.sy_resumeout_day_num" type="number" min="0">
+                            <span slot="suffix" class="slotspan">次</span>
+                        </el-input>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>0为关闭</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">简历外发最小时间间隔</div>
+                </td>
+                <td>
+                    <div class="TableInpt">
+
+                        <el-input placeholder="请输入内容" v-model="list.sy_resumeout_interval" autocomplete="off" type="number" min="0">
+                            <span slot="suffix" class="slotspan">秒</span>
+                        </el-input>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>0为不限</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">百度自动推送功能</div>
+                </td>
+                <td>
+                    <div class="TableButn">
+                        <el-radio-group v-model="list.sy_zhanzhang_baidu">
+                            <el-radio label="1">开启</el-radio>
+                            <el-radio label="2">关闭</el-radio>
+                        </el-radio-group>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">新闻内链</div>
+                </td>
+                <td>
+                    <div class="TableButn">
+                        <el-radio-group v-model="list.sy_outlinks">
+                            <el-radio label="1">开启</el-radio>
+                            <el-radio label="2">关闭</el-radio>
+                        </el-radio-group>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>该设置可以改变新闻内容信息，涉及网站职位关键字内容添加链接</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">特别申明</div>
+                </td>
+                <td>
+                    <div class="TableButn">
+                        <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="list.sy_shenming"></el-input>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>如：用人单位不得以任何名义收取求职者任何形式的费用</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">职位简历点击器</div>
+                </td>
+                <td>
+                    <div class="jianlidian">
+                        <div class="TableInpt">
+                            <el-input placeholder="请输入数字" value="1" disabled></el-input>
+                        </div>
+                        <div class="hxian"></div>
+                        <div class="TableInpt">
+                            <el-input placeholder="请输入数字" v-model="list.sy_job_hits" type="number" max="100"></el-input>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>提示：最小为1，最大为100，每次在1-X范围随机增加</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">列表页区域默认设置</div>
+                </td>
+                <td>
+                    <div class="morenset">
+                        <div class="TableSelect">
+                            <el-select v-model="list.sy_web_city_one" placeholder="请选择" @change="cityChange" clearable>
+                                <el-option v-for="item in province" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                            </el-select>
+                        </div>
+                        <div class="TableSelect">
+                            <el-select v-model="list.sy_web_city_two" placeholder="请选择" clearable>
+                                <el-option v-for="item in city_type" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>如：前台职位、简历、企业列表区域默认查询设置</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">刷新时间格式</div>
+                </td>
+                <td>
+                    <div class="TableButn">
+                        <el-radio-group v-model="list.sy_sxsjgs">
+                            <el-radio label="1">XX时XX分</el-radio>
+                            <el-radio label="2">XX小时前</el-radio>
+                        </el-radio-group>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span> 设置 人才/职位（详情页/列表页）刷新时间格式，仅当天可用</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">充值订单超时自动关闭</div>
+                </td>
+                <td>
+                    <div class="TableInpt">
+                        <el-input placeholder="请输入内容" v-model="list.sy_closeOrder" type="number" min="0">
+                            <span slot="suffix" class="slotspan">天</span>
+                        </el-input>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>充值订单超时天数，默认15天</span>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="setBasicButn" style="border: none;">
+        <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">提交</el-button>
+    </div>
+</div>
+<!-- script -->
+<script>
+    const custoapp = new Vue({
+        el: '#yemanapp',
+        data: function () {
+            return {
+                salary: [
+                    {value: '1', label: '元'},
+                    {value: '2', label: '千元'},
+                    {value: '3', label: 'K'},
+                    {value: '4', label: 'k'},
+                ],
+                province: [],
+                value: '',
+                uri: "m=system&c=",
+                list: {},
+                cache: {},
+                city_index: [],
+                city_type: [],
+
+                saveLoading: false
+            }
+        },
+        created() {
+            this.getList();
+        },
+        methods: {
+            cityChange: function () {
+                this.list.sy_web_city_two = '';
+                this.city(this.list.sy_web_city_one);
+            },
+            city: async function (cityId) {
+                let _this = this;
+                let url = _this.uri + 'set_web_config&a=city';
+                let sendData = {};
+                if (cityId) {
+                    sendData.city_id = cityId;
+                }
+                let res = await httpPost(url, sendData, {hideloading: true})
+                if (res.data.error == 0) {
+                    _this.city_type = res.data.data.city
+                }
+            },
+            getList: function () {
+                let _this = this;
+                let url = _this.uri + 'set_web_config&a=index';
+                httpPost(url, {}, {hideloading: true}).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        _this.province = res.data.province;
+                        _this.list = res.data.config;
+                        if (_this.list.sy_web_city_one) {
+                            _this.city(_this.list.sy_web_city_one)
+                        } else {
+                            _this.city('');
+                        }
+                    }
+                })
+            },
+            save: function () {
+                let _this = this;
+                let url = this.uri + "set_web_config&a=save";
+                let ruleForm = {};
+                ruleForm.config = 1;
+                ruleForm.sy_seo_rewrite = this.list.sy_seo_rewrite == '1' ? 1 : 0;
+                ruleForm.sy_header_fix = this.list.sy_header_fix == "1" ? 1 : 0;
+                ruleForm.sy_footer_fix = this.list.sy_footer_fix == "1" ? 1 : 0;
+                ruleForm.sy_wap_comtpl = this.list.sy_wap_comtpl;
+                ruleForm.sy_uni_comtpl = this.list.sy_uni_comtpl;
+                ruleForm.sy_news_rewrite = this.list.sy_news_rewrite;
+                ruleForm.sy_linksq = this.list.sy_linksq == "1" ? 1 : 0;
+                ruleForm.sy_wap_jump = this.list.sy_wap_jump == "1" ? 1 : 0;
+                ruleForm.sy_pc_jump_wap = this.list.sy_pc_jump_wap == "1" ? 1 : 0;
+                ruleForm.sy_default_comclass = this.list.sy_default_comclass;
+                ruleForm.sy_zhanzhang_baidu = this.list.sy_zhanzhang_baidu;
+                ruleForm.sy_default_userclass = this.list.sy_default_userclass;
+                ruleForm.sy_ewm_type = this.list.sy_ewm_type;
+                ruleForm.sy_job_hits = parseInt(this.list.sy_job_hits);
+                ruleForm.sy_indexpage = parseInt(this.list.sy_indexpage);
+                ruleForm.sy_resume_visitors = parseInt(this.list.sy_resume_visitors);
+                ruleForm.sy_datacycle = parseInt(this.list.sy_datacycle) > 0 ? parseInt(this.list.sy_datacycle) : 0;
+                ruleForm.sy_datacycle_job = parseInt(this.list.sy_datacycle_job) > 0? parseInt(this.list.sy_datacycle_job) : 0;
+                ruleForm.sy_datacycle_com = parseInt(this.list.sy_datacycle_com) > 0 ? parseInt(this.list.sy_datacycle_com) : 0;
+                ruleForm.sy_logintime = parseInt(this.list.sy_logintime) > 0 ? parseInt(this.list.sy_logintime) : 1;
+                ruleForm.sy_login_type = this.list.sy_login_type;
+                ruleForm.sy_closeOrder = parseInt(this.list.sy_closeOrder) > 0 ? parseInt(this.list.sy_closeOrder) : 15;
+                ruleForm.sy_h5_share = this.list.sy_h5_share == "1" ? 1 : 0;
+                ruleForm.sy_advice_mobilecode = this.list.sy_advice_mobilecode == "1" ? 1 : 0;
+                ruleForm.sy_job_lookfx = this.list.sy_job_lookfx == "1" ? 1 : 0;
+                ruleForm.sy_wxwap_list = this.list.sy_wxwap_list;
+                ruleForm.sy_adclick = parseInt(this.list.sy_adclick);
+                ruleForm.sy_outlinks = this.list.sy_outlinks;
+                ruleForm.sy_shenming = this.list.sy_shenming;
+                ruleForm.sy_autoref = this.list.sy_autoref;
+                ruleForm.sy_autorefrand = this.list.sy_autorefrand;
+                ruleForm.sy_recommend_day_num = parseInt(this.list.sy_recommend_day_num);
+                ruleForm.sy_recommend_interval = parseInt(this.list.sy_recommend_interval);
+                ruleForm.sy_resumeout_day_num = parseInt(this.list.sy_resumeout_day_num);
+                ruleForm.sy_resumeout_interval = parseInt(this.list.sy_resumeout_interval);
+                ruleForm.sy_web_city_one = this.list.sy_web_city_one;
+                ruleForm.sy_web_city_two = this.list.sy_web_city_two;
+                ruleForm.resume_salarytype = this.list.resume_salarytype;
+                ruleForm.sy_sxsjgs = this.list.sy_sxsjgs;
+                _this.saveLoading = true;
+                httpPost(url, ruleForm, {hideloading: true}).then(function (response) {
+                    var res = response.data;
+                    if (res.error == 0) {
+                        message.success('操作成功', _this.getList());
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).finally(function () {
+                    setTimeout(function () {
+                        _this.saveLoading = false;
+                    }, 2000);
+                });
+            }
+        }
+    });
+</script>
+</body>
+
+</html>

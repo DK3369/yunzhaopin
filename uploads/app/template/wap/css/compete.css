@@ -1,0 +1,74 @@
+@charset "utf-8";
+/* CSS Document */
+*{ margin:0;padding:0;}
+ul,li{ list-style:none}
+em{ font-style:normal}
+a{ text-decoration:none}
+.mt20{ margin-top:20px;}
+.yun_prompt_box{width:100%;background:#fff; float:left;font-size:14px;}
+
+/*职位竞争力*/
+.compete_body{padding:0  0.586666rem 0.613333rem 0.586666rem}
+.compete_body_jzl{text-align:center;font-size:0.64rem;font-weight:700;color:#deae66;line-height:1.6rem}
+.compete_body_dx{font-size:0.4rem;color:#deae66;opacity:.5;text-align:center;margin-bottom:1.066666rem}
+.compete_body_zh{font-size:0.4rem;color:#ccc;line-height:1.013333rem;padding:0 0.32rem}
+.compete_body_zh_l{width:0.506666rem;height:0.506666rem}
+.compete_body_row{display:flex;flex-direction:row;align-items:center;justify-content:center;text-align:center}
+.compete_body_rowtwo{display:flex;flex-direction:row;align-items:center;justify-content:center;text-align:center;margin-top:0.826666rem}
+.compete_body_card{margin-top:0.32rem;background:rgba(255,230,193,.1);border-radius:0.213333rem;padding:0.8rem 0.4rem 0.773333rem 0.4rem}
+.compete_body_cardtwo{margin-top:0.32rem;background:rgba(255,230,193,.1);border-radius:0.213333rem;padding:0.8rem 0.4rem 0.266666rem 0.4rem}
+.compete_body_card_tao{padding-left:2rem;padding-bottom:0.533333rem;padding-right:1.333333rem}
+.compete_body_card_tao_q{position:relative;width:100%;height:0.4rem;background:rgba(255,255,255,.2);border-radius:0.026666rem;margin-bottom:0.666666rem}
+.compete_body_card_tao_bdz{width:35%;background:rgba(255,255,255,.2);border-radius:0.026666rem}
+.compete_body_card_tao_ss{width:15%;background:rgba(255,255,255,.2);border-radius:0.026666rem}
+.compete_body_card_tao_qlast{position:relative;width:100%;height:0.4rem;background:rgba(255,255,255,.2);border-radius:0.026666rem}
+.compete_body_card_tao_h{background:#deae66;border-radius:0.026666rem;width:100%}
+.compete_body_card_tao_b{width:100%;height:0.4rem;background:rgba(255,255,255,.2);border-radius:0.026666rem}
+.jzl_cur{background:#deae66}
+.compete_body_card_tao_xz{width:2.666666rem;position:absolute;left:-2.933333rem;text-align:right;top:0rem;font-size:0.346666rem;color:#ccc;line-height:0.4rem}
+.compete_body_card_tao_dz{position:absolute;left:-2.133333rem;top:0;font-size:0.346666rem;color:#ccc;line-height:0.4rem}
+.compete_body_card_tao_xzd{position:absolute;left:-1.733333rem;top:0;font-size:0.346666rem;color:#ccc;line-height:0.4rem}
+.compete_body_card_tao_bfb{position:absolute;right:-1.6rem;top:0;width:1.333333rem;text-align:left;font-size:0.32rem;color:#fff;line-height:0.4rem}
+.compete_body_card_y{display:flex;align-items:center;justify-content:center}
+.compete_body_card_djg{width:3.2rem;height:3.2rem}
+.compete_body_shu{border-left:0.026666rem solid rgba(255,255,255,.5);border-radius:0.026666rem;padding:0.293333rem 0}
+.compete_body_card_dj{position:relative;text-align:center;width:3.2rem;height:3.2rem;border:0.4rem solid #dfae67;font-size:0.96rem;font-weight:700;color:#deae66;line-height:3.2rem;border-radius:50%}
+.compete_body_card_h{position:relative;text-align:center;width:3.2rem;height:3.2rem;border:0.4rem solid rgba(255,255,255,.1);font-size:0.96rem;font-weight:700;line-height:3.2rem;border-radius:50%}
+.compete_body_card_zw{margin-top:0.533333rem;text-align:center;font-size:0.4rem;color:rgba(255,255,255,.5);line-height:1.546667rem}
+.compete_body_card_zw_dj{font-size:0.4rem;color:#deae66;line-height:0.773333rem}
+.compete_body_card_zh{padding:0 0.666666rem;margin-top:0.266666rem;font-size:0.346666rem;color:rgba(255,255,255,.5);line-height:0.64rem;text-align:center}
+.compete_body_card_qw{text-align:center;font-size:0.4rem;color:rgba(255,255,255,.5);margin-bottom:1.04rem;display:flex;flex-direction:row;justify-content:center}
+.compete_body_card_gy{font-size:0.4rem;color:rgba(255,255,255,.5);margin-bottom:0.213333rem}
+.compete_body_card_th{font-size:0.4rem;color:rgba(255,255,255,.5)}
+.compete_body_card_bfb{font-size:0.4rem;color:#deae66;display:inline-block;margin:0 0.08rem}
+.compete_body_card_xz{font-size:0.4rem;color:#deae66}
+.compete_body_card_column{display:flex;flex-direction:column}
+.compete_body_zhu{margin-top:0.8rem;font-size:0.346666rem;color:rgba(255,255,255,.5);line-height:0.48rem}
+.comapply_redpack_list_c{width:100%; padding:.533333rem 0 .266667rem 0;}
+.comapply_redpack_list_c_s{ width:25%;display:inline-block; position:relative; padding:1.6rem 0 .266667rem 0; position:relative;text-align:center; cursor:pointer; float:left;}
+.comapply_redpack_list_c_icon{width:1.066667rem;height:1.066667rem; display:inline-block; position:absolute;left:50%; margin-left:-0.533333rem;;top:.133333rem;}
+.comapply_redpack_list_c_icon_gz{ background:url(../images/j_icon1_y.png) no-repeat;background-size:100%;}
+.comapply_redpack_list_c_icon_jy{ background:url(../images/j_icon2_y.png) no-repeat;background-size:100%;}
+.comapply_redpack_list_c_icon_xm{ background:url(../images/j_icon3_y.png) no-repeat;background-size:100%;}
+.comapply_redpack_list_c_icon_jn{ background:url(../images/j_icon4_y.png) no-repeat;background-size:100%;}
+.comapply_redpack_list_c_s_cur{ text-align:center; }
+.comapply_redpack_list_c_s_cur .comapply_redpack_list_c_icon_gz{ background:url(../images/j_icon1.png) no-repeat;background-size:100%;}
+.comapply_redpack_list_c_s_cur .comapply_redpack_list_c_icon_jy{ background:url(../images/j_icon2.png) no-repeat;background-size:100%;}
+.comapply_redpack_list_c_s_cur .comapply_redpack_list_c_icon_xm{ background:url(../images/j_icon3.png) no-repeat;background-size:100%;}
+.comapply_redpack_list_c_s_cur .comapply_redpack_list_c_icon_jn{ background:url(../images/j_icon4.png) no-repeat;background-size:100%;}
+.comapply_redpack_jl{width:100%; float:left; padding:0 0 .266667rem 0;text-align:center;}
+.comapply_redpack_jl a{color:#09F; text-decoration:underline}
+.comapply_redpack_list_resume_tj{width:100%; text-align:center;}
+.comapply_redpack_list_resume_s{ display:inline-block;color:#29b654}
+.comapply_redpack_list_resume_tj_no .comapply_redpack_list_resume_s{color:#f00; }
+.comapply_redpack_td{witdh:100%; text-align:center;}
+.comapply_redpack_td a{ display:block;padding:0 .533333rem;height:1.013333rem;color:#333;border:.026667rem solid #ddd; line-height:1.013333rem; text-align:center;border-radius:.133333rem; margin-left:.266667rem; margin-right:.533333rem; margin-top:.213333rem;}
+.comapply_redpack_td .comapply_redpack_td_cur{color:#f60;border:.026667rem solid #f60;}
+.comapply_redpack_pop {color: #666666;line-height: .64rem;padding:.266667rem 0 .533333rem 0;}
+.comapply_redpack_tit_s{ font-size:.426667rem;}
+.comapply_redpack_tit_n{color:#f00}
+.comapply_redpack_tit{width:100%; float:left; padding:.266667rem 0 .533333rem  0; text-align:center}
+.compete_body_fuli{ padding-bottom: 0.8rem;}
+.compete_body_fuli_n{ display: inline-block; margin-right: 0.266666rem; margin-top:0.4rem; background: rgba(255,255,255,.2);color:#deae66; padding: 3px 0.213333rem;border-radius:0.106666rem;}
+.compete_body_fuliname{ padding-top: 0.266666rem;color: rgba(255,255,255,.5);font-size: 0.4rem; }
+

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+<body>
+<div id="hyfl" class="moduleElenAl">
+    <div class="moduleSeachs">
+        <div class="">
+            测评类别
+        </div>
+        <div class="nrtopbtn">
+            <el-button type="primary" icon="el-icon-document-add" @click="dialogVisible = true"
+                       size="mini">添加类别
+            </el-button>
+        </div>
+    </div>
+    <div class="moduleElTable" style="padding: 12px; height: calc(100% - (60px + 6px + 12px + 12px));">
+        <el-table :data="tableData" stripe border style="width: 100%;height: 100%;" :empty-text="emptytext"
+                  :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" v-loading="loading">
+            <el-table-column prop="id" label="编号" width="180">
+            </el-table-column>
+            <el-table-column label="类别名称" property="name">
+                <template slot-scope="scope">
+                    <el-input v-if="scope.row[scope.column.property + 'isShow']"
+                              :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
+                              v-model="scope.row.name" @blur="alterData(scope, 1)"></el-input>
+                    <span v-else>{{ scope.row.name }}
+                        <img src="../../../admin/images/bine.png" alt="" style="margin-left: 4px;" width="14"
+                             height="14" @click="editData(scope, 1)">
+					</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="记录数" property="number">
+                <template slot-scope="scope">
+                    共有试卷 <span style="color:#0033FF; display:inline-block;">{{scope.row.count ? scope.row.count : 0}}</span> 篇
+                </template>
+            </el-table-column>
+            <el-table-column label="排序" property="sort">
+                <template slot-scope="scope">
+                    <el-input v-if="scope.row[scope.column.property + 'isShow']"
+                              :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
+                              v-model="scope.row.sort" @blur="alterData(scope, 1)"></el-input>
+                    <span v-else>
+                        {{ scope.row.sort }}
+                        <img src="../../../admin/images/bine.png" alt="" style="margin-left: 4px;" width="14"
+                             height="14" @click="editData(scope, 1)">
+                    </span>
+                </template>
+            </el-table-column>
+            <el-table-column label="操作" width="80" fixed="right">
+                <template slot-scope="scope">
+                    <div class="cz_button">
+                        <el-button type="danger" size="mini" @click="delrow(scope.row.id)">删除</el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+    <el-dialog title="添加类别" width="500px" :visible.sync="dialogVisible" :modal-append-to-body="false">
+        <div class="hydialog_item">
+            <span>类别名称：</span>
+            <el-input v-model="lbname" style="flex: 1;"></el-input>
+        </div>
+        <div slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="saveClass" :disabled="submitLoading">添加</el-button>
+        </div>
+    </el-dialog>
+</div>
+</body>
+<script>
+    const custoapp = new Vue({
+        el: '#hyfl',
+        data: function () {
+            return {
+                emptytext: '暂无数据',
+                loading: false,
+                tableData: [], //表格数据
+                dialogVisible: false,
+                lbname: '',
+                islook: false,
+				submitLoading: false
+            }
+        },
+        created: function () {
+            this.getList();
+        },
+        methods: {
+            editData(scope) {
+                let index = scope.$index;
+                let row = scope.row;
+                let column = scope.column;
+                this.oldData = JSON.parse(JSON.stringify(row));
+                let copyRow = JSON.parse(JSON.stringify(row));
+                copyRow[column.property + "isShow"] = true;
+                this.$set(this.tableData, index, copyRow);
+                this.$nextTick(() => {
+                    let ref = column.property + index;
+                    $("#" + ref).focus();
+                });
+            },
+            alterData(scope) {
+                if (this.oldData == null) {
+                    return false;
+                }
+                let index = scope.$index;
+                let row = scope.row;
+                let column = scope.column;
+                let copyRow = JSON.parse(JSON.stringify(row));
+                copyRow[column.property + "isShow"] = false;
+                this.$set(this.tableData, index, copyRow);
+                if (row[column.property] === this.oldData[column.property]) {
+                    return false;
+                }
+                let _this = this;
+                let sendData = {id: row.id};
+                sendData[column.property] = row[column.property];
+                httpPost('m=neirong&c=evaluate&a=ajax', sendData, {hideloading: true}).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        message.success('修改成功');
+                    } else {
+                        message.error('修改失败');
+                    }
+                    _this.oldData = null;
+                    _this.getList();
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            async getList() {
+                let that = this;
+                that.loading = true;
+                that.emptytext = "数据加载中";
+                httpPost('m=neirong&c=evaluate&a=group', {}, {hideloading: true}).then(function (result) {
+                    var res = result.data
+                    if (res.error == 0) {
+                        that.tableData = res.data
+                        that.loading = false;
+                        if (that.tableData.length === 0){
+                            that.emptytext = "暂无数据";
+                        }
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            delrow(id) {
+                delConfirm(this, id, this.delete);
+            },
+            async delete(id) {
+                let that = this;
+                let params = {
+                    del: id
+                };
+                httpPost('m=neirong&c=evaluate&a=delgroup', params).then(function (response) {
+                    if (response.data.error == 0) {
+                        message.success(response.data.msg, function () {
+                            that.draweredit = false
+                            that.getList();
+                        });
+                    } else {
+                        message.error(response.data.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            // 添加分类保存
+            saveClass(){
+                var that = this
+                if(that.lbname == ''){
+                    message.error('类别名称不能为空！');
+                    return false;
+                }
+				that.submitLoading = true;
+                httpPost('m=neirong&c=evaluate&a=addgroup', {classname: that.lbname}).then(function (response) {
+                    if (response.data.error == 0) {
+                        message.success(response.data.msg, function(){
+                            that.getList();
+                            that.dialogVisible = false
+                        });
+                    } else {
+                        message.error(response.data.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                }).finally(function () {
+					that.submitLoading = false;
+				});
+            },
+        }
+    });
+</script>
+</html>
+<style>
+    .cell span {
+        display: flex;
+        align-items: center;
+    }
+
+    .hydialog_item {
+        display: flex;
+    }
+</style>

@@ -1,0 +1,68 @@
+{yun:}include file="$wapstyle/header_cont.htm"{/yun}
+<style>
+body{ background:#fff}
+.header_bg{ background-color:#1773fa ;}
+.app_down_pic{   text-align:center; font-size:16px; }
+.app_down_pic_b{width:160px;height:160px;  margin:0 auto}
+.app_down_name{width:100%; text-align:center; padding:10px 0; font-size:16px; font-weight:bold}
+.app_downbth_box{width:100%; text-align:center; padding-top:30px;font-size:16px; }
+.app_downbth{width:260px;height:50px; line-height:50px; text-align:center; background:#09F;color:#fff; display:inline-block;border-radius:30px;font-size:16px; }
+.app_downbth_a{color:#09F; text-decoration:underline;font-size:16px; }
+.app_down_name_n{color:#999;width:100%; text-align:center;font-size:16px; }
+
+.app_img img{width:100%;}
+.app_down_all{ margin-top: -40px;;}
+.app_down_icon{width:90px;height:90px; background-color: #fff;border-radius:16px; margin: 0 auto;}
+.app_down_icon img{width:90px;height:90px;border-radius:16px;}
+.app_down_bth{width:210px;height:55px; line-height: 55px; text-align: center; margin: 0 auto; font-size: 18px;color:#fff;background-color:#1773fa ;border-radius:50px;}
+.app_down_bth a{color:#fff}
+.app_sm{ padding-top: 20px; text-align: center; font-size: 15px; line-height: 30px;color:#666;}
+.app_down_bbh{text-align: center; font-size: 15px;color:#666;}
+.app_down_kh{ text-align: center; font-size: 18px; font-weight: bold; line-height: 30px;color:#666; padding-top:10px;padding-bottom: 20px;}
+</style>
+ 
+<!--浏览器浏览-->
+<div class="app_img">
+	<img src="{yun:}$wap_style{/yun}/images/xzapp.png"/>
+</div>
+<div class="app_down_all">
+<div class="app_down_icon"><img src="{yun:}$wap_style{/yun}/images/biographical_notes.png"/></div>
+<div class="app_down_kh">找自己喜欢的工作</div>
+{yun:}if $down.qrcode{/yun}
+<div class="app_down_pic"><div class="app_down_pic_b"><img src="{yun:}$down.qrcode{/yun}" width="160" height="160"></div></div>
+<div class="app_down_bbh">长按识别二维码下载</div>
+{yun:}/if{/yun}
+{yun:}if $down.url{/yun}
+<div class="app_down_bth"><a href="{yun:}$down.url{/yun}">立即下载</a></div>
+{yun:}/if{/yun}
+
+<div class="app_sm">
+<div class="app_down_bbh">高薪职位招聘，找工作求职必备</div>
+{yun:}if $down.version{/yun}
+<div class="app_down_bbh">版本号：{yun:}$down.version{/yun}</div>
+{yun:}/if{/yun}
+</div>
+</div>
+<!--浏览器浏览-->
+ 
+
+<script>
+function goBack(){
+	if (navigator.userAgent.indexOf('Firefox') >= 0 ||
+		navigator.userAgent.indexOf('Opera') >= 0 ||
+		navigator.userAgent.indexOf('Safari') >= 0 ||
+		navigator.userAgent.indexOf('Chrome') >= 0 ||
+		navigator.userAgent.indexOf('WebKit') >= 0){
+
+		if(window.history.length > 1){
+			window.history.go( -1 );
+		}else{
+			location.href = wapurl;
+		}
+	}else{ //未知的浏览器
+		window.history.go( -1 );
+	}
+}
+</script>
+</body>
+</html>

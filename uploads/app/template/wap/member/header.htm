@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <meta http-equiv="Cache-Control" content="no-cache" />
+        <title>{yun:}$config.sy_webname{/yun}</title>
+        <meta name="keywords" content="人才招聘,网络招聘,wap" />
+        <meta name="description" content="人才招聘网wap网站" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+        <meta name="MobileOptimized" content="240" />
+        <meta http-equiv="Expires" content="0" />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <meta content="yes" name="apple-mobile-web-app-capable" />
+        <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+		<script src="{yun:}$wap_style{/yun}/js/flexible.js?v={yun:}$config.cachecode{/yun}"></script>
+        <link href="{yun:}$wap_style{/yun}/css/base.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet">
+		<link href="{yun:}$wap_style{/yun}/css/member/memberuserwap.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet">
+		<link href="{yun:}$wap_style{/yun}/css/member/memberwap.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet">
+		<link href="{yun:}$config_wapdomain{/yun}/js/vant/lib/index.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet" />
+		<script src="{yun:}$wap_style{/yun}/js/jquery.min.js?v={yun:}$config.cachecode{/yun}"></script>
+		<script src="{yun:}$wap_style{/yun}/js/vue.min.js?v={yun:}$config.cachecode{/yun}"></script>
+		<script src="{yun:}$config_wapdomain{/yun}/js/vant/lib/vant.min.js?v={yun:}$config.cachecode{/yun}"></script>
+		<script src="{yun:}$config_wapdomain{/yun}/js/vant/phpyun_vant.js?v={yun:}$config.cachecode{/yun}"></script>
+		<script src="{yun:}$wap_style{/yun}/js/public.js?v={yun:}$config.cachecode{/yun}"></script>
+		<script src="{yun:}$wap_style{/yun}/js/user.js?v={yun:}$config.cachecode{/yun}"></script>
+    </head>
+
+    <body>
+    	
+        {yun:}if isset($smarty.get.c) && !in_array($smarty.get.c, array('sysnews','addresume')){/yun}
+		
+		{yun:}if in_array($smarty.get.c, array('finance','loglist','change','pay','withdraw','integral')){/yun}
+		<!--黑色背景头部-->
+		<div class="m_backheader">
+			
+				<div class="m_headericon"><a href="{yun:}if $backurl{/yun}{yun:}$backurl{/yun}{yun:}else{/yun}javascript:goBack();{yun:}/if{/yun}">
+					<img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
+				</a></div>
+			
+			<div class="m_header_cont">{yun:}$headertitle{/yun}</div>
+		</div>
+		{yun:}elseif in_array($smarty.get.c, array('resume','info','addexpect','addresumeson')){/yun}
+		<!--白色背景头部-->
+		<div class="m_whiteheader">
+			<div class="m_whiteheaderfid ">
+				<a href="{yun:}if $backurl{/yun}{yun:}$backurl{/yun}{yun:}else{/yun}javascript:goBack();{yun:}/if{/yun}"
+					 class="m_headericon">
+						<img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
+					
+				</a>
+				<div class="m_header_cont">{yun:}$headertitle{/yun}</div>
+				{yun:}if $smarty.get.c == 'resume'{/yun}
+				<!--编辑简历 -->
+				<div class="Edit_your_resume_header_right" onclick="resumeMore()">
+					<img src="{yun:}$wap_style{/yun}/images/add_newdot.png" alt="" width="100%" height="100%">
+				</div>
+				{yun:}elseif $smarty.get.c == 'info' || $smarty.get.c == 'addexpect'{/yun}
+				<!--基本信息和编辑求职意向 -->
+				<!--<div class="personal_details_header_save" id="headSave" onclick="headSave('{yun:}$smarty.get.c{/yun}')">保存</div>-->
+				{yun:}elseif $smarty.get.c == 'addresumeson'{/yun}
+				<!--简历附表 -->
+				<div class="personal_details_header_save" onclick="headDelete('{yun:}$smarty.get.type{/yun}','{yun:}$smarty.get.eid{/yun}','{yun:}$smarty.get.id{/yun}','{yun:}url d=wxapp h=user m=resume c=delResumeFb{/yun}')">{yun:}if $smarty.get.id{/yun}删除{yun:}/if{/yun}</div>
+				{yun:}/if{/yun}
+			</div>
+        </div>
+		{yun:}else if $smarty.get.c == 'partapply'{/yun}
+
+		<!--新增兼职头部-->
+		<div class="more_position_header">
+			<div class="position_header_back">
+				<a href="{yun:}if $backurl{/yun}{yun:}$backurl{/yun}{yun:}else{/yun}javascript:goBack();{yun:}/if{/yun}" style="display: block">
+					<img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="">
+				</a>
+			</div>
+			<div class="position_header_serch">
+				{yun:}if $smarty.get.type == 'bm' || !$smarty.get.type{/yun}
+				<input type="search" id="partBm" placeholder="搜索兼职">
+				{yun:}else if $smarty.get.type == 'sc'{/yun}
+				<input type="search" id="partSc" placeholder="搜索兼职">
+				{yun:}/if{/yun}
+			</div>
+		</div>
+		<!--新增兼职头部- end-->
+		{yun:}else{/yun}
+		<!--蓝色背景头部-->
+		<div class="m_header">
+			<div class="m_header_c">
+				<div class="m_headericon">
+					<a href="{yun:}if $backurl{/yun}{yun:}$backurl{/yun}{yun:}else{/yun}javascript:goBack();{yun:}/if{/yun}">
+						<img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
+					</a>
+				</div>
+				<div class="m_header_cont">{yun:}$headertitle{/yun}</div>
+			</div>
+		</div>
+		{yun:}/if{/yun}
+		{yun:}/if{/yun}
+	<script>
+		var weburl = "{yun:}$config.sy_weburl{/yun}",
+			wapurl = "{yun:}url m=wap{/yun}";
+	</script>
+	<script>
+		window.localStorage.removeItem("needRefresh");
+		window.addEventListener('pageshow', function(){
+			var storage = window.localStorage.getItem("needRefresh");
+			if(storage){
+				window.location.reload();
+			}
+		});
+	</script>

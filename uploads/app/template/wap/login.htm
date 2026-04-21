@@ -1,0 +1,340 @@
+{yun:}include file="$wapstyle/header.htm"{/yun}
+<style>
+    body {
+        background: #fff
+    }
+</style>
+<!-- 页面头部返回按钮 -->
+<div class="Back_to_the_previous_level">
+    <div class="login_back" onclick="goBack()">
+        <img src="{yun:}$wap_style{/yun}/images/return.png" alt="" width="100%" height="100%">
+    </div>
+</div>
+<div class="login_cont">
+	<div class="bottom_nav_bom" style="padding-top: 0px; text-align: right;"><i class="bottom_nav_bom_word">还没有账号，</i> <a href="{yun:}url m=wap c=register{/yun}" class="register_1">马上注册</a></div>
+	<div class="login_welcome">
+		<div>您好，</div>
+		<div>欢迎登录</div>
+	</div>
+    {yun:}if $wxid && ($wxnickname || $wxpic){/yun}
+        <div class="login_titlebox">
+            <div class="login_title_logo">
+                <img src="{yun:}$wxpic{/yun}" alt="" width="100%" height="100%">
+            </div>
+            <div class="login_title_info">
+                您已登录微信账号，<i>登录绑定已有账户</i>
+            </div>
+        </div>
+    {yun:}/if{/yun}
+
+    <!-- form表单区域 -->
+    <form id="login_form">
+        <input id="qfyuid" name="qfyuid" type="hidden" value=""/>
+        <input type="hidden" name="backurl" id="backurl" value="{yun:}$backurl{/yun}"/>
+        <input type="hidden" name="act_login" id="act_login" value="0"/>
+        <input name="usertype" type="hidden" value="{yun:}$smarty.get.usertype{/yun}"/>
+        <input name="wxid" type="hidden" value="{yun:}$smarty.get.wxid{/yun}"/>
+        {yun:}if $smarty.get.job{/yun}
+        <input name="job" type="hidden" value="{yun:}$smarty.get.job{/yun}"/>
+        {yun:}/if{/yun}
+
+        <div class="The_login_subject">
+            <div id="login_normal_box">
+                <div class="login_textbox">
+                    <input type="text" name="username" placeholder="请输入用户名/邮箱/手机号" class="account_number">
+                </div>
+                <div class="login_textbox">
+                    <input type="password" id="password" value="" name="password" placeholder="请输入密码"/>
+                    <input type="text" id="login_password" style="display: none"/>
+                    <div class="close_open"><img src="{yun:}$wap_style{/yun}/images/conceal.png" alt="" width="100%" height="100%" id="close"></div>
+                </div>
+            </div>
+            <!--手机动态码登录-->
+            {yun:}if $config.sy_msg_login==1{/yun}
+            <div id="login_sj_box" class="login_textbox" style="display:none;">
+                <input type="tel" value="" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" placeholder="请输入手机号" name="moblie" id="usermoblie" class="account_number">
+            </div>
+            {yun:}/if{/yun}
+
+            {yun:}if strstr($config.code_web, '前台登录'){/yun}
+                <div>
+                    {yun:}if $config.code_kind>2{/yun}
+                    <div class="gtdx-captcha">
+                        <div id="bind-captcha" data-id='login_bth' data-type='click'></div>
+                        <input type='hidden' id="verify_token" name="verify_token" value="" />
+						{yun:}if $config.code_kind==6{/yun}
+                        <input type='hidden' id="verify_str" name="verify_str" value="" />
+                        {yun:}/if{/yun}
+                        <input type='hidden' id="popup-submit" />
+                        <input type='hidden' id="bind-submit" />
+                    </div>
+                    {yun:}else{/yun}
+                    <div class="login_textbox">
+                        <input class="inputitemtxt" placeholder="图片验证码" name="authcode" id="checkcode" type="text"
+                               maxlength="6"/>
+                        <img id="vcode_img" class="authcode" src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php"
+                             onclick="checkCode('vcode_img');"/>
+                    </div>
+
+                    {yun:}/if{/yun}
+                </div>
+            {yun:}/if{/yun}
+
+            {yun:}if $config.sy_msg_login==1{/yun}
+                <div class="passwords" id="login_sjyz_box" style="display:none;">
+                    <div class="login_textbox">
+                        <input name="dynamiccode" type="text" maxlength='6' class="inputitemtxt" value="" placeholder="输入短信验证码" onblur="changeCaptcha()"/>
+                        <input type="password" id="login_code" style="display: none"/>
+                        <div class="dx_yz_hq" id="send_msg_tip" onclick="send_msg('{yun:}$config_wapdomain{/yun}/index.php?c=login&a=sendmsg');"> 获取验证码</div>
+                    </div>
+                </div>
+            {yun:}/if{/yun}
+            <div class="login_xy">
+                <div class="login_xy_zx">
+                    <input type="checkbox" id="xieyicheck" name="xieyicheck" value="1" checked onclick="choosexie(this)"/>
+                </div>
+                <div>
+                    <i class="policy">我已同意</i>
+                    <a href="{yun:}url m=wap c=protocol{/yun}" class="Privacy">《用户协议》</a>
+                    <i class="policy">和</i>
+                    <a href="{yun:}url m=wap c=privacy{/yun}" class="Privacy">《隐私政策》</a>
+                </div>
+            </div>
+            <div id="login_bth" class="login_bth" onclick="login()">登录</div>
+        </div>
+
+        {yun:}if $checkurl!="{yun:}url m=wap c=forgetpw{/yun}"{/yun}
+        <input type="hidden" name="checkurl" value="{yun:}$checkurl{/yun}"/>
+        {yun:}/if{/yun}
+    </form>
+    <!-- 验证码 -->
+    <div class="login_otherfs">
+        {yun:}if $config.sy_msg_isopen==1 && $config.sy_msg_login==1{/yun}
+        <div class="verification_code_word" id="mobile_login">短信登录</div>
+        {yun:}/if{/yun}
+        <div class="verification_code_word" id="acount_login" style="display: none"> 用户名登录</div>
+        <a href="{yun:}url m=wap c=forgetpw{/yun}" class="login_wjmm">忘记密码</a>
+    </div>
+</div>
+<!-- 另外的登录方式 -->
+{yun:}if $config.sy_qqlogin==1 || $config.sy_sinalogin==1 || ($config.wx_rz==1 && !$wxid){/yun}
+<div class="bottom_nav">
+    <div class="bottom_nav_top">或通过以下方式登录</div>
+    <div class="bottom_nav_center">
+        {yun:}if $config.wx_rz==1 && !$wxid{/yun}
+        <a class="bottom_nav_center_logo" href="{yun:}url m=wap c=wxconnect{/yun}">
+            <img src="{yun:}$wap_style{/yun}/images/weixin.png" alt="" width="100%" height="100%">
+        </a>
+        {yun:}/if{/yun}
+        {yun:}if $config.sy_qqlogin==1{/yun}
+            <a class="bottom_nav_center_logo" href="{yun:}$config.sy_weburl{/yun}/qqlogin.php">
+                <img src="{yun:}$wap_style{/yun}/images/QQ@2x.png" alt="" width="100%" height="100%">
+            </a>
+        {yun:}/if{/yun}
+        {yun:}if $config.sy_sinalogin==1{/yun}
+            <a class="bottom_nav_center_logo" href="{yun:}url m=wap c=sinaconnect{/yun}">
+                <img src="{yun:}$wap_style{/yun}/images/weibu.png" alt="" width="100%" height="100%">
+            </a>
+        {yun:}/if{/yun}
+    </div>
+
+</div>
+{yun:}/if{/yun}
+
+{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+<script src="{yun:}$wap_style{/yun}/js/reg_ajax.js?v={yun:}$config.cachecode{/yun}"></script>
+{yun:}include file="$wapstyle/verify_js.htm"{/yun}
+<script>
+    var wapurl = "{yun:}url m=wap{/yun}",
+        wapRegUrl = "{yun:}url m=wap c=register{/yun}",
+        weburl = "{yun:}$config.sy_weburl{/yun}",
+        code_web = '{yun:}$config.code_web{/yun}',
+        code_kind = '{yun:}$config.code_kind{/yun}',
+        sy_login_type = '{yun:}$config.sy_login_type{/yun}';
+
+    $(document).ready(function () {
+        $('#close').on('click', function () {
+            var $inp = $('#password');
+            $inp.attr('type') === 'password' ? $inp.attr('type', 'text') : $inp.attr('type', 'password')
+            $(this).attr('src') == '{yun:}$wap_style{/yun}/images/conceal.png' ? $(this).attr('src', '{yun:}$wap_style{/yun}/images/conceal_1.png') : $(this).attr('src', '{yun:}$wap_style{/yun}/images/conceal.png')
+        });
+        $("#username").focus(function () {
+            var txAreaVal = $(this).val();
+            if (txAreaVal == this.defaultValue) {
+                $(this).attr("placeholder", "");
+            }
+        }).blur(function () {
+            var txAreaVal = $(this).val();
+            if (txAreaVal == this.defaultValue || $(this).val() == "") {
+                $(this).attr("placeholder", "请输入用户名/邮箱/手机号");
+            }
+        })
+        $("#password").focus(function () {
+            var txAreaVal = $(this).val();
+            if (txAreaVal == this.defaultValue) {
+                $(this).attr("placeholder", "");
+            }
+        }).blur(function () {
+            var txAreaVal = $(this).val();
+            if (txAreaVal == this.defaultValue || $(this).val() == "") {
+                $(this).attr("placeholder", "请输入您的密码");
+            }
+        })
+        $("#usermoblie").focus(function () {
+            var txAreaVal = $(this).val();
+            if (txAreaVal == this.defaultValue) {
+                $(this).attr("placeholder", "");
+            }
+        }).blur(function () {
+            var txAreaVal = $(this).val();
+            if (txAreaVal == this.defaultValue || $(this).val() == "") {
+                $(this).attr("placeholder", "请输入手机号");
+            }
+        })
+        $(".inputitemtxt").focus(function () {
+            var txAreaVal = $(this).val();
+            if (txAreaVal == this.defaultValue) {
+                $(this).attr("placeholder", "");
+            }
+        }).blur(function () {
+            var txAreaVal = $(this).val();
+            if (txAreaVal == this.defaultValue || $(this).val() == "") {
+                $(this).attr("placeholder", "请输入短信验证码");
+            }
+        })
+        //账号登录和手机登录tab选择
+        $('#acount_login').click(function (data) {
+            $('#acount_login').css("display", "none");
+            $('#mobile_login').css("display", "block");
+            $('#login_normal_box').css("display", "block");
+            $('#login_sj_box').css("display", "none");
+            $('#login_sjyz_box').css("display", "none");
+            $('#act_login').val('0');
+            $('#bind-captcha').attr('data-id', 'login_bth');
+            $('#bind-captcha').attr('data-type', 'click');
+        });
+        $('#mobile_login').click(function (data) {
+            $('#mobile_login').css("display", "none");
+            $('#acount_login').css("display", "block");
+            $('#login_sj_box').css("display", "block");
+            $('#login_sjyz_box').css("display", "block");
+            $('#login_normal_box').css("display", "none");
+            $('#act_login').val('1');
+            $('#bind-captcha').attr('data-id', 'send_msg_tip');
+            $('#bind-captcha').attr('data-type', 'click');
+        });
+
+        if (sy_login_type == '2' && $('#mobile_login')) {
+            $('#mobile_login').trigger("click");
+        }
+    });
+    var Timer;
+    var smsTimer_time = 90; //倒数 90
+    var smsTimer_flag = 90; //倒数 90
+    var smsTime_speed = 1000; //速度 1秒钟
+
+    //发送手机短信
+    function send_msg(url) {
+        var moblie = $('#usermoblie').val();
+        var code;
+
+        var verify_token,verify_str;
+        if (moblie == "" || moblie == "请输入手机号码") {
+
+            showToast("请输入手机号码！");
+            return false;
+        } else {
+
+            if (!isjsMobile(moblie)) {
+                showToast('手机格式错误！');
+                return false;
+            }
+        }
+        var codesear = new RegExp('前台登录');
+        if (codesear.test(code_web)) {
+            if (code_kind == 1) {
+                code = $.trim($("#checkcode").val());
+                if (!code) {
+                    showToast('请填写图片验证码！');
+                    return false;
+                }
+            } else if (code_kind > 2) {
+                // 验证类型改成短信
+                $('#bind-captcha').attr('data-id', 'send_msg_tip');
+                $('#bind-captcha').attr('data-type', 'click');
+                verify_token = $('input[name="verify_token"]').val();
+                if (verify_token == '') {
+                    if (code_kind == 6) {
+                        $("#bind-captcha").trigger("click");
+                    } else {
+                        $("#bind-submit").trigger("click");
+                    }
+                    return false;
+                }
+				verify_str = $('input[name="verify_str"]').val();
+            }
+        }
+        if (smsTimer_time == smsTimer_flag) {
+            showLoading();
+            $.post(url, {
+                moblie: moblie,
+                authcode: code,
+                verify_token: verify_token,
+                verify_str: verify_str
+            }, function (data) {
+                hideLoading();
+                if (data) {
+                    var res = JSON.parse(data);
+                    if (res.error == 1) {
+                        Timer = setInterval("smsTimer($('#send_msg_tip'))", smsTime_speed);
+                    }
+                    showToast(res.msg, 2, function () {
+                        if (res.error != 1) {
+                            if (code_kind == 1) {
+                                checkCode('vcode_img');
+
+                            } else if (code_kind > 2) {
+                                $("#popup-submit").trigger("click");
+                            }
+                            if (res.url){
+                                location.href = res.url;
+                            }
+                        }
+                        if (res.msg == '请先注册账号') {
+                            location.href = wapRegUrl;
+                        }
+                    });
+                }
+            })
+        } else {
+            showToast('请勿重复发送！', 2);
+            return false;
+        }
+    }
+
+    //倒计时
+    function smsTimer(obj) {
+        if (smsTimer_flag > 0) {
+            $(obj).html('重新发送(' + smsTimer_flag + 's)');
+            $(obj).attr({
+                'style': 'background: ;'
+            });
+            smsTimer_flag--;
+        } else {
+            $(obj).html('重新发送');
+            $(obj).attr({
+                'style': 'background: ;'
+            });
+            smsTimer_flag = smsTimer_time;
+            clearInterval(Timer);
+        }
+    }
+
+    function changeCaptcha() {
+        // 验证类型改成提交
+        $('#bind-captcha').attr('data-id', 'login_bth');
+        $('#bind-captcha').attr('data-type', 'click');
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+
+<div id="yunvue" class="none">
+<div class="modification_name_box">
+	<form id="setname_form">
+		<div class="yun_from_card">
+		<div class="yun_from_list">
+			<input :placeholder="regnameplaceholder" name="username" value="" class="yun_from_name_input"/>
+		</div>
+		<div class="yun_from_list">
+			<input password="true" placeholder="请输入登录密码" name="password" value="" class="yun_from_name_input"/>
+		</div>
+		</div>				
+		<div class="yun_bth modification_name_btn" @click="saveSetName">确认</div>
+	</form>
+</div>
+</div>
+
+<script>  
+var yunvue = new Vue({
+    el: '#yunvue',
+    data: {
+        regnameplaceholder:'',
+    },
+    created() {   
+        this.getCon();
+    },
+    methods:{          
+        getCon:function(){
+            showLoading();
+            var that = this;
+            var paramer = {};                
+            $.post('{yun:}url d=wxapp m=register c=getCon{/yun}',{rander: Math.random()},function(data){
+                hideLoading();      
+               	var con = data.data;
+				var reg_namemaxlen 	= con.reg_namemaxlen,
+					reg_nameminlen 	= con.reg_nameminlen,
+					reg_name_sp 	= con.reg_name_sp,
+					reg_name_zm 	= con.reg_name_zm,
+					reg_name_num 	= con.reg_name_num,
+					reg_name_han 	= con.reg_name_han;
+				
+				var regnameplaceholder = '请输入新用户名'+ '长度'+reg_nameminlen+'-'+reg_namemaxlen+'位';
+				if(reg_name_han=='1' || reg_name_sp=='1' || reg_name_num=='1' || reg_name_zm=='1'){
+					regnameplaceholder +='须包含';
+					if (reg_name_han=='1'){
+						regnameplaceholder +='汉字 ';
+					}
+					if (reg_name_num=='1'){
+						regnameplaceholder +='数字 ';
+					}
+					if (reg_name_zm=='1'){
+						regnameplaceholder +='字母 ';
+					}
+					if (reg_name_sp=='1'){
+						regnameplaceholder +='字符!@#.$-_';
+					}
+					
+				}
+				that.regnameplaceholder = regnameplaceholder;
+                $("#yunvue").css('display', 'block');
+            },'json');            
+        },         
+        saveSetName:function(){
+            var that = this;
+            var self = this;
+			var formData = {};
+			var v = getFormValue('setname_form');
+			var username = v.username;
+			var pass = v.password;
+				
+			if(username.length<2 || username.length>16){
+				return showToast('用户名长度应该为2-16位！');
+			}
+			if(pass.length<6 || pass.length>20){
+				return showToast('密码长度应该为6-20位！');
+			}
+			
+			formData.password = pass;
+			formData.username = username;           
+            
+            showLoading('提交中...');
+            $.post('{yun:}url d=wxapp h=user m=set c=setname{/yun}',formData,function(data){
+                hideLoading();      
+                if (data.error == 1) {
+                    showToast('修改成功，请重新登录',2, function() {
+                       window.localStorage.setItem("socketState", "2");
+                       window.location.href="{yun:}url m=wap c=login{/yun}"
+                    });
+                } else {
+                    showToast(data.msg);
+                }
+            });
+               
+           
+        },
+        pageTo:function(url){
+            window.location.href = url;
+        }
+    } 
+});
+        
+</script>
+</body>
+</html>

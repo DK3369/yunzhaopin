@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="hyfl" class="moduleElenAl">
+        <div class="moduleSeachs">
+            <div class="">
+                招聘会场地
+            </div>
+            <div class="nrtopbtn">
+                <el-button type="primary" icon="el-icon-document-add" @click="dialogVisible = true" size="mini">添加区域
+                </el-button>
+            </div>
+        </div>
+        <div class="moduleElTable">
+            <el-table :data="tableData" stripe border style="width: 100%;height: 100%;"
+                :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" v-loading="loading" :empty-text="emptytext">
+                <el-table-column type="selection" width="55"> </el-table-column>
+                <el-table-column prop="id" label="编号" width="180">
+                </el-table-column>
+                <el-table-column label="行业名称(点击修改)" property="name">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.name }}<img src="../../../admin/images/bine.png" alt=""
+                                style="margin-left: 4px;" width="14" height="14"></span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="排序(越大越在前)" property="px">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.px }}<img src="../../../admin/images/bine.png" alt=""
+                                style="margin-left: 4px;" width="14" height="14"></span>
+                    </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="120">
+                    <div class="TableLink">
+                        <el-link type="primary">预览</el-link>
+                        <el-link type="primary">修改</el-link>
+                    </div>
+                    <div class="TableLink">
+                        <el-link type="primary">位置</el-link>
+                        <el-link type="primary" @click="deldialog = true">删除</el-link>
+                    </div>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="">
+                <div class="">
+                    <el-checkbox v-model="checked" style="margin-right: 8px">全选</el-checkbox>
+                    <el-button>批量删除</el-button>
+                </div>
+            </div>
+        </div>
+        <el-dialog title="添加类别" width="30%" :visible.sync="dialogVisible" :modal-append-to-body="false">
+            <div class="hydialog_item">
+                <span>类别名称：</span>
+                <el-input type="textarea" v-model="lbname" style="flex: 1;"></el-input>
+            </div>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="dialogVisible = false">添加</el-button>
+            </div>
+        </el-dialog>
+        <!-- 删除弹窗 -->
+        <el-dialog title="信息" :visible.sync="deldialog" width="20%" :modal-append-to-body="false">
+            <span>确定要删除？</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="deldialog = false">取 消</el-button>
+                <el-button type="primary" @click="deldialog = false">确 定</el-button>
+            </span>
+        </el-dialog>
+    </div>
+
+</body>
+<script>
+    const custoapp = new Vue({
+        el: '#hyfl',
+        data: function () {
+            return {
+                emptytext: '暂无数据',
+                loading: false,
+                tableData: [
+                    {
+                        id: "1", //分类编号
+                        name: "一级分类：A区", //分类名称
+                        px: "1",
+                    },
+                    {
+                        id: "1", //分类编号
+                        name: "一级分类：A区", //分类名称
+                        px: "2",
+                    },
+                    {
+                        id: "1", //分类编号
+                        name: "一级分类：A区", //分类名称
+                        px: "4",
+                    },
+                    {
+                        id: "1", //分类编号
+                        name: "一级分类：A区", //分类名称
+                        px: "6",
+                    },
+                    {
+                        id: "1", //分类编号
+                        name: "一级分类：A区", //分类名称
+                        px: "9",
+                    },
+                    {
+                        id: "1", //分类编号
+                        name: "一级分类：A区", //分类名称
+                        px: "7",
+                    },
+                ], //表格数据
+                randomKey: Math.random(),
+                checked: false,
+                zmselect: '',
+                options: [{
+                    value: '选项1',
+                    label: '黄金糕'
+                }, {
+                    value: '选项2',
+                    label: '双皮奶'
+                }, {
+                    value: '选项3',
+                    label: '蚵仔煎'
+                }, {
+                    value: '选项4',
+                    label: '龙须面'
+                }, {
+                    value: '选项5',
+                    label: '北京烤鸭'
+                }],
+                sfoptions: [
+                    {
+                        value: '选项1',
+                        label: '是'
+                    }, {
+                        value: '选项2',
+                        label: '否'
+                    }],
+                dialogVisible: false,
+                lbname: '',
+                deldialog: false,
+            }
+        },
+        methods: {
+
+        }
+    });
+</script>
+
+</html>
+<style>
+    .cell span {
+        display: flex;
+        align-items: center;
+    }
+
+    .hydialog_item {
+        display: flex;
+    }
+	.el-table .el-table__cell {
+	    padding: 12px 0;
+	}
+</style>

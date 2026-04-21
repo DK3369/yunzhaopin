@@ -1,0 +1,1752 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+body,
+html {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    background: #f1f1f1;
+}
+
+body ::selection {
+    background: #f90;
+    color: #222;
+}
+
+a,
+li {
+    list-style: none;
+    text-decoration: none;
+}
+
+a {
+    color: #333;
+    font-size: 14px;
+}
+
+a:hover {
+    color: #f30;
+}
+
+button,
+input {
+    border: none;
+    outline: none;
+    background: none;
+}
+
+input::-ms-clear {
+    display: none;
+}
+
+button {
+    cursor: pointer;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+/***
+ * _ooOoo_
+ * o8888888o
+ * 88" . "88
+ * (| -_- |)
+ *  O\ = /O
+ * ___/`---'\____
+ * .   ' \\| |// `.
+ * / \\||| : |||// \
+ * / _||||| -:- |||||- \
+ * | | \\\ - /// | |
+ * | \_| ''\---/'' | |
+ * \ .-\__ `-` ___/-. /
+ * ___`. .' /--.--\ `. . __
+ * ."" '< `.___\_<|>_/___.' >'"".
+ * | | : `- \`.;`\ _ /`;.`/ - ` : | |
+ * \ \ `-. \_ __\ /__ _/ .-` / /
+ * ======`-.____`-.___\_____/___.-`____.-'======
+ * `=---='
+ *          .............................................
+ *           佛曰：bug泛滥，我已瘫痪！
+ */
+/* ---渠道码--首页样式--- */
+.qudaoIndexs {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 24px);
+    margin: 12px;
+    /*background: #fff;*/
+}
+
+.homeTabLink {
+    position: relative;
+}
+
+.homeTabNavs {
+    /*overflow: hidden;*/
+    position: relative;
+    background: #fff;
+    margin-bottom: 12px;
+    border-radius: 4px;
+}
+
+.homeTabLinks{
+    position: relative;
+}
+
+.homeTabNavs ul {
+    overflow: hidden;
+    position: relative;
+    height: 50px;
+    border-bottom: 1px solid #f1f1f1;
+    display: flex;
+    align-items: center;
+    width: calc(100% - 24px);
+    padding: 0 12px;
+}
+
+.homeTabNavs ul li {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin-right: 25px;
+}
+.homeTabNavs ul li a{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    height: 100%;
+    color: #666;
+}
+
+.homeTabNavs ul li.homeTabCur a{
+    color: #2778f8;
+    font-weight: 700;
+}
+
+.homeTabNavs ul li.homeTabCur:after {
+    display: block;
+    position: absolute;
+    content: "";
+    width: 40px;
+    height: 2px;
+    background: #2778f8;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    z-index: 2;
+}
+
+.homeTabForms{
+    position: relative;
+    padding: 12px;
+}
+
+.homeTabConts {
+    position: relative;
+    padding: 0 12px 12px 12px;
+    background: #fff;
+    border-radius: 4px;
+}
+
+.homeTabConts .homeTabList {
+    position: relative;
+    display: none;
+}
+
+.homeTabConts .homeTabConOn {
+    display: block;
+}
+
+.qdmIndSubject{
+    position: relative;
+    background: #fff;
+    border-radius: 4px;
+}
+
+.qdmIndTopTips {
+    overflow: hidden;
+    position: relative;
+    padding: 12px;
+    background: #fff7ee;
+    border: 1px solid #ff9900;
+    line-height: 25px;
+    margin: 10px;
+}
+
+.qdmIndTopTips span {
+    font-size: 14px;
+    color: #ff9900;
+}
+.qdmIndTopTips i {
+    font-size: 14px;
+    color: #ff9900;
+    font-weight: 600;
+}
+
+.qdmIndSearch {
+    overflow: hidden;
+    position: relative;
+}
+
+.qdmIndSearTite {
+    overflow: hidden;
+    position: relative;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    font-size: 17px;
+    color: #333;
+    font-weight: 600;
+}
+
+.qdmIndSearInt {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.qdmIndShuru {
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.qdmIndShuru .layui-input-block {
+    overflow: hidden;
+    position: relative;
+    width: 300px;
+}
+
+.qdmIndShuru .layui-input {
+    font-size: 14px;
+    height: 32px;
+    margin-top: 2px;
+}
+
+.qdmIndChaxun {
+    overflow: hidden;
+    position: relative;
+    margin-left: 10px;
+    border-radius: 4px;
+}
+
+.qdmIndChaxun button {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #2778f8;
+    height: 32px;
+    padding: 0 12px;
+    color: #fff;
+    font-size: 14px;
+}
+
+.qdmIndXinjian {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.qdmIndXinjian span{
+    overflow: hidden;
+    position: relative;
+    display: block;
+    color: #666;
+    font-size: 13px;
+    padding-right: 10px;
+}
+
+.qdmIndXinjian .layui-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #2778f8;
+    height: 32px;
+    line-height: 32px;
+    padding: 0 12px;
+    border-radius: 4px;
+}
+
+.qdmIndXinjian .layui-btn img {
+    display: block;
+    margin-right: 4px;
+}
+
+.qdmIndTable {
+    overflow: hidden;
+    position: relative;
+}
+
+.qdmIndTable .layui-table th{
+    border: none;
+}
+
+.qdmIndTable .layui-table td{
+    border: none;
+}
+
+.qdmIndTable tbody {
+    overflow: hidden;
+    position: relative;
+}
+
+.qdmIndTable tbody td {
+    padding: 15px !important;
+    color: #61687C;
+}
+.qdmIndTable thead tr {
+    background-color: #fff !important;
+}
+.qdmIndTable thead th {
+    padding: 15px !important;
+}
+
+.qdmIndTable tbody .tbodTips {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.qdmIndTable tbody .tbodTips span {
+    display: block;
+    background: #E7F3FF;
+    padding: 3px 12px;
+    border-radius: 5px;
+    margin: 3px;
+    color: #0080FF;
+}
+
+.qdmIndTable tbody .tbodLink {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.qdmIndTable tbody .tbodLink a {
+    display: block;
+    min-width: 40px;
+    height: 24px;
+    line-height: 24px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #61687c;
+    overflow: hidden;
+    margin: 0 4px;
+    text-align: center;
+}
+
+.qdmIndTable tbody tr{
+    background: #F8F9FD;
+}
+
+.qdmIndTable tbody tr:nth-child(2n+2){
+    background: #fff;
+}
+
+.qudaomashow {
+    overflow: hidden;
+    position: fixed;
+    top: -100%;
+    left: 0;
+    width: calc(100% - 24px);
+    height: calc(100% - 24px);
+    padding: 12px;
+    z-index: 666;
+    background: rgb(0 0 0 /50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.6s;
+}
+
+.qudmshowCont {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 70px);
+    max-width: 1000px;
+    background: #fff;
+    padding: 12px 35px;
+    border-radius: 8px;
+}
+
+.qudaomashowCur {
+    top: 0;
+}
+
+.qudmshowCont .showclose {
+    overflow: hidden;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 15px;
+    z-index: 22;
+    cursor: pointer;
+}
+
+.qudmshowCont .showclose img {
+    width: 100%;
+    height: auto;
+}
+
+.qudmshowshanb {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: calc(640px - 30px);
+    display: flex;
+    padding-top: 30px;
+    justify-content: space-between;
+}
+
+.qudmshowData {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 340px);
+    height: 100%;
+}
+
+.qudmshowTite {
+    overflow: hidden;
+    position: relative;
+    font-size: 17px;
+    font-weight: 600;
+    color: #333;
+}
+
+.qudmshowErwm {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.qudmshowErwImg{
+    overflow: hidden;
+    position: relative;
+    width: 150px;
+    height: 150px;
+    background: #f90;
+}
+.qudmshowErwImg img{
+    width: 100%;
+    height:auto;
+}
+
+.qudmshowErwIno {
+    overflow: hidden;
+    position: relative;
+    padding-left: 15px;
+}
+.qudmshowErwIno .layui-btn{
+    background: #0080FF;
+    color: #fff;
+}
+.qudmshowErwIno span.spanqdm {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 16px;
+    padding-bottom: 15px;
+    color: #555;
+}
+
+.qudmshowBiaq {
+    overflow: hidden;
+    position: relative;
+    padding-top: 20px;
+    padding-bottom: 15px;
+}
+
+.qudmshowBiaq h3 {
+    overflow: hidden;
+    position: relative;
+    font-size: 16px;
+    color: #555;
+}
+
+.qudmshowTpis {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    padding-top: 12px;
+}
+
+.qudmshowTpis span {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    height: 30px;
+    background: #E7F3FF;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #0080FF;
+    margin-right: 13px;
+    margin: 3px;
+}
+
+.qudmshowText {
+    overflow: hidden;
+    position: relative;
+    font-size: 15px;
+    color: #999;
+    padding-top: 20px;
+}
+
+.qudmshowText .soaoen {
+    color: #333;
+}
+
+.qudmshowText .soatwo {
+    color: #2778f8;
+}
+
+.qudmshowmethod {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+}
+
+.qudmshowmetsubs {
+    overflow: hidden;
+    position: relative;
+    width: calc(48% - 24px);
+    padding: 12px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+}
+
+.qudmshowmetsubs span {
+    display: block;
+    font-size: 16px;
+    color: #333;
+}
+
+.qudmshowmetsubs b {
+    display: block;
+    font-size: 14px;
+    color: #777;
+    font-weight: 500;
+    padding: 12px 0;
+}
+
+.qudmshowmetsubs a {
+    display: block;
+    overflow: hidden;
+    width: 100%;
+    text-align: center;
+    color: #2778f8;
+    font-size: 15px;
+}
+
+.qudmshowAnniu {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    /*justify-content: center;*/
+}
+
+.qudmshowAnniu .layui-btn {
+    padding: 0 50px;
+    border: 1px solid #0080FF;
+    color: #0080FF;
+}
+
+.qudmshowPhone {
+    overflow: hidden;
+    width: calc(310px - (28px + 4px));
+    position: absolute;
+    top: 20px;
+    right: 12px;
+    height: calc(610px - (120px + 4px));
+    padding: 70px 14px 50px 14px;
+    /* border: 2px solid #eee; */
+    border-radius: 25px;
+    background: url(./newsjbg.png) center no-repeat;
+    background-size: 100% 100%;
+    z-index: 33;
+}
+
+.qudmshoPhoCont {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.qudmshoPhoTop {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 50px;
+    display: none;
+}
+.qudmshoPhoTop .ipontime{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 8px);
+    padding: 5px 4px 0 4px;
+    display: none;
+}
+.qudmshoPhoTop .ipontime img{
+    width: 100%;
+    display: block;
+    height: auto;
+}
+.qudmshoPhoTop .ipontGuanb{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 16px);
+    display: flex;
+    align-items: center;
+    padding: 12px 8px 0 8px;
+    justify-content: space-between;
+}
+.qudmshoPhoTop .ipontGuanb a{
+    display: block;
+    font-weight: 600;
+}
+.qudmshoPhoData {
+    overflow-y: auto;
+    position: relative;
+    height: calc(100% - 28px);
+    width: calc(100% - 16px);
+    margin-top: 16px;
+    padding: 0 8px;
+}
+
+.qudmshoPhoData::-webkit-scrollbar {
+    display: none;
+}
+
+.qudmshoPhoData ul {
+    overflow: hidden;
+    position: relative;
+}
+
+.qudmshoPhoData ul li {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    margin-bottom: 15px;
+}
+
+.qudmshoPhoData ul li .qudmshoPhoLogo {
+    overflow: hidden;
+    position: relative;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    /*justify-content: center;*/
+    background: #fff;
+    border-radius: 3px;
+}
+
+.qudmshoPhoData ul li .qudmshoPhoLogo img {
+    width: auto;
+    height: 100%;
+}
+
+.qudmshoPhoData ul li .qudmshoPhoInfo {
+    position: relative;
+    width: calc(100% - 38px);
+    margin-left: 8px;
+}
+
+.qudmshoPhoData ul li .qudmshoPhoInfo .qudmshoNumber {
+    position: relative;
+    padding: 8px;
+    background: #fff;
+    border-radius: 3px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #555;
+    width: fit-content;
+}
+
+.qudmshoPhoData ul li .qudmshoPhoInfo a {
+    color: #2778f8;
+}
+
+.qudmshoPhoData ul li .qudmshoPhoInfo .qudmshoNumber img {
+    width: auto;
+    max-width: 100%;
+}
+
+.qudmshoPhoData ul li .qudmshoPhoInfo .qudmshoNumber::after {
+    overflow: hidden;
+    position: absolute;
+    content: "";
+    width: 6px;
+    height: 6px;
+    background: #fff;
+    top: 10px;
+    left: -3px;
+    z-index: 2;
+    transform: rotate(45deg);
+}
+.qudmshoPhoData ul li .qudmshoNumCom {
+    overflow: hidden;
+    position: relative;
+}
+.qudmshoPhoData ul li .qudmshoCompaName {
+    overflow: hidden;
+    position: relative;
+    font-size: 15px;
+    color: #333;
+    font-weight: 600;
+}
+.qudmshoPhoData ul li .qudmshoCompaInfo {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 10px;
+}
+.qudmshoPhoData ul li .qudmshoCompZaiy {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 50px);
+    font-size: 13px;
+    line-height: 16px;
+    color: #777;
+}
+.qudmshoPhoData ul li .qudmshoCompLogo {
+    overflow: hidden;
+    position: relative;
+    width: 45px;
+    height: 45px;
+    border-radius: 2px;
+    border: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.qudmshoPhoData ul li .qudmshoCompLogo img{
+    width: auto;
+    height: 100%;
+    max-width: initial !important;
+}
+
+
+.qudmshoPhoData ul li .qudmshoNumCom .qudmshoComGons{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+.qudmshoPhoData ul li .qudmshoNumCom .qudmshoComGons img{
+    display: block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+}
+.qudmshoPhoData ul li .qudmshoNumCom .qudmshoComGons span{
+    display: block;
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 22px);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+    padding-left: 3px;
+    color: #444;
+}
+
+.qudmshoPhoData ul li .qudmshoNumXicx .qudmshoCompaName{
+    font-weight: 500;
+}
+
+.qudmshoPhoData ul li .qudmshoNumXicx .qudmshoCompLogo{
+    width: auto;
+    max-width: 100% !important;
+    height: initial;
+}
+.qudmshoPhoData ul li .qudmshoNumXicx .qudmshoCompLogo img{
+    width: auto;
+    max-width: 100% !important;
+    height: initial;
+}
+.qudmshoPhoData ul li .qudmshoNumXicx .qudmshoComBotto{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    /*margin-top: 8px;
+    border-top: 1px solid #eee;*/
+    padding-top: 8px;
+}
+.qudmshoPhoData ul li .qudmshoNumXicx .qudmshoComBotto img{
+    display: block;
+    width: 18px;
+    height: auto;
+}
+.qudmshoPhoData ul li .qudmshoNumXicx .qudmshoComBotto span{
+    display: block;
+    font-size: 14px;
+    color: #888;
+    padding-left: 5px;
+}
+
+
+/* ---渠道码--添加样式--- */
+.qudaoAddsAll {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - (24px + 70px));
+    margin: 12px;
+    background: #fff;
+    padding: 20px 35px;
+}
+
+.qudaoAddsAll .admin_button{
+    width: 140px;
+    height: 35px;
+    border-radius: 6px;
+    background: #2d8cf0;
+    color: #fff;
+    margin-left: 165px;
+}
+
+.qdmAddsTitle {
+    overflow: hidden;
+    position: relative;
+}
+.qdmAddsTitle a{
+    overflow: hidden;
+    position: relative;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    color: #666;
+}
+
+.qdmAddNeirzas {
+    overflow: hidden;
+    position: relative;
+    padding-top: 25px;
+}
+
+.qdmAddNeirList {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 15px 0;
+}
+
+.qdmAddNeirName {
+    overflow: hidden;
+    position: relative;
+    width: 120px;
+    text-align: right;
+    color: #444;
+    font-size: 15px;
+}
+
+.qdmAddNeirData {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 15px;
+    width: calc(100% - (120px + 15px));
+}
+
+.qdmAddNeirData .layui-input-block {
+    overflow: hidden;
+    position: relative;
+    width: 580px;
+}
+
+.qdmAddNeirData .layui-input-block .layui-input {
+    font-size: 14px;
+}
+
+.qdmAddNeirData span.spanOne {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    padding-left: 10px;
+    color: #999;
+    font-size: 15px;
+}
+
+.qdmAddNeirData .layui-form-item .layui-form-radio {
+    color: #999;
+    font-size: 15px;
+    margin: 3px 30px 0 0;
+}
+
+.qdmAddNeirData .layui-form-item .layui-form-radioed {
+    color: #2d8cf0;
+}
+
+.qdmAddNeirData .titlegray{
+    background: #eff3fb;
+    color: #d2d2d2;
+}
+
+.qdmAddNeirTips {
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #eee;
+    width: calc(80% - 24px);
+    padding: 12px;
+    border-radius: 3px;
+}
+
+.qdmAdNeiTipTite {
+    overflow: hidden;
+    position: relative;
+    font-size: 15px;
+    color: #666;
+}
+
+.qdmAdNeiTipList {
+    overflow: hidden;
+    position: relative;
+    /*display: flex;
+    flex-wrap: wrap;
+    align-items: center;*/
+    padding-top: 12px;
+}
+
+.qdmAdNeiTipList p {
+    overflow: hidden;
+    position: relative;
+    font-size: 14px;
+    color: #555;
+    line-height: 34px;
+}
+
+.qdmAdNeiTipList .tipsxuanz {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.qdmAdNeiTipList .tipsxuanz span {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    line-height: 26px;
+    font-size: 13px;
+    border: 1px solid #f1f1f1;
+    padding: 0 15px;
+    color: #888;
+    border-radius: 3px;
+    margin: 3px 6px;
+    cursor: pointer;
+    max-width: 150px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+
+.qdmAdNeiTipList .tipsxuanz span.tag_checked {
+    border: 1px solid #1E9FFF;
+    color: #1E9FFF;
+}
+.qdmAdNeiTipList .tipsxuanz span.tipsxuaNews{
+    border: 1px solid #009688;
+    color: #009688;
+}
+.qdmAdNeiTipList .tipsxuaAdd {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 4px 0 14px 7px;
+}
+.qdmAdNeiTipList .tipsxuaAdd .tipsxuaLayuInt{
+    overflow: hidden;
+    position: relative;
+    /*padding-left: 10px;*/
+}
+
+.qdmAdNeiTipList .tipsxuaAdd .layui-input-block{
+    width: auto;
+    min-height: 26px;
+}
+.qdmAdNeiTipList .tipsxuaAdd .layui-input-block .layui-input{
+    height: 28px;
+}
+.qdmAdNeiTipList .tipsxuaAdd .layui-btn{
+    height: 28px;
+    line-height: 28px;
+}
+
+
+.qdmAdNeiTipList .tipsxuaBiaqs{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-bottom: 10px;
+}
+.qdmAdNeiTipList .tipsxuaFlis{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.qdmAdNeiTipList .tipsxuaFlis .tipsxShoqi{
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 22;
+}
+.qdmAdNeiTipList .tipsxuaFlis .tipsxShoqi a{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    color: #1E9FFF;
+    font-size: 13px;
+    padding-right: 4px;
+}
+
+.tipsxuaspanse{
+    overflow: hidden;
+    position: relative;
+    height: 28px !important;
+    display: flex;
+    align-items: center;
+    padding: 0 !important;
+    border: none !important;
+    max-width: 250px !important;
+    margin: 0 0 0 6px !important;
+}
+
+.tipsxuaspanse .tipsxuaAdd{
+    padding: 0;
+}
+
+.qdmAddNeiTior{
+    display: flex;
+    align-items: initial;
+}
+.qdmAddNeiTior .tipsxuaBiaqs{
+    display: flex;
+    align-items: initial;
+}
+
+.qdmAddNeiTior .tipsxuaBiaqs .tipsxuanz{
+    width: calc(100% - 120px);
+}
+
+
+.qdmAddNeirShuom {
+    overflow: hidden;
+    position: relative;
+    padding: 10px 0 0 30px;
+    font-size: 14px;
+    color: #999;
+}
+
+.qdmAddNeirTuison {
+    overflow: hidden;
+    position: relative;
+    border: 1px #eee solid;
+    background: #F8F9FD;
+    min-height: 200px;
+    width: calc(100% - 62px);
+    margin-top: 15px;
+    padding: 25px 30px;
+}
+
+.AddNeirTuisonOne {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.ddNeirTuisonName {
+    overflow: hidden;
+    position: relative;
+    text-align: right;
+    color: #444;
+    font-size: 15px;
+}
+
+.ddNeirTuisonData {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 15px;
+    width: calc(100% - (120px + 15px));
+}
+
+.ddNeirTuisonData .layui-form-item .layui-form-radio {
+    color: #999;
+    font-size: 15px;
+    margin: 3px 30px 0 0;
+}
+
+.ddNeirTuisonData .layui-form-item .layui-form-radioed {
+    color: #2d8cf0;
+}
+
+.AddNeirTuisoTite {
+    overflow: hidden;
+    position: relative;
+    color: #444;
+    font-size: 15px;
+    padding: 12px 0 12px 0;
+}
+
+.AddNeirTuisoTabs {
+    position: relative;
+    min-height: 200px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.tuisongTabNav {
+    position: relative;
+    width: 130px;
+}
+
+.tuisongTabNav ul {
+    position: relative;
+    width: 100%;
+}
+
+.tuisongTabNav ul li {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    width: calc(100% - 24px);
+    height: 50px;
+    padding: 0 12px;
+    background: #eee;
+    cursor: pointer;
+    margin-bottom: 10px;
+    font-size: 15px;
+    color: #555;
+    border-radius: 5px 0 0 5px;
+}
+
+.tuisongTabNav ul li.tuisongTabNavCur {
+    background: #fff;
+    color: #2778f8;
+    box-shadow: 0px 1px 3px 0px rgb(0 0 0 / 10%);
+}
+
+.tuisongTabNav ul li .divtexts{
+    overflow: hidden;
+    position: relative;
+    display: block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: calc(100% - 15px);
+}
+
+.tuisongTabNav ul li .divtuodong{
+    overflow: hidden;
+    position: relative;
+    width: 15px;
+    height: 15px;
+}
+.tuisongTabNav ul li .divtuodong img{
+    width: 15px;
+    height: 15px;
+}
+
+
+.tuisongTabCont {
+    overflow: hidden;
+    position: relative;
+    background: #fff;
+    width: calc(100% - (130px + 24px));
+    padding: 25px 12px;
+    box-shadow: 2px 1px 3px 0px rgb(0 0 0 / 10%);
+}
+
+.tuisongTabCont .tuisTabContList {
+    overflow: hidden;
+    position: relative;
+    display: none;
+}
+
+.tuisongTabCont .tuisTabContOn {
+    display: block;
+}
+
+.tuisTabContInfo {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    min-height: 640px;
+}
+
+.tuisTabContData {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 340px);
+    height: 100%;
+}
+
+.tuisTabContDanx {
+    overflow: hidden;
+    position: relative;
+}
+
+.tuisTabContDanx .layui-form-label {
+    overflow: hidden;
+    position: relative;
+    font-size: 15px;
+    color: #444;
+}
+
+.tuisTabContDanx .layui-input-block {
+    overflow: hidden;
+    position: relative;
+    font-size: 15px;
+    color: #777;
+}
+
+.tuisTabContDanx .layui-form-radioed {
+    color: #2d8cf0;
+}
+
+.tuisTabContGuan {
+    overflow: hidden;
+    position: relative;
+    margin: 15px;
+    background: #f1f1f1;
+    padding: 15px;
+    border-radius: 2px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.tuisTabContGuan span {
+    display: block;
+    color: #444;
+    font-size: 15px;
+}
+
+.tuisTabContGuan a {
+    display: block;
+    color: #2778f8;
+    font-size: 15px;
+    padding-left: 10px;
+}
+
+.tuisTabConInpy {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 15px 0;
+}
+
+.tuisTabConInpy .el-input{
+    width: calc(100% - 120px);
+}
+.tuisTabConInpy .el-input{
+    width: calc(100% - 120px);
+}
+.tuisTabConInpy .el-textarea .el-input__count {
+    right: 28px;
+}
+
+.tuisTabConInpy .layui-input-block {
+    width: calc(100% - 140px);
+    max-width: 700px;
+}
+
+.tuisTabConInpy .layui-input {
+    font-size: 15px;
+}
+
+.tuisTabConInpy textarea{
+    border: 1px solid #e6e6e6;
+    padding: 10px;
+    width: calc(100% - 22px);
+}
+
+.jusyydsddsr{
+    overflow: hidden;
+    position: relative;
+    padding-left: 8px;
+}
+.jusyydsddsr .el-button{
+    border: none;
+}
+.jusyydsddsr span{
+    overflow: hidden;
+    position: relative;
+    border: none !important;
+    margin: 0 !important;
+    color: #fff !important;
+}
+/* .jusyydsddsr .el-button--primary{
+    background: none;
+    border: none;
+} */
+
+.tuisTabConInpy .spantite{
+    overflow: hidden;
+    position: relative;
+    width: 110px;
+    text-align: right;
+    font-size: 14px;
+    color: #444;
+}
+.tuisTabConInpy .spancont{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 110px);
+}
+
+.tuisTabConImage .spantite{
+    overflow: hidden;
+    position: relative;
+    width: 110px;
+    text-align: right;
+    font-size: 14px;
+    color: #444;
+}
+.tuisTabConImage .spancont{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 110px);
+}
+
+.tuisTabConImage {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    padding: 20px 0;
+}
+.tuisTabConImage .layui-upload-drag .layui-icon{
+    color: #2778F8;
+}
+
+.tuisTabConImaTite {
+    overflow: hidden;
+    position: relative;
+    font-size: 15px;
+    color: #444;
+    text-align: right;
+    width: 110px;
+    padding: 9px 15px;
+}
+
+.tuisTabConImage .layui-upload-drag {
+    padding: 30px 50px;
+    width: calc(100% - (100px + 140px));
+    max-width: 598px;
+}
+
+.tuisTabConClose {
+    overflow: hidden;
+    position: relative;
+}
+
+.tuisTabConClose a {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    color: #333;
+}
+
+.tuisTabConClose a i {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 21px;
+    color: #333;
+    padding-right: 2px;
+}
+
+/* ---渠道码--详情样式--- */
+/* ---渠道码--统计样式--- */
+.homeTabTong{
+    position: relative;
+    display: flex;
+    align-items: center;
+    /*padding: 15px 0;*/
+}
+.homeTabTong .layui-form-label{
+    width: 100px;
+    font-size: 15px;
+    color: #555;
+    padding: 9px 15px 9px 0;
+}
+.homeTabTong .layui-form-select dl dd{
+    font-size: 15px;
+    color: #555;
+}
+.homeTabTong .layui-form-select .layui-input{
+    font-size: 15px;
+    color: #444;
+}
+
+.homeTabTong .layui-input-block{
+    width: 400px;
+}
+.homeTabTosum{
+    overflow: hidden;
+    position: relative;
+    font-size: 14px;
+    color: #888;
+    padding-left: 12px;
+}
+.homeTabToTite{
+    overflow: hidden;
+    position: relative;
+    font-size: 18px;
+    color: #333;
+    font-weight: 600;
+    padding: 20px 0 12px 0;
+}
+.homeTabToNumer{
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #eee;
+    padding: 25px;
+    width: calc(100% - 50px);
+    border-radius: 5px;
+}
+.homeTabToNumer ul{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+.homeTabToNumer ul li{
+    overflow: hidden;
+    position: relative;
+    width: 24%;
+    background: #F8F9FD;
+    border-radius: 5px;
+}
+.homeTabToNumer ul li .tongzonOne{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    border-bottom: 1px solid #ddd;
+    height: 130px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.homeTabToNumer ul li .tongzonOne b{
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 32px;
+    color: #2778f8;
+    font-weight: 500;
+}
+.homeTabToNumer ul li .tongzonOne span{
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 16px;
+    color: #444;
+    padding-top: 5px;
+}
+.homeTabToNumer ul li .tongzonTwo{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 130px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.homeTabToNumer ul li .tongzonTwoDwon{
+    overflow: hidden;
+    position: relative;
+    width: calc(50% - 2px);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.homeTabToNumer ul li .tongzonTwoDwon b{
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 25px;
+    color: #2778f8;
+    font-weight: 500;
+}
+.homeTabToNumer ul li .tongzonTwoDwon span{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    color: #444;
+    padding-top: 5px;
+}
+.homeTabToNumer ul li .tongzonTwoDwon span i{
+    overflow: hidden;
+    position: relative;
+    display: block;
+    padding-top: 3px;
+    padding-left: 3px;
+}
+.homeTabToNumer ul li .shuxian{
+    overflow: hidden;
+    position: relative;
+    width: 1px;
+    height: 80px;
+    background: #eee;
+}
+.homeTabEchatTite{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 30px 0 15px 0;
+}
+.homeTabEchatTite .chatTiteName{
+    overflow: hidden;
+    position: relative;
+    font-size: 18px;
+    color: #333;
+    font-weight: 600;
+    padding-right: 18px;
+}
+.homeTabEchatTite .chatTiteButn{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+.homeTabEchatTite .chatTiteButn a{
+    overflow: hidden;
+    position: relative;
+    display: block;
+    line-height: 40px;
+    padding: 0 35px;
+    font-size: 15px;
+    color: #444;
+    border-left: 1px solid #eee;
+}
+.homeTabEchatTite .chatTiteButn a:nth-child(1){
+    border-left: 0px solid #eee;
+}
+.homeTabEchatTite .chatTiteButn a.chatTiteButnCur{
+    background: #2778f8;
+    border-left: #2778f8 1px solid;
+    color: #fff;
+}
+.homeTabEchatTite .chatTiteButn a:nth-child(1).chatTiteButnCur{
+    border-left: 0px solid #eee;
+}
+.homeTabEchatOne{
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    height: 400px;
+    padding: 10px 0;
+}
+.homeTabEchatOne #main1{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.homeTabBiaog{
+    justify-content: space-between;
+}
+.homeTabBiaog .chatBiaoButn .layui-btn{
+    padding: 0 30px;
+}
+.homeTabBiaTable{
+    position: relative;
+}
+.homeBiaoTaMinc{
+    position: relative;
+    height: 80px;
+    background: #F8F9FD;
+    display: flex;
+    width: calc(100% - 32px);
+    align-items: center;
+    padding: 0 15px;
+    border: 1px solid #e6e6e6;
+    border-bottom: 0;
+}
+.homeBiaoTaMinc .homeBiaoTaName{
+    overflow: hidden;
+    position: relative;
+    font-size: 16px;
+    color: #444;
+}
+.homeBiaoTaMinc .tablesuxin{
+    overflow: hidden;
+    position: relative;
+    width: 1px;
+    height: 30px;
+    background: #ddd;
+    margin: 0 35px;
+}
+.homeBiaoTaMinc .homeBiaoTaTime{
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.homeBiaoTaMinc .homeBiaoTaTime .layui-inline{
+    margin: 0;
+}
+.homeBiaoTaMinc .homeBiaoTaTime .layui-input-inline{
+    margin: 0;
+}
+.homeBiaoTaMinc .homeBiaoTaTime .layui-input{
+    font-size: 15px;
+}
+.homeBiaoTaMinc .homeBiaoTaTime .wenzid{
+    overflow: hidden;
+    position: relative;
+    font-size: 15px;
+    color: #666;
+    padding: 0 10px;
+}
+.homeLayuitable{
+    overflow: hidden;
+    position: relative;
+}
+.homeLayuitable .layui-table{
+    margin: 0;
+}
+.homeLayuitable .layui-table thead tr{
+    background: #fff;
+}
+.homeLayuitable .layui-table th{
+    padding: 15px;
+}
+.homeLayuitable .layui-table td{
+    padding: 15px;
+}
+
+.zanwusaom{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.zanwusaom span{
+    display: block;
+    overflow: hidden;
+    padding: 5px 0;
+    font-size: 14px;
+}
+.diggPages{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    float: right;
+}
+.diggPages a{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    border-radius: 4px;
+}
+.diggPages a.pageJant{
+    padding: 0 15px;
+}
+.diggPages a.pageTiaz{
+    padding: 0 20px;
+    background: #009688;
+    color: #fff;
+}
+.diggPages .pageNumber{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    padding: 0 12px;
+    /*background: #009688;*/
+    border-radius: 4px;
+    font-size: 14px;
+    color: #333;
+}
+.diggPages input{
+    height: 28px;
+    /*background: #eff3fb;*/
+    border: 1px solid #7a8ebd;
+    border-radius: 4px;
+    width: 60px;
+    padding: 0 10px;
+    margin: 0 10px;
+}

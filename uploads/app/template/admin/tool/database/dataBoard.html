@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="../../header.js"></script>
+    <script src="../../httpVueLoader.js"></script>
+    <link rel="stylesheet" href="../../../admin/js/wangeditor/index.css">
+    <script src="../../../admin/js/wangeditor/index.js"></script>
+    <script src="../../js/base64ToFile.js"></script>
+</head>
+<body>
+<div id="toolDataBoardApp" class="moduleDome">
+    <div class="setDomeAll setDomeInte">
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+            <el-tab-pane label="综合统计" name="first">
+                <comp_stat></comp_stat>
+            </el-tab-pane>
+            <el-tab-pane label="分类统计" name="second" :lazy="true">
+                <class_stat></class_stat>
+            </el-tab-pane>
+            <el-tab-pane v-if="show" label="数据风向标" name="three" :lazy="true">
+                <fenxiabiao></fenxiabiao>
+            </el-tab-pane>
+        </el-tabs>
+    </div>
+</div>
+<!-- script -->
+<script>
+    const toolDataBoardApp = new Vue({
+        el: '#toolDataBoardApp',
+        data: function () {
+            return {
+                activeName: 'first',
+                show :false
+            }
+        },
+        components: {
+            'comp_stat': httpVueLoader('./component/compStat.vue'),
+            'class_stat': httpVueLoader('./component/classStat.vue'),
+            'fenxiabiao': httpVueLoader('./component/fenxiabiao.vue'),
+        },
+        created(){
+            this.auth();
+        },
+        methods: {
+            auth:function () {
+                var self = this;
+                var params ={
+                    navi_id:1067
+                }
+                httpPost('m=tool&c=dataBoard&a=getAuth', params).then(function(response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        self.show= res.data.status;
+                    }
+                }).catch(function(error) {
+                    console.log(error);
+                })
+            },
+            handleClick(tab, event) {
+            }
+        }
+    });
+</script>
+</body>
+
+</html>

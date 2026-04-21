@@ -1,0 +1,66 @@
+<script src="{yun:}$wap_style{/yun}/js/jquery.min.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/vue.min.js?v={yun:}$config.cachecode{/yun}"></script> 
+<script src="{yun:}$config_wapdomain{/yun}/js/vant/lib/vant.min.js?v={yun:}$config.cachecode{/yun}"></script> 
+<script src="{yun:}$config_wapdomain{/yun}/js/vant/phpyun_vant.js?v={yun:}$config.cachecode{/yun}"></script> 
+<script src="{yun:}$wap_style{/yun}/js/public.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+{yun:}include file="$wapstyle/nativeshare.htm"{/yun}
+
+
+{yun:}if ($ball!=2 && !empty($smarty.get.c) && !in_array($smarty.get.c, array('job','resume','sysnews','login','register','forgetpw','ask','article'))) || (!empty($smarty.get.a) && !in_array($smarty.get.a, array('applyjobuid'))){/yun}
+<section id="ball" class="goBackHome">
+    <a href="javascript:void(0)" onclick="yunfootClose()">
+        <img src="{yun:}$wap_style{/yun}/images/severs.png" alt="">
+    </a>
+</section>
+<script src="{yun:}$wap_style{/yun}/js/tuozhuai.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+{yun:}/if{/yun}
+<!--底部导航弹出-->
+<div id="footerVue" class="none">
+	<van-popup v-model="yunfoot" position="bottom" round closeable>
+		<footer>
+		    <div class="footerbox">
+				 <div class="footerbox_tit">
+		        </div>
+		        <div class="foot_nav_box">
+				<dl class="index_navlist" style="height:70px;">
+					<a href="{yun:}url m=wap{/yun}">
+						<dt class="index_nav_icon"><image src="{yun:}$wap_style{/yun}/images/blackhome.png?v={yun:}$config.cachecode{/yun}" ></image></dt>
+						<dd>回到首页</dd>
+					</a>
+				</dl>
+				<dl class="index_navlist" style="height:70px;">
+					<a href="{yun:}url m=wap c=login{/yun}">
+						<dt class="index_nav_icon"><image src="{yun:}$wap_style{/yun}/images/usercent.png?v={yun:}$config.cachecode{/yun}" ></image></dt>
+						<dd>用户中心</dd>
+					</a>
+				</dl>
+	            {yun:}foreach from=$navlist key=key item=v{/yun}
+				{yun:}if $key<6{/yun}
+				<dl class="index_navlist" style="height:70px;">
+					<a href="{yun:}$v.url_n{/yun}">
+						<dt class="index_nav_icon"><image src="{yun:}$v.pic_n{/yun}" ></image></dt>
+						<dd>{yun:}$v.name{/yun}</dd>
+					</a>
+				</dl>
+				{yun:}/if{/yun}
+				{yun:}/foreach{/yun}
+		        </div>
+		    </div>
+		</footer>
+	</van-popup>
+</div>
+<script>
+var footerVue = new Vue({
+        el: '#footerVue',
+        data: {
+			yunfoot: false
+		},
+		mounted(){
+			document.getElementById('footerVue').style.display = 'block';
+		}
+	});
+</script>
+
+{yun:}if !empty($smarty.get.c) && (!in_array($smarty.get.c, array('job','resume')) || !empty($smarty.get.a)){/yun}
+<div class='none'>{yun:}tongji{/yun}</div>
+{yun:}/if{/yun}

@@ -1,0 +1,239 @@
+<div id="promote_div" style="display: none;">
+    <div class="set_tips">
+        <div class="set_tips_hello">尊敬的用户您好：</div>
+        <div class="set_tips_p" id="peomote_etime_div" style="display: none"> 目前置顶职位的到期时间为：<span id="promote_etime"></span></div>
+        <div class="set_tips_p" id='promote_tc'> 您的套餐内置顶职位余量为：<span class="set_tips_n">{yun:}$statis.top_num{/yun}</span>天</div>
+        <div class="set_tips_textbox"> 设置推广天数
+            <input type="text" value="" class="set_tips_text" id="promote_day" name="promote_day" maxlength='3' onkeyup="checkPromoteDay();" oninput="myFunction(this)">天
+        </div>
+        <input type="hidden" name="promote_jobid" id="promote_jobid" value=""/>
+        <input type="hidden" name="promote_type" id="promote_type" value=""/>
+        <div class="set_tips_bthbox">
+            <input type='button' value='确定' onClick="setJobPromote();" class='set_tips_bth'>
+        </div>
+    </div>
+</div>
+
+<div id="close_promote_div" style="display: none;">
+    <div class="set_tips">
+        <div class="set_tips_hello">尊敬的用户您好：</div>
+        <div class="set_tips_p" id="close_peomote_etime_div" style="display: none"> 目前置顶职位的到期时间为：<span id="close_promote_etime"></span></div>
+        <div class="set_tips_p" id='close_promote_tc'> 您的职位置顶剩余：<span class="set_tips_n">0</span>天</div>
+        <div class="set_tips_p" style="font-weight: bold;"> 您确定要<span id="close_promote_title">关闭职位置顶</span>吗？</div>
+        <input type="hidden" name="promote_jobid" id="close_promote_jobid" value=""/>
+        <input type="hidden" name="promote_type" id="close_promote_type" value=""/>
+        <div class="set_tips_bthbox" style="padding-left: 72px; margin: 10px 0;">
+            <input type='button' value='取消' onClick="layer.closeAll();" class='set_tips_bth'>
+            <input type='button' value='确定' onClick="setJobPromoteClose();" class='set_tips_bth'>
+        </div>
+    </div>
+</div>
+
+<!--自动刷新-->
+<div id="auto_promote_div" style="display: none;">
+    <div class="set_tips">
+        <div class="set_tips_hello">尊敬的用户您好：</div>
+        <div class="set_tips_p"> 当前职位自动刷新的到期时间为：<span id="auto_promote_etime" class="set_tips_n"></span></div>
+        <div class="set_tips_p"> 剩余 <span class="set_tips_n" id="auto_promote_day">0</span>天</div>
+        <div class="set_tips_p" style="font-weight: bold;"> 您是否需要延长自动刷新时间？</div>
+        <div class="set_tips_bthbox" style="padding-left: 72px; margin: 10px 0;" id="auto_btn"></div>
+    </div>
+</div>
+
+<!--预约刷新-->
+<div id="reserve_box" style="display:none;">
+    <form class="layui-form">
+        <div class="aisx_job_left">
+            <div class="aisx_job_list"><span class="aisx_job_name">刷新状态：</span>
+                <div class="layui-input-block">
+                    <input type="radio" name="status" value="1" title="开启">
+                    <input type="radio" name="status" value="2" title="关闭">
+                </div>
+            </div>
+            <div class="aisx_job_list">
+                <span class="aisx_job_name">刷新间隔：</span>
+                <div class="layui-input-inline" style="width: 152px;height: 35px;position: relative;border-radius: 3px;margin-left: 20px;">
+                    <select name="intervalId" id="intervalId" lay-filter="intervalId">
+                        <option value="">请选择刷新间隔</option>
+                        <option value="60" selected>每隔1小时刷新</option>
+                        <option value="120">每隔2小时刷新</option>
+                        <option value="180">每隔3小时刷新</option>
+                        <option value="240">每隔4小时刷新</option>
+                        <option value="300">每隔5小时刷新</option>
+                        <option value="360">每隔6小时刷新</option>
+                        <option value="420">每隔7小时刷新</option>
+                        <option value="480">每隔8小时刷新</option>
+                        <option value="1">自定义刷新间隔</option>
+                    </select>
+                </div>
+            </div>
+            <div class="aisx_job_list" style="display: none;" id="intervalDiv">
+                <span class="aisx_job_name"></span>
+                <div class="sx_controls">
+                    <input type="text" id="interval" onblur="checkInterval(this);" placeholder="自定义" maxlength="4" onKeyUp="this.value=this.value.replace(/[^0-9]/g,'')" class="sx_text" />
+                    <span class="sx_controls_dw">分钟</span>
+                </div>
+            </div>
+            <div class="aisx_job_list"><span class="aisx_job_name">截止日期：</span>
+                <div class="sx_controls">
+                    <input type="text" id="end_time" class="sx_text" placeholder="不限" readonly>
+                </div>
+            </div>
+            <div class="aisx_job_list" style="display: flex;">
+                <span class="aisx_job_name">刷新时间段：</span>
+                <div class="sx_controls_s">
+                    <input type="text" id="s_time" class="sx_text" placeholder="开始">
+                </div>
+                <div class="sx_controls_s">
+                    <input type="text" id="e_time" class="sx_text" placeholder="截止">
+                </div>
+            </div>
+        </div>
+        <div class="aisx_job_right">
+            <div class="">预约刷新规则：</div>
+            <div class="">截止日期不得设置今天，超过截止日期</div>
+            <div class="">自动关闭预约刷新</div>
+            <div class="">刷新资源不足，将会自动停止，购买后</div>
+            <div class="">需重新设置</div>
+        </div>
+        <div class="clear"></div>
+        <div class="aisx_zy">
+            剩余刷新资源 <span class="aisx_zy_n">{yun:}$statis.upJobNum{/yun}</span> 份
+            单个职位可预约 <span class="aisx_zy_n">{yun:}intval($statis.upJobNum/$config.sy_reserve_refresh_price){/yun}</span> 次自动刷新
+            {yun:}if $statis.rating_type == 1{/yun}<a href="index.php?c=right&act=added&id={yun:}$config.sy_reserve_service_id{/yun}" target="_blank" class="aisx_zy_buy">购买资源</a>{yun:}/if{/yun}
+        </div>
+        <div class="aisx_job_fot"><a href="javascript:;" onclick="setReserveRefreshJob();" class="aisx_job_bth">确定设置</a></div>
+        <input type="hidden" id="reserve_id" value=""/>
+    </form>
+</div>
+<style>
+    .aisx_zy{ padding-left:25px;}
+    .layui-laydate-content>.layui-laydate-list {
+        padding-bottom: 0px;
+        overflow: hidden;
+    }
+    .layui-laydate-content>.layui-laydate-list>li{
+        width:50%
+    }
+    .merge-box .scrollbox .merge-list {
+        padding-bottom: 5px;
+    }
+    .layui-form-radio{
+        margin-left: 20px;
+    }
+</style>
+<script>
+    var form;
+    layui.use(['form', 'layer', 'laydate'], function () {
+        form = layui.form;
+        var $ = layui.$,
+            layer = layui.layer,
+            laydate = layui.laydate;
+
+        laydate.render({
+            elem: '#end_time'
+            , trigger: 'click'
+            , min: 1
+            , btns: ['clear', 'confirm']
+        });
+        laydate.render({
+            elem: '#s_time'
+            ,type: 'time'
+            ,format: 'HH:mm',
+            value:'09:00'
+        });
+        laydate.render({
+            elem: '#e_time'
+            ,type: 'time'
+            ,format: 'HH:mm',
+            value:'17:00'
+
+        });
+        form.on('select(intervalId)', function(data){
+            if (data.value == 1){
+
+                $('#intervalDiv').show();
+                $('#interval').val(0);
+            }else{
+
+                $('#intervalDiv').hide();
+                $('#interval').val(data.value);
+            }
+        });
+    });
+
+    function checkInterval(obj) {
+
+        var minInterval = '{yun:}$config.sy_reserve_refresh_interval{/yun}',
+            interval = $('#interval').val();
+        if (parseInt(interval) < parseInt(minInterval)) {
+            $('#interval').val(minInterval);
+        }
+        
+    }
+
+    function setReserveRefreshJob() {
+
+        var job_id = $("#reserve_id").val();
+        var status = $("input[name=status]:checked").val();
+        var interval = $('#interval').val();
+        var end_time = $('#end_time').val();
+
+        var s_time = $('#s_time').val();
+        var e_time = $('#e_time').val();
+
+        var num =   '{yun:}$statis.upJobNum/$config.sy_reserve_refresh_price{/yun}';
+
+        if (status == 1 && parseInt(num) == 0){
+            layer.msg('刷新资源不足', 2, 8);
+            return false;
+        }
+
+        if (job_id == '') {
+            layer.msg('参数错误', 2, 8);
+            return false;
+        } else if (status == '' || status == 0 || status == undefined) {
+            layer.msg('请选择预约状态', 2, 8);
+            return false;
+        } else if (status == 1) {
+            if (interval == '') {
+                layer.msg('请填写刷新时间间隔', 2, 8);
+                return false;
+            }
+            if (s_time.length > 0  && e_time.length > 0 ){
+
+                var stime = s_time.split(':');
+                var etime = e_time.split(':');
+                if (parseInt(stime[0]) > parseInt(etime[0]) || (parseInt(stime[0]) == parseInt(etime[0]) && parseInt(stime[1]) >= parseInt(etime[1])) ){
+                    layer.msg('请合理设置刷新时间段', 2, 8);
+                    return false;
+                }
+            }
+        }
+
+        var index = layer.load('执行中，请稍候...', 0);
+
+        $.ajax({
+            async: false,
+            type: "POST",
+            global: false,
+            url: "index.php?c=job&act=reserveUp",
+            data: {job_id: job_id, status: status, interval: interval, end_time: end_time, s_time: s_time, e_time: e_time},
+            success: function (data) {
+                layer.close(index);
+                var data = eval('(' + data + ')');
+                if (data.error == 0) {
+
+                    layer.msg(data.msg, 2, 8);
+                } else if (data.error == 1) {
+
+                    layer.msg(data.msg, 2, 9, function () {
+                        layer.closeAll();
+                        location.reload();
+                    });
+                }
+            }
+        });
+
+    }
+</script> 

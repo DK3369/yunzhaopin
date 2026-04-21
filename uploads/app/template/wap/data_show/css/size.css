@@ -1,0 +1,655 @@
+/* 自适应尺寸 */
+@media (max-width: 1600px) {
+    .analyBackImg img.dianzui2 {
+        right: -32%;
+    }
+}
+
+@media (max-width: 1470px) {
+    .analyBackImg img.dianzui1 {
+        left: -45%;
+    }
+}
+
+@media (max-width: 1290px) {
+    .analyBackImg img.dianzui2 {
+        right: -40%;
+    }
+}
+
+@media (max-width: 1140px) {
+    .analyBackImg img.dianzui1 {
+        left: -50%;
+    }
+}
+
+@media (max-width: 1100px) {
+    .analyBackImg img.dianzui1 {
+        width: 600px;
+        height: 600px;
+        top: -32%;
+        left: -30%;
+    }
+
+    .analyBackImg img.dianzui2 {
+        width: 700px;
+        height: 700px;
+        right: -38%;
+    }
+}
+
+@media (max-width: 920px) {
+    .analyBackImg img.dianzui2 {
+        width: 550px;
+        height: 550px;
+        right: -38%;
+    }
+
+    .analyBackImg img.dianzui1 {
+        left: -35%;
+    }
+    .analyEchaPaim li .paimNam span.citys{
+        font-size: 22px;
+    }
+}
+@media (max-width: 850px) {
+    .analyEchaPaim li .paimNam span.citys{
+        font-size: 18px;
+        padding: 0 10px;
+    }
+    .analyEchaPaim li .paimNumr{
+        padding: 0 10px;
+    }
+}
+
+@media (max-width: 770px) {
+    .analyBackImg img.dianzui1 {
+        width: 400px;
+        height: 400px;
+        top: -22%;
+        left: -28%;
+    }
+
+    .analyBackImg img.dianzui2 {
+        width: 500px;
+        height: 500px;
+        right: -40%;
+    }
+    .analyEchaPaim li .paimNam span.citys{
+        font-size: 18px;
+        padding: 0 8px;
+    }
+    .analyEchaPaim li .paimNumr{
+        padding: 0 8px;
+    }
+    .analyEchaPaim li .paimNam span{
+        font-size: 16px;
+    }
+    .analyEchaPaim li .paimNumr{
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 730px) {
+    .analyTopYear {
+        font-size: 80px;
+    }
+
+    .analyTopName {
+        font-size: 50px;
+    }
+
+    .analyTopTips {
+        width: calc(270px - 50px);
+    }
+
+    .analyTopTips span {
+        font-size: 22px;
+    }
+
+    .analyTopTips img.tipsimg1 {
+        width: 23px;
+        height: auto;
+    }
+
+    .analyTopTips img.tipsimg2 {
+        width: 60px;
+        height: auto;
+        right: -26px;
+        bottom: 2px;
+    }
+
+    .analyTopImgs {
+        width: 340px;
+    }
+
+    .analyEchatMap {
+        height: 500px;
+    }
+
+    
+    .analyEchatTite {
+        font-size: 28px;
+    }
+
+    .analyOldData {
+        width: 120px;
+    }
+
+    .analyOldList .analyOldNam {
+        font-size: 25px;
+    }
+
+    .analyOldList .analyOldShuz {
+        font-size: 32px;
+    }
+
+    .analyOlds {
+        justify-content: space-between;
+    }
+
+    .analyOldList {
+        padding: 10px 0;
+    }
+
+    .analyOldEchat {
+        width: calc(100% - 120px);
+    }
+
+    .analyHuaxs {
+        padding: 25px;
+        width: calc(100% - 50px);
+    }
+
+    .analyHuaxs .analyHuaImg {
+        width: 90px;
+        height: 90px;
+    }
+
+    .analyHuaxs .analyHuaImg img {
+        width: 50px;
+        height: auto;
+    }
+
+    .analyHuaxs .analyHuaTxt span {
+        font-size: 30px;
+    }
+
+    .analyHuaxs .analyHuaTxt b {
+        font-size: 22px;
+    }
+
+    .analySexMode {
+        height: 90px;
+    }
+
+    .analySexNan {
+        width: calc(50% - 43px);
+        padding: 0 20px;
+    }
+
+    .analySexNanTxt span {
+        font-size: 20px;
+    }
+
+    .analySexNanTxt b {
+        font-size: 15px;
+    }
+
+    .analySexNanNub span {
+        font-size: 54px;
+    }
+
+    .analySexNvs {
+        width: calc(50% - 43px);
+        padding: 0 20px;
+    }
+
+    .analySexNanTxt {
+        padding-left: 0;
+    }
+
+    .analySexNvs .analySexNvsTxt {
+        padding-right: 0;
+    }
+
+    .analySexNvs .analySexNvsNub span {
+        font-size: 54px;
+    }
+
+    .analySexNvs .analySexNvsTxt span {
+        font-size: 20px;
+    }
+
+    .analySexNvs .analySexNvsTxt b {
+        font-size: 15px;
+    }
+
+    .analyTitle span {
+        font-size: 42px;
+    }
+
+    .analyCompanyFenb .analyOldData {
+        width: 140px;
+    }
+
+    .analyCompanyFenb .analyOldEchat {
+        width: calc(100% - 140px);
+    }
+
+    .analyBottom .bottomOne {
+        font-size: 42px;
+    }
+
+    .analyBottom .bottomTwo {
+        font-size: 42px;
+    }
+
+    .analyBottom .bottomThre {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 640px) {
+    .analyBackImg img.dianzui1 {
+        width: 300px;
+        height: 300px;
+        top: -17%;
+        left: -26%;
+    }
+
+    .analyBackImg img.dianzui2 {
+        width: 400px;
+        height: 400px;
+        right: -40%;
+    }
+}
+
+@media (max-width: 590px) {
+    .analyHuaxs .analyHuaImg {
+        width: 70px;
+        height: 70px;
+    }
+
+    .analyHuaxs .analyHuaImg img {
+        width: 40px;
+        height: auto;
+    }
+
+    .analyHuaxs .analyHuaTxt span {
+        font-size: 25px;
+    }
+
+    .analyHuaxs .analyHuaTxt b {
+        font-size: 16px;
+    }
+
+    .analyEchaPaim li {
+        flex-wrap: wrap;
+        padding: 6px 0;
+    }
+
+    /*.analyEchaPaim li .paimNam {
+        width: 100%;
+        margin-left: 8px;
+    }*/
+
+    /*.analyEchaPaim {
+        width: 120px;
+    }*/
+
+    .analyEchaPaim li .paimNam span.citys {
+        font-size: 20px;
+        padding: 0 8px;
+    }
+
+    .analyOldList .analyOldNam {
+        font-size: 18px;
+    }
+
+    .analyOldList .analyOldShuz {
+        font-size: 26px;
+    }
+
+    .analyOldData {
+        width: 80px;
+    }
+
+    .analyOldEchat {
+        width: calc(100% - 80px);
+    }
+
+    .analyEchatMap {
+        height: 400px;
+    }
+
+    .analyCompanyFenb .analyOldData {
+        width: 100px;
+    }
+
+    .analyCompanyFenb .analyOldEchat {
+        width: calc(100% - 100px);
+    }
+
+    .analyCompanyFenb .analyOldList {
+        padding: 10px 0;
+    }
+
+
+    .analySexMode {
+        height: 70px;
+    }
+
+    .analySexNan {
+        width: calc(50% - 33px);
+        padding: 0 15px;
+    }
+
+    .analySexNanTxt span {
+        font-size: 15px;
+    }
+
+    .analySexNanTxt b {
+        font-size: 12px;
+    }
+
+    .analySexNanNub span {
+        font-size: 38px;
+    }
+
+    .analySexNvs {
+        width: calc(50% - 33px);
+        padding: 0 15px;
+    }
+
+    .analySexNanTxt {
+        padding-left: 0;
+    }
+
+    .analySexNvs .analySexNvsTxt {
+        padding-right: 0;
+    }
+
+    .analySexNvs .analySexNvsNub span {
+        font-size: 38px;
+    }
+
+    .analySexNvs .analySexNvsTxt span {
+        font-size: 15px;
+    }
+
+    .analySexNvs .analySexNvsTxt b {
+        font-size: 12px;
+    }
+
+    .analySexNanNub b {
+        font-size: 20px;
+    }
+
+    .analySexNvs .analySexNvsNub b {
+        font-size: 20px;
+    }
+
+    /*后加的*/
+    .analyEchaFenbuer{
+        width: 120px;
+        left: calc(100% - 150px);
+        bottom: 15px;
+    }
+    .analyEchaFenbuer ul{
+        flex-wrap: wrap;
+    }
+    .analyEchaFenbuer li .paimNam{
+        flex-wrap: wrap;
+    }
+    .analyEchaFenbuer li .paimNam span{
+        padding: 0 5px;
+    }
+    .analyEchaFenbuer li .paimNam span.citys{
+        padding: 0;
+    }
+
+    .analyDiqufeb ul li{
+        width: 70%;
+    }
+    .analyDiqufeb li .paimNam{
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 520px) {
+    .analyBackImg img.dianzui1 {
+        left: -30%;
+    }
+
+    .analyBackImg img.dianzui2 {
+        right: -50%;
+    }
+}
+
+@media (max-width: 470px) {
+    .analyTopYear {
+        font-size: 50px;
+    }
+
+    .analyTopName {
+        font-size: 40px;
+    }
+
+    .analyTopTips {
+        width: calc(240px - 24px);
+        padding: 0 12px;
+    }
+
+    .analyTopTips span {
+        font-size: 18px;
+    }
+
+    .analyTopTips img.tipsimg1 {
+        width: 18px;
+        height: auto;
+    }
+
+    .analyTopImgs {
+        width: 230px;
+    }
+
+    .analyTitle span {
+        font-size: 35px;
+    }
+
+    .analyHuaxs .analyHuaTxt {
+        width: calc(100% - (70px + 15px));
+    }
+
+    .analyBottom {
+        padding: 100px 0 40px 0;
+    }
+
+    .analyBottom .bottomOne {
+        font-size: 35px;
+    }
+
+    .analyBottom .bottomTwo {
+        font-size: 35px;
+    }
+
+    .analyBottom .bottomThre {
+        font-size: 15px;
+    }
+
+    .analyEchatExper {
+        height: 380px;
+    }
+}
+
+@media (max-width: 520px) {
+    .analyBackImg img.dianzui1 {
+        left: -35%;
+        top: -20%;
+    }
+
+    .analyBackImg img.dianzui2 {
+        right: -55%;
+    }
+    .analyDiqufeb ul li{
+        height: 28px;
+    }
+    .analyDiqufeb li .paimNam span.citys{
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 420px) {
+    .analyBackImg img.dianzui1 {
+        left: -40%;
+    }
+    .analyBackImg img.dianzui2 {
+        right: -60%;
+    }
+    .analyTopYear {
+        font-size: 40px;
+    }
+
+    .analyTopName {
+        font-size: 30px;
+    }
+
+    .analyTopTips {
+        width: calc(200px - 24px);
+        padding: 0 12px;
+    }
+
+    .analyTopTips span {
+        font-size: 18px;
+    }
+
+    .analyTopTips img.tipsimg1 {
+        width: 18px;
+        height: auto;
+    }
+
+    .analyTopImgs {
+        width: 200px;
+    }
+
+    .analyTitle span {
+        font-size: 28px;
+    }
+
+    .analyTitle b {
+        font-size: 16px;
+    }
+
+    .analyHuaxs .analyHuaImg {
+        width: 50px;
+        height: 50px;
+    }
+
+    .analyHuaxs .analyHuaImg img {
+        width: 30px;
+        height: auto;
+    }
+
+    .analyHuaxs .analyHuaTxt span {
+        font-size: 18px;
+    }
+
+    .analyHuaxs .analyHuaTxt b {
+        font-size: 12px;
+    }
+
+    .analyHuaxs .analyHuaTxt {
+        width: calc(100% - (50px + 15px));
+    }
+
+    .analyEchaPaim li{
+        flex-wrap: wrap;
+    }
+
+    .analyEchaPaim li .paimNam span {
+        font-size: 14px;
+    }
+
+    .analyEchaPaim li .paimNam span.citys {
+        font-size: 14px;
+        padding: 0 5px;
+    }
+
+    .analyEchaPaim li .paimNumr {
+        font-size: 13px;
+        height: 25px;
+    }
+
+    /*.analyEchaPaim {
+        width: 82px;
+    }*/
+
+    .analyEchatTite {
+        font-size: 22px;
+    }
+
+    .analyEchatMap {
+        height: 350px;
+    }
+
+    .analyOldList .analyOldNam {
+        font-size: 13px;
+    }
+
+    .analyOldList .analyOldShuz {
+        font-size: 20px;
+    }
+
+    .analyOldData {
+        width: 60px;
+    }
+
+    .analyOldEchat {
+        width: calc(100% - 60px);
+    }
+
+    .analySexNanNub {
+        padding-right: 0;
+    }
+
+    .analySexNanNub span {
+        font-size: 25px;
+    }
+
+    .analySexNanNub b {
+        font-size: 14px;
+    }
+
+    .analySexNanTxt span {
+        font-size: 14px;
+    }
+
+    .analySexNvs .analySexNvsNub {
+        padding-left: 0;
+    }
+
+    .analySexNvs .analySexNvsNub span {
+        font-size: 25px;
+    }
+
+    .analySexNvs .analySexNvsNub b {
+        font-size: 14px;
+    }
+
+    .analySexNvs .analySexNvsTxt span {
+        font-size: 14px;
+    }
+
+    .analyCompanyFenb .analyOldData {
+        width: 68px;
+    }
+
+    .analyCompanyFenb .analyOldEchat {
+        width: calc(100% - 68px);
+    }
+    .analyEchaFenbuer{
+        width: 90px;
+        left: calc(100% - 120px);
+    }
+}

@@ -1,0 +1,17 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}  
+<section class="wap_member">
+  <div class="wap_member_comp_h1" style="position:relative"><span>举报简历</span></div>
+<div class="wap_reportlist_box">
+<form action="" method="post" >
+<div class="wap_reportlist_tit"> 选择举报原因  </div>
+{yun:}foreach from=$userdata.user_reporting item=uesrv{/yun}
+<label><div class="jb_infochlose">{yun:}$userclass_name.$uesrv{/yun}<span class="jb_info_r"><input type="checkbox" name="reason[]" id="reason_{yun:}$uesrv{/yun}"  title="{yun:}$userclass_name.$uesrv{/yun}" value="{yun:}$userclass_name.$uesrv{/yun}"></span></div></label> 
+{yun:}/foreach{/yun}
+<div class="jb_infochlose_pd"><input type="submit" name="submit" value="举报" class="wap_reportlist_tit_bth"></div>
+</form>
+  </div>
+</section>
+</div>
+
+</body>
+</html>

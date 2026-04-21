@@ -1,0 +1,1572 @@
+.toobody {
+    background-color: #fff;
+    padding: 10px;
+}
+
+.tool_box {
+    width: 24%;
+    margin: 12px 20px 0 0px;
+}
+
+.tool_tip {
+    font-size: 14px;
+    color: #666;
+    padding: 10px 0 30px 0;
+}
+
+.tool_name {
+    font-size: 18px;
+}
+
+.tool_boxall {
+    display: flex;
+}
+
+.tool_hc_tit {
+    font-size: 16px;
+}
+
+.tool_hc_sm {
+    padding: 40px 20px 0 20px;
+    line-height: 30px;
+    color: #999;
+    font-size: 13px;
+}
+
+.tool_inputips {
+    font-size: 12px;
+    color: #666;
+    padding-top: 10px;
+}
+
+.wxfbtool {
+    padding-right: 400px;
+}
+
+.wxfbtool .TableInpt {
+    width: 420px;
+}
+
+.wxfbtool .jianlidian {
+    width: 420px;
+}
+
+.wxfbtooltable {
+    width: 360px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.dataImportAll {
+    overflow: hidden;
+    padding: 15px 20px;
+    display: flex;
+    margin-top: 10px;
+    align-items: center;
+}
+
+.dataImportAll .dataImporOne {
+    overflow: hidden;
+}
+
+.dataImportAll .dataImporOne form {
+    overflow: hidden;
+}
+
+.dataImportAll .dataImporOne form .table_form {
+    overflow: hidden;
+    width: 480px;
+    height: 302px;
+    background: #f8f9fc;
+    border: 1px solid #edeff5;
+    border-radius: 8px;
+    margin: 0 20px 0 15px;
+}
+
+.dataImportAll .dataImporOne form h3 {
+    overflow: hidden;
+    font-size: 13px;
+    color: #61687c;
+    margin: 25px 0 9px 25px;
+}
+
+.dataImportAll .dataImporOne form .dataImporButton {
+    overflow: hidden;
+    width: 430px;
+    height: 220px;
+    background: #fff;
+    margin: 5px 25px;
+    border-radius: 4px;
+}
+
+.dataImportAll .dataImporOne form .dataImporButton .imporButOne {
+    overflow: hidden;
+    text-align: center;
+    padding-top: 35px;
+}
+
+.dataImportAll .dataImporOne form .dataImporButton .imporButOne .imporButOneImg {
+    overflow: hidden;
+    margin-bottom: 35px;
+}
+
+.dataImportAll .dataImporOne form .dataImporButton .imporButOne .imporButOneFile {
+    overflow: hidden;
+    width: 104px;
+    height: 85px;
+    margin: auto;
+    position: relative;
+}
+
+.dataImportAll .dataImporOne form .imporButOneFile span {
+    overflow: hidden;
+    display: block;
+    width: 90px;
+    height: 30px;
+    margin: auto;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dataImportAll .dataImporOne form .imporButOneFile input {
+    position: absolute;
+    top: 0;
+    left: -73px;
+    padding-top: 50px;
+    z-index: 22;
+    cursor: pointer;
+}
+
+.dataImportAll .dataImporOne form .imporButTwo {
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 25px 0 25px 0;
+}
+
+.dataImportAll .dataImporOne form .imporButTwo input {
+    width: 140px;
+    height: 42px;
+    background: #2778f8;
+}
+
+.xwyj_box {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+    position: relative;
+}
+
+.xwyj_box_list {
+    border: 1px solid #EBEEF5;
+    margin-bottom: 12px;
+    overflow: hidden;
+    position: relative;
+    width: calc(33% - 9px);
+}
+
+.xwyj_box_list:nth-of-type(4n+0) {
+    margin-right: 0px;
+}
+
+.xwyj_box_list_tit {
+    padding: 10px 15px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+}
+
+.xwyj_box_n {
+    color: #999;
+    font-size: 12px;
+}
+
+.xwyj_box_list_titmore {
+    color: #409eff;
+    font-size: 12px;
+}
+
+.wxsettip_smallselect .el-select {
+    width: 100%;
+}
+
+.xwyj_list {
+    padding: 0 15px 15px 15px;
+    height: 435px;
+}
+
+.xwyj_list .xwyj_table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.xwyj_table thead {
+    background: #F5F7FA;
+}
+
+.xwyj_table th {
+    padding: 10px;
+    height: 5px;
+    font-size: 13px;
+    color: var(--font-color2);
+    font-weight: 500;
+}
+
+.xwyj_table td {
+    border-bottom: 1px solid #EBEEF5;
+    padding: 10px 5px;
+    font-size: 13px;
+}
+
+.xwyj_table tr:last-child td {
+    border: none;
+}
+
+.xwyj_table tbody {
+    overflow: hidden;
+    position: relative;
+}
+
+.xwyj_table tbody tr:hover {
+    background: #F5F7FA;
+}
+
+.xwyj_n {
+    color: #f00;
+    font-weight: bold;
+}
+
+.cyy_nav {
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* 统计图样式 */
+.dataEchatFrom {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.dataEchFromTip {
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #EEEFF2;
+    height: 33px;
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+    border-radius: 4px;
+}
+
+.dataEchFromTip span {
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    font-size: 13px;
+    color: #333;
+    padding: 0 20px;
+    border-right: 1px solid #EEEFF2;
+}
+
+.dataEchFromTip span:last-child {
+    border-right: 0px solid #EEEFF2;
+}
+
+.dataEchFromTip span.spanDay {
+    background: #2778f8;
+    color: #fff;
+}
+
+.dataEchNumber {
+    position: relative;
+    width: calc(100% - 6px);
+    height: 105px;
+    padding: 20px 6px 20px 0;
+    display: flex;
+    /* flex-wrap: wrap; */
+    align-items: center;
+    /* justify-content: space-between; */
+    text-align: center;
+}
+
+.dataEchNumxzen {
+    overflow: hidden;
+    position: relative;
+    width: 105px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0FB8DC;
+    border-radius: 8px;
+    margin-right: 12px;
+}
+
+.dataEchNumxzen span {
+    overflow: hidden;
+    display: block;
+    font-size: 14px;
+    color: #fff;
+}
+
+.dataEchNumxzen b {
+    overflow: hidden;
+    display: block;
+    font-size: 28px;
+    color: #fff;
+    padding-top: 5px;
+}
+
+.dataEchNumSxin {
+    overflow: hidden;
+    position: relative;
+    height: 100%;
+    box-shadow: 0px 1px 6px 1px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.dataEchNumList {
+    overflow: hidden;
+    position: relative;
+}
+
+.dataEchNumName {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dataEchNumName img {
+    display: block;
+    width: 16px;
+    height: auto;
+}
+
+.dataEchNumName span {
+    display: block;
+    overflow: hidden;
+    font-size: 14px;
+    color: #333;
+    padding-left: 6px;
+}
+
+.dataEchNumSusn {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dataEchNumSusn b {
+    display: block;
+    overflow: hidden;
+    font-size: 28px;
+    color: #333;
+    padding-top: 6px;
+}
+
+.dataEchNuWione {
+    position: relative;
+    width: calc(50% - 155px);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    margin-right: 12px;
+}
+
+.dataEchNuWione .dataEchNumSxin {
+    width: calc(100% - (105px + 12px));
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.dataEchNuWitwo {
+    position: relative;
+    width: calc(50% + 155px - 12px);
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.dataEchNuWitwo .dataEchNumSxin {
+    width: calc(100% - (105px + 12px));
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.dataEchatTite {
+    overflow: hidden;
+    position: relative;
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+    margin: 20px 0 15px 0;
+}
+
+.dataEchatInfo {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 360px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dataEchatModul {
+    overflow: hidden;
+    position: relative;
+    width: calc(50% - 15px);
+    height: 100%;
+}
+
+.dataClassStat {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.dataClassStat ul {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.dataClassStat ul li {
+    overflow: hidden;
+    position: relative;
+    width: 25%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 25px 0;
+    cursor: pointer;
+}
+
+.dataClassStat ul li a {
+    overflow: hidden;
+    position: relative;
+    display: block;
+}
+
+.dataClassStat ul li .dataClassImg {
+    overflow: hidden;
+    position: relative;
+    width: 70px;
+    height: 70px;
+    background: #36ce88;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin: auto;
+}
+
+.dataClassStat ul li .dataClassName {
+    overflow: hidden;
+    position: relative;
+    font-size: 15px;
+    color: #333;
+    padding-top: 12px;
+}
+
+.xcxseoLinks {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.xcxseoLinks a {
+    overflow: hidden;
+    position: relative;
+    height: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 13px;
+    color: #333;
+    padding: 0 15px;
+    border-radius: 12px;
+    margin: 0 5px;
+}
+
+.xcxseoLinks a:hover {
+    background: #2778f8;
+    color: #fff;
+}
+
+.xcxseoLinks a.acure {
+    background: #2778f8;
+    color: #fff;
+}
+
+
+/* wap模版 */
+.wapHeaders {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: calc(100% - 12px);
+    padding: 12px 12px 12px 0;
+}
+
+.wapCollapse {
+    overflow-y: auto;
+    position: relative;
+    width: 100%;
+    height: calc(100% - 45px);
+}
+
+.wapCollapse::-webkit-scrollbar {
+    display: none;
+}
+
+.wapCollapse .wapColTite {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 80px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.wapCollapse .wapColTiName {
+    overflow: hidden;
+    position: relative;
+    font-size: 15px;
+}
+
+.wapCollapse .wapColTiPaix {
+    overflow: hidden;
+    position: relative;
+}
+
+.wapCollapse .wapColTiPaix .el-button {
+    padding: 0;
+}
+
+.wapCollConts {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.wapCollColor {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.wapCollColor span {
+    display: block;
+    overflow: hidden;
+    position: relative;
+    width: 28px;
+    height: 28px;
+    margin-right: 8px;
+    cursor: pointer;
+    border: 2px solid #fff;
+}
+
+.wapCollFrom {
+    overflow: hidden;
+    position: relative;
+    padding-top: 15px;
+}
+
+.wapCollFromList {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 100%;
+    padding: 7px 0;
+}
+
+.wapCollFroTite {
+    overflow: hidden;
+    position: relative;
+    width: 60px;
+    font-size: 14px;
+    color: #555;
+}
+
+.wapCollFroInpt {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 60px);
+}
+
+.wapCollFroInpt .el-radio {
+    margin-right: 15px;
+}
+
+.wapCollFroInpt .el-radio__label {
+    padding-left: 8px;
+}
+
+.wapCollFromBane {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding-bottom: 10px;
+}
+
+.wapCollFromBane .wapCollFroInpt {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.wapCollFromBane .wapCollFroInpt .el-image {
+    overflow: hidden;
+    position: relative;
+    padding: 0 12px;
+}
+
+.wapCollFromBane .wapCollFroInpt span.spantip {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    color: #999;
+    font-size: 12px;
+    padding-top: 3px;
+    width: 100%;
+}
+
+.wapCollFroShum {
+    overflow: hidden;
+    position: relative;
+    padding-bottom: 10px;
+    font-size: 15px;
+    color: #999;
+}
+
+.mouldappLirbia {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 24px);
+    background: #f5f5f5;
+    padding: 12px;
+    margin-top: 8px;
+}
+
+.mouldappDuoge {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 24px);
+    background: #fff;
+    border-radius: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 12px;
+    margin: 6px 0 6px 0;
+}
+
+.mouldappShur {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.mouldappShur .titName {
+    overflow: hidden;
+    position: relative;
+    /* width: 120px; */
+    padding-right: 10px;
+}
+
+.mouldappShur .el-input {
+    overflow: hidden;
+    position: relative;
+    width: 120px;
+}
+
+.mouldapNavs {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.mouldapNavList {
+    overflow: hidden;
+    position: relative;
+    width: 20%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.mouldapNavList img {
+    display: block;
+    width: 24px;
+    height: 24px;
+    margin: auto;
+}
+
+.mouldapNavList span {
+    display: block;
+    font-size: 12px;
+    color: #333;
+    padding-top: 5px;
+}
+
+.navstyle1 .el-carousel__container {
+    height: 100px;
+}
+
+.drawerTableAll {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0 20px;
+}
+
+.draweYujiHead {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 24px);
+    height: 70px;
+    display: flex;
+    padding: 0 12px;
+    align-items: center;
+    background: #f7f7f7;
+    border-radius: 4px;
+}
+
+.drawEuiHedButn {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.drawEuiHedTetx {
+    overflow: hidden;
+    position: relative;
+    font-size: 14px;
+    color: #707070;
+}
+
+.drawEuiHedAniu {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.drawEuiHedAniu span {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 24px;
+    font-size: 14px;
+    color: #707070;
+    padding: 0 14px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.drawEuiHedAniu span.spanCur {
+    background: #2778f8;
+    color: #fff;
+}
+
+.drawEuiHedInpt {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 15px;
+}
+
+.draweYujiBiaog {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: calc(100% - 85px);
+    margin-top: 10px;
+}
+
+.draweYujiBiaog .el-table {
+    border: 1px solid #eee;
+}
+
+.QiuzDataDome {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-bottom: 15px;
+}
+
+.QiuzDataHead {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.QiuzHeadName {
+    overflow: hidden;
+    position: relative;
+    font-size: 16px;
+    color: #333;
+    font-weight: bold;
+}
+
+.QiuzDataTips {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 5px 0 10px 0;
+}
+
+.QiuzDataTips span {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    color: #818896;
+    padding-right: 12px;
+}
+
+.QiuzDataInfo {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.QiuaInfoList {
+    overflow: hidden;
+    position: relative;
+    width: calc(24% - 2px - 4px);
+    border: 1px solid #eee;
+    height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px 0 6px 0;
+}
+
+.QiuaInfoList div {
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+}
+
+.QiuaInfoList div b {
+    display: block;
+    font-size: 20px;
+    color: #111;
+}
+
+.QiuaInfoList div span {
+    display: block;
+    font-size: 12px;
+    color: #818896;
+    padding-top: 5px;
+}
+
+.data_sj {
+    line-height: 30px;
+}
+
+.datalx {
+    margin: 10px 10px;
+    display: inline-block
+}
+
+.TableSelect {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+.TableSelect .el-select {
+    width: 100%;
+}
+
+.drawerReply {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding: 0 20px;
+}
+
+.drawerReply .el-tabs__item {
+    overflow: hidden;
+    position: relative;
+    height: 38px;
+    line-height: 38px;
+}
+
+.drawerReply .el-tabs__nav {
+    overflow: hidden;
+    position: relative;
+    height: 38px;
+}
+
+.drawerReply .el-tabs__header {
+    border: none;
+}
+
+.drawerReply .el-tabs__content {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 30px);
+    background: #f5f7fb;
+    padding: 8px 15px;
+}
+
+.drawerReply .el-tabs__nav-scroll {
+    padding: 0;
+}
+
+.drawerReply .ReplyButn {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 100px);
+    margin-left: 100px;
+}
+
+.drawerReply .el-tabs__new-tab {
+    margin: 9px 0 9px 10px;
+    border: 1px solid #4290f7;
+    color: #4290f7;
+}
+
+.tw_table_left {
+    width: 600px;
+    float: left;
+    padding: 26px 0 20px 20px;
+}
+
+.tw_yl {
+    width: 400px;
+    float: left;
+    padding-top: 26px;
+}
+
+.n_tw_list {
+    padding-left: 100px;
+    position: relative;
+    margin-top: 10px;
+}
+
+.n_tw_name {
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 14px;
+    line-height: 35px;
+}
+
+.tw_job_tag {
+    display: inline-block;
+    border: 1px solid #d4e6fa;
+    color: #097cf5;
+    /* height: 25px; */
+    line-height: 25px;
+    vertical-align: top;
+    text-align: center;
+    border-radius: 4px;
+    margin-top: 10px;
+    background: #ecf5ff;
+    margin-right: 10px;
+    font-size: 13px;
+    padding: 0px 30px 0 10px;
+    position: relative;
+    cursor: pointer;
+}
+
+.tw_jobscbox {
+    padding-top: 10px;
+}
+
+.tw_jobscbth {
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    background: url(../../images/icon_gb_h.png) no-repeat center center;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    bottom: 0;
+    margin: auto;
+    z-index: 2;
+}
+
+.tw_job_tip {
+    padding-top: 5px;
+}
+
+.tw_job_tip_sc {
+    font-size: 12px;
+    display: inline-block;
+    color: #fff;
+    background: #ccc url(../../images/twsc.png) no-repeat 3px center;
+    padding: 2px 5px 2px 18px;
+    border-radius: 3px
+}
+
+.tw_job_tip_xj {
+    font-size: 12px;
+    display: inline-block;
+    color: #fff;
+    background: #ccc url(../../images/tw_xj.png) no-repeat 3px center;
+    padding: 2px 5px 2px 18px;
+    border-radius: 3px
+}
+
+.ts_bth {
+    width: 54px;
+    height: 22px;
+    line-height: 22px;
+    border-radius: 3px;
+    background: #2778F8;
+    border: 1px solid #2778F8;
+    display: inline-block;
+    color: #fff;
+    text-align: center
+}
+
+.ts_ybth {
+    width: 54px;
+    height: 22px;
+    line-height: 22px;
+    border-radius: 3px;
+    background: #2778F8;
+    border: 1px solid #2778F8;
+    display: inline-block;
+    color: #fff;
+    text-align: center;
+    opacity: 0.5;
+}
+
+.tz_tip {
+    display: flex;
+    align-items: center;
+    color: #ff6600;
+    margin-top: 10px;
+}
+
+.admin_Filter_bth {
+    padding: 0 16px;
+    height: 32px;
+    background: #2778f8;
+    border-radius: 4px;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 32px;
+    margin-right: 10px;
+}
+
+.tw_textarea textarea {
+    width: 400px;
+    height: 130px;
+    border: 1px solid #dcdfe6;
+    border-radius: 4px;
+}
+
+/* 工具-微信-发布工具 */
+.wxfbtoolshoww {
+    width: 300px;
+    height: 535px;
+    border: 1px solid #eee;
+    overflow: auto;
+    /*margin-right:15px ;*/
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.wxfbtoolshoww::-webkit-scrollbar {
+    display: none;
+}
+
+.wxpubtool_sj_show {
+    width: 100%;
+    height: auto;
+    position: relative;
+    overflow: hidden;
+}
+
+/* .wxpubtool_sj_sx {} */
+
+.wxpubtool_sj_con {
+    width: 280px;
+    height: 490px;
+    overflow: auto;
+    color: #333;
+    padding-right: 20px;
+}
+
+.wxpubtool_sj_con::-webkit-scrollbar {
+    width: 4px
+}
+
+.wxpubtool_sj_con::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, .2);
+    background: rgba(0, 0, 0, .2)
+}
+
+.wxpubtool_sj_con::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, .2);
+    border-radius: 0;
+    background: rgba(0, 0, 0, .1)
+}
+
+
+.wxpubtool_sj_tit {
+    width: 100%;
+    height: 10px;
+}
+
+.wxpubtool_sj_tit_c {
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    font-size: 12px;
+    padding-top: 30px;
+}
+
+.wxpubtool_list {
+    margin: 12px;
+}
+
+.wxpubtool_list_tit {
+    margin-bottom: -42px;
+    margin-left: 3px;
+    transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+}
+
+.wxpubtool_list_tit_x1 {
+    width: 58px;
+    height: 58px;
+    margin: 20px 0px;
+    background-color: #fefefe;
+    border-radius: 100%;
+    margin-bottom: -35px;
+    margin-left: -8px;
+}
+
+.wxpubtool_list_tit_x2 {
+    margin-bottom: -48px;
+    margin-left: 3px;
+    width: 56px;
+    height: 28px;
+    background-color: #fefefe;
+    border-radius: 30px 30px 0 0;
+    border: 2px dashed #0070c0;
+    border-bottom: none;
+    transform: rotate(140deg);
+    -webkit-transform: rotate(140deg);
+    -moz-transform: rotate(140deg);
+    -o-transform: rotate(140deg);
+}
+
+.wxpubtool_list_tit_x3 {
+    width: 45px;
+    height: 45px;
+    background-color: #0070c0;
+    border-radius: 100%;
+    font-size: 26px;
+    color: #fff;
+    text-align: center;
+    line-height: 45px;
+    transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+}
+
+.wxpubtool_CZ {
+    width: 100%;
+    text-align: center
+}
+
+.wxpubtool_CZbth {
+    background: #2778F8;
+    color: #fff;
+    height: 38px;
+    line-height: 38px;
+    width: 190px;
+    border-radius: 20px;
+    border: none;
+    font-size: 12px;
+    cursor: pointer
+}
+
+.wxpubtool_list_con {
+    padding: 0 5px;
+}
+
+.wxpubtool_list_con_box {
+    border: 2px dashed #0070c0;
+    border-radius: 6px;
+    padding: 0px 1em 1em 1em;
+}
+
+.wxpubtool_jobtit {
+    font-size: 18px;
+    padding: 12px 0px 20px 47px;
+    font-weight: bold;
+}
+
+.wxpubtool_jobcon {
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    line-height: 24px;
+}
+
+.wxpubtool_jobcon_bq {
+    margin-bottom: 6px;
+}
+
+.wxpubtool_jobcon_bq span {
+    padding: 2px 6px;
+    background-color: #eee;
+    border-radius: 5px;
+}
+
+.wxpubtool_jobcon_redfont {
+    color: #c00000;
+    font-size: 16px;
+}
+
+.wxpubtool_jobcon_address {
+    text-align: center;
+    color: #0070c0;
+}
+
+.chat_hf_show {
+    display: flex;
+    font-size: 13px;
+    padding-top: 10px;
+    margin-bottom: 10px;
+}
+
+.chat_hf_showname {
+    line-height: 30px;
+}
+
+.chat_hf_showbox {
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #f4f4f5;
+    color: #909399;
+}
+
+.chat_hf_showone {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.chat_sftag {
+    display: flex;
+    align-items: center;
+}
+
+.chat_sftag_r {
+    padding-left: 10px;
+}
+
+.datacallLepys{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+.datacallLepys .el-row{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+.datacallLepys .el-row .el-button{
+    overflow: hidden;
+    position: relative;
+    margin: 5px;
+}
+
+.wxfbtoolshoww .wxpubtool_gj_con_1{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    background: #fff;
+}
+
+.wxfbtoolshoww .wxpubtool_gj_con_1 .asdaSubject{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 2px - 24px);
+    padding: 12px;
+    border-radius: 3px;
+    border: 1px solid #eee;
+    margin: 6px 0;
+}
+.wxfbtoolshoww .wxpubtool_gj_con_1 .asdaSubName{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    color: #fff;
+    background: #2f80f2;
+    font-size: 13px;
+    height: 28px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wxfbtoolshoww .wxpubtool_gj_con_1 .asdaSubwebs{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    word-break: break-all;
+    font-size: 14px;
+    padding: 5px 0;
+    color: #666;
+}
+
+.wxfbtoolshoww .wxpubtool_gj_con_1 .asdaSubComc{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    word-break: break-all;
+    font-size: 14px;
+    color: #2f80f2;
+}
+
+.dataDiaoyong{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: calc(100% - 4px);
+}
+.dataDiaoyong .el-tabs{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.dataDiaoyong .el-tabs__header{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    margin: 0 0 10px 0;
+}
+.dataDiaoyong .el-tabs__content{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: calc(100% - 45px);
+}
+
+.dataDiaoyong .el-tabs__content .el-tab-pane{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.dataDdiaoTable{
+    overflow-y: auto;
+    position: relative;
+    width: 100%;
+    height: calc(100% - 80px);
+}
+
+
+
+
+
+.wapmbSshowDuoh{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    background: #fff;
+    padding: 10px 0;
+}
+.wapmbSshowDuoh li{
+    overflow: hidden;
+    position: relative;
+    width: 20%;
+    text-align: center;
+}
+
+.mouldappGundBottom{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-bottom: 64px;
+}
+.xuanzhecanshu{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-top: 10px;
+}
+.xuanzhecanshu .el-checkbox-group{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+.xuanzhecanshu .el-checkbox{
+    overflow: hidden;
+    position: relative;
+    width: calc(50% - 6px);
+    margin-right: 0;
+    padding: 2px 0;
+}
+
+/* 数据风向标 */
+.fenxiabHeadr{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.fenxiabHeadTite{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.fenxiabHeadTite span{
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #333;
+}
+.fenxiabHeadTite span::before{
+    overflow: hidden;
+    position: relative;
+    content: "";
+    display: block;
+    width: 4px;
+    height: 12px;
+    margin: 1px 15px 0 0;
+    background: #2D57E5;
+}
+.fenxiabHeadFrom{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.fenxiabHeadFomList{
+    overflow: hidden;
+    position: relative;
+}
+.fenxiabHeadFomList .el-input{
+    width: 150px;
+}
+
+.fenxiabHeadTexts{
+    overflow: hidden;
+    position: relative;
+    font-size: 13px;
+    color: #333;
+    padding: 0 12px;
+}
+
+.fenxiabConts{
+    overflow-y: auto;
+    position: relative;
+    width: 100%;
+    height: calc(100% - 42px);
+    margin-top: 8px;
+}
+.fenxiabConTable{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding: 0 0 24px 0;
+}
+
+.moduleFenxias{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.moduleFenxText{
+    overflow: hidden;
+    position: relative;
+}
+
+.moduleFenxIcon{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+}

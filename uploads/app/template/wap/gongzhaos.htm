@@ -1,0 +1,78 @@
+{yun:}include file="$wapstyle/header_cont.htm"{/yun}
+<style>
+    .about_right_p img {
+        max-width: 100%;
+    }
+
+    table[align="center"] {
+        margin: 0 auto;
+    }
+
+    table, table tr th, table tr td {
+        border: 1px solid #666;
+    }
+</style>
+<div class="about_content" style="margin-top:10px;">
+    <div class="anno_tit">
+        <h1>{yun:}$row.title{/yun}</h1>
+    </div>
+    <div class="anno_titDataInfo">
+        <span>{yun:}$config.sy_webname{/yun}</span><span>{yun:}$row.startime|date_format:'%Y-%m-%d'{/yun}</span>
+    </div>
+
+    <div class="about_right_p">
+        <div style="width:100%; overflow:hidden">
+            {yun:}$row.content{/yun}
+        </div>
+    </div>
+</div>
+<div class="relevanRecom">
+	<div class="titles">您可能还想看</div>
+	{yun:}gongzhao limit=6 order=startime sort=desc item=alist t_len=28{/yun}
+		{yun:}if $alist.id != $row.id{/yun}
+		<a href="{yun:}url m=wap c=gongzhao a=show id=$alist.id{/yun}">
+			{yun:}$alist.title{/yun}
+		</a>
+		{yun:}/if{/yun}
+	{yun:}/gongzhao{/yun}
+</div>
+
+<script>
+    var config = {
+        url: '{yun:}url m=wap c=gongzhaos id=$row.id{/yun}',
+        title: '{yun:}$row.title{/yun}',
+        desc: '{yun:}$row.content|replace:"\r\n":""{/yun}',
+        img: '{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_sharelogo{/yun}',
+        from: '{yun:}$config.sy_webname{/yun}'
+    };
+</script>
+{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+<script type="text/javascript">   
+    $(function(){
+
+        $(".about_right_p img").click(function() {
+            var thissrc = $(this).attr('src');
+            var imgarr = [];
+            var startPosition = 0;
+            $(".about_right_p img").each(function(index){
+                imgsrc = $(this).attr('src');
+                if(imgsrc){
+                    imgarr.push(imgsrc);
+                    if(thissrc==imgsrc){
+                        startPosition = index;
+                    }
+                }
+            })
+            vant.ImagePreview({
+              images:imgarr,
+              startPosition: startPosition,
+            });
+        });
+
+           
+    }) 
+
+</script>
+<style type="text/css">.van-image-preview__index{top: 8% !important;}</style>
+</body>
+</html>

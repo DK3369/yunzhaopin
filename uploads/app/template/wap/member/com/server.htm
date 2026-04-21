@@ -1,0 +1,1337 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<div id="yunvue">
+    <div class="none" :style="islook ? 'display:block': ''">
+        <!-- 页面主体部分 -->
+        <div class="dredge_body">
+            
+            <!-- tab切换 -->
+            <div class="dredge_body_tab">
+                <div class="dredge_body_tab_tetle">
+                    <ul>
+                        <li @click="tab" data-tab="4" :class="rating==4 ? 'pitch_on' : ''" v-if="tab4">单份购买</li>
+                        <li @click="tab" data-tab="1" :class="rating==1 ? 'pitch_on' : ''" v-if="tab1 && vipShow">套餐会员</li>
+                        <li @click="tab" data-tab="2" :class="rating==2 ? 'pitch_on' : ''" v-if="tab2 && vipShow">时间会员</li>
+                        <li @click="tab" data-tab="3" :class="rating==3 ? 'pitch_on' : ''" v-if="tab3 && vipShow">增值包</li>
+                    </ul>
+                </div>
+                <div class="dredge_body_tab_body" v-show="rating == 1">
+                    <ul>
+                        <li v-for="(item,tkey) in rating_1" :key="tkey">
+                            <div class="dredge_body_tab_body_box" :data-cid="item.id" data-server="vip" @click="chooseServer">
+                                <div class="dredge_body_tab_body_left">
+                                    <div class="tab_body_left_number">
+                                        <div class="vip_box_left_money_price">
+                                            <i>￥</i>
+                                            <i class="tab_body_left_number_monye">{{item.yh_price ? item.yh_price :
+                                                item.service_price}}</i>
+                                        </div>
+                                        <div v-if="item.yh_price" class="vip_box_left_money_yj">原价：<i>{{item.service_price}}</i></div>
+                                    </div>
+                                    <div class="tab_body_left_text">
+                                        <div class="tab_body_left_text_top">
+                                            <div class="left_text_top_vip">{{item.name}}</div>
+                                            <div class="left_text_top_time">（有效期：{{item.service_time}}）</div>
+                                        </div>
+                                        <div class="tab_body_left_text_bom" @click.stop="setMoreShow(item.id)">
+                                            <div class="left_text_bom_particular">详细信息</div>
+                                            <div class="left_text_bom_icon">
+                                                <img src="{yun:}$wap_style{/yun}/images/dredge_examine.png" alt="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="dredge_body_tab_body_right">
+                                    <img v-if="item.id!=cid" src="{yun:}$wap_style{/yun}/images/dredge_To_confirm.png" alt="">
+                                    <img v-if="item.id==cid" src="{yun:}$wap_style{/yun}/images/dredge_affirm.png" alt="">
+                                </div>
+                            </div>
+                            <!-- 详细信息 -->
+                            <div class="dredge_body_tab_body_close" v-show="showMore == item.id">
+                                <div class="dredge_close_title">
+                                    <div class="dredge_close_line"></div>
+                                    <div class="dredge_close_titlename">简历资源</div>
+                                </div>
+                                <div class="dredge_close_body">
+                                    <ul>
+                                        <li v-if="item.interview>0">面试邀请:<i class="dredge_close_body_number">{{item.interview}}</i>份;</li>
+                                        <li v-if="item.resume>0">简历下载:<i class="dredge_close_body_number">{{item.resume}}</i>份;</li>
+
+                                    </ul>
+                                </div>
+                                <div class="dredge_close_title">
+                                    <div class="dredge_close_line"></div>
+                                    <div class="dredge_close_titlename">职位资源</div>
+                                </div>
+                                <div class="dredge_close_body">
+                                    <ul>
+                                        <li v-if="item.job_num>0">职位上架:<i class="dredge_close_body_number">{{item.job_num}}</i>份;</li>
+                                        <li v-if="item.rec_num>0">职位推荐:<i class="dredge_close_body_number">{{item.rec_num}}</i>天;</li>
+                                        <li v-if="item.breakjob_num>0">职位刷新:<i class="dredge_close_body_number">{{item.breakjob_num}}</i>份;</li>
+                                        <li v-if="item.top_num>0">职位置顶:<i class="dredge_close_body_number">{{item.top_num}}</i>天;</li>
+                                        <li v-if="item.urgent_num>0">职位紧急:<i class="dredge_close_body_number">{{item.urgent_num}}</i>天;</li>
+                                    </ul>
+                                </div>
+                                <div class="dredge_close_title">
+                                    <div class="dredge_close_line"></div>
+                                    <div class="dredge_close_titlename">其他资源</div>
+                                </div>
+                                <div class="dredge_close_body">
+                                    <ul>
+                                        <li v-if="item.zph_num>0">招聘会预定:<i class="dredge_close_body_number">{{item.zph_num}}</i>场;</li>
+                                    </ul>
+                                </div>
+                                <div class="dredge_close_explain">
+                                    <i class="dredge_close_explain_title">套餐说明：</i>{{item.explains}}
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="dredge_body_tab_body" v-show="rating == 2">
+                    <ul>
+                        <li v-for="(item,skey) in rating_2" :key="skey">
+                            <div class="dredge_body_tab_body_box" :data-cid="item.id" data-server="vip" @click="chooseServer">
+                                <div class="dredge_body_tab_body_left">
+                                    <div class="tab_body_left_number">
+										<div class="vip_box_left_money_price">
+										    <i>￥</i>
+										    <i class="tab_body_left_number_monye">{{item.yh_price ? item.yh_price : item.service_price}}</i>
+										</div>
+										<div v-if="item.yh_price" class="vip_box_left_money_yj">原价：<i>{{item.service_price}}</i></div>
+                                    </div>
+                                    <div class="tab_body_left_text">
+                                        <div class="tab_body_left_text_top">
+                                            <div class="left_text_top_vip">{{item.name}}</div>
+                                            <div class="left_text_top_time">（有效期：{{item.service_time}}）</div>
+                                        </div>
+                                        <div class="tab_body_left_text_bom" @click.stop="setMoreShow(item.id)">
+                                            <div class="left_text_bom_particular">详细信息</div>
+                                            <div class="left_text_bom_icon">
+                                                <img src="{yun:}$wap_style{/yun}/images/dredge_examine.png" alt="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="dredge_body_tab_body_right">
+                                    <img v-if="item.id!=cid" src="{yun:}$wap_style{/yun}/images/dredge_To_confirm.png" alt="">
+                                    <img v-if="item.id==cid" src="{yun:}$wap_style{/yun}/images/dredge_affirm.png" alt="">
+                                </div>
+                            </div>
+                            <!-- 详细信息 -->
+                            <div class="dredge_body_tab_body_close" v-show="showMore == item.id">
+                                <div v-if="item.interview_resume">
+                                    <div class="dredge_close_title">
+                                        <div class="dredge_close_line"></div>
+                                        <div class="dredge_close_titlename">简历资源</div>
+                                    </div>
+                                    <div class="dredge_close_body">
+                                        <ul>
+                                            <li v-if="item.interview_resume">单日限制<i class="dredge_close_body_number">{{item.interview_resume}}</i></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div v-if="item.job_breakjob || item.rec_num > 0 || item.top_num > 0 || item.urgent_num > 0">
+                                    <div class="dredge_close_title">
+                                        <div class="dredge_close_line"></div>
+                                        <div class="dredge_close_titlename">职位资源</div>
+                                    </div>
+                                    <div class="dredge_close_body">
+                                        <ul>
+                                            <li v-if="item.job_breakjob">单日限制<i class="dredge_close_body_number">{{item.job_breakjob}}</i></li>
+                                            <li v-if="item.job_num > 0">职位上架<i class="dredge_close_body_number">{{item.job_num}}</i>份</li>
+                                            <li v-if="item.rec_num > 0">职位推荐:<i class="dredge_close_body_number">{{item.rec_num}}</i>天;</li>
+                                            <li v-if="item.top_num > 0">职位置顶:<i class="dredge_close_body_number">{{item.top_num}}</i>天;</li>
+                                            <li v-if="item.urgent_num > 0">职位紧急:<i class="dredge_close_body_number">{{item.urgent_num}}</i>天;</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div v-if="item.zph_num > 0 || item.spview_num > 0 || item.chat_num > 0 || item.sons_num > 0">
+                                    <div class="dredge_close_title">
+                                        <div class="dredge_close_line"></div>
+                                        <div class="dredge_close_titlename">其他资源</div>
+                                    </div>
+                                    <div class="dredge_close_body">
+                                        <ul>
+                                            <li v-if="item.zph_num > 0">招聘会预定单日限制:<i class="dredge_close_body_number">{{item.zph_num}}</i>场;</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="dredge_close_explain">
+                                    <i class="dredge_close_explain_title">套餐说明：</i>{{item.explains}}
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="dredge_body_tab_body" v-show="rating == 3">
+                    <ul>
+                        <li v-for="(item,akey) in add" :key="akey">
+                            <div class="zzb_tit" :data-sid="item.id" @click="chooseServer">
+                                <span class="zzb_tit_name">{{item.name}}</span>
+                                <span class="zzb_tit_zk" v-if="statis.zk">{{statis.zk_n}}折</span>
+                                <span class="zzb_tit_zkxq">详细信息</span>
+                                <span class="zzb_tit_zkicon"><img src="{yun:}$wap_style{/yun}/images/hylook.png" alt=""></span>
+                            </div>
+                            <!-- 详细信息 -->
+                            <div class="dredge_body_tab_body_close" v-show="(sid > 0 && sid==item.id) || (sid == 0 && akey == 0)">
+                                <div class="dredge_close_body">
+                                    <div v-for="(dv,dekey) in item.detail" :key="dekey">
+                                        <div :data-cid="dv.id" data-server="pack" @click.stop="chooseServer" class="zzb_xzbox">
+											<span class="zzb_xz">
+                                                <img v-if="dv.id==cid" src="{yun:}$wap_style{/yun}/images/dredge_affirm.png" alt="">
+                                                <img v-else src="{yun:}$wap_style{/yun}/images/hywxz.png" alt="">
+                                            </span>
+                                            <span v-if="dv.interview" class="zzb_name">
+                                                面试邀请:<i class="zzb_n">{{dv.interview}}</i>份;
+                                            </span>
+                                            <span v-if="dv.resume" class="zzb_name">
+                                                简历下载:<i class="zzb_n">{{dv.resume}}</i>份;
+                                            </span>
+                                            <span v-if="dv.job_num" class="zzb_name">
+                                                上架职位:<i class="zzb_n">{{dv.job_num}}</i>份;
+                                            </span>
+                                            <span v-if="dv.breakjob_num" class="zzb_name">
+                                                刷新职位:<i class="zzb_n">{{dv.breakjob_num}}</i>次;
+                                            </span>
+                                            <span v-if="dv.zph_num" class="zzb_name">
+                                                招聘会报名:<i class="zzb_n">{{dv.zph_num}}</i>场;
+                                            </span>
+                                            <span v-if="dv.top_num" class="zzb_name">
+                                                职位置顶:<i class="zzb_n">{{dv.top_num}}</i>天;
+                                            </span>
+                                            <span v-if="dv.urgent_num" class="zzb_name">
+                                                职位紧急:<i class="zzb_n">{{dv.urgent_num}}</i>天;
+                                            </span>
+                                            <span v-if="dv.rec_num" class="zzb_name">
+                                                职位推荐:<i class="zzb_n">{{dv.rec_num}}</i>天;
+                                            </span>
+                                            
+											<div class="">
+                                                <span v-if="dv.yh_price_n" class="zzb_zk">原价{{dv.service_price_n}}</span>
+                                                <span class="zzb_jg">{{dv.service_price_n}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="dredge_body_tab_body" v-show="rating == 4">
+                    <div v-if="isDay">
+                        <div class="buy_texttime">服务时长</div>
+                        <div class="wraprowlast">
+                            <div id="1" @click="chooseDay" :class="cd == '1' ? 'buy_card': ''" class="buy_cardtwo">1天</div>
+                            <div id="3" @click="chooseDay" :class="cd == '3' ? 'buy_card': ''" class="buy_cardtwo">3天</div>
+                            <div id="7" @click="chooseDay" :class="cd == '7' ? 'buy_card': ''" class="buy_cardtwo">7天</div>
+                            <div id="15" @click="chooseDay" :class="cd == '15' ? 'buy_card': ''" class="buy_cardtwo">15天</div>
+                            <div :class="cd == '0' ? 'buy_card': ''" class="buy_cardtwo">
+                                <input @focus="zdyDay" maxlength="3" v-model="zdyDays" oninput="value=value.replace(/^0|[\^d]/g,'')" type="number" value="" placeholder="自定义推广天数" class="zzb_cont_day_zdy" />
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="canUseIntegral">
+                        <!--充足积分情况-->
+                        <div class="zzb_cont_single" v-if="!jfmodel_fk">
+                            <div class="zzb_cont_single_p">当前拥有
+                                <span class="zzb_cont_single_p_n">{{statis.integral}}</span>
+                                {{config.integral_pricename}},
+                                购买此服务将扣除您
+                                <span class="zzb_cont_single_p_n">{{order_integral}}</span>
+                                {{config.integral_pricename}}
+                            </div>
+                            <div class="zzb_cont_single_tip">套餐购买更优惠，升级会员享受专属特权</div>
+                        </div>
+                        <!--不足积分情况-->
+                        <div class="zzb_cont_single" v-else>
+                            <div class="zzb_cont_single_p">当前拥有
+                                <span class="zzb_cont_single_p_n">{{statis.integral}}</span>
+                                {{config.integral_pricename}},
+                                购买此服务将扣除您
+                                <span class="zzb_cont_single_p_n">{{order_integral}}</span>
+                                {{config.integral_pricename}}
+                            </div>
+                            <div class="deduction_text">
+                                <text class="dksl">充值{{config.integral_pricename}}：</text>
+                                <input maxlength="6" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" v-model="price_int" class="yun_purchase_text" />
+                            </div>
+                        </div>
+                    </div>
+                    <!--钱情况-->
+                    <div v-else class="zzb_cont_single">
+                        <div class="zzb_cont_single_p">{{single_msg}}需支付<span class="zzb_cont_single_p_n">{{order_price}}</span>元</div>
+                    </div>
+                </div>
+            </div>
+            <!-- 会员专属权益 -->
+            <div class="dredge_body_equity" v-show="rating < 3">
+                <div class="dredge_body_equity_box">
+                    <div class="dredge_body_equity_tetle">
+                        <img src="{yun:}$wap_style{/yun}/images/dredge_title.png" alt="" />
+                    </div>
+                </div>
+                <div class="dredge_body_equity_boon">
+                    <ul>
+                        <li>
+                            <div class="equity_boon_icon">
+                                <img src="{yun:}$wap_style{/yun}/images/dredge_service.png" alt="" />
+                            </div>
+                            <div class="equity_boon_name">专属客服</div>
+                        </li>
+                        <li>
+                            <div class="equity_boon_icon">
+                                <img src="{yun:}$wap_style{/yun}/images/dredge_identifying.png" alt="" />
+                            </div>
+                            <div class="equity_boon_name">身份标识</div>
+                        </li>
+                        <li>
+                            <div class="equity_boon_icon">
+                                <img src="{yun:}$wap_style{/yun}/images/dredge_refresh.png" alt="" />
+                            </div>
+                            <div class="equity_boon_name">职位刷新</div>
+                        </li>
+                        <li>
+                            <div class="equity_boon_icon">
+                                <img src="{yun:}$wap_style{/yun}/images/dredge_top.png" alt="" />
+                            </div>
+                            <div class="equity_boon_name">置顶推广</div>
+                        </li>
+                        
+                        <li>
+                            <div class="equity_boon_icon">
+                                <img src="{yun:}$wap_style{/yun}/images/dredge_resume.png" alt="" />
+                            </div>
+                            <div class="equity_boon_name">优质简历</div>
+                        </li>
+                        
+                        <li>
+                            <div class="equity_boon_icon">
+                                <img src="{yun:}$wap_style{/yun}/images/dredge_discount.png" alt="">
+                            </div>
+                            <div class="equity_boon_name">专享折扣</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+
+            <div class="bodyfavourable" v-show="!dkdivshow && !single_only_price && config.fktype">
+                <div class="cardfavourable">
+                    <div class="yhj">{{config.integral_pricename}}抵扣</div>
+                    <div class="rowlast">
+                        <span class="jf">您当前有</span>
+                        <span class="slground">{{statis.integral}}</span>
+                        <span class="jf">{{config.integral_pricename}}（1元={{config.integral_proportion + config.integral_pricename}})</span>
+                    </div>
+                    <div class="slither" @click="candk">
+                        <van-switch v-model="dkshow" active-color="#e4b46b" inactive-color="#dcdee0" :disabled="isdk" @change="dkChange" size="26"/>
+                    </div>
+                    <div class="deduction_text" v-show="dkshow">
+                        <span class="dksl">抵扣数量：</span>
+                       <div class="deduction_textinput"> <input type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" cursor-spacing="200px" v-model="integral_dk" placeholder="请输入抵扣数量"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- 支付方式 -->
+            <div class="dredge_body_pay" v-if="ptshow && gmtype=='price'">
+                <div v-if="config.fktype && (config.fktype.fkwx || config.fktype.fkal)">
+                    <div class="dredge_body_wx" v-if="config.fktype && config.fktype.fkwx" @click="fkcheck" data-fktype="fkwx">
+                        <div class="dredge_body_wx_box">
+                            <div class="wx_box_icon">
+                                <img src="{yun:}$wap_style{/yun}/images/dredge_wx.png" alt="">
+                            </div>
+                            <div class="wx_box_name">{{config.fktype.fkwx}}</div>
+                        </div>
+                        <div class="dredge_body_wx_icon">
+                            <img v-if="fktype!='fkwx'" src="{yun:}$wap_style{/yun}/images/dredge_To_confirm.png" alt="">
+                            <img v-if="fktype=='fkwx'" src="{yun:}$wap_style{/yun}/images/dredge_affirm.png" alt="">
+                        </div>
+                    </div>
+                    <div class="dredge_body_zfb" v-if="config.fktype && config.fktype.fkal" @click="fkcheck" data-fktype="fkal">
+                        <div class="dredge_body_wx_box">
+                            <div class="wx_box_icon">
+                                <img src="{yun:}$wap_style{/yun}/images/dredge_zfb.png" alt="">
+                            </div>
+                            <div class="wx_box_name">{{config.fktype.fkal}}</div>
+                        </div>
+                        <div class="dredge_body_wx_icon">
+                            <img v-if="fktype!='fkal'" src="{yun:}$wap_style{/yun}/images/dredge_To_confirm.png" alt="">
+                            <img v-if="fktype=='fkal'" src="{yun:}$wap_style{/yun}/images/dredge_affirm.png" alt="">
+                        </div>
+                    </div>
+                </div>
+                <div class="gb_tip" v-else>
+                    网站已关闭支付接口，请联系管理员
+                </div>
+            </div>
+			<div style="height:50px;"></div>
+
+            <van-popup v-model="tips" :style="{background:'none'}" closeable>
+                <div class="zfsm_box">
+                    <div class="zfsm_box_tit">支付金额说明</div>
+                    <div>购买需支付{{config.integral_pricename}}：<span class="zfsm_box_n">{{needJf}}</span></div>
+                    <div>账号剩余{{config.integral_pricename}}：<span class="zfsm_box_n">{{statis.integral}}</span></div>
+                    <div>{{config.integral_pricename}}换算比例为：1元 = {{config.integral_proportion + config.integral_pricename}}</div>
+                    <div>换算后应付金额为：<span class="zfsm_box_n">{{order_price}}</span></div>
+                </div>
+            </van-popup>
+
+            <!-- 支付 -->
+            <div class="dredge_bod_buy" v-if="config.fktype">
+                <div class="dredge_bod_buy_number" v-if="gmtype=='price'">
+                    <div class="buy_number_left">应付金额:</div>
+                    <div class="buy_number_center">￥</div>
+                    <div class="buy_number_right" style="position: relative;">{{order_price}} <span @click="tips = true" v-if="needTips" class="zf_yw">     <img src="{yun:}$wap_style{/yun}/images/wh.png" alt=""></span></div>
+                </div>
+                <div class="dredge_bod_buy_text" v-if="gmtype=='price'" @click="getdays">立即购买</div>
+                <div class="dredge_bod_buy_number" v-if="gmtype=='integral'">
+                    <div class="buy_number_left">支付{{config.integral_pricename}}：</div>
+                    <div class="buy_number_center"></div>
+                    <div class="buy_number_right">{{order_integral}}</div>
+                </div>
+                <div class="dredge_bod_buy_text" v-if="gmtype=='integral'" @click="getdays">立即购买</div>
+
+            </div>
+        </div>
+        <template v-if="!vipShow && !singleShow">
+            <div class="youxuanModels">
+                <img src="{yun:}$wap_style{/yun}/images/youhuiimg1.png" alt="">
+            </div>
+            <div class="youxuanModWenzx">
+                <div class="youxuanTipsa">
+                    <span>{{vipTips}}</span>
+                </div>
+                <a :href="'tel:' + webTel" class="youxuanButns">
+                    <span>联系客服</span>
+                </a>
+                <div class="youxuanTellsd" v-if="crmLinkWay">
+                    <span>招聘顾问：{{consultant.name}}</span>
+                    <span style="color: #3D7DFB;"> {{consultant.mobile}}</span>
+                </div>
+                <div class="youxuanTellsd" v-else>
+                    <span>客服电话：</span>
+                    <span style="color: #3D7DFB;">{{config.sy_comwebtel}}</span>
+                </div>
+            </div>
+        </template>
+    </div>
+</div>
+<script>
+
+    var zphjobid = '';
+    var yunvue = new Vue({
+        el: '#yunvue',
+        data() {
+            return {
+                islook: false,
+                server: '', //选中的购买服务
+                oserver: '', //携带的单项服务
+                sigle_show: false, //单项服务是否显示
+                singleid: '',
+                single_price: 0, //单项购买价格
+                single_integral: 0, // 单项购买积分
+                jfmodel_fk: true, // 积分模式下，单项服务购买积分不够是否需要充值积分
+                single_msg: '', //单项购买的服务名称
+                statis: {},
+                add: [], //增值服务数据
+                rating_1: [], //套餐会员数据
+                rating_2: [], //时间会员数据
+                config: {},
+                rating: 1,
+                cid: 0, //选中的服务id
+                sid: 0, //仅用于增值服务，用于展开多条信息
+
+                showMore: 0, //	更多信息
+
+                dkdivshow: true, //抵扣积分DIV显示隐藏
+                dkshow: false, //抵扣积分INPUT显示隐藏
+                ptshow: true, //支付方式显示隐藏
+                gmtype: 'price', //积分支付和金额支付控制显示(分别有price金额支付/integral完全积分支付)
+                server_price: 0, //选中服务的原始金额
+                single_id: 0, //服务id，包含选中的服务id和单独购买的传参id
+                order_price: 0, //付款金额
+                jfdk_price: 0, // 积分抵扣金额
+                order_integral: 0, //支付积分,在此页面仅有显示作用
+                price_int: 0, //充值积分数，积分模式下，所需服务积分大于持有积分时用到,同时还有最低充值积分制约
+                fktype: '', //支付方式
+                integral_dk: '', //抵扣积分
+                bid: '',
+                isDay: false,
+                cd: '1',
+                days: '1',
+                isdk: true,
+                zdyDays: '',
+             
+                tab1: false,
+                tab2: false,
+                tab3: false,
+                tab4: false,
+                firsttab: 1,
+	            serviceId: 0,
+                vip_etime:'',
+                time:'',
+
+	            //  积分模式，积分不足，使用金额，需要金额明细说明
+	            needTips: false,
+	            tips: false,
+	            needJf: 0,
+				single_only_price: false,
+
+                vipShow: true,
+                vipTips: '',
+                consultant: {},
+                webTel: '',
+                crmLinkWay: false,
+                singleShow: false
+            };
+        },
+        created() {
+            let that = this;
+            let server = getUrlKey('server');
+            if (server) {
+                let oserver = server;
+
+                if (oserver == 'autojob' || oserver == 'jobtop' || oserver == 'jobrec' || oserver == 'joburgent') {
+                    that.isDay = true;
+                }
+                if (oserver == 'zph') {
+                    zphjobid = localStorageGet('zphjobid');
+                }
+                that.oserver = oserver;
+                that.singleShow = true;
+            }
+            let id = getUrlKey('id')
+            if (id) {
+                that.single_id = that.singleid = id;
+            }
+            let bid = getUrlKey('bid')
+            if (bid) {
+                that.bid = bid;
+            }
+            let serviceId = getUrlKey('serviceId')
+            if (serviceId) {
+                that.serviceId = serviceId;
+            }
+            that.getServer();
+        },
+        watch:{
+            zdyDays: function (value) {
+                debounce(this.setCkDays);
+            },
+            price_int: function (value) {
+                debounce(this.setPI);
+            },
+            integral_dk:{
+                handler(val){
+                    debounce(this.setjfdk);
+                },
+                deep:true
+            }
+        },
+        computed: {
+           
+            tcmCount() {
+                return (this.rating_1.length > 0)
+            },
+            sjmCount() {
+                return (this.rating_2.length > 0)
+            },
+            addCount() {
+                return (this.add.length > 0)
+            },
+			canUseIntegral(){
+				return this.com_integral_online == '3' && this.config.sy_only_price.indexOf(that.server) == -1 ? true : false
+			}
+        },
+        methods: {
+            getTab: function () {
+                let config = this.config,
+                    statis = this.statis;
+
+                if (statis.notOvertime == '1' && config.com_integral_online != '4' && statis.rating_type != '2' && this.addCount && this.oserver != 'autojob') {
+                    this.tab3 = true;
+                    this.firsttab = 3;
+                }
+                if ((config.com_vip_type == '1' || config.com_vip_type == '0') && this.sjmCount && this.oserver !=
+                    'autojob') {
+                    this.tab2 = true;
+                    this.firsttab = 2;
+                }
+                if ((config.com_vip_type == '2' || config.com_vip_type == '0') && this.tcmCount && this.oserver !=
+                    'autojob') {
+                    this.tab1 = true;
+                    this.firsttab = 1;
+                }
+                if (statis.notOvertime == '1' && this.sigle_show) {
+                    this.tab4 = true;
+                    this.firsttab = 4;
+                }
+
+                if (this.serviceId > 0) {
+                    this.tab(3);
+                } else {
+                    this.tab(this.firsttab);
+                }
+            },
+            getServer() {
+                let that = this,
+                    param = {
+                        server: that.oserver,
+                        id: that.single_id
+                    };
+                if (that.oserver == 'zph') {
+                    param.bid = that.bid;
+                }
+
+                showLoading();
+                $.post('{yun:}url d=wxapp h=com m=fk c=server{/yun}', param, function (data) {
+                    hideLoading();
+                    if (data) {
+
+                        let res = data.data;
+                        that.rating_1 = res.rating_1;
+                        that.rating_2 = res.rating_2;
+                        that.add = res.add;
+                        res.statis.integral = parseInt(res.statis.integral);
+                        that.statis = res.statis;
+                        that.single_price = res.single_price;
+                        that.single_integral = parseInt(res.single_integral);
+                        that.single_msg = res.single_msg;
+                        that.vip_etime  = res.vip_etime;
+                        that.time = res.time;
+                        let config = res.config;
+                        that.config = config;
+
+                        that.sigle_show = res.sigle_show == '1' ? true : false;
+                        that.getTab();
+                        that.islook = true;
+                        if (res.noPermission && parseInt(res.noPermission) == 1){
+
+                            that.vipShow = false;
+                            that.vipTips = '联系客服，开通会员服务~';
+                        }
+                        if (res.isPaused && parseInt(res.isPaused) == 1){
+
+                            that.vipShow = false;
+                            that.vipTips = '当前会员已暂停，联系客户开启服务~';
+                        }
+                        if (res.consultant){
+
+                            that.crmLinkWay = true;
+                            that.consultant =   res.consultant;
+                            that.webTel = res.consultant.mobile;
+                        }else{
+
+                            that.crmLinkWay = false;
+                            that.webTel = res.config.sy_comwebtel;
+                        }
+                    }
+                }, 'json')
+            },
+            defalutfktype:function(){
+
+                var that = this;
+
+                if(that.ptshow && that.gmtype=='price' && that.fktype==''){
+                    
+                    if(that.config.fktype){
+
+                        if(that.config.fktype.fkwx){
+
+                            that.fktype = 'fkwx';
+
+                        }else if(that.config.fktype.fkal){
+
+                            that.fktype = 'fkal';
+
+                        }
+                    }
+                }
+                
+            },
+            //切换上方导航
+            tab: function (e) {
+                let that = this,
+                    config = that.config,
+                    tab = 1;
+                let com_integral_online = config.com_integral_online,
+                    integral_min = parseInt(config.integral_min_recharge),
+                    pro = parseFloat(config.integral_proportion);
+                if (isNaN(e)) {
+                    tab = e.target.dataset.tab;
+                } else {
+                    tab = e;
+                }
+            	that.needTips = false;
+
+                if (tab != that.rating) {
+                    that.cid = 0;
+                    that.sid = 0;
+                    that.integral_dk = '';
+                    that.jfdk_price = 0;
+                    if (tab == 4) {
+                        that.server = that.oserver;
+                        that.single_id = that.singleid;
+                        that.server_price = that.order_price = that.single_price;
+						if((com_integral_online == '3' || com_integral_online == '1') && config.sy_only_price.indexOf(that.server) > -1){
+							// 抵扣模式、积分模式，要确定单项购买是否有强制消费项目
+							that.single_only_price = true;
+						}
+                        if (com_integral_online == '3' && that.single_only_price == false) {
+							// 积分模式下，若自身积分数大于等于服务积分数，则为积分支付，否则金额支付差价。
+							// 并且没有被强制金额消费项目包含在内
+                            var integral_cha = that.accSub(that.single_integral, that.statis.integral);
+                            that.order_integral = that.single_integral;
+                            if (integral_cha <= 0) {
+                                that.jfmodel_fk = false;
+                                that.gmtype = 'integral';
+                            } else {
+                                that.jfmodel_fk = true;
+                                integral_cha = integral_cha > integral_min ? integral_cha : integral_min;
+                                that.price_int = integral_cha;
+                                that.order_price = that.accDiv(integral_cha, pro);
+                                that.gmtype = 'price';
+	                            that.needTips = true;
+	                            that.needJf = that.single_integral;
+                            }
+
+                        } else {
+                            that.gmtype = 'price';
+                        }
+                        that.isdk = false;
+                    } else {
+                        that.server = '';
+                        that.order_price = 0;
+                        that.isdk = true;
+                        that.gmtype = 'price';
+                    }
+
+                    that.dkdivshow = true;
+                    that.dkshow = false;
+
+                    // 积分抵扣
+                    //会员套餐消费模式-强制金额消费
+                    if (config.member_meal == '1') {
+                        // 套餐消费模式为抵扣消费、积分消费
+                        if ((tab == 3 || tab == 4) && config.com_integral_online == '1' && that.statis.integral > 0) {
+                            that.dkdivshow = false;
+                        }
+                    } else {
+                        if (config.com_integral_online == '1' && that.statis.integral > 0) {
+                            that.dkdivshow = false;
+                        }
+                    }
+
+                    that.rating = tab;
+             
+                    that.integral_dk = '';
+
+                    that.ptshow = true;
+                    that.fktype = '';
+                } else {
+                    if (tab == 1 && config.member_meal != '1' && config.com_integral_online == '1' && that.statis.integral > 0) {
+                        that.dkdivshow = false;
+                    }
+                }
+
+                if (com_integral_online == 2) {
+                    that.dkdivshow = true;
+                }
+
+                if(tab == 1 || tab == 2){
+                    that.dkdivshow = config.sy_only_price.indexOf('vip') >= 0 ? true : false;
+                }else if(tab == 3){
+                    that.dkdivshow = config.sy_only_price.indexOf('pack') >= 0 ? true : false;
+                }
+
+                if (that.serviceId > 0 && tab == 3) {
+                    that.sid = that.serviceId;
+                    that.serviceId = 0;
+                }
+                that.defalutfktype();
+            },
+            //显示选中的套餐详细
+            chooseServer: function (e) {
+                let that = this,
+                    dataset = e.currentTarget.dataset;
+                let cid = dataset.cid,
+                    sid = dataset.sid,
+                    tt = dataset.server;
+
+                if (cid != that.showMore) {
+                    that.showMore = 0;
+                }
+
+                let rating = that.rating;
+                var com_integral_online = that.config.com_integral_online;
+                var integral_min = parseInt(that.config.integral_min_recharge);
+                var pro = parseFloat(that.config.integral_proportion);
+
+                that.integral_dk = '';
+                that.jfdk_price = 0;
+            
+
+                that.ptshow =   true;
+
+            	that.needTips = false;
+                let meal = tt == 'vip' ? this.config.meal_vip : this.config.meal_pack;
+                //选中服务
+                if (cid && cid != 'undefined') {
+                    if (cid != this.cid) {
+                        this.cid = cid;
+                    }
+                    let info = that.getChooseInfo(cid);
+
+	                that.server_price = info.yh_price ? parseFloat(info.yh_price) : parseFloat(info.service_price);
+
+	                if (com_integral_online == '3' && this.config.sy_only_price.indexOf(tt) == -1) {
+	                    // 积分模式下，若自身积分数大于等于服务积分数，则为积分支付，否则金额支付差价。
+	                	// 并且没有被强制金额消费项目包含在内
+	                    var integral_need = parseInt(that.accMul(that.server_price, pro));
+	                    var integral_cha = that.accSub(integral_need, that.statis.integral);
+	                    if (integral_cha <= 0) {
+
+	                        that.order_integral = integral_need;
+	                        that.gmtype = 'integral';
+	                    } else {
+
+	                        integral_cha = integral_cha > integral_min ? integral_cha : integral_min;
+	                        that.price_int = integral_cha;
+	                        that.order_price = that.accDiv(integral_cha, pro);
+	                        that.gmtype = 'price';
+	                        that.needTips = true;
+	                        that.needJf = integral_need;
+	                    }
+	                } else {
+	                    that.order_price = that.server_price;
+	                    that.gmtype = 'price';
+	                    if (meal == 1) {
+	                        this.dkdivshow = true;
+	                    } else if (that.statis.integral > 0) {
+	                        this.dkdivshow = false;
+	                    }
+	                }
+                    if (parseFloat(that.server_price) == 0) {
+                        $('.dredge_body_discounts').hide();
+                        this.dkdivshow = true;
+                        this.ptshow = false;
+                        this.gmtype = 'integral';
+                        this.order_integral = 0;
+                    }
+                    that.single_id = cid;
+                    that.server = dataset.server;
+                    that.isdk = false;
+
+                    if (com_integral_online == 2) {
+                        that.dkdivshow = true;
+                    }
+
+                }
+                //仅用作增值套餐展开信息
+                if (sid && sid != 'undefined') {
+                    if (sid != this.sid) {
+                        this.sid = sid;
+                    }
+                }
+            },
+            setMoreShow: function (id) {
+                var that = this;
+                that.showMore = that.showMore == id ? 0 : id;
+            },
+            //根据服务id获取服务信息
+            getChooseInfo: function (id) {
+                var that = this;
+                let data = {};
+                if (that.rating == 1 || that.rating == 2) {
+                    let info = that.rating == 1 ? that.rating_1 : that.rating_2;
+                    for (var i = 0; i < info.length; i++) {
+                        if (info[i].id == id) {
+                            data = info[i];
+                            break;
+                        }
+                    }
+                }
+                if (that.rating == 3) {
+
+                    let add = that.add;
+                    for (var i = 0; i < add.length; i++) {
+                        if (add[i].detail) {
+                            for (var j = 0; j < add[i].detail.length; j++) {
+                                if (add[i].detail[j].id == id) {
+                                    data = add[i].detail[j];
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                return data;
+            },
+            //选择支付方式
+            fkcheck: function (e) {
+                this.fktype = e.currentTarget.dataset.fktype;
+            },
+            //显示与隐藏抵扣积分输入框
+            dkChange: function (switched) {
+                let pro = parseInt(this.config.integral_proportion),
+                    order_price = this.order_price;
+
+                if (this.integral_dk > 0) {
+                    var price = parseFloat(this.accDiv(this.integral_dk, pro));
+                    this.order_price = parseFloat(this.accAdd(order_price, price));
+
+                    this.integral_dk = '';
+                    this.jfdk_price = 0;
+                    // 隐藏时，将相关参数值设为默认值
+                    this.ptshow = true;
+                    this.gmtype = 'price';
+                    this.order_integral = 0;
+                }
+                if (switched) {
+                    this.dkshow = true;
+                } else {
+                    this.dkshow = false;
+                }
+            },
+            setjfdk: function () {
+                let dknum = parseInt(this.integral_dk ? this.integral_dk : 0),
+                    server_price = parseFloat(this.server_price),
+                    integral = parseInt(this.statis.integral),
+                    pro = parseFloat(this.config.integral_proportion),
+                    order_price = 0,
+             
+                    integral_dk = '';
+                if (parseInt(this.days) > 0) {
+                    server_price = parseFloat(server_price * parseInt(this.days));
+                }
+                if (server_price == 0) {
+                    this.integral_dk = '';
+                    return showModal('请先选择购买服务！');
+                }
+              
+
+                var integral_need = parseInt(this.accMul(server_price, pro));
+                if (dknum > 0) {
+                    if (integral >= integral_need) { // 	拥有积分充足
+
+                        if (dknum >= integral_need) { // 	输入抵扣积分超过购买积分
+
+                            //	抵扣积分变更最大所需积分
+                            integral_dk = integral_need;
+                            order_price = 0; // 抵扣积分后所需金额
+
+                        } else {
+                            integral_dk = dknum;
+                            order_price = this.accSub(server_price, this.accDiv(dknum, pro)); //	抵扣积分后所需金额
+                        }
+
+                    } else { //	拥有积分不充足
+
+                        if (dknum >= integral) { //	抵扣所有积分
+                            integral_dk = integral;
+
+                            order_price = this.accSub(server_price, this.accDiv(integral, pro)); //	抵扣积分后所需金额
+                        } else {
+                            integral_dk = dknum;
+                            order_price = this.accSub(server_price, this.accDiv(dknum, pro)); // 抵扣积分后所需金额
+                        }
+                    }
+                } else {
+                    order_price = server_price;
+                }
+                this.integral_dk = integral_dk;
+                if (parseFloat(order_price) > 0) {
+                    this.ptshow = true;
+                    this.gmtype = 'price';
+                } else {
+                    this.ptshow = false;
+                    this.gmtype = 'integral';
+                    this.order_integral = integral_need;
+                }
+                this.order_price = order_price;
+                this.jfdk_price = this.accSub(server_price, order_price);
+            },
+            //单项购买，积分模式下输入充值积分检查，需要大于系统最低充值积分数和服务所需积分数
+            setPI: function () {
+                var price_int = this.price_int;
+                var pro = parseFloat(this.config.integral_proportion);
+                var integral_cha = this.accSub(price_int, this.statis.integral);
+                var integral_min = parseInt(this.config.integral_min_recharge);
+
+                integral_cha = integral_cha > integral_min ? integral_cha : integral_min; //最低充值积分
+
+                price_int = integral_cha > price_int ? integral_cha : price_int;
+                this.order_price = this.accDiv(price_int, pro);
+                this.price_int = price_int;
+            },
+            getdays(){
+                let that = this;
+                let etime = that.vip_etime;
+                let time = that.time;
+                let days = ((etime - time) / ( 60 * 60 * 24));
+
+                if(days < 7 && days >=0){
+                    showConfirm('您的会员还有'+days+'天过期，是否继续购买？',function(){
+                        if(that.gmtype == 'price'){
+                            that.getOrder();
+                        }else if(that.gmtype == 'integral'){
+                            that.integralgm();
+                        }
+
+                    });
+                }else{
+                    if(that.gmtype == 'price'){
+                        that.getOrder();
+                    }else if(that.gmtype == 'integral'){
+                        that.integralgm();
+                    }
+                }
+            },
+            getOrder() {
+                let that = this;
+                if (that.fktype == '') {
+                    return showModal('请选择支付方式');
+                } else if (that.server == '') {
+                    return showModal('请选择购买服务');
+                }
+                let paytype = '';
+                if (that.fktype == 'fkal') {
+                    paytype = 'alipay'
+                }
+                let param = {
+                    paytype: paytype,
+                    server: that.server,
+                    dkjf: that.integral_dk,
+                    price_int: that.price_int,
+                   
+                };
+
+                let single_id = that.single_id;
+                let server = that.server;
+                if (server == 'issuejob' || server == 'invite' || server == 'createson') {
+
+
+                } else if (server == 'sxjob') {
+
+                    param.sxjobid = single_id;
+
+                } else if (server == 'jobtop') {
+
+                    if (parseInt(that.days) < 1) {
+                        return showModal('请选择服务时长');
+                    } else {
+                        param.days = that.days;
+                    }
+                    param.zdjobid = single_id;
+
+                } else if (server == 'jobrec') {
+
+                    if (parseInt(that.days) < 1) {
+                        return showModal('请选择服务时长');
+                    } else {
+                        param.days = that.days;
+                    }
+                    param.recjobid = single_id;
+
+                } else if (server == 'joburgent') {
+
+                    if (parseInt(that.days) < 1) {
+                        return showModal('请选择服务时长');
+                    } else {
+                        param.days = that.days;
+                    }
+                    param.ujobid = single_id;
+
+                } else if (server == 'sxpart') {
+
+                    param.sxpartid = single_id;
+
+                } else if (server == 'partrec') {
+
+                    if (parseInt(that.days) < 1) {
+                        return showModal('请选择服务时长');
+                    } else {
+                        param.days = that.days;
+                    }
+                    param.recpartid = single_id;
+
+                } else if (server == 'sxltjob') {
+
+                    param.sxltjobid = single_id;
+
+                } else if (server == 'downresume') {
+
+                    param.eid = single_id;
+
+                } else if (server == 'zph') {
+                    param.zid = single_id;
+                    param.bid = that.bid;
+
+                } else if (server == 'vip') {
+
+                    param.ratingid = single_id;
+
+                } else if (server == 'pack') {
+
+                    param.tcid = single_id;
+
+                } else if (server == 'autojob') {
+
+                    if (parseInt(that.days) < 1) {
+                        return showModal('请选择服务时长');
+                    } else {
+                        param.days = that.days;
+                    }
+                    param.jobautoids = single_id;
+
+                }
+
+                showLoading('提交中');
+                $.post('index.php?c=getOrder', param, function (data) {
+                    hideLoading();
+					window.localStorage.setItem("needRefresh", 1);
+                    
+                    if (data.error == '0') { // 下单成功
+                        showToast(data.msg, 2, function () {
+                            location.href = data.url;
+                        });
+                        return false;
+                    } else {
+                        showToast(data.msg, 2, function () {
+                            location.reload(true);
+                        });
+                        return false;
+                    }
+                }, 'json')
+            },
+            /* 积分支付购买 */
+            integralgm() {
+                var that = this;
+                var server = that.server;
+                var days = that.days;
+                var single_id = that.single_id;
+          
+
+                var param = {};
+                var pData = {
+                    server: server,
+                   
+                };
+                if (server == 'issuejob' || server == 'invite' || server == 'createson') {
+
+                } else if (server == 'jobtop') {
+                    pData.zdjobid = single_id;
+                    pData.days = days;
+                } else if (server == 'jobrec') {
+                    pData.recjobid = single_id;
+                    pData.days = days;
+                } else if (server == 'joburgent') {
+                    pData.ujobid = single_id;
+                    pData.days = days;
+                } else if (server == 'sxjob') {
+                    pData.sxjobid = single_id;
+                } else if (server == 'sxpart') {
+                    pData.sxpartid = single_id;
+                } else if (server == 'downresume') {
+                    pData.eid = single_id;
+                } else if (server == 'zph') {
+                    var bid = that.bid;
+                    pData.zid = single_id;
+                    pData.bid = bid;
+                    pData.jobid = zphjobid;
+                } else if (server == 'vip') {
+                    pData.ratingid = single_id;
+                } else if (server == 'pack') {
+                    pData.tcid = single_id;
+                } else if (server == 'autojob') {
+                    pData.jobautoids = single_id;
+                    pData.days = days;
+                }
+                Object.assign(param, pData);
+
+                showLoading();
+                $.post('{yun:}url d=wxapp h=com m=fk c=dkzf{/yun}', param, function (data) {
+                    hideLoading();
+					window.localStorage.setItem("needRefresh", 1);
+                    if (data) {
+                        if (data.error == '0') { // 成功
+                            showModal(data.msg, function () {
+                                history.go(-1);
+                            });
+                        } else {
+                            showModal(data.msg);
+                        }
+                    }
+                }, 'json')
+            },
+            
+            chooseDay: function (e) {
+                let that = this,
+                    id = e.target.id,
+                    com_integral_online = that.config.com_integral_online,
+
+                    pro = parseFloat(that.config.integral_proportion);
+                this.cd = id;
+                this.days = id;
+                this.zdyDays = '';
+                var order_price = this.accMul(this.single_price, parseInt(id));
+                this.integral_dk = '';
+                this.jfdk_price = 0;
+
+                var integral_min = parseInt(that.config.integral_min_recharge);
+
+                if (com_integral_online == '3') { //积分模式，判断自身积分与所需积分大小，根据情况切换积分付款还是金额付款
+                    var integral_need = that.accMul(order_price, pro);
+                    var integral_cha = that.accSub(integral_need, that.statis.integral);
+                    that.order_integral = integral_need;
+                    if (integral_cha <= 0) {
+                        that.jfmodel_fk = false;
+                        that.gmtype = 'integral';
+                    } else {
+                        integral_cha = integral_cha > integral_min ? integral_cha : integral_min; //最低充值积分
+                        that.order_price = that.accDiv(integral_cha, pro);
+                        that.price_int = integral_cha;
+                        that.jfmodel_fk = true;
+                        that.gmtype = 'price';
+                    }
+                } else {
+                    that.order_price = order_price;
+                    that.gmtype = 'price';
+                }
+
+                if (this.dkshow == true) {
+                    this.dkshow = false;
+                }
+                this.isdk = false;
+            },
+            zdyDay: function () {
+                this.cd = '0';
+                this.days = '0';
+                this.zdyDays = '';
+                this.integral_dk = '';
+                this.jfdk_price = 0;
+                this.jfmodel_fk = false;
+                if (this.dkshow == true) {
+                    this.dkshow = false;
+                }
+                this.order_integral = 0
+                this.order_price = 0;
+                this.isdk = true;
+            },
+            setCkDays: function () {
+                var com_integral_online = this.config.com_integral_online,
+                    pro = parseFloat(this.config.integral_proportion);
+
+                var integral_min = parseInt(this.config.integral_min_recharge);
+                var order_price = this.accMul(this.single_price, this.zdyDays);
+                if (com_integral_online == '3') { //积分模式，判断自身积分与所需积分大小，根据情况切换积分付款还是金额付款
+
+                    var integral_need = this.accMul(order_price, pro);
+                    var integral_cha = this.accSub(integral_need, this.statis.integral);
+
+                    if (integral_cha <= 0) {
+                        this.jfmodel_fk = false;
+                        this.gmtype = 'integral';
+                    } else {
+                        integral_cha = integral_cha > integral_min ? integral_cha : integral_min; //最低充值积分
+                        this.price_int = integral_cha;
+                        this.order_price = this.accDiv(integral_cha, pro);
+                        this.jfmodel_fk = true;
+                        this.gmtype = 'price';
+                    }
+                    this.order_integral = integral_need;
+                } else {
+                    this.order_price = order_price;
+                    this.gmtype = 'price';
+                }
+                this.days = this.zdyDays;
+                this.isdk = false;
+            },
+            candk: function () {
+                if (this.isdk) {
+                    return showModal('请选择要购买的服务');
+                }
+                return true;
+            },
+            //减
+            accSub: function (arg1, arg2) {
+                return this.accAdd(arg1, -arg2);
+            },
+            //除
+            accDiv: function (arg1, arg2) {
+                var t1 = 0,
+                    t2 = 0,
+                    r1, r2;
+                try {
+                    t1 = arg1.toString().split(".")[1].length
+                } catch (e) {
+                }
+                try {
+                    t2 = arg2.toString().split(".")[1].length
+                } catch (e) {
+                }
+
+                r1 = Number(arg1.toString().replace(".", ""));
+                r2 = Number(arg2.toString().replace(".", ""));
+                return (r1 / r2) * Math.pow(10, t2 - t1);
+
+            },
+            //加
+            accAdd: function (arg1, arg2) {
+                if (isNaN(arg1)) {
+                    arg1 = 0;
+                }
+                if (isNaN(arg2)) {
+                    arg2 = 0;
+                }
+                arg1 = Number(arg1);
+                arg2 = Number(arg2);
+                var r1, r2, m, c;
+                try {
+                    r1 = arg1.toString().split(".")[1].length;
+                } catch (e) {
+                    r1 = 0;
+                }
+                try {
+                    r2 = arg2.toString().split(".")[1].length;
+                } catch (e) {
+                    r2 = 0;
+                }
+                c = Math.abs(r1 - r2);
+                m = Math.pow(10, Math.max(r1, r2));
+                if (c > 0) {
+                    var cm = Math.pow(10, c);
+                    if (r1 > r2) {
+                        arg1 = Number(arg1.toString().replace(".", ""));
+                        arg2 = Number(arg2.toString().replace(".", "")) * cm;
+                    } else {
+                        arg1 = Number(arg1.toString().replace(".", "")) * cm;
+                        arg2 = Number(arg2.toString().replace(".", ""));
+                    }
+                } else {
+                    arg1 = Number(arg1.toString().replace(".", ""));
+                    arg2 = Number(arg2.toString().replace(".", ""));
+                }
+                return (arg1 + arg2) / m;
+            },
+            //乘
+            accMul: function (arg1, arg2) {
+                var m = 0,
+                    s1 = arg1.toString(),
+                    s2 = arg2.toString();
+                try {
+                    m += s1.split(".")[1].length
+                } catch (e) {
+                }
+                try {
+                    m += s2.split(".")[1].length
+                } catch (e) {
+                }
+
+                return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m);
+            }
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+<div id="cityfl" class="moduleElenAl">
+    <div class="moduleSeachs">
+        <div class="">
+            城市分类
+        </div>
+        <div class="nrtopbtn">
+            <el-button size="mini" icon="el-icon-plus" @click="handleAdd('0','top')">添加分类</el-button>
+            <el-button size="mini" icon="el-icon-refresh" @click="pinyin">生成拼音</el-button>
+            <el-button size="mini" icon="el-icon-refresh-right" @click="chachongVisible = true">一键查重</el-button>
+            <el-button size="mini" type="primary" icon="el-icon-delete" @click="clearPinYin">清空拼音</el-button>
+        </div>
+    </div>
+
+    <div class="moduleElTable">
+        <el-table :data="tableData" border style="width: 100%;" height="100%" row-key="id"
+            :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" lazy :load="load"
+            :tree-props="{children: 'children', hasChildren: 'hasChildren'}" ref="multipleTable"
+            v-loading="loading"
+                  @selection-change="handleSelectionChange"
+                  @select-all="selectAll" :empty-text="emptytext">
+            <el-table-column type="selection" prop="id" width="55"></el-table-column>
+			<el-table-column label="ID" property="id" width="150"></el-table-column>
+            <el-table-column label="城市排序" width="100" property="sort" style="display: flex; align-items: center;">
+                <template slot-scope="scope">
+                    <el-input v-model="scope.row.sort"></el-input>
+                </template>
+            </el-table-column>
+            <el-table-column label="城市名称" property="name">
+                <template slot-scope="scope">
+                    <el-input v-model="scope.row.name"></el-input>
+                </template>
+            </el-table-column>
+            <el-table-column label="英文名称/拼音" property="e_name">
+                <template slot-scope="scope">
+                    <el-input v-model="scope.row.e_name"></el-input>
+                </template>
+            </el-table-column>
+            <el-table-column label="字母" property="letter" width="110">
+                <template slot-scope="scope">
+                    <el-select v-model="scope.row.letter" placeholder="请选择">
+                        <el-option v-for="item in letterOptions" :key="item" :label="item"
+                            :value="item">
+                        </el-option>
+                    </el-select>
+                </template>
+            </el-table-column>
+            <el-table-column label="显示" property="show" width="110">
+                <template slot-scope="scope">
+                    <el-select v-model="scope.row.display" placeholder="请选择">
+                        <el-option v-for="item in displayOptions" :key="item.value" :label="item.label"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
+                </template>
+            </el-table-column>
+            <el-table-column label="区域编号" property="code">
+                <template slot-scope="scope">
+                    <el-input v-model="scope.row.code"></el-input>
+                </template>
+            </el-table-column>
+            <el-table-column fixed="right" header-align="center" align="right" label="操作" width="210">
+                <template slot-scope="scope">
+                    <div v-if="scope.row.id > 0" class="cz_button">
+                        <el-button v-if="scope.row.level < 3" size="mini" @click="handleAddChild(scope)">添加子类</el-button>
+                        <el-button size="mini" @click="handleSingle(scope)" :disabled="submitLoading">更新</el-button>
+                        <el-button type="danger" size="mini" @click="deleteRow(scope)">删除</el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+    <div class="modulePaging">
+        <div class="">
+            <div class="modulecz modulePagButn">
+                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">全选</el-checkbox>
+                <el-button @click="deleteRow(null, true)" size="mini">批量删除</el-button>
+				<el-button @click="upRow()" size="mini">批量保存</el-button>
+            </div>
+        </div>
+    </div>
+
+    <!--添加子类-->
+    <div class="modluDrawer">
+        <el-drawer :title="addTitle" :visible.sync="addVisible" :modal-append-to-body="false" :show-close="true"
+            :with-header="true" size="35%">
+            <city_add :keyid="keyid" :keyid_name="keyid_name" :level="level" :letter-options="letterOptions"
+                :display-options="displayOptions" @child-event-getlist="addcityFun"></city_add>
+        </el-drawer>
+    </div>
+
+    <el-drawer title="拼音重复类别" :visible.sync="chachongVisible" :modal-append-to-body="false" size="50%"
+        :destroy-on-close="true" :wrapper-closable="false" :close-on-press-escape="false">
+        <city_chachong></city_chachong>
+    </el-drawer>
+</div>
+</body>
+<script>
+    const custoapp = new Vue({
+        el: '#cityfl',
+        data: function () {
+            return {
+                emptytext: '暂无数据',
+                loading: false,
+                submitLoading: false,
+                letterOption: [],
+                tableData: [],
+                randomKey: Math.random(),
+                checked: false,
+                isIndeterminate: false,// checkbox 的不确定状态
+                selectedItem: [],
+                addVisible: false,
+                addParams: {},
+                addTitle: '',
+                keyid: 0,
+                keyid_name: '',
+                level: 1,
+                chachongVisible: false,
+                letterOptions: Object.freeze(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",]),
+                displayOptions: Object.freeze([{"label": "是", "value": "1"}, {"label": "否", "value": "0"}]),
+                maps: new Map(),
+            }
+        },
+        mounted() {
+            this.getList();
+        },
+        methods: {
+            rowSelect(selection, row) {
+                // if (row.children) {
+                //     if (!row.isChecked) {
+                //         //由行数据中的元素isChecked判断当前是否被选中
+                //         row.children.map(item => {
+                //             //遍历所有子节点
+                //             this.$refs.multipleTable.toggleRowSelection(item, true); //切换该子节点选中状态
+                //             item.isChecked = true;
+                //             //添加选中数据
+                //             this.selectedItem.push({ id: item.id });
+                //         });
+                //         this.selectedItem.push({ id: row.id });
+                //         row.isChecked = true; //当前行isChecked标志元素切换为false
+                //     } else {
+                //         row.children.map(item => {
+                //             this.$refs.multipleTable.toggleRowSelection(item, false);
+                //             item.isChecked = false;
+                //             this.selectedItem.splice(this.selectedItem.indexOf(item), 1);
+                //         });
+                //         row.isChecked = false;
+                //         this.selectedItem.splice(this.selectedItem.indexOf(row), 1);
+                //     }
+                // }
+            },
+            selectAll() {
+                // selection 是选中的数据集合
+                this.$refs.multipleTable.tableData.map(items => {
+                    //使用$ref获取注册的子组件信息，用data获取所有行，并用map函数遍历行
+                    if (items.children) {
+                        if (!items.isChecked) {
+                            //若遍历出来的行未选中
+                            this.$refs.multipleTable.toggleRowSelection(items, true); //行变为选中状态
+                            items.isChecked = true; //更新标志参数
+                            this.selectedItem.push({ id: items.id });
+                            items.children.map(item => {
+                                if (item.children){
+                                    if (!item.isChecked) {
+                                        item.children.map(it=>{
+                                            this.$refs.multipleTable.toggleRowSelection(it, true);
+                                            it.isChecked = true;
+                                            this.selectedItem.push({ id: it.id });
+                                        })
+                                    }
+                                }
+                                //遍历子节点并改变状态与标志参数
+                                this.$refs.multipleTable.toggleRowSelection(item, true);
+                                item.isChecked = true;
+                                this.selectedItem.push({ id: item.id });
+                            });
+                        } else {
+                            //选中状态同理
+                            this.$refs.multipleTable.toggleRowSelection(items, false);
+                            items.isChecked = false;
+                            this.selectedItem.splice(this.selectedItem.indexOf(items), 1);
+                            items.children.map(item => {
+                                if (item.children){
+                                    if (item.isChecked) {
+                                        item.children.map(it=>{
+                                            this.$refs.multipleTable.toggleRowSelection(it, false);
+                                            it.isChecked = false;
+                                            this.selectedItem.splice(this.selectedItem.indexOf(it),1);
+                                        })
+                                    }
+                                }
+                                this.$refs.multipleTable.toggleRowSelection(item, false);
+                                item.isChecked = false;
+                                this.selectedItem.splice(this.selectedItem.indexOf(item), 1);
+                            });
+                        }
+                    } else {
+                        if (!items.isChecked) {
+                            items.isChecked = true;
+                            this.selectedItem.push({ id: items.id });
+                        }
+                        else {
+                            items.isChecked = false;
+                            this.selectedItem.splice(this.selectedItem.indexOf(items), 1);
+                        }
+                    }
+                });
+            },
+            handleSelectionChange(val) {
+                this.selectedItem = val;
+                if (this.selectedItem.length == 0) {
+                    this.isIndeterminate = false;
+                    this.checked = false;
+                } else {
+                    if (this.selectedItem.length == this.tableData.length) {
+                        this.isIndeterminate = false;
+                        this.checked = true;
+                    } else {
+                        this.isIndeterminate = true;
+                        this.checked = false;
+                    }
+                }
+            },
+            selectAllBottom(value) {
+                value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+            },
+            load(tree, treeNode, resolve) {
+                let _this = this;
+                let levelNew = isNaN(parseInt(tree.level)) ? 0 + 1 : parseInt(tree.level) + 1;
+                let sendData = {
+                    keyid: tree.id,
+                    level: levelNew,
+                }
+                httpPost('m=system&c=category_city&a=get_city_children', sendData).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        resolve(res.data.list);
+                        tree.children = res.data.list;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                }).finally(function () {
+                    _this.maps.set(tree.id, {tree, treeNode, resolve});
+                })
+            },
+            // 局部刷新列表
+            refreshRow(keyid) {
+                if (this.maps.get(keyid) == undefined) {
+                    return false;
+                }
+                const {tree, treeNode, resolve} = this.maps.get(keyid);//根据父级id取出对应的节点数据
+                //将对应父节点下的数据清空，需要在el-table中增加参数 `ref="multipleTable"`
+                this.$set(this.$refs.multipleTable.store.states.lazyTreeNodeMap, tree.id, []);
+                //实现数据的重新加载
+                if (tree) {
+                    this.load(tree, treeNode, resolve);
+                }
+            },
+            getList() {
+                this.addVisible = false;
+                let _this = this;
+                _this.loading = true;
+                _this.emptytext = "数据加载中";
+                httpPost('m=system&c=category_city&a=index').then(function (response) {
+                    let res = response.data;
+                    _this.tableData = res.data;
+                    _this.loading = false;
+                    if (_this.tableData.length === 0){
+                        _this.emptytext = "暂无数据";
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            addcityFun(keyid) {
+                this.addVisible = false;
+                if (keyid == 0) {
+                    this.getList();
+                } else {
+                    this.refreshRow(keyid);
+                }
+            },
+            /**
+             * 添加分类
+             */
+            handleAdd(id, level) {
+                this.keyid = 0;
+                this.keyid_name = '';
+                this.level = 1;
+                this.addTitle = '添加省级行政区';
+                this.addVisible = true;
+            },
+            /**
+             * 添加子类
+             */
+            handleAddChild(scope) {
+                let levelNew = isNaN(parseInt(scope.row.level)) ? 0 + 1 : parseInt(scope.row.level) + 1;
+                this.keyid = scope.row.id;
+                this.keyid_name = scope.row.name;
+                this.level = levelNew;
+                if (levelNew == 2) {
+                    this.addTitle = '添加地级行政区';
+                } else if (levelNew == 3) {
+                    this.addTitle = '添加县级行政区';
+                } else {
+                    this.addTitle = '';
+                }
+                this.addVisible = true;
+            },
+            /**
+             * 更新
+             */
+            handleSingle(scope) {
+                let _this = this;
+                let row = scope.row;
+                let index = scope.$index;
+                if (row.name == "") {
+                    message.error("城市名称不能为空！");
+                    return false;
+                }
+
+                let params = row;
+                _this.submitLoading = true;
+                httpPost('m=system&c=category_city&a=up_single', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        message.success('更新成功！');
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                }).finally(function () {
+                    _this.submitLoading = false;
+                });
+            },
+            deleteRow(scope, isMore) {
+                let params = {};
+                let msg = "确定删除吗？";
+                if (isMore) {
+                    if (!this.selectedItem.length) {
+                        message.error('请选择要删除的数据');
+                        return false;
+                    }
+                    let list = [];
+                    for (let item of this.selectedItem) {
+                        list.push(item.id);
+                    }
+                    params.delType = 'more';
+                    params.delid = list.join(',');
+                } else {
+                    // let index = scope.$index;
+                    // this.tableData.splice(index, 1);
+                    params.delType = 'single';
+                    params.keyid = scope.row.keyid;
+                    params.delid = scope.row.id;
+                    msg = "删除该城市会导致有关数据无法使用，确认删除？";
+                }
+
+                delConfirm(this, params, this.delete, msg);
+            },
+            delete(params) {
+                let _this = this;
+                httpPost('m=system&c=category_city&a=del', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        message.success('删除成功！');
+                        if (params.delType == 'single') {
+                            if (params.keyid == 0) {
+                                _this.getList();
+                            } else {
+                                _this.refreshRow(params.keyid);
+                            }
+                        } else {
+                            //批量删除，全部更新
+                            _this.getList();
+                        }
+                    } else {
+                        message.error('删除失败！');
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+			upRow(){
+				
+				var params = {};
+				var id_arr = [];
+				var cityarr = deepClone(this.selectedItem);
+				if (!cityarr.length) {
+				    message.error('请选择要保存的数据');
+				    return false;
+				}
+				for(let i in cityarr){
+					id_arr.push(cityarr[i].id);
+					params[`cityname_${cityarr[i].id}`] = cityarr[i].name;
+					params[`citye_name_${cityarr[i].id}`] = cityarr[i].e_name;
+					params[`citysort_${cityarr[i].id}`] = cityarr[i].sort;
+					params[`letter_${cityarr[i].id}`] = cityarr[i].letter;
+					params[`display_${cityarr[i].id}`] = cityarr[i].display;
+					params[`sitetype_${cityarr[i].id}`] = cityarr[i].sitetype;
+					params[`citycode_${cityarr[i].id}`] = cityarr[i].code;
+				}
+				params.id_arr = id_arr.join(',');
+				
+				httpPost('m=system&c=category_city&a=upp', params).then((response)=>{
+				    let res = response.data;
+				    if (res.error === 0) {
+				        message.success(res.msg);
+				        this.getList();
+				    } else {
+				        message.error(res.msg);
+				    }
+				}).catch(function (error) {
+				    console.log(error);
+				});
+			},
+            pinyin() {
+                delConfirm(this, {
+                    page: 0,
+                    pagesize: 100
+                }, this.doPinyin, '未设置拼音的相关分类将根据中文名称自动生成拼音？');
+            },
+            /**
+             * 生成拼音
+             * @param params {page:0, pagesize:100}
+             */
+            doPinyin(params) {
+                let _this = this;
+                httpPost('m=system&c=category_city&a=ajaxpinyin', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error === 0) {
+                        message.success('生成拼音成功！');
+                        _this.getList();
+                    } else if (res.error === 1) {
+                        message.warning(res.msg);
+                        params.page = res.data.page;
+                        _this.doPinyin(params);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            clearPinYin() {
+                let _this = this;
+                delConfirm(this, {}, function () {
+                    httpPost('m=system&c=category_city&a=clearpinyin').then(function (response) {
+                        message.success('拼音已清空！');
+                        _this.getList();
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                }, '清空所有职位类别对应拼音？');
+            }
+        },
+        components: {
+            'city_add': httpVueLoader('./component/city_add.vue'),
+            'city_chachong': httpVueLoader('./component/city_chachong.vue'),
+        }
+    });
+</script>
+
+</html>
+<style>
+    .cell {
+        display: flex;
+        align-items: center;
+    }
+</style>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+<div id="yujinapp" class="moduleElenAl">
+
+    <div class="moduleSeachs">
+        <div class="moduleSeachleft">
+            <div class="moduleSeachInpt" style="margin-right: 12px;">
+                <el-date-picker size="small" style="width: 260px;" v-model="daterange" type="daterange" @change="changedate" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+            </div>
+            <div class="tableSeachInptsmall newsinput">
+                <el-select v-model="status" size="small" slot="prepend" :clearable="true" placeholder="状态" @change="search">
+                    <el-option label="已读" value="1"></el-option>
+                    <el-option label="未读" value="2"></el-option>
+                </el-select>
+            </div>
+			<div style="overflow: hidden;position: relative;display: flex;flex-wrap: wrap;align-items: center;">
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+            </div>
+        </div>
+        <div class="moduleSeachButn" style="display: flex;align-items: center;">
+            <el-button type="primary" icon="el-icon-document-add" size="mini" @click="setshow=true">预警配置</el-button>
+        </div>
+    </div>
+
+    <div class="moduleElTable">
+
+        <el-table ref="multipleTable" :data="tableData" @selection-change="selectionChange" border
+                  style="width: 100%" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" v-loading="loading" :empty-text="emptytext">
+            <el-table-column type="selection" width="55">
+            </el-table-column>
+            <el-table-column prop="id" label="编号" width="120">
+            </el-table-column>
+            <el-table-column label="名称/用户名" width="200">
+                <template slot-scope="scope">
+                    <div class="moduleProps">
+                        <span class=" ">{{scope.row.name_n}}</span>
+                        <span class=" ">{{scope.row.username}}</span>
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="usertype_n" label="用户类型" width="120">
+            </el-table-column>
+            <el-table-column prop="content" label="预警原因">
+            </el-table-column>
+            <el-table-column prop="ctime_n" label="操作时间" width="220">
+            </el-table-column>
+            <el-table-column label="状态" width="120">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.status==1">已读</span>
+                    <span v-else-if="scope.row.status==2">未读</span>
+                </template>
+            </el-table-column>
+            <el-table-column fixed="right" label="操作" width="80">
+                <template slot-scope="scope">
+                    <div class="cz_button">
+                        <el-button size="mini" type="danger" @click="deleteinfo(scope.row.id)">删除</el-button>
+                    </div>
+
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+    <div class="modulePaging">
+        <div class="modulecz modulePagButn">
+            <el-checkbox v-model="allchecked" @change="allcheckChange">全选</el-checkbox>
+            <el-button size="mini" @click="deleteAll">批量删除</el-button>
+        </div>
+        <div class="modulePagNum">
+            <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                           :current-page="currentPage" :page-sizes="page_sizes" :page-size="page_size" :total="total"
+                           layout="total, sizes, prev, pager, next, jumper">
+            </el-pagination>
+        </div>
+    </div>
+
+    <div class="modluDrawer">
+        <el-drawer title="预警配置" :visible.sync="setshow" :modal-append-to-body="false" :show-close="true"
+                   :with-header="true" size="92%">
+            <warningset :setshow.sync="setshow"></warningset>
+        </el-drawer>
+    </div>
+</div>
+<!-- script -->
+<script>
+    const custoapp = new Vue({
+        el: '#yujinapp',
+        data: function () {
+            return {
+                emptytext: '暂无数据',
+                loading: false,
+                status: '',
+                tableData: [],
+                total: 0,
+                limit: '',
+                currentPage: 1,
+                prevPage: 0,
+                page_sizes: [],
+                page_size:0,
+
+                daterange: [],
+
+                allchecked: false,
+                choosedata: [],
+
+                setshow: false,
+
+            }
+        },
+        components: {
+            'warningset': httpVueLoader('./component/warningset.vue'),
+        },
+        created: function () {
+            var that = this
+            let query = window.parent.homeapp.$route.query;
+            if (query.status) {
+                that.status = query.status;
+            }
+
+            this.getList();
+        },
+        methods: {
+            async getList() {
+                let that = this;
+                let params = {
+                    page: that.currentPage,
+                    limit: that.limit
+                }
+                if (this.daterange && this.daterange.length > 0) {
+
+                    params['date1'] = this.daterange[0].getTime() / 1000;
+                    params['date2'] = this.daterange[1].getTime() / 1000;
+                }
+                if (this.status) {
+                    params.status = this.status;
+                }
+                this.loading = true;
+                that.emptytext = "数据加载中";
+                httpPost('m=system&c=warning&a=index', params).then((result) => {
+
+                    var res = result.data
+                    if (res.error == 0) {
+                        that.tableData = res.data.list;
+                        that.total = parseInt(res.data.total);
+                        that.page_sizes = res.data.page_sizes;
+                        that.page_size = res.data.page_size;
+                        if (that.prevPage != that.currentPage) {
+                            that.prevPage = that.currentPage;
+                            that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        }
+                        that.loading = false;
+                        if (that.tableData.length === 0){
+                            that.emptytext = "暂无数据";
+                        }
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            search: function () {
+                this.currentPage = 1;
+                this.getList();
+            },
+            changedate: function () {
+                if (this.daterange === null) {
+                    this.currentPage = 1;
+                    this.getList();
+                }
+
+            },
+            handleCurrentChange(val) {
+                this.currentPage = val;
+                this.getList();
+            },
+            handleSizeChange(val) {
+                this.currentPage = 1
+                this.limit = val
+                this.getList()
+            },
+            allcheckChange: function () {
+
+                this.$refs.multipleTable.toggleAllSelection();
+
+            },
+            selectionChange: function (e) {
+                if (this.tableData.length != e.length) {
+                    this.allchecked = false;
+                } else {
+                    this.allchecked = true;
+                }
+                this.choosedata = e;
+            },
+            deleteinfo: function (id) {
+                var _this = this;
+
+                var params = {
+                    del: id
+                };
+                delConfirm(_this, params, this.deletePost)
+            },
+            deleteAll: function () {
+                var _this = this;
+                var idarr = [];
+                if (this.choosedata.length > 0) {
+                    for (let i in this.choosedata) {
+                        idarr.push(this.choosedata[i].id);
+                    }
+                } else {
+                    message.error('请选择要删除的数据');
+                    return;
+                }
+                var params = {
+                    del: idarr
+                };
+
+                delConfirm(_this, params, this.deletePost)
+            },
+            async deletePost(params) {
+
+                let that = this;
+
+                httpPost('m=system&c=warning&a=del', params).then(function (result) {
+
+                    var res = result.data;
+                    if (res.error == 9) {
+                        message.success(res.msg, function () {
+                            that.getList();
+                        });
+                        return;
+                    } else {
+                        message.error(res.msg);
+                        return;
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,51 @@
+{yun:}include file="$wapstyle/header_cont.htm"{/yun}
+<style>
+    .about_right_p img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    table[align="center"] {
+        margin: 0 auto;
+    }
+
+    table, table tr th, table tr td {
+        border: 1px solid #666;
+    }
+    .news_cont_ms {
+        width: 100%;
+        text-align: center;
+        padding: 10px 0;
+        color: #a3adb6;
+        font-size: 12px;
+    }
+</style>
+<div class="about_content" style="margin-top:10px;">
+    <div class="anno_tit">
+        <h1>{yun:}$row.title{/yun}</h1>
+    </div>
+    <div class="news_cont_ms">
+        {yun:}$row.startime|date_format:"%Y-%m-%d"{/yun}
+        被浏览：<span id="click">{yun:}$row.view_num{/yun}</span> 次
+    </div>
+    <div class="about_right_p">
+        <div style="width:100%; overflow:hidden">
+            {yun:}$row.content{/yun}
+        </div>
+    </div>
+</div>
+<script src="{yun:}$wap_style{/yun}/js/prefixfree.min.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/jquery.min.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/public.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script>
+    var config = {
+        url: '{yun:}url m=wap c=announcements id=$row.id{/yun}',
+        title: '{yun:}$row.title{/yun}',
+        desc: '{yun:}$row.content|replace:"\r\n":""{/yun}',
+        img: '{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_sharelogo{/yun}',
+        from: '{yun:}$config.sy_webname{/yun}'
+    };
+</script>
+{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+</body>
+</html>

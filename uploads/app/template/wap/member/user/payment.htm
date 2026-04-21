@@ -1,0 +1,69 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+<link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/style.css?v={yun:}$config.cachecode{/yun}" type="text/css" />
+<div class="pay_choice_box">
+	<form action="" method="post" onsubmit="return order_form();" id="paymentform">
+		<div class="pay_xymoney">
+			<span class="pay_xymoney_name">订单号</span>
+			<div class="pay_xymoney_t"><em class="">{yun:}$order.order_id{/yun}</em></div>
+		</div>
+		<div class="pay_xymoney">
+			<span class="pay_xymoney_name">支付金额</span>
+			<div class="pay_xymoney_t"><em class="pay_xymoney_t_n"><span id="price">{yun:}$order.order_price{/yun}</span></em> 元</div>
+		</div>
+		<div class="pay_xymoney">
+			<span class="pay_xymoney_name">订单类型</span>
+			<div class="pay_xymoney_t">
+				<em class="">
+					{yun:}if $order.type==1{/yun}购买会员
+					{yun:}else if $order.type=='2'{/yun}{yun:}$config.integral_pricename{/yun}充值
+					{yun:}else if $order.type=='3'{/yun}银行转帐
+					{yun:}else if $order.type=='4'{/yun}金额充值
+					{yun:}else if $order.type=='14'{/yun}简历置顶
+					{yun:}/if{/yun}
+				</em>
+			</div>
+		</div>
+		<div id="pay_style" class="member_set_meal_fk_fbox mt10">
+			{yun:}if $config.alipay==1 && $isweixin!=1{/yun}
+			<div class="member_set_meal_fk_fs member_set_meal_fk_fs_zfb" onclick="paycheck('alipay');">
+				<i class="alipay member_set_meal_fk_xz"></i>支付宝
+			</div>
+			{yun:}/if{/yun} 
+		</div>
+		<input type="hidden" value="" id="paytype" name="paytype" />
+		<input type="hidden" value="{yun:}$order.order_price{/yun}" id="order_price" name="price" /> 
+		{yun:}if $config.alipay==1{/yun}
+			<div class="member_set_meal_fk_zf">
+				<input type="submit" class="member_set_meal_fk_zf_bth" value="确认支付">
+			</div>
+		{yun:}else{/yun}
+			<div class="pay_zfgb_tip">
+				<span>网站已关闭支付功能，请联系管理员！</span>
+			</div>
+		{yun:}/if{/yun}
+
+	</form>
+</div>
+ 
+<script language="javascript">
+	
+	$(function() {
+		if(document.getElementById('main')){
+			document.getElementById('main').addEventListener('touchmove', function (e) { e.preventDefault();}, {passive: false});
+		}
+        $("#pay_style").children(":first").click();
+	})
+    function order_form() {
+        var paytype = $('#paytype').val();
+        if(paytype == "") {
+            showToast('请选择一种支付方式！', 2);
+            return false;
+        } else if(paytype == 'alipay') {
+            $("#paymentform").attr("action", "{yun:}$config.sy_weburl{/yun}/api/wapalipay/alipayto.php?dingdan={yun:}$order.order_id{/yun}&dingdanname={yun:}$order.order_id{/yun}&alimoney={yun:}$order.order_price{/yun}");
+        }
+    }
+</script>
+<script src="{yun:}$wap_style{/yun}/js/pay.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+{yun:}include file="$wapstyle//member/public/phptoast.htm"{/yun}
+</body>
+</html>

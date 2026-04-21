@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<script src="../../../admin/header.js"></script>
+<script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+<div id="domainAdminApp" class="moduleElenAl">
+    <div class="moduleSeachs">
+        <div class="moduleSeachInpt">
+            <el-input placeholder="请输入用户名或真实姓名" v-model="search.keyword" class="input-with-select" size="small" clearable></el-input>
+            <el-button type="primary" icon="el-icon-search" size="mini" @click="handelSearch">查询</el-button>
+        </div>
+        <div class="">
+            <el-button type="primary" icon="el-icon-setting" size="mini" plain @click="openGroupList">管理员权限</el-button>
+            <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addAdmin">添加管理员</el-button>
+        </div>
+    </div>
+    <div class="moduleElTable">
+        <div class="tableDome_tip">
+            <el-alert title="分站管理员列表展示所有分站管理员信息，超级管理员可以实时调整分站管理员所属分站以及所在权限组！" type="info" :closable="false"></el-alert>
+        </div>
+        <el-table :data="tableData" border style="width: 100%" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="calc(100% - 48px)" @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
+            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column prop="uid" label="	编号" width="80"></el-table-column>
+            <el-table-column prop="username" label="用户名"></el-table-column>
+            <el-table-column prop="name" label="真实姓名"></el-table-column>
+            <el-table-column prop="domain_name" label="所属分站"></el-table-column>
+            <el-table-column prop="group_name" label="权限用户组"></el-table-column>
+            <el-table-column fixed="right" label="操作" width="140">
+                <template slot-scope="scope">
+                    <div class="cz_button">
+                        <a href="javascript:;" @click="editAdmin(scope);">
+                            <el-button size="mini">修改</el-button>
+                        </a>
+                        <el-button size="mini" @click="delAdmin(scope)" type="danger">删除</el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+    <div class="modulePaging">
+        <div class="modulecz modulePagButn" style="margin-left: 10px;">
+            <el-checkbox v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+            <el-button size="mini" @click="delAdminSel">批量删除</el-button>
+        </div>
+        <div class="modulePagNum">
+            <div class="modulePagNum" style="margin: 0 auto;">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size.sync="pageSize" :page-sizes="pageSizes" layout="total, sizes, prev, pager, next, jumper" :total="total"></el-pagination>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗 -->
+    <div class="modluDrawer">
+        <el-dialog :title="addAdminTitle" :visible.sync="addAdminShow" :with-header="true" :modal-append-to-body="false" :show-close="true" width="550px">
+            <admin-add :admin_uid="adminUid" @child-event="closeAdminAdd"></admin-add>
+        </el-dialog>
+        <el-drawer title="分站管理员权限" :visible.sync="setshow" :with-header="true" :append-to-body="true" :show-close="true" size="80%">
+            <group-list :setshow.sync="setshow" @child-event="closeGroupList"></group-list>
+        </el-drawer>
+    </div>
+</div>
+<script>
+    const domainAdminApp = new Vue({
+        el: '#domainAdminApp',
+        data: function () {
+            return {
+                emptytext: '暂无数据',
+                search: {
+                    keyword: null
+                },
+
+                addAdminShow: false,
+                addAdminTitle: '添加分站管理员',
+
+                adminUid: 0,
+                tableData: [],
+
+                total: 0,
+                currentPage: 1,
+                prevPage: 0,
+                pageSize: 0,
+                pageSizes: [],
+
+                // 批量选择
+                checkAll: false,
+                isIndeterminate: false,
+                selectedItem: [],
+                loading: true,
+                setshow: false,
+            }
+        },
+        components: {
+            'admin-add': httpVueLoader('./component/adminAdd.vue'),
+            'group-list': httpVueLoader('./component/domainAdminGroup.vue'),
+        },
+        created: function () {
+            this.getDomainAdmin();
+        },
+        methods: {
+            openGroupList() {
+                this.setshow = true;
+            },
+            closeGroupList() {
+                this.setshow = false;
+                this.getDomainAdmin();
+            },
+            getDomainAdmin() {
+                var that = this;
+                var params = JSON.parse(JSON.stringify(this.search));
+                params.pageSize = that.pageSize;
+                params.page = that.currentPage;
+                that.loading = true;
+                that.emptytext = "数据加载中";
+                httpPost('m=system&c=domain_group&a=adminList', params, { hideloading: true }).then(function (res) {
+                    let data = res.data.data;
+                    that.tableData = data.list;
+                    that.total = data.total;
+                    that.pageSize = parseInt(data.pageSize);
+                    that.pageSizes = data.pageSizes;
+                    if (that.prevPage != that.currentPage) {
+                        that.prevPage = that.currentPage;
+                        that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                    }
+                    that.loading = false;
+                    if (that.tableData.length === 0){
+                        that.emptytext = "暂无数据";
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            handelSearch: function () {
+
+                this.currentPage = 1
+                this.getDomainAdmin()
+            },
+            handleSelectionChange(val) {
+                this.selectedItem = val;
+                if (this.selectedItem.length == 0) {
+                    this.isIndeterminate = false;
+                    this.checkAll = false;
+                } else {
+                    if (this.selectedItem.length == this.tableData.length) {
+                        this.isIndeterminate = false;
+                        this.checkAll = true;
+                    } else {
+                        this.isIndeterminate = true;
+                        this.checkAll = false;
+                    }
+                }
+            },
+            handleCheckAllChange(val) {
+                val ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+            },
+            delAdmin(scope, isMore) {
+                var that = this;
+                let name = '';
+                let idArr = [], nameArr = [];
+                let params = {};
+                if (isMore) {
+                    this.selectedItem.forEach((item) => {
+
+                        idArr.push(item.uid);
+                        nameArr.push(item.name);
+                    });
+                    name = '（' + nameArr.join('，') + '）';
+                    params.uid = idArr;
+                } else {
+
+                    name = '（' + scope.row.name + '）';
+                    params.uid = scope.row.uid;
+                }
+                delConfirm(this, params, this.delete, '您确定要删除管理员' + name + '信息吗？');
+            },
+            delAdminSel() {
+                var that = this;
+                if (!that.selectedItem.length) {
+                    message.error('请选择要删除的分站管理员');
+                    return;
+                }
+                this.delAdmin(null, true);
+            },
+            delete(params) {
+                var self = this;
+                httpPost('m=system&c=domain_group&a=delAdmin', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        message.success(res.msg, function () {
+                            self.getDomainAdmin();
+                        });
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            handleSizeChange(val) {
+
+                console.log(`每页 ${val} 条`);
+                this.pageSize = val;
+                this.getDomainAdmin();
+            },
+            handleCurrentChange(val) {
+
+                console.log(`当前页: ${val}`);
+                this.currentPage = val;
+                this.getDomainAdmin();
+            },
+            addAdmin() {
+                var self = this;
+                self.adminUid = 0;
+                self.addAdminTitle = '添加分站管理员';
+                self.addAdminShow = true;
+            },
+            editAdmin(scope) {
+                var self = this;
+                self.adminUid = parseInt(scope.row.uid);
+                self.addAdminTitle = '修改分站管理员';
+                self.addAdminShow = true;
+            },
+            closeAdminAdd: function () {
+                this.addAdminShow = false;
+                this.handelSearch();
+            }
+        }
+    });
+</script>
+</body>
+
+</html>

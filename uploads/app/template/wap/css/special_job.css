@@ -1,0 +1,243 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+body,
+html {
+    padding: 0;
+    margin: 0;
+}
+
+body { 
+    background: #F2F2F2;
+}
+
+a,
+li {
+    list-style: none;
+    text-decoration: none;
+}
+
+a {
+ 
+}
+
+a:hover {
+ 
+}
+
+button,
+input {
+    border: none;
+    outline: none;
+}
+
+button {
+    cursor: pointer;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+section {
+    position: relative;
+   
+}
+
+.specialPhoto{
+    overflow: hidden;
+    min-height: 1.33rem;
+    background: #2778f8;
+}
+ 
+.specialDirec{
+    overflow: hidden;
+    position: absolute;
+    top: 0.32rem;
+    left: 0.2rem;
+    z-index: 22;
+}
+.specialDirec a{
+    display: block;
+    width: 0.633rem;
+}
+.specialPhoto img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.specialSubject {
+    margin: 0.3rem; 
+}
+
+.specialSubject ul {
+    overflow: hidden;
+}
+
+.specialSubject ul li{
+    overflow: hidden;
+    background: #fff;
+    border-radius: 0.2rem;
+    padding: 0.2666rem;
+    margin-bottom: 0.3rem; position: relative;
+}
+.specialSubject ul li a{
+    display: block;
+}
+.specialSubject ul li .specialSubjectOne{
+    overflow: hidden;
+}
+.specialSubject ul li .specialSubjectOne .specialSubjectOneInfo{
+    overflow: hidden;
+    /*width: 6rem;*/
+}
+.specialSubject ul li .specialSubjectOne .specialSubjectOneInfo .oneInfoTitle{
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.26666rem;
+}
+.specialSubject ul li .specialSubjectOne .specialSubjectOneInfo .oneInfoTitleMoney{
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-18);
+    font-weight: bold;
+    color: #ff4c52;
+    padding-top: 2px;
+}
+.specialSubject ul li .specialSubjectOne .specialSubjectOneInfo .oneInfoTitle p{
+    font-size: var(--font-18);
+    margin-right: 0.2rem;
+    
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: bold;
+}
+.specialSubject ul li .specialSubjectOne .specialSubjectOneInfo .oneInfoTitle img{
+    width: var(--font-18);
+    margin-right: 0.2rem;
+}
+.specialSubject ul li .specialSubjectOne .twoInfoNam{
+    color: #666;
+    font-size: var(--font-14);
+    padding-bottom: var(--font-10);
+}
+.specialSubject ul li .specialSubjectOne .specialSubjectOneInfo .oneInfoMoney{
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    margin: 0.2rem 0;
+    font-size: var(--font-14);
+    color: #FF667F;
+}
+.specialSubject ul li .specialSubjectOne .specialSubjectOneInfo .oneInfoMap{
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    color: #999;
+}
+.specialSubject ul li .specialSubjectOne .specialSubjectOneInfo .oneInfoMap p{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.specialSubject ul li .specialSubjectOne .specialSubjectOneInfo .oneInfoMap img{
+    width: var(--font-16);
+    margin-left: 0.2rem;
+}
+.specialSubject ul li .specialSubjectOne .specialSubjectOneShow{
+    overflow: hidden;
+}
+.specialSubject ul li .specialSubjectOne .specialSubjectOneShow span{
+    display: block;
+    width: 2rem;
+    line-height: var(--font-35);
+    background: #E9F1FF;
+    text-align: center;
+    border-radius: 0.5rem;
+    color: #2778F8;
+}
+.specialSubject ul li .specialSubjectTwo{
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    max-height: 0.95rem;
+    padding-bottom: var(--font-10);
+}
+.specialSubject ul li .specialSubjectTwo span{
+    display: block;
+    padding: 0.1rem 0.23rem;
+    background: #F7F9FA;
+    color: #666;
+    margin-right: 0.3rem;
+    border-radius: 0.2rem;
+    font-size: var(--font-13);
+    margin-bottom: var(--font-10);
+}
+
+.buttonSpecial{ position:fixed;right:0px;top:1.6rem;
+}
+.buttonSpecial button{
+    background: #f74545;
+    background: linear-gradient(270deg, #f60, #f60, #f74545);
+    height: 1rem;
+    width: 4rem;
+    border-radius: 0.55rem;
+    font-size: 0.377rem;
+    color: #fff;
+}
+.buttonSpecial .bottonOne{
+    background: #2778f8;
+    background: linear-gradient(270deg, #19b7ff, #2778f8, #2778f8);
+}
+/* 控制尺寸 */
+@media (max-width: 375px) {
+    .specialSubject{
+        /*height: 63vh;*/
+        height: calc(63vh - 2rem);
+    }
+}
+
+.ztjob_top{font-size:0.48rem; font-weight: bold;  }
+.ztjob_xz{font-size:0.48rem; font-weight: bold;color:#f60;padding-top:0.266rem   }
+.ztjob_top img{width:0.42rem;height:0.42rem; margin-left: 0.2rem;    vertical-align: middle;}
+.ztjob_info{padding:0.266rem 0;font-size:0.37rem;color:#666}
+.ztjob_com{ font-size:0.37rem;color:#666}
+.ztjob_com img{width:0.37rem;height:0.37rem; margin-left: 0.15rem; vertical-align: middle;}
+.ztjob_fl{ 
+    padding-bottom:0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.ztjob_fl span{
+    color: #fa9900;
+    font-size:0.32rem;
+    margin-right:0.33rem; margin-top: 0.213rem;  
+    padding:3px 0.32rem;
+    border: 1px solid #fa9900;
+    border-radius:3px;
+    font-style: normal; display: inline-block;
+}
+.jobzt_cz{ position:fixed;right:0px;top:1.6rem; z-index: 100;}
+.jobzt_cz_a{width:0.53rem;padding:0.5rem 0;   font-size: 0.37rem;; text-align: center;color:#2778f8;  display: block;background:#fff;border-radius:0.16rem 0 0 0.16rem; margin-top:0.53rem;    box-shadow: 0 1px 0.16rem rgb(6 0 1 / 10%);}
+.jobzt_gzj{ background:#fff;border-radius: 0.213rem; padding-bottom: 0.53rem; text-align: center;}
+
+ .job_spc_box{padding:0.32rem}
+.job_spc_list{ background-color: #fff;padding:0.266rem;border-radius:0.213rem; margin-bottom: 0.53rem;   min-height: 2.93rem;}
+.job_spc_list_name{ font-weight:bold;font-size:0.48rem; padding:0.266rem 0 0px 0;  }
+.job_spc_list_p{padding:0.16rem 0;color:#666}
+.job_spc_list_com{color:#666}
+.job_spc_list_com_n{color:#276bf2}
+.job_spc_list_time{   font-weight: normal; font-size: 0.34rem;color:#999 ; padding-top: 0.266rem;}
+.job_spc_pic img{width:100%;height:3.73rem;border-radius: 0.133rem;  }
+.job_spc_list_a{ display: inline-block; background-color: #276bf2;padding:0.213rem 0.533rem;border-radius:0.533rem;;color:#fff;border-radius:1.066rem; position: absolute;right:0.533rem;bottom:1.066;}

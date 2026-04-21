@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="moduleHeadr">
+            <h3>支付设置</h3>
+            <span>请对系统->支付设置网站轻松与支付宝、微信支付进行对接，对接后实现用户在线支付功能！可以购买广告位、会员套餐等服务。</span>
+        </div>
+        <div class="playModule">
+            <div class="playModuleList">
+                <div class="playModuName">
+                    <span>支付宝</span>
+                </div>
+                <div class="playModuLay">
+                    <span>支付宝网站(www.alipay.com) 是国内先进的网上支付平台。</span>
+                </div>
+                <div class="playModuLink">
+                    <a href="https://b.alipay.com/index.htm" target="_blank">立即在线申请</a>
+                </div>
+                <div class="playModuSet">
+                    <div class="playModLogo">
+                        <img src="../../../admin/images/zf1.png" alt="">
+                    </div>
+                    <div class="playModButn" v-if="config.alipay != 1">
+                        <el-button size="mini" @click="change_pay('alipay')"type="primary">安装</el-button>
+                    </div>
+                    <div class="playModButn" v-else>
+                        <el-button  size="mini" @click="change_pay_un('alipay')">卸载</el-button>
+                        <el-button  size="mini" @click="alipay_config = true"  type="primary">设置</el-button>
+                    </div>
+                </div>
+            </div>
+            <div class="playModuleList">
+                <div class="playModuName">
+                    <span>财付通</span>
+                </div>
+                <div class="playModuLay">
+                    <span>财付通是腾讯公司创办的中国领先的在线支付平台
+                        致力于为互联网用户和企业提供安全、便捷、专业的在线支付服务。</span>
+                </div>
+                <!--<div class="playModuLink">-->
+                    <!--<a href="">立即在线申请</a>-->
+                <!--</div>-->
+                <div class="playModuSet">
+                    <div class="playModLogo">
+                        <img src="../../../admin/images/zf3.png" alt="">
+                    </div>
+                    <div class="playModButn" v-if="config.tenpay!=1">
+                        <el-button  size="mini" @click="change_pay('tenpay')"type="primary">安装</el-button>
+                    </div>
+                    <div class="playModButn" v-else>
+                        <el-button  size="mini" @click="change_pay_un('tenpay')">卸载</el-button>
+                        <el-button  size="mini" @click="tenpay_config = true"type="primary">设置</el-button>
+                    </div>
+                </div>
+            </div>
+            <div class="playModuleList">
+                <div class="playModuName">
+                    <span>银行转帐</span>
+                </div>
+                <div class="playModuLay">
+                    <span>收着收款人的银行信息<br>
+                        注意事项：办理电汇时，请在电汇单"汇款用途"一栏处注明您的订单号。</span>
+                </div>
+                <!--<div class="playModuLink">-->
+                    <!--<a href="">立即在线申请</a>-->
+                <!--</div>-->
+                <div class="playModuSet">
+                    <div class="playModLogo">
+                        <img src="../../../admin/images/zf4.png" alt="">
+                    </div>
+                    <div class="playModButn" v-if="config.bank!=1">
+                        <el-button  size="mini" @click="change_pay('bank')" type="primary">安装</el-button>
+                    </div>
+                    <div class="playModButn" v-else>
+                        <el-button  size="mini" @click="change_pay_un('bank')">卸载</el-button>
+                        <el-button  size="mini" @click="show_bank_config"type="primary">设置</el-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 支付宝设置弹窗 -->
+        <div class="modluDrawer">
+            <el-drawer title="支付宝设置" :visible.sync="alipay_config" :modal-append-to-body="false" :show-close="true"
+                       :with-header="true" size="35%">
+                <el-alert type="info" :closable="false" style="background: none;">
+                    支付宝的商户号和KEY参数管理员要注意设置，要完全正确才能正常使用
+                </el-alert>
+                <div class="drawerModInfo drawerModInfoOne">
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>选择接口类型</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-select v-model="alipaydata.alipaytype" placeholder="请选择用户组">
+                                <el-option label="即时到账交易" value="1"></el-option>
+                            </el-select>
+                        </div>
+                        <div class="drawerModTips">
+                            <el-alert title="请选择您最后一次跟支付宝签订的协议里面说明的接口类型" type="info" show-icon :closable="false">
+                            </el-alert>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>收款方名称</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="alipaydata.sy_alipayname" placeholder="请输入收款方名称"></el-input>
+                        </div>
+                        <div class="drawerModTips">
+                            <el-alert title="如：公司名称、网站名称、收款人姓名等" type="info" show-icon :closable="false">
+                            </el-alert>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>加密模式</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-radio v-model="alipaydata.sy_alipayKeyType" label="1">MD5加密</el-radio>
+                            <el-radio v-model="alipaydata.sy_alipayKeyType" label="2">公钥加密</el-radio>
+                        </div>
+                        <div class="drawerModTips">
+                            <el-alert title="加密模式二选一即可，不需要重复填写" type="info" show-icon :closable="false">
+                            </el-alert>
+                        </div>
+                    </div>
+                    <div class="drawerModLis" v-if="alipaydata.sy_alipayKeyType == '1'">
+                        <div class="drawerModTite">
+                            <span>合作身份者(PID)</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="alipaydata.sy_alipayid" placeholder="请输入合作身份者(PID)"></el-input>
+                        </div>
+                        <div class="drawerModTips">
+                            <el-alert title="如：208800220994****" type="info" show-icon :closable="false">
+                            </el-alert>
+                        </div>
+                    </div>
+                    <div class="drawerModLis" v-if="alipaydata.sy_alipayKeyType == '1'">
+                        <div class="drawerModTite">
+                            <span>安全检验码(MD5)</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="alipaydata.sy_alipaycode" placeholder="请输入安全检验码"></el-input>
+                        </div>
+                        <div class="drawerModTips">
+                            <el-alert title="如：7zzqkb09qu7zoo9ehny7j4sdfj22qqcf" type="info" show-icon :closable="false">
+                            </el-alert>
+                        </div>
+                    </div>
+                    <div class="drawerModLis" v-if="alipaydata.sy_alipayKeyType == '1'">
+                        <div class="drawerModTite">
+                            <span>支付宝账号</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="alipaydata.sy_alipayemail" placeholder="请输入支付宝账号"></el-input>
+                        </div>
+                        <div class="drawerModTips">
+                            <el-alert title="签约支付宝账号或卖家支付宝帐户" type="info" show-icon :closable="false">
+                            </el-alert>
+                        </div>
+                    </div>
+                    <div class="drawerModLis" v-if="alipaydata.sy_alipayKeyType == '2'">
+                        <div class="drawerModTite">
+                            <span>APPID</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="alipaydata.sy_alipayappid" placeholder="请输入APPID"></el-input>
+                        </div>
+                        <div class="drawerModTips">
+                            <el-alert title="在支付宝开放平台查看" type="info" show-icon :closable="false">
+                            </el-alert>
+                        </div>
+                    </div>
+                    <div class="drawerModLis" v-if="alipaydata.sy_alipayKeyType == '2'">
+                        <div class="drawerModTite">
+                            <span>开发者私钥</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input type="textarea" v-model="alipaydata.sy_alipayprivatekey" placeholder="请输入安全检验码"></el-input>
+                        </div>
+                        <div class="drawerModTips">
+                            <el-alert title="通过支付宝开放平台开发助手生成秘钥" type="info" show-icon :closable="false">
+                            </el-alert>
+                        </div>
+                    </div>
+                    <div class="drawerModLis" v-if="alipaydata.sy_alipayKeyType == '2'">
+                        <div class="drawerModTite">
+                            <span>支付宝公钥</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input type="textarea" v-model="alipaydata.sy_alipaypublickey" placeholder="请输入支付宝账号"></el-input>
+                        </div>
+                        <div class="drawerModTips">
+                            <el-alert title="通过支付宝开放平台查看" type="info" show-icon :closable="false">
+                            </el-alert>
+                        </div>
+                    </div>
+                </div>
+                <div class="setBasicButn" style="border: none;">
+                    <el-button type="primary" size="medium" :loading="save_load" @click="submitPayConf(1)">提交</el-button>
+                </div>
+            </el-drawer>
+        </div>
+        <!-- 财付通设置弹窗 -->
+        <div class="modluDrawer">
+            <el-drawer title="财付通设置" :visible.sync="tenpay_config" :modal-append-to-body="false" :show-close="true"
+                       :with-header="true" size="35%">
+                <div class="drawerModInfo drawerModInfoOne">
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>商户号</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="tenpaydata.sy_tenpayid" placeholder="请输入商户号"></el-input>
+                        </div>
+                        <div class="drawerModTips">
+                            <el-alert title="如：1209404409" type="info" show-icon :closable="false">
+                            </el-alert>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>商户密钥</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="tenpaydata.sy_tenpaycode" placeholder="请输入商户密钥"></el-input>
+                        </div>
+                        <div class="drawerModTips">
+                            <el-alert title="如：a2cec92d571f43b56f1e6ab32173e492" type="info" show-icon :closable="false">
+                            </el-alert>
+                        </div>
+                    </div>
+                </div>
+                <div class="setBasicButn" style="border: none;">
+                    <el-button type="primary" size="medium" :loading="save_load" @click="submitPayConf(3)">提交</el-button>
+                </div>
+            </el-drawer>
+        </div>
+        <!-- 银行卡设置弹窗 -->
+        <div class="modluDrawer">
+            <el-drawer :key="nowtime" title="银行卡设置" :visible.sync="bank_config" :modal-append-to-body="false" :show-close="true"
+                       :with-header="true" size="50%">
+                <div class="drawerModInfo drawerModInfoOne">
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>银行名称</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="bank.bank_name" placeholder="请输入银行名称"></el-input>
+                        </div>
+                        <div class="drawerModTips">
+                            <el-alert title="如：中国银行" type="info" show-icon :closable="false">
+                            </el-alert>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>卡　　号</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="bank.bank_number" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" placeholder="请输入卡号"></el-input>
+                        </div>
+                        <div class="drawerModTips">
+                            <el-alert title="如：6228 4567 8888 8888 888" type="info" show-icon :closable="false">
+                            </el-alert>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>开 户 行</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="bank.bank_address" placeholder="请输入开户行"></el-input>
+                        </div>
+                        <div class="drawerModTips">
+                            <el-alert title="如：上海分行徐汇支行田林路分理处" type="info" show-icon :closable="false">
+                            </el-alert>
+                        </div>
+                    </div>
+                    <div class="drawerModLis">
+                        <div class="drawerModTite">
+                            <span>收款方名称</span>
+                        </div>
+                        <div class="drawerModInpt">
+                            <el-input v-model="bank.name" placeholder="请输入收款方名称"></el-input>
+                        </div>
+                        <div class="drawerModTips">
+                            <el-alert title="如：张三" type="info" show-icon :closable="false">
+                            </el-alert>
+                        </div>
+                    </div>
+                </div>
+                <div class="setBasicButn" style="border: none;">
+                    <el-button type="primary" size="medium" :loading="save_load" @click="submitPayConf(4)">提交</el-button>
+                </div>
+                <div class="drawerModInfo drawerModInfoOne" style="padding-left: 12px;">
+                    <el-table :data="bankrows" border style="width: 100%"
+                              :header-cell-style="{background:'#f5f7fa',color:'#606266'}" v-loading="loading" :empty-text="emptytext">
+                        <el-table-column prop="bank_name" label="银行名称"></el-table-column>
+                        <el-table-column prop="bank_number" label="卡号"></el-table-column>
+                        <el-table-column prop="bank_address" label="开户行"></el-table-column>
+                        <el-table-column prop="name" label="开户人"></el-table-column>
+                        <el-table-column fixed="right" label="操作" width="110">
+                            <template slot-scope="scope">
+                                <div class="moduleElTaCaoz">
+                                    <el-button type="text" size="small" @click="bank_edit(scope.row)">修改</el-button>
+                                    <el-button type="text" size="small" @click="bank_del(scope.row)">删除</el-button>
+                                </div>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+            </el-drawer>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#moduapp',
+            data: function () {
+                return {
+                    emptytext: '暂无数据',
+                    loading: false,
+                    config: {},
+                    params: {config: 1},
+                    alipay_config: false,
+                    wechat_config: false,
+                    tenpay_config: false,
+                    bank_config: false,
+                    alipaydata: {},
+                    tenpaydata:{},
+                    bankrows:[],
+                    bank:{bank_name: '', bank_number: '', bank_address: '', name: '', id: ''},
+
+                    nowtime: new Date().getTime(),
+					save_load:false,
+
+                    
+
+                }
+            },
+            components: {
+
+            },
+            created: function () {
+                this.getInfo();
+            },
+            methods: {
+                changenowtime(){
+                    this.nowtime = new Date().getTime()
+                },
+                bank_del(row){
+                    delConfirm(this, row.id, this.delete, '', this.changenowtime);
+                },
+                async delete(id) {
+                    let that = this;
+                    let params= {
+                        del: id
+                    };
+                    httpPost('m=system&c=set_payset&a=del', params).then(function (response) {
+                        if (response.data.error == 0) {
+                            message.success(response.data.msg, function(){
+                                that.changenowtime()
+                                that.getInfo();
+                            });
+                        }else{
+                            message.error(response.data.msg);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                },
+                show_bank_config(){
+                    this.bank = {bank_name: '', bank_number: '', bank_address: '', name: '', id: ''}
+                    this.bank_config = true
+                },
+                bank_edit(row){
+                    var that = this
+                    that.bank = deepClone(row)
+                },
+                async getInfo() {
+                    var that = this
+                    that.loading = true;
+                    that.emptytext = "数据加载中";
+                    let res = await httpPost('m=system&c=set_payset&a=index', {});
+                    if (res.data.error == 0) {
+                        let data = res.data.data;
+                        that.config = data.config
+                        that.alipaydata = data.alipaydata
+                        that.tenpaydata = data.tenpaydata
+                        that.bankrows = data.bankrows;
+                        that.loading = false;
+                        if (that.bankrows.length === 0){
+                            that.emptytext = "暂无数据";
+                        }
+                    }
+                },
+                change_pay(paytype) {
+                    var that = this
+                    var paytype;
+                    if (paytype == "alipay") {
+                        that.params.alipay = 1
+                        that.params.alipaytype = 1
+                    } else if (paytype == "tenpay") {
+                        that.params.tenpay = 1
+                    } else {
+                        that.params.bank = 1
+                    }
+                    that.save()
+                },
+                change_pay_un(paytype) {
+                    var paytype;
+                    var that = this
+                    if (paytype == "alipay") {
+                        that.params.alipay = 0
+                    } else if (paytype == "tenpay") {
+                        that.params.tenpay = 0
+                    } else {
+                        that.params.bank = 0
+                    }
+                    that.save()
+                },
+                save(){
+                    var that = this
+                    httpPost('m=system&c=set_payset&a=save', that.params).then(function (res) {
+                        if (res.data.error == 0) {
+                            that.getInfo();
+                        } else {
+                            that.$message.error(res.data.msg);
+                        }
+                    });
+                },
+                submitPayConf(payType){
+                    var that = this
+                    if (payType == 1) {
+                        var params = that.alipaydata
+                        var act = 'alipay'
+                    } else if (payType == 3) {
+                        var params = {
+                            sy_tenpayid:that.tenpaydata.sy_tenpayid,
+                            sy_tenpaycode:that.tenpaydata.sy_tenpaycode
+                        }
+                        var act = 'tenpay'
+                    } else {
+                        var params = that.bank
+                        var act = 'bank'
+
+                        if (!this.bank.bank_name){
+                            message.error('请输入银行名称');
+                            return;
+                        }
+                        if (!this.bank.bank_number){
+                            message.error('请输入卡号');
+                            return;
+                        }
+                        if (!this.bank.bank_address){
+                            message.error('请输入开户行');
+                            return;
+                        }
+                        if (!this.bank.name){
+                            message.error('请输入收款方名称');
+                            return;
+                        }
+                    }
+                    params.pay_config = 1;
+					that.save_load = true;
+                    httpPost('m=system&c=set_payset&a=' + act, params).then(function (res) {
+						that.save_load = false;
+                        if (res.data.error == 0) {
+                            that.$message.success({
+                                message: res.data.msg,
+                                onClose: function () {
+                                    if (payType == 1) {
+                                        that.alipay_config = false
+                                    } else if (payType == 2) {
+                                        that.wechat_config = false
+                                    } else if (payType == 3) {
+                                        that.tenpay_config = false
+                                    } else {
+                                        that.bank = {bank_name: '', bank_number: '', bank_address: '', name: '', id: ''}
+                                    }
+                                    that.getInfo()
+                                }
+                            });
+                        } else {
+                            that.$message.error(res.data.msg);
+                        }
+                    });
+                },
+            }
+        });
+    </script>
+</body>
+</html>

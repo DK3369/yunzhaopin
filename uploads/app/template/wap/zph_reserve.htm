@@ -1,0 +1,242 @@
+{yun:}include file="$wapstyle/header_cont.htm"{/yun}
+<div id="bg" class="bg" style="width:100%;height:100%;background-color:#000;opacity:0.3;display:none; position:fixed;left:0px;top:0px;filter: alpha(opacity=30); z-index:100">
+</div>
+
+
+<div class="particulars_bodybg"></div>
+<div class="particulars_body">
+	<div class="particulars_body_card">
+		<div class="particulars_card_title">
+			<div class="particulars_title_text">
+				{yun:}$Info.title{/yun}
+				{yun:}if $Info.stime<'0'&&$Info.etime>'0'{/yun}
+				<span class="particulars_title_icon">进行中</span>
+				{yun:}elseif $Info.stime>'0'{/yun}
+				<span class=" particulars_title_icon">预定中</span>
+				{yun:}/if{/yun}
+			</div>
+		</div>
+		<div class="card_top_word_time">
+			<div class="word_time_icon">
+				<img src="{yun:}$wap_style{/yun}/images/career_fair_time.png" alt="">
+			</div>
+			<div class="word_time">{yun:}$Info.starttime|date_format:"%Y-%m-%d"{/yun} 至 {yun:}$Info.endtime|date_format:"%Y-%m-%d"{/yun}</div>
+		</div>
+		{yun:}if $Info.address{/yun}
+
+		<div class="particulars_card_location">
+			<div class="card_location_box">
+				<div class="location_box_icon">
+					<img src="{yun:}$wap_style{/yun}/images/issue_location.png" alt="">
+				</div>
+				<div class="location_box_text">{yun:}$Info.address{/yun}</div>
+			</div>
+		</div> {yun:}/if{/yun}
+	</div>
+
+	<div class="zph_show_pd">
+		<div class="particulars_body_concise">
+			<section>
+				{yun:}if $space.pic_n{/yun}
+				<div class="zph_bg_pd mt15">
+					<div class="zphwap_title"><span class="">招聘会展位图</span></div>
+					<div class="fairs_display">
+						<img src="{yun:}$space.pic_n{/yun}" class="png" style="max-width:100%" />
+					</div>
+				</div>
+				{yun:}/if{/yun}
+				<div class="zph_show_zwcontent mt15">
+					<div class="zphwap_title"><span class="">招聘会展位在线预订</span></div>
+					<div class="zph_show_content">
+
+						<div class="zph_make">
+							<div class="zph_makelist">
+								<img class="zph_make_ticon" src="{yun:}$wap_style{/yun}/images/zw_wyd.png" style="background:no-repeat; background-size:100%;" />
+								可选
+							</div>
+							<div class="zph_makelist">
+								<img class="zph_make_ticon" src="{yun:}$wap_style{/yun}/images/zw_yxz.png" style="background:no-repeat; background-size:100%;" />
+								已选</div>
+							<div class="zph_makelist">
+								<img class="zph_make_ticon" src="{yun:}$wap_style{/yun}/images/zw_yyd.png" style="background:no-repeat; background-size:100%;" />
+								不可选
+							</div>
+						</div>
+
+						<input type="hidden" id="jobid" />
+
+						{yun:}foreach item=v from=$spacelist{/yun}
+						<div class="zph_show_xz_box">
+							<div class="zph_show_zwname">{yun:}$v.name{/yun}</div>
+							<div class="zph_show_zwbox">
+								{yun:}foreach item=val key=key from=$v.list{/yun}
+								{yun:}if $val.comstatus=="-1"{/yun}
+								<div class="zph_show_zwlist fairs_disp_position" 
+									aname="{yun:}$val.name{/yun}" aid="{yun:}$val.id{/yun}" 
+									price="{yun:}if $config.com_integral_online==3 && !$meal_zph{/yun}{yun:}$val.price{/yun}{yun:}else{/yun}{yun:}$val.price/$config.integral_proportion{/yun}{yun:}/if{/yun}">
+									<i class="zph_make_icon zph_make_icon_kyd"></i>
+									<div class="zph_show_zw_n">{yun:}$val.name{/yun}</div>
+									<div class="zph_show_zw_zt">可选</div>
+								</div>
+								{yun:}else{/yun}
+
+								<div class="zph_show_zwlist fairs_disp_position1" aid="{yun:}$val.id{/yun}"
+									comname="{yun:}$val.comname|mb_substr:0:14:'utf-8'{/yun}"
+									comurl="{yun:}url m=wap c=company a=show id=$val.uid{/yun}">
+									<i class="zph_make_icon zph_make_icon_yyd"></i>
+									<div class="zph_show_zw_n">{yun:}$val.name{/yun}</div>
+									<div class="zph_show_zw_zt">不可选</div>
+								</div>
+
+								{yun:}/if{/yun}
+								{yun:}/foreach{/yun}
+							</div>
+						</div>
+						{yun:}/foreach{/yun}
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+	<div id="reserve_vue" class="none">
+		<!--不可预定-->
+		<van-popup v-model="noReserveShow" round position="bottom">
+			<div class="zph_makebox" style="position:fixed;left:50%; margin-left:-130px;top:160px; z-index:1000">
+				<div class="zph_makeboxfix">
+					<div class="zph_make_bth_box">
+						<div class="zph_make_zw_c">
+							<a href="javascript:void(0)" @click="pageTo(comurl)">{{comname}} </a>已预订
+						</div>
+					</div>
+				</div>
+			</div>
+		</van-popup>
+		<!--可预订-->
+		<van-popup v-model="reserveShow" round position="bottom" @close="reserveClose" closeable>
+			<div class="zph_xzjob ">
+				<div class="zph_xzjob_tit">请选择参会职位</div>
+				<div class="zph_xzjob_cont">
+					<van-checkbox-group v-model="result" @change="changeResult" ref="jobcheckboxGroup">
+						<van-cell-group>
+							<van-cell clickable title="全选" @click="jobCheckAlltoggle">
+								<template #right-icon>
+									<van-checkbox v-model="allresult" ref="jobCheckAll" shape="square"></van-checkbox>
+								</template>
+							</van-cell>
+							<van-cell v-for="(item, index) in joblist" clickable :key="item.id" :title="`${item.name}`"
+								@click="toggle(index)">
+								<template #right-icon>
+									<van-checkbox :name="item" ref="jobChecks" shape="square" />
+								</template>
+							</van-cell>
+						</van-cell-group>
+					</van-checkbox-group>
+				</div>
+				<div class="zph_xzjob_bot">
+					<div class="zph_xzjob_bot_t">参会展位：<span>{{zphzwname}}</span>
+						<span class="zph_make_zw_jg">价格
+							<span v-if="com_integral_online=='3' && !meal_zph">
+								<span class="zph_make_zw_jg_n" id="zphzwprice">{{zphzwprice}}</span>
+								{{integral_priceunit}}{{integral_pricename}}
+							</span>
+							<span v-else>
+								<span class="zph_make_zw_jg_n" id="zphzwprice">{{zphzwprice}}</span>元
+							</span>
+						</span>
+					</div>
+
+					<span id="clickzph" onclick="clickzph();" class="zph_xzjob_bth">提交</span>
+				</div>
+			</div>
+		</van-popup>
+	</div>
+</div>
+<input id="zph_id" value='{yun:}$Info.id{/yun}' type="hidden" />
+<input id="zph_etime" value='{yun:}$Info.etime{/yun}' type="hidden" />
+<input id="zph_stime" value='{yun:}$Info.stime{/yun}' type="hidden" />
+{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+<script src="{yun:}$wap_style{/yun}/js/prefixfree.min.js?v={yun:}$config.cachecode{/yun}" language="javascript">
+</script>
+<script src="{yun:}$wap_style{/yun}/js/zph.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script type="text/javascript">
+	var com_integral_online = '{yun:}$config.com_integral_online{/yun}';
+	var meal_zph = '{yun:}$meal_zph{/yun}';
+	var integral_priceunit = '{yun:}$config.integral_priceunit{/yun}';
+	var integral_pricename = '{yun:}$config.integral_pricename{/yun}';
+
+	var jobIds = [];
+	var joblist = [];
+	var aid = '';
+	var zph_id = '';
+	'{yun:}foreach item=jv key=jk from=$joblist{/yun}'
+	joblist.push({
+		'id': '{yun:}$jv.id{/yun}',
+		'name': '{yun:}$jv.name{/yun}'
+	});
+	'{yun:}/foreach{/yun}'
+
+	var reserve_vue = new Vue({
+		el: '#reserve_vue',
+		data: {
+			noReserveShow: false,
+			reserveShow: false,
+			joblist: joblist,
+			result: [],
+			jobIds: [],
+			allresult: false,
+			zphzwprice: '',
+			comurl: '',
+			comname: '',
+			zphzwname: '',
+			integral_pricename: integral_pricename,
+			com_integral_online: com_integral_online,
+			meal_zph: meal_zph,
+			integral_priceunit: integral_priceunit
+		},
+		methods: {
+			toggle(index) {
+				var that = this;
+				that.$refs.jobChecks[index].toggle();
+
+			},
+			changeResult: function() {
+				var that = this;
+				jobIds = [];
+				that.result.forEach((v, i) => {
+					if(v && v.id){
+						jobIds.push(v.id);
+					}
+				}, this);
+				if (jobIds.length < joblist.length) {
+					that.allresult = false;
+				} else {
+					that.allresult = true;
+				}
+			},
+			jobCheckAlltoggle: function() {
+				var that = this;
+				that.allresult = !that.allresult;
+
+				that.$refs.jobcheckboxGroup.toggleAll(that.allresult);
+
+			},
+			reserveClose: function() {
+				var that = this;
+
+				$('.zph_make_icon_yxz').addClass('zph_make_icon_kyd');
+				$('.zph_make_icon_yxz').removeClass('zph_make_icon_yxz');
+				that.allresult = false;
+				that.$refs.jobcheckboxGroup.toggleAll(false);
+
+			},
+			pageTo: function(url) {
+				window.location.href = url;
+			}
+		}
+	})
+	$(document).ready(function() {
+		$('#reserve_vue').removeClass('none');
+	});
+</script>
+</body>
+</html>

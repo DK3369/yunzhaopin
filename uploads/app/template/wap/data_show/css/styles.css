@@ -1,0 +1,753 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+body,
+html {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background: #0A0718;
+  transition: all 0.3s;
+}
+
+body ::selection {
+  background: #f90;
+  color: #222;
+}
+
+a,
+li {
+  list-style: none;
+  text-decoration: none;
+}
+
+a {
+  color: #333;
+  font-size: 14px;
+}
+
+a:hover {
+  color: #f90;
+}
+
+button,
+input {
+  border: none;
+  outline: none;
+  background: none;
+}
+
+input::-ms-clear {
+  display: none;
+}
+
+button {
+  cursor: pointer;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+
+
+/***
+* _ooOoo_
+* o8888888o
+* 88" . "88
+* (| -_- |)
+*  O\ = /O
+* ___/`---'\____
+* .   ' \\| |// `.
+* / \\||| : |||// \
+* / _||||| -:- |||||- \
+* | | \\\ - /// | |
+* | \_| ''\---/'' | |
+* \ .-\__ `-` ___/-. /
+* ___`. .' /--.--\ `. . __
+* ."" '< `.___\_<|>_/___.' >'"".
+* | | : `- \`.;`\ _ /`;.`/ - ` : | |
+* \ \ `-. \_ __\ /__ _/ .-` / /
+* ======`-.____`-.___\_____/___.-`____.-'======
+* `=---='
+*          .............................................
+*           佛曰：bug泛滥，我已瘫痪！
+*/
+/* ---分割线--头部样式--- */
+.analyAlls {
+  position: relative;
+  width: 100%;
+  max-width: 980px;
+  margin: auto;
+  z-index: 3;
+}
+
+.analyConts {
+  overflow: hidden;
+  position: relative;
+  width: 90%;
+  margin: 40px auto 0 auto;
+  min-height: 300px;
+}
+
+.analyTops {
+  position: relative;
+  margin-top: 20%;
+  overflow: hidden;
+}
+
+.analyTopImgs {
+  overflow: hidden;
+  position: relative;
+  width: 500px;
+  float: right;
+  z-index: 2;
+}
+
+.analyTopImgs img {
+  width: 100%;
+  height: auto;
+}
+
+.analyTopData {
+  position: absolute;
+  top: 45px;
+  left: 0;
+  width: 90%;
+  padding: 0 5%;
+  z-index: 4;
+}
+
+.analyTopYear {
+  overflow: hidden;
+  position: relative;
+  font-size: 100px;
+  color: #F4003E;
+  font-weight: 600;
+}
+
+.analyTopName {
+  overflow: hidden;
+  position: relative;
+  font-size: 90px;
+  font-weight: 600;
+  color: #F4003E;
+}
+
+.analyTopName span {
+  color: #0579FE;
+}
+
+.analyTopTips {
+  position: relative;
+  height: 56px;
+  background: url(../image/bgimg1.png) center no-repeat;
+  background-size: 100%;
+  display: flex;
+  align-items: center;
+  width: calc(370px - 50px);
+  margin-top: 30px;
+  padding: 0 25px;
+}
+
+.analyTopTips span {
+  color: #fff;
+  font-size: 30px;
+  padding-left: 15px;
+}
+
+.analyTopTips img.tipsimg2 {
+  position: absolute;
+  right: -30px;
+  bottom: -8px;
+  z-index: -1;
+}
+
+/* 数据开始样式 */
+.analyTitle {
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.analyTitle span {
+  overflow: hidden;
+  display: block;
+  color: #fff;
+  font-size: 50px;
+}
+
+.analyTitle b {
+  overflow: hidden;
+  display: block;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 500;
+  padding: 15px 0;
+}
+
+.analyTitle i {
+  overflow: hidden;
+  display: block;
+  width: 50px;
+  height: 4px;
+  background: #fff;
+  margin: auto;
+}
+
+.analyHuaxs {
+  overflow: hidden;
+  position: relative;
+  background: #4149BC;
+  border-radius: 12px;
+  padding: 32px;
+  width: calc(100% - 64px);
+  display: flex;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.analyHuaxs .analyHuaImg {
+  overflow: hidden;
+  position: relative;
+  width: 110px;
+  height: 110px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  margin-right: 15px;
+}
+
+.analyHuaxs .analyHuaTxt {
+  overflow: hidden;
+  position: relative;
+  width: calc(100% - (110px + 15px));
+}
+
+.analyHuaxs .analyHuaTxt span {
+  overflow: hidden;
+  display: block;
+  font-size: 40px;
+  font-weight: bold;
+  color: #fff;
+  padding-bottom: 8px;
+}
+
+.analyHuaxs .analyHuaTxt b {
+  overflow: hidden;
+  display: block;
+  font-size: 30px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.analyEchatMap {
+  overflow: hidden;
+  position: relative;
+  width: calc(100% - 60px);
+  height: 600px;
+  background: #101133;
+  border-radius: 12px;
+  margin-top: 30px;
+  padding: 30px;
+}
+
+.analyEchatTite {
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-size: 36px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.analyEchat1 {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: calc(100% - 72px);
+  margin-top: 10px;
+}
+
+.analyEchaPaim {
+  overflow: hidden;
+  position: absolute;
+  width: calc(100% - 30px);
+  left: 0;
+  bottom: 0;
+  z-index: 4;
+  padding: 0 15px 10px 15px;
+}
+.analyEchaPaim ul{
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.analyEchaPaim li {
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 16px 0;
+}
+
+.analyEchaPaim li .paimNam {
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.analyEchaPaim li .paimNam span {
+  overflow: hidden;
+  display: block;
+  color: #fff;
+  font-size: 20px;
+}
+
+.analyEchaPaim li .paimNam span.citys {
+  font-size: 25px;
+  padding: 0 15px;
+  font-weight: 600;
+  color: #4367F9;
+}
+
+.analyEchaPaim li .paimNumr {
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 30px;
+  background: #4367F9;
+  padding: 0 15px;
+  border-radius: 8px;
+  font-size: 22px;
+  color: #fff;
+}
+
+.analyEchaPaim li .paimNumr span {
+  display: block;
+  padding-right: 4px;
+}
+
+.analyEchaPaim li:nth-child(1) .paimNumr {
+  background: #F4003E;
+}
+
+.analyEchaPaim li:nth-child(1) .paimNam span.citys {
+  color: #F4003E;
+}
+
+.analyOlds {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: calc(100% - 72px);
+  margin-top: 28px;
+  display: flex;
+  align-items: center;
+}
+
+.analyOldEchat {
+  overflow: hidden;
+  position: relative;
+  width: calc(100% - 160px);
+  height: 100%;
+}
+
+.analyOldData {
+  overflow: hidden;
+  position: relative;
+  width: 160px;
+}
+
+.analyOldList {
+  overflow: hidden;
+  position: relative;
+  padding: 20px 0;
+}
+
+.analyOldList .analyOldNam {
+  overflow: hidden;
+  position: relative;
+  font-size: 32px;
+  color: #fff;
+}
+
+.analyOldList .analyOldShuz {
+  overflow: hidden;
+  position: relative;
+  font-size: 48px;
+  color: #fff;
+}
+
+.analyEchatExper {
+  overflow: hidden;
+  position: relative;
+  width: calc(100% - 60px);
+  height: 480px;
+  background: #101133;
+  border-radius: 12px;
+  margin-top: 30px;
+  padding: 30px;
+}
+
+.analyExperTub {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: calc(100% - 72px);
+  margin-top: 28px;
+  display: flex;
+  align-items: center;
+}
+
+
+.analySexMode {
+  overflow: hidden;
+  position: relative;
+  height: 110px;
+  margin: 30px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.analySexNan {
+  overflow: hidden;
+  position: relative;
+  width: calc(50% - 53px);
+  height: 100%;
+  background: #4367F9 url(../image/nan.png) 20px center no-repeat;
+  padding: 0 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 55px 0 0 55px;
+}
+
+.analySexNanTxt {
+  overflow: hidden;
+  position: relative;
+  padding-left: 15px;
+}
+
+.analySexNanTxt span {
+  overflow: hidden;
+  display: block;
+  font-size: 26px;
+  color: #fff;
+}
+
+.analySexNanTxt b {
+  overflow: hidden;
+  display: block;
+  font-size: 17px;
+  color: #fff;
+  font-weight: 500;
+}
+
+.analySexNanNub {
+  overflow: hidden;
+  position: relative;
+  padding-right: 15px;
+}
+
+.analySexNanNub span {
+  font-size: 80px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.analySexNanNub b {
+  font-size: 32px;
+  color: #fff;
+  font-weight: 500;
+}
+
+.analySexNvs {
+  overflow: hidden;
+  position: relative;
+  width: calc(50% - 53px);
+  height: 100%;
+  background: #F4003E url(../image/nvs.png) calc(100% - 25px) center no-repeat;
+  padding: 0 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 0 55px 55px 0;
+}
+
+.analySexNvs .analySexNvsTxt {
+  overflow: hidden;
+  position: relative;
+  padding-right: 15px;
+  text-align: right;
+}
+
+.analySexNvs .analySexNvsTxt span {
+  overflow: hidden;
+  display: block;
+  font-size: 26px;
+  color: #fff;
+}
+
+.analySexNvs .analySexNvsTxt b {
+  overflow: hidden;
+  display: block;
+  font-size: 17px;
+  color: #fff;
+  font-weight: 500;
+}
+
+.analySexNvs .analySexNvsNub {
+  overflow: hidden;
+  position: relative;
+  padding-left: 15px;
+}
+
+.analySexNvs .analySexNvsNub span {
+  font-size: 80px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.analySexNvs .analySexNvsNub b {
+  font-size: 32px;
+  color: #fff;
+  font-weight: 500;
+}
+
+.analyConpany {
+  background: #F4003E;
+}
+
+.analyTrend .analyEchatTite {
+  justify-content: center;
+}
+
+.analyTrend {
+  height: 450px;
+}
+
+.analyTrendEchat {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: calc(100% - 72px);
+  margin-top: 28px;
+  display: flex;
+  align-items: center;
+}
+
+.analyCompanyTite {
+  padding-top: 30px;
+}
+
+.analyCompays {
+  background: #FF9337;
+}
+
+.analyCompanyFenb .analyOldEchat {
+  width: calc(100% - 200px);
+}
+
+.analyCompanyFenb .analyOldData {
+  width: 200px;
+}
+
+.analyCompanyFenb .analyOldList {
+  padding: 15px 0;
+}
+
+.analyComXinw {
+  background: #58DBD3;
+}
+
+.analyBottom {
+  overflow: hidden;
+  position: relative;
+  padding: 150px 0 150px 0;
+  text-align: center;
+  color: #4367F9;
+}
+
+.analyBottom .bottomOne {
+  overflow: hidden;
+  position: relative;
+  font-size: 50px;
+  font-weight: 600;
+}
+
+.analyBottom .bottomTwo {
+  overflow: hidden;
+  position: relative;
+  font-size: 50px;
+  font-weight: 500;
+  padding: 20px 0;
+}
+
+.analyBottom .bottomThre {
+  overflow: hidden;
+  position: relative;
+  font-size: 28px;
+}
+
+/* 装饰 */
+.analyBackImg{
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+.analyBackImg img.dianzui1{
+  overflow: hidden;
+  position: absolute;
+  display: block;
+  /* width: 600px;
+  height: 600px; */
+  top: -60%;
+  left: -35%;
+  z-index: 1;
+}
+.analyBackImg img.dianzui2{
+  overflow: hidden;
+  position: absolute;
+  display: block;
+  bottom: 1%;
+  right: -26%;
+  z-index: 1;
+}
+
+
+.analyDiqufeb ul{
+  overflow: hidden;
+  flex-wrap: wrap;
+}
+.analyDiqufeb ul li{
+  overflow: hidden;
+  position: relative;
+  width: 80%;
+  background: rgb(67 103 249 /15%);
+  height: 36px;
+  justify-content: space-between;
+  padding: 0;
+  border-radius: 18px;
+  margin-bottom: 12px;
+}
+
+.analyDiqufeb li .paimNumr{
+  height: auto;
+  background: none;
+  padding: 0 12px 0 0;
+  color: #4367F9;
+}
+.analyDiqufeb li:nth-child(1) .paimNumr{
+  background: none;
+}
+.analyDiqufeb li .paimNam span.citys{
+  font-size: 20px;
+  padding: 0 8px;
+}
+.analyDiqufeb li .paimNam{
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+}
+
+.analyDiqufeb li .paimNam span.spanone{
+  overflow: hidden;
+  position: relative;
+  display: block;
+  padding: 0 15px;
+  height: 100%;
+  background: #4367F9;
+  display: flex;
+  align-items: center;
+  border-radius: 18px;
+}
+
+.analyDiqufeb li:nth-child(1) .paimNam span.spanone{
+  background: #F4003E;
+}
+.analyDiqufeb li:nth-child(1){
+  background: rgb(244 0 62 /15%);
+}
+.analyDiqufeb li:nth-child(1) .paimNumr{
+  color: #F4003E;
+}
+
+.analyDiqufeb li:nth-child(3) .paimNam span.spanone{
+  background: #E7AD1B;
+}
+.analyDiqufeb li:nth-child(3){
+  background: rgb(231 173 27 /15%);
+}
+.analyDiqufeb li:nth-child(3) .paimNumr{
+  color: #E7AD1B;
+}
+
+.analyDiqufeb li:nth-child(3) .paimNam span.citys{
+  color: #E7AD1B;
+}
+
+
+/*目标连接*/
+.analyLinks{
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding-bottom: 100px;
+}
+.analyLinks a{
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  animation: anallink 1.5s infinite linear;
+  height: 38px;
+  background: #F4003E;
+  border-radius: 3px;
+  font-size: 14px;
+  color: #fff;
+}
+
+@keyframes anallink {
+    0% {
+        margin-left: 15px;
+    }
+
+    25% {
+        margin-left: 0;
+    }
+
+    50% {
+        margin-left: -15px;
+    }
+
+    75% {
+        margin-left: 0px;
+    }
+
+    100% {
+        margin-left: 15px;
+    }
+}

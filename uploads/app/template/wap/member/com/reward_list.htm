@@ -1,0 +1,157 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<div id="yunvue" class="none">
+	<div class="detail_header">
+		<div class="detail_header_title"></div>        
+        <div class="detail_header_nav category">
+            <ul>
+                <li :class="type == 'all' ? 'pitch_up' : ''" @click="pageTo('index.php?c=reward_list&type=all')" >全部</li>
+                <li :class="type == 1 ? 'pitch_up' : ''" @click="pageTo('index.php?c=reward_list&type=1')">已兑换</li>
+                <li :class="type == 0 ? 'pitch_up' : ''" @click="pageTo('index.php?c=reward_list&type=0')">待审核</li>
+                <li :class="type == 2 ? 'pitch_up' : ''" @click="pageTo('index.php?c=reward_list&type=2')">未通过</li>
+            </ul>
+        </div>
+    </div>
+    <div class="detail_body">
+        <div>
+            <div class="detail_body_card" v-for="(item, infokey) in list" :key="infokey">
+                <div class="conversion_title">
+                    <div class="conversion_title_logo">
+                        <img :src="item.pic" alt="" width="100%" height="100%">
+                    </div>
+                    <div class="conversion_title_box">
+                        <div class="conversion_title_top">
+                            <div class="detail_card_add" @click="pageTo(item.wapredeem_url)">{{item.name}}</div>
+                            <div class="detail_card_state" v-if="item.status==0">待审核</div>
+                            <div class="detail_card_succeed" v-else-if="item.status==1">已兑换</div>
+                            <div class="detail_card_succeed" v-else>未通过</div>
+                        </div>
+                        <div class="conversion_title_bom">共 {{item.num}} 件商品，合计<i class="conversion_title_number">{{item.integral}}</i>积分</div>
+                    </div>
+                </div>
+                <div class="detail_card_odd">
+                    <div class="detail_odd_q">兑换时间</div>
+                    <div class="detail_odd_a">{{item.ctime_n}}</div>
+                </div>
+                <div class="detail_card_pay">
+                    <div class="detail_odd_q">联系方式</div>
+                    <div class="detail_odd_a">{{item.linkman}}  {{item.linktel}}</div>
+                </div>
+                <div class="detail_card_recharge">
+                    <div class="detail_odd_q">收货地址</div>
+                    <div class="detail_odd_a">{{item.address}}</div>
+                </div>
+               
+                <div class="detail_card_btns">
+                	<div class="detail_card_cancel" v-if="item.expnum" @click="look(infokey)">查看物流</div>
+                    <div class="detail_card_cancel" v-if="item.status==0" @click="del(item.id,infokey)">取消兑换</div>
+                    <div class="detail_card_cancel" v-if="item.status==2" @click="lookstatus(infokey)">查看原因</div>                    
+                </div>
+            </div>            
+        </div>        
+    </div>
+	<div v-if="count ==2">
+    <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange" />
+    </div> 
+	<div class="wap_member_no"  v-show="islook&&count==0">
+		您共有<span class="f60"><font color="orange">{{integral}}</font></span> {yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}
+		{yun:}if $config.sy_redeem_web==1{/yun}
+    <br> 快去商城兑换礼品吧！
+    <br>
+    <a href="{yun:}url m=wap c=redeem{/yun}" class="wap_member_no_submit">我要兑换</a>
+    {yun:}/if{/yun}
+	</div>
+</div>
+
+<script>  
+  var currentPage = parseInt('{yun:}$smarty.get.page{/yun}');
+  var type = '{yun:}$smarty.get.type{/yun}';  
+      type = type ? type : 'all';   
+      new Vue({
+        el: '#yunvue',
+        data: {
+          list: [],
+          limit:20,       
+          total:0,
+          type:type ? type : 'all',
+          integral:0,
+          page: currentPage ? currentPage : 1,
+          islook :false
+        },
+        computed: {
+          count(){
+            if(this.total > this.limit){
+              return 2;
+            }else if(this.list.length==0){
+              return 0;
+            }else{
+                return 1;
+            }
+          }
+        },
+        created() {   
+         this.typeShow(type);
+        },
+        methods:{
+        	typeShow:function(e){
+        		this.type=e;
+        		this.getCha();
+        	},
+          getCha:function(){
+            showLoading();
+            var that = this;
+            var paramer = {};
+                paramer['page'] = that.page;
+                paramer['limit'] = that.limit;     
+                paramer['type'] = that.type; 
+            $.post('{yun:}url d=wxapp h=com m=reward c=changeList{/yun}',paramer,function(res){
+              hideLoading();      
+            
+              that.list = res.data.list;
+              that.integral = res.data.statis.integral
+              that.total = res.total;
+              that.page = currentPage ? currentPage : 1;
+              that.islook = true 
+               $("#yunvue").css('display', 'block');
+            },'json');
+          },
+          look:function(key){
+          	let msg = this.list[key].express + this.list[key].expnum
+          	showModal(msg);
+          },
+          lookstatus:function(key){
+          	let msg = this.list[key].statusbody
+          	showModal(msg);
+          },     
+          del:function(id,key){
+              let that = this
+              let param = {
+                id: id
+              };
+             
+             showConfirm('确定要取消兑换', () => {
+                showLoading('取消中...')
+                $.post('{yun:}url d=wxapp h=com m=reward c=delChange{/yun}', param, function(data){
+                  hideLoading();
+                  if (data.error == 1) {
+                    showToast(data.msg,2, function() {
+                      that.typeShow(that.type)   
+                    });
+                  } else {
+                    showToast(data.msg);
+                  }
+                });
+             });   
+             
+          },
+           pageChange:function(e){
+          
+            location.href = 'index.php?c=reward_list&type='+this.type+'&page='+e;
+          },
+          pageTo:function(url){
+              window.location.href = url;
+          }
+        } 
+      });
+</script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta name="keywords" content="{yun:}$keywords{/yun}" />
+    <meta name="description" content="{yun:}$description{/yun}" />
+    <link rel="stylesheet" href="{yun:}$style{/yun}/style/css.css?v={yun:}$config.cachecode{/yun}" type="text/css" />
+    <link rel="stylesheet" href="{yun:}$style{/yun}/style/yun_job_fairs.css?v={yun:}$config.cachecode{/yun}" type="text/css" />
+    <title>{yun:}$title{/yun}</title>
+</head>
+
+<body class="body_bg">
+    {yun:}include file="$tplstyle/header.htm"{/yun}
+    <div class="clear"></div>
+    <div class="careerfair">
+		{yun:}if $newZph{/yun}
+        <a href="{yun:}$newZph.url{/yun}" style="background: url('{yun:}$newZph.cover{/yun}') center no-repeat;">
+            <!-- <img src="{yun:}$newZph.cover{/yun}"> -->
+        </a>
+		{yun:}/if{/yun}
+    </div>
+    <div class="careerfair_tab">
+        <div class="tab_div">
+            <div class="tab_cont">
+                <div class="careerfair_cont">
+                    <ul>
+                        {yun:}fairs ispage=1 item=zph limit=10 type=zph{/yun} 
+                        <li>
+                            <div class="fair_cont_info fair_cont_infoimg">
+                                <a class="" href="{yun:}url m=zph c=show id='`$zph.id`'{/yun}"> <img  class="fair_left_imgs" src="{yun:}$zph.is_themb{/yun}" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_zph_icon{/yun}',2);"></a>
+                                
+                                    {yun:}if $zph.stime < 0 && $zph.etime < 0{/yun}
+                                        <!-- <span>已结束...</span> -->
+                                    {yun:}elseif $zph.stime < 0 && $zph.etime > 0{/yun}
+                                        <div class="promptbox"><img src="{yun:}$style{/yun}/images/goon.png">
+                                        <span>进行中...</span></div>
+                                    {yun:}else{/yun}
+                                        <div class="promptbox"><img src="{yun:}$style{/yun}/images/signup.png">
+                                        <span>报名中...</span></div>
+                                    {yun:}/if{/yun} 
+                                
+                            </div>
+                            <div class="fair_cont_info fair_cont_infotxt">
+                                <h3> <a class="" href="{yun:}url m=zph c=show id='`$zph.id`'{/yun}">{yun:}$zph.title{/yun}</a></h3>
+                                <p class="cont_infotxt_time">举办时间： <span>{yun:}date('Y-m-d H:i', strtotime($zph.starttime)){/yun} </span>至<span>{yun:}date('Y-m-d H:i', strtotime($zph.endtime)){/yun}</span></p>
+                                <p class="cont_infotxt_add">举办地点：<span>{yun:}$zph.address{/yun}</span></p>
+                            </div>
+                            {yun:}if $zph.stime < 0 && $zph.etime < 0{/yun}
+                                <a class="fair_cont_link fair_cont_obso" href="{yun:}url m=zph c=show id='`$zph.id`'{/yun}">往期回顾</a>
+                            {yun:}else{/yun}
+                                <a class="fair_cont_link" href="{yun:}url m=zph c=show id='`$zph.id`'{/yun}">查看详情</a>
+                            {yun:}/if{/yun} 
+                        </li>
+                        {yun:}/fairs{/yun} 
+                    </ul>
+                    {yun:}if !$total{/yun} 
+                        <div class="no_tip">很抱歉，还没有招聘会的相关信息</div>
+                    {yun:}else{/yun}
+                        <div class="clear"></div>
+                        <div class="search_pages">
+                            <div class="pages">{yun:}$pagenav{/yun}</div>
+                        </div>
+                    {yun:}/if{/yun}
+                </div>
+            </div>
+            <div class="careerfair_fixed">
+                {yun:}if !$uid{/yun}
+                <div class="fixed_info fixed_info_resume">
+                    <h4>求职参会必备</h4>
+                        <a href="{yun:}url m=login{/yun}" >
+                            <img src="{yun:}$style{/yun}/images/registe.png">
+                            <span>注册简历</span>
+                        </a>
+                    <p>线上线下随时可用</p>
+                </div>
+                {yun:}elseif $usertype == 1 && $rlist.name == "" {/yun}
+                    <div class="fixed_info fixed_info_resume">
+                        <h4>求职参会必备</h4>
+                            <a href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=expect&act=add">
+                                <img src="{yun:}$style{/yun}/images/registe.png">
+                                <span>注册简历</span>
+                            </a>
+                        <p>线上线下随时可用</p>
+                    </div>
+                {yun:}/if{/yun}
+                <div class="fixed_info fixed_info_weChat">
+                    <img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}"  width="130" height="130">
+                    <span>关注公众号</span>
+                    <p>即时了解参会岗位信息</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    {yun:}include file="$tplstyle/jquery/jquery_js.htm"{/yun}
+    <link href="{yun:}$config.sy_weburl{/yun}/js/layui/css/layui.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet" type="text/css" />
+    <script src="{yun:}$config.sy_weburl{/yun}/js/layui/layui.js?v={yun:}$config.cachecode{/yun}"></script>
+    <script src="{yun:}$config.sy_weburl{/yun}/js/layui/phpyun_layer.js?v={yun:}$config.cachecode{/yun}"></script>
+    <script src="{yun:}$config.sy_weburl{/yun}/js/lazyload.min.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+    <script src="{yun:}$config.sy_weburl{/yun}/js/public.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+    <script>
+    function tabshow(state){
+        var url = '{yun:}url m=zph{/yun}';
+        if(state){
+            url  ='{yun:}url m=zph type="'+state+'"{/yun}';
+        }
+        window.location.href = url;
+    }
+    </script>
+    <!--[if IE 6]>
+	<script src="{yun:}$config.sy_weburl{/yun}/js/png.js?v={yun:}$config.cachecode{/yun}"></script>
+	<script>
+	DD_belatedPNG.fix('.png,.car_time,.car_the_time,.car_the_add,.car_the_per,.car_state');
+	</script>
+	<![endif]-->
+    {yun:}include file="$tplstyle/public_search/login.htm"{/yun}
+    {yun:}include file="$tplstyle/footer.htm"{/yun}

@@ -1,0 +1,156 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+<div id="yunvue">
+    <div id='list'>
+        <div class=" blacklist_show">
+            <div class="search_com_text_box">
+                <div class="search_com_text"><input type="text" @input="bindKeywordInput" :value="searchKeyword" placeholder="请输入企业名称" />
+                    <div class="search_com_button">
+                        <button @click="keywordSearch">搜索</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="" v-show="showview">
+            <div class="blacklist_show">
+                <div class="blacklistadd_box">
+                    <div class="blacklistadd_box_pp">企业名称匹配</div>
+                    <ul class="mui-table-view" id="comullist">
+                        <li v-for="(item,blkey) in blackList" :key="blkey">
+                            <van-checkbox v-model="item.checked" shape="square" @click="checkCount(item.checked,item.uid)">{{item.name}}</van-checkbox>
+                        </li>
+                        <li class='mui-table-view-cell mui-indexed-list-item mui-checkbox mui-left'>
+                            <van-checkbox v-model="select_all" shape="square" @click="selectall">全选</van-checkbox>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="search_com_tj">
+                <span class="search_com_tjbut" @click="save">完成{{num}}</span>
+            </div>
+        </div>
+        <div class=" blacklist_show">
+            <div id="nonelist" class="blacklist_notip " v-show="noList">暂未匹配到相关企业</div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var yunvue = new Vue({
+        el: '#yunvue',
+        data() {
+            return {
+                blackList: [],
+                select_all: false,
+                showview: false,
+                batchIds: '',
+                searchKeyword: '',
+                count: 0,
+                num: '',
+                countlist: [],
+                noList: false,
+            };
+        },
+        created() {
+
+        },
+        methods: {
+            selectall: function (e) {
+                var that = this;
+                var arr = []; //存放选中uid的数组
+                for (let i = 0; i < that.blackList.length; i++) {
+
+                    that.blackList[i].checked = (that.select_all)
+
+                    if (that.blackList[i].checked == true) {
+                        // 全选获取选中的值
+                        arr = arr.concat(that.blackList[i].uid.split(','));
+
+                    }
+                    that.count = arr.length;
+                    if (that.count > -1) {
+                        that.num = '(' + that.count + ')';
+                    }
+                }
+                that.select_all = (that.select_all);
+                arr = arr.toString();
+                that.batchIds = arr;
+                if (arr == '') {
+                    that.countlist = [];
+                }
+            },
+            pageTo: function (url) {
+                window.location.href = url;
+            },
+            checkCount: function (e, uid) {
+
+                var that = this;
+                if (e) {
+                    that.countlist.push(uid);
+                } else {
+                    let index = that.countlist.indexOf(uid);
+                    that.countlist.splice(index, 1);
+                }
+
+                that.batchIds = that.countlist;
+                that.count = that.batchIds.length;
+                if (that.count > -1) {
+                    that.num = '(' + that.count + ')';
+                }
+                if (that.batchIds.length == that.blackList.length) {
+                    that.select_all = true;
+                } else {
+                    that.select_all = false;
+
+                }
+            },
+            bindKeywordInput: function (e) {
+
+                this.searchKeyword = e.target.value
+            },
+            fetchSearchList: function () {
+                let that = this;
+                var param = {};
+                showLoading('搜索中...');
+                param['keyword'] = that.searchKeyword;
+                $.post('{yun:}url d=wxapp h=user m=privacy c=searchcom{/yun}', param, function (data) {
+                    hideLoading();
+                    if (data.error == 1) {
+                        that.showview = true;
+                        that.blackList = data.data;
+
+                    } else {
+                        if (!data.data) {
+                            that.noList = true;
+                            that.showview = false;
+                        }
+                    }
+                }, 'json');
+            },
+            keywordSearch: function (e) {
+                this.blackList = [];
+                this.fetchSearchList();
+            },
+            save: function () {
+                let that = this;
+                var param = {};
+                showLoading();
+                param['p_uid'] = that.batchIds;
+                if (that.batchIds.length == 0) {
+                    return showToast('请选择要屏蔽的企业');
+                }
+                $.post('{yun:}url d=wxapp h=user m=privacy c=save{/yun}', param, function (data) {
+                    hideLoading();
+                    if (data.error == 1) {
+                        showToast(data.msg, 2, function () {
+                            window.location.href = "index.php?c=blacklist"
+                        });
+                    } else {
+                        showToast(data.msg);
+                    }
+                }, 'json');
+            }
+        },
+    });
+</script>
+</body>
+</html>

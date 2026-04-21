@@ -1,0 +1,65 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<!--账号设置-->
+<div class="none" id="yunvue">
+    <!-- 页面整体部分 -->
+    <div class="issue_post_body_new">
+        <div class="issue_post_body_card" style="padding-top: 0px; margin-top: 0px;;">
+            <div class="com_set_list" v-if="info.setname>0" onclick="navigateTo('index.php?c=setname')">
+                <div class="com_set_listname">用户名修改</div>
+                <div class="com_set_listp">每人仅有一次修改机会</div>
+                <div class="com_set_listicon">
+                    <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
+                </div>
+            </div>
+            <div class="com_set_list" onclick="navigateTo('index.php?c=password')">
+
+                <div class="com_set_listname">密码设置</div>
+                <div class="com_set_listicon">
+                    <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
+                </div>
+            </div>
+            <div class="com_set_list" onclick="navigateTo('index.php?c=logout')">
+                <div class="com_set_listname">账号注销</div>
+                <div class="com_set_listicon">
+                    <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <script>
+        new Vue({
+            el: '#yunvue',
+            data: {
+                info: {},
+                showList: [],
+            },
+            created() {
+                this.getInfo();
+                this.getShowLis();
+            },
+            methods: {
+                getInfo: function () {
+                    showLoading();
+                    var self = this;
+                    $.post('{yun:}url d=wxapp h=com m=info c=getinfo{/yun}', {rand: Math.random()}, function (res) {
+                        hideLoading();
+
+                        self.info = res.data;
+
+                        $("#yunvue").css('display', 'block');
+                    }, 'json');
+                },
+                getShowLis: function () {
+                    var that = this;
+                    $.post('{yun:}url d=wxapp h=com m=info c=show pageSize=2{/yun}', {rand: Math.random()}, function (data) {
+                        if (data) {
+                            that.showList = data.data.list;
+                        }
+                    }, 'json');
+                }
+            }
+        })
+    </script>
+    </body>
+    </html>

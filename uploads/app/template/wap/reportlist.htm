@@ -1,0 +1,50 @@
+{yun:}include file="$wapstyle/header_cont.htm"{/yun}
+<section class="wap_member">
+	<div class="yun_wap_addresume_box">
+		<div class="wap_reportlist_box">
+			<div class="wap_reportlist_boxshow">
+				<div class="wap_reportlist_tit"> 选择举报原因
+				</div>
+				{yun:}foreach from=$userdata.user_reporting item=uesrv{/yun}
+				<div class="mui-input-row mui-checkbox">
+					<span class="jb_infochlose"><input name="reason" title="{yun:}$userclass_name.$uesrv{/yun}" value="{yun:}$userclass_name.$uesrv{/yun}" type="checkbox"> {yun:}$userclass_name.$uesrv{/yun}</span>
+					
+				</div>
+				{yun:}/foreach{/yun}</div>
+				<div class="">
+					<input type="submit" value="举报" onclick="report()" class="wap_reportlist_tit_bth" style="border:none">
+				</div>
+			
+		</div>
+	</div>
+</section>
+{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+<script>
+	function report(){
+		var reason = [];
+		var uid = '{yun:}$smarty.get.uid{/yun}';
+		var eid = '{yun:}$smarty.get.eid{/yun}';
+		var r_name = '{yun:}$smarty.get.r_name{/yun}';
+		$("input:checkbox[name='reason']:checked").each(function(){
+		    reason.push($(this).val());
+		});
+		if(reason.length > 0){
+			$.post(wapurl + 'index.php?c=reportlist&a=saveReport', {uid: uid,eid: eid,r_name: r_name,reason: reason}, function(data){
+				if(data){
+					var res = eval('('+data+')');
+					if(res.st == 9){
+						showToast(res.msg, 2, function(){
+							goBack();
+						});
+					}else{
+						showToast(res.msg);
+					}
+				}
+			})
+		}else{
+			showToast('请选择举报原因');
+		}
+	}
+</script>
+</body>
+</html>

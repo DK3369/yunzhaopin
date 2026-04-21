@@ -1,0 +1,111 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+<div id="yunvue" class="none">
+<div class="m_cardbox">
+    <div class="m_cardbg" v-for="(item,msgk) in list" :key="msgk">
+        <div class="com_member_hr_name">
+            <a href="javascript:void(0)" @click="pageTo(item.wapcom_url)" class="    "> {{item.com_name}}</a>
+            <div class="wap_member_date_r" >
+                <span v-if="item.status==1">已审核</span>
+                <span class="wap_member_wtg" v-else-if="item.status==2">未通过</span>
+                <span class="wap_member_wtg" v-else>未审核</span>
+            </div>
+        </div>
+
+     <div class="mag_show">
+                    <div class="com_member_hr_p1" v-if="item.job_name"><span class="member_c9">咨询职位 </span>{{item.job_name}}</div>
+                    <div class="com_member_hr_p1"><span class="member_c9">咨询内容 </span>{{item.content}}</div>                   
+                    <div class="com_member_hr_p1" v-if="item.reply"><span class="member_c9">企业回复 </span>{{item.reply}}</div>
+                    <div class="com_member_hr_p1" v-else><span class="member_c9">企业回复</span><font color="red">尚未回复！</font></div>
+                    <div class="com_member_hr_p1" v-if="item.status==2">
+                                   <span class="member_c9"  > 审核原因</span>
+                           <div   v-if="item.statusbody"> {{item.statusbody}}</div>
+                            <div class="" style="color:red" v-else>审核原因：暂无说明、请联系管理员</div>
+                   
+                </div>
+
+            <div class="com_member_hr_p1" style="position: relative;">
+                <span class="member_c9">咨询日期</span> {{item.datetime_n}} <div class="sx_new_icon"><a href="javascript:void(0)" @click="delmsg(item.id,msgk)"><img src="{yun:}$wap_style{/yun}/images/resume_del.png" class="    "></a></div>
+            </div>
+       </div>
+	  
+           
+    </div>    
+    <div v-if="count==2">
+    <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange" /> 
+    </div>
+     <div class="wap_member_no" v-show="count==0">
+        暂无记录！
+      </div>    </div>
+</div>
+<script>  
+  var currentPage = parseInt('{yun:}$smarty.get.page{/yun}');       
+      new Vue({
+        el: '#yunvue',
+        data: {
+          list: [],
+          limit:20,              
+          total:0,
+          page: currentPage ? currentPage : 1,          
+        },
+        computed: {
+          count(){
+            if(this.total > this.limit){
+              return 2;
+            }else if(this.list.length==0){
+              return 0;
+            }else{
+                return 1;
+            }
+          }
+        },
+        created() {   
+         this.getmsg();
+        },
+        methods:{          
+          getmsg:function(){
+            showLoading();
+            var that = this;
+            var paramer = {};
+                paramer['page'] = that.page;
+                paramer['limit'] = that.limit;   
+            $.post('{yun:}url d=wxapp h=user m=msg c=zxmsg{/yun}',paramer,function(res){
+                hideLoading();      
+               
+                that.list = res.data;
+                that.total = res.total;
+                that.page = currentPage ? currentPage : 1;
+              
+               $("#yunvue").css('display', 'block');
+            },'json');            
+          },
+          delmsg:function(id,key){
+            var that = this;
+            var paramer = {
+                id: id,                
+            };
+            showConfirm("确定删除？",function(){
+                showLoading('删除中...');
+                $.post('{yun:}url d=wxapp h=user m=msg c=delzxmsg{/yun}',paramer,function(data){
+
+                    hideLoading();      
+                    if (data.error == 1) {
+                        that.list.splice(key, 1);
+                        showToast('删除成功',2);
+                    } else {
+                       showToast('删除失败');
+                    }
+                },'json');  
+            })
+          },          
+          pageChange:function(e){
+          
+            location.href = 'index.php?c=commsg&chat=1&page='+e;
+          },
+          pageTo:function(url){
+              window.location.href = url;
+          }
+        } 
+      });
+</script>
+</body>
+</html>

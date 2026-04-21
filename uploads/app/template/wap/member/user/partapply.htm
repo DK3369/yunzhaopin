@@ -1,0 +1,244 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+<div id="yunvue" class="none">
+
+    <div class="m_tab">
+        <div class="m_tabbox category">
+            <ul>
+                <li :class="type == 'bm' ? 'm_tabactive' : ''" @click="pageTo('index.php?c=partapply&type=bm')">兼职报名</li>
+                <li :class="type == 'sc' ? 'm_tabactive' : ''" @click="pageTo('index.php?c=partapply&type=sc')">兼职收藏</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="m_cardbox">
+
+        <div class="m_cardbgbox">
+            <div v-if="type=='bm'">
+                <div class="Posted_body_card" v-for="(item, applykey) in list" :key="applykey">
+                    <div class="Posted_card_top">
+                        <div class="Posted_card_name" @click="pageTo(item.wappart_url)">{{item.partname}}</div>
+                        <div class="Posted_card_examine">{{item.status_n}}</div>
+                    </div>
+                    <div class="Posted_card_companyname" @click="pageTo(item.wapcom_url)">{{item.comname}}</div>
+                    <div class="Posted_card_contactway">
+                        <div class="Posted_contactway">
+                            <div class="Posted_card_applytext">报名时间</div>
+                            <div class="Posted_card_applytime">{{item.ctime_n}}</div>
+                        </div>
+                        <div class="Posted_contactway_icon" @click="applydel(item.id,applykey)">
+                            <img src="{yun:}$wap_style{/yun}/images/resume_del.png" alt="" width="100%" height="100%">
+                        </div>
+                    </div>
+                </div>
+                <div v-if="count ==2">
+                    <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange"/>
+                </div>
+                <div class="wap_member_bgcar" v-show="count==0">
+                    <div class="wap_member_no">
+                        暂无兼职报名记录
+                        <div><a class="wap_member_no_submit" href="{yun:}url m=wap c=part{/yun}">去搜索兼职</a></div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="type=='sc'">
+                <div class="Posted_body_card" v-for="(item, applykey) in list" :key="applykey">
+                    <div class="Posted_card_top">
+                        <div class="Posted_card_name" @click="pageTo(item.wappart_url)">{{item.jobname}}</div>
+                        <div class="Posted_card_time">{{item.ctime_n}}</div>
+                    </div>
+                    <div class="Posted_card_del">
+                        <div class="Posted_card_delname" @click="pageTo(item.wapcom_url)">{{item.com_name}}</div>
+                        <div class="Posted_contactway_icon" @click="collectdel(item.id,applykey)">
+                            <img src="{yun:}$wap_style{/yun}/images/resume_del.png" alt="" width="100%" height="100%">
+                        </div>
+                    </div>
+                </div>
+                <div v-if="count ==2">
+                    <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange"/>
+                </div>
+                <div class="wap_member_bgcar" v-show="count==0">
+                    <div class="wap_member_no">
+                        暂无兼职收藏记录
+                        <div><a class="wap_member_no_submit" href="{yun:}url m=wap c=part{/yun}">去搜索兼职</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var currentPage = parseInt('{yun:}$smarty.get.page{/yun}');
+    var type = '{yun:}$smarty.get.type{/yun}';
+    type = type ? type : 'bm';
+    var yunvue = new Vue({
+        el: '#yunvue',
+        data: {
+            list: [],
+            limit: 20,
+            total: 0,
+            page: currentPage ? currentPage : 1,
+            islook: false,
+            type: type,
+            searchContent: ''
+        },
+        computed: {
+            count() {
+                if (this.total > this.limit) {
+                    return 2;
+                } else if (this.list.length == 0) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+            }
+        },
+        created() {
+            this.typeShow(type);
+        },
+        methods: {
+            typeShow: function (e) {
+                this.type = e;
+                if (e == 'bm') {
+
+                    this.getPartApply();
+                } else if (e == 'sc') {
+
+                    this.getPartFav();
+                }
+            },
+            getPartApply: function () {
+                showLoading();
+                var that = this;
+
+                if (type == 'refresh') {
+
+                    $("#yunvue").css('display', 'none');
+                    that.page = 1;
+                    that.list = [];
+                }
+
+                var that = this;
+                var paramer = {};
+                paramer['name'] = that.searchContent;
+                paramer['page'] = that.page;
+                paramer['limit'] = that.limit;
+
+                $.post('{yun:}url d=wxapp h=user m=part c=applylist{/yun}', paramer, function (res) {
+                    hideLoading();
+
+                    that.list = res.data;
+                    that.total = res.total;
+                    that.page = currentPage ? currentPage : 1;
+                    that.type = type;
+                    $("#yunvue").css('display', 'block');
+
+                }, 'json');
+            },
+            getPartFav: function () {
+                showLoading();
+                var that = this;
+
+                if (type == 'refresh') {
+
+                    $("#yunvue").css('display', 'none');
+                    that.page   =   1;
+                    that.list   =   [];
+                }
+                var paramer     =   {};
+                paramer['name'] =   that.searchContent;
+                paramer['page'] =   that.page;
+                paramer['limit']=   that.limit;
+
+                $.post('{yun:}url d=wxapp h=user m=part c=partCollect{/yun}', paramer, function (res) {
+                    hideLoading();
+
+                    that.list = res.data;
+                    that.total = res.total;
+                    that.page = currentPage ? currentPage : 1;
+                    $("#yunvue").css('display', 'block');
+                }, 'json');
+            },
+            applydel: function (id, key) {
+                let that = this
+                let param = {
+                    ids: id
+                };
+
+                showConfirm('确定删除', () => {
+                    showLoading('删除中...')
+                    $.post('{yun:}url d=wxapp h=user m=part c=delapply{/yun}', param, function (data) {
+                        hideLoading();
+                        if (data.error == 1) {
+                            showToast(data.msg, 2, function () {
+                                that.list.splice(key, 1);
+                            });
+                        } else {
+                            showToast(data.msg);
+                        }
+                    });
+                });
+
+            },
+            collectdel: function (id, key) {
+                let that = this
+                let param = {
+                    ids: id
+                };
+
+                showConfirm('确定删除', () => {
+                    showLoading('删除中...')
+                    $.post('{yun:}url d=wxapp h=user m=part c=delfavpart{/yun}', param, function (data) {
+                        hideLoading();
+                        if (data.error == 1) {
+                            showToast(data.msg, 2, function () {
+                                that.list.splice(key, 1);
+                            });
+                        } else {
+                            showToast(data.msg);
+                        }
+                    });
+                });
+            },
+            pageChange: function (e) {
+
+                location.href = 'index.php?c=partapply&type=' + this.type + '&page=' + e;
+            },
+            pageTo: function (url) {
+                window.location.href = url;
+            }
+        }
+    });
+
+    $("#partBm").keydown(function (e) {
+        if (e.keyCode == 13) {
+            yunvue.searchContent = $("#partBm").val();
+            yunvue.getPartApply('refresh');
+        }
+    })
+    $("#partBm").on('input', function (e) {
+        let val = $(e.currentTarget).val();
+        if(val == ''){
+            if(yunvue.searchContent != ''){
+                yunvue.searchContent = '';
+                yunvue.getPartApply('refresh');
+            }
+        }
+    })
+    $("#partSc").keydown(function (e) {
+        if (e.keyCode == 13) {
+            yunvue.searchContent = $("#partSc").val();
+            yunvue.getPartFav('refresh');
+        }
+    })
+    $("#partSc").on('input', function (e) {
+        let val = $(e.currentTarget).val();
+        if(val == ''){
+            if(yunvue.searchContent != ''){
+                yunvue.searchContent = '';
+                yunvue.getPartFav('refresh');
+            }
+        }
+    })
+</script>
+</body>
+</html>

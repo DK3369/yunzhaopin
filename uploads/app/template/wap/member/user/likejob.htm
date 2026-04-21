@@ -1,0 +1,63 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun} 
+<div id="yunvue" class="none">
+<div class="main_member_cot_box">
+  	<div class="com_member_hr" v-for="(item,jkey) in joblist" :key="jkey"  @click="pageTo(item.wapjob_url)">
+	 	<div class="com_member_hr_name" @click="pageTo(item.wapjob_url)">{{item.name}}</div>
+	 	<div class="user_member_box">
+	  		<div class="com_member_company" @click="pageTo(item.wapcom_url)">{{item.com_name}}</div>
+			 <div class="com_member_particulars">
+			 	<div>{{item.job_salary}}</div>
+			 	<div class="" v-if="item.job_edu"> | {{item.job_edu}}学历</div>
+			 	<div v-if="item.job_exp"> | {{item.job_exp}}经验</div>
+			 </div>
+	 		<div class="com_member_matched_degree"> 职位匹配度：{{item.pre}}% </div>
+	  	</div>
+		
+	</div>
+	<div class="wap_member_no" v-if="!count">暂无匹配职位
+		<div>
+		<a class="wap_member_no_submit" href="{yun:}url m=wap c=job{/yun}">搜索职位</a>
+		</div>
+	</div>
+</div>
+</div>
+<script type="text/javascript">
+	var id = '{yun:}$smarty.get.id{/yun}';
+		id = id ? id : '';
+	var yunvue =  new Vue({
+		el: '#yunvue',
+		data() {
+		    return {
+				eid: id,
+				joblist: [],
+		    };
+		},
+		computed: {
+			count(){
+             	return this.joblist.length
+        	}
+    	},
+		created() {
+			this.getLike();
+		},
+		methods:{
+			getLike: function(){
+				showLoading();
+				let that = this;
+				$.post('{yun:}url d=wxapp h=user m=job c=like_job{/yun}', {id: that.eid}, function(data){
+					hideLoading();
+					
+					if (data.data.length > 0) {
+						that.joblist = data.data;
+					} 
+					$("#yunvue").css('display', 'block');
+				},'json');
+			},
+			pageTo:function(url){
+				window.location.href=url;
+			}
+		},
+	});
+</script> 
+</body>
+</html>

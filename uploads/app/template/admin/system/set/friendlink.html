@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<script src="../../../admin/header.js"></script>
+	<script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+	<div id="daohaapp" class="moduleElenAl">
+		<div class="moduleSeachmore">
+			<div class="tableSeachInpt tableSeachInptsmall">
+				<el-select v-model="searchOption.ctime" size="small" clearable @change="search" placeholder="发布时间">
+					<el-option label="今天" value="1"></el-option>
+					<el-option label="最近三天" value="3"></el-option>
+					<el-option label="最近七天" value="7"></el-option>
+					<el-option label="最近半月" value="15"></el-option>
+					<el-option label="最近一个月" value="30"></el-option>
+				</el-select>
+			</div>
+			<div class="tableSeachInpt tableSeachInptsmall">
+				<el-select v-model="searchOption.type" size="small" clearable @change="search" slot="prepend"
+					placeholder="类型">
+					<el-option label="文字" value="1"></el-option>
+					<el-option label="图片" value="2"></el-option>
+				</el-select>
+			</div>
+			<div class="tableSeachInpt tableSeachInptsmall">
+				<el-select v-model="searchOption.did" size="small" clearable @change="search" slot="prepend"
+					placeholder="站点">
+					<el-option v-for="item in domainData" :key="item.value" :label="item.label" :value="item.value"></el-option>
+				</el-select>
+			</div>
+			<div class="tableSeachInpt tableSeachInptsmall">
+				<el-select v-model="searchOption.state" size="small" clearable @change="search" slot="prepend"
+					placeholder="审核状态">
+					<el-option label="已审核" value="1"></el-option>
+					<el-option label="未审核" value="2"></el-option>
+				</el-select>
+			</div>
+			<div class="tableSeachInpt">
+				<el-input placeholder="请输入搜索内容" size="small" v-model="searchOption.keyword" clearable
+					prefix-icon="el-icon-search">
+				</el-input>
+			</div>
+			<div class="tableSeachInpt tableSeachbutton">
+				<el-button type="primary" size="mini" icon="el-icon-search" @click="search">查询</el-button>
+			</div>
+			<div class="tableSeachInpt tableSeachbutton" style="margin-left: auto;">
+				<el-button type="primary" icon="el-icon-document-add" size="mini" @click="addlink">添加友情链接</el-button>
+			</div>
+		</div>
+
+		<div class="moduleElTable">
+			<el-table :data="tableData" border style="width: 100%"
+				:header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" @sort-change="shortChange"
+				@selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
+				<el-table-column type="selection" width="55">
+				</el-table-column>
+				<el-table-column prop="id" label="	编号" width="80" sortable="custom">
+				</el-table-column>
+				<el-table-column prop="link_name" label="链接标题" width="180">
+				</el-table-column>
+				<el-table-column prop="link_url" label="链接地址">
+					<template slot-scope="scope">
+						<a target="_blank" :href="scope.row.link_url">{{scope.row.link_url}}</a>
+					</template>
+				</el-table-column>
+				<el-table-column prop="did_n" label="显示站点" width="110">
+				</el-table-column>
+				<el-table-column prop="ctime_n" label="发布时间" width="110">
+				</el-table-column>
+				<el-table-column prop="link_type_n" label="类型" width="110">
+				</el-table-column>
+				<el-table-column prop="link_sorting" label="排序" width="60">
+				</el-table-column>
+				<el-table-column label="状态" width="100">
+					<template slot-scope="scope">
+						<el-tag type="success" size="small" v-if="scope.row.link_state==1">已审核</el-tag>
+						<el-tag type="danger" size="small" v-else>未审核</el-tag>
+					</template>
+				</el-table-column>
+				<el-table-column fixed="right" label="操作" width="200">
+					<template slot-scope="scope">
+						<div class="cz_button">
+							<el-button size="mini" @click="status(scope.row)">审核</el-button>
+							<el-button size="mini" @click="eidtlink(scope.row)">修改</el-button>
+							<el-button size="mini" type="danger" @click="delrow(scope.row)">删除</el-button>
+						</div>
+					</template>
+				</el-table-column>
+			</el-table>
+		</div>
+		<div class="modulePaging">
+			<div class="modulecz modulePagButn">
+				<el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
+				<el-button size="mini" @click="delAllBottom">批量删除</el-button>
+				<el-button size="mini" @click="setDidAllBottom">批量选择分站</el-button>
+			</div>
+			<div class="modulePagNum">
+				<el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+					:current-page="pagination.page" :page-sizes="pagination.pageSizeOption"
+					:page-size="pagination.pageSize" layout="total, sizes, prev, pager, next, jumper"
+					:total="pagination.total">
+				</el-pagination>
+			</div>
+		</div>
+		<!-- 处理弹窗 -->
+		<div class="modluDrawer">
+			<el-dialog title="友情链接审核" :visible.sync="statusBox" :with-header="true" :modal-append-to-body="false"
+				:show-close="true" width="400px">
+				<el-form :model="ruleFormStatus" ref="ruleFormStatus" label-width="90px">
+					<el-form-item label="审核状态">
+						<el-radio-group v-model="ruleFormStatus.status">
+							<el-radio label="1">已审核</el-radio>
+						</el-radio-group>
+					</el-form-item>
+					<el-form-item label="审核说明" prop="content">
+						<el-input type="textarea" :rows="2" v-model="ruleFormStatus.content"></el-input>
+					</el-form-item>
+				</el-form>
+				<span slot="footer" class="dialog-footer">
+					<el-button @click="statusBox = false">取 消</el-button>
+					<el-button type="primary" @click="submitForm">确 定</el-button>
+				</span>
+			</el-dialog>
+		</div>
+		<div class="modluDrawer">
+			<el-dialog title="分配站点" :visible.sync="setDidBox" :with-header="true" :modal-append-to-body="false"
+				:show-close="true" width="400px">
+				<el-form ref="ruleFormDid" label-width="90px">
+					<el-form-item label="切换站点" prop="content">
+						<el-select v-model="setdid" filterable>
+							<el-option v-for="item in domainData" :key="item.value" :label="item.label" :value="item.value"></el-option>
+						</el-select>
+					</el-form-item>
+				</el-form>
+				<span slot="footer" class="dialog-footer">
+					<el-button @click="setDidBox = false">取 消</el-button>
+					<el-button type="primary" @click="submitFormDid">分 配</el-button>
+				</span>
+			</el-dialog>
+		</div>
+		<div class="modluDrawer">
+			<el-drawer :title="title" :visible.sync="showLinkBox" :modal-append-to-body="false" size="50%">
+				<friendlink-add :link_id="link_id" @child-event="closeLinkBox" v-if="showLinkBox"></friendlink-add>
+			</el-drawer>
+		</div>
+		
+	</div>
+	<!-- script -->
+	<script>
+		const custoapp = new Vue({
+			el: '#daohaapp',
+			data: function () {
+				return {
+					emptytext: '暂无数据',
+					searchForm: [],
+					setdid: 0,
+					setDidBox: false,
+					statusBox: false,
+					link_id: 0,
+					title: '添加友情链接',
+					showLinkBox: false,
+					drawer: false,
+					tableData: [],
+					searchOption: {
+						type: '',
+						ctime: '',
+						did: '',
+						state: '',
+						keyword: ''
+					},
+					pagination: {
+						page: 1,
+						// pageSize: 10,
+						total: 0,
+						pageSize: 0,
+						pageSizeOption: [10, 20, 50, 100]
+					},
+					prevPage: 0,
+					checkedAll: false,
+					selectedItem: [],
+					domainData: [],
+					ruleFormStatus: {
+						status: '',
+						content: '',
+						id: ''
+					},
+					loading: false,
+				}
+			},
+			components: {
+				'friendlink-add': httpVueLoader('./component/friendlinkAdd.vue'),
+			},
+			created() {
+				var that = this
+				let query = window.parent.homeapp.$route.query;
+				if (query.state) {
+					that.searchOption.state = query.state;
+				}
+				this.getList();
+			},
+			methods: {
+				shortChange(e) {
+				    let orderMap = {ascending: 'asc', descending: 'desc'}
+				    this.searchForm.t = e.order ? e.prop : null;
+				    this.searchForm.order = orderMap[e.order];
+				    this.search();
+				},
+				async submitFormDid() {
+					let that = this;
+					let params = {
+						did: that.setdid,
+						id: that.selectedItem
+					};
+
+					httpPost('m=system&c=set_friendlink&a=sitedid', params).then(function (response) {
+						let data = response.data;
+						if (data.error == 0) {
+							that.setDidBox = false;
+							message.success(data.msg, function (e) {
+								that.getList();
+							});
+						} else {
+							message.error(data.msg);
+						}
+					}).catch(function (error) {
+						console.log(error);
+					})
+				},
+				setDidAllBottom() {
+					if (!this.selectedItem.length) {
+						this.$message.error('请选择要分配的数据');
+						return false;
+					}
+					this.setdid = 0;
+					this.setDidBox = true;
+				},
+				eidtlink(row) {
+					this.link_id = parseInt(row.id);
+					this.title = '修改友情链接';
+					this.showLinkBox = true;
+				},
+				addlink() {
+					this.title = '添加友情链接';
+					this.link_id = 0;
+					this.showLinkBox = true;
+				},
+				closeLinkBox() {
+					this.showLinkBox = false;
+					this.getList();
+				},
+				async submitForm() {
+					let that = this;
+					let params = {
+						formdata: that.ruleFormStatus
+					};
+					that.statusBox = false;
+					httpPost('m=system&c=set_friendlink&a=status', params).then(function (response) {
+						let data = response.data;
+						if (data.error == 0) {
+							message.success(data.msg, function (e) {
+								that.getList();
+							});
+						} else {
+							message.error(data.msg);
+						}
+					}).catch(function (error) {
+						console.log(error);
+					})
+				},
+				status(row) {
+					this.ruleFormStatus.status = row.link_state;
+					this.ruleFormStatus.id = row.id;
+					this.ruleFormStatus.content = row.statusbody;
+					this.statusBox = true;
+				},
+				search() {
+					this.pagination.page = 1;
+					this.getList();
+				},
+				async getList() {
+					let that = this;
+					let searchForm = that.searchForm;
+					let params = {
+						searchOption: that.searchOption,
+						pagination: that.pagination
+					};
+					that.loading = true;
+					that.emptytext = "数据加载中";
+					httpPost('m=system&c=set_friendlink&a=index', {...params, ...searchForm},{hideloading: true}).then(function (data) {
+						let res = data.data;
+						if (res.error == 0) {
+							that.tableData = res.data.list;
+							that.domainData = res.data.domain;
+							that.pagination.total = res.data.total;
+							that.pagination.pageSizeOption = res.data.pageSizes;
+							if (that.prevPage != that.pagination.page) {
+								that.prevPage = that.pagination.page;
+								that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+							}
+							that.loading = false;
+							if (that.tableData.length === 0){
+	                            that.emptytext = "暂无数据";
+	                        }
+						}
+					}).catch(function (error) {
+						console.log(error)
+					})
+				},
+				handleSizeChange(val) {
+					this.pagination.pageSize = val;
+					this.getList();
+				},
+				handleCurrentChange(val) {
+					this.pagination.page = val;
+					this.getList();
+				},
+				selectAllBottom(value) {
+					value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+				},
+				handleSelectionChange(val) {
+					this.selectedItem = [];
+					let _this = this;
+					if (val.length) {
+						val.forEach(item => {
+							_this.selectedItem.push(item.id);
+						});
+					}
+					if (_this.selectedItem.length == 0) {
+						_this.checkedAll = false;
+					} else {
+						if (_this.selectedItem.length == _this.tableData.length) {
+							_this.checkedAll = true;
+						} else {
+							_this.checkedAll = false;
+						}
+					}
+				},
+				delrow(row) {
+					delConfirm(this, row.id, this.delete);
+				},
+				delAllBottom() {
+					if (!this.selectedItem.length) {
+						this.$message.error('请选择要删除的数据');
+						return false;
+					}
+					delConfirm(this, this.selectedItem, this.delete);
+				},
+				async delete(Ids) {
+					let _this = this;
+					let params = {
+						del: Ids
+					};
+					httpPost('m=system&c=set_friendlink&a=del', params).then(function (response) {
+						if (response.data.error == 0) {
+							message.success(response.data.msg);
+							_this.getList();
+						} else {
+							message.error(response.data.msg);
+						}
+					}).catch(function (error) {
+						console.log(error);
+					})
+				},
+			}
+		});
+	</script>
+</body>
+<style>
+	.el-table .el-table__cell {
+    padding: 12px 0;
+}
+</style>
+</html>

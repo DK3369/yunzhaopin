@@ -1,0 +1,110 @@
+<!-- yun_cert.htm  企业强制操作提示-->
+<style>
+	.Certification_prompt_box{width:6.933333rem;background-color:#fff;padding-top:.466667rem;padding-bottom:.666667rem;display:flex;flex-direction:column;align-items:center;padding-left:1.066667rem;padding-right:1.066667rem}
+	.prompt_box_title{width:2.933333rem;height:2.186667rem;display:flex;align-items:center;justify-content:center}
+	.prompt_box_info{margin-top:.373333rem;margin-bottom:.64rem;font-size:.4rem;font-weight:700;color:#333}
+	.prompt_box_particulars{width:100%}
+	.prompt_box_particulars>ul{display:flex;flex-direction:column}
+	.prompt_box_particulars>ul>li{display:flex;align-items:center;justify-content:space-between;margin-bottom:.226667rem}
+	.prompt_box_particulars>ul>li:last-child{margin-bottom:0}
+	.particulars_q{font-size:.373333rem;font-weight:500;color:#666}
+	.particulars_a{font-size:.346667rem;font-weight:500;color:#2778f8}
+	.prompt_box_btn{margin-top:.666667rem;width:4rem;height:1.066667rem;background-color:#fff;background:linear-gradient(90deg,#34acfb,#1c80f6);box-shadow:0 .106667rem .32rem 0 rgba(38,122,248,.4);border-radius:.533333rem;font-size:.4rem;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center}
+
+	.close{
+		position: absolute;
+		top: 0.4533rem;
+		right: 0.5333rem;
+	}
+	.close img{
+		width: 0.32rem;
+		height: 0.32rem;
+	}
+	.particulaButns{
+		overflow: hidden;
+		position: relative;
+	}
+	.particulaButns ul{
+		overflow: hidden;
+		position: relative;
+	}
+	.particulaButns ul li{
+		overflow: hidden;
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.particulaButns ul li .particulars_a{
+		overflow: hidden;
+		position: relative;
+		padding: 3px 0.32rem;
+		background: #1C80F6;
+		border-radius: 3px;
+		color: #fff;
+	}
+</style>
+<!-- 余额不足提示 -->
+<div id="certVue" class="none">
+	<van-popup v-model="yunCert" closeable round>
+		<div class="Certification_prompt_box">
+            <!-- <div class="close" @click="yunCert = false">
+                <img src="{yun:}$wap_style{/yun}/images/mask_close.png" alt="">
+            </div> -->
+			<div class="prompt_box_title">
+				<img src="{yun:}$wap_style{/yun}/images/Certification_prompt_img.png" alt="" width="100%" height="100%">
+			</div>
+			<div class="prompt_box_info">请满足以下条件</div>
+			<div class="prompt_box_particulars particulaButns">
+				<ul>
+					<li v-if="checked.name">
+						<i class="particulars_q">基本信息未完善</i>
+						<i class="particulars_a" onclick="navigateTo(wapurl+'member/index.php?c=info')">去完善 ></i>
+					</li>
+					<li v-if="checked.tel">
+						<i class="particulars_q">手机未认证</i>
+						<i class="particulars_a" onclick="navigateTo(wapurl+'member/index.php?c=bindingbox&type=moblie&certbox=1')">去认证</i>
+					</li>
+					<li v-if="checked.email">
+						<i class="particulars_q">邮箱未认证</i>
+						<i class="particulars_a" onclick="navigateTo(wapurl+'member/index.php?c=bindingbox&type=email&certbox=1')">去认证</i>
+					</li>
+					<li v-if="checked.yyzz">
+						<i class="particulars_q">企业资质未认证</i>
+						<i class="particulars_a" onclick="navigateTo(wapurl+'member/index.php?c=comcert&certbox=1')">去认证</i>
+					</li>
+					<li v-if="checked.xy">
+						<i class="particulars_q">企业位置未设置</i>
+						<i class="particulars_a" onclick="navigateTo(wapurl+'member/index.php?c=info&certbox=1')">去设置</i>
+					</li>
+					<li v-if="checked.gzh">
+						<i class="particulars_q">微信公众号未关注</i>
+						<i class="particulars_a" onclick="toGz('{yun:}url m=wap c=wxconnect login=1{/yun}')">去关注</i>
+					</li>
+					<li v-if="checked.job">
+						<i class="particulars_q">没有招聘中的职位</i>
+						<i class="particulars_a" onclick="navigateTo('index.php?c=job')">去发布</i>
+					</li>
+				</ul>
+			</div>
+			<!--<div class="prompt_box_btn" @click="yunCert = false">好的</div>-->
+		</div>
+	</van-popup>
+</div>
+<script>
+var certVue = new Vue({
+	el: '#certVue',
+	data: {
+		yunCert: false,
+		checked: {}
+	},
+	mounted(){
+		document.getElementById('certVue').style.display = 'block';
+	}
+});
+function toGz(url) {
+	throttle(function () {
+		window.location.href = url;
+	});
+}
+</script>

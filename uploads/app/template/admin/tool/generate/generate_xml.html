@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+<div id="moduapp" class="tableDome">
+    <div class="tableDome_tip">
+        <el-alert title="生成请确保目录有可写权限，否则无法生成，添加数量时，请勿填写太大数值" type="success"
+            :closable="false">
+        </el-alert>
+    </div>
+    <div class="moduleTable">
+        <table class="tableVue">
+            <thead>
+            <tr align="left">
+                <th width="100">名称</th>
+                <th width="260">指向目录</th>
+                <th width=" ">说明</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <div class="TableTite">数据类型</div>
+                </td>
+                <td>
+                    <div class="TableSelect">
+                        <el-select v-model="ruleForm.type" placeholder="请选择">
+                            <el-option value="sitemap" label="全部"></el-option>
+                            <el-option value="company" label="企业"></el-option>
+                            <el-option value="job" label="职位"></el-option>
+                            <el-option value="resume" label="简历"></el-option>
+                            <el-option value="ask" label="问答"></el-option>
+                            <el-option value="news" label="新闻"></el-option>
+                        </el-select>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">数据排序</div>
+                </td>
+                <td>
+                    <div class="TableSelect">
+                        <el-select v-model="ruleForm.order" placeholder="请选择">
+                            <el-option value="uptime" label="更新时间"></el-option>
+                            <el-option value="addtime" label="添加时间"></el-option>
+                        </el-select>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">更新频率</div>
+                </td>
+                <td>
+                    <div class="TableSelect">
+                        <el-select v-model="ruleForm.frequency" placeholder="请选择">
+                            <el-option value="always" label="总是"></el-option>
+                            <el-option value="hourly" label="每小时"></el-option>
+                            <el-option value="daily" label="每天"></el-option>
+                            <el-option value="weekly" label="每周"></el-option>
+                            <el-option value="monthly" label="每月"></el-option>
+                            <el-option value="yearly" label="每年"></el-option>
+                            <el-option value="never" label="从不"></el-option>
+                        </el-select>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">获取数量</div>
+                </td>
+                <td>
+                    <div class="TableInpt">
+                        <el-input v-model="ruleForm.limit" @input="inputIntNumber($event, 'ruleForm', 'limit')" placeholder="请输入数字"></el-input>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>请谨慎填写数量 </span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">文件名称</div>
+                </td>
+                <td>
+                    <div class="TableInpt">
+                        <el-input v-model="ruleForm.name" placeholder="请输入文件名称"></el-input>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>如：sitemap，请勿带后缀</span>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="setBasicButn" style="border: none;">
+        <el-button type="primary" size="medium" @click="submitForm">提交</el-button>
+    </div>
+</div>
+<!-- script -->
+<script>
+    const custoapp = new Vue({
+        el: '#moduapp',
+        data: function () {
+            return {
+                submitLoading: false,
+                ruleForm: {
+                    type: 'sitemap',
+                    order: 'uptime',
+                    frequency: 'always',
+                    limit: '100',
+                    name: 'sitemap',
+                },
+            }
+        },
+        methods: {
+            inputIntNumber(val, form, key) {
+                this.$data[form][key] = val.replace(/[^0-9]/g, '');
+                // console.log(this[form])
+                // this.$set(this[form], key, val.replace(/[^0-9]/g,''))
+            },
+            submitForm() {
+                let _this = this;
+                let params = JSON.parse(JSON.stringify(this.ruleForm));
+                if (params.limit < 1 || params.limit == '') {
+                    message.error('请输入获取数量');
+                    return false;
+                }
+                if (!params.name.length) {
+                    message.error('请输入文件名称');
+                    return false;
+                }
+                if (_this.submitLoading) {
+                    return false;
+                }
+                _this.submitLoading = true;
+                message.success('正在生成文件……');
+                httpPost('m=tool&c=generate_xml&a=archive', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        message.success(res.msg);
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                }).finally(function () {
+                    setTimeout(() => {
+                        _this.submitLoading = false;
+                    }, 1000);
+                });
+            }
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,17 @@
+{yun:}if $layer{/yun}
+  	<input id="layermsg" value="{yun:}$layer.msg{/yun}" type="hidden">
+  	<input id="layerurl" value="{yun:}$layer.url{/yun}" type="hidden">
+  	<script>
+		var msg = document.getElementById('layermsg').value;
+  	    if(msg){
+  	        if(msg){
+				var url = document.getElementById('layerurl').value;
+  	    	    if(url){
+  	    		    showToast(msg,2,function(){location.href=url;});
+  	    	    }else{
+  	    		    showToast(msg);
+  	    	    } 
+  	        }
+  	    } 
+  	</script>
+{yun:}/if{/yun}

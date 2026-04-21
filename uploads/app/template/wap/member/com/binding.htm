@@ -1,0 +1,103 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+
+<ul class="bingding_box none" id="yunvue">
+
+	{yun:}if $config.wx_rz=='1'{/yun}
+	<li>
+		<div class="bingding_box_iconbg" :class="bind.wxbind ? 'bingding_yx_g':''"><i class="bingding_box_iconwx"></i></div>
+		<div class="bingding_box_name">微信绑定</div>
+		<template v-if="bind.wxbind == 1">
+			<div class="bingding_box_p">你已绑定微信，下次你可以直接使用微信快捷登录</div>
+			<span @click="bindClear('weixin')" class="bingding_box_bth_jc">解除绑定</span>
+		</template>
+		<template v-else>
+			<span v-if="bind.wxbind == 2" class="bingding_box_bth" onclick="tobind('{yun:}url m=wap c=wxconnect login=1{/yun}')">重新绑定</span>
+			<span v-else class="bingding_box_bth" onclick="tobind('{yun:}url m=wap c=wxconnect login=1{/yun}')">立即绑定</span>
+			<div class="bingding_box_p">绑定微信，下次你可以直接使用微信快捷登录</div>
+		</template>
+	</li>
+	{yun:}/if{/yun}
+
+	{yun:}if $config.sy_qqlogin=='1'{/yun}
+	<li>
+		<div class="bingding_box_iconbg" :class="bind.qqbind ? 'bingding_yx_qq':''"><i class="bingding_box_iconqq"></i></div>
+		<div class="bingding_box_name">QQ绑定</div>
+		<template v-if="bind.qqbind == 1">
+			<div class="bingding_box_p">你已绑定QQ号，下次你可以直接使用QQ快捷登录</div>
+			<span @click="bindClear('qq')" class="bingding_box_bth_jc">解除绑定</span>
+		</template>
+		<template v-else>
+			<span class="bingding_box_bth" onclick="tobind('{yun:}url m=qqconnect login=1{/yun}')">立即绑定</span>
+			<div class="bingding_box_p">绑定QQ号，下次你可以直接使用QQ快捷登录</div>
+		</template>
+	</li>
+	{yun:}/if{/yun}
+	{yun:}if $config.sy_sinalogin=='1'{/yun}
+	<li>
+		<div class="bingding_box_iconbg" :class="bind.sinabind ? 'bingding_yx_xl':''"><i class="bingding_box_iconxl"></i></div>
+		<div class="bingding_box_name">新浪微博绑定</div>
+		<template v-if="bind.sinabind == 1">
+			<div class="bingding_box_p">你已绑定新浪微博，下次你可以直接使用新浪微博快捷登录</div>
+			<span @click="bindClear('sina')" class="bingding_box_bth_jc">解除绑定</span>
+		</template>
+		<template v-else>
+			<span class="bingding_box_bth" onclick="tobind('{yun:}url m=wap c=sinaconnect login=1{/yun}')">立即绑定</span>
+			<div class="bingding_box_p">绑定新浪微博，下次你可以直接使用新浪微博快捷登录</div>
+		</template>
+	</li>
+	{yun:}/if{/yun}
+
+	{yun:}if $config.wx_rz != '1' && $config.sy_qqlogin != '1' && $config.sy_sinalogin != '1'{/yun}
+	<div class="wap_member_no">
+		网站未开启第三方绑定，请联系管理员反馈
+	</div>
+	{yun:}/if{/yun}
+
+</ul>
+
+<script>
+	var yunvue = new Vue({
+		el: '#yunvue',
+		data() {
+			return {
+				bind: {},
+			}
+		},
+		created() {
+			this.getInfo();
+		},
+		methods: {
+			getInfo() {
+				var self = this;
+				showLoading();
+				$.post('{yun:}url d=wxapp h=com m=set c=getBind{/yun}', {provider: 'h5'}, function (res) {
+					hideLoading();
+					self.bind = res.data;
+					$('#yunvue').removeClass('none');
+				})
+			},
+			bindClear(type) {
+				showConfirm('确定要解除绑定吗？', function () {
+					showLoading();
+					$.post('{yun:}url d=wxapp h=com m=set c=binding{/yun}', {
+						provider: 'h5',
+						isbind: 1,
+						type: type
+					}, function (res) {
+						showToast('解除成功', 2, function () {
+							window.location.reload();
+						})
+					})
+				})
+			}
+		}
+	});
+
+	function tobind(url) {
+		throttle(function () {
+			window.location.href = url;
+		});
+	}
+</script>
+</body>
+</html>

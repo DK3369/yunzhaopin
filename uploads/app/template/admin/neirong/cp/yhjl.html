@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+<body>
+<div id="hyfl" class="moduleElenAl">
+    <div class="moduleSeachs">
+        <div class="moduleSeachleft">
+			<div class="moduleInptList">
+			    <el-input placeholder="请输入搜索内容" v-model="keyword" class="input-with-select" clearable>
+			        <el-select v-model="type" slot="prepend" placeholder="用户名">
+			            <el-option label="用户名" value="1"></el-option>
+			            <el-option label="试卷题目" value="2"></el-option>
+			        </el-select>
+			    </el-input>
+			</div>
+            <div class="moduleInptList" >
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+            </div>
+        </div>
+        <div class="nrtopbtn">
+        </div>
+    </div>
+    <div class="moduleElTable">
+        <el-table :data="tableData" stripe border style="width: 100%;height: 100%;" @sort-change="sortChange"
+                  :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%"  @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
+            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column prop="id" label="编号" width="80" sortable="custom">
+            </el-table-column>
+            <el-table-column prop="name" label="用户名" width="150">
+            </el-table-column>
+            <el-table-column prop="title" label="试卷题目" min-width="180" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column label="试卷类别" width="180">
+                <template slot-scope="props">
+                    <el-tag type="success" size="small">{{ grouparr[props.row.keyid] }}</el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column prop="grade" label="用户得分" width="150">
+            </el-table-column>
+            <el-table-column label="测评时间" property="ctime_n" width="150">
+            </el-table-column>
+            <el-table-column label="操作" width="90" fixed="right">
+                <template slot-scope="scope">
+                    <div class="cz_button">
+                        <el-button type="danger" size="mini" @click="delrow(scope.row.id)">删除</el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+    <div class="modulePaging">
+        <div class="">
+            <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
+            <el-button @click="delAllBottom" size="mini">批量删除</el-button>
+        </div>
+        <div class="modulePagNum">
+            <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                           :current-page="currentPage" :page-sizes="pageSizes" :page-size="perPage"
+                           layout="total, sizes, prev, pager, next, jumper" :total="total">
+            </el-pagination>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    const custoapp = new Vue({
+        el: '#hyfl',
+        data: function () {
+            return {
+                emptytext: '暂无数据',
+                loading: false,
+                tableData: [], //表格数据
+                checkedAll: false,
+                selectedItem: [],
+                currentPage: 1,
+                perPage: 0,
+                pageSizes: [],
+                total: 0,
+                type: '1',
+                keyword: '',
+                grouparr: [],
+				sort_type: '',
+				sort_col: '',
+                prevPage:0
+            }
+        },
+        created: function () {
+
+            this.getGroup();
+            this.getList();
+        },
+        methods: {
+            handleSelectionChange(val) {
+                this.selectedItem = [];
+                let _this = this;
+                if (val.length) {
+                    val.forEach(item => {
+                        _this.selectedItem.push(item.id);
+                    });
+                }
+                if (_this.selectedItem.length == 0) {
+                    _this.checkedAll = false;
+                } else {
+                    if (_this.selectedItem.length == _this.tableData.length) {
+                        _this.checkedAll = true;
+                    } else {
+                        _this.checkedAll = false;
+                    }
+                }
+            },
+            selectAllBottom(value) {
+                value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+            },
+            handleSizeChange(val) {
+                this.perPage = val;
+                this.getList()
+            },
+            handleCurrentChange(val) {
+                this.currentPage = val;
+                this.getList()
+            },
+            search() {
+                this.currentPage = 1;
+                this.getList();
+            },
+			sortChange: function (column) {
+			    if (column.order == 'descending') {
+			        this.sort_type = 'desc';
+			    } else if (column.order == 'ascending') {
+			        this.sort_type = 'asc';
+			    } else {
+			        this.sort_type = '';
+			    }
+				this.sort_col = column.prop
+			    this.search();
+			},
+            getGroup: async function () {
+                let that = this;
+                httpPost('m=neirong&c=evaluate&a=recordGroup', {}, {hideloading: true}).then(function (result) {
+                    var res = result.data
+                    if (res.error == 0) {
+                        that.grouparr = res.data.arr
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            async getList() {
+                let that = this;
+                let params = {
+                    page: that.currentPage,
+                    pageSize: that.perPage
+                }
+                if (that.type) {
+                    params.type = that.type
+                }
+                if (that.keyword) {
+                    params.keyword = that.keyword
+                }
+				if (that.sort_type && that.sort_col) {
+				    params.order = that.sort_type
+				    params.t = that.sort_col
+				}
+                that.loading = true;
+                that.emptytext = "数据加载中";
+                httpPost('m=neirong&c=evaluate&a=record', params, {hideloading: true}).then(function (result) {
+                    var res = result.data
+                    if (res.error == 0) {
+                        that.tableData = res.data.list
+                        that.perPage = parseInt(res.data.perPage)
+                        that.pageSizes = res.data.pageSizes
+                        that.total = parseInt(res.data.total)
+                        if(that.prevPage != that.currentPage){
+                            that.prevPage = that.currentPage;
+                            that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        }
+                        that.loading = false;
+                        if (that.tableData.length === 0){
+                            that.emptytext = "暂无数据";
+                        }
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            delrow(id) {
+                delConfirm(this, id, this.delete);
+            },
+            delAllBottom() {
+                if (!this.selectedItem.length) {
+					message.error('请选择要删除的数据项');
+                    return false;
+                }
+                delConfirm(this, this.selectedItem, this.delete);
+            },
+            async delete(id) {
+                let that = this;
+                let params = {
+                    del: id
+                };
+                httpPost('m=neirong&c=evaluate&a=delevaluatelog', params).then(function (response) {
+                    if (response.data.error == 0) {
+                        message.success(response.data.msg);
+                        that.getList();
+                    } else {
+                        message.error(response.data.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+        }
+    });
+</script>
+
+</html>
+<style>
+    .hydialog_item {
+        display: flex;
+    }
+</style>

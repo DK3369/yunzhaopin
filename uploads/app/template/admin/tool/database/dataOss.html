@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../header.js"></script>
+    <script src="../../httpVueLoader.js"></script>
+</head>
+<body>
+<div id="ossConfigApp" class="moduleDome">
+    <div class="tableDome_tip" style="margin-top: 12px;">
+        <el-alert title="关闭时文件上传到网站服务器，开启后网站文件将上传到阿里云OSS" type="success" :closable="false"></el-alert>
+    </div>
+    <div class=" moduleTable">
+
+        <table class="tableVue">
+            <thead>
+            <tr align="left">
+                <th width="200">名称</th>
+                <th width="400">状态</th>
+                <th>说明</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <div class="TableTite">阿里云OSS存储</div>
+                </td>
+                <td>
+                    <div class="TableButn">
+                        <el-radio-group v-model="ossConfig.sy_oss">
+                            <el-radio :label="1">开启</el-radio>
+                            <el-radio :label="2">关闭</el-radio>
+                        </el-radio-group>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>关闭时文件上传到网站服务器，开启后网站文件将上传到阿里云OSS</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">OSS存储地址</div>
+                </td>
+                <td>
+                    <div class="TableInpt">
+                        <el-input v-model="ossConfig.userdomain" placeholder="https://phpyun50.oss-cn-beijing.aliyuncs.com "></el-input>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>阿里云OSS远程存储地址, 如https://img.hr135.com</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">Access Key ID</div>
+                </td>
+                <td>
+                    <div class="TableInpt">
+                        <el-input v-model="ossConfig.access_id" placeholder=" "></el-input>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span> </span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">Access Key Secret</div>
+                </td>
+                <td>
+                    <div class="TableInpt">
+                        <el-input v-model="ossConfig.access_key" placeholder=" "></el-input>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span> </span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">EndPoint</div>
+                </td>
+                <td>
+                    <div class="TableInpt">
+                        <el-input v-model="ossConfig.endpoint" placeholder=" "></el-input>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span> </span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="TableTite">Bucket</div>
+                </td>
+                <td>
+                    <div class="TableInpt">
+                        <el-input v-model="ossConfig.bucket" placeholder=" "></el-input>
+                    </div>
+                </td>
+                <td>
+                    <div class="TableShuom">
+                        <span>存储空间名称</span>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="setBasicButn" style="border: none;">
+            <el-button type="primary" size="medium" @click="setOssConfig" :disabled="saveLoading">提交</el-button>
+        </div>
+    </div>
+</div>
+<script>
+    const ossConfigApp = new Vue({
+        el: '#ossConfigApp',
+        data: function () {
+            return {
+                ossConfig: [],
+                saveLoading: false
+            }
+        },
+        created(){
+            this.getOssConfig();
+        },
+        methods: {
+            async getOssConfig() {
+                let res = await httpPost('m=tool&c=dataOss');
+                if (res.data.error == 0) {
+
+                    this.ossConfig = res.data.data;
+                    this.ossConfig.sy_oss = this.ossConfig.sy_oss == '1' ? 1 : 2;
+                }
+            },
+            setOssConfig: function () {
+                let that = this;
+                let params = {
+                    ossConfig: 1,
+                    sy_oss: that.ossConfig.sy_oss,
+                    userdomain: that.ossConfig.userdomain,
+                    access_id: that.ossConfig.access_id,
+                    access_key: that.ossConfig.access_key,
+                    endpoint: that.ossConfig.endpoint,
+                    bucket: that.ossConfig.bucket
+                };
+                that.saveLoading = true;
+                httpPost('m=tool&c=dataOss&a=setOssConfig', params).then(function (res) {
+                    if (res.data.error == 0) {
+                        message.success(res.data.msg);
+                    } else {
+                        message.error(res.data.msg);
+                    }
+                }).finally(function () {
+                    setTimeout(function () {
+                        that.saveLoading = false;
+                    }, 2000);
+                });
+            },
+        }
+    });
+</script>
+</body>
+
+</html>

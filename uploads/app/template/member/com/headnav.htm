@@ -1,0 +1,106 @@
+<body>
+	<div class="body_box">
+		<header>
+			<div class="header">
+				<div class="header_fixed">
+					<div class="header-logo fltL">
+						<a href="{yun:}$config.sy_weburl{/yun}" target="_blank">
+							<img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_unit_logo{/yun}" class="png">
+						</a>
+					</div>
+					<div class="user_headerright">
+						<a href="{yun:}$config.sy_weburl{/yun}" target="_blank" title="返回网站首页" class="user_m_fanh">返回首页</a>
+						<div class="yun_m_headermsg" onmouseover="tzmsgNumShow('show')" onmouseout="tzmsgNumShow('hide')">
+							<i class="yun_m_headermsg_icon"></i>通知中心
+							<span class="yun_m_headermsg_n" id="tzmsgNum" style="display:none"></span>
+							<div class="yun_m_headermsg_box" style="display:none">
+								<div class="yun_m_headermsg_list">
+									<a href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=hr&state=1">职位申请
+										<em class="yun_m_headermsg_list_n" id="jobApplyNum"></em>
+									</a>
+								</div>
+								<div class="yun_m_headermsg_list">
+									<a href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=sysnews">系统消息
+										<em class="yun_m_headermsg_list_n" id="sysmsgNum"></em>
+									</a>
+								</div>
+								{yun:}if $config.com_message == 1{/yun}
+								<div class="yun_m_headermsg_list">
+									<a href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=msg">求职咨询
+										<em class="yun_m_headermsg_list_n" id="jobAskNum"></em>
+									</a>
+								</div>
+								{yun:}/if{/yun}
+							</div>
+						</div>
+						<div class="header_m_navright">
+							{yun:}if (isset($vipIsDown) || empty($company.rating)){/yun}
+							<!--未开通会员或会员到期，显示购买提示-->
+							<div class="new_com_headervipbox" onMouseOver="headervipShow('show')" onMouseOut="headervipShow('hide')">
+								<div class="new_com_headervip">开通超级会员</div>
+								<div class="new_com_headervipshow" style="display: none;">
+									<div class="new_com_headerviptop">
+										<div class="new_com_headerviptop_c">你还不是VIP超级会员
+											<a href="index.php?c=right" class="new_com_headervipbth">开通会员</a>
+										</div>
+									</div>
+									<div class="new_com_headerviptit"></div>
+									<div class="headervip">
+										<a href="index.php?c=right" class="headervip_bth"><i class="headervipicon headervip1"></i>专属客服</a>
+										<a href="index.php?c=right" target="_blank" class="headervip_bth"><i class="headervipicon headervip2"></i>身份标识</a>
+										<a href="index.php?c=right" class="headervip_bth"><i class="headervipicon headervip3"></i>置顶推广</a>
+										<a href="index.php?c=right" class="headervip_bth"><i class="headervipicon headervip4"></i>查看更多</a>
+									</div>
+									<div class="headerviptit">我的权益</div>
+									<div class="headervip">
+										<a href="index.php?c=paylogtc" class="headervip_bth"><i class="headervipicon headervip1"></i>我的服务</a>
+										<a href="index.php?c=paylog" target="_blank" class="headervip_bth"><i class="headervipicon headervip2"></i>订单管理</a>
+										
+									</div>
+									<div class="headervip">
+										
+										<a href="index.php?c=integral" class="headervip_bth"><i class="headervipicon headervip1"></i>{yun:}$config.integral_pricename{/yun}管理</a>
+									</div>
+								</div>
+							</div>
+							{yun:}/if{/yun}
+							<div class="yun_m_headertx" onMouseOver="headerInfoShow('show')" onMouseOut="headerInfoShow('hide')">
+								<a href="index.php?c=uppic" class="yun_m_headertxa">
+									<img src="{yun:}$company.logo{/yun}" width="30" height="30" />
+								</a>
+								<div class="yun_m_headertx_hi">{yun:}$company.linkman{/yun}</div>
+								<div class="yun_m_header_info" style="display: none;">
+									<div class="user_infobox">
+										<div class="user_infobox_c">
+											<div class="user_infobox_zg">
+												<span class="user_infobox_zg_n">{yun:}$company.linkman{/yun}</span>{yun:}$company.linkjob{/yun}
+												<i class="user_infobox_cj"></i>
+											</div>
+											<div class="user_infobox_comname">
+												{yun:}if $company.name{/yun}
+												{yun:}$company.name{/yun}<a href="index.php?c=info" class="user_infobox_combj">编辑</a>
+												{yun:}if $company_rating.com_pic{/yun} 
+												<img src="{yun:}$company_rating.com_pic{/yun}" width="16">
+												{yun:}/if{/yun}
+												{yun:}else{/yun}
+												<a href="index.php?c=info" style="color: #f60; text-decoration: underline">您还未完善企业信息，点击完善！</a>
+												{yun:}/if{/yun}
+											</div>
+										</div>
+									</div>
+									<div class="user_tc_tset">
+										<a href="index.php?c=vs" title="修改密码" class="user_set_bth"><i class="user_set_icon user_set_icon2"></i>修改密码</a>
+										<a href="index.php?c=binding" class="user_set_bth"><i class="user_set_icon user_set_icon3"></i>账号认证</a>
+									</div>
+									<div class="user_tcdl">
+										<a href="javascript:void(0)" onClick="logout('index.php?act=logout')" title="退出登录" class="user_tcdlbth" style="border:none;">退出登录</a>
+									</div>
+								</div>
+							</div>
+							<span class="user_headertel">招聘咨询电话：<span class="user_headertel_n">{yun:}($config.sy_comwebtel!='')?$config.sy_comwebtel:$config.sy_freewebtel{/yun}</span></span>
+						</div>
+					</div>
+				</div>
+				<div class="clear"></div>
+			</div>
+		</header>

@@ -1,0 +1,427 @@
+{yun:}include file="$wapstyle/header_cont.htm"{/yun}
+<link rel="stylesheet" type="text/css" href="{yun:}$wap_style{/yun}/js/webapppic/cropper.css?v={yun:}$config.cachecode{/yun}" />
+<link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/style.css?v={yun:}$config.cachecode{/yun}" type="text/css" />
+<style type="text/css">
+    body{font-size: 14px !important;}
+    [v-cloak] {display: none;}
+</style>
+
+<!--页面主结构结束-->
+<!--单页面开始-->
+<div id="main">
+    <!--页面主内容区开始-->
+    <ul class="yun_newwap_box">
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name">我想招聘</span>
+            <span class="yun_newwap_text_box"> 
+				<input type="text" id="title" name="title" value="{yun:}$row.title{/yun}" class="reinputText" placeholder="请填写招聘名称,如厨师">
+            </span>
+        </li>
+	 
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name">工作薪资</span>
+            <span class="yun_newwap_text_box"> 
+            <input type="text" id="salary" name="salary"  value="{yun:}$row.salary{/yun}"  onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" class="reinputText" placeholder="请填写工资">
+            </span>
+        </li>
+        <li class=""><span class="yun_newwap_text_name">工作地区</span>
+            <span class="yun_newwap_text_box" @click="showArea=true">
+                <button id='cityPicker' type='button' v-cloak>{{city  ? city : '请填写工作地区'}}</button>
+                <input type="hidden" id="provinceid" name="provinceid" v-model="provinceid">
+                <input type="hidden" id="cityid" name="cityid" v-model="cityid">
+                <input type="hidden" id="three_cityid" name="three_cityid" v-model="three_cityid">
+            </span>
+        </li>
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name">详细地址</span>
+            <span class="yun_newwap_text_box"> 
+				<input type="text" id="address" name="address" value="{yun:}$row.address{/yun}"  class="reinputText" placeholder="请填写详细地址">
+            </span>
+        </li>
+        <li>
+            <span class="yun_newwap_text_name">招聘要求</span>
+            <div class="yun_newwap_text_box yun_newwap_text_box_p" @click="onRequireShow" v-cloak>{{require  ? require : '请填写'}}
+                <textarea style="display: none;" id="contents" name="require" :value="require" ></textarea>
+            </div>
+        </li>
+    </ul>
+
+    <ul class="yun_newwap_box mt15">
+        
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name">店面名称</span>
+            <div class="yun_newwap_text_box">
+                <input type="text" id="companyname" name="companyname" value="{yun:}$row.companyname{/yun}" class="reinputText" placeholder="请填写店铺名称">
+            </div>
+        </li>
+        
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name">联&nbsp;系&nbsp; 人</span>
+            <div class="yun_newwap_text_box">
+                <input type="text" id="linkman" name="linkman" value="{yun:}$row.linkman{/yun}" class="reinputText" placeholder="请填写联系人">
+            </div>
+        </li>
+        
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name">联系电话</span>
+            <div class="yun_newwap_text_box">
+                <input type="text" id="phone" name="phone" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" value="{yun:}$row.phone{/yun}" class="reinputText" placeholder="请填写联系电话">
+            </div>
+        </li>
+		{yun:}if strpos($config.code_web,"店铺招聘")!==false{/yun}
+			{yun:}if $config.code_kind == 1{/yun}
+			<li class="yun_newwap_text"><span class="yun_newwap_text_name">验证码</span>
+				<div class="yun_newwap_yz">
+					<input type="text" id="checkcode" name="checkcode" id="checkcode" value="" placeholder="请输入图片验证码">
+					<div class="yun_newwap_yz_img">
+						<img id="vcode_img" class="" src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php" onclick="checkCode('vcode_img');" />
+					</div>
+				</div>
+			</li>
+			{yun:}/if{/yun}
+		{yun:}/if{/yun}
+		{yun:}if $config.sy_msg_isopen==1{/yun}
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name">短信验证码</span>
+            <div class="yun_newwap_text_box yun_newwap_text_sjyz" style="padding-right:120px;">
+       <input type="text" id="moblie_code" class="inputitem_w input" name="moblie_code" placeholder="请填写短信验证码"><a href="javascript:;" id="send_msg_tip" onclick="send_msg('{yun:}url m=wap c=once a=sendmsg{/yun}')" class="yun_newwap_text_sjyz_send" style="width:">获取验证码</a>
+            </div>
+        </li>
+		{yun:}/if{/yun}
+
+        {yun:}if $row.id{/yun}
+        <li class="yun_newwap_text yunNewwapShicha"><span class="yun_newwap_text_name">招聘时长</span>
+            <div class=" yun_newwap_text_time">
+                <span class="yun_newwap_text_time_dw" style="top:10px;right:10px;">{yun:}$row.day_n{/yun} 天</span>
+            </div>
+        </li>
+        {yun:}else{/yun}
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name" style="top: 5px;">招聘时长</span>
+            <div class=" yun_newwap_text_time" @click="oncepricegearOpen">
+                <span>{{ oncepricegearStr ? oncepricegearStr : '请选择招聘时长'}}</span>
+                <input type="hidden" id="oncepricegear" name="oncepricegear" :value="oncepricegear"/>
+            </div>
+        </li>
+        {yun:}/if{/yun}
+
+    </ul>
+    {yun:}if $config.sy_once_yyzz == 1{/yun}
+    <ul class="yun_newwap_box ">
+        <li class=""><span class="yun_newwap_text_name">店面营业执照</span>
+            <div class="yun_newwap_text_box">
+                <span class="once_cont_wate_list_photo_pic" id="yyzzpreviewshow" style="right:30px;"> <img id="yyzzpreviewimg" src="{yun:}if $row.yyzz_n{/yun}{yun:}$row.yyzz_n{/yun}{yun:}/if{/yun}"   width="35" height="35"></span>
+                <div class="once_cont_wate_list_photo">
+                    <div class="yunset_list_file">
+                        <input type="file" id="yyzz" name="yyzz" onchange="previewImage(this,'yyzzpreview')" accept="image/*"  />
+                    </div>
+                    <input type='hidden' name='yyzzpreview' value='{yun:}$row.yyzz{/yun}' id='yyzzpreview'>
+                </div>
+            </div>
+        </li>
+    </ul>
+    {yun:}/if{/yun}
+    <ul class="yun_newwap_box ">
+ <li class=""><span class="yun_newwap_text_name">店面形象</span>
+     <div class="yun_newwap_text_box">
+     	<span class="once_cont_wate_list_photo_pic" id="previewshow" style="right:30px;"> <img id="previewimg" src="{yun:}if $row.pic_n{/yun}{yun:}$row.pic_n{/yun}{yun:}else{/yun}{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_once_icon{/yun}{yun:}/if{/yun}"   width="35" height="35"></span>
+         <div class="once_cont_wate_list_photo">
+        		<div class="yunset_list_file"> 
+         	<input type="file" id="pic" name="pic" onchange="previewImage(this,'preview')" accept="image/*"  />
+        		</div>
+        		<input type='hidden' name='preview' value='{yun:}$row.pic{/yun}' id='preview'>  
+         </div>
+     </div>
+ </li>
+     </ul>
+    <ul class="yun_newwap_box ">
+        {yun:}if $row.id==''{/yun}
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name">设置密码</span>
+            <div class="yun_newwap_text_box">
+                <input type="password" id="password" name="password" onkeyup="this.value=this.value.replace(/^ +| +$/g,'')" class=" " placeholder="请输入密码">
+            </div>
+        </li>
+        {yun:}else{/yun}
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name">密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码</span>
+            <div class="yun_newwap_text_box">
+                <input type="password" id="password" name="password" onkeyup="this.value=this.value.replace(/^ +| +$/g,'')" class=" " placeholder="请输入密码">
+            </div>
+        </li>
+		{yun:}/if{/yun} 
+		
+		
+    </ul>   <div class="yun_newwap_box_ts">提示：密码可用于刷新/修改/删除此信息</div>
+    <div class="yun_newwap_bth ">
+		<input id="id" name="id" value="{yun:}$row.id{/yun}" type="hidden" /> 
+		<button id="oncesubmit" type="button" onclick="oncesubmit()">提交操作</button>
+	</div>
+
+    <van-popup v-model="showArea" round position="bottom">
+       <van-cascader
+        v-model="areaValue"
+        title="请选择地区"
+        :options="areaList"
+        @close="showArea = false"
+        @finish="onAreaFinish"
+       />
+    </van-popup>
+
+    <van-popup v-model="showoncepricegear" round position="bottom">
+        <div class="oncepriceAll none">
+            <h3>招聘时长</h3>
+            <div v-for="(opgitem, opgkey) in oncepricegearData.oncepricegear_index"
+                 :class="oncepricegearOpt.id && oncepricegearOpt.id == opgitem ? 'oncepriceList riceListLink' : 'oncepriceList'"
+                 @click="oncepricegearChange(opgitem, oncepricegearData.oncepricegear_name[opgitem], oncepricegearData.oncepricegear_price[opgitem])">
+                <span>{{oncepricegearData.oncepricegear_name[opgitem]}} 天</span>
+                <span>{{oncepricegearData.oncepricegear_price[opgitem]}} 元</span>
+            </div>
+            <div class="oncepriceClick" @click="oncepricegearConfirm">
+                <button>确定</button>
+            </div>
+        </div>
+    </van-popup>
+
+{yun:}if strpos($config.code_web,"店铺招聘")!==false{/yun}
+	{yun:}if $config.code_kind>2{/yun}
+		<div class="gtdx-captcha">
+			<div id="bind-captcha" data-id='oncesubmit' data-type='click'></div>
+			<input type='hidden' id="verify_token"  name="verify_token" value="">
+            {yun:}if $config.code_kind==6{/yun}
+            <input type='hidden' id="verify_str" name="verify_str" value="" />
+            {yun:}/if{/yun}
+			<input type='hidden' id="popup-submit">
+			<input type='hidden' id="bind-submit">
+		</div>
+	{yun:}/if{/yun}
+{yun:}/if{/yun}
+<!--单页面结束-->
+<van-popup v-model="requireShow" position="right" :style="{ height: '100%',width:'100%'}"@background-color: @gray-1;>
+    <header>
+        <div class="header">
+            <div class="header_fixed">
+                <div class="header_bg">
+                    <div class="header_cont">
+                        <a @click="cancelRequire" class="header_back hd-lbtn mui-action-back"></a>
+                        <div class="header_h1">
+                            <div class="header_words"> {yun:}$headertitle{/yun}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="yun_wap_info_brief none">
+      
+            <div class="yun_wap_info_brief_tit"> 招聘要求 </div>
+            <div class="yun_wap_info_brief_c">  <textarea class="  tip contenttext"  id="content" name="require" placeholder="请填写招聘的具体要求，如性别、学历、年龄、工作经验和工作待遇等"  v-model="require" ></textarea></div>
+        <div class="yunset_bth_box" @click="cancelRequire">   
+            <a class="yun_wap_info_brief_tit_bc mui-action-back">确定</a>    
+        </div>
+    </div>
+</van-popup>
+
+</div>
+<script>
+    var weburl = "{yun:}$config.sy_weburl{/yun}";
+    var code_web = "{yun:}$config.code_web{/yun}";
+	var formData = new FormData(),newuploadpic;
+
+</script>
+
+{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+{yun:}include file="$wapstyle/verify_js.htm"{/yun}
+
+<script src="{yun:}$wap_style{/yun}/js/onceadd.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$config.sy_weburl{/yun}/data/plus/city.cache.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/category.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/compress.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/exif.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script type="text/javascript">
+    (function() {
+        var num = '{yun:}$num{/yun}';
+        if(parseInt(num) > 0 ) {
+            showConfirm('您还有{yun:}$num{/yun}个订单未付款，是否继续发布！', function(){
+                window.location.href=wapurl+"index.php?c=once&a=paylog";
+            }, '继续发布', '去付款');
+        }
+    })()
+</script>
+<div id="require_s" style="display: none">{yun:}$row.require{/yun}</div>
+<script language="javascript">
+    var oncepricegearObj = eval('({yun:}$oncepricegearJson{/yun})');
+    var oncepricegear_num = oncepricegearObj ? oncepricegearObj.oncepricegear_name.length : 0;
+    var require_s = $("#require_s").html();
+    var cityParam={
+            sy_web_city_one:'{yun:}$config.sy_web_city_one{/yun}',
+            sy_web_city_two:'{yun:}$config.sy_web_city_two{/yun}',
+        };
+    var searchUrlObj = {};
+    '{yun:}if $searchUrlObj{/yun}'
+    searchUrlObj = JSON.parse('{yun:}$searchUrlObj{/yun}');
+    '{yun:}/if{/yun}'
+    var cityData    =   cityCategory(cityParam);
+    var vm = new Vue({
+        el: '#main',
+        data:{
+            showArea: false,
+            areaValue:'',
+            city:'{yun:}$city_name[$row.provinceid]{/yun}{yun:}$city_name[$row.cityid]{/yun}{yun:}$city_name[$row.three_cityid]{/yun}',
+            areaList: cityData,
+            provinceid:'{yun:}$row.provinceid{/yun}',
+            cityid:'{yun:}$row.cityid{/yun}',
+            three_cityid:'{yun:}$row.three_cityid{/yun}',
+            requireShow:false,
+            require:require_s,
+            showoncepricegear: false,
+            oncepricegearData: oncepricegearObj,
+            oncepricegear: '',
+            oncepricegearStr: '',
+            oncepricegearOpt: {
+                id: 0,
+                days: 0,
+                price: 0,
+            },
+        },
+        methods: {
+            onAreaFinish({ selectedOptions }) {
+                this.city = selectedOptions.map((option) => option.text).join('-');
+                searchUrlObj.provinceid = searchUrlObj.cityid = searchUrlObj.three_cityid = '';
+
+                if(selectedOptions[0] && selectedOptions[0].value>0){
+                    searchUrlObj.provinceid = selectedOptions[0].value;
+                    this.provinceid = selectedOptions[0].value;
+                }
+                if(selectedOptions[1] && selectedOptions[1].value>0){
+                    searchUrlObj.cityid = selectedOptions[1].value;
+                    this.cityid = selectedOptions[1].value;
+                }
+                if(selectedOptions[2] && selectedOptions[2].value>0){
+                    searchUrlObj.three_cityid = selectedOptions[2].value;
+                    this.three_cityid = selectedOptions[2].value;
+                }
+                this.showArea = false;
+            },
+            onRequireShow(){
+                this.requireShow = true;
+                $('.header_count').css('display',"none");
+                setTimeout(function() {
+                    $('.yun_wap_info_brief').show();
+                },200)
+            },
+            cancelRequire(){
+                this.requireShow = false;
+                $('.header_count').css('display',"block");
+            },
+            oncepricegearOpen: function(){
+                this.showoncepricegear = true;
+                setTimeout(function() {
+                    $('.oncepriceAll').show();
+                },200)
+            },
+            oncepricegearChange: function(id, days, price) {
+                this.oncepricegearOpt = {
+                    id: id,
+                    days: days,
+                    price: price,
+                }
+            },
+            oncepricegearConfirm: function() {
+                this.oncepricegear = this.oncepricegearOpt.id;
+                this.oncepricegearStr = this.oncepricegearOpt.days + ' 天/' + this.oncepricegearOpt.price + ' 元';
+                this.showoncepricegear = false;
+            }
+        }
+    });
+
+
+    var Timer;
+    var smsTimer_time = 120; //倒数 120
+    var smsTimer_flag = 120; //倒数 120
+    var smsTime_speed = 1000; //速度 1秒钟
+
+    //发送手机短信
+    function send_msg(url) {
+        var moblie = $('#phone').val();
+        var code;
+
+        var verify_token,verify_str;
+        if(moblie == "" || moblie == "请输入手机号码") {
+            showToast("请输入手机号码！");
+            return false;
+        } else {
+            if(!isjsMobile(moblie)) {
+                showToast('手机格式错误！');
+                return false;
+            }
+        }
+        var codesear = new RegExp('店铺招聘');
+        if(codesear.test(code_web) && exitsid("moblie_code")) {
+            if(code_kind == 1) {
+                code = $.trim($("#checkcode").val());
+                if(!code) {
+                    showToast('请填写图片验证码！');
+                    return false;
+                }
+            } else if(code_kind > 2) {
+                verify_token = $('input[name="verify_token"]').val();
+                if(verify_token == '') {
+                    $("#bind-captcha").attr('data-id','send_msg_tip');
+                    $("#bind-captcha").attr('data-type','click');
+                    if (code_kind == 6) {
+                        $("#bind-captcha").trigger("click");
+                    } else {
+                        $("#bind-submit").trigger("click");
+                    }
+                    return false;
+                }
+                verify_str = $('input[name="verify_str"]').val();
+            }
+        }
+
+        if(smsTimer_time == smsTimer_flag) {
+            Timer = setInterval("smsTimer($('#send_msg_tip'))", smsTime_speed);
+            showLoading();
+            $.post(url, {
+                moblie: moblie,
+                authcode: code,
+                verify_token:verify_token,
+                verify_str:verify_str
+            }, function(data) {
+                hideLoading();
+                if(data){
+                    var res = JSON.parse(data);
+                    if(res.error != 1){
+                        clearInterval(Timer);
+                    }
+                    showToast(res.msg, 2, function(){
+                        if(res.error != 1){
+                            if(code_kind == 1) {
+                                checkCode('vcode_img');
+                                
+                            } else if(code_kind >2) {
+                                $("#popup-submit").trigger("click");
+                            }
+                        }
+                    });
+                }
+            })
+        } else {
+            showToast('请勿重复发送！', 2);
+            return false;
+        }
+    }
+    
+    //倒计时
+    function smsTimer(obj) {
+        if(smsTimer_flag > 0) {
+            $(obj).html('重新发送(' + smsTimer_flag + 's)');
+            $(obj).attr({
+                'style': ''
+            });
+            smsTimer_flag--;
+        } else {
+            $(obj).html('重新发送');
+            $(obj).attr({
+                'style': ''
+            });
+            smsTimer_flag = smsTimer_time;
+            clearInterval(Timer);
+        }
+    }
+</script>
+
+</body>
+</html>

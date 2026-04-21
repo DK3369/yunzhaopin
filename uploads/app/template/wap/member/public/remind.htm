@@ -1,0 +1,15 @@
+{yun:}if $remind.info{/yun}
+
+<script>
+    var wapurl = '{yun:}url m=wap{/yun}';
+    var url = '{yun:}$remind.url{/yun}';
+    var info = '{yun:}$remind.info{/yun}';
+    var btninfo = '{yun:}$remind.btn{/yun}';
+
+    showConfirm(info, function () {
+        location.href = url;
+    }, '退出登录', btninfo, function () {
+        islogout('{yun:}url m=wap c=loginout{/yun}', '确认退出吗？');
+    });
+</script>
+{yun:}/if{/yun}

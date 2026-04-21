@@ -1,0 +1,59 @@
+{yun:}include file="$comstyle/header.htm"{/yun}
+<div class="w1000">
+    <div class="admin_mainbody">
+        {yun:}include file="$comstyle/left.htm"{/yun}
+        <div class=right_box>
+            <div class="newmember_screenbox">
+            <div class="newmember_screen">  
+            <div class="newmember_screenname">  导航自定义</div> 
+                </div>
+                    </div>
+          <div class=admincont_box>
+         
+                <div class="com_body" style=" padding-top:10px;">
+                    <div class=admin_textbox_04>
+                        <iframe id="supportiframe" name="supportiframe" onload="returnmessage('supportiframe');" style="display:none"></iframe>
+                        <form  action="index.php?c=customize&act=saveCustomize" target="supportiframe" method="post" id='myform' class="layui-form">
+                            <table class="com_table  " id="job_checkbokid">
+                                <tr>
+                                    <th>名称</th>
+                                    <th>排序</th>
+                                    <th>弹出窗口</th>
+                                    <th>显示</th>
+                                </tr>
+                                {yun:}foreach from=$navList item=v key=key{/yun}
+                                <tr id="nav_{yun:}$key{/yun}">
+                                    <td align="center">{yun:}$v.name{/yun}</td>
+                                    <td align="center">
+                                        <input type="number" name="sort_{yun:}$key{/yun}" id="sort_{yun:}$key{/yun}" value="{yun:}$v.sort{/yun}" class="layui-input" style="width: 100px; text-align: center;">
+                                    </td>
+                                    <td align="center">
+                                        <input type="checkbox" name="target_{yun:}$key{/yun}" id="target_{yun:}$key{/yun}" lay-skin="switch" lay-text="原窗口|新窗口" {yun:}if $v.target == 1{/yun}checked{yun:}/if{/yun} />
+                                    </td>
+                                    <td align="center">
+                                        <input type="checkbox" name="show_{yun:}$key{/yun}" id="show_{yun:}$key{/yun}" lay-skin="switch" lay-text="显示|隐藏" {yun:}if $v.show == 1{/yun}checked{yun:}/if{/yun} />
+                                    </td>
+                                    <input type="hidden"  name="url_{yun:}$key{/yun}" value="{yun:}$v.url{/yun}" />
+                                </tr>
+                                {yun:}/foreach{/yun}
+                                <tr>
+                                    <td colspan="4" align="center">
+                                        <button type="submit" class="layui-btn layui-btn-normal" >保存设置</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['form', 'layer'], function () {
+        var $ = layui.$,
+            form = layui.form,
+            layer = layui.layer;
+    });
+</script>
+{yun:}include file="$comstyle/footer.htm"{/yun}

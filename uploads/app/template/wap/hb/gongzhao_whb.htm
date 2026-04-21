@@ -1,0 +1,87 @@
+<link rel="stylesheet" href="{yun:}$wap_style{/yun}/hb/reset.css?v={yun:}$config.cachecode{/yun}" type="text/css"/>
+<section class='zhongxin'>
+    <div>
+        <ul class="poster-list-a pdb10 overflow ">
+            {yun:}foreach from=$gzHb item=v{/yun}
+            <li class="">
+                <div class="hb_listbox">
+                    <div class="poster_pic"><img src="{yun:}$v.pic_n{/yun}"></div>
+                    <div class="hb_listbox_name" style="background:#fff;">
+                        <div class="hb_cz">
+                            <a href="javascript:;" onclick="showHbDiv('{yun:}$v.id{/yun}')">预览</a>
+                            <a href="javascript:;" onclick="downWhb('{yun:}$v.id{/yun}');">下载</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            {yun:}/foreach{/yun}
+        </ul>
+    </div>
+</section>
+
+<div style="display: none;" id="imgDiv">
+    <img id="showImg" class="important" />
+</div>
+
+<script type="text/javascript" src="{yun:}$config.sy_weburl{/yun}/js/jquery-1.8.1.min.js?v={yun:}$config.cachecode{/yun}"></script>
+<link href="{yun:}$config.sy_weburl{/yun}/js/layui/css/layui.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet" type="text/css"/>
+<script src="{yun:}$config.sy_weburl{/yun}/js/layui/layui.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$config.sy_weburl{/yun}/js/layui/phpyun_layer.js?v={yun:}$config.cachecode{/yun}"></script>
+
+<script>
+
+    const weburl = '{yun:}$config.sy_weburl{/yun}';
+    const id = '{yun:}$gzid{/yun}';
+    
+    function showHbDiv(hb) {
+        
+        const url = weburl+'/index.php?m=ajax&c=getgongzhaoHb&id=' + id + '&hb=' + hb;
+
+        layer.open({
+            type: 1,
+            title: false,
+            content: '<div class="hb_tc"><img src="'+url+'" style="max-width: 100%;"></div>',
+            area: ['360px', 'auto'],
+            offset: '35px',
+            closeBtn: 0,
+            shadeClose: true
+        });
+    }
+
+    function downWhb(hb) {
+
+        const url = weburl+'/index.php?m=ajax&c=getgongzhaoHb&id=' + id + '&hb=' + hb;
+
+        const loading = layer.load('生成中...');
+
+        layer.open({
+            type: 1,
+            title: false,
+            content: '<div class="hb_tc"><img src="'+url+'" style="max-width: 100%;"></div>',
+            area: ['360px', 'auto'],
+            offset: '35px',
+            closeBtn: 0,
+            shadeClose: true
+        });
+
+        layer.close(loading);
+
+        const loading2 = layer.load('下载中...');
+
+        setTimeout(function () {
+
+            layer.close(loading2);
+
+            const a = document.createElement('a');          // 创建一个a节点插入的document
+            const event = new MouseEvent('click');           // 模拟鼠标click点击事件
+            a.download = 'gongzhaoHb'+'_'+ id+'_'+hb;           // 设置a节点的download属性值
+            a.href = url;                                 // 将图片的src赋值给a节点的href
+            a.dispatchEvent(event);
+
+        }, 1000);
+
+
+    }
+
+</script>
+</html>

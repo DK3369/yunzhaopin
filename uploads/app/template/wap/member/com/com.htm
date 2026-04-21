@@ -1,0 +1,204 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<section class="none" id="yunvue">
+    <div class="set_meal_tip">
+        <div class="set_meal_tip_name">尊敬的企业用户：</div>
+        <div class="">您当前是：
+            <span class="set_meal_tip_name_hy">{{statis.rating_name}}</span>
+            <span @click="pageTo('index.php?c=server')" class="set_meal_tip_a">升级套餐</span>
+            <br>
+            服务时间：
+            {{statis.vip_fwtime}}
+        </div>
+    </div>
+    <div class="set_meal_fa">
+        <ul>
+            <li>
+                <div class="set_meal_fa_list">
+                    <div class="set_meal_fa_name">职位上架</div>
+                    <div class="set_meal_fa_sy">{{statis.JobNum}}</div>
+                    <div class="set_meal_fa_fb" @click="jobAdd">发布职位</div>
+                </div>
+            </li>
+            <li>
+                <div class="set_meal_fa_list">
+                    <div class="set_meal_fa_name">面试邀请</div>
+                    <div class="set_meal_fa_sy" v-if="statis.rating_type==2">{{statis.invite_resume == 0?'-':statis.invite_resume+'次/天'}}
+                    </div>
+                    <div class="set_meal_fa_sy" v-else>{{statis.invite_resume}}</div>
+                    <div class="set_meal_fa_fb">
+                        <a onclick="navigateTo('{yun:}url m=wap c=resume{/yun}')" href="javascript:void(0)">搜人才</a>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </div>
+
+    <div class="set_meal_tit">专属服务使用情况</div>
+    <div class="set_meal_tit_p">彩线上方数字表示服务剩余套餐数据</div>
+
+    <div class="set_meal_box">
+        <div class="set_meal_box_cont">
+            <ul class="set_meal_box_list">
+                <li>
+                    <div class="set_meal_box_list_box">
+                        <div class="set_meal_name">简历下载</div>
+                        <div class="set_meal_n set_meal_n_line3" v-if="statis.rating_type==2">{{statis.down_resume == 0?'-':statis.down_resume}}
+                        </div>
+                        <div class="set_meal_n set_meal_n_line3" v-else>{{statis.down_resume}}</div>
+                        <div class="set_meal_yn">
+                            总：{{statis.rating_type==2 && rating.resume==0?'-':rating?rating.resume:0}}
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="set_meal_box_list_box">
+                        <div class="set_meal_name">职位刷新</div>
+                        <div class="set_meal_n set_meal_n_line4" v-if="statis.rating_type==2">{{statis.breakjob_num==0?'-':statis.breakjob_num}}
+                        </div>
+                        <div class="set_meal_n set_meal_n_line4" v-else>{{statis.breakjob_num}}</div>
+                        <div class="set_meal_yn">
+                            总：{{statis.rating_type==2 && rating.breakjob_num==0?'-':rating?rating.breakjob_num:0}}
+                        </div>
+                    </div>
+                </li>
+
+                <li>
+                    <div class="set_meal_box_list_box">
+                        <div class="set_meal_name">招聘会报名</div>
+                        <div class="set_meal_n set_meal_n_line7" v-if="statis.rating_type==2">{{statis.zph_num==0?'-':statis.zph_num}}
+                        </div>
+                        <div class="set_meal_n set_meal_n_line7" v-else>{{statis.zph_num}}</div>
+                        <div class="set_meal_yn">
+                            总：{{statis.rating_type==2 && rating.zph_num==0?'-':rating?rating.zph_num:0}}
+                        </div>
+                    </div>
+                </li>
+
+                <li>
+                    <div class="set_meal_box_list_box">
+                        <div class="set_meal_name">置顶天数</div>
+                        <div class="set_meal_n set_meal_n_line8" v-if="statis.rating_type==2">{{statis.top_num==0?'-':statis.top_num+'天'}}
+                        </div>
+                        <div class="set_meal_n set_meal_n_line8" v-else>{{statis.top_num}}</div>
+                        <div class="set_meal_yn">
+                            总：{{statis.rating_type==2 && rating.top_num==0?'-':rating?rating.top_num+'天':0+'天'}}
+                        </div>
+                    </div>
+                </li>
+
+                <li>
+                    <div class="set_meal_box_list_box">
+                        <div class="set_meal_name">紧急天数</div>
+                        <div class="set_meal_n set_meal_n_line9" v-if="statis.rating_type==2">{{statis.urgent_num==0?'-':statis.urgent_num+'天'}}
+                        </div>
+                        <div class="set_meal_n set_meal_n_line9" v-else>{{statis.urgent_num}}</div>
+                        <div class="set_meal_yn">
+                            总：{{statis.rating_type==2 && rating.urgent_num==0?'-':rating?rating.urgent_num+'天':0+'天'}}
+                        </div>
+                    </div>
+                </li>
+
+                <li>
+                    <div class="set_meal_box_list_box">
+                        <div class="set_meal_name">推荐天数</div>
+                        <div class="set_meal_n set_meal_n_line10" v-if="statis.rating_type==2">{{statis.rec_num==0?'-':statis.rec_num+'天'}}
+                        </div>
+                        <div class="set_meal_n set_meal_n_line10" v-else>{{statis.rec_num}}</div>
+                        <div class="set_meal_yn">
+                            总：{{statis.rating_type==2 && rating.rec_num==0?'-':rating?rating.rec_num+'天':0+'天'}}
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="set_meal_box_list_box">
+                        <div class="tcteq">
+                            <a href="javascript:void(0)" @click="pageTo('index.php?c=server')">
+                                <div class="tcteq_a">查看会员套餐特权></div>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+                
+            </ul>
+
+            <div class="clear"></div>
+        </div>
+    </div>
+
+
+</section>
+<script src="{yun:}$wap_style{/yun}/js/jsMath.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/com.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script type="text/javascript">
+    new Vue({
+        el: '#yunvue',
+        data: {
+            list: [],
+            statis: [],
+            rating: [],
+            isname: false,
+            istel: false,
+            isemail: false,
+            isyyzz: false,
+            isxy: false,
+            isgzh: false,
+            config: {}
+        },
+        created() {   
+            this.getCom();
+        },
+        methods:{
+            getCom:function(){
+                var that = this;
+                var paramer = {rand: Math.random()};
+                showLoading();
+                $.post('{yun:}url d=wxapp h=com m=finance c=com{/yun}',paramer,function(data){
+                    hideLoading();
+                    let res = data.data;
+                    that.statis = res.statis;
+                    if (res.JobNum){
+                        that.statis.JobNum = res.JobNum;
+                    }else{
+                        that.statis.JobNum = 0;
+                    }
+                    that.rating = res.rating;
+                    that.config = res.config;
+                    $("#yunvue").css('display', 'block');
+                },'json');
+            },
+            jobAdd: function () {
+                var self = this;
+                var url = "{yun:}url d=wxapp h=com m=index c=addCheck{/yun}";
+                comjobAdd(url, { job: 'job' }, function (res) {
+                    if (res.error==1) {
+                        // 套餐不足
+                        modalVue.$data.mb_content = res.msg;
+                        modalVue.$data.cancelText = '不用了';
+                        modalVue.$data.confirmText = '去购买';
+                        modalVue.$data.yunModal = true;
+                        modalType = 'job';
+                    } else if(res.error==2){
+                        modalVue.$data.mb_content = res.msg;
+                        modalVue.$data.cancelText = '取消';
+                        modalVue.$data.confirmText = '去发布';
+                        modalVue.$data.tourl = res.tourl;
+                        modalVue.$data.yunModal = true;
+                        modalType = 'toaddjob';
+                    }else {
+                        // 强制操作
+                        certVue.$data.checked = res;
+                        certVue.$data.yunCert = true;
+                    }
+                });
+            },
+            pageTo:function(url){
+                window.location.href = url;
+            }
+        }
+    });
+</script>
+<!-- 余额不足提示 -->
+{yun:}include file="$wapstyle/publichtm/yun_modal.htm"{/yun}
+</body>
+</html>

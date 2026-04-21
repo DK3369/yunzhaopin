@@ -1,0 +1,488 @@
+{yun:}include file="$comstyle/header.htm"{/yun}
+<div class="w1000">
+    <div class="admin_mainbody">
+        {yun:}include file="$comstyle/left.htm"{/yun}
+        
+    <div class="clear"></div>
+     <div class='right_box'>
+                <div class="newmember_tit">
+                <ul>
+                 <li class="newmember_titcur"><a href="index.php?c=hr" title="看过我的职位" class="   ">应聘简历</a></li>
+                <li><a href="index.php?c=down" title="关注我的简历" class=" ">我的下载</a></li>
+                <li> <a href="index.php?c=look_job" title="看过我的职位" class=" ">谁看过我</a></li>
+                 <li> <a href="index.php?c=attention_me" title="关注我的简历" class=" ">对我感兴趣</a></li>
+                <li><a href="index.php?c=look_resume" title="您浏览简历的记录" class=" ">我看过的简历</a></li>
+                <li><a href="index.php?c=talent_pool" title="加入人才库的简历" class=" ">我的收藏</a></li>
+                 
+                 </ul>
+                </div>
+                
+            <div class="newmember_screenbox">
+            <div class="newmember_screen">  
+            <ul>
+                <li {yun:}if $smarty.get.state==$one.id{/yun}class="job_list_tit_cur" {yun:}/if{/yun}>
+                    <a href="index.php?c=hr">全部</a>
+                </li>
+                {yun:}foreach from = $StateList item = one{/yun}
+                <li {yun:}if $smarty.get.state==$one.id{/yun}class="job_list_tit_cur" {yun:}/if{/yun}>
+                    <a href="index.php?c=hr&state={yun:}$one.id{/yun}">{yun:}$one.name{/yun}({yun:}$one.num{/yun})</a>
+                </li>
+                {yun:}/foreach{/yun}
+            </ul>   
+        
+            <div class="joblist_search">
+                <form class='layui-form' action="index.php" method='get' id='MyForm'>
+                    <div class="joblist_search_box">
+                        <input type="text" placeholder="在当前条件下筛选" class="joblist_search_box_text" name='keyword' value='{yun:}$smarty.get.keyword{/yun}'/>
+                        <input type="submit" value="" class="joblist_search_bth"/>
+                    </div>
+                    <input name='c' value='hr' type='hidden'/>
+                    <input name='rstate' id="rstate" value='' type='hidden'/>
+                    <input name='jobid' id="jobid" value='' type='hidden'/>
+                    <input type="hidden" id="resumetype" name="resumetype" value=""/>
+                    <input type="hidden" id="exp" name="exp" value=""/>
+                    <input type="hidden" id="edu" name="edu" value=""/>
+                    <input type="hidden" id="sex" name="sex" value=""/>
+                    <input type="hidden" id="uptime" name="uptime" value=""/>
+                    <a id="joblist_search_more" href="javascript:void(0);" onclick="$('#jlsx').show();" class="joblist_search_more">更多筛选</a>
+                </form>
+            </div>
+            
+            <div class="ypjob" id="yp_jobname"  onclick="yp_jobshow();">
+                <div class="ypjob_name">{yun:}if $current.name{/yun}{yun:}$current.name{/yun}{yun:}else{/yun}应聘职位筛选{yun:}/if{/yun}</div>
+                <div id="yp_joblist" class="ypjob_box" style="display: none;">
+                    <a href="javascript:void(0);" onclick="sxjob('',this);">全部</a>
+                    {yun:}foreach from = $JobList item=v {/yun}
+                    <a href="javascript:void(0);" onclick="sxjob('{yun:}$v.id{/yun}',this);">{yun:}$v.name{/yun}</a>
+                    {yun:}/foreach{/yun}
+                </div>
+            </div>
+             </div> 
+             </div>
+         
+
+       
+            <div class='admincont_box'>
+                <div class='com_body'>
+                    <div class="admin_textbox_04">
+
+                        <div class="clear"></div>
+
+                        <!-- 筛选部分 -->
+                        <!-- 收到简历列表 -->
+                        <iframe id="supportiframe" name="supportiframe" onload="returnmessage('supportiframe');" style="display:none"></iframe>
+                        <form action='{yun:}$now_url{/yun}&act=hrset' target="supportiframe" method="post" id='myform' class='layui-form'>
+                            <table class="com_table">
+                                {yun:}if $rows{/yun}
+                                <tr>
+                                    <th style="border-radius:6px 0 0 6px ;">基本信息</th>
+                                    <th>投递职位</th>
+                                    <th>联系电话</th>
+                                    <th>状态</th>
+                                    <th>查看简历</th>
+                                    <th style="border-radius:0 6px 6px 0 ;" width="212">操作</th>
+                                </tr>
+                                {yun:}/if{/yun}
+                                {yun:}foreach item=v from=$rows{/yun}
+                                <tr>
+                                    <td>
+                                        <div class="newcom_user_info">
+                                            <span class="newcom_user_infoheckb">
+                                                <input type="checkbox" name="delid[]" value="{yun:}$v.id{/yun}" class="newcom_user_infoheck" lay-skin="primary"/>
+                                            </span>
+                                            <div class="newcom_user_pic"><img src="{yun:}$v.photo{/yun}"></div>
+                                            <div>
+                                                {yun:}if $v.state==1{/yun}
+                                                    <a href="javascript:void(0)" onclick="com_lookresume_check('{yun:}$v.eid{/yun}','{yun:}$v.resume_status{/yun}','{yun:}$v.state{/yun}')" class="newcom_user_name">{yun:}$v.username_n{/yun}</a>
+                                                    <!--<a href="javascript:void(0);" onclick="rstateTip('{yun:}$v.state{/yun}');" class="newcom_user_name">{yun:}$v.name{/yun}</a>-->
+                                                {yun:}/if{/yun}
+                                                {yun:}if $v.state_n{/yun}
+                                                    <span class="newcom_user_zt">{yun:}$v.state_n{/yun}</span>
+                                                {yun:}/if{/yun}
+                                                {yun:}if $v.userid_msg == 1{/yun}<span class="hr_yyy">已邀约</span>{yun:}/if{/yun}
+                                                {yun:}if $v.islink == 1{/yun}<span class="hr_yxz">已下载</span>{yun:}/if{/yun}
+                                            </div>
+
+                                            <div class="newcom_user_infop">
+                                                {yun:}if $v.sex{/yun}{yun:}$v.sex{/yun}{yun:}else{/yun}保密{yun:}/if{/yun} · {yun:}if $v.exp{/yun}{yun:}$v.exp{/yun}经验 · {yun:}/if{/yun}{yun:}if $v.edu{/yun}{yun:}$v.edu{/yun}学历 · {yun:}/if{/yun}{yun:}$v.age{/yun}岁
+                                            </div>
+                                            <div>期望薪资：{yun:}$v.salary{/yun}</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            投递了<a href="{yun:}if $v.type==1 {/yun}{yun:}url m=job c=comapply id=$v.job_id{/yun}{yun:}elseif $v.type==2 {/yun}{yun:}url m=lietou c=jobcomshow id=$v.job_id{/yun}{yun:}/if{/yun}" target="_blank" class="newcom_user_td">{yun:}$v.job_name{/yun}</a>
+                                        </div>
+                                        <div class="com_received_tdtime">投递时间 {yun:}$v.datetime_n{/yun}</div>
+                                    </td>
+
+                                    <td align="center">
+                                        <div>
+                                            {yun:}if $v.state==1{/yun}
+                                                {yun:}if $v.islink==1{/yun}
+                                                    {yun:}if $v.is_browse == 1{/yun}
+                                                    <!--状态是未查看的，不展示联系方式，需要先查看简历-->
+                                                    <a href="javascript:void(0)" onclick="com_lookresume('{yun:}$v.eid{/yun}')" class="newcom_user_tel">查看联系方式</a>
+                                                    {yun:}else{/yun}
+                                                    <a class="newcom_user_tel">{yun:}$v.telphone{/yun}</a>
+                                                    {yun:}/if{/yun}
+                                                {yun:}else if $freenum{/yun}
+                                                    <a class="newcom_user_tel" href="javascript:void(0);" onclick="downResume('{yun:}$v.eid{/yun}','{yun:}Url m='ajax' c='for_link'{/yun}')">查看联系方式</a>   
+                                                {yun:}else if $statis.down_resume > 0{/yun}
+                                                    <a class="newcom_user_tel" href="javascript:void(0);" onclick="isDownResume('{yun:}$v.eid{/yun}','{yun:}Url m='ajax' c='for_link'{/yun}', '{yun:}$statis.down_resume{/yun}')">查看联系方式</a>
+                                                {yun:}else{/yun}
+                                                    <a class="newcom_user_tel" href="javascript:void(0);" onclick="downResume('{yun:}$v.eid{/yun}','{yun:}Url m='ajax' c='for_link'{/yun}')">查看联系方式</a>
+                                                {yun:}/if{/yun}
+                                            {yun:}else{/yun}
+                                                <a class="newcom_user_tel" href="javascript:void(0);" onclick="rstateTip('{yun:}$v.state{/yun}');">查看联系方式</a>
+                                            {yun:}/if{/yun}
+                                        </div>
+                                    </td>
+
+                                    <td align="center">
+                                        <div>
+                                            {yun:}if $v.is_browse=='1'{/yun}
+
+                                                {yun:}if $v.body !=''{/yun}
+                                                    <span class="com_received_zt com_received_zt_bhs"><i class="com_received_zt_icon "></i>取消申请</span>
+                                                    <span onclick="lookreason('{yun:}$v.body{/yun}')" style=" display:block; padding-top:5px;color:#4a89e8; text-decoration:underline; cursor:pointer">查看原因</span>
+                                                {yun:}else{/yun}
+                                                    <span class="com_received_zt com_received_zt_dcl"><i class="com_received_zt_icon"></i>未查看</span>
+                                                {yun:}/if{/yun}
+                                            {yun:}elseif $v.is_browse=='2'{/yun}
+
+                                                <span class="com_received_zt com_received_zt_yck"><i class="com_received_zt_icon"></i>已查看</span>
+                                            {yun:}elseif $v.is_browse=='3'{/yun}
+
+                                                <span class="com_received_zt com_received_zt_dtz"><i class="com_received_zt_icon"></i>已面试</span>
+                                            {yun:}elseif $v.is_browse=='4'{/yun}
+
+                                                <span class="com_received_zt com_received_zt_bhs"><i class="com_received_zt_icon"></i>不合适</span>
+                                            {yun:}elseif $v.is_browse=='5'{/yun}
+
+                                                <span class="com_received_zt com_received_zt_bhw"><i class="com_received_zt_icon"></i>未接通</span>
+                                            {yun:}elseif $v.is_browse=='7'{/yun}
+
+                                                <span class="com_received_zt com_received_zt_wjt"><i class="com_received_zt_icon"></i>已入职</span>
+                                            {yun:}/if{/yun}
+                                        </div>
+
+                                    </td>
+                                    <td align="center">
+                                        <a href="javascript:void(0)" style="background: #3d7dfd; color: #fff;" onclick="com_lookresume_check('{yun:}$v.eid{/yun}','{yun:}$v.resume_status{/yun}')" class=" com_bth cblue">查看简历</a>
+                                    </td>
+                                    <td align="center">
+                                        <div class="">
+                                            <div class="com_received_username_bjbox bj_{yun:}$v.id{/yun}" onmouseover='bjAddClass({yun:}$v.id{/yun});' onmouseout='bjRemoveClass({yun:}$v.id{/yun});'>
+                                                <span class="com_received_username_bj" style="cursor:pointer;">标记</span>
+                                                <div class="com_received_username_bjbox_show">
+                                                    <!--<a href="javascript:void(0);" onclick='changeBrowse(1,{yun:}$v.id{/yun})' class="com_received_username_bjbox_show_a"><i class="com_received_username_dclicon"></i>未查看</a>-->
+                                                    <a href="javascript:void(0);" onclick='changeBrowse(2,{yun:}$v.id{/yun})' class="com_received_username_bjbox_show_a"><i class="com_received_username_yckicon"></i>已查看</a>
+                                                    <a href="javascript:void(0);" onclick='changeBrowse(3,{yun:}$v.id{/yun})' class="com_received_username_bjbox_show_a"><i class="com_received_username_dtzicon"></i>已面试</a>
+                                                    <a href="javascript:void(0);" onclick='changeBrowse(4,{yun:}$v.id{/yun})' class="com_received_username_bjbox_show_a"><i class="com_received_username_bhgicon"></i>不合适</a>
+                                                    <a href="javascript:void(0);" onclick='changeBrowse(7,{yun:}$v.id{/yun})' class="com_received_username_bjbox_show_a"><i class="com_received_username_wjticon"></i>已入职</a>
+                                                </div>
+                                            </div>
+                                            <div class="com_received_username_bjbox ">
+                                                <a href="javascript:;" class="com_received_username_bj cblue" onclick="remark('{yun:}$v.uid{/yun}','{yun:}$v.eid{/yun}');">备注</a>
+                                            </div>
+                                            <div class="com_received_username_bjbox ">
+                                                <a href="javascript:void(0);" onclick="layer_del('确定要删除该条职位申请吗？', 'index.php?c=hr&act=hrset&delid={yun:}$v.id{/yun}');" class="com_received_username_bj">删除</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {yun:}if $v.remark{/yun}
+                                <tr><td colspan="9" style="background-color: #f5faff; "><div style="padding-left: 20px;;">↑ 备注状态：{yun:}$v.status_n{/yun}&nbsp;&nbsp;&nbsp;&nbsp;备注说明：{yun:}$v.remark{/yun}</div></td></tr>
+                                {yun:}/if{/yun}
+
+                                {yun:}/foreach{/yun}
+
+                                {yun:}if $rows{/yun}
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="newcom_user_info" style="width: 500px; padding-left: 30px;float: left;">
+                                            <span class="newcom_user_infoheckb" style="top:5px;"><input type="checkbox" lay-filter='allcom' lay-skin="primary"/></span>
+                                            全选
+                                            <input class="c_btn_02" type="button" name="subdel" value="批量删除" onclick="return really('delid[]');">
+                                            <input class="c_btn_02" type="button" name="subdel" value="批量标记" onclick="return changeBrowseAll('1','delid[]');" style="margin-left: 10px;">
+                                        </div>
+                                        <div class="diggg">{yun:}$pagenav{/yun}</div>
+                                    </td>
+                                </tr>
+                                {yun:}else{/yun}
+                                <tr>
+                                    <td colspan="7" class="table_end">
+                                        <div class="msg_no">
+                                            <p class="com_msg_no_name">人才库空空如也~</p>
+                                            <p>快去主动出击挑选心仪人才</p>
+                                            <a href="{yun:}url m=resume{/yun}" class="com_msg_no_bth com_submit">我要主动找人才</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {yun:}/if{/yun}
+                            </table>
+                        </form>
+
+                        <div class="clear"></div>
+
+<!--                    -->
+                        <div class="infoboxp22" id="remarkbox" style="display:none; ">
+                            <div>
+                                <form action="index.php?c=hr&act=remark" method="post" id="formstatus2"
+                                      target="supportiframe" class="layui-form">
+                                    <input name="uid" value="0" type="hidden">
+                                    <input name="eid" value="0" type="hidden">
+                                    <div class="newbz_list"><span class="newbz_list_name">当前状态：</span> <div class="layui-input-inline">
+                                                <select name="status" id="status" lay-filter="status">
+                                                    {yun:}foreach from=$comdata.job_remark key=j item=v{/yun}
+                                                    <option value="{yun:}$v{/yun}">{yun:}$comclass_name[$v]{/yun}</option>
+                                                    {yun:}/foreach{/yun}
+                                                </select>
+                                            </div></div>
+                                    <div class="newbz_list"><span class="newbz_list_name">备注说明：</span> <div class="newbz_textarea">
+                                        <textarea id="remark"  name="remark" cols="30" rows="9" class="hr_textarea"></textarea>
+                                    </div></div>
+                                    <div class="newbz_list"><div class="newbz_bthbox">
+                                        <button type="submit" name='submit' value='1' class="newbz_bth"  >确认</button>
+                                        </div>
+                                    </div>
+                                 
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<!--筛选弹出-->
+<div id="jlsx" style="display: none;">
+
+    <div id="jlsx_box" class="jlsx_box">
+        <div class="jlsx_box_tit">筛选 <a href="javascript:void(0);" onclick="$('#jlsx').hide();" class="jlsx_box_tit_c"></a></div>
+        <div class="jlsx_boxallpd">
+            <div class="jlsx_boxall">
+                {yun:}if $config.sy_shresume_applyjob==1{/yun}
+                <div class="jlsx_boxname">简历状态</div>
+                <div class="jlsx_box_p">
+                    <a href="javascript:void(0);" onclick="sxset('rstate','',this);" class="rstateCtrl jlsx_boxjy {yun:}if !isset($smarty.get.rstate) || $smarty.get.rstate==''{/yun}jlsx_boxjy_cur{yun:}/if{/yun}">全部</a>
+                    {yun:}foreach from = $resumestate item = rstate{/yun}
+                    <a href="javascript:void(0);" onclick="sxset('rstate','{yun:}$rstate.val{/yun}',this);" class="rstateCtrl jlsx_boxjy {yun:}if isset($smarty.get.rstate) && $smarty.get.rstate!='' && $smarty.get.rstate==$rstate.val{/yun}jlsx_boxjy_cur{yun:}/if{/yun}">{yun:}$rstate.name{/yun}</a>
+                    {yun:}/foreach{/yun}
+                </div>
+                {yun:}/if{/yun}
+                <div class="jlsx_boxname">经验要求</div>
+                <div class="jlsx_box_p">
+                    <a href="javascript:void(0);" onclick="sxset('exp','',this);" class="expCtrl jlsx_boxjy {yun:}if !$smarty.get.exp{/yun}jlsx_boxjy_cur{yun:}/if{/yun}">全部</a>
+                    {yun:}foreach from = $userdata.user_word item=v {/yun}
+                    <a href="javascript:void(0);" onclick="sxset('exp','{yun:}$v{/yun}',this);" class="expCtrl jlsx_boxjy {yun:}if $smarty.get.exp == $v{/yun}jlsx_boxjy_cur{yun:}/if{/yun}">{yun:}$userclass_name[$v]{/yun}</a>
+                    {yun:}/foreach{/yun}
+                </div>
+                <div class="jlsx_boxname">学历要求</div>
+                <div class="jlsx_box_p">
+                    <a href="javascript:void(0);" onclick="sxset('edu','',this);" class="eduCtrl jlsx_boxjy {yun:}if !$smarty.get.edu{/yun}jlsx_boxjy_cur{yun:}/if{/yun}">全部</a>
+                    {yun:}foreach from = $userdata.user_edu item=v {/yun}
+                    <a href="javascript:void(0);" onclick="sxset('edu','{yun:}$v{/yun}',this);" class="eduCtrl jlsx_boxjy {yun:}if $smarty.get.edu == $v{/yun}jlsx_boxjy_cur{yun:}/if{/yun}">{yun:}$userclass_name[$v]{/yun}</a>
+                    {yun:}/foreach{/yun}
+                </div>
+                <div class="jlsx_boxname">性别要求</div>
+                <div class="jlsx_box_p">
+                    <a href="javascript:void(0);" onclick="sxset('sex','',this);" class="sexCtrl jlsx_boxjy {yun:}if !$smarty.get.sex{/yun}jlsx_boxjy_cur{yun:}/if{/yun}">全部</a>
+                    {yun:}foreach from = $user_sex key = key item=v {/yun}
+                    <a href="javascript:void(0);" onclick="sxset('sex','{yun:}$key{/yun}',this);" class="sexCtrl jlsx_boxjy  {yun:}if $smarty.get.sex == $key{/yun}jlsx_boxjy_cur{yun:}/if{/yun}">{yun:}$v{/yun}</a>
+                    {yun:}/foreach{/yun}
+                </div>
+                <div class="jlsx_boxname">更新时间</div>
+                <div class="jlsx_box_p">
+                    <a href="javascript:void(0);" onclick="sxset('uptime','',this);" class="uptimeCtrl jlsx_boxjy {yun:}if !$smarty.get.uptime{/yun}jlsx_boxjy_cur{yun:}/if{/yun}">全部</a>
+                    {yun:}foreach from = $uptime key = key item=v {/yun}
+                    <a href="javascript:void(0);" onclick="sxset('uptime','{yun:}$key{/yun}',this);" class="uptimeCtrl jlsx_boxjy {yun:}if $smarty.get.uptime == $key{/yun}jlsx_boxjy_cur{yun:}/if{/yun}">{yun:}$v{/yun}</a>
+                    {yun:}/foreach{/yun}
+                </div>
+                <div class="jlsx_boxname">简历类型</div>
+                <div class="jlsx_box_p">
+                    <a href="javascript:void(0);" onclick="sxset('resumetype','',this);" class="resumetypeCtrl jlsx_boxjy {yun:}if !$smarty.get.resumetype{/yun}jlsx_boxjy_cur{yun:}/if{/yun}">全部</a>
+                    <a href="javascript:void(0);" onclick="sxset('resumetype','1',this);" class="resumetypeCtrl jlsx_boxjy {yun:}if $smarty.get.resumetype == 1{/yun}jlsx_boxjy_cur{yun:}/if{/yun}">普通简历</a>
+                    <a href="javascript:void(0);" onclick="sxset('resumetype','2',this);" class="resumetypeCtrl jlsx_boxjy {yun:}if $smarty.get.resumetype == 2{/yun}jlsx_boxjy_cur{yun:}/if{/yun}">优质简历</a>
+                </div>
+            </div>
+        </div>
+        <div class="jlsx_box_bth"><a href="javascript:void(0);" onclick="$('#MyForm').submit();" class="jlsx_box_bth_a">确定</a></div>
+    </div>
+    <div class="jlsx_bg"></div>
+</div>
+<!--筛选弹出 end-->
+
+<script>
+    $(function () {
+
+        $(document).bind("click", function (e) {
+            //目标对象
+            var object = $(e.target);
+            if (object.closest("#yp_jobname").length == 0) {
+                $('#yp_joblist').hide();
+            }
+
+            if (object.closest("#jlsx_box").length == 0 && object.closest("#joblist_search_more").length == 0) {
+                $('#jlsx').hide();
+            }
+
+        })
+
+        $(".bodyreturn").hover(function () {
+            var msg = $(this).attr('msg');
+            if ($.trim(msg) == '') {
+                msg = '没有内容';
+            }
+            layer.tips(msg, this, {
+                guide: 1,
+                style: ['background-color:#5EA7DC; color:#fff;top:-7px', '#5EA7DC'],
+                area: ['auto', 'auto'],
+                time: 5000
+            });
+            $(".xubox_layer").addClass("xubox_tips_border");
+        }, function () {
+
+            layer.closeAll('tips');
+
+        });
+    })
+    layui.use(['form'], function () {
+        var form = layui.form,
+            $ = layui.$;
+
+        form.on('checkbox(allcom)', function (data) {
+            $("input[name='delid[]']").each(function () {
+                this.checked = data.elem.checked;
+            });
+            form.render('checkbox');
+        });
+    });
+
+
+
+    function sxjob(val, obj) {
+        $('#jobid').val(val);
+        $('#MyForm').submit();
+    }
+
+    function sxset(id, val, obj) {
+
+        $('.' + id + 'Ctrl').removeClass('jlsx_boxjy_cur');
+        $(obj).addClass('jlsx_boxjy_cur');
+        $('#' + id).val(val);
+    }
+
+    function bjAddClass(id) {
+        $('.bj_' + id).addClass("com_received_username_bjboxcur");
+    }
+
+    function bjRemoveClass(id) {
+        $('.bj_' + id).removeClass("com_received_username_bjboxcur");
+    }
+
+    function changeBrowse(browse, id) {
+        $.post("index.php?c=hr&act=hrset", {
+            id: id,
+            browse: browse
+        }, function (data) {
+            location.reload();
+        });
+    }
+
+    function changeBrowseAll(browse, name) {
+        var chk_value = [];
+        $('input[name="' + name + '"]:checked').each(function () {
+            chk_value.push($(this).val());
+        });
+        if (chk_value.length == 0) {
+            layer.msg("请选择要标记的数据！", 2, 8);
+            return false;
+        } else {
+            layer.confirm("确定标记为已读吗？", function () {
+                $.post("index.php?c=hr&act=hrset", {
+                    ids: chk_value,
+                    ajax: 1
+                }, function (data) {
+                    var data = eval('(' + data + ')');
+                    if (data.errcode == '9') {
+                        parent.layer.msg(data.msg, 2, 9, function () {
+                            window.location.reload();
+                            window.event.returnValue = false;
+                            return false;
+                        });
+                        return false;
+                    } else {
+                        parent.layer.msg(data.msg, 2, 8);
+                        return false;
+                    }
+                })
+            });
+        }
+    }
+
+    function rstateTip(rstate) {
+
+        var reason = "";
+        if (rstate == '0') {
+            reason = '该简历为未审核状态，暂时无法对其查看、邀请面试等操作，我们将尽快完成该简历的审核，对您的工作造成不便请谅解';
+        } else if (rstate == '3') {
+            reason = '该简历未通过审核';
+        }
+        layer.alert(reason);
+    }
+
+    function lookreason(reason) {
+        layer.alert(reason);
+    }
+
+    function remark(uid,eid) {
+        $.post('index.php?c=hr&act=remarkhr',{uid:uid,eid:eid},function(res){
+            if(res){
+                $("#remark").val(res.remark);
+                $('#status').val(res.status);
+            }else{
+                $("#remark").val('');
+                $('#status').val(0);
+            }
+            layui.use(['form'], function() {
+                var form = layui.form,
+                    $ = layui.$;
+                form.render('select');
+            });
+
+            var layindex = $.layer({
+                type: 1,
+                title: '备注简历',
+                closeBtn: [0, true],
+                border: [10, 0.3, '#000', true],
+                area: ['420px', 'auto'],
+                page: {
+                    dom: "#remarkbox"
+                }
+            });
+            $("#layindex").val(layindex);
+        },'json');
+        $("input[name=uid]").val(uid);
+        $("input[name=eid]").val(eid);
+    }
+
+    function yp_jobshow() {
+        $('#yp_joblist').toggle();
+    }
+    function remarkSubmit(){
+        if($("#remark").val() == ''){
+            layer.msg("请填写备注内容", 2, 8);
+            return false;
+        }
+        loadlayer();
+    }
+</script>
+
+{yun:}include file="$comstyle/yqms.htm"{/yun}
+{yun:}include file="$comstyle/footer.htm"{/yun}

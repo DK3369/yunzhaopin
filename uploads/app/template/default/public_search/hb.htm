@@ -1,0 +1,293 @@
+<style>
+	
+	.hb_tc_bth{padding:10px 0; text-align: center;backgroud-color:#fff !important;}
+	.hb_tc_bth .hb_tc_hyz{width:120px;height:40px; line-height: 40px; text-align: center; display: inline-block; background-color: #3478ea;color:#fff;border-radius:3px;color:#fff;}
+	.hb_tc_xz{width:120px;height:40px; line-height: 40px; text-align: center; display: inline-block; margin-left: 10px; background-color: #01af67;color:#fff;border-radius:3px;color:#fff;}
+	.hb_tc_bth a:hover{color:#fff}
+	
+	.hb_close_box{padding:0px 0 0 25px}
+	.hb_close_box_tit{color:#333; font-weight: bold;}
+	.hb_close_job{width:100%;max-height: 130px; overflow: auto;min-height: 45px;}
+	.hb_close_box_job{width:168px;height:30px; line-height: 30px; padding-left:30px; position: relative;    overflow: hidden;text-overflow: ellipsis;white-space: nowrap;  display: inline-block; margin-right: 10px; margin-top:8px;border-radius:4px;}
+	.hb_close_box_job input{ position: absolute;left:10px;top:8px;}
+	.poster_pic{width:100%;}
+	.poster_pic img{width:100%;border-radius:3px;box-shadow: 0px 5px 10px 0px rgba(111, 116, 132, 0.1);}
+	.hb_listbox{ display:block; }
+	.hb_listbox_name{ font-size:15px;width:100%; text-align:center; padding-top:10px;}
+	.hb_listbox_sc{ display:inline-block;padding:3px 20px; background:#3d7dfd;color:#fff;border-radius:20px; cursor: pointer;}
+	.hbCloseBoxAll{overflow: hidden;padding: 0 12px 12px 12px;}
+	.swiperPhpup{overflow: hidden;min-height: 200px;position: relative;padding: 12px 0 20px 0;}
+	
+	#hbSwiper .swiper-container {width: 100%;height: 100%;}
+	#hbSwiper .swiper-slide {text-align: center;font-size: 18px;background: #fff;display: -webkit-box;display: -ms-flexbox;display: -webkit-flex;display: flex;-webkit-box-pack: center;-ms-flex-pack: center;-webkit-justify-content: center;justify-content: center;-webkit-box-align: center;-ms-flex-align: center;-webkit-align-items: center;align-items: center;cursor: pointer;}
+
+.swiperContBoxs{
+    overflow: hidden;
+}
+.swiperContBoxs .swiper-button-next{
+    background: rgba(0, 0, 0, 0.6);
+    background-size: 100%;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+.swiperContBoxs .swiper-button-next:after{
+    font-size: 20px;
+    color: #fff;
+}
+.swiperContBoxs .swiper-button-prev{
+    background: rgba(0, 0, 0, 0.6);
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+.swiperContBoxs .swiper-button-prev:after{
+    font-size: 20px;
+    color: #fff;
+}
+</style>
+<link href="{yun:}$config.sy_weburl{/yun}/js/swiper/swiper-bundle.min.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet" type="text/css"/>
+<script src="{yun:}$config.sy_weburl{/yun}/js/swiper/swiper-bundle.min.js?v={yun:}$config.cachecode{/yun}"></script>
+<!--选择海报提示框-->
+<div id="hb_tip" class="hb_tip" style="display: none;">
+    <!--选择职位-->
+    <div class="hb_close_box hbCloseBoxAll">
+        <div class="hb_close_box_tit">1. 选择海报上展示的职位</div>
+        <div id="jobs_container" class="hb_close_job" >
+            {yun:}foreach from=$jobs item=v{/yun}
+            <label>
+                <span class="hb_close_box_job">
+                    <input type="checkbox" class="jobChecked" name="jobIds[]" value="{yun:}$v['id']{/yun}" {yun:}if $jobCnt = 1{/yun}checked{yun:}/if{/yun}> {yun:}$v['name']{/yun}
+                </span>
+            </label>
+            {yun:}/foreach{/yun}
+        </div>
+        <div class="hb_close_box_tit mt10">2. 在喜欢的图片下方点击生成海报</div>
+        <div class="hb_close_img">
+            <div class="swiperPhpup">
+                <div id="hbSwiper" class="swiper-container swiperContBoxs">
+                    <div class="swiper-wrapper">
+                        {yun:}foreach from=$comHb item=v{/yun}
+                        <div onclick="showHbJob()" class="swiper-slide">
+                            <span class="hb_listbox">
+                                <div class="poster_pic"><img src="{yun:}$v.pic_n{/yun}"/></div>
+                                <div class="hb_listbox_name">
+                                    <span class="hb_listbox_sc" onclick="createHb('{yun:}$v.style{/yun}','{yun:}$v.id{/yun}')">生成海报</span>
+                                </div>
+                            </span>
+                        </div>
+                        {yun:}/foreach{/yun}
+                    </div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var weburl = '{yun:}$config.sy_weburl{/yun}';
+    var jobCnt = '{yun:}$jobCnt{/yun}';
+    var hbids = [];
+    '{yun:}foreach from=$hbids item=v{/yun}'
+    hbids.push('{yun:}$v{/yun}')
+    '{yun:}/foreach{/yun}'
+    var hbJobId = '';
+    var isJobDtl = 0;
+    function getComHb(hb) {
+        layer.closeAll();
+
+        var hbNum = '{yun:}$hbNum{/yun}';
+        var id = '{yun:}$hb_uid{/yun}';
+        var url = weburl + '/index.php?m=ajax&c=getComHb&uid=' + id + '&hb=' + hbids[hb];
+        if (hb < (parseInt(hbNum) - 1)) {
+            var next = hb + 1;
+        } else {
+            var next = 0;
+        }
+
+        var loading = layer.load('生成中...', 0);
+
+        var image = new Image();
+        image.src = url;
+        image.onload = function() {
+            layer.closeAll();
+
+            layer.open({
+                type: 1,
+                title: false,
+                content: '<div class="hb_tc"><img src="' + image.src + '" style="max-width: 100%;"><div class="hb_tc_bth"><a href="javascript:;" onclick="getComHb(' + next + ');" class="hb_tc_hyz">换一张</a><a href="javascript:;" onclick="downWhb(' + hb + ');" class="hb_tc_xz">下载海报</a></div></div>',
+                area: ['360px', 'auto'],
+                offset: '55px',
+                closeBtn: 0,
+                shadeClose: true
+            });
+        };
+    }
+    // 生成指定职位的为海报
+    function getComHbNew(style, hbJobId, hbid) {
+        // layer.closeAll();
+        var url = '';
+        if (isJobDtl) {
+            // const url 	= 	weburl+'/index.php?m=ajax&c=getJobHb&id=' + id + '&hb=' + hbids[hb];
+            url = weburl + '/index.php?m=ajax&c=getJobHb&id=' + hbJobId + '&hb=' + hbid;
+        } else {
+            var id = '{yun:}$hb_uid{/yun}';
+            url = weburl + '/index.php?m=ajax&c=getComHb&uid=' + id + '&style=' + style +'&jobids=' + hbJobId;
+        }
+        var loading = layer.load('生成中...', 0);
+        localStorage.setItem('jobids', hbJobId)
+        var image = new Image();
+        image.src = url;
+        image.onload = function() {
+            layer.close(loading);
+            layer.open({
+                type: 1,
+                title: false,
+                content: '<div class="hb_tc"><img src="' + image.src + '" style="max-width: 100%;"><div class="hb_tc_bth"><a href="javascript:;" data-jobs="'+ hbJobId +'" onclick="downWhbNew(' + style + ',' + hbid +');" class="hb_tc_xz">下载海报</a></div></div>',
+                area: ['360px', 'auto'],
+                offset: '55px',
+                closeBtn: 0,
+                shadeClose: true
+            });
+        };
+    }
+
+    function downWhb(hb) {
+    	var loading = layer.load('下载中...', 0);
+    	var id = '{yun:}$hb_uid{/yun}';
+    	var url   =   weburl + '/index.php?m=ajax&c=getComHb&uid=' + id + '&hb=' +  + hbids[hb];
+        var image = new Image();
+        image.src = url;
+        image.onload = function() {
+            layer.closeAll();
+            var a = document.createElement('a');          // 创建一个a节点插入的document
+            var event = new MouseEvent('click')           // 模拟鼠标click点击事件
+            a.download = 'whb' + id + '_' +hbids[hb];     // 设置a节点的download属性值
+            a.href = url;                                 // 将图片的src赋值给a节点的href
+            a.dispatchEvent(event);
+        }
+    }
+    // 下载指定职位的为海报
+    function downWhbNew(style, hbid) {
+        hbJobId = localStorage.getItem('jobids')
+        var loading = layer.load('下载中...', 0);
+        var url = '';
+        if (isJobDtl) {
+            url = weburl + '/index.php?m=ajax&c=getJobHb&id=' + hbJobId + '&hb=' + hbid;
+        } else {
+            var id = '{yun:}$hb_uid{/yun}';
+            url = weburl + '/index.php?m=ajax&c=getComHb&uid=' + id + '&style=' + style +'&jobids=' + hbJobId;
+        }
+        var image = new Image();
+        image.src = url;
+        image.onload = function() {
+            layer.closeAll();
+            var a = document.createElement('a');          // 创建一个a节点插入的document
+            var event = new MouseEvent('click')           // 模拟鼠标click点击事件
+            a.download = 'whb' + style + '_' + hbJobId.split(',').join('_');     // 设置a节点的download属性值
+            a.href = url;                                 // 将图片的src赋值给a节点的href
+            a.dispatchEvent(event);
+        }
+    }
+    function getJobHb(hb) {
+
+		layer.closeAll();
+
+		const hbNum	=	'{yun:}$hbNum{/yun}';
+		const id 	= 	'{yun:}$Info.id{/yun}';
+
+		const url 	= 	weburl+'/index.php?m=ajax&c=getJobHb&id=' + id + '&hb=' + hbids[hb];
+
+		if (hb < (parseInt(hbNum)-1)){
+			var  next  =   hb+1;
+		}else{
+			var  next  =   0;
+		}
+
+		const loading = layer.load('生成中...', 0);
+
+		var image = new Image();
+		image.src = url;
+		image.onload = function() {
+			layer.closeAll();
+			layer.open({
+				type: 1,
+				title: false,
+				content: '<div class="hb_tc"><img src="'+url+'" style="max-width: 100%;"><div class="hb_tc_bth"><a href="javascript:;" onclick="getJobHb('+next+');" class="hb_tc_hyz">换一张</a></div></div>',
+				area: ['360px', 'auto'],
+				offset: '55px',
+				closeBtn: 0,
+				shadeClose: true
+			});
+		}
+	}
+
+    // 选择海报模板页面
+    function selectHb(job_cnt, job_dtl = 0, job_id = 0, job_name = ''){
+        if (job_dtl) {
+            isJobDtl = 1;
+        }
+        if (job_id > 0 && job_name) {
+            var h5 = '<label><span class="hb_close_box_job"><input type="checkbox" class="jobChecked" name="jobIds[]" value="' + job_id +'" checked>'+job_name+'</span></label>';
+            $('#jobs_container').html(h5);
+        }
+        if (job_cnt == 0) {
+            layer.msg('请先发布职位', 2, 8, function () {
+                window.location.href = 'index.php?c=jobadd';
+            });
+            return false;
+        }
+		var jheight = '500px';
+		if(Math.ceil(job_cnt/4) >= 3){
+			jheight = '600px';
+		}else if(Math.ceil(job_cnt/4) == 2){
+			jheight = '550px';
+		}
+        var selHbLayer = layer.open({
+            type: 1,
+            title: '生成招聘海报',
+            closeBtn: 1,
+            area: ['900px', jheight],
+            content: $("#hb_tip"),
+			success: function(){
+				var swiper = new Swiper('#hbSwiper', {
+				    slidesPerView: 5,
+				    spaceBetween: 20,
+                    navigation: {
+                      nextEl: ".swiper-button-next",
+                      prevEl: ".swiper-button-prev",
+                    },
+				});
+			}
+        });
+        // 只有一个职位时，默认选中;职位数大于1时，所有职位全部初始化为未选中状态
+        if (job_cnt > 1) {
+            hbJobId = '';
+            $("input[class=jobChecked]").attr('checked', false);
+        }
+    }
+
+    // 显示职位复选框
+    function showHbJob() {
+        $("#hbjob_tip").attr("style", "display:block;");
+    }
+    // 点击生成海报按钮
+    function createHb(style,hbid) {
+        hbJobId = ""
+        $.each($("input[class=jobChecked]:checked"),function(i){
+            if (hbJobId == "") {
+                hbJobId = $(this).val();
+            } else {
+                hbJobId += "," + $(this).val();
+            }
+        })
+        if (hbJobId == '') {
+            layer.msg('请选择海报职位', 2, 8);
+            return false;
+        }
+        getComHbNew(style, hbJobId, hbid)
+    }
+</script>

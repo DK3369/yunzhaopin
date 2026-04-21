@@ -1,0 +1,224 @@
+<!-- 公共多职位、多城市弹窗-->
+<div id="cityjobVue" style="display: none;">
+    <input type="hidden" value="5" id="jobnum" />
+    <!--工作职能-->
+    <van-popup v-model="jobShow" position="right" :style="{ height: '100%',width:'100%',backgroundColor:'#f2f6f9'}">
+        <div class="yzxz_header">
+            <!-- 页面头部 -->
+            <div class="workplace_header">
+                <div class="workplace_header_left" @click="jobShow = false">
+                    <img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
+                </div>
+                <div class="workplace_header_center">{{jobheader?jobheader:'意向岗位选择'}}</div>
+                <div class="workplace_header_right"></div>
+            </div>
+            <div id="jobClassBox">
+                <div class="zn_search">
+                    <div class="zn_search_text_c">
+                        <div class="zn_search_text">
+                            <input id="jclass_svalue" type="text" value="" data-type='jobclass' placeholder="搜索意向岗位" class="zn_search_t inputListener">
+                        </div>
+                    </div>
+                </div>
+                <div id="jobclass_search" class="zn_searchbox " style="display:none;">
+                    <div id="jobclass_searhtml" class="mui-input-row   s_checkbox  classTap"> </div>
+                </div>
+                {yun:}if empty($job_type){/yun}
+                <div class="grade-eject grade-w-roll">
+                    <ul class="grade-w" id="jobone">
+                        {yun:}foreach from=$job_index item=v{/yun}
+                        <li class="jobone" data-id="{yun:}$v{/yun}">
+                            <div class="mui-input-row mui-checkbox">
+                                <label for="jobone{yun:}$v{/yun}" value="{yun:}$v{/yun}">{yun:}$job_name[$v]{/yun}</label>
+                                <input class="jobonebox jobcheck{yun:}$v{/yun}" id="jobone{yun:}$v{/yun}" value="{yun:}$v{/yun}" type="checkbox" />
+                            </div>
+                        </li>
+                        {yun:}/foreach{/yun}
+                    </ul>
+                </div>
+                {yun:}else{/yun}
+                <div class="grade-eject grade-w-roll">
+                    <ul class="grade-w" id="jobone" style="height:77%;">
+                        {yun:}foreach from=$job_index item=v{/yun}
+                        <li data-id="{yun:}$v{/yun}">{yun:}$job_name[$v]{/yun}</li>
+                        {yun:}/foreach{/yun}
+                    </ul>
+                    <ul class="grade-t" id="jobtwo">
+                        {yun:}foreach from=$job_type key=key item=v{/yun}
+                        {yun:}if in_array($key,$job_index){/yun}
+                        {yun:}foreach from=$v key=twok item=vv{/yun}
+                        {yun:}if !empty($job_type[$vv]){/yun}
+                        <li class="jobtwo job{yun:}$key{/yun} none" data-id="{yun:}$vv{/yun}">{yun:}$job_name[$vv]{/yun}</li>
+                        {yun:}else{/yun}
+                        <li class="jobtwo job{yun:}$key{/yun} none" data-id="{yun:}$vv{/yun}">
+                            <div class="mui-input-row mui-checkbox two_check" style="display: flex; ">
+                                <label style="padding-top: 2px;">{yun:}$job_name[$vv]{/yun}</label>
+                                <input class="two_check_ipt jobtwobox jobcheck{yun:}$twok{/yun}" id="jobtwo{yun:}$vv{/yun}" value="{yun:}$vv{/yun}" type="checkbox" style="width: 100%;" />
+                            </div>
+                        </li>
+                        {yun:}/if{/yun}
+                        {yun:}/foreach{/yun}
+                        {yun:}/if{/yun}
+                        {yun:}/foreach{/yun}
+                    </ul>
+                    <ul class="grade-s citythreeHinght" id="jobthree">
+                        {yun:}foreach from=$job_type key=key item=v{/yun}
+                        {yun:}if in_array($key,$job_index){/yun}
+                        {yun:}foreach from=$v item=vv{/yun}
+                        {yun:}if !empty($job_type[$vv]){/yun}
+                        <li id="jobtwo{yun:}$vv{/yun}" class="jobthree job{yun:}$vv{/yun} none">
+                            <div class="mui-input-row mui-checkbox citythree_pd">
+                                <label class="label_box" for="jobcheckAll{yun:}$vv{/yun}">全部</label>
+                                <input type="checkbox" value="{yun:}$vv{/yun}" id="jobcheckAll{yun:}$vv{/yun}" class="checkAll" />
+                            </div>
+                        </li>
+                        {yun:}/if{/yun}
+                        {yun:}/foreach{/yun}
+                        {yun:}/if{/yun}
+                        {yun:}/foreach{/yun}
+                        {yun:}foreach from=$job_type key=key item=v{/yun}
+                        {yun:}if !in_array($key,$job_index){/yun}
+                        {yun:}foreach from=$v item=vv{/yun}
+                        <li class="jobthree job{yun:}$key{/yun} none">
+                            <div class="mui-input-row mui-checkbox citythree_pd">
+                                <label for="jobthree{yun:}$vv{/yun}">{yun:}$job_name[$vv]{/yun}</label>
+                                <input class="jobthreebox jobcheck{yun:}$key{/yun}" id="jobthree{yun:}$vv{/yun}" value="{yun:}$vv{/yun}" type="checkbox" />
+                            </div>
+                        </li>
+                        {yun:}/foreach{/yun}
+                        {yun:}/if{/yun}
+                        {yun:}/foreach{/yun}
+                    </ul>
+                </div>
+                {yun:}/if{/yun}
+                <div class="grade_chlose_box">
+                    <div class="grade_chlose_box_c">
+                        <div id="jobchoosed" class="mui-scroll mui-scrollpouy">
+                            <a class="grade_chlose_box_a" v-for="(job, jk) in jobnameArr" :key="jk" :data-id="jk">{{job}}</a>
+                        </div>
+                    </div>
+                    <a class="grade_chlose_bth" @click="jobShow = false">确定 <span id="jobpencent" class="none">1/5</span></a>
+                </div>
+            </div>
+        </div>
+    </van-popup>
+    <!--城市类别-->
+    <van-popup v-model="cityShow" position="right" :style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
+        <div class="yzxz_header">
+            <!-- 页面头部 -->
+            <div class="workplace_header">
+                <div class="workplace_header_left" @click="cityShow = false">
+                    <img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
+                </div>
+                <div class="workplace_header_center">工作城市选择</div>
+                <div class="workplace_header_right"></div>
+            </div>
+            <div id="cityClassBox">
+                <div class="zn_search">
+                    <div class="zn_search_text_c">
+                        <div class="zn_search_text">
+                            <input id="cclass_svalue" type="text" value="" data-type='cityclass' placeholder="请输入城市类别" class="zn_search_t inputListener">
+                        </div>
+                    </div>
+                </div>
+                <div id="cityclass_search" class="zn_searchbox " style="display:none;">
+                    <div id="cityclass_searhtml" class="mui-input-row s_checkbox classTap">
+                    </div>
+                </div>
+                <div class="grade_tit">选择工作城市(可多选)</div>
+                {yun:}if empty($city_type){/yun}
+                <div class="grade-eject grade-w-roll">
+                    <ul class="grade-w" id="cityone">
+                        {yun:}foreach from=$city_index item=v{/yun}
+                        <li class="cityone" data-id="{yun:}$v{/yun}">
+                            <div class="mui-input-row mui-checkbox">
+                                <label>{yun:}$city_name[$v]{/yun}</label>
+                                <input class="cityonebox citycheck{yun:}$v{/yun}" id="cityone{yun:}$v{/yun}" value="{yun:}$v{/yun}" type="checkbox" style="width:10px" />
+                            </div>
+                        </li>
+                        {yun:}/foreach{/yun}
+                    </ul>
+                </div>
+                {yun:}else{/yun}
+                <div class="grade-eject grade-w-roll">
+                    <ul class="grade-w" id="cityone" style="height:74%;">
+                        {yun:}foreach from=$city_index item=v{/yun}
+                        <li class="cityone" data-id="{yun:}$v{/yun}">
+                            <div class="mui-input-row mui-checkbox">
+                                <label>{yun:}$city_name[$v]{/yun}</label>
+                                <input class="cityonebox citycheck{yun:}$v{/yun}" id="cityone{yun:}$v{/yun}" value="{yun:}$v{/yun}" type="checkbox" style="width:10px" />
+                            </div>
+                        </li>
+                        {yun:}/foreach{/yun}
+                    </ul>
+                    <ul class="grade-t" id="citytwo" style="left: 30.48%; height: 74%;">
+                        {yun:}foreach from=$city_type key=key item=v{/yun}
+                        {yun:}if in_array($key,$city_index){/yun}
+                        {yun:}foreach from=$v key=twok item=vv{/yun}
+                        {yun:}if !empty($city_type[$vv]){/yun}
+                        <li class="citytwo city{yun:}$key{/yun} none" data-id="{yun:}$vv{/yun}">{yun:}$city_name[$vv]{/yun}</li>
+                        {yun:}else{/yun}
+                        <li class="citytwo city{yun:}$key{/yun} none" data-id="{yun:}$vv{/yun}">
+                            <div class="mui-input-row mui-checkbox"><label>{yun:}$city_name[$vv]{/yun}</label><input class="citytwobox citycheck{yun:}$twok{/yun}" id="citytwo{yun:}$vv{/yun}" value="{yun:}$vv{/yun}" type="checkbox" style="width:150px" /></div>
+                        </li>
+                        {yun:}/if{/yun}
+                        {yun:}/foreach{/yun}
+                        {yun:}/if{/yun}
+                        {yun:}/foreach{/yun}
+                    </ul>
+                    <ul class="grade-s citythreeHinght" id="citythree">
+                        {yun:}foreach from=$city_type key=key item=v{/yun}
+                        {yun:}if in_array($key,$city_index){/yun}
+                        {yun:}foreach from=$v item=vv{/yun}
+                        {yun:}if !empty($city_type[$vv]){/yun}
+                        <li id="citytwo{yun:}$vv{/yun}" class="citythree city{yun:}$vv{/yun} none">
+                            <div class="mui-input-row mui-checkbox citythree_pd"><label for="citycheckAll{yun:}$vv{/yun}">全部</label><input type="checkbox" value="{yun:}$vv{/yun}" id="citycheckAll{yun:}$vv{/yun}" class="checkAll" /></div>
+                        </li>
+                        {yun:}/if{/yun}
+                        {yun:}/foreach{/yun}
+                        {yun:}/if{/yun}
+                        {yun:}/foreach{/yun}
+                        {yun:}foreach from=$city_type key=key item=v{/yun}
+                        {yun:}if !in_array($key,$city_index){/yun}
+                        {yun:}foreach from=$v item=vv{/yun}
+                        <li class="citythree city{yun:}$key{/yun} none">
+                            <div class="mui-input-row mui-checkbox citythree_pd"><label for="citythree{yun:}$vv{/yun}">{yun:}$city_name[$vv]{/yun}</label><input class="citythreebox citycheck{yun:}$key{/yun}" id="citythree{yun:}$vv{/yun}" value="{yun:}$vv{/yun}" type="checkbox" /></div>
+                        </li>
+                        {yun:}/foreach{/yun}
+                        {yun:}/if{/yun}
+                        {yun:}/foreach{/yun}
+                    </ul>
+                </div>
+                {yun:}/if{/yun}
+                <div class="grade_chlose_box">
+                    <div class="grade_chlose_box_c">
+                        <div class="mui-slider">
+                            <div class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted" style="background:#fff; ">
+                                <div id="citychoosed" class="mui-scroll" style="background:#fff; ">
+                                    <a class="grade_chlose_box_a" v-for="(city, ck) in citynameArr" :key="ck" :data-id='ck'>{{city}}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a class="grade_chlose_bth" @click="cityShow = false">确定<span id="citypencent" class="none">1/5</span></a>
+                </div>
+            </div>
+        </div>
+    </van-popup>
+</div>
+<script>
+var cityjobVue = new Vue({
+    el: '#cityjobVue',
+    data: {
+        jobShow: false,
+        cityShow: false,
+
+        citynameArr: [],
+        jobnameArr: [],
+        jobheader:''
+    },
+    mounted() {
+        document.getElementById('cityjobVue').style.display = 'block';
+    }
+});
+</script>

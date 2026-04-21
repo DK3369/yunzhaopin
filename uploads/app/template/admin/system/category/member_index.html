@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="systemvip">
+        <div class="setDomeAll setDomehuiyuan">
+            <!--会员分类-->
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="个人会员" name="userclass" :lazy="true">
+                    <member_userclass></member_userclass>
+                </el-tab-pane>
+                <el-tab-pane label="企业会员" name="comclass" :lazy="true">
+                    <member_comclass></member_comclass>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+
+    <script>
+        const custoapp = new Vue({
+            el: '#systemvip',
+            data: function () {
+                return {
+                    activeName: 'userclass'
+                }
+            },
+            mounted() {
+            },
+            components: {
+                'member_userclass': httpVueLoader('./component/member_userclass.vue'),
+                'member_comclass': httpVueLoader('./component/member_comclass.vue'),
+            },
+            methods: {
+                handleClick(tab, event) {
+                }
+            }
+        });
+    </script>
+</body>
+<style>
+    .el-table {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .el-table .el-table__body-wrapper {
+        flex: 1;
+    }
+</style>
+</html>

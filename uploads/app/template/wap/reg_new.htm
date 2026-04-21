@@ -1,0 +1,59 @@
+{yun:}include file="$wapstyle/header.htm"{/yun}
+<script src="{yun:}$wap_style{/yun}/js/jquery.min.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/public.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<style type="text/css">
+	body {background: #fff}
+	.header_h {display: none;}
+	.regok_box ul li {min-height: 1.933333rem; padding: 0.5rem 0.8rem; height: auto;}
+</style>
+<div class="login_tit">
+	<a class="hd-lbtn" href="{yun:}if $backurl{/yun}{yun:}$backurl{/yun}{yun:}else{/yun}javascript:goBack();{yun:}/if{/yun}"><i class="header_top_l"></i></a>请选择您要注册的身份
+	<div class="regok_tit_p">注册完成之后，您可以在“我的-设置”中切换</div>
+</div>
+<div class="regok_box">
+	<ul>
+		<li>
+			<a href="javascript:void(0);" onclick="chooseIdent('{yun:}url m=wap c=register usertype=1 step=2{/yun}')">
+				<div class="regok_box_center">
+					<div class="regok_box_logo">
+						<img src="{yun:}$wap_style{/yun}/images/genius.png" alt="" width="100%" height="100%">
+					</div>
+					<div class="regok_box_user">
+					<p>我要找工作</p>
+					<span>我是求职者，我要找工作</span>
+				</div>
+					<div class="regok_box_nav">
+						<img src="{yun:}$wap_style{/yun}/images/dredge_add.png" alt="" width="100%" height="100%" >
+					</div>
+				</div>
+			</a>
+		</li>
+		<li>
+			<a href="javascript:void(0);" onclick="chooseIdent('{yun:}url m=wap c=register usertype=2 step=2{/yun}')">
+				<div class="regok_box_center">
+					<div class="regok_box_logo">
+						<img src="{yun:}$wap_style{/yun}/images/company.png" alt="" width="100%" height="100%">
+					</div>
+					<div class="regok_box_user">
+					<p>我要招人</p>
+					<span>我是企业，我要招人</span>
+				</div>
+					<div class="regok_box_nav">
+						<img src="{yun:}$wap_style{/yun}/images/dredge_add.png" alt="" width="100%" height="100%" >
+					</div>
+				</div>
+			</a>
+		</li>
+	</ul>
+</div>
+{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+
+</body>
+<script>
+	function chooseIdent(url) {
+		// 处理浏览器历史记录，防止可以返回注册页面
+		window.history.replaceState({}, "", wapurl+"index.php");
+		window.location.href = url;
+	}
+</script>
+</html>

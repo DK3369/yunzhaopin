@@ -1,0 +1,87 @@
+{yun:}include file="$userstyle/header.htm"{/yun}
+<div class="yun_w1200">
+    {yun:}include file="$userstyle/left.htm"{/yun}
+	<div class="yun_m_rightsidebar">
+		<div class="user_new_tit"><span class="user_new_tit_n">我的足迹</span><span class="user_new_tit_r">安全提醒：招聘企业无权收取任何费用，求职中请加强自我保护，避免上当受骗！</span></div>
+		
+    <div class="yun_m_rightbox fltR mt20 re">
+
+   
+		<div class="remindbox01 ">
+      <div id="gms_showclew"></div>
+      <form action="index.php" method="get" target="supportiframe" id='myform' class="layui-form">
+        <input type="hidden" name="c" value="look_job" />
+        <input type="hidden" name="act" value="del" />
+        <div class="resumelistbox01">
+ <div class="resume_box_list ">
+ {yun:}if !empty($look){/yun}
+<div class="user_new_listtit">
+					<div class=" user_new_job">岗位</div>
+				<div class=" user_new_time">薪资</div>
+				<div class=" user_new_zt">浏览时间</div>
+				<div class=" user_new_yqh">职位状态</div>
+				<div class=" user_new_cz">操作</div>
+			</div>
+ 
+            {yun:}/if{/yun}
+            {yun:}foreach item=log from=$look{/yun}
+			
+			<div class="jobnotice_list">
+									<div class=" user_new_job">
+													<div class="">
+ <a href="{yun:}url m=job c=comapply id='`$log.jobid`'{/yun}" target="_blank" class="interview_application_name">{yun:}$log.job_name{/yun}</a> 
+																</div>
+											
+											<div class="  user_new_comname" style="padding-top: 10px;"> 
+			         <a href="{yun:}url m=company c=show id='`$log.com_id`'{/yun}" target="_blank" class="cor3">{yun:}$log.com_name{/yun}</a></div>
+											
+									</div>
+					                   
+									<div class="user_new_time"><span class="user_new_xz_n">{yun:}$log.salary{/yun}</span>&nbsp;</div>
+					
+									<div class="user_new_zt">
+					{yun:}$log.datetime|date_format:'%Y-%m-%d'{/yun}
+														
+											
+																
+														</div>
+					<div class=" user_new_yqh">{yun:}$log.status{/yun}</div>
+									<div class=" user_new_cz">
+								 <a href="javascript:void(0)" onclick="layer_del('确定要删除？','index.php?c=look_job&act=del&id={yun:}$log.id{/yun}');" class="user_new_yqh_sc"> 删除</a>
+					
+							</div>
+								</div>
+			
+            {yun:}foreachelse{/yun}
+            <div class="msg_no">
+              <p>亲爱的用户，您还没有浏览记录，想要获得更多工作机会</p>
+              <p>立即搜索您感兴趣的职位并申请吧！</p>
+              <a href="{yun:}url m=job{/yun}" target="_blank" class="msg_no_sq uesr_submit">搜索职位</a> </div>
+            {yun:}/foreach{/yun}
+			 </div>
+            {yun:}if $look{/yun}
+
+           
+            <div class="diggg">{yun:}$pagenav{/yun}</div>
+            {yun:}/if{/yun} </div>
+       
+      </form>
+    </div>
+  </div>    </div>
+</div>
+<script>
+	layui.use(['form','layer', 'laydate'], function(){
+    	var $ = layui.$,
+			form = layui.form,
+			laydate = layui.laydate,
+			layer = layui.layer;
+    	
+    	form.on('checkbox(alluser)', function (data) {
+       	 	$("input[name='del[]']").each(function () {
+            	this.checked = data.elem.checked;
+        	});
+        	form.render('checkbox');
+      	});
+  	});
+</script>
+{yun:}include file="$userstyle/footer.htm"{/yun} 

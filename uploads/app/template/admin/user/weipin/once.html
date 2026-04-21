@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="店铺招聘" name="once">
+                    <once ref="once" :status="status"></once>
+                </el-tab-pane>
+                <el-tab-pane label="店铺设置" name="set" lazy>
+                    <set ref="set"></set>
+                </el-tab-pane>
+                <el-tab-pane label="招聘时长" name="price_gear" lazy>
+                    <price_gear ref="price_gear"></price_gear>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+    const custoapp = new Vue({
+        el: '#moduapp',
+        data: function() {
+            return {
+                activeName: 'once',
+                status: '',
+            }
+        },
+        components: {
+            'once': httpVueLoader('./component/once.vue'),
+            'set': httpVueLoader('./component/once_set.vue'),
+            'price_gear': httpVueLoader('./component/once_price_gear.vue'),
+        },
+        created: function () {
+            var that = this
+            let query = window.parent.homeapp.$route.query;
+            if (query.status) {
+                that.status = query.status;
+            }
+            if (query.tabs) {
+                that.activeName = query.tabs;
+            }
+        },
+        methods: {
+            handleClick(tab, event) {
+                // this.$refs[tab.name].init();
+            }
+        }
+    });
+    </script>
+</body>
+
+</html>

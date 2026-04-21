@@ -1,0 +1,106 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+<link rel="stylesheet" type="text/css" href="{yun:}$wap_style{/yun}/js/webapppic/cropper.css?v={yun:}$config.cachecode{/yun}" />
+<script src="{yun:}$wap_style{/yun}/js/alloy/transform.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/alloy/alloy-finger.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/alloy-crop.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/compress.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/exif.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/user.js?v={yun:}$config.cachecode{/yun}"></script>   
+    <div class="issue_post_body" id="yunvue">
+        <div class="video_interview_card">
+            <div class="image_body_title">真实的照片更易获得企业青睐，请用清晰的生活照，上传成功将直接作为头像</div>
+            <div class="image_body_box">
+                <div class="image_body_img" onclick="fileSelect()">
+                    <img :src="info.photo ? info.photo : '{yun:}$wap_style{/yun}/images/add_newrenewal.png'" width="100%" height="100%" id="changeAvatar">
+                </div>
+               <input id="image" type="file" accept="image/*" class="none" onchange="photoChange(this)" />
+                <input type="hidden" value=""  id="preview">
+                <div class="image_body_text">最多上传一张</div>
+            </div>
+        </div>
+        <input name="submit" type="button" onclick="savePhoto()" value="提交" class="photo_button" />
+    </div>
+    <script>
+		var yunvue = new Vue({
+			el: '#yunvue',
+			data: {
+				info: {}
+			},
+			created() {
+				this.getInfo();
+			},
+			methods:{
+				getInfo:function(){
+					showLoading();
+					var self = this;
+					$.post('{yun:}url d=wxapp h=user m=info c=getinfo{/yun}',{rand: Math.random()},function(res){
+						hideLoading();
+						$("#yunvue").css('display', 'block');
+						self.info = res.data;	
+						
+					},'json');
+				},
+			}
+		})
+	</script>			
+    <script>
+
+    
+    function fileSelect(){
+		document.getElementById("image").click(); 
+	}
+	
+	function toAlloyCrop(pic){
+		var mAlloyCrop;
+		
+		mAlloyCrop = new AlloyCrop({
+			image_src: pic,
+			width: 200,
+			height: 200,
+			output: 1,
+			ok: function(base64, canvas) {
+				yunvue.$data.info.photo = base64;
+				$("#preview").val(base64);
+				$('#showResult').fadeIn();
+			},
+			cancel: function() {
+				$('#showResult').fadeIn();
+			},
+			ok_text: '确定',
+			cancel_text: '取消'
+		});
+	}
+    function savePhoto() {
+        var uimage = $("#preview").val();
+        if(uimage == '') {
+            showToast('头像未改变，无需修改');
+            return false;
+        }else{
+			var regS = new RegExp("\\+", "gi");
+			uimage = uimage.replace(regS, "#");
+			showLoading()
+			$.ajax({
+				type: 'POST',
+				url: '{yun:}url d=wxapp h=user m=info c=savephoto{/yun}',
+				cache: false,
+				dataType: 'json',
+				data: {
+					uimage: uimage,
+					submit: 1,
+					source:'wap'
+				},
+				success: function(res) {
+					hideLoading();
+					if(res){
+						showToast(res.msg, 2, function() {
+							window.location.reload();
+						});
+						return false;
+					}
+				}
+			});
+		}
+    }
+</script>
+</body>
+</html>

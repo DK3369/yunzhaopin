@@ -1,0 +1,107 @@
+<div class="zwfl" v-if="classShow">
+    <div class="zwfl_top classShowNew">
+        <div class="goBlacks">
+            <a href="javascript:;" @click="classShow = false"><img src="{yun:}$wap_style{/yun}/images/return.png"></a>
+        </div>
+        <div class="zwfl_inputbox">
+            <img src="{yun:}$wap_style{/yun}/images/searchicon.png" class="ss_img" alt="">
+            <input class="zwfl_input" type="text" confirm-type="done" :value="searchClassVal" placeholder="搜索岗位" @input="bindSearch" />
+            <img src="{yun:}$wap_style{/yun}/images/input_close.png" class="input_closeimg" alt="" @click="clearSearch" v-show="searchClassVal!=''">
+        </div>
+    </div>
+    <div class="zwfl_content">
+
+        <div class="flex_row" v-if="!searchClassShow">
+            <div class="nav_left">
+                <div class="zwfl_cont_left">
+                    <div class="zwfl_left_itembox">
+                        <template v-if="category == 'job'" v-for="(jv, jk) in jobIndexArr" :key="jk">
+                            <div class="zwfl_left_item" :class="job1==jv ? 'left_active' : ''" @click="checkClassOne(jv);">
+                                <div class="left_active_line" v-if="job1==jv"></div>
+                                {{jobNameArr[jv]}}
+                            </div>
+                        </template>
+                        <template v-if="category == 'city'" v-for="(cv, ck) in cityIndexArr" :key="ck">
+                            <div class="zwfl_left_item" :class="provinceid==cv ? 'left_active' : ''" @click="checkClassOne(cv);">
+                                <div class="left_active_line" v-if="provinceid==cv"></div>
+                                {{cityNameArr[cv]}}
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+            <div class="nav_right">
+                <div class="zwfl_cont_right">
+                    <div class="zwfl_right_itembox">
+                        <template v-if="category == 'job'" v-for="(j2_v, j2_k) in jobTypeArr[job1]" :key="j2_k">
+                            <template v-if="jobTypeArr[j2_v]">
+                                <div class="zwfl_right_item">
+                                    <div class="zwfl_right_item_tit">
+                                        {{jobNameArr[j2_v]}}
+                                    </div>
+                                    <div class="zwfl_right_item_tagbox">
+                                        <template v-for="(j3_v, j3_k) in jobTypeArr[j2_v]" :key="j3_k">
+                                        <div class="zwfl_right_item_tag" @click="setSearchJobClass(job1, j2_v, j3_v);">
+                                            {{jobNameArr[j3_v]}}
+                                        </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                            <template v-else>
+                                <div class="zwfl_right_item">
+                                    <div class="zwfl_right_item_tagbox">
+                                        <div class="zwfl_right_item_tag" @click="setSearchJobClass(job1, j2_v);">
+                                            {{jobNameArr[j2_v]}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </template>
+                        <template v-if="category == 'city'" v-for="(c2_v, c2_k) in cityTypeArr[provinceid]" :key="c2_k">
+                            <template v-if="cityTypeArr[c2_v]">
+                                <div class="zwfl_right_item">
+                                    <div class="zwfl_right_item_tit">
+                                        {{cityNameArr[c2_v]}}
+                                    </div>
+                                    <div class="zwfl_right_item_tagbox">
+                                        <template v-for="(c3_v, c3_k) in cityTypeArr[c2_v]" :key="c3_k">
+                                            <div class="zwfl_right_item_tag" @click="setSearchJobClass(provinceid, c2_v, c3_v);">
+                                                {{cityNameArr[c3_v]}}
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                            <template v-else>
+                                <div class="zwfl_right_item">
+                                    <div class="zwfl_right_item_tagbox">
+                                        <div class="zwfl_right_item_tag" @click="setSearchJobClass(provinceid, c2_v);">
+                                            {{cityNameArr[c2_v]}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 搜索列表 -->
+        <div class="search_list" v-if="searchClassShow">
+            <div class="search_list_itembox">
+                <template v-for="(item, sk) in searchClassList" :key="sk">
+                <div class="search_list_item" @click="setSearchJobClass(item.one, item.two, item.value);">
+                    <div class="search_list_item_name">
+                        {{item.name}}
+                    </div>
+                    <div class="search_list_item_info">
+                        {{item.fname}}
+                    </div>
+                </div>
+                </template>
+            </div>
+        </div>
+    </div>
+</div>

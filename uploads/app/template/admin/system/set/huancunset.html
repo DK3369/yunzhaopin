@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="tableDome">
+        <div class="tableDome_tip">
+            <el-alert title="该页面展示了缓存模块" type="success" show-icon>
+            </el-alert>
+        </div>
+        <div class="moduleTable">
+            <div class="moduleHuancun">
+                <ul>
+                    <li>
+                        <div class="moduleHcTite">
+                            <span>首页</span>
+                        </div>
+                        <div class="moduleHcKg">
+                            <el-radio-group v-model="sy_index_cache">
+                                <el-radio label="1">开启</el-radio>
+                                <el-radio label="2">关闭</el-radio>
+                            </el-radio-group>
+                        </div>
+                    </li>
+                    <li v-for="item in newModel">
+                        <div class="moduleHcTite">
+                            <span>{{item.value}}</span>
+                        </div>
+                        <div class="moduleHcKg">
+                            <el-radio-group v-model="item.cache">
+                                <el-radio v-model="radio" label="1">开启</el-radio>
+                                <el-radio v-model="radio" label="2">关闭</el-radio>
+                            </el-radio-group>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="setBasicButn" style="border: none;">
+            <el-button type="primary" size="medium" @click="save">保存</el-button>
+        </div>
+
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#moduapp',
+            data: function () {
+                return {
+                    radio: '1',
+                    uri:"m=system&c=",
+                    newModel:[],
+                    sy_index_cache:''
+                }
+
+            },
+            created(){
+                this.getSettplcache();
+            },
+            components: {
+                // 'jibenset': httpVueLoader('./component/jibenset.vue'),
+                // 'navset': httpVueLoader('./component/navset.vue'),
+                // 'seoshezhi': httpVueLoader('./component/seoshezhi.vue'),
+            },
+            methods: {
+                getSettplcache(){
+                    const _this = this;
+                    let url =  this.uri+"set_config&a=settplcache";
+                    httpGet(url, {}).then(function (response) {
+                        var res = response.data;
+                        if (res.error == 0) {
+                            _this.newModel = res.data.newModel;
+                            _this.sy_index_cache = res.data.sy_index_cache;
+                        } else {
+                            message.error(res.msg);
+                        }
+                    })
+                },
+                save:function(){
+                    let url =  this.uri+"set_config&a=savetplcache";
+                    let _this = this;
+                    let ruleForm = {
+                        sy_index_cache:this.sy_index_cache
+                    }
+                    for (const ruleFormKey in this.newModel) {
+                        // console.log(ruleFormKey.cache);
+                        let key = 'sy_'+ruleFormKey+"_cache"
+                        ruleForm[key]=this.newModel[ruleFormKey].cache;
+                    }
+                    httpPost(url, ruleForm).then(function (response) {
+                        var res = response.data;
+                        if (res.error == 0) {
+                            message.success(res.msg);
+                            _this.getSettplcache();
+                        } else {
+                            message.error(res.msg);
+                        }
+                    })
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

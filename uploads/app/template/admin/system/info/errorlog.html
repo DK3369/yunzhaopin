@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="daohaapp" class="moduleElenAl">
+        <div class="moduleSeachs">
+            <div class="moduleSeachInpt">
+				<el-input placeholder="请输入搜索内容" v-model="searchOption.keyword" style="margin-right: 8px;" clearable size="small">
+					<el-select v-model="searchOption.type" size="small" slot="prepend" @clear="search" placeholder="用户ID">
+					    <el-option label="用户ID" value="1"></el-option>
+					    <el-option label="内容" value="2"></el-option>
+					</el-select>
+				</el-input>
+
+                <el-select v-model="searchOption.ctime" size="small" style="margin-right: 8px;" clearable @change="search" placeholder="发布时间">
+                    <el-option label="今天" value="1"></el-option>
+                    <el-option label="最近三天" value="3"></el-option>
+                    <el-option label="最近七天" value="7"></el-option>
+                    <el-option label="最近半月" value="15"></el-option>
+                    <el-option label="最近一个月" value="30"></el-option>
+                </el-select>
+                <el-select v-model="searchOption.logtype" size="small" style="margin-right: 8px;" clearable @change="search" slot="prepend" placeholder="类型">
+                    <el-option label="注册" value="1"></el-option>
+                    <el-option label="添加简历" value="2"></el-option>
+                    <el-option label="投递简历" value="3"></el-option>
+                    <el-option label="发布职位" value="4"></el-option>
+                    <el-option label="刷新职位" value="5"></el-option>
+                    <el-option label="下载简历" value="6"></el-option>
+                    <el-option label="邀请面试" value="7"></el-option>
+                    <el-option label="发送短信" value="8"></el-option>
+                    <el-option label="发送邮件" value="9"></el-option>
+                    
+                    
+                </el-select>
+                <el-button type="primary" size="mini" icon="el-icon-search" @click="search">查询</el-button>
+            </div>
+        </div>
+        <div class="moduleElTable">
+            <el-table :data="tableData" border style="width: 100%"
+                :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" @sort-change="shortChange"
+                @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
+                <el-table-column type="selection" width="55">
+                </el-table-column>
+                <el-table-column prop="id" label="	编号" width="80" sortable="custom">
+                </el-table-column>
+                <el-table-column prop="uid" label="用户ID" width="100">
+                </el-table-column>
+
+                <el-table-column prop="type_n" label=" 类型" width="130">
+                </el-table-column>
+                <el-table-column prop="content" label="内容">
+                </el-table-column>
+                <el-table-column prop="ctime_n" label="时间" width="180">
+                </el-table-column>
+                <el-table-column label="状态" width="100">
+                    <template slot-scope="scope">
+                        <el-tag type="success" size="small" v-if="scope.row.isread==1">已读</el-tag>
+                        <el-tag type="danger" size="small" v-else>未读</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="80">
+                    <template slot-scope="scope">
+                        <div class="cz_button">
+                            <el-button size="mini" @click="delrow(scope.row)" type="danger">删除</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="modulecz modulePagButn">
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
+                <el-button size="mini" @click="delAllBottom">批量删除</el-button>
+            </div>
+            <div class="modulePagNum">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                   :current-page="page" :page-sizes="pageSizes" :page-size="limit"
+                   layout="total, sizes, prev, pager, next, jumper" :total="total">
+                </el-pagination>
+            </div>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#daohaapp',
+            data: function () {
+                return {
+                    emptytext: '暂无数据',
+                    loading: false,
+                    tableData: [],
+                    searchOption: {
+                        type: '1',
+                        ctime: '',
+                        logtype: '',
+                        keyword: ''
+                    },
+                    page: 1,
+                    prevPage: 0,
+                    limit: 0,
+                    list: [],
+                    total: 0,
+                    pageSizes: [],
+                    checkedAll: false,
+                    selectedItem: [],
+                }
+            },
+            created() {
+                this.getList();
+            },
+            methods: {
+                shortChange(e) {
+                    let orderMap = {ascending: 'asc', descending: 'desc'}
+                    this.searchOption.t = e.order ? e.prop : null;
+                    this.searchOption.order = orderMap[e.order];
+                    this.search();
+                },
+                search() {
+                    this.page = 1;
+                    this.getList();
+                },
+                async getList() {
+                    let that = this;
+                    let searchOption = that.searchOption;
+                    let params = {
+                        page: that.page,
+                        pageSize: that.limit,
+                    };
+                    that.loading = true;
+                    that.emptytext = "数据加载中";
+                    httpPost('m=system&c=info_errorlog&a=index',  {...params, ...searchOption}, {hideloading: true}).then(function (data) {
+                        let res = data.data;
+                        if (res.error == 0) {
+                            that.tableData = res.data.list;
+                            if (that.prevPage != that.page) {
+                                that.prevPage = that.page;
+                                that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                            }
+                            that.loading = false;
+                            that.total = parseInt(res.data.total);
+                            that.pageSizes = res.data.pageSizes;
+                            that.limit = parseInt(res.data.pageSize);
+                            if (that.page > res.data.page) {
+                                that.page = parseInt(res.data.page); // 最后一页被删除后，取最新的页数
+                            }
+                            if (that.tableData.length === 0){
+                                that.emptytext = "暂无数据";
+                            }
+                        }
+                    }).catch(function (error) {
+                        console.log(error)
+                    })
+                },
+                handleSizeChange(val) {
+                    this.limit = val;
+                    this.getList();
+                },
+                handleCurrentChange(val) {
+                    this.page = val;
+                    this.getList();
+                },
+                selectAllBottom(value) {
+                    value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+                },
+                handleSelectionChange(val) {
+                    this.selectedItem = [];
+                    let _this = this;
+                    if (val.length) {
+                        val.forEach(item => {
+                            _this.selectedItem.push(item.id);
+                        });
+                    }
+                    if (_this.selectedItem.length == 0) {
+                        _this.checkedAll = false;
+                    } else {
+                        if (_this.selectedItem.length == _this.tableData.length) {
+                            _this.checkedAll = true;
+                        } else {
+                            _this.checkedAll = false;
+                        }
+                    }
+                },
+                delrow(row) {
+                    delConfirm(this, row.id, this.delete);
+                },
+                delAllBottom() {
+                    if (!this.selectedItem.length) {
+                        this.$message({ showClose: true, message: '请选择要删除的数据', type: 'warning' });
+                        return false;
+                    }
+                    delConfirm(this, this.selectedItem, this.delete);
+                },
+                async delete(Ids) {
+                    let _this = this;
+                    let params = {
+                        del: Ids
+                    };
+                    httpPost('m=system&c=info_errorlog&a=del', params).then(function (response) {
+                        if (response.data.error == 0) {
+                            message.success('操作成功');
+                            _this.getList();
+                        } else {
+                            message.error(response.data.msg);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                },
+            }
+        });
+    </script>
+</body>
+
+</html>

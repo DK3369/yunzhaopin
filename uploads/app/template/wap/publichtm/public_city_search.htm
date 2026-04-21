@@ -1,0 +1,18 @@
+<script type="text/javascript">
+    var cityParam = {
+        sy_web_city_one: '{yun:}$config.sy_web_city_one{/yun}',
+        sy_web_city_two: '{yun:}$config.sy_web_city_two{/yun}',
+    };
+
+    // 选择分站地区默认
+    {yun:}if $config.province{/yun}
+        cityParam.sy_web_city_one = parseInt('{yun:}$config.province{/yun}');
+        cityParam.sy_web_city_two = parseInt('{yun:}$config.cityid{/yun}');
+        cityParam.sy_web_city_three = parseInt('{yun:}$config.three_cityid{/yun}');
+        cityParam.one_all = false;
+        cityParam.two_all = cityParam.sy_web_city_two ? false : true;
+        cityParam.three_all = cityParam.sy_web_city_three ? false : true;
+    {yun:}/if{/yun}
+
+    var cityData = cityCategory(cityParam);
+</script>

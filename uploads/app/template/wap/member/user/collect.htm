@@ -1,0 +1,249 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+
+<div id="yunvue" class="none">
+
+	<div class="m_tab">
+		<div class="m_tabbox category">
+			<ul>
+				<li :class="type == 'job' ? 'm_tabactive' : ''" @click="pageTo('index.php?c=collect&type=job')">职位</li>
+				<li :class="type == 'company' ? 'm_tabactive' : ''" @click="pageTo('index.php?c=collect&type=company')"> 企业</li>			</ul>
+		</div>
+	</div>
+
+	<div class="m_cardbox">
+		<div class="m_cardbgbox" v-if="type == 'job'">
+			<div class="m_cardbg" v-for="(item, favkey) in list" :key="favkey" @touchstart="touchin(favkey,'job')" @touchend="cleartime(favkey)" @touchmove="cleartouch">
+				<div class="Posted_card_top">
+					<div class="Posted_card_name">{{item.job_name}}</div>
+					<div class="Posted_card_pay">{{item.salary}}</div>
+				</div>
+				<div class="Posted_card_cen">
+					<ul>
+						<li>{{item.cityname}}</li>
+						<li>{{item.job_edu}}</li>
+						<li>{{item.job_exp}}</li>
+					</ul>
+			
+				</div>
+				<div class="Posted_card_bom">
+					<div class="Posted_bom_box">
+						<div class="Posted_box_logo">
+							<img :src="item.com_logo_n" alt="" width="100%" height="100%">
+						</div>
+						<div class="Posted_box_name">{{item.com_name}}</div>
+					</div>
+					<div class="Posted_bom_time">{{item.datetime_n}}</div>
+				</div>
+			</div>
+			<div v-if="count==2">
+				<van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses
+					@change="pageChange" />
+			</div>
+			<div class="wap_member_nobg" v-show="islook&&count==0">
+				<div class="wap_member_no">没有收藏过职位
+					<a class="wap_member_no_submit" href="{yun:}url m=wap c=job{/yun}">去搜索相关职位</a>
+				</div>
+			</div>
+		</div>
+		<div class="m_cardbgbox" v-if="type != 'job'">
+			<template v-if="utype=='company'">
+				<div class="issue_post_body_card" v-for="(item, atnkey) in list" :key="atnkey" @touchstart="touchin(atnkey,'company')" @touchend="cleartime(atnkey)" @touchmove="cleartouch">
+					<div class="Posted_card_top">
+						<div class="Posted_card_name"> {{item.com_name}}</div>
+					</div>
+					<div class="Posted_card_cen">
+						<ul>
+							<li>{{item.city_n}}</li>
+							<li v-if="item.com_mun">{{item.com_mun}}</li>
+							<li v-if="item.com_pr">{{item.com_pr}}</li>
+						</ul>
+					</div>
+					<div class="Posted_card_bom" v-if="item.jobnum>0">
+						<div class="Posted_bom_box">
+							<div class="Posted_box_logo">
+								<img :src="item.logo" alt="" width="100%" height="100%">
+							</div>
+							<div class="Posted_box_name">{{item.jobnum}}个职位在招</div>
+						</div>
+						<div class="Posted_bom_time">{{item.time_n}}</div>
+					</div>
+				</div>
+			</template>
+			<div v-if="count==2" class="">
+				<van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange" />
+			</div>
+			<div class="wap_member_nobg" v-show="islook&&count==0">
+				<div class="wap_member_no">
+					暂无记录！
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	var currentPage = parseInt('{yun:}$smarty.get.page{/yun}');
+	var type = '{yun:}$smarty.get.type{/yun}';
+	type = type ? type : 'job';
+	var loopVal = null;
+	var loop = 0;
+	var loopType = '';
+	var yunvue = new Vue({
+		el: '#yunvue',
+		data: {
+			list: [],
+			limit: 20,
+			type: type,
+			id: '',
+			total: 0,
+			page: currentPage ? currentPage : 1,
+			islook: false,
+			utype: 'company'
+		},
+		computed: {
+			count() {
+				if (this.total > this.limit) {
+					return 2;
+				} else if (this.list.length == 0) {
+					return 0;
+				} else {
+					return 1;
+				}
+			}
+		},
+		created() {
+			this.typeShow(type);
+		},
+		methods: {
+			typeShow: function(e) {
+				this.page = 1;
+				this.list = [];
+				this.islook = false;
+				this.type = e;
+				if (e == 'job') {
+					this.getFav();
+				} else {
+					this.utype = e;
+					this.getAtn();
+				}
+			},
+			getFav: function() {
+				showLoading();
+				var that = this;
+				var paramer = {};
+				paramer['page'] = that.page;
+				paramer['limit'] = that.limit;
+				$.post('{yun:}url d=wxapp h=user m=job c=favlist{/yun}', paramer, function(res) {
+					hideLoading();
+
+					that.list = res.data;
+					that.total = res.total;
+					that.page = currentPage ? currentPage : 1;
+					that.type = type;
+					that.islook = true
+					$("#yunvue").css('display', 'block');
+				}, 'json');
+			},
+			getAtn: function() {
+				showLoading();
+				var that = this;
+				var paramer = {};
+				paramer['page'] = that.page;
+				paramer['limit'] = that.limit;
+				paramer['utype'] = that.utype;
+				paramer['wap'] = 1;
+				$.post('{yun:}url d=wxapp h=user m=atn c=atncom{/yun}', paramer, function(res) {
+					hideLoading();
+					that.list = res.data;
+					that.total = res.total;
+					that.page = currentPage ? currentPage : 1;
+					that.islook = true
+					$("#yunvue").css('display', 'block');
+				}, 'json');
+			},
+			pageChange: function(e) {
+
+				location.href = 'index.php?c=collect&type=' + this.type + '&page=' + e;
+			},
+			pageTo: function(url) {
+				window.location.href = url;
+			},
+			touchin(key, type) {
+				loopType = type;
+				if(loopVal){
+					 //再次清空定时器，防止重复注册定时器
+					clearInterval(loopVal);
+				}
+				var self = this;
+				loopVal = setTimeout(function() {
+					loop = 1;
+					if (type == 'job') {
+						self.collectCancel(key);
+					} else {
+						self.atnCancel(key);
+					}
+				}.bind(this), 1000);
+			},
+			cleartime(key) {
+				if(loop == 0){
+					// click
+					if(loopType == 'job'){
+						this.pageTo(this.list[key].wapjob_url);
+					}else{
+						this.pageTo(this.list[key].wapcom_url);
+					}
+				}
+				// 这个方法主要是用来将每次手指移出之后将计时器清零
+				if(loopVal){
+					clearInterval(loopVal);
+					loopVal = null;
+				}
+				loop = 0;
+			},
+			// 滑动时清除定时器
+			cleartouch(){
+			    if(loopVal){
+					clearInterval(loopVal);
+					loopVal = null;
+					loop = 1;
+				}
+			},
+			// 取消职位收藏
+			collectCancel(key){
+				var self = this;
+				showConfirm('确定要取消收藏？', function() {
+				    showLoading('取消中');
+					$.post('{yun:}url d=wxapp h=user m=job c=delfavjob{/yun}', {ids: self.list[key].id}, function(data){
+						if (data.error == 1) {
+							self.list.splice(key, 1);
+							showToast('取消成功');
+						} else {
+							showToast('取消失败');
+						}
+					})
+				});
+			},
+			atnCancel(key){
+				var self = this;
+				showConfirm('确定要取消关注？', function() {
+				    showLoading('取消中');
+					var param = {
+						id: self.list[key].id,
+						cuid: self.list[key].sc_uid,
+						utype: self.utype
+					};
+					$.post('{yun:}url d=wxapp h=user m=atn c=delatncom{/yun}', param, function(data){
+						if (data.error == 9) {
+							self.list.splice(key, 1);
+							showToast('取消成功');
+						} else {
+							showToast('取消失败');
+						}
+					})
+				});
+			}
+		}
+	});
+</script>
+</body>
+</html>

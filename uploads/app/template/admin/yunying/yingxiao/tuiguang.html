@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+    <link rel="stylesheet" href="../../../admin/js/wangeditor/index.css">
+    <script src="../../../admin/js/wangeditor/index.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="邮件推广" name="email">
+                    <email ref="email"></email>
+                </el-tab-pane>
+                <el-tab-pane label="短信推广" name="msg" lazy>
+                    <msg ref="msg"></msg>
+                </el-tab-pane>
+                <el-tab-pane label="简历推广" name="resume" lazy>
+                    <resume ref="resume"></resume>
+                </el-tab-pane>
+                <el-tab-pane label="职位推广" name="job" lazy>
+                    <job ref="job"></job>
+                </el-tab-pane>
+                <el-tab-pane label="自定义邮件" name="custom_email" lazy>
+                    <custom_email ref="custom_email"></custom_email>
+                </el-tab-pane>
+                <el-tab-pane label="自定义短信" name="custom_msg" lazy>
+                    <custom_msg ref="custom_msg"></custom_msg>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script src="../../js/base64ToFile.js"></script>
+    <script>
+        const custoapp = new Vue({
+            el: '#moduapp',
+            data: function () {
+                return {
+                    activeName: 'email'
+                }
+            },
+            components: {
+                'email': httpVueLoader('./component/tuiguang_email.vue'),
+                'msg': httpVueLoader('./component/tuiguang_msg.vue'),
+                'resume': httpVueLoader('./component/tuiguang_resume.vue'),
+                'job': httpVueLoader('./component/tuiguang_job.vue'),
+                'custom_email': httpVueLoader('./component/tuiguang_custom_email.vue'),
+                'custom_msg': httpVueLoader('./component/tuiguang_custom_msg.vue'),
+            },
+            methods: {
+                handleClick(tab, event) {
+                    // this.$refs[tab.name].init();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

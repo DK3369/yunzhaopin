@@ -1,0 +1,30 @@
+{yun:}include file="$wapstyle/header_cont.htm"{/yun}
+<div class="special_indexbox">
+{yun:}special limit=10  item=row{/yun}
+<div class="pic-txt">
+
+<div class="txt"><a href="{yun:}url m=wap c=special a=show id='`$row.id`'{/yun}" class="">
+    <div style="width:100%;height:150px;">
+		
+			{yun:}if $row.wappic{/yun}
+			<img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$row.wappic{/yun}" alt="{yun:}$row.title{/yun}"/>
+			{yun:}else{/yun}
+			<img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$row.pic{/yun}" alt="{yun:}$row.title{/yun}"/>
+			{yun:}/if{/yun}
+		
+	</div></a>
+<div class="tit"><a href="{yun:}url m=wap c=special a=show id='`$row.id`'{/yun}">{yun:}$row.title{/yun}</a></div>
+
+<div class="special_box_info">
+<span class="special_box_time">{yun:}$row.ctime|date_format:'%Y-%m-%d'{/yun}</span>
+
+</div><a href="{yun:}url m=wap c=special a=show id='`$row.id`'{/yun}" class="s_bth">进入专题</a>
+</div>
+</div>
+ {yun:}specialelse{/yun}
+<div class="wap_member_no">抱歉，还没有专题招聘的相关信息</div>
+ {yun:}/special{/yun}
+ </div>
+{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+</body>
+</html>

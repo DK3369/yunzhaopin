@@ -1,0 +1,75 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+<div class="none" id="yunvue">
+ <!-- 页面整体部分 -->
+      <div class="issue_post_body">
+       <div class="issue_post_body_card">
+        <div onclick="navigateTo('index.php?c=info')" class="post_body_card_job">
+            <div class="body_card_job_box">
+                <div class="card_job_box_post">基本资料</div>
+                <div class="card_job_box_name">完善个人基本资料</div>
+            </div>
+            <div class="body_card_job_icon">
+                <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="" width="100%">
+            </div>
+        </div>
+           <div class="post_body_card_job" onclick="navigateTo('index.php?c=ident')">
+               <div class="body_card_job_box">
+                   <div class="card_job_box_post">认证与绑定</div>
+               </div>
+               <div class="body_card_job_icon">
+                   <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
+               </div>
+           </div>
+           <div class="post_body_card_job" onclick="navigateTo('index.php?c=safe')">
+               <div class="body_card_job_box">
+                   <div class="card_job_box_post">账号与安全</div>
+               </div>
+               <div class="body_card_job_icon">
+                   <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
+               </div>
+           </div>
+           <div onclick="navigateTo('index.php?c=privacy')" class="post_body_card_job"> <div class="body_card_job_box">
+               <div class="card_job_box_post">隐私设置</div>
+               <div class="card_job_box_name">设置简历公开、保密</div>
+           </div>
+               <div class="body_card_job_icon">
+                   <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
+               </div>
+           </div>
+        <div onclick="navigateTo('{yun:}url m=wap c=advice{/yun}')" class="post_body_card_job">
+            <div class="body_card_job_box">
+                <div class="card_job_box_post">意见反馈</div>
+            </div>
+            <div class="body_card_job_icon">
+                <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
+            </div>
+        </div>
+       </div>
+       <div class="logout_btn" onclick="islogout('{yun:}url m=wap c=loginout{/yun}','确认退出吗？');">退出登录</div>
+      </div>
+</div>
+<script>
+    new Vue({
+        el: '#yunvue',
+        data: {
+            info: {}
+        },
+        created() {
+            this.getInfo();
+        },
+        methods:{
+            getInfo:function(){
+                showLoading();
+                var self = this;
+                $.post('{yun:}url d=wxapp h=user m=set c=getInfo{/yun}',{rand: Math.random()},function(res){
+                    hideLoading();
+                    $("#yunvue").css('display', 'block');
+                    self.info = res.data;
+
+                },'json');
+            }
+        }
+    })
+</script>
+</body>
+</html>  

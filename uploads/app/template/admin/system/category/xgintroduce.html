@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="yemanapp" class="moduleDome">
+        <div class="moduleHeadr">
+            <el-page-header @back="goBack" content="修改">
+            </el-page-header>
+            <!-- <span>设置前台导航菜单，可以修改增加排序导航，点击此处</span> -->
+        </div>
+        <div class="moduleTable">
+            <table class="tableVue">
+                <thead>
+                    <tr align="left">
+                        <th width="200">名称</th>
+                        <th width="400">状态</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="TableTite">类别名称</div>
+                        </td>
+                        <td>
+                            <div class="TableInpt">
+                                <el-input placeholder="请输入内容" v-model="input3">
+                                    <!-- <span slot="suffix" class="slotspan">天</span> -->
+                                </el-input>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                <span>类别名称</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="TableTite">自定义描述</div>
+                        </td>
+                        <td>
+                            <div class="TableInpt">
+                                <el-input type="textarea" placeholder="请输入内容" v-model="input3">
+                                    <!-- <span slot="suffix" class="slotspan">天</span> -->
+                                </el-input>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                <span>自定义描述</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="TableTite">排　　序</div>
+                        </td>
+                        <td>
+                            <div class="TableInpt">
+                                <el-input placeholder="请输入内容" v-model="input3">
+                                    <!-- <span slot="suffix" class="slotspan">天</span> -->
+                                </el-input>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                <span>越小越在前</span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="setBasicButn" style="border: none;">
+            <el-button type="primary" size="medium">提交</el-button>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#yemanapp',
+            data: function () {
+                return {
+                    radio: '1',
+                    options: [{
+                        value: '选项1',
+                        label: '黄金糕'
+                    }, {
+                        value: '选项2',
+                        label: '双皮奶'
+                    }, {
+                        value: '选项3',
+                        label: '蚵仔煎'
+                    }, {
+                        value: '选项4',
+                        label: '龙须面'
+                    }, {
+                        value: '选项5',
+                        label: '北京烤鸭'
+                    }],
+                    value: '',
+                    input3: '',
+                    fileList: [
+                        {
+                            name: 'food.jpeg',
+                            url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
+                        },
+                    ]
+                }
+            },
+            components: {
+                // 'jibenset': httpVueLoader('./component/jibenset.vue'),
+            },
+            methods: {
+                handleClick(tab, event) {
+                    console.log(tab, event);
+                },
+                goBack() {
+                    history.go(-1);
+                },
+                handleRemove(file, fileList) {
+                    console.log(file, fileList);
+                },
+                handlePreview(file) {
+                    console.log(file);
+                },
+            }
+        });
+    </script>
+</body>
+
+</html>

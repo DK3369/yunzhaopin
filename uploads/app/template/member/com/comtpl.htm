@@ -1,0 +1,130 @@
+{yun:}include file="$comstyle/header.htm"{/yun}
+<div class="w1000">
+  <div class="admin_mainbody">
+    {yun:}include file="$comstyle/left.htm"{/yun}
+        <div class=right_box>
+      <div class="newmember_tit">
+        <ul>
+          <li><a href="index.php?c=info">基本信息</a></li>
+          <li><a href="index.php?c=info&act=side">补充信息</a></li>
+          <li><a href="index.php?c=address">地址管理</a></li>
+          <li><a href="index.php?c=show"> 公司相册</a></li>
+          <li><a href="index.php?c=uppic"> 公司LOGO</a></li>
+          <li><a href="index.php?c=product">产品介绍</a></li>
+          <li><a href="index.php?c=news">公司资讯</a></li>
+          {yun:}if $config.map_key{/yun}
+          <li><a href="index.php?c=map">公司地图</a></li>
+          {yun:}/if{/yun}
+          <li class="newmember_titcur"><a href="index.php?c=comtpl">个性化模板</a></li>
+               </ul>
+      </div>
+              <div class="clear"></div>
+        <div class="newmember_screenbox">
+        <div class="newmember_screen">
+        <div class="com_topbth_box">
+            <a  href="index.php?c=banner"class="com_ylbth">上传横幅</a>
+        
+        </div>  </div>  </div>
+        
+      <div class=admincont_box>
+         <div class="com_body" >
+         <iframe id="supportiframe" name="supportiframe" onload="returnmessage('supportiframe');"
+            style="display:none"></iframe>
+          <form id="myform" name="form1" method="post" target="supportiframe"
+            action="{yun:}$now_url{/yun}&act=settpl">
+            <input type="hidden" value="savetpl" name="savetpl" />
+            <div class="com_new_tip">
+ <span class="com_new_tip_h">温馨小提示</span>公司相册方便求职者了解贵公司的直观呈现，横版拍摄上传效果最佳
+ </div>
+            <table class="com_table">
+              <tr>
+                <th>图片</th>
+                <th>图片介绍</th>
+                <th>价格</th>
+
+                <th width="260">操作</th>
+              </tr>
+             {yun:}foreach from=$list item=style{/yun}
+              <input type="hidden" value="{yun:}$style.name{/yun}" name="tplname{yun:}$style.id{/yun}" />
+
+              <tr>
+                <td width="200"> <img alt="{yun:}$style.name{/yun}"
+                    src="{yun:}$config.sy_ossurl{/yun}/{yun:}$style.pic{/yun}" width="150"
+                    height="75"> </td>
+                <td> {yun:}$style.name{/yun} </td>
+                <td>
+                  <div class="compl_list_p" id="list_tpl_{yun:}$style.id{/yun}">
+                    <b class="comtpl_b">
+                      {yun:}if $style.price!=0{/yun}
+                      {yun:}$style.price{/yun}
+                      {yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}
+                      {yun:}else{/yun}
+                      免费
+                      {yun:}/if{/yun}
+                    </b>
+                  </div>
+                </td>
+                <td style="width:120px;     position: relative;">
+                  <div>
+                  {yun:}assign var="t" value=$style.url{/yun}
+                  {yun:}if $style.url=='default'{/yun}
+                  {yun:}if $statis.comtpl=='0' || $statis.comtpl=='default'{/yun}
+
+                  <span class=" compl_list_b_optsy">使用中</span>
+                  <a href="index.php?c=banner" class="com_bth cblue"> 横幅</a>
+
+                  {yun:}else{/yun}
+                  <a href="javascript:void(0);" onclick="return checktpl('{yun:}$style.id{/yun}');"
+                    class="com_bth cblue">使用</a>
+                  {yun:}/if{/yun}
+                  <input type='hidden' id='buytpl_{yun:}$style.id{/yun}' value='1'>
+                  {yun:}elseif in_array($t,$buytpl){/yun}
+                  <input type='hidden' id='buytpl_{yun:}$style.id{/yun}' value='1'>
+                  {yun:}if $statis.comtpl==$style.url{/yun}
+
+
+                  <span class="  ">使用中</span>
+                  <a href="index.php?c=banner" class="com_bth cblue"> 横幅</a>
+                                  {yun:}else{/yun}
+                  <a href="javascript:void(0);" onclick="return checktpl('{yun:}$style.id{/yun}');"
+                    class="com_bth cblue">使用</a>
+                  {yun:}/if{/yun}
+                  {yun:}else{/yun}
+                  <input type='hidden' id='buytpl_{yun:}$style.id{/yun}' value='0'>
+                  <a href="javascript:void(0);"
+                    onclick="return checktpl('{yun:}$style.id{/yun}','{yun:}$style.price{/yun}');"
+                    class="com_bth cblue">{yun:}if
+                    $style.price!=0{/yun}购买{yun:}else{/yun}使用{yun:}/if{/yun}</a>
+                  {yun:}/if{/yun} <a
+										href="{yun:}url m=company c=show id=$uid style=$style.url{/yun}"
+                    target="_blank" class="com_bth cblue">预览</a>
+                    </div>
+                </td>
+              </tr>
+
+              {yun:}/foreach{/yun}
+
+            </table>
+            <input type="hidden" name="tpl" id="tplid" value="" />
+            <input type="hidden" name="bannernum" value="{yun:}$bannernum{/yun}" />
+          </form>
+
+        </div>
+      </div>
+    </div>
+    <script language="javascript">
+      $(document).ready(function() {
+        $(".com_admin_ask").hover(function() {
+          layer.tips("为自己的公司选择一个合适的展示风格！", this, {
+            guide: 1,
+            style: ['background-color:#5EA7DC; color:#fff;top:-7px', '#5EA7DC']
+          });
+          $(".xubox_layer").addClass("xubox_tips_border");
+        }, function() {
+          layer.closeTips();
+        });
+      });
+    </script>
+  </div>
+</div>
+{yun:}include file="$comstyle/footer.htm"{/yun}

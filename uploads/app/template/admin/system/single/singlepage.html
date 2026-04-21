@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+
+    <!-- 配置文件 -->
+    <script type="text/javascript" src="../../../../../js/ueditor/ueditor.config.js"></script>
+    <!-- 编辑器源码文件 -->
+    <script type="text/javascript" src="../../../../../js/ueditor/ueditor.all.min.js"></script>
+    <!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
+    <!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
+    <script type="text/javascript" charset="utf-8" src="../../../../../js/ueditor/lang/zh-cn/zh-cn.js"></script>
+</head>
+
+<body>
+    <div id="daohaapp" class="moduleElenAl">
+        <div class="moduleSeachs" style="padding-bottom: 0px;">
+            <div class="moduleSeachleft">
+                <div class="moduleElSearchInf">
+                    <div class="moduleElTabInpt" style="flex-wrap: wrap;">
+                        <div class="moduleInptList" style="flex-wrap: wrap;">
+                            <el-input v-model="keyword" placeholder="请输入搜索内容">
+                                <el-select v-model="is_type" size="small" slot="prepend" placeholder="链接类型">
+                                    <el-option label="外部链接" value="0"></el-option>
+                                    <el-option label="自定义" value="1"></el-option>
+                                    <el-option label="站内链接" value="2"></el-option>
+                                </el-select>
+                            </el-input>
+                        </div>
+                        <div class="tableSeachInpt">
+                            <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="moduleSeachButn">
+                <el-button type="primary" icon="el-icon-document-add" plain size="mini" @click="make('')">生成单页面</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addinfo('')">添加单页面</el-button>
+            </div>
+        </div>
+        <div class="moduleElTable">
+            <el-table ref="multipleTable" :data="tableData" border style="width: 100%" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" @selection-change="selectionChange" v-loading="loading" :empty-text="emptytext">
+                <el-table-column type="selection" width="55"></el-table-column>
+                <el-table-column prop="id" label="  序号" width="80"></el-table-column>
+                <el-table-column prop="name" label="单页面名称"></el-table-column>
+                <el-table-column prop="is_type_n" label="类型"></el-table-column>
+                <el-table-column prop="ctime_n" label="添加时间"></el-table-column>
+                <el-table-column label="左侧导航">
+                    <template slot-scope="scope">
+                        <el-tag>{{scope.row.is_nav==1?'显示':'不显示'}}</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column label="排序" width="80">
+                    <template slot-scope="scope">
+                        <div class="moduleElTaPax" v-if="editsort_id==scope.row.id">
+                            <el-input id="inputref" placeholder="请输入内容" v-model="editsort" @input="inputIntNumber($event, 'editsort', '')" :data-preval="scope.row.sort" @blur="editChange"></el-input>
+                        </div>
+                        <div class="moduleElTaPax" v-else>
+                            <span>{{scope.row.sort}}</span>
+                            <img src="../../../admin/images/bine.png" @click="editcolumn(scope.row.sort,scope.row.id)" alt="">
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="140">
+                    <template slot-scope="scope">
+                        <div class="moduleElTaCaoz">
+                            <el-button size="mini">
+                                <el-link style="color: #606266;" type="primary" :underline="false" :href="scope.row.url_pc" target="_blank">预览</el-link>
+                            </el-button>
+                            <el-button size="mini" @click="make(scope.row.id)" v-if="scope.row.is_type==1">更新</el-button>
+                            <el-button size="mini" @click="addinfo(scope.row.id)">修改</el-button>
+                            <el-button size="mini" @click="deleteinfo(scope.row.id)" type="danger">删除</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="modulecz modulePagButn">
+                <el-checkbox v-model="allchecked" @change="allcheckChange">全选</el-checkbox>
+                <el-button size="mini" @click="deleteAll">批量删除</el-button>
+            </div>
+            <div class="modulePagNum">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-size="limit" :page-sizes="page_sizes" :total="total" layout="total, sizes, prev, pager, next, jumper">
+                </el-pagination>
+            </div>
+        </div>
+        <!-- 弹窗 -->
+        <div class="modluDrawer">
+            <el-drawer title="添加单页面" :visible.sync="addshow" :modal-append-to-body="false" :show-close="true" :with-header="true" size="60%">
+                <addsingle :sid="sid" @close-update="closeUpdate"></addsingle>
+            </el-drawer>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+    var timer = null;
+    const custoapp = new Vue({
+        el: '#daohaapp',
+        data: function() {
+            return {
+                emptytext: '暂无数据',
+                is_type: '',
+                keyword: '',
+
+                tableData: [],
+                total: 0,
+                limit: 0,
+                currentPage: 1,
+                prevPage: 0,
+                page_sizes: [],
+
+                editsort_id: '',
+                editsort: '',
+
+                allchecked: false,
+                choosedata: [],
+
+                sid: '',
+                addshow: false,
+                addloading: false,
+
+                timer: '',
+                loading: false,
+            }
+        },
+        components: {
+            'addsingle': httpVueLoader('./component/addsingle.vue'),
+        },
+        created: function() {
+            this.getList();
+        },
+        methods: {
+            inputIntNumber(val, form, key) {
+                this.$data[form] = val.replace(/[^0-9]/g,'');
+            },
+            search() {
+                this.currentPage = 1
+                this.getList()
+            },
+            async getList() {
+                let that = this;
+                let params = {
+                    is_type: that.is_type,
+                    keyword: that.keyword,
+                    page: that.currentPage,
+                    limit: that.limit
+                }
+                that.loading = true;
+                that.emptytext = "数据加载中";
+                httpPost('m=system&c=singlepage&a=index', params).then(function(result) {
+                    endLoading();
+                    var res = result.data
+                    if (res.error == 0) {
+                        that.tableData = res.data.list
+                        that.total = parseInt(res.data.total)
+                        that.page_sizes = res.data.page_sizes;
+						that.limit = res.data.page_size;
+                        if (that.prevPage != that.currentPage) {
+                            that.prevPage = that.currentPage;
+                            that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        }
+                        that.loading = false;
+                        if (that.tableData.length === 0){
+                            that.emptytext = "暂无数据";
+                        }
+                    }
+                }).catch(function(e) {
+                    console.log(e)
+                })
+            },
+            handleCurrentChange(val) {
+                this.currentPage = val;
+                this.getList();
+            },
+            handleSizeChange(val) {
+                this.currentPage = 1
+                this.limit = val
+                this.getList()
+            },
+            editcolumn: function(def, id) {
+
+                this.editsort_id = id;
+                this.editsort = def;
+
+                this.$nextTick(() => {
+                    if (timer) {
+                        clearTimeout(timer);
+                    }
+                    timer = setTimeout(() => {
+                        document.getElementById('inputref').focus();
+                    }, 100);
+                })
+
+            },
+            async editChange(e) {
+
+                var that = this;
+
+                var preval = e.target.dataset.preval;
+
+                var val = this.editsort;
+                var id = this.editsort_id;
+
+                if (val == preval) {
+
+                    this.editsort_id = '';
+                    this.editsort = '';
+
+                } else {
+
+                    var param = { id: id, sort: val };
+
+                    httpPost('m=system&c=singlepage&a=ajax', param).then(function(result) {
+
+                        for (let i in that.tableData) {
+                            if (that.tableData[i].id == id) {
+                                that.tableData[i].sort = val;
+                                break;
+                            }
+                        }
+
+                        that.editsort_id = '';
+                        that.editsort = '';
+                        message.success('修改成功',function(){
+                            that.getList()
+                        });
+
+                    }).catch(function(e) {
+                        console.log(e)
+                    })
+                }
+
+            },
+
+            allcheckChange: function() {
+
+                this.$refs.multipleTable.toggleAllSelection();
+
+            },
+            selectionChange: function(e) {
+                if (this.tableData.length != e.length) {
+                    this.allchecked = false;
+                } else {
+                    this.allchecked = true;
+                }
+                this.choosedata = e;
+            },
+            deleteinfo: function(id) {
+                var _this = this;
+
+                var params = {
+                    del: id
+                };
+                delConfirm(_this, params, this.deletePost)
+            },
+            deleteAll: function() {
+                var _this = this;
+                var idarr = [];
+                if (this.choosedata.length > 0) {
+                    for (let i in this.choosedata) {
+                        idarr.push(this.choosedata[i].id);
+                    }
+                } else {
+                    message.error('请选择要删除的数据！');
+                    return;
+                }
+                var params = {
+                    del: idarr
+                };
+
+                delConfirm(_this, params, this.deletePost)
+            },
+            async deletePost(params) {
+
+                let that = this;
+
+                httpPost('m=system&c=singlepage&a=del', params).then(function(result) {
+
+                    var res = result.data;
+                    if (res.error == 9) {
+                        message.success(res.msg, function() { that.getList() });
+                        return;
+                    } else {
+                        message.error(res.msg);
+                        return;
+                    }
+                }).catch(function(e) {
+                    console.log(e)
+                })
+            },
+
+            addinfo: function(id) {
+                if (this.sid != id || id == '') {
+                    this.sid = id;
+                    this.timer = new Date().getTime();
+                }
+                this.addshow = true;
+            },
+            closeUpdate: function() {
+                this.addshow = false;
+                this.getList()
+            },
+            async make(id) {
+
+                let that = this;
+                var params = {
+                    id: id
+                };
+                httpPost('m=system&c=singlepage&a=make', params).then(function(result) {
+
+                    var res = result.data;
+                    if (res.error == 0) {
+                        message.success(res.msg);
+                        return;
+                    } else {
+                        message.error(res.msg);
+                        return;
+                    }
+                }).catch(function(e) {
+                    console.log(e)
+                })
+            },
+        }
+    });
+    </script>
+</body>
+<style>
+    .moduleInptList .el-select .el-input{
+        width: 130px;
+    }
+</style>
+</html>

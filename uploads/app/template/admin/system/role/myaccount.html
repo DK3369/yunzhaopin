@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+    <script src="https://wwcdn.weixin.qq.com/node/wework/wwopen/js/wwLogin-1.2.5.js"></script>
+</head>
+<body>
+<div id="moduapp" class="moduleDome">
+    <div class="moduleElTable">
+        <template>
+            <el-descriptions title="我的账户 " direction="vertical" :column="4" border>
+                <el-descriptions-item>
+                    <template slot="label">
+                        <i class="el-icon-user"></i>
+                        用户名
+                    </template>
+                    {{user.username}}
+                </el-descriptions-item>
+                <el-descriptions-item>
+                    <template slot="label">
+                        <i class="el-icon-mobile-phone"></i>
+                        手机号
+                    </template>
+                    {{user.mobile}}
+                </el-descriptions-item>
+                <el-descriptions-item>
+                    <template slot="label">
+                        <i class="el-icon-postcard"></i>
+                        真实姓名
+                    </template>
+                    {{user.real_name}}
+                </el-descriptions-item>
+                <el-descriptions-item>
+                    <template slot="label">
+                        <i class="el-icon-alarm-clock"></i>
+                        上次登录时间
+                    </template>
+                    {{user.last_login}}
+                </el-descriptions-item>
+                <el-descriptions-item>
+                    <template slot="label">
+                        <i class="el-icon-tickets"></i>
+                        权限
+                    </template>
+                    <el-tag size="small" type="warning">{{user.group_name}}</el-tag>
+                </el-descriptions-item>
+                <el-descriptions-item>
+                    <template slot="label">
+                        <i class="el-icon-alarm-clock"></i>
+                        密码
+                    </template>
+                    <div class="admin_item">
+                        <div class=""> *********</div>
+                        <el-button type="text" size="small" icon="el-icon-edit" @click="drawer = true">修改</el-button>
+                    </div>
+                </el-descriptions-item>
+                <el-descriptions-item>
+                    <template slot="label">
+                        <i class="el-icon-link"></i>
+                        微信绑定
+                    </template>
+                    <div class="admin_item" v-if="user.wxid == ''">
+                        <div class="">暂未绑定</div>
+                        <el-button type="text" size="small" icon="el-icon-edit" @click="getcode()">绑定</el-button>
+                    </div>
+                    <div class="admin_item" v-else>
+                        <div class="">已绑定</div>
+                        <el-button type="text" size="small" icon="el-icon-edit" @click="delwxid()">取消</el-button>
+                    </div>
+                </el-descriptions-item>
+                <el-descriptions-item>
+                    <template slot="label">
+                        <i class="el-icon-link"></i>
+                        企微绑定
+                    </template>
+                    <div class="admin_item" v-if="user.qy_wxid == ''">
+                        <div class="">暂未绑定</div>
+                        <el-button type="text" size="small" icon="el-icon-edit" @click="getQycode()">绑定</el-button>
+                    </div>
+                    <div class="admin_item" v-else>
+                        <div class="">已绑定</div>
+                        <el-button type="text" size="small" icon="el-icon-edit" @click="delQyuserid()">取消</el-button>
+                    </div>
+                </el-descriptions-item>
+            </el-descriptions>
+        </template>
+    </div>
+    <div class="modluDrawer">
+        <el-dialog title="扫描二维码" :visible.sync="code" :with-header="true" :modal-append-to-body="false"
+                   :show-close="true" width="300px">
+            <div class="codeFldex">
+                <div>
+                    <div class="code_img">
+                        <img :src="code_img" width="200" height="200">
+                    </div>
+                    <div class="code_p">请使用微信扫描二维码绑定</div>
+                </div>
+            </div>
+
+        </el-dialog>
+    </div>
+    <div class="modluDrawer" v-if="qycode">
+        <el-dialog title="扫描企微二维码" :visible.sync="qycode" :with-header="true" :modal-append-to-body="false"
+                   :show-close="true" width="350px" :append-to-body="true">
+            <div id="qyQrCode" class="code_img"></div>
+            <div class="code_p">请使用企业微信扫描二维码绑定</div>
+        </el-dialog>
+    </div>
+    <div class="modluDrawer">
+        <el-dialog title="修改密码" :visible.sync="drawer" :with-header="true" :modal-append-to-body="false"
+                   :show-close="true" width="30%">
+            <div class="drawerModLis">
+                <div class="drawerModTite">
+                    <span>原始密码：</span>
+                </div>
+                <div class="drawerModInpt">
+                    <el-input v-model="old_pwd" placeholder="请输入原始密码" show-password></el-input>
+                </div>
+            </div>
+            <div class="drawerModLis">
+                <div class="drawerModTite">
+                    <span>新密码：</span>
+                </div>
+                <div class="drawerModInpt">
+                    <el-input v-model="new_pwd" placeholder="请输入新密码" show-password></el-input>
+                </div>
+            </div>
+            <div class="drawerModLis">
+                <div class="drawerModTite">
+                    <span>确认密码：</span>
+                </div>
+                <div class="drawerModInpt">
+                    <el-input v-model="re_pwd" placeholder="请确认密码" show-password></el-input>
+                </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+				<el-button @click="drawer = false">取 消</el-button>
+				<el-button type="primary" @click="submitPwd" :disabled="saveLoading">确 定</el-button>
+			</span>
+        </el-dialog>
+    </div>
+</div>
+<!-- script -->
+<script>
+    const custoapp = new Vue({
+        el: '#moduapp',
+        data: function () {
+            return {
+                activeName: 'first',
+                drawer: false,
+                code: false,
+                qycode: false,
+                user: {
+                    username: '',
+                    mobile: '',
+                    name: '',
+                    wxid: '',
+                    qy_wxid: '',
+                    last_login: '',
+                    group_name: '',
+                    qy_app_id: '',
+                    agent_id: '',
+                    redirect_uri: '',
+                    state: ''
+                },
+                old_pwd: '',
+                new_pwd: '',
+                re_pwd: '',
+                code_img: null,
+                codesetval: null,
+                qw_tk: '',
+                qw_state: '',
+                ly: '',
+                firstOpen: true, // 头部客勤首次弹窗
+                saveLoading: false
+            }
+        },
+        components: {},
+        watch: {
+            '$route.query.code': function () {
+                this.qw_tk = this.$route.query.code
+                if (this.$route.query.qw_state) {
+                    this.qw_state = this.$route.query.qw_state
+                }
+                if (this.qw_tk && this.qw_state) {
+                    this.qwcallback()
+                }
+            },
+        },
+        created: function () {
+            let query = getUrlParams(window.parent.location);
+            if (query.ly) {
+                this.ly = query.ly;
+            }
+            this.getInfo();
+        },
+        methods: {
+            handleClick(tab, event) {
+                console.log(tab, event);
+            },
+            async getInfo() {
+                let that = this;
+                httpPost('m=system&c=role_myuser&a=index', {}).then(function (result) {
+                    var res = result.data
+                    if (res.error == 0) {
+                        that.user = res.data
+                    }
+                    if (that.ly == 'pass') { // 弹出修改密码框
+                        that.drawer = true;
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            //修改密码
+            async submitPwd() {
+                let that = this;
+                if (!that.old_pwd) {
+                    message.error('原始密码不能为空');
+                    return false;
+                }
+                if (!that.new_pwd) {
+                    message.error('新密码不能为空');
+                    return false;
+                }
+                if (!that.new_pwd) {
+                    message.error('确认密码不能为空');
+                    return false;
+                }
+                if (that.new_pwd == that.old_pwd) {
+                    message.error('新密码不能与旧密码相同');
+                    return false;
+                }
+                if (that.new_pwd != that.re_pwd) {
+                    message.error('确认密码与新密码不一致');
+                    return false;
+                }
+                that.drawer = false;
+                that.saveLoading = true;
+                httpPost('m=system&c=role_myuser&a=savePass', {
+                    old_pwd: that.old_pwd,
+                    new_pwd: that.new_pwd,
+                    re_pwd: that.re_pwd,
+                    useradd: 'savepwd'
+                }).then(function (result) {
+                    var res = result.data
+                    if (res.error == 0) {
+                        message.success(res.msg, function () {
+                            parent.location.reload()
+                        })
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).finally(function () {
+                    setTimeout(function () {
+                        that.saveLoading = false;
+                    }, 2000);
+                });
+            },
+            async wxbindstatus() {
+                var that = this;
+                httpPost('m=index&c=getwxbindstatus', {}).then(function (result) {
+                    var res = result.data;
+                    if (res.error == 0) {
+                        message.success('绑定成功', function () {
+                            clearInterval(that.codesetval);
+                            that.user.wxid = res.data.wxid;
+                            that.code = false
+                        });
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            // 获取微信绑定二维码
+            async getcode() {
+                var that = this;
+                httpPost('m=index&c=wxbind', {}).then(function (result) {
+                    var res = result.data;
+                    if (res.error == 0) {
+                        that.code_img = res.data.code_url;
+                        that.code = true;
+                        that.codesetval = setInterval(function () {
+                            that.wxbindstatus()
+                        }, 2500);
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            //解绑微信
+            async delwxid() {
+                var that = this;
+                httpPost('m=system&c=role_myuser&a=delAdminWxBind', {}).then(function (result) {
+                    var res = result.data;
+                    if (res.error == 0) {
+                        message.success(res.msg, function () {
+                            that.user.wxid = '';
+                        });
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            // 企业微信绑定
+            async getQycode() {
+                var that = this;
+                that.qycode = true;
+                this.$nextTick(function () {
+                    var wwLogin = new WwLogin({
+                        "id": "qyQrCode",
+                        "appid": that.user.qy_app_id,
+                        "agentid": that.user.agent_id,
+                        "redirect_uri": that.user.redirect_uri,
+                        "state": that.user.state,
+                        "lang": "zh",
+                    });
+                })
+            },
+            // 企业微信扫码回调
+            async qwcallback() {
+                var that = this;
+                if (that.qw_tk && that.qw_state) {
+                    httpPost('m=system&c=role_myuser&a=qwcallback', {
+                        code: that.qw_tk,
+                        state: that.qw_state
+                    }).then(function (result) {
+                        var res = result.data;
+                        if (res.error == 0) {
+                            message.success(res.msg, function () {
+                                that.user.qy_wxid = res.data.qy_userid;
+                                that.qycode = false;
+                            });
+                        } else {
+                            message.error(res.msg);
+                        }
+                    }).catch(function (e) {
+                        console.log(e)
+                    })
+                }
+            },
+            // 企业微信解绑
+            async delQyuserid() {
+                var that = this;
+                httpPost('m=system&c=role_myuser&a=delAdminQyUserId', {}).then(function (result) {
+                    var res = result.data;
+                    if (res.error == 0) {
+                        message.success(res.msg, function () {
+                            that.user.qy_wxid = '';
+                        });
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            }
+        }
+    });
+</script>
+</body>
+</html>

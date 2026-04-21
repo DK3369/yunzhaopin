@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+    <script src="../../../../../js/ueditor/ueditor.config.js"></script>
+    <script src="../../../../../js/ueditor/ueditor.all.min.js"></script>
+
+    <script src="../../../../../js/clipboard/clipboard.min.js"></script>
+
+    <script src="../../../admin/js/Sortable.min.js"></script>
+    <script src="../../../admin/js/vuedraggable.umd.min.js"></script>
+    
+    <script src="../../../../../data/plus/city.cache.js"></script>
+    <script src="../../../../../data/plus/cityparent.cache.js"></script>
+    <script src="../../../../../data/plus/job.cache.js"></script>
+    <script src="../../../../../data/plus/jobparent.cache.js"></script>
+    <script src="../../../../../data/plus/industry.cache.js"></script>
+    <script src="../../../../../data/plus/user.cache.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName">
+                <el-tab-pane label="发布工具" name="first" :lazy="true">
+                    <wxfbtool></wxfbtool>
+                </el-tab-pane>
+                <el-tab-pane label="公众号文章模板" name="second" :lazy="true">
+                    <pubtemplist :temptype="0" :secondpage="secondpage" :thirdpage="thirdpage"></pubtemplist>
+                </el-tab-pane>
+                <el-tab-pane label="社群推文模板" name="third" :lazy="true">
+                    <pubtemplist :temptype="1" :secondpage="secondpage" :thirdpage="thirdpage"></pubtemplist>
+                </el-tab-pane>
+                <el-tab-pane label="职位推文任务" name="fourth" :lazy="true">
+                    <jobtw></jobtw>
+                </el-tab-pane>
+                <el-tab-pane label="企业推文任务" name="fiveth" :lazy="true">
+                    <comtw></comtw>
+                </el-tab-pane>
+
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        Vue.component('vuedraggable', window.vuedraggable);
+        const custoapp = new Vue({
+            el: '#moduapp',
+            data: function () {
+                return {
+                    activeName: 'first',
+                    childPage:0,
+                    thirdpage:0,
+                    secondpage:0
+                }
+            },
+            components: {
+                'wxfbtool': httpVueLoader('./component/wxfbtool.vue'),
+                'pubtemplist': httpVueLoader('./component/pubtemplist.vue'),
+                'jobtw': httpVueLoader('./component/jobtw.vue'),
+                'comtw': httpVueLoader('./component/comtw.vue'),
+            },
+            created:function(){
+				if(typeof window.parent.homeapp.$route.params.activeName!='undefined'){
+                    this.activeName =window.parent.homeapp.$route.params.activeName;
+                    this.childPage =window.parent.homeapp.$route.params.page;
+                    if (window.parent.homeapp.$route.params.activeName == 'second'){
+                        this.secondpage = this.childPage
+                        this.thirdpage = 0
+                    }
+                    if (window.parent.homeapp.$route.params.activeName == 'third'){
+                        this.thirdpage = this.childPage
+                        this.secondpage = 0
+                    }
+
+                }
+            },
+            methods: {
+
+            }
+        });
+    </script>
+</body>
+
+</html>

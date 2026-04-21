@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+<div id="domainListApp" class="moduleElenAl">
+
+    <div class="moduleSeachs">
+        <div class="moduleSeachInpt">
+            <el-input placeholder="请输入域名备注" v-model="search.keyword" class="input-with-select" size="small" clearable></el-input>
+            <el-button type="primary" icon="el-icon-search" size="mini" @click="handelSearch">查询</el-button>
+        </div>
+        <div class="">
+            <a href="javascript:;" @click="addDomain">
+                <el-button type="primary" icon="el-icon-document-add" size="mini">添加分站</el-button>
+            </a>
+            <a href="javascript:;" @click="domainConfigShow = true">
+                <el-button type="primary" icon="el-icon-document-add" size="mini" plain>分站设置</el-button>
+            </a>
+        </div>
+    </div>
+
+    <div class="moduleElTable oduleEldujegh">
+        <div class="tableDome_tip">
+            <el-alert title="管理员通过分站列表轻松查询到网站开通多少家分站，同时根据运营情况进行实时调整。" type="info" :closable="false"></el-alert>
+        </div>
+
+        <el-table :data="tableData" border style="width: 100%;" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="calc(100% - 48px)" @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
+            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column prop="title" label="域名备注" width="220"></el-table-column>
+            <el-table-column prop="name" label="域名/目录"></el-table-column>
+            <el-table-column prop="city" label="城市"></el-table-column>
+            <el-table-column prop="hy_n" label="行业"></el-table-column>
+            <el-table-column prop="style" label="风格目录"></el-table-column>
+            <el-table-column label="是否启用">
+                <el-switch slot-scope="scope" v-model="scope.row.typeStatus" active-color="#1890FF" inactive-color="#B8BDC9" @change="changeType(scope)"></el-switch>
+            </el-table-column>
+            <el-table-column fixed="right" label="操作" width="140">
+                <template slot-scope="scope">
+                    <div class="cz_button">
+                        <el-button size="mini" @click="editDomain(scope)">修改</el-button>
+                        <el-button size="mini" @click="delDomain(scope)" type="danger">删除</el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+    <div class="modulePaging">
+        <div class="modulecz modulePagButn" style="margin-left: 10px;">
+            <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+            <el-button size="mini" @click="delDomainSel">批量删除</el-button>
+        </div>
+        <div class="modulePagNum">
+            <div class="modulePagNum" style="margin: 0 auto;">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size.sync="pageSize" :page-sizes="pageSizes" layout="total, sizes, prev, pager, next, jumper" :total="total"></el-pagination>
+            </div>
+        </div>
+    </div>
+    <!-- 分站设置弹窗 -->
+    <div class="modluDrawer">
+        <el-drawer title="分站设置" :visible.sync="domainConfigShow" :modal-append-to-body="false" size="85%">
+            <domain-config @child-event="closeDomainConfig"></domain-config>
+        </el-drawer>
+    </div>
+    <!-- 分站添加/修改 弹窗 -->
+    <div class="modluDrawer">
+        <el-drawer :title="addDomainTitle" :visible.sync="domainAddShow" :modal-append-to-body="false" size="85%">
+            <domain-add :domain_id="domainId" @child-event="closeDomainAdd"></domain-add>
+        </el-drawer>
+    </div>
+</div>
+<script>
+    const domainListApp = new Vue({
+        el: '#domainListApp',
+        data: function () {
+            return {
+                emptytext: '暂无数据',
+                loading: false,
+                search: {
+                    keyword: null
+                },
+                domainId: 0,
+                tableData: [],
+
+                total: 0,
+                currentPage: 1,
+                prevPage: 0,
+                pageSize: 0,
+                pageSizes: [],
+
+                // 批量选择
+                checkAll: false,
+                isIndeterminate: false,
+                selectedItem: [],
+
+                domainConfigShow: false,
+                domainAddShow: false,
+                addDomainTitle: '添加分站',
+            }
+        },
+        components: {
+            'domain-add': httpVueLoader('./component/domainAdd.vue'),
+            'domain-config': httpVueLoader('./component/domainConfig.vue'),
+        },
+        created: function () {
+            this.getDomainList();
+        },
+        methods: {
+            getDomainList() {
+                var that = this;
+                var params = JSON.parse(JSON.stringify(this.search));
+                params.pageSize = that.pageSize;
+                params.page = that.currentPage;
+				that.loading = true;
+                that.emptytext = "数据加载中";
+                httpPost('m=system&c=domain_list&a=index', params, {hideloading: true}).then(function (res) {
+                    let data = res.data.data;
+                    that.tableData = data.list;
+                    that.total = data.total;
+                    that.pageSize = parseInt(data.pageSize);
+                    that.pageSizes = data.pageSizes;
+                    if (that.prevPage != that.currentPage) {
+                        that.prevPage = that.currentPage;
+                        that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                    }
+					that.loading = false;
+                    if (that.tableData.length === 0){
+                        that.emptytext = "暂无数据";
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            handelSearch: function () {
+                this.currentPage = 1
+                this.getDomainList()
+            },
+            handleSelectionChange(val) {
+                this.selectedItem = val;
+                if (this.selectedItem.length == 0) {
+                    this.isIndeterminate = false;
+                    this.checkAll = false;
+                } else {
+                    if (this.selectedItem.length == this.tableData.length) {
+                        this.isIndeterminate = false;
+                        this.checkAll = true;
+                    } else {
+                        this.isIndeterminate = true;
+                        this.checkAll = false;
+                    }
+                }
+            },
+            handleCheckAllChange(val) {
+                val ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+            },
+            changeType(e) {
+                let _this = this;
+                let typeStatusVal = !e.row.typeStatus ? 2 : 1;
+                let typeStatusBefore = e.row.type;
+                if (typeStatusBefore == typeStatusVal) {
+                    return;
+                }
+                let param = {type: typeStatusVal, id: e.row.id};
+                httpPost('m=system&c=domain_list&a=changeDomainType', param).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        _this.getDomainList()
+                        message.success(res.msg);
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            addDomain() {
+                var self = this;
+                self.domainId = 0;
+                self.addDomainTitle = '添加分站';
+                self.domainAddShow = true;
+            },
+            editDomain(scope) {
+                var self = this;
+                self.domainId = parseInt(scope.row.id);
+                self.addDomainTitle = '修改分站';
+                self.domainAddShow = true;
+            },
+            delDomain(scope, isMore) {
+                var that = this;
+                let name = '';
+                let idArr = [], nameArr = [];
+                let params = {};
+                if (isMore) {
+                    this.selectedItem.forEach((item) => {
+
+                        idArr.push(item.id);
+                        nameArr.push(item.title);
+                    });
+                    name = '（' + nameArr.join('，') + '）';
+                    params.id = idArr;
+                } else {
+
+                    name = '（' + scope.row.title + '）';
+                    params.id = scope.row.id;
+                }
+
+                delConfirm(this, params, this.delete, '您确定要删除' + name + '分站信息吗？');
+            },
+            delDomainSel() {
+                var that = this;
+                if (!that.selectedItem.length) {
+                    message.error('请选择要删除的分站数据');
+                    return;
+                }
+                this.delDomain(null, true);
+            },
+            delete(params) {
+                var self = this;
+                httpPost('m=system&c=domain_list&a=delDomain', params).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        message.success(res.msg, function () {
+                            self.getDomainList();
+                        });
+                    } else {
+                        message.error(res.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            handleSizeChange(val) {
+
+                this.pageSize = val;
+                this.getDomainList();
+            },
+            handleCurrentChange(val) {
+
+                this.currentPage = val;
+                this.getDomainList();
+            },
+            closeDomainConfig() {
+                this.domainConfigShow = false;
+                this.getDomainList();
+            },
+            closeDomainAdd() {
+                this.domainAddShow = false;
+                this.getDomainList();
+            }
+        }
+    });
+</script>
+</body>
+</html>

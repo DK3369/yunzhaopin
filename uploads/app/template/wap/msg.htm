@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta http-equiv="Cache-Control" content="no-cache"/>
+    <title>{yun:}$title{/yun}</title>
+    <meta name="keywords" content="{yun:}$keywords{/yun},wap"/>
+    <meta name="description" content="{yun:}$description{/yun}"/>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+	<script src="{yun:}$wap_style{/yun}/js/flexible.js?v={yun:}$config.cachecode{/yun}"></script>
+	<script src="{yun:}$wap_style{/yun}/js/jquery.min.js?v={yun:}$config.cachecode{/yun}"></script>
+	<style>
+		.msg_nogood{width:100%; text-align:center; padding:100px 0 5px 0; font-size:16px;}
+		.msg_nogood_icon{width:130px;height:130px;background:url(../images/msg_tipicon.png) no-repeat; background-size:100%; display:inline-block; position:absolute;left:50%;;top:100px; margin-left:-65px;}
+		.msg_nogood_cz{width:100%; text-align:center; padding:40px 0}
+		.msg_nogood_ts{width:100%; text-align:center; font-size:.4rem;color:#999;font-weight: 500;}
+		.msg_nogood_ts span{color:#2778F8}
+		.msg_nogood_cz_bth{width: 4rem ;height: 1.133333rem; line-height:1.133333rem;border-radius:1.033333rem; background:#2778F8;color:#fff; text-align:center; display:inline-block;text-decoration:none;font-size: .426667rem;font-weight: bold;}
+        .msg_nogood_no{font-size: .4rem;font-weight: 500;color: #999999;width: 100%; text-align: center;margin-bottom: 0.4rem}
+        .msg_nogood_imgbox{width: 100%;height:3.893333rem;display: flex;justify-content: center;align-items: center;margin-bottom: 1.6rem;}
+        .msg_nogood_img{width:5.466666rem;height: 3.946666rem;}
+	</style>
+</head>
+
+<body onLoad="TimeOut('{yun:}$tm{/yun}')">
+    <div class="msg_nogood">
+        
+    </div>
+    <div class="msg_nogood_imgbox">
+        <div class="msg_nogood_img">
+            <img src="{yun:}$wap_style{/yun}/images/log_out_img.png" alt="" width="100%" height="100%">
+        </div>
+    </div>
+    <div class="msg_nogood_no">{yun:}$msg{/yun} ~ 请点击下方按钮跳转</div>
+    <div class="msg_nogood_ts"><span id="times">{yun:}$tm{/yun}</span> 秒后自动跳转</div>
+    <div class="msg_nogood_cz"><a href="javascript:void(0);" onclick="navigateTo('{yun:}$url{/yun}')" class="msg_nogood_cz_bth">立即跳转</a></div>
+</body>
+
+<script>
+	var url = "{yun:}$url{/yun}";
+    function TimeOut(i) {
+        if (i > 1) {
+            i = i - 1;
+            $("#times").html(i);
+            setTimeout("TimeOut(" + i + ");", 1000);
+        } else {
+           navigateTo(url);
+        }
+    }
+	
+	// 将浏览记录设为将跳转的地址，防止返回到本页面，造成重复跳转
+	if(url != '' && url != '1'){
+		window.history.replaceState({}, "", url);
+	}
+	// url = 1，浏览器直接后退
+	function navigateTo(url){
+		if(url == '1'){
+			if(window.history.length > 1){
+				window.history.go( -1 );
+			}else{
+				location.href = '{yun:}url m=wap{/yun}';
+			}
+		}else{
+			window.location.href = url;
+		}
+	}
+</script>
+</body>
+</html>

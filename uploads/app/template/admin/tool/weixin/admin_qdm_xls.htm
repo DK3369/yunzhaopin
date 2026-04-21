@@ -1,0 +1,22 @@
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<title>PHP output Excel Example</title>
+</head>
+<table width="100%" border="1">
+    <tr> 
+		<th>时间</th>
+		<th>扫码人数</th>
+		<th>关注人数</th>
+		<th>取关人数</th>
+		<th>净关注人数</th>
+	</tr>
+    {yun:}foreach item=v key=key from=$list{/yun}
+    <tr>
+		<td>{yun:}$v.date{/yun}</td>
+		<td>{yun:}$v.scannum{/yun}</td>
+		<td>{yun:}$v.follownum{/yun}</td>
+		<td> {yun:}$v.unfollownum{/yun} </td>
+		<td>{yun:}$v.netfollownum{/yun}</td>
+	</tr>
+    {yun:}/foreach{/yun}
+    </table>

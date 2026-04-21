@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+    <script src="../../../../../data/plus/city.cache.js?v={yun:}$config.cachecode{/yun}"
+        type="text/javascript"></script>
+</head>
+
+<body>
+    <div id="daohaapp" class="moduleElenAl">
+        <div class="moduleSeachs">
+            
+			<div class="moduleSeachleft">
+				<div class="tableSeachInptsmall tableSeachFomud">
+				    <el-select style="width: 220px;" v-model="m_id" size="small" slot="prepend" placeholder="请选择用户组" clearable @change="search">
+				        <el-option v-for="item in group" :key="item.id" :label="item.group_name" :value="item.id"></el-option>
+				    </el-select>
+				</div>
+				<div class="moduleInptList">
+				    <el-input placeholder="请输入用户名或姓名" size="small" v-model="keyword" class="input-with-select" clearable></el-input>
+				</div>
+			    <div class="newsbtnbox"  >
+			        <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+			    </div>
+			 </div>
+            <div class="moduleSeachButn">
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="add">添加管理员</el-button>
+            </div>
+        </div>
+        <div class="moduleElTable">
+            <el-table :data="tableData" border style="width: 100%" ref="multipleTable"
+                :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" v-loading="loading" :empty-text="emptytext">
+                <el-table-column prop="uid" label="编号" width="80">
+                </el-table-column>
+                <el-table-column prop="username" label="用户名"></el-table-column>
+                <el-table-column label="权限">
+                    <template slot-scope="scope">
+                        <el-tag>{{scope.row.group_name}}</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="name" label="姓名"></el-table-column>
+                <el-table-column label="联系方式">
+                    <template slot-scope="scope">
+                        <div v-if="scope.row.mobile">手机：{{scope.row.mobile}}</div>
+                        <div v-if="scope.row.weixin">微信：{{scope.row.weixin}}</div>
+                        <div v-if="scope.row.qq">QQ：{{scope.row.qq}}</div>
+                    </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="140">
+                    <template slot-scope="scope">
+                        <div class="cz_button">
+                            <el-button size="mini" @click="edit(scope.row)">修改</el-button>
+                            <el-button size="mini" @click="delrow(scope.row)" type="danger">删除</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div>
+                <!--<el-checkbox v-model="checked">全选</el-checkbox>-->
+                <!--<el-button>批量删除</el-button>-->
+            </div>
+            <div class="modulePagNum">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                    :current-page="currentPage" :page-sizes="pageSizes" :page-size="perPage"
+                    layout="total, sizes, prev, pager, next, jumper" :total="total">
+                </el-pagination>
+            </div>
+        </div>
+        <!-- 抽屉弹窗 -->
+        <div class="modluDrawer">
+            <el-drawer :title="title" :visible.sync="showadd" :modal-append-to-body="false" :show-close="true"
+                :with-header="true" size="600px">
+                <add :user="info" :week="week" :group="group" source="useradd" @complete="completeAdd"></add>
+            </el-drawer>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#daohaapp',
+            data: function () {
+                return {
+					keyword:'',
+					m_id:'',
+					
+                    emptytext: '暂无数据',
+                    loading: false,
+                    showadd: false,
+                    currentPage: 1,
+                    prevPage: 0,
+                    perPage: 0,
+                    pageSizes: [],
+                    total: 0,
+                    tableData: [],
+                    group: [],
+                    week: [],
+                    info: {},
+                    // centerDialogVisible: false,
+                    title: '添加管理员信息',
+                    
+					save_load:false,
+                }
+            },
+            components: {
+                'add': httpVueLoader('../../component/admin_add.vue'),
+            },
+            created: function () {
+                let that = this;
+                that.getList();
+            },
+            methods: {
+                add() {
+                    var that = this
+                    that.title = '添加管理员信息';
+                    that.info = {};
+                    that.showadd = true;
+                },
+                edit(row) {
+                    var that = this
+                    that.title = '修改管理员信息';
+                    that.info = row;
+                    that.showadd = true;
+                },
+                completeAdd() {
+                    this.showadd = false;
+                    this.getList();
+                },
+                handleSizeChange(val) {
+                    this.perPage = val;
+                    this.getList()
+                },
+                handleCurrentChange(val) {
+                    this.currentPage = val;
+                    this.getList();
+                },
+				search:function(){
+					this.currentPage = 1;
+					this.getList()
+				},
+                async getList() {
+                    let that = this;
+                    let params = {
+                        page: that.currentPage,
+                        pageSize: that.perPage,
+						keyword:that.keyword,
+						m_id:that.m_id
+                    }
+                    that.loading = true;
+                    that.emptytext = "数据加载中";
+                    httpPost('m=system&c=role_user&a=index', params).then(function (result) {
+                        var res = result.data
+                        if (res.error == 0) {
+                            that.tableData = res.data.list
+                            that.group = res.data.group
+                            that.week = res.data.week
+                            that.perPage = parseInt(res.data.perPage)
+                            that.pageSizes = res.data.pageSizes
+                            that.total = parseInt(res.data.total);
+                            if (that.prevPage != that.currentPage) {
+                                that.prevPage = that.currentPage;
+                                that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                            }
+                            that.loading = false;
+                            if (that.tableData.length === 0){
+                                that.emptytext = "暂无数据";
+                            }
+                        }
+                    }).catch(function (e) {
+                        console.log(e)
+                    })
+                },
+                delrow(row) {
+                    delConfirm(this, row.uid, this.delete);
+                },
+                async delete(id) {
+                    let that = this;
+                    let params = {
+                        del: id
+                    };
+                    httpPost('m=system&c=role_user&a=del', params).then(function (response) {
+                        if (response.data.error == 0) {
+                            message.success('操作成功');
+                            that.getList();
+                        } else {
+                            message.error(response.data.msg);
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                },
+            }
+        });
+    </script>
+</body>
+<style>
+    .el-table .el-table__cell { padding: 12px 0; }
+</style>
+</html>

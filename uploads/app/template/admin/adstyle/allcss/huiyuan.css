@@ -1,0 +1,1305 @@
+.moduleElHight .moduleElTable {
+    padding: 0;
+    margin: 0;
+    height: calc(100% - 95px);
+    width: 100%;
+}
+
+.moduleElHight .moduleSeachs {
+    padding: 0 0 12px 0;
+    width: 100%;
+}
+
+.jobtj .el-link.el-link--default {
+    font-size: 12px;
+    color: #409eff
+}
+
+.job_tg_bth .el-switch__label * {
+    color: #666
+}
+
+.job_tg_bth .el-switch__core {
+    height: 16px;
+}
+
+.job_tg_bth .el-switch__core:after {
+    width: 12px;
+    height: 12px;
+}
+
+.job_tg_bth .el-switch.is-checked .el-switch__core::after {
+    left: 100%;
+    margin-left: -13px;
+}
+
+.jobtj .el-link.el-link--default {
+    font-size: 12px;
+    color: #409eff
+}
+
+.tcjiage {
+    font-size: 16px;
+    color: #f60;
+    ;
+}
+
+.modulePropsbox {
+    display: flex;
+    width: 300px;
+}
+
+.modulePropsboxsmall {
+    width: 48%;
+}
+
+.tctime {
+    color: #999;
+    font-size: 12px;
+    margin-left: 5px;
+    display: inline-block;
+}
+
+.tc_checkbox {
+    display: inline-block;
+    width: 130px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    ;
+}
+
+.tc_checktip {
+    line-height: 25px;
+}
+
+.user_resumejob {
+    font-size: 15px;
+    color: #409eff;
+    cursor: pointer;
+}
+
+.telgsd {
+    color: #999;
+    font-size: 12px;
+    ;
+}
+
+.user_resumrmr {
+    width: 35px;
+    height: 16px;
+    line-height: 16px;
+    background-color: #ff766f;
+    border-radius: 0px 8px 0px 8px;
+    font-size: 11px;
+    display: inline-block;
+    color: #fff;
+    text-align: center;
+    font-weight: normal;
+    margin-left: 10px;
+}
+
+
+.userinfo_name {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.userinfo {
+    font-size: 14px;
+    color: #666;
+    padding: 5px 0 0 0
+}
+
+.userline {
+    padding: 0px 10px;
+    display: inline-block;
+    font-size: 12px;
+}
+
+.userinfo_box {
+    display: flex;
+    padding: 10px 0;
+}
+
+.userinfo_l img {
+    width: 70px;
+    height: 70px;
+    margin-right: 15px;
+    border-radius: 50%;
+    ;
+}
+
+.user_resume_add {
+    display: flex;
+    font-size: 14px;
+    background: #FFFCF9;
+    border: 1px solid #FFEBD2;
+    padding: 6px 10px;
+    position: relative;
+    color: #999;
+    margin: 10px 0
+}
+
+.user_resume_addbth {
+    position: absolute;
+    right: 10px;
+    top: 0px;
+    overflow: hidden;
+    line-height: 16px;
+}
+
+.user_resume_addjy {
+    display: flex;
+    font-size: 14px;
+}
+
+.user_resume_addname {
+    font-size: 16px;
+    font-weight: bold;
+    margin-right: 20px;
+    ;
+}
+
+.user_resume_time {
+    margin-left: 40px;
+    color: #999
+}
+
+.user_resume_show {
+    font-size: 14px;
+    line-height: 30px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.dt_list {
+    padding: 10px 0 30px 0
+}
+
+.dt_name {
+    font-size: 12px;
+    display: inline-block;
+    color: #409eff;
+    background: #ecf5ff;
+    border: 1px solid #b3d8ff;
+    padding: 1px 8px;
+}
+
+.dt_mx {
+    font-size: 14px;
+    line-height: 30px;
+    color: #666;
+    padding-top: 8px;
+}
+
+.dt_list ul {
+    border-left: 1px solid #eee;
+    padding-left: 20px;
+    margin-left: 100px;
+    ;
+}
+
+.dt_list ul li {
+    margin-top: 20px;
+    position: relative;
+}
+
+.dt_time {
+    color: #999;
+    font-size: 14px;
+    position: absolute;
+    left: -80px;
+    top: 0px;
+    display: inline-block;
+    line-height: 20px;
+    ;
+}
+
+.dt_list ul li:after {
+    width: 10px;
+    height: 10px;
+    background-color: #eee;
+    border-radius: 50%;
+    display: inline-block;
+    content: '';
+    position: absolute;
+    left: -26px;
+    top: 5px;
+}
+
+.moduleHeadTite {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    font-size: 18px;
+    padding-bottom: 15px;
+}
+
+.moduleScloCont {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.moduleScloList {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    /* justify-content: space-between; */
+    padding: 10px 0;
+}
+
+.moduleScloTit {
+    overflow: hidden;
+    position: relative;
+    width: 140px;
+    text-align: right;
+    color: #515a6e;
+    font-size: 14px;
+}
+
+.moduleScloFrom {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 150px);
+    max-width: 800px;
+    padding-left: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.moduleScloFrom .henxian {
+    overflow: hidden;
+    display: block;
+    width: 5px;
+    height: 1px;
+    background: #999;
+    margin: 0 8px;
+}
+
+.moduleScloFrom .slotspan {
+    overflow: hidden;
+    display: block;
+    line-height: 32px;
+}
+
+.moduleScloMore .el-input {
+    width: 140px;
+}
+
+.moduleScloMore .henxian {
+    width: 5px;
+}
+
+.moduleSclFuli {
+    width: calc(100% - 2px - 40px);
+    height: 80px;
+    border: 1px solid #e8eaec;
+    background: #f8f8f9;
+    margin-top: 10px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+}
+
+.moduleScloInpu .el-input {
+    width: 200px;
+}
+
+.moduleScloBitio {
+    overflow: hidden;
+    position: relative;
+    padding: 10px 0;
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+}
+
+.zhaopTacOne {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.zhaopTacName {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    font-size: 16px;
+    color: #111;
+}
+
+.zhaopTacTwo {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-top: 4px;
+}
+
+.zhaopTacTwo div {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.zhaopTacTwo div span {
+    overflow: hidden;
+    display: block;
+    font-size: 14px;
+    color: #707070;
+    padding: 6px 12px;
+}
+
+.peixunData {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-bottom: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.peixunData span {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 14px;
+    color: #808695;
+    padding-right: 24px;
+}
+
+/* .TableInpt {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+} */
+
+.TableInpt {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+.TableInpt .el-autocomplete{
+    width: 100%;
+}
+
+.TableInpt .mplatejdshds{
+    width: 100%;
+}
+.TableInpt .mplatejdshds .el-select{
+    width: calc(100% - 30px);
+}
+.TableInpt .mplatejdshds .el-select .el-tag{
+    margin: 4px;
+    padding: 2px 6px;
+}
+
+.jiliTanTite {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    font-size: 18px;
+}
+
+.jiliTanDatas {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-content: center;
+    justify-content: space-between;
+    padding-top: 20px;
+}
+
+.jiliTanDaImgs {
+    overflow: hidden;
+    position: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+}
+
+.jiliTanDaImgs .el-image {
+    overflow: hidden;
+    position: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+}
+
+.jiliTanDaImgs .el-image img {
+    overflow: hidden;
+    display: block;
+    width: auto;
+    height: 100%;
+}
+
+.jiliTanDaText {
+    overflow: hidden;
+    position: center;
+    width: calc(100% - 76px);
+}
+
+.jiliTanDaText h3 {
+    overflow: hidden;
+    position: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.jiliTanDaText span {
+    overflow: hidden;
+    display: block;
+    font-size: 13px;
+    color: #707070;
+    padding-top: 5px;
+}
+
+.jiliTanJinli {
+    overflow: hidden;
+    position: center;
+    width: 100%;
+    padding-top: 20px;
+}
+
+.jiliTanJinTite {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-bottom: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-content: center;
+}
+
+.jiliTanJinTite span {
+    overflow: hidden;
+    display: block;
+}
+
+.jiliTanJinTite:before {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    content: "";
+    width: 4px;
+    height: 15px;
+    background: #145dff;
+    margin-right: 6px;
+    margin-top: 4px;
+    border-radius: 2px;
+}
+
+.jiliTanJinCont {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.jiliTanJinCont span {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 13px;
+    color: #666;
+    line-height: 25px;
+}
+
+.xingweiConts {
+    overflow-y: auto;
+    position: relative;
+    height: calc(100% - 4px);
+    padding: 0 20px 4px 20px;
+}
+
+.xingweTips {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-bottom: 12px;
+    font-size: 14px;
+    color: #707070;
+}
+
+.xingweTitle {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    font-size: 15px;
+    color: #0A7BFD;
+    margin-bottom: 12px;
+}
+
+.xingweiDatas {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.xingweiDaComs {
+    overflow: hidden;
+    position: relative;
+    width: calc(480px - 30px);
+    background: #f8f8f8;
+    min-height: 200px;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.xingweiDaTite {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    font-size: 16px;
+    color: #707070;
+    padding-bottom: 12px;
+}
+
+.xingweiDaCis {
+    overflow: hidden;
+    position: relative;
+    width: 188px;
+    height: 188px;
+    background: url("../../images/chatimg.png") center no-repeat;
+    background-size: 100% 100%;
+    margin: 12px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.xingweiDaCis div {
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+}
+
+.xingweiDaCis div b {
+    overflow: hidden;
+    display: block;
+    font-size: 35px;
+    color: #3478ea;
+}
+
+.xingweiDaCis div span {
+    overflow: hidden;
+    display: block;
+    font-size: 14px;
+    color: #707070;
+}
+
+.xingweiDaList {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 15px;
+}
+
+.xingweiDaList div {
+    overflow: hidden;
+    position: relative;
+    width: calc(50% - 20px);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 15px;
+    color: #707070;
+}
+
+.xingweiDaList div:before {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    content: "";
+    margin-right: 8px;
+    width: 8px;
+    height: 8px;
+    background-color: #3478ea;
+    border-radius: 50%;
+}
+
+.xingweiDaList div span {
+    overflow: hidden;
+    display: block;
+    font-size: 20px;
+    color: #3478ea;
+    font-weight: bold;
+    padding: 0 5px;
+}
+
+.xingweiDaTime {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 480px - 30px - 20px);
+    background: #f8f8f8;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.xingweiToubu {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 18px;
+}
+
+.xingweiFwtim {
+    overflow: hidden;
+    position: relative;
+    font-size: 14px;
+    color: #707070;
+}
+
+.xingweiFwTips {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    padding-right: 8px;
+}
+
+.xingweiFwTips span {
+    overflow: hidden;
+    display: block;
+    font-size: 14px;
+    color: #707070;
+    height: 24px;
+    line-height: 24px;
+    padding: 0 10px;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.xingweiFwTips span.fwCur {
+    background: #3478ea;
+    color: #fff;
+}
+
+.xingweiFwInpt {
+    overflow: hidden;
+    position: relative;
+}
+
+.xingweiFwInpt .el-date-editor {
+    overflow: hidden;
+    position: relative;
+    width: 300px;
+}
+
+.xingweiBuzous {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-top: 30px;
+}
+
+.drawerModInyoue {
+    position: relative;
+    overflow: hidden;
+    padding: 15px 10px;
+    border-radius: 3px;
+    background: #f5f7fb;
+    width: calc(100% - 20px);
+    border: 1px solid #e6e6e6;
+}
+
+.drawerModInyoue .titleCont {
+    position: relative;
+    overflow: hidden;
+    width: calc(100% - 124px);
+}
+
+.drawerModInyoue .titleCont .el-date-editor {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+.drawerModInFlex {
+    align-items: initial;
+}
+
+.drawerModInFlex .drawerModInpt {
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.drawerModInFlex .drawerModInpt .el-input {
+    position: relative;
+    width: calc(50% - 10px);
+    margin: 4px 0;
+}
+
+.drawerModInFlex .drawerModTite {
+    position: relative;
+    line-height: 46px;
+}
+
+.huiyuanDeng {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.huiyuanList {
+    overflow: hidden;
+    position: relative;
+    width: calc(50% - 10px);
+    display: flex;
+    align-items: center;
+    padding: 6px 0;
+
+}
+
+.huiyuanTite {
+    overflow: hidden;
+    position: relative;
+    width: 100px;
+    font-size: 13px;
+    text-align: right;
+    padding-right: 10px;
+}
+
+.huiyuanFrom {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 100px);
+}
+
+.huiyuanFrom .el-date-editor.el-input {
+    width: auto;
+}
+
+
+.jobBthChufa{
+    overflow: hidden;
+    position: relative;
+}
+.jobBthChufa .chufaButn{
+    overflow: hidden;
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    z-index: 2;
+    opacity: 0.01;
+    padding-left: 40px;
+    cursor: pointer;
+}
+
+.danqainDataFlex{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.daochuNumer{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+}
+
+.daochuNumer .daochuTite{
+    overflow: hidden;
+    position: relative;
+    width: 60px;
+    line-height: 35px;
+}
+.daochuNumer .daochuFrom{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 65px);
+    display: flex;
+    align-items: center;
+}
+.daochuNumer .daochuFrom div{
+    overflow: hidden;
+    position: relative;
+}
+.daochuNumer .daochuFrom .el-alert{
+    overflow: hidden;
+    position: relative;
+    background: none;
+}
+
+.lieTouxusas{
+    overflow: hidden;
+    position: relative;
+    padding: 0 20px;
+}
+.lieTouConts{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-bottom: 12px;
+}
+.lieTouConTite{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    font-size: 14px;
+    color: #409EFF;
+}
+.lieTouConTite::before{
+    overflow: hidden;
+    position: absolute;
+    display: block;
+    content: "";
+    width: 55px;
+    height: 2px;
+    background: #409EFF;
+    left: 0;
+    bottom: 0;
+    z-index: 2;
+}
+.lieTouDatas{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+.lieTouDatList{
+    overflow: hidden;
+    position: relative;
+    width: calc(50% - 6px);
+    height: 48px;
+    display: flex;
+    align-items: center;
+    border: 1px solid #eee;
+    margin-bottom: 8px;
+}
+
+.lieTouDatList span{
+    overflow: hidden;
+    display: block;
+    width: 110px;
+    height: 100%;
+    background: #F5F7FA;
+    font-size: 13px;
+    color: #606266;
+    line-height: 48px;
+    padding-left: 12px;
+}
+
+.lieTouDatList .divplis{
+    overflow: hidden;
+    display: block;
+    width: calc(100% - 140px);
+    height: 100%;
+    font-size: 13px;
+    color: #606266;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.xiaozhaodjsh .el-date-editor .el-range-separator {
+    line-height: 28px;
+}
+.xiaozhaodjsh .el-date-editor .el-range__icon{
+    line-height: 28px;
+}
+
+.tableTancyans{
+    overflow: hidden;
+    position: relative;
+    height: 100%;
+    padding: 0 20px;
+}
+
+.tableTancyans .toolClasDia{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+.tableTancyans .zhaopTacOne{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-bottom: 25px;
+}
+.tableTancyans .zhaopTacName{
+    overflow: initial;
+    position: relative;
+    width: 100%;
+    font-size: 14px;
+    color: #409EFF;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #E4E7ED;
+}
+.tableTancyans .zhaopTacName::after{
+    overflow: hidden;
+    position: absolute;
+    content: "";
+    width: 56px;
+    background: #409EFF;
+    display: block;
+    height: 2px;
+    left: 0;
+    bottom: -2px;
+    z-index: 2;
+}
+
+.tableTancyans .zhaopTacTwo{
+    overflow: hidden;
+    position: relative;
+    margin-top: 15px;
+    /* border: 1px solid #EBEEF5; */
+    width: calc(100% - 2px);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 0;
+    border-collapse: collapse;
+}
+.tableTancyans .zhaopTacTwo table{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #EBEEF5;
+}
+.tableTancyans .zhaopTacTwo thead{
+    overflow: hidden;
+    position: relative;
+    height: 0;
+    width: 100%;
+    opacity: 0.01;
+}
+.tableTancyans .zhaopTacTwo table .TableTite{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 16px);
+    font-size: 13px;
+    color: #606266;
+    background: #F5F7FA;
+    display: flex;
+    min-height: 52px;
+    align-items: center;
+    padding: 1px 8px;
+}
+.tableTancyans .zhaopTacTwo table .TableData{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 16px);
+    font-size: 13px;
+    color: #606266;
+    display: flex;
+    align-items: center;
+    padding: 1px 8px;
+}
+
+.tableTancyans .toolClasList{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0 0 25px 0;
+}
+.tableTancyans .toolClasTite{
+    overflow: hidden;
+    position: relative;
+    width: initial;
+    padding-bottom: 0;
+}
+
+.tableTancyans .dialogFooter{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+.tableTancyans .dialogFooter .el-button{
+    width: 150px;
+}
+
+.tableSeackellsd{
+    overflow: hidden;
+    position: relative;
+    margin-right: 8px;
+}
+
+.tableSeackellsd .el-select{
+    width: 120px;
+}
+
+
+.tanchuangkoul{
+    padding:0px 20px; 
+    overflow: hidden;
+    position: relative; 
+    height: calc(100% - 5px);
+}
+.tanchuangkoul .el-tabs{ 
+    overflow: hidden;
+    position: relative; 
+    width: 100%;
+    height: calc(100% - 44px);
+}
+.tanchuangkoul .el-tabs__header{ 
+    overflow: hidden;
+    position: relative; 
+    margin: 0 0 10px 0;
+}
+.tanchuangkoul .el-tabs__content{ 
+    overflow: hidden;
+    position: relative; 
+    width: 100%;
+    height: calc(100% - 54px);
+}
+.tanchuangkoul .el-tab-pane{ 
+    overflow: hidden;
+    position: relative; 
+    width: 100%;
+    height: 100%;
+}
+.zujiantanchus{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+
+.companyMobans{
+    overflow: hidden;
+    position: relative;
+    padding: 0 20px;
+}
+.companyMobans ul{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+.companyMobans ul li{
+    overflow: hidden;
+    position: relative;
+    width: calc(25% - 16px);
+    padding: 0 8px;
+}
+.companyMobans .hb_listbox{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+.companyMobans .poster_pic{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 2px) !important;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    border: 1px solid #eee;
+}
+.companyMobans .poster_pic img{
+    overflow: hidden;
+    display: block;
+    width: 100%;
+    height: auto;
+}
+.companyMobans .hb_cz{
+    overflow: hidden;
+    display: block;
+    width: 100%;
+}
+.companyMobans .namneyulan{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.companyMobans .namneyulan .bmanmic{
+    overflow: hidden;
+    display: block;
+    font-size: 14px;
+    color: #333;
+}
+.companyMobans .shiyonbutn{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-top: 10px;
+}
+.companyMobans .shiyonbutn .el-button--mini{
+    padding: 6px 30px;
+}
+
+.minqizhaXizeng .xinzenLite{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 0;
+}
+
+.minqizhaXizeng .wxsettip_small{
+    overflow: hidden;
+    position: relative;
+    width: 100px;
+    text-align: right;
+}
+.minqizhaXizeng .wxsetokdsu{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 110px);
+    display: flex;
+    align-items: center;
+}
+.minqizhaXizeng .wxsetokdsu .el-select{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+.minqizhaXizeng .wxsetokdsu .el-date-editor.el-input{
+    width: initial;
+}
+
+.xinzdialoGooter{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-bottom: 20px;
+    padding-top: 10px;
+    display: flex;
+    align-items: center;
+}
+.xinzdialoGooter div{
+    overflow: hidden;
+    position: relative;
+    margin-left: auto;
+}
+
+
+.el-tab-pane-company{
+    overflow: hidden;
+    position: relative;
+    height:calc(100% - 5px);
+    width: 100%;
+}
+
+.elTabQanCompany{
+    position: relative; 
+    overflow-y: auto; 
+    height: 100%;
+    padding: 0 20px;
+}
+
+.elTabQanCompany .moduleElHight{
+    height: initial;
+}
+
+.layuiSmallImgUp .el-image__inner{
+    border-radius: 6px;
+}
+
+.userEsumeAdds{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+}
+.userEsumeAdds .user_resume_addbth{
+    overflow: hidden;
+    position: relative;
+}
+
+.moduleProtacin{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+.moduleProtacin span{
+    overflow: hidden;
+    position: relative;
+    display: block;
+    width: 48%;
+}
+
+.admin_jobshtip{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    background: #f4f4f4;
+    font-size: 14px;
+    color: #666;
+    line-height: 24px;
+}
+
+.autocompLtite{
+    overflow: hidden;
+    position: relative;
+}
+
+.autocompLtite .name{
+    overflow: hidden;
+    position: relative;
+    font-size: 15px;
+    color: #333;
+    line-height: initial;
+}
+.autocompLtite span.addr{
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 12px;
+    color: #888;
+    padding-top: 0px;
+}

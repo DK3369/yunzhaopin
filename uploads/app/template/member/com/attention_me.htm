@@ -1,0 +1,108 @@
+{yun:}include file="$comstyle/header.htm"{/yun}
+<div class="w1000">
+<div class="admin_mainbody"> {yun:}include file="$comstyle/left.htm"{/yun}
+  <div class="clear"></div>
+   <div class=right_box>
+        <div class="newmember_tit">
+        <ul>
+         <li><a href="index.php?c=hr" title="看过我的职位" class="   ">应聘简历</a></li>
+        <li> <a href="index.php?c=down" title="我下载的简历" class=" ">我的下载</a></li>
+        <li> <a href="index.php?c=look_job" title="看过我的职位" class=" ">谁看过我</a></li>
+         <li class="newmember_titcur"> <a href="index.php?c=attention_me" title="关注我的简历" class=" ">对我感兴趣</a></li>
+        <li><a href="index.php?c=look_resume" title="您浏览简历的记录" class=" ">我看过的简历</a></li>
+        <li><a href="index.php?c=talent_pool" title="加入人才库的简历" class=" ">我的收藏</a></li>
+         
+         </ul>
+        </div>
+        
+        <div class="newmember_screenbox">
+        <div class="newmember_screen">  
+        
+        
+     
+     <div class="joblist_search"   >
+    <form action="index.php" method="get">
+      <div class="joblist_search_box">
+    
+             <input name="c" type="hidden" value="attention_me">
+          <input name="keyword" type="text" class="joblist_search_box_text" placeholder="请输入简历关键字" value="{yun:}$smarty.get.keyword{/yun}">
+          <input name="" type="submit" class="joblist_search_bth" value="  ">
+          
+            
+            </div>
+    </form>
+  </div>  </div>
+    <div class="clear"></div>
+    <div class=admincont_box>
+  
+  
+      <div class="com_body">
+
+     
+          <div class="clear"></div>
+        <div class=admin_textbox_04>
+          <iframe id="supportiframe"  name="supportiframe" onload="returnmessage('supportiframe');" style="display:none"></iframe>
+          <form action="{yun:}$now_url{/yun}&act=del" target="supportiframe" method="post" id='myform'>
+ <table class="com_table  " id="job_checkbokid">
+             
+              {yun:}if !empty($rows){/yun}
+               <tr align="center">
+              
+              <th >姓名</th>
+              <th>意向职位</th>
+              <th>工作经验 </th>
+              <th>学历</th>
+              <th>关注时间</th>
+              <!-- <th>邀请面试</th> -->
+              <th width="240">操作</th>
+            </tr>
+                {yun:}foreach  from=$rows  item=v{/yun}
+                <tr align="center">
+              
+                
+               <td>  <a href="javascript:void(0)" onclick="com_lookresume_check('{yun:}$v.eid{/yun}','{yun:}$v.resume_status{/yun}')"  class="uesr_name_a">{yun:}$v.username{/yun}&nbsp;</a></td>
+               <td> <span class="invite_user_job">{yun:}$v.resume{/yun}&nbsp;</span></td>
+               <td> {yun:}$v.exp{/yun}</td>
+               <td>{yun:}$v.edu{/yun}</td>
+               <td>{yun:}$v.time|date_format:'%Y-%m-%d'{/yun}</td>
+               <!-- <td align="center"> 
+                {yun:}if $v.userid_msg==1{/yun} 
+                <font color="red">已邀请</font> 
+                {yun:}else{/yun} 
+                  <a href="javascript:;" onclick="inviteResume(this)" uid="{yun:}$v.uid{/yun}" username="{yun:}$v.username{/yun}" class="com_received_username_yqms" >邀请面试</a> 
+                {yun:}/if{/yun}  
+               </td> -->
+               <td>
+                     <a href="#" onclick="com_lookresume_check('{yun:}$v.eid{/yun}','{yun:}$v.resume_status{/yun}')" style="background: #3d7dfd; color: #fff;" class=" com_bth cblue">查看简历</a>
+               </td>
+              </tr>
+                {yun:}/foreach{/yun}
+               <tr>
+                  <td colspan="8" class="table_end">
+                 
+                  <div class="diggg">{yun:}$pagenav{/yun}</div>
+                 </td>
+          
+                </tr>
+                {yun:}elseif $smarty.get.keyword!="" {/yun}
+                 <tr>
+                  <td colspan="8" class="table_end"> <div class="msg_no">没有搜索关注我企业的人才。 </div>
+                    </td>
+          
+                </tr>
+                {yun:}else{/yun}
+                  <tr>
+                  <td colspan="8" class="table_end"> <div class="msg_no">亲爱的用户，目前还没有人才关注您。
+                   <p>您可以主动邀请人才面试</p>
+                   <a href="{yun:}url m=resume{/yun}" class="com_msg_no_bth com_submit">我要主动找人才</a></div>
+                     </td>
+          
+                </tr>
+                {yun:}/if{/yun}</table>
+          </form>
+        </div>
+      </div></div></div>
+    </div>
+  </div>
+{yun:}include file="$comstyle/yqms.htm"{/yun}
+{yun:}include file="$comstyle/footer.htm"{/yun}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="身份认证审核" name="first" :lazy="true">
+                    <renzheng_renzheng :status="status.first"></renzheng_renzheng>
+                </el-tab-pane>
+                <el-tab-pane label="个人头像审核" name="second" :lazy="true">
+                    <renzheng_logo :status="status.second"></renzheng_logo>
+                </el-tab-pane>
+                <el-tab-pane label="作品案例 " name="third" :lazy="true">
+                    <renzheng_show :status="status.third"></renzheng_show>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+
+    <script>
+        const custoapp = new Vue({
+            el: '#moduapp',
+            data: function () {
+                return {
+                    activeName: 'first',
+                    status: {
+                        first: '',
+                        second: '',
+                        third: '',
+                    },
+                }
+            },
+            components: {
+                'renzheng_renzheng': httpVueLoader('./component/renzheng_renzheng.vue'),
+                'renzheng_logo': httpVueLoader('./component/renzheng_logo.vue'),
+                'renzheng_show': httpVueLoader('./component/renzheng_show.vue'),
+             },
+            created: function () {
+                var that = this
+                let query = window.parent.homeapp.$route.query;
+                if (query.tabs) {
+                    that.activeName = query.tabs;
+                }
+                if (query.status) {
+                    that.status[that.activeName] = query.status;
+                }
+            },
+            methods: {
+                handleClick(tab, event) {
+                    console.log(tab, event);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

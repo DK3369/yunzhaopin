@@ -1,0 +1,216 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+<div class="m_cardbox none" id="yunvue">
+<div class="m_cardbg">
+
+        <div class="evaluate_job_name">对本次面试 {{jobInfo.com_name}} {{jobInfo.name}}的职位体验如何？</div>
+
+    <form id="comment_Form" onsubmit='return false;'>
+        <div class="evaluate_com_mypj_zt">
+            <div class="evaluate_com_mypj">总体评价</div>
+            <ul class="evaluate_com_mypj_list">                
+                <li :class="item.show==1?'evaluate_changetag evaluate_changetag_cur':'evaluate_changetag'" 
+                    v-for="(item,index) in totalname" :key="index" @click="tagchoose(index)"><em>{{item.name}}</em></li>               
+            </ul>
+        </div>
+
+        <div class="evaluate_com_pjbox">
+            <div class="evaluate_com_mypj">我的评分</div>
+            <div class="evaluate_com_pjlist">
+                <div class="evaluate_com_pjtit">企业描述 </div>
+                <div class="com_pjia_liststar">
+                    <van-rate v-model="desscore" :size="25" color="#ffd21e" void-icon="star" void-color="#eee" @change="onChangeDes" :readonly="!control"/>
+                </div>
+            </div>
+           
+            <div class="evaluate_com_pjlist">
+                <div class="evaluate_com_pjtit">企业环境  </div>
+                <div class="com_pjia_liststar">
+                    <van-rate v-model="comscore" :size="25" color="#ffd21e" void-icon="star" void-color="#eee" @change="onChangeCom" :readonly="!control"/>
+                </div>
+            </div>
+			 <div class="evaluate_com_pjlist">
+                <div class="evaluate_com_pjtit">面试官态度 </div>
+                <div class="com_pjia_liststar">
+                   <van-rate v-model="hrscore" :size="25" color="#ffd21e" void-icon="star" void-color="#eee" @change="onChangeHr" :readonly="!control"/>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="evaluate_com_msbox">
+            <div class="evaluate_com_mstit">请您简要描述一下面试心得体会</div>
+            <textarea id="content" name="content" v-model="content" :disabled="!control" class="evaluate_textarea" placeholder="亲，写点面试过程吧，你的面试经历对其他求职者有很大帮助的。">{{content}}</textarea>
+        </div>
+
+
+        <div class="evaluate_com_msbox">
+            <div class="evaluate_com_mstit">对公司的第一印象如何，简单描述一下您的感受</div>
+            <textarea id="othercontent" name="othercontent" v-model="othercontent" :disabled="!control" class="evaluate_textarea" placeholder="如 公司环境氛围规模等">{{othercontent}}</textarea>
+        </div>
+        <div class="evaluate_com_fb">
+           
+
+            <div class="com_pjia_bot">
+                
+               
+                <input type='checkbox' name='isnm' :checked="msgInfo.isnm=='1'" @click="getvalue"> 匿名评价
+                
+            </div>
+        </div>
+		
+    </form>
+    
+    <div class="evaluate_com_mypj_zt" v-if="msgInfo.reply">
+        <div class="evaluate_com_mypj">企业回复</div>
+        <div class="evaluate_com_msbox">
+            <textarea class="evaluate_textarea">{{msgInfo.reply}}</textarea>
+        </div>
+    </div>
+    
+</div><div class="evaluate_bthall"> <input type='hidden' name='id' id='applyid' value='{yun:}$msg.id{/yun}'> <input type="submit" v-if="msgInfo.id" name='submit' @click="savecomment" value="修改评价" class="evaluate_bth">
+                <input type="submit" v-else name='submit' value="发表评价" @click="savecomment" class="evaluate_bth"></div></div> 
+<script type="text/javascript">
+    var id = '{yun:}$smarty.get.id{/yun}';
+        id = id ? id : '0';
+    new Vue({
+        el: '#yunvue',
+        data: {
+            id: id,
+            score: 0,
+            count: 0,
+            othercontent: '',
+            content: '',
+            desscore: 1,
+            comscore: 1,
+            hrscore: 1,
+            msgInfo: [],
+            totalname: [],
+            jobtag: [],
+            isnmval: 2,
+            islook: false,
+            control: true,
+            starshow: false,
+            jobInfo:{},
+        },
+        created() {
+            this.getcomment();
+        },
+        methods:{            
+            getcomment:function(){
+                showLoading();
+                var that = this,
+                    param = {                        
+                        id: that.id,
+                    };
+                $.post('{yun:}url d=wxapp h=user m=job c=comment{/yun}',param,function(data){
+                    hideLoading();
+                    if (data.error == 0) {
+                        that.islook = true;
+                        that.msgInfo = data.data.msgInfo;
+                        that.totalname = data.data.totalname;
+                        that.desscore = that.msgInfo.desscore?parseInt(that.msgInfo.desscore):1;
+                        that.hrscore = that.msgInfo.hrscore?parseInt(that.msgInfo.hrscore):1;
+                        that.comscore = that.msgInfo.comscore?parseInt(that.msgInfo.comscore):1;
+                        that.jobInfo = data.data.jobInfo?data.data.jobInfo:{};
+                        that.content = that.msgInfo.content;
+                        that.othercontent = that.msgInfo.othercontent;
+                        if (that.msgInfo.id > 0) {
+                            // that.control = false; // 暂时关闭禁用功能
+                            that.isnmval = that.msgInfo.isnm;
+                        }
+                        setTimeout(function() {
+                            that.starshow = true;
+                        }, 500);
+                    } else {
+                        showModal(data.msg, function() {
+                           goBack();
+                        });
+                    }
+                    $("#yunvue").css('display', 'block');
+                },'json');
+            },
+            tagchoose:function(key){
+                if (this.control) {
+                    if (this.totalname[key].show == 1) {
+
+                        this.totalname[key].show = 0;
+                    } else {
+                        var j = 0;
+                        for (var i = 0; i < this.totalname.length; i++) {
+                            if (this.totalname[i].show == 1) {
+                                j++;
+                            }
+                        }
+                        if (j > 2) {
+                            showModal('最多只能选择3个');
+                            return false;
+                        }
+
+                        this.totalname[key].show = 1;
+                    }
+                }
+            },
+            onChangeDes:function(e){ 
+                this.desscore = e ;
+            },
+            onChangeHr:function(e) {
+                this.hrscore = e;
+            },
+            onChangeCom:function(e){
+                this.comscore = e;
+            },
+            getvalue:function(e){
+                var that = this;
+                if (that.isnmval == 2) {
+                    that.isnmval = 1;
+                } else {
+                    that.isnmval = 2;
+                }
+            },
+            savecomment:function(){
+                var that = this;
+                var formData = {};                
+                var tarr = [];
+                
+                if (that.content =='') {
+                    showModal('请填写完整评论信息');
+                    return false;
+                }
+
+                if (that.othercontent == '') {
+
+                    showModal('请填写完整评论信息');
+                    return false;
+                }
+                for (var i = 0; i < that.totalname.length; i++) {
+                    if (that.totalname[i].show == 1) {
+                        tarr.push(that.totalname[i].id);
+                    }
+                }
+                formData.content = that.content;
+                formData.othercontent = that.othercontent;
+                formData.id = that.id;
+                formData.desscore = that.desscore;
+                formData.hrscore = that.hrscore;
+                formData.comscore = that.comscore;
+                formData.isnmval = that.isnmval;
+                formData.tag = tarr.join(',');
+                showLoading('保存中...');
+                $.post('{yun:}url d=wxapp h=user m=job c=commentsave{/yun}',formData,function(data){
+                    hideLoading();
+                    if (data.error == 1) {
+
+                        showModal(data.msg, function() {
+                            goBack();
+                        });
+
+                    } else {
+                        showModal(data.msg);
+                    }
+                },'json');
+            },
+        },
+    });
+</script>
+</body>
+</html>

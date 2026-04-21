@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="../../header.js"></script>
+    <script src="../../httpVueLoader.js"></script>
+</head>
+<body>
+<div id="gsdConfigApp" class="moduleDome">
+    <div class="setDomeAll setDomeInte">
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+            <el-tab-pane label="IP归属地配置" name="first">
+                <ip_address v-bind:gsd_config="gsdConfig" v-bind:ip_num="ipNum"></ip_address>
+            </el-tab-pane>
+            <el-tab-pane label="手机号归属地配置" name="second">
+                <phone_address v-bind:gsd_config="gsdConfig" v-bind:phone_num="phoneNum"></phone_address>
+            </el-tab-pane>
+        </el-tabs>
+    </div>
+</div>
+<!-- script -->
+<script>
+    const gsdConfigApp = new Vue({
+        el: '#gsdConfigApp',
+        data: function () {
+            return {
+                activeName: 'first',
+                gsdConfig: {},
+
+                ipNum: 0,
+                phoneNum: 0
+            }
+        },
+        components: {
+            'ip_address': httpVueLoader('./component/ipAddress.vue'),
+            'phone_address': httpVueLoader('./component/phoneAddress.vue'),
+        },
+        created(){
+            this.getGsdConfig();
+        },
+        methods: {
+            async getGsdConfig() {
+                let res = await httpPost('m=tool&c=gsdConfig',{},{hideloading: true});
+                if (res.data.error == 0) {
+
+                    this.gsdConfig = res.data.data;
+                    this.gsdConfig.sy_ip = this.gsdConfig.sy_ip == '1' ? 1 : 2;
+                    this.gsdConfig.sy_mobile = this.gsdConfig.sy_mobile == '1' ? 1 : 2;
+                }
+            },
+            handleClick(tab, event) {
+                let that = this;
+
+                if (tab._props.name == 'first') {
+
+                    that.ipNum++;
+                } else if (tab._props.name == 'second') {
+
+                    that.phoneNum++;
+                }
+            }
+        }
+    });
+</script>
+</body>
+
+</html>

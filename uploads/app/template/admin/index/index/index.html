@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="indexapp" class="homeModule">
+        <div v-if="islook">
+            <template v-if="index_lookstatistc=='2'">
+                <hometop :topinfo="topinfo"></hometop>
+                <div class="indexSubFlex">
+                    <div class="indexSubLets">
+                        <!-- <hometop :topinfo="topinfo"></hometop> -->
+                        <homecenter></homecenter>
+                    </div>
+                    <div class="indexSubRigt">
+                        <indexright></indexright>
+                    </div>
+                </div>
+                <!-- <hometop :topinfo="topinfo"></hometop>
+				<homecenter></homecenter> -->
+                <homebottom :sysinfo="sysinfo"></homebottom>
+            </template>
+            <el-empty v-else description="可点击所需栏目，开启工作哟~"></el-empty>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+    const custoapp = new Vue({
+        el: '#indexapp',
+        data: function() {
+            return {
+                sysinfo: {},
+                topinfo: {},
+
+                index_lookstatistc: '',
+                base: '',
+                timer: null,
+                islook: false,
+            }
+        },
+        components: {
+            'hometop': httpVueLoader('./component/hometop.vue'),
+            'homecenter': httpVueLoader('./component/homecenter.vue'),
+            'homebottom': httpVueLoader('./component/homebottom.vue'),
+            'indexright': httpVueLoader('./component/indexright.vue'),
+        },
+        created: function() {
+
+            this.getData();
+        },
+        methods: {
+            getData() {
+                var that = this;
+
+                this.timer && clearInterval(this.timer)
+
+                httpPost('m=index&c=homeData').then(function(response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        that.sysinfo = res.data.sysinfo;
+                        that.topinfo = res.data.topinfo;
+                        that.index_lookstatistc = res.data.index_lookstatistc;
+                        that.base = res.data.base;
+
+                        that.timer = setTimeout(function() {
+                            var phpyunsite = document.createElement('script');
+                            phpyunsite.src = `https://init.phpyun.com/site.php?site=${that.base}`;
+                            document.body.appendChild(phpyunsite);
+                        }, 3000);
+                    }
+                    that.islook = true;
+                })
+            },
+        }
+    });
+    </script>
+</body>
+
+</html>

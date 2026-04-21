@@ -1,0 +1,1340 @@
+{yun:}include file="$comstyle/header.htm"{/yun}
+<div class="zhaopinSubject">
+    <div class="admin_mainbody">
+        {yun:}include file="$comstyle/left.htm"{/yun}
+        <div class="zhaopSubNeirs">
+            <div class="zhaopSubNavs">
+                <ul>
+                    <li class="zhaopSubNavcur">日报</li>
+                    <li>年月报表</li>
+                </ul>
+            </div>
+            <div class="zhaopSubConts">
+                <div class="zhaopSubConList zhaopSubConOn">
+                    <!--后台企业设置-招聘数据开启才显示-->
+                    {yun:}if $config.com_zpdata != '0'{/yun}
+                    <form class="layui-form" action="">
+                        <div class="zaopiModes" style="margin-top: 0;">
+                            <div class="zaopsubHeader layui-form-item">
+                                <div class="zaopsubTitle">
+                                    <span>数据概览</span>
+                                </div>
+                                <div class="layui-input-block">
+                                    <select name="interest" lay-filter="changedaytp">
+                                        <option value="today">今日数据</option>
+                                        <option value="yesterday">昨日数据</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="zaopsubDatas">
+                                <ul>
+                                    <li class="zaopsubDatCur">
+                                        <a href="javascript:void(0);" class="j-charttype" data-type="1">
+                                            <div class="zaopsubDataBiat">
+                                                <span>我看过</span>
+                                                <img src="{yun:}$com_style{/yun}/images/dataimg11.png?v={yun:}$config.cachecode{/yun}" alt="">
+                                            </div>
+                                            <div class="zaopsubDataNum">
+                                                <span id="wkg_cnt">0</span>
+                                            </div>
+                                            <div class="zaopsubDataZuori">
+                                                <span>较昨日</span>
+                                                <span id="wkg_zj_cnt">0</span>
+                                            </div>
+                                            <div class="zaopsubDataImage">
+                                                <img src="{yun:}$com_style{/yun}/images/dataimg1.png?v={yun:}$config.cachecode{/yun}" alt="">
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0);" class="j-charttype" data-type="2">
+                                            <div class="zaopsubDataBiat">
+                                                <span>看过我</span>
+                                                <img src="{yun:}$com_style{/yun}/images/dataimg12.png?v={yun:}$config.cachecode{/yun}" alt="">
+                                            </div>
+                                            <div class="zaopsubDataNum">
+                                                <span id="kgw_cnt">0</span>
+                                            </div>
+                                            <div class="zaopsubDataZuori">
+                                                <span>较昨日</span>
+                                                <span id="kgw_zj_cnt">0</span>
+                                            </div>
+                                            <div class="zaopsubDataImage">
+                                                <img src="{yun:}$com_style{/yun}/images/dataimg2.png?v={yun:}$config.cachecode{/yun}" alt="">
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0);" class="j-charttype" data-type="5">
+                                            <div class="zaopsubDataBiat">
+                                                <span>下载简历</span>
+                                                <img src="{yun:}$com_style{/yun}/images/dataimg15.png?v={yun:}$config.cachecode{/yun}" alt="">
+                                            </div>
+                                            <div class="zaopsubDataNum">
+                                                <span id="xzjl_cnt">0</span>
+                                            </div>
+                                            <div class="zaopsubDataZuori">
+                                                <span>较昨日</span>
+                                                <span id="xzjl_zj_cnt">0</span>
+                                            </div>
+                                            <div class="zaopsubDataImage">
+                                                <img src="{yun:}$com_style{/yun}/images/dataimg5.png?v={yun:}$config.cachecode{/yun}" alt="">
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0);" class="j-charttype" data-type="6">
+                                            <div class="zaopsubDataBiat">
+                                                <span>投递简历</span>
+                                                <img src="{yun:}$com_style{/yun}/images/dataimg16.png?v={yun:}$config.cachecode{/yun}" alt="">
+                                            </div>
+                                            <div class="zaopsubDataNum">
+                                                <span id="tdjl_cnt">0</span>
+                                            </div>
+                                            <div class="zaopsubDataZuori">
+                                                <span>较昨日</span>
+                                                <span id="tdjl_zj_cnt">0</span>
+                                            </div>
+                                            <div class="zaopsubDataImage">
+                                                <img src="{yun:}$com_style{/yun}/images/dataimg6.png?v={yun:}$config.cachecode{/yun}" alt="">
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0);" class="j-charttype" data-type="8">
+                                            <div class="zaopsubDataBiat">
+                                                <span>邀请面试</span>
+                                                <img src="{yun:}$com_style{/yun}/images/dataimg18.png?v={yun:}$config.cachecode{/yun}" alt="">
+                                            </div>
+                                            <div class="zaopsubDataNum">
+                                                <span id="yqms_cnt">0</span>
+                                            </div>
+                                            <div class="zaopsubDataZuori">
+                                                <span>较昨日</span>
+                                                <span id="yqms_zj_cnt">0</span>
+                                            </div>
+                                            <div class="zaopsubDataImage">
+                                                <img src="{yun:}$com_style{/yun}/images/dataimg8.png?v={yun:}$config.cachecode{/yun}" alt="">
+                                            </div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="zaopiModes">
+                            <div class="zaopsubHeader layui-form-item">
+                                <div class="zaopsubTitle">
+                                    <span>近期趋势</span>
+                                </div>
+                                <div class="zaopsubMargins">
+                                    <div id="dayTrendDate" class="layui-inline" style="display:none">
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="date" id="start_date" lay-verify="date" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input">
+                                        </div>
+                                        <div class="henxas">-</div>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="date" id="end_date" lay-verify="date" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="zaopsubTimeTips">
+                                        <span class="datetype" onclick="datetypechange(1)" data-days="0">自定义</span>
+                                        <span onclick="datetypechange(2)" class="datetype spanCurs" data-days="30">近30天</span>
+                                        <span class="datetype" onclick="datetypechange(3)" data-days="10">近10天</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="charttype" value="1">
+                            <div class="zaopinEchats" id="main2">
+                            </div>
+                        </div>
+                        <div class="zaopiModes">
+                            <div class="zaopsubHeader">
+                                <div class="zaopsubTitle">
+                                    <span>剩余权益使用量</span>
+                                </div>
+                            </div>
+                            <div class="zaopsubGyonlas">
+                                <ul>
+                                    <li>
+                                        <div class="zaopGyonTite">
+                                            <span>可上架职位数</span>
+                                        </div>
+                                        <div class="zaopGyonNums">
+                                            <b class="ksj_num">0</b>
+                                            <span class="ksj_unit">个</span>
+                                        </div>
+                                        <div class="zaopGyonInfo">
+                                            <div class="zaopGyonInSzne">
+                                                <div>
+                                                    <span class="ksj_num" style="color: #005DEC;">0</span>
+                                                    /<span class="ksj_total">0</span>
+                                                </div>
+                                            </div>
+                                            <div class="zaopGyonInDuse">
+                                                <span class="ksj_rate" style="width: 50%;"></span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="zaopGyonTite">
+                                            <span>可刷新职位数</span>
+                                        </div>
+                                        <div class="zaopGyonNums">
+                                            <b class="ksx_num">0</b>
+                                            <span class="ksx_unit">次</span>
+                                        </div>
+                                        <div class="zaopGyonInfo">
+                                            <div class="zaopGyonInSzne">
+                                                <div>
+                                                    <span class="ksx_num" style="color: #005DEC;">0</span>
+                                                    /<span class="ksx_total">0</span>
+                                                </div>
+                                            </div>
+                                            <div class="zaopGyonInDuse">
+                                                <span class="ksx_rate" style="width: 50%;"></span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="zaopGyonTite">
+                                            <span>置顶天数</span>
+                                        </div>
+                                        <div class="zaopGyonNums">
+                                            <b class="zd_num">0</b>
+                                            <span class="zd_unit">天</span>
+                                        </div>
+                                        <div class="zaopGyonInfo">
+                                            <div class="zaopGyonInSzne">
+                                                <div>
+                                                    <span class="zd_num" style="color: #005DEC;">0</span>
+                                                    /<span class="zd_total">0</span>
+                                                </div>
+                                            </div>
+                                            <div class="zaopGyonInDuse">
+                                                <span class="zd_rate" style="width: 50%;"></span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="zaopGyonTite">
+                                            <span>招聘会次数</span>
+                                        </div>
+                                        <div class="zaopGyonNums">
+                                            <b class="zph_num">0</b>
+                                            <span class="zph_unit">次</span>
+                                        </div>
+                                        <div class="zaopGyonInfo">
+                                            <div class="zaopGyonInSzne">
+                                                <div>
+                                                    <span class="zph_num" style="color: #005DEC;">0</span>
+                                                    /<span class="zph_total">0</span>
+                                                </div>
+                                            </div>
+                                            <div class="zaopGyonInDuse">
+                                                <span class="zph_rate" style="width: 50%;"></span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="zaopGyonTite">
+                                            <span>可邀请面试数</span>
+                                        </div>
+                                        <div class="zaopGyonNums">
+                                            <b class="kms_num">0</b>
+                                            <span class="kms_unit">次</span>
+                                        </div>
+                                        <div class="zaopGyonInfo">
+                                            <div class="zaopGyonInSzne">
+                                                <div>
+                                                    <span class="kms_num" style="color: #005DEC;">0</span>
+                                                    /<span class="kms_total">0</span>
+                                                </div>
+                                            </div>
+                                            <div class="zaopGyonInDuse">
+                                                <span class="kms_rate" style="width: 50%;"></span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="zaopGyonTite">
+                                            <span>可下载简历数</span>
+                                        </div>
+                                        <div class="zaopGyonNums">
+                                            <b class="kxz_num">0</b>
+                                            <span class="kxz_unit">份</span>
+                                        </div>
+                                        <div class="zaopGyonInfo">
+                                            <div class="zaopGyonInSzne">
+                                                <div>
+                                                    <span class="kxz_num" style="color: #005DEC;">0</span>
+                                                    /<span class="kxz_total">0</span>
+                                                </div>
+                                            </div>
+                                            <div class="zaopGyonInDuse">
+                                                <span class="kxz_rate" style="width: 50%;"></span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="zaopGyonTite">
+                                            <span>紧急天数</span>
+                                        </div>
+                                        <div class="zaopGyonNums">
+                                            <b class="jj_num">0</b>
+                                            <span class="jj_unit">天</span>
+                                        </div>
+                                        <div class="zaopGyonInfo">
+                                            <div class="zaopGyonInSzne">
+                                                <div>
+                                                    <span class="jj_num" style="color: #005DEC;">0</span>
+                                                    /<span class="jj_total">0</span>
+                                                </div>
+                                            </div>
+                                            <div class="zaopGyonInDuse">
+                                                <span class="jj_rate" style="width: 50%;"></span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="zaopGyonTite">
+                                            <span>推荐天数</span>
+                                        </div>
+                                        <div class="zaopGyonNums">
+                                            <b class="tj_num">0</b>
+                                            <span class="tj_unit">天</span>
+                                        </div>
+                                        <div class="zaopGyonInfo">
+                                            <div class="zaopGyonInSzne">
+                                                <div>
+                                                    <span class="tj_num" style="color: #005DEC;">0</span>
+                                                    /<span class="tj_total">0</span>
+                                                </div>
+                                            </div>
+                                            <div class="zaopGyonInDuse">
+                                                <span class="tj_rate" style="width: 50%;"></span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="zaopiModes">
+                            <div class="zaopsubHeader">
+                                <div class="zaopsubTitle">
+                                    <span>为你推荐</span>
+                                </div>
+                            </div>
+                            <div class="zaopsubTuijian">
+                                <ul>
+                                    <li>
+                                        <a href="index.php?c=job">
+                                            <div class="zaopsubTuiTitle">
+                                                <b>涨查看？</b>
+                                                <span>去置顶</span>
+                                            </div>
+                                            <div class="zaopsubTuiImgs">
+                                                <img src="{yun:}$com_style{/yun}/images/tuijian1.png?v={yun:}$config.cachecode{/yun}" alt="">
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{yun:}$config.sy_weburl{/yun}/index.php?m=resume">
+                                            <div class="zaopsubTuiTitle">
+                                                <b>不满意？</b>
+                                                <span>去搜索</span>
+                                            </div>
+                                            <div class="zaopsubTuiImgs">
+                                                <img src="{yun:}$com_style{/yun}/images/tuijian2.png?v={yun:}$config.cachecode{/yun}" alt="">
+                                            </div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </form>
+                    {yun:}else{/yun}
+                    <div class="weikaiSubctKell">
+                        <div>
+                            <img src="{yun:}$com_style{/yun}/images/weikai.png?v={yun:}$config.cachecode{/yun}" alt="">
+                            <span>很抱歉，功能暂未开放</span>
+                            <a href="index.php">返回上级页面</a>
+                        </div>
+                    </div>
+                    {yun:}/if{/yun}
+                </div>
+                <div class="zhaopSubConList">
+                    <!--后台企业设置-招聘数据开启才显示-->
+                    {yun:}if $config.com_zpdata != '0'{/yun}
+                    <form class="layui-form" action="">
+                        <div class="shujuSubcts">
+                            <div class="shujuSubDaong">
+                                <ul>
+                                    <li class="shujuSubDaocur">数据概览</li>
+                                    <li>数据明细</li>
+                                </ul>
+                                <div class="shujuSubxuanz">
+                                    <div class="layui-input-block">
+                                        <select name="interest" id="DataStatsType" lay-filter="DataStatsType">
+                                            <option value="1">日报</option>
+                                            <option value="2" selected>月报</option>
+                                            <option value="3">年报</option>
+                                        </select>
+                                    </div>
+                                    <div class="shujuSubRiqis ds_date ds_date_1" style="display: none">
+                                        <div class="layui-input-inline">
+                                            <input type="text" readonly class="layui-input" id="ds_date_start" placeholder="请选择开始日期">
+                                        </div>
+                                        <div class="shujuSubHenx"></div>
+                                        <div class="layui-input-inline">
+                                            <input type="text" readonly class="layui-input" id="ds_date_end" placeholder="请选择结束日期">
+                                        </div>
+                                    </div>
+                                    <div class="shujuSubRiqis ds_date ds_date_2">
+                                        <div class="layui-input-inline">
+                                            <input type="text" readonly class="layui-input" id="ds_month" placeholder="请选择月份">
+                                        </div>
+                                    </div>
+                                    <div class="shujuSubRiqis ds_date ds_date_3" style="display: none">
+                                        <div class="layui-input-inline">
+                                            <input type="text" readonly class="layui-input" id="ds_year" placeholder="请选择年份">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="shujuSubConts">
+                                <div class="shujuSubCoList shujuSubCoLiOn">
+                                    <div class="shujuGaiLanFlex">
+                                        <div class="shujuGaiLanNav">
+                                            <ul>
+                                                <li class="shujuGaiLanNavcur" data-id="1">
+                                                    <div class="shujuGaiLanNaWidt">
+                                                        <div class="zhousubNumTitle">
+                                                            <img src="{yun:}$com_style{/yun}/images/zhouinfo1.png?v={yun:}$config.cachecode{/yun}" alt="">
+                                                            <span>查看</span>
+                                                        </div>
+                                                        <div class="shujuGaiLanNainfo">
+                                                            <div class="shujuGaiLanNaLiba">
+                                                                <div>
+                                                                    <span id="ds_wkg">0</span>
+                                                                    <b>我看过</b>
+                                                                </div>
+                                                            </div>
+                                                            <div class="shujuGaiLanNaLiba">
+                                                                <div>
+                                                                    <span id="ds_kgw">0</span>
+                                                                    <b>看过我</b>
+                                                                </div>
+                                                            </div>
+                                                            <div class="shujuGaiLanNaLiba">
+                                                                <div>
+                                                                    <span id="ds_wdl">0</span>
+                                                                    <b>我登录</b>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li data-id="2">
+                                                    <div class="shujuGaiLanNaWidt">
+                                                        <div class="zhousubNumTitle">
+                                                            <img src="{yun:}$com_style{/yun}/images/zhouinfo2.png?v={yun:}$config.cachecode{/yun}" alt="">
+                                                            <span>简历</span>
+                                                        </div>
+                                                        <div class="shujuGaiLanNainfo">
+                                                            <div class="shujuGaiLanNaLiba">
+                                                                <div>
+                                                                    <span id="ds_xzjl">0</span>
+                                                                    <b>下载简历</b>
+                                                                </div>
+                                                            </div>
+                                                            <div class="shujuGaiLanNaLiba">
+                                                                <div>
+                                                                    <span id="ds_tdjl">0</span>
+                                                                    <b>投递简历</b>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li data-id="3">
+                                                    <div class="shujuGaiLanNaWidt">
+                                                        <div class="zhousubNumTitle">
+                                                            <img src="{yun:}$com_style{/yun}/images/zhouinfo3.png?v={yun:}$config.cachecode{/yun}" alt="">
+                                                            <span>面试</span>
+                                                        </div>
+                                                        <div class="shujuGaiLanNainfo">
+                                                            <div class="shujuGaiLanNaLiba">
+                                                                <div>
+                                                                    <span id="ds_yqms">0</span>
+                                                                    <b>邀请面试</b>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="shujuGaiLaConts">
+                                            <div class="shujuGaiLaCoList shujuGaiLaCoLiOn">
+                                                <div class="shujuGaiLaCoHrigt shujuGaiLaCoEchat1">
+                                                    <div class="zhoumain3" id="ckchart"></div>
+                                                    <div class="zhouDataName">
+                                                        <img src="{yun:}$com_style{/yun}/images/datime5.png?v={yun:}$config.cachecode{/yun}" alt="">
+                                                        <span id="ckchartname">查看</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="shujuGaiLaCoList">
+                                                <div class="shujuGaiLaCoHrigt shujuGaiLaCoEchat2">
+                                                    <div class="zhoumain3" id="jlchart"></div>
+                                                    <div class="zhouDataName">
+                                                        <img src="{yun:}$com_style{/yun}/images/datime6.png?v={yun:}$config.cachecode{/yun}" alt="">
+                                                        <span id="jlchartname">简历</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="shujuGaiLaCoList">
+                                                <div class="shujuGaiLaCoHrigt shujuGaiLaCoEchat3">
+                                                    <div class="zhoumain3" id="gmchart"></div>
+                                                    <div class="zhouDataName">
+                                                        <img src="{yun:}$com_style{/yun}/images/datime7.png?v={yun:}$config.cachecode{/yun}" alt="">
+                                                        <span id="gmchartname">面试</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="rencaiFenxIsuct">
+                                    	<span>人才分析</span>
+                                    </div>
+                                    <div class="rencaiFenxMode">
+                                    	<div class="rencaiFenxNav">
+                                    		<ul>
+                                    			<li class="rencaiFenxNavcur" data-id="1">我看过</li>
+                                    			<li data-id="2">看过我</li>
+                                    			<li data-id="3">下载简历</li>
+                                    			<li data-id="4">投递简历</li>
+                                                <li data-id="8">邀请面试</li>
+                                    		</ul>
+                                    	</div>
+                                    	<div class="rencaiFenxConts">
+                                    		<div class="rencaiFenxCoList rencaiFenxCoLiOn">
+                                    			<div class="rencaiFenxCoDekll">
+                                    				<div class="rencaiFenxCoChat">
+                                    					<div class="rencaiFenxTubao" id="rcfx-exp-1"></div>
+                                    					<div class="rencaiFenxCenter">
+                                    						<span>工作经验</span>
+                                    					</div>
+                                    				</div>
+                                    				<div class="rencaiFenxCoChat">
+                                    					<div class="rencaiFenxTubao" id="rcfx-edu-1"></div>
+                                    					<div class="rencaiFenxCenter">
+                                    						<span>最高学历</span>
+                                    					</div>
+                                    				</div>
+                                    				<div class="rencaiFenxCoChat">
+                                    					<div class="rencaiFenxTubao" id="rcfx-salary-1"></div>
+                                    					<div class="rencaiFenxCenter">
+                                    						<span>期望薪资</span>
+                                    					</div>
+                                    				</div>
+                                    			</div>
+                                    		</div>
+                                    		<div class="rencaiFenxCoList">
+                                                <div class="rencaiFenxCoDekll">
+                                                    <div class="rencaiFenxCoChat">
+                                                        <div class="rencaiFenxTubao" id="rcfx-exp-2"></div>
+                                                        <div class="rencaiFenxCenter">
+                                                            <span>工作经验</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="rencaiFenxCoChat">
+                                                        <div class="rencaiFenxTubao" id="rcfx-edu-2"></div>
+                                                        <div class="rencaiFenxCenter">
+                                                            <span>最高学历</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="rencaiFenxCoChat">
+                                                        <div class="rencaiFenxTubao" id="rcfx-salary-2"></div>
+                                                        <div class="rencaiFenxCenter">
+                                                            <span>期望薪资</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    		<div class="rencaiFenxCoList">
+                                                <div class="rencaiFenxCoDekll">
+                                                    <div class="rencaiFenxCoChat">
+                                                        <div class="rencaiFenxTubao" id="rcfx-exp-3"></div>
+                                                        <div class="rencaiFenxCenter">
+                                                            <span>工作经验</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="rencaiFenxCoChat">
+                                                        <div class="rencaiFenxTubao" id="rcfx-edu-3"></div>
+                                                        <div class="rencaiFenxCenter">
+                                                            <span>最高学历</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="rencaiFenxCoChat">
+                                                        <div class="rencaiFenxTubao" id="rcfx-salary-3"></div>
+                                                        <div class="rencaiFenxCenter">
+                                                            <span>期望薪资</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    		<div class="rencaiFenxCoList">
+                                                <div class="rencaiFenxCoDekll">
+                                                    <div class="rencaiFenxCoChat">
+                                                        <div class="rencaiFenxTubao" id="rcfx-exp-4"></div>
+                                                        <div class="rencaiFenxCenter">
+                                                            <span>工作经验</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="rencaiFenxCoChat">
+                                                        <div class="rencaiFenxTubao" id="rcfx-edu-4"></div>
+                                                        <div class="rencaiFenxCenter">
+                                                            <span>最高学历</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="rencaiFenxCoChat">
+                                                        <div class="rencaiFenxTubao" id="rcfx-salary-4"></div>
+                                                        <div class="rencaiFenxCenter">
+                                                            <span>期望薪资</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    		<div class="rencaiFenxCoList">
+                                                <div class="rencaiFenxCoDekll">
+                                                    <div class="rencaiFenxCoChat">
+                                                        <div class="rencaiFenxTubao" id="rcfx-exp-8"></div>
+                                                        <div class="rencaiFenxCenter">
+                                                            <span>工作经验</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="rencaiFenxCoChat">
+                                                        <div class="rencaiFenxTubao" id="rcfx-edu-8"></div>
+                                                        <div class="rencaiFenxCenter">
+                                                            <span>最高学历</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="rencaiFenxCoChat">
+                                                        <div class="rencaiFenxTubao" id="rcfx-salary-8"></div>
+                                                        <div class="rencaiFenxCenter">
+                                                            <span>期望薪资</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    	</div>
+                                    </div>
+
+
+
+
+                                </div>
+                                <div class="shujuSubCoList">
+                                	<div class="shujuSubTable">
+                                		<table class="tableDomes">
+                                			<thead>
+                                				<tr align="left">
+                                					<th id="details-date"></th>
+                                					<th>我看过</th>
+                                                    <th>看过我</th>
+                                                    <th>我登录</th>
+                                					<th>下载简历</th>
+                                					<th>投递简历</th>
+                                					<th>邀请面试</th>
+                                				</tr>
+                                			</thead>
+                                			<tbody id="details-list">
+                                			</tbody>
+                                		</table>
+                                	</div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    {yun:}else{/yun}
+                    <div class="weikaiSubctKell">
+                        <div>
+                            <img src="{yun:}$com_style{/yun}/images/weikai.png?v={yun:}$config.cachecode{/yun}" alt="">
+                            <span>很抱歉，功能暂未开放</span>
+                            <a href="index.php">返回上级页面</a>
+                        </div>
+                    </div>
+                    {yun:}/if{/yun}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--后台企业设置-招聘数据开启才显示-->
+{yun:}if $config.com_zpdata != '0'{/yun}
+<script src="{yun:}$config.sy_weburl{/yun}/js/echarts.min.js?v={yun:}$config.cachecode{/yun}"></script>
+<script>
+var laydate = null,
+    sdate = '',
+    edate = '',
+    dayChart = null,
+    typeSort = [
+        1,
+        2,
+        9,
+        3,
+        4,
+        8
+    ],
+    zpDataType = {
+        "1": "wkg",
+        "2": "kgw",
+        "3": "xzjl",
+        "4": "tdjl",
+        "8": "yqms",
+        "9": "wdl",
+    },
+    dsChart = {},
+    rcfxChart = {},
+    chatopen = "{yun:}$config.sy_chat_open{/yun}"
+var dayChartOpt = {
+    color: ['#4367F9', '#46a6ff', '#5259F4'],
+    // legend: {},
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'shadow'
+        }
+    },
+    grid: {
+        top: '5%',
+        left: '2%',
+        right: '3%',
+        bottom: '4%',
+        containLabel: true
+    },
+    xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: [],
+        axisLine: { show: false },
+        axisTick: { show: false },
+        splitLine: {
+            lineStyle: {
+                type: 'dashed',
+                color: '#f1f1f1'
+            },
+            show: true
+        },
+    },
+    yAxis: {
+        type: 'value',
+        axisTick: {
+            show: false
+        },
+        axisLine: {
+            show: false
+        },
+        splitLine: {
+            lineStyle: {
+                color: '#f1f1f1'
+            },
+            show: true
+        },
+    },
+    series: [{
+        name: '',
+        data: [],
+        type: 'line',
+        smooth: true,
+        areaStyle: {},
+        itemStyle: {
+            normal: {
+                color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [{
+                    offset: 0,
+                    color: "#fff"
+                }, {
+                    offset: 0.9,
+                    color: "#0084FF"
+                }], false)
+            }
+        }
+    }, ]
+};
+
+function goto(url) {
+    window.location.href = url
+}
+
+// 数据统计，时间选择
+let now = new Date(),
+    end = new Date();
+now.setDate(now.getDate() - 6)
+var DataStatsType = {
+    "1" : [formatDate(now), formatDate(end)],
+    "2" : formatMonth(end),
+    "3" : end.getFullYear(),
+};
+
+layui.use(['form', 'layedit', 'laydate'], function() {
+    var form = layui.form,
+        layer = layui.layer,
+        layedit = layui.layedit;
+    laydate = layui.laydate;
+    laydate.render({
+        elem: '#ds_date_start'
+        ,btns: ['now', 'confirm']
+        ,max: formatDate(end)
+        ,done: function(value, date){ // 选择完毕的回调
+            DataStatsType['1'][0] = value;
+            if (new Date(DataStatsType['1'][0]) > new Date(DataStatsType['1'][1])) {
+                layer.msg('开始日期不能大于结束日期！', 2, 8);
+                $("#ds_date_start").val('');
+                return false;
+            }
+            getDataStats();
+        }
+    });
+    laydate.render({
+        elem: '#ds_date_end'
+        ,btns: ['now', 'confirm']
+        ,max: formatDate(end)
+        ,done: function(value, date){ // 选择完毕的回调
+            DataStatsType['1'][1] = value;
+            if (new Date(DataStatsType['1'][0]) > new Date(DataStatsType['1'][1])) {
+                layer.msg('结束日期不能小于开始日期！', 2, 8);
+                $("#ds_date_end").val('');
+                return false;
+            }
+            getDataStats();
+        }
+    });
+    laydate.render({
+        elem: '#ds_month'
+        ,type: 'month'
+        ,btns: ['now', 'confirm']
+        ,max: formatMonth(end)
+        ,done: function(value, date){ // 选择完毕的回调
+            DataStatsType['2'] = value;
+            getDataStats();
+        }
+    });
+    laydate.render({
+        elem: '#ds_year'
+        ,type: 'year'
+        ,btns: ['now', 'confirm']
+        ,max: `${end.getFullYear()}`
+        ,done: function(value, date){ // 选择完毕的回调
+            DataStatsType['3'] = value;
+            getDataStats();
+        }
+    });
+    form.on('select(changedaytp)', function(data) {
+        dayTj(data.value)
+    });
+
+    initDate(2)
+    form.on('select(DataStatsType)', function(data) {
+        initDate(data.value);
+        getDataStats()
+    });
+
+    $('.j-charttype').click(function() {
+        let type = $(this).attr('data-type');
+        $('#charttype').val(type)
+        form.render('select');
+
+        $('.zaopsubDatas').find('li').removeClass('zaopsubDatCur');
+        $(this).parent('li').addClass('zaopsubDatCur');
+
+        var params = {}
+        if ($('.spanCurs').attr('data-days') > 0) {
+            params.days = $('.spanCurs').attr('data-days')
+        } else {
+            params.days = -1;
+            params.sdate = sdate
+            params.edate = edate
+        }
+        recentTrend(params)
+    })
+});
+
+function datetypechange(type) {
+    $('.datetype').removeClass('spanCurs')
+    if (type == 1) { // 自定义
+        $('.datetype').eq(0).addClass('spanCurs')
+        $('#dayTrendDate').html('<div class="layui-input-inline">\n' +
+            '                <input type="text" name="date" id="start_date" lay-verify="date"\n' +
+            '            placeholder="开始时间" autocomplete="off" class="layui-input">\n' +
+            '                </div>\n' +
+            '                <div class="henxas">-</div>\n' +
+            '                <div class="layui-input-inline">\n' +
+            '                <input type="text" name="date" id="end_date" lay-verify="date"\n' +
+            '            placeholder="结束时间" autocomplete="off" class="layui-input">\n' +
+            '                </div>')
+        $('#dayTrendDate').show()
+        initLaydate(1)
+        initLaydate(2)
+    } else {
+        $('#dayTrendDate').hide()
+        $('.datetype').eq(type - 1).addClass('spanCurs')
+        recentTrend({ days: type == 2 ? 30 : 10 })
+    }
+}
+
+// 渲染自定义时间选择框
+function initLaydate(type = 1) {
+    if (type == 1) { // 开始时间
+        laydate.render({
+            elem: '#start_date',
+            type: 'date',
+            min: -90,
+            max: 0,
+            done: function(value) {
+                sdate = value
+                if (sdate && edate) {
+                    recentTrend({ dyas: -1, sdate: sdate, edate: edate })
+                }
+            }
+        });
+    } else { // 结束时间
+        laydate.render({
+            elem: '#end_date',
+            type: 'date',
+            min: -90,
+            max: 1,
+            done: function(value) {
+                edate = value
+                if (sdate && edate) {
+                    recentTrend({ dyas: -1, sdate: sdate, edate: edate })
+                }
+            }
+        });
+    }
+}
+
+$(".zhaopSubNavs li").click(function() {
+    if ($(".zhaopSubNavs li").index(this) == 1) {
+        getDataStats()
+    }
+    $(this).addClass("zhaopSubNavcur").siblings().removeClass('zhaopSubNavcur');
+    $(".zhaopSubConList").eq($(".zhaopSubNavs li").index(this)).addClass("zhaopSubConOn").siblings().removeClass('zhaopSubConOn');
+});
+
+$(".shujuSubDaong li").click(function() {
+    $(this).addClass("shujuSubDaocur").siblings().removeClass('shujuSubDaocur');
+    $(".shujuSubCoList").eq($(".shujuSubDaong li").index(this)).addClass("shujuSubCoLiOn").siblings().removeClass('shujuSubCoLiOn');
+});
+
+$(".shujuGaiLanNav li").click(function() {
+    $(this).addClass("shujuGaiLanNavcur").siblings().removeClass('shujuGaiLanNavcur');
+    $(".shujuGaiLaCoList").eq($(".shujuGaiLanNav li").index(this)).addClass("shujuGaiLaCoLiOn").siblings().removeClass('shujuGaiLaCoLiOn');
+    setDataStatsChart();
+});
+$(".rencaiFenxNav li").click(function() {
+    $(this).addClass("rencaiFenxNavcur").siblings().removeClass('rencaiFenxNavcur');
+    $(".rencaiFenxCoList").eq($(".rencaiFenxNav li").index(this)).addClass("rencaiFenxCoLiOn").siblings().removeClass('rencaiFenxCoLiOn');
+    setDataStatsRcfx();
+});
+// 近期趋势
+function recentTrend(param) {
+    param.type = $('#charttype').val()
+    $.post("index.php?c=zhaopin&act=recentTrend", param, function(data) {
+        var x_data = [];
+        var s1_data = []
+        var datas = data.data
+        for (const key in datas) {
+            x_data.push(key)
+            s1_data.push(datas[key])
+        }
+        dayChartOpt.xAxis.data = x_data
+        dayChartOpt.series[0].data = s1_data
+        dayChartOpt.series[0].name = data.name
+        dayChart.setOption(dayChartOpt)
+    }, 'json');
+}
+// 今日数据统计
+function dayTj(type) {
+    let param = {
+        type: type,
+    };
+    $.post("index.php?c=zhaopin&act=getTodayData", param, function(o) {
+        $('#wkg_cnt').text(o.wkg.num)
+        $('#wkg_zj_cnt').text(o.wkg.jzr)
+        $('#kgw_cnt').text(o.kgw.num)
+        $('#kgw_zj_cnt').text(o.kgw.jzr)
+        $('#xzjl_cnt').text(o.xzjl.num)
+        $('#xzjl_zj_cnt').text(o.xzjl.jzr)
+        $('#tdjl_cnt').text(o.tdjl.num)
+        $('#tdjl_zj_cnt').text(o.tdjl.jzr)
+        $('#yqms_cnt').text(o.yqms.num)
+        $('#yqms_zj_cnt').text(o.yqms.jzr)
+    }, 'json');
+}
+// 剩余权益使用量
+function qyTj() {
+    $.get("index.php?c=zhaopin&act=getTcData", function(o) {
+        // 推荐天数
+        $('.tj_num').text(o.tj.num)
+        $('.tj_total').text(o.tj.tc_num)
+        $('.tj_unit').text(o.tj.unit)
+        $('.tj_rate').attr('style', 'width: ' + o.tj.width + '%;')
+        // 紧急天数
+        $('.jj_num').text(o.jj.num)
+        $('.jj_total').text(o.jj.tc_num)
+        $('.jj_unit').text(o.jj.unit)
+        $('.jj_rate').attr('style', 'width: ' + o.jj.width + '%;')
+        // 可下载简历
+        $('.kxz_num').text(o.kxz.num)
+        $('.kxz_total').text(o.kxz.tc_num)
+        $('.kxz_unit').text(o.kxz.unit)
+        $('.kxz_rate').attr('style', 'width: ' + o.kxz.width + '%;')
+        // 可邀请面试
+        $('.kms_num').text(o.kms.num)
+        $('.kms_total').text(o.kms.tc_num)
+        $('.kms_unit').text(o.kms.unit)
+        $('.kms_rate').attr('style', 'width: ' + o.kms.width + '%;')
+        // 招聘会次数
+        $('.zph_num').text(o.zph.num)
+        $('.zph_total').text(o.zph.tc_num)
+        $('.zph_unit').text(o.zph.unit)
+        $('.zph_rate').attr('style', 'width: ' + o.zph.width + '%;')
+        // 置顶天数
+        $('.zd_num').text(o.zd.num)
+        $('.zd_total').text(o.zd.tc_num)
+        $('.zd_unit').text(o.zd.unit)
+        $('.zd_rate').attr('style', 'width: ' + o.zd.width + '%;')
+        // 可刷新职位数
+        $('.ksx_num').text(o.ksx.num)
+        $('.ksx_total').text(o.ksx.tc_num)
+        $('.ksx_unit').text(o.ksx.unit)
+        $('.ksx_rate').attr('style', 'width: ' + o.ksx.width + '%;')
+        // 可上架职位数
+        $('.ksj_num').text(o.ksj.num)
+        $('.ksj_total').text(o.ksj.tc_num)
+        $('.ksj_unit').text(o.ksj.unit)
+        $('.ksj_rate').attr('style', 'width: ' + o.ksj.width + '%;')
+    }, 'json');
+}
+
+// 数据统计
+function initDate(type) {
+    if (type == 2) {
+        $("#ds_month").val(DataStatsType['2'])
+    } else if (type == 3) {
+        $("#ds_year").val(DataStatsType['3'])
+    } else {
+        $("#ds_date_start").val(DataStatsType['1'][0]);
+        $("#ds_date_end").val(DataStatsType['1'][1]);
+    }
+    $('.ds_date').hide();
+    $(".ds_date_" + type).show();
+}
+function getDataStats() {
+    let type = $("#DataStatsType").val();
+    let param = {
+        type: type,
+        times: DataStatsType[type]
+    };
+    $.post("index.php?c=zhaopin&act=getDataStats", param, function(res) {
+        // localStorage.setItem("weekzpdata", JSON.stringify(o));
+        $('#ds_wkg').text(res.wkg.num)
+        $('#ds_kgw').text(res.kgw.num)
+        $('#ds_wdl').text(res.wdl.num)
+        $('#ds_xzjl').text(res.xzjl.num)
+        $('#ds_tdjl').text(res.tdjl.num)
+        $('#ds_yqms').text(res.yqms.num)
+        getDataStatsChart()
+        getDataStatsRcfx()
+        getDataStatsDetails()
+    }, 'json');
+}
+var dsChartData = null;
+function getDataStatsChart() {
+    let type = $("#DataStatsType").val();
+    let param = {
+        type: type,
+        times: DataStatsType[type],
+    };
+
+    $.post("index.php?c=zhaopin&act=getDataStatsChart", param, function(res) {
+        dsChartData = res;
+        setDataStatsChart()
+    }, 'json');
+}
+var dsRcfxData = null;
+function getDataStatsRcfx() {
+    let type = $("#DataStatsType").val();
+    let param = {
+        type: type,
+        times: DataStatsType[type],
+    };
+
+    $.post("index.php?c=zhaopin&act=getDataStatsRcfx", param, function(res) {
+        dsRcfxData = res;
+        setDataStatsRcfx()
+    }, 'json');
+}
+
+function getDataStatsDetails() {
+    let type = $("#DataStatsType").val();
+    let param = {
+        type: type,
+        times: DataStatsType[type],
+    };
+
+    $("#details-date").text(type == '1' ? DataStatsType[type].join(' / ') : DataStatsType[type])
+    $("#details-list").find('tr').remove();
+    $.post("index.php?c=zhaopin&act=getDataStatsDetails", param, function(res) {
+        if (res.dates.length > 0) {
+            let k = null,
+                html = '';
+            for (let i = 0; i < res.dates.length; i++) {
+                html += '<tr>';
+                html += `<td>${res.dates[i]}</td>`;
+                for (k = 0; k < typeSort.length; k++) {
+                    html += `<td>${res[zpDataType[typeSort[k]]][i]}</td>`;
+                }
+                html += '</tr>';
+            }
+            $("#details-list").html(html)
+        }
+    }, 'json');
+}
+
+var DataStatsChartOption = {
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'shadow'
+        }
+    },
+    legend: {
+        right: 10,
+    },
+    grid: {
+        top: '15%',
+        left: '1%',
+        right: '1%',
+        bottom: '1%',
+        containLabel: true
+    },
+    xAxis: {
+        type: 'category',
+        // boundaryGap: false,
+        data: [],
+        axisLine: { show: false },
+        axisTick: { show: false },
+        splitLine: {
+            lineStyle: {
+                type: 'dashed',
+                color: '#f1f1f1'
+            },
+            show: true
+        },
+        axisLabel: {
+            textStyle: {
+                color: '#555',
+                fontSize: 12,
+            }
+        },
+    },
+    yAxis: {
+        type: 'value',
+        axisTick: {
+            show: false
+        },
+        axisLine: {
+            show: false
+        },
+        splitLine: {
+            lineStyle: {
+                color: '#f1f1f1'
+            },
+            show: true
+        },
+        axisLabel: {
+            textStyle: {
+                color: '#555',
+                fontSize: 12,
+            }
+        },
+    },
+}
+function setDataStatsChart() {
+    let val = $('.shujuGaiLanNav').find('.shujuGaiLanNavcur').attr('data-id');
+    let colorArr = [
+        [
+            "#D2E9FF",
+            "#8896FB"
+        ],
+        [
+            "#D7E9CF",
+            "#48C4D0"
+        ],
+        [
+            "#FFE9C2",
+            "#FEA15C"
+        ]
+    ]
+    let dsarr = {
+        "1": {
+            key: "ck",
+            list: [{
+                name: '我看过',
+                key: 'wkg',
+                color: colorArr[0]
+            },{
+                name: '看过我',
+                key: 'kgw',
+                color: colorArr[1]
+            },{
+                name: '我登录',
+                key: 'wdl',
+                color: colorArr[2]
+            }]
+        },
+        "2": {
+            key: "jl",
+            list: [{
+                name: '下载简历',
+                key: 'xzjl',
+                color: colorArr[0]
+            },{
+                name: '投递简历',
+                key: 'tdjl',
+                color: colorArr[1]
+            }]
+        },
+        "3": {
+            key: 'gm',
+            list: [{
+                name: '邀请面试',
+                key: 'yqms',
+                color: colorArr[2]
+            }]
+        }
+    };
+
+    let dscKey = dsarr[val].key,
+        dscList = dsarr[val].list;
+    console.log(dscList[0])
+    if (typeof dsChart[dscKey + 'chart'] == 'undefined') {
+        dsChart[dscKey + 'chart'] = echarts.init(document.getElementById(dscKey + 'chart'));
+        setTimeout(function () {
+            window.addEventListener("resize", () => {
+                dsChart[dscKey + 'chart'].resize();
+            });
+        }, 200);
+    }
+    let chartOption = JSON.parse(JSON.stringify(DataStatsChartOption));
+    chartOption.xAxis.data = dsChartData.dates;
+    chartOption.series = [];
+    for(let i = 0; i < dscList.length; i++) {
+        chartOption.series.push({
+            name: dscList[i].name,
+            data: dsChartData[dscList[i].key],
+            type: 'bar',
+            barWidth: 16,
+            barCategoryGap: 8,
+            itemStyle: {
+                normal: {
+                    barBorderRadius: [15, 15, 0, 0],
+                    color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [{
+                        offset: 0,
+                        color: dscList[i].color[0]
+                    }, {
+                        offset: 1,
+                        color: dscList[i].color[1]
+                    }], false)
+                },
+            }
+        })
+    }
+    dsChart[dscKey + 'chart'].setOption(JSON.parse(JSON.stringify(chartOption)));
+}
+
+var DataStatsRcfxOption = {
+    color: ['#5971FB', '#FF7752', '#D172FB', '#52C4B9', '#F15384'],
+    tooltip: {
+        trigger: 'item',
+        formatter: '{a} <br/>{b}: {c} ({d}%)'
+    },
+}
+function setDataStatsRcfx() {
+    let val = $('.rencaiFenxNav').find('.rencaiFenxNavcur').attr('data-id');
+    let chartOption = null;
+    let type = zpDataType[val],
+        typeName = {
+            exp: '工作经验',
+            edu: '最高学历',
+            salary: '期望薪资',
+        };
+
+    for (let obj in dsRcfxData[type]) {
+        chartOption = null;
+        if (typeof rcfxChart[type] == 'undefined') {
+            rcfxChart[type] = {};
+        }
+        if (typeof rcfxChart[type][obj + 'chart'] == 'undefined') {
+            rcfxChart[type][obj + 'chart'] = echarts.init(document.getElementById('rcfx-' + obj + '-' + val));
+            setTimeout(function() {
+                window.addEventListener("resize", () => {
+                    rcfxChart[type][obj + 'chart'].resize();
+                });
+            }, 200);
+        }
+
+        chartOption = JSON.parse(JSON.stringify(DataStatsRcfxOption));
+        chartOption.series = [
+            {
+                name: typeName[obj],
+                type: 'pie',
+                radius: ['38%', '60%'],
+                center: ['50%', '50%'],
+                avoidLabelOverlap: false,
+                data: dsRcfxData[type][obj],
+                emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: '14',
+                        fontWeight: 'bold'
+                    }
+                },
+            }
+        ];
+        rcfxChart[type][obj + 'chart'].setOption(JSON.parse(JSON.stringify(chartOption)));
+    }
+}
+
+window.onload = function() {
+    //初始化 日数据 近期趋势图表
+    dayChart = echarts.init(document.getElementById('main2'));
+    dayChart.setOption(dayChartOpt);
+    setTimeout(function () {
+        window.addEventListener("resize", () => {
+            dayChart.resize();
+        });
+    }, 200);
+
+    recentTrend({type: 1, days: 30}); // 初始化近期趋势
+    this.dayTj('today')
+
+    setTimeout(function() {
+        qyTj()
+    }, 200)
+}
+</script>
+{yun:}else{/yun}
+<script type="text/javascript">
+    $(".zhaopSubNavs li").click(function() {
+        $(this).addClass("zhaopSubNavcur").siblings().removeClass('zhaopSubNavcur');
+        $(".zhaopSubConList").eq($(".zhaopSubNavs li").index(this)).addClass("zhaopSubConOn").siblings().removeClass('zhaopSubConOn');
+    });
+</script>
+{yun:}/if{/yun}
+
+{yun:}include file="$comstyle/footer.htm"{/yun}

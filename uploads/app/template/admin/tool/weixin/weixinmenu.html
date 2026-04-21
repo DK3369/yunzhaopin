@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="公众号设置" name="first" :lazy='true'>
+                    <wxgzh :config="config" @post-set="postset"></wxgzh>
+                </el-tab-pane>
+                <el-tab-pane label="开发者凭据" name="forud" :lazy='true'>
+                    <wxkfz :config="config" @post-set="postset"></wxkfz>
+                </el-tab-pane>
+                <el-tab-pane label="体验设置" name="fived" :lazy='true'>
+                   <wxtyset :config="config" @post-set="postset"></wxtyset>
+                </el-tab-pane>
+                <el-tab-pane label="微信菜单" name="second" :lazy='true'>
+                    <wxmenu ref="second"></wxmenu>
+                </el-tab-pane>
+                <el-tab-pane label="自动回复" name="third" :lazy='true'>
+                    <reply ref="third"></reply>
+                </el-tab-pane> 
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#moduapp',
+            data: function () {
+                return {
+                    activeName: 'first',
+                    config:{},
+                }
+            },
+            components: {
+				'wxgzh': httpVueLoader('./component/wxgzh.vue'),
+				'wxkfz': httpVueLoader('./component/wxkfz.vue'),
+				'wxtyset': httpVueLoader('./component/wxtyset.vue'),
+                'wxmenu': httpVueLoader('./component/wxmenu.vue'),
+                'reply': httpVueLoader('./component/reply.vue'),
+            },
+            created:function(){
+                this.getInfo();
+            },
+            methods: {
+                async getInfo() {
+                    let that = this;
+                    
+                    httpPost('m=tool&c=weixinmenu&a=index',{}).then((result)=>{
+                        
+                        var res = result.data;
+                        if (res.error == 0) {
+                            
+                            that.config =res.data;
+                            
+                        }
+                        
+                    }).catch(function(e){
+                        console.log(e)
+                    })
+                },
+                async postset(e){
+                    
+                    let that = this;
+                    if(e.type=='wxgzh'){
+                        var param = {
+                            wx_name    : e.config.wx_name,
+                            wx_token   : e.config.wx_token,
+                        };
+                    }else if(e.type=='wxkfz'){
+                        var param = {
+                            
+                            wx_appid  : e.config.wx_appid,
+                            wx_appsecret : e.config.wx_appsecret,
+                        };
+                    }else if(e.type=='wxtyset'){
+                        var param = {
+                            
+                            wx_rz  : e.config.wx_rz,
+                            wx_author : e.config.wx_author,
+                            wx_author_htlogin : e.config.wx_author_htlogin,
+                            wx_popWin : e.config.wx_popWin,
+                            wx_welcom_type : e.config.wx_welcom_type,
+                            wx_welcom : e.config.wx_welcom,
+                            wx_search : e.config.wx_search,
+                            wx_search_no : e.config.wx_search_no,
+                        };
+                    }
+                    startLoading();
+                    httpPost('m=tool&c=weixinmenu&a=save',param).then((result)=>{
+                        endLoading();
+                        var res = result.data;
+
+                        message.success(res.msg,this.getInfo);
+
+                    }).catch(function(e){
+                        console.log(e)
+                    })
+                },
+                handleClick(tab, event){
+                    this.$nextTick(() => {
+                        if (tab.name == 'second' || tab.name == 'third'){
+                            this.$refs[tab.name].doLayout();
+                        }
+                    });
+                },
+            }
+        });
+    </script>
+</body>
+
+</html>

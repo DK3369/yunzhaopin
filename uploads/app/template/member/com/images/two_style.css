@@ -1,0 +1,1099 @@
+.memberSubject {
+    overflow: hidden;
+    position: relative;
+    width: 100%; 
+}
+
+.memberSubject .admin_mainbody {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-left: 0;
+}
+
+
+.memberSubCont {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 222px);
+    height: 100%;
+    margin-left: auto; margin-right: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+@media screen and (min-width: 320px) and (max-width: 1500px) {
+    .memberSubCont {
+        width: calc(100% - 182px);
+    }
+}
+
+
+.memberSubRight {
+    overflow-y: auto;
+    position: relative;
+    width: calc(100% - 332px);
+    height: 100%;
+}
+
+.memberSubRight::-webkit-scrollbar {
+    display: none;
+}
+
+.membRighTops {
+    overflow: hidden;
+    position: relative;
+    width: 100%; 
+}
+
+.membRighTops ul {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    /* flex-wrap: wrap; */
+    align-items: center;
+    justify-content: space-between;
+}
+
+.membRighTops ul li {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 30px);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    background: #FDFDFD;
+    padding: 15px;
+    border-radius: 3px;
+    height: calc(127px - 30px);
+    margin-right: 12px;
+}
+.membRighTops ul li:last-child {
+    margin-right: 0;
+}
+
+.membRighTops .membRiTopImg {
+    overflow: hidden; position: absolute;right:20px;top:30px;
+    width: 52px;
+}
+
+.membRighTops .membRiTopImg img {
+    display: block;
+    width: 52px;
+    height: 52px;
+}
+
+.membRighTops .membRiTopInfo {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    font-size: 14px;
+    color: #0C0D0D;
+    display: flex;
+    align-items: center;
+}
+.membRighTops .membRiTopInfo img{
+    display: block;
+    cursor: pointer;
+}
+
+.membRighTops .membRiTopInfo span {
+    overflow: hidden;
+    display: block;
+    padding-right: 10px;
+}
+
+.membRighTops .membRiTopNum {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    font-size: 28px;
+    color: #0C0D0D;
+    padding: 15px 0;
+}
+
+.membRighTops .membRiTopInx {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    font-size: 12px;
+    color: #0C0D0D;
+    display: flex;
+    align-items: center;
+}
+
+.membRighTops .membRiTopInx span {
+    overflow: hidden;
+    display: block;
+}
+
+.membRighTops .membRiTopInx a {
+    overflow: hidden;
+    display: block;
+    color: #1387DA;
+}
+
+.membRighTops ul li:hover {
+    background: linear-gradient(-90deg, #1A91FF, #3571F8);
+}
+
+.membRighTops ul li:hover .membRiTopInfo {
+    color: #fff;
+}
+
+.membRighTops ul li:hover .membRiTopNum {
+    color: #fff;
+}
+
+.membRighTops ul li:hover .membRiTopInx {
+    color: #fff;
+}
+
+.membRighTops ul li:hover .membRiTopInx a {
+    color: #fff;
+}
+.membRighTops ul li:hover .membRiTopNum a {
+    color: #fff;
+}
+.membRighTops ul .membRighTopscur { background: linear-gradient(-90deg, #1A91FF, #3571F8);color: #fff;}
+.membRighTops ul .membRighTopscur  .membRiTopInfo {
+    color: #fff;
+}
+.membRighTops ul .membRighTopscur  .membRiTopInx {
+    color: #fff;
+}
+.membRighTops ul .membRighTopscur  .membRiTopNum {
+    color: #fff;
+}
+.membRighTops ul .membRighTopscur a{    color: #fff;}
+.memberSubGuanl {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+   
+    margin: 12px 0 0px 0; 
+    justify-content: space-between;
+}
+
+.memberSubzaopi {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 0px - 24px); 
+    border-radius: 3px; 
+    background: #fff;  
+    padding: 12px 12px 0px 12px; margin-bottom: 12px;
+}
+
+
+
+.membSubGuanTite {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 15px; padding-top: 5px;;
+}
+
+.membSubGuanTite span {
+    overflow: hidden;
+    display: block;
+    font-size: 16px;
+    color: #0C0D0D;
+}
+
+.membSubGuanTite a {
+    overflow: hidden;
+    display: block;
+    font-size: 13px;
+    color: #145DFF;
+}
+
+.membSubGuanNeir {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: calc(100% - 31px);
+}
+
+.membSubGuanFlex { 
+}
+
+.membSubGuaOnes {
+    overflow: hidden;
+    position: relative;
+    width: 100%; 
+}
+
+.membSubGuaOnes ul {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height:100px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    align-content: space-between;
+    justify-content: space-between;
+}
+.membSubGuaOnes ul li {
+    overflow: hidden;
+    position: relative;
+    width: calc(25% - 6px - 24px); 
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    background: #E9EFFB;
+    border-radius: 3px;
+    padding: 12px;
+}
+
+.membSubGuaOnes ul li .oneDivs {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.membSubGuaOnes ul li .oneDivTite {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.membSubGuaOnes ul li .oneDivTite img{
+    display: block;
+    cursor: pointer;
+}
+
+.membSubGuaOnes ul li .oneDivTite span {
+    overflow: hidden;
+    display: block;
+    font-size: 13px;
+    color: #090908;
+}
+
+.membSubGuaOnes ul li .oneDivNum {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    font-size: 26px;
+    padding: 17px 0 0 0;
+    color: #2F2E2E;
+}
+
+.membSubGuaOnes ul li .oneDivlink { 
+    width: 52px; position: absolute;right:0px;bottom:0px;
+}
+
+.membSubGuaOnes ul li .oneDivlink a {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    width: 52px;
+    height: 22px;
+    background: #145DFF;
+    text-align: center;
+    line-height: 22px;
+    color: #fff;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+.membSubGuaOnes ul li:nth-child(2) {
+    background: #FFF2E6;
+}
+
+.membSubGuaOnes ul li:nth-child(2) .oneDivlink a {
+    background: #FF7744;
+}
+
+.membSubGuaOnes ul li:nth-child(3) {
+    background: #E6F6EC;
+}
+
+.membSubGuaOnes ul li:nth-child(3) .oneDivlink a {
+    background: #11AA66;
+}
+
+.membSubGuaOnes ul li:nth-child(4) {
+    background: #F1EDFF;
+}
+
+.membSubGuaOnes ul li:nth-child(4) .oneDivlink a {
+    background: #9476FB;
+}
+
+.membSubGuaTwo {
+    overflow: hidden;
+    position: relative;
+    width:100%; 
+}
+
+.membSubGuaTwo ul {
+    overflow: hidden;
+    position: relative;
+    width: 100%; 
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    align-content: space-between; 
+}
+
+.membSubGuaTwo ul li {
+    overflow: hidden;
+    position: relative;
+    width:15.8%; padding-left: 10px; padding-bottom: 10px;;
+    
+}
+
+.membSubGuaTwo ul li .twoDivimg {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-bottom: 16px;
+}
+
+.membSubGuaTwo ul li .twoDivTite {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    font-size: 13px;
+    color: #090908;
+}
+
+.membSubGuaTwo ul li .twoDivNum {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding: 13px 0;
+    display: flex;
+    align-items: center;
+}
+
+.membSubGuaTwo ul li .twoDivNum span {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 26px;
+    color: #090908;
+    padding-right: 6px;
+}
+
+.membSubGuaTwo ul li .twoDivNum b {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    font-size: 12px;
+    color: #110F0F;
+    font-weight: 500;
+}
+
+.membSubGuaTwo ul li .twoDivYula {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    font-size: 12px;
+    color: #999;
+}
+
+.memberSubBanner {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    max-height: 60px;
+    background: #E1E0E0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.memberSubBanner img{
+    overflow: hidden;
+    display: block;
+    margin-bottom: 12px;
+    width: 100%;
+    height: auto;
+}
+
+.membSubPoster {
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 24px);
+    min-height: 358px;
+    background: #fff;
+    padding: 12px;
+    border-radius: 3px;
+}
+
+.membSuosTite {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 12px;
+}
+
+.membSuosTite span {
+    overflow: hidden;
+    display: block;
+    font-size: 16px;
+    color: #0C0D0D;
+}
+
+.membSuosTite a {
+    overflow: hidden;
+    display: block;
+    font-size: 12px;
+    color: #145DFF;
+}
+
+.membSubposCont {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.membSubposCont ul {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    /*justify-content: space-between;*/
+}
+
+/*.membSubposCont ul:after {
+    overflow: hidden;
+    position: relative;
+    width: calc(19% - 8px);
+    display: block;
+    content: "";
+}*/
+
+.membSubposCont ul li {
+    overflow: hidden;
+    position: relative;
+    width: calc(20% - 10px - 24px - 2px);
+    border: 1px solid #F5F5F5;
+    padding: 12px;
+    margin: 6px 5px;
+}
+.membSubposCont ul li:hover{ background-color:#f5f7fc; cursor: pointer;  border: 1px solid #eee;}
+.membSubposCont .postdivTite {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    border-bottom: 1px solid #eee;
+}
+
+.membSubposCont .postdivTite span {
+    overflow: hidden;
+    display: block;
+    width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 15px;
+    color: #121314;
+    font-weight: bold;
+}
+
+.membSubposCont .postdivTite b {
+    overflow: hidden;
+    display: block;
+    width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+    padding: 8px 0 10px 0;
+}
+
+.membSubposCont .postdivInfo {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-top: 10px; 
+}
+
+.membSubposCont .postdivData {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.membSubposCont .postdivImg {
+    overflow: hidden;
+    position: relative;
+    width: 23px;
+    height: 23px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.membSubposCont .postdivImg img {
+    overflow: hidden;
+    display: block;
+    width: 23px;
+    height: 23px;
+}
+
+.membSubposCont .postdivName {
+    overflow: hidden;
+    position: relative;
+}
+
+.membSubposCont .postdivName span {
+    overflow: hidden;
+    display: block;
+    font-size: 13px;
+    color: #39393A;
+}
+
+.membSubposCont .postdivName b {
+    overflow: hidden;
+    display: block;
+    font-size: 12px;
+    color: #979595;
+    font-weight: 500;
+    padding-top: 4px;display: none;
+}
+
+.membSubposCont .postdivButn {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center; display: none;;
+}
+
+.membSubposCont .postdivButn span {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    width: 68px;
+    height: 28px;
+    border: 1px solid #145DFF;
+    font-size: 12px;
+    color: #145DFF;
+    margin-left: 8px;
+    border-radius: 3px;    background: #145DFF;color: #fff;
+}
+
+.postdivChatrs .spanDown {
+    background: #fff;
+    color: #145DFF;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.memberSubLeft {
+    overflow-y: auto;
+    position: relative;
+    width: 320px;
+    height: 100%;
+}
+
+.memberSubLeft::-webkit-scrollbar {
+    display: none;
+}
+
+.membSubLeComs{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 24px);
+    height: calc(429px - 24px);
+    background: #fff; 
+    border-radius: 3px;
+    padding: 12px;
+}
+.membLeComData{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;  
+}
+.membLeComLogo{
+    overflow: hidden;
+    position: relative;
+    width: 40px;
+    height: 40px;
+    margin-right: 15px;
+    background: #E9EFFB;
+    border-radius: 3px; margin-top: 4px;;
+}
+.membLeComLogo img{
+    overflow: hidden;
+    display: block;
+    width: 100%;
+    height: auto;
+}
+.membLeComNam{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 6px - 52px);
+}
+
+.membLeComText{
+ text-overflow: ellipsis;
+     overflow: hidden;
+     white-space: nowrap;
+    position: relative;height:30px; line-height: 30px;;
+    width: 100%;
+    font-size: 16px;
+    color: #070707; font-weight:bold
+}
+
+.membLeComslink{
+    overflow: hidden;
+    position: relative;
+    width: 100%; 
+}
+.membLeComslink a{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;color:#666
+}
+.membLeComslink a span{
+    overflow: hidden;
+    display: block;
+    font-size: 12px;
+    color: #56585A;
+    padding-left: 4px;
+}
+
+.membLeComDaos{
+    /*overflow: hidden;*/
+  
+    z-index: 2;
+    width: 50px;
+    height: 26px;
+    background: #437DFF;
+    border-radius: 4px; 
+    float: right; 
+    margin-right: 20px;
+    margin-top: -3px;
+}
+.membLeComDaos .left_box_zp_qd{
+    background: none;
+    border-radius: initial;
+}
+.membLeComDaos .left_box_zp_qd.yqd{
+    background: #ccc;
+    border-radius: initial;
+}
+.membLeComDaos a{
+    overflow: hidden;
+    width: 100%;
+    height: 26px;
+    color: #fff;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.membLeComDaos .sign_main{
+    left: inherit;
+    right: 6px;
+    top: 26px;
+}
+
+.membLeComRenz{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.membLerenzLis{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 3px 0;
+    font-size: 12px;
+    margin-right: 8px;
+}
+.membLerenTite{
+    overflow: hidden;
+    position: relative;
+    color: #413F3D;
+}
+
+.membLerenIoc{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.membLerenIoc a{
+    overflow: hidden;
+    display: block;
+}
+.membLerenIoc img{
+    overflow: hidden;
+    display: block;
+    margin-right: 4px;
+}
+
+.membLerenIoc span{
+    overflow: hidden;
+    display: block;
+    color: #f60;
+}
+.membLeComHuiy{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 28px);
+    padding: 0 14px;
+    height: 46px;
+    background: #FFE7B8;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 16px 0;
+}
+.membLeComHuiy .huiyimg{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.membLeComHuiy .huiyimg a{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    color: #FB9405;
+    padding-left: 5px;
+}
+
+.membLeComChen{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.membLeComChen div{
+    overflow: hidden;
+    position: relative;
+    width: calc(50% - 6px - 24px);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    height: 38px;
+    background: #F4F6F8;
+    cursor: pointer;
+}
+.membLeComChen div a{
+    overflow: hidden;
+    display: block;
+    font-size: 13px;
+    color: #2A2424;
+    padding-left: 5px;
+}
+.membLeCoTitel{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    font-size: 15px;
+    color: #2A2424;
+    padding-top: 15px;
+}
+
+.membLeCoNavs{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    margin-top:15px;
+}
+
+.membLeCoNavs .fbjob{ 
+    padding: 8px 15px;
+    width: calc(55% - 5px - 30px);
+    background:#3d7dfd; color: #fff;
+    border-radius: 4px;height:30px
+}
+.membLeCoNavs .sxjob{
+	padding: 8px 15px;
+	width: calc(45% - 5px - 30px);
+	background:#2eb281; color: #fff;
+	border-radius: 4px;  height:30px
+}
+.membLeCoNavs .fbjob a{
+    overflow: hidden;
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;color: #fff;font-size: 15px;;padding-left: 20px;
+}
+.membLeCoNavs .sxjob a{
+    overflow: hidden;
+    position: relative;   width: 100%;
+    height: 100%;
+    display: block; text-align: center; 
+    display: flex;font-size: 15px;;
+    align-items: center;color: #fff; 
+}
+ 
+.membLeCoNavs div img{
+    display: block;
+    overflow: hidden;
+    width: 20px;
+    height: 20px; margin-right: 10px;;
+}
+
+.membLeCoBanr{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 80px;
+    background: #E1E0E0;
+    margin-top: 12px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.membLeCoBanr img{
+    overflow: hidden;
+    display: block;
+    height: 100%;
+    width: auto;
+}
+
+.membSubLeKrfu{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 24px); 
+    background: #fff;
+    margin-top: 12px;
+    border-radius: 3px;
+    padding: 12px;min-height:410px;
+}
+
+.membLeKfuBand{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;  
+}
+
+.membLeKfusuz{
+    overflow: hidden;
+    position: relative;
+    width: calc(50% - 6px - 24px);
+    padding: 12px;
+}
+.membLeKfuBaIcon{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+}
+.membLeKfuBaIcon img{
+    display: block;
+    width: 38px;
+    height: 38px;
+}
+.membLeKfuBaLink{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+.membLeKfuBaLink a{
+    display: block;
+    font-size: 12px;
+    color: #666;
+    padding-top: 5px;
+}
+.membLeKfuBaGren{
+    background: #E5F6EC;
+}
+.membLeKfuBaGren .membLeKfuBaIcon{
+    color: #15B359;
+}
+
+.membLeKfuBaBlue{
+    background: #E7F0FF;
+}
+.membLeKfuBaBlue .membLeKfuBaIcon{
+    color: #145DFF;
+}
+
+.membLeCoTips{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-top: 15px;
+}
+.membLeCoTips p{
+    overflow: hidden;
+    position: relative;
+    font-size: 14px;
+    color: #0C0D0D;line-height: 25px;
+}
+.membLeCoTips p span{
+    color: #FB9405;
+}
+.membLeCoUser{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+.membLeCoUsData{
+    overflow: hidden;
+    position: relative;
+    width: calc(100% - 70px);
+    display: flex;
+    align-items: center;
+}
+.membLeCoUsImg{
+    overflow: hidden;
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 3px;
+    background: #eee;
+}
+.membLeCoUsTell{
+    overflow: hidden;
+    position: relative;
+    padding-left: 6px;
+}
+
+.membLeCoUsTell span{
+    overflow: hidden;
+    display: block;
+    font-size: 14px;
+    color: #f60;
+    padding: 3px 0;
+}
+.membLeCoUsTell .membLeCoUsTellname{color:#000; font-size: 14px;}
+
+.membLeCoUsButn{
+    overflow: hidden;
+    position: relative;
+    width: 68px;
+}
+.membLeCoUsButn a{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 26px;
+    border-radius: 3px;
+    background: #15B359;
+    color: #fff;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.membLeCofkui{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding-top: 10px;
+}
+.membLeCofkui p{
+    overflow: hidden;
+    position: relative;
+    font-size: 13px;
+    color: #56585A;
+    padding-bottom: 10px;
+}
+.membLeCofkui a{
+    overflow: hidden;
+    position: relative;
+    width: 80px;
+    border: 1px solid #F06314;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #F06314;
+    font-size: 13px;
+}
+
+.con_new_mininav{width:100%;display: flex; text-align: center; padding:0px 0;}
+.con_new_mininav_a{width:100%; margin-top:8px;}
+.con_new_mininav_a a{ display:block; padding-top:30px; position: relative;font-size: 13px;color:#666}
+.con_new_mininav_a img{ position: absolute;left:50%;top:5px; margin-left: -9px;;}
+.com_n_data{width:100%;display: flex; text-align: center;padding:10px 0}
+.com_n_data_a{width:100%;font-size:12px;color:#666}
+.com_n_data_n{font-size:16px;font-weight:bold;padding:5px 0}
+.com_n_data_a a{color:#666}
+.new_vip{width:100%;display: flex;  color:#795128}
+.new_vip_a{width:100%; line-height: 30px; text-align: center;color:#795128}
+.new_vip_a a{color:#f5eccd}
+
+
+.postdivChatrs{
+    overflow: hidden; padding-top:5px;
+    z-index: 22; display: flex; 
+}
+.postdivChatrs span{
+    overflow: hidden;
+    display: block;
+    cursor: pointer;
+    font-size: 12px;
+    border: 1px solid #145DFF;
+    border-radius: 3px;
+    padding: 3px 10px;
+    margin: 6px 0px; text-align: center; background-color: #145DFF;color:#fff; margin-right: 10px;;
+}
+.newfbgw{width:100%; margin-bottom: 12px;;}

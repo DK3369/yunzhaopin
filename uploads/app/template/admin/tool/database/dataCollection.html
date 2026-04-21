@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+<body>
+<div id="dataCollectionApp" class="moduleDome">
+    <div class="setDomeAll setDomeInte">
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+            <el-tab-pane label="采集设置" name="first">
+                <collection_set v-bind:locoy_config="locoyConfig"></collection_set>
+            </el-tab-pane>
+            <el-tab-pane label="新闻设置" name="second">
+                <news_set v-bind:locoy_config="locoyConfig"></news_set>
+            </el-tab-pane>
+            <el-tab-pane label="职位设置" name="third">
+                <job_set v-bind:locoy_config="locoyConfig" v-bind:job_set="jobSet"></job_set>
+            </el-tab-pane>
+            <el-tab-pane label="公司设置" name="fourth">
+                <com_set v-bind:locoy_config="locoyConfig" v-bind:com_set="comSet"></com_set>
+            </el-tab-pane>
+            <el-tab-pane label="个人设置" name="fifth">
+                <user_set v-bind:locoy_config="locoyConfig" v-bind:user_set="userSet"></user_set>
+            </el-tab-pane>
+            <el-tab-pane label="简历设置" name="sixth">
+                <resume_set v-bind:locoy_config="locoyConfig" v-bind:resume_set="resumeSet"></resume_set>
+            </el-tab-pane>
+            <el-tab-pane label="账号设置" name="seventh">
+                <account_set v-bind:locoy_config="locoyConfig" v-bind:account_set="accountSet"></account_set>
+            </el-tab-pane>
+            <el-tab-pane label="兼职设置" name="eighth">
+                <part_set v-bind:locoy_config="locoyConfig" v-bind:part_set="partSet"></part_set>
+            </el-tab-pane>
+        </el-tabs>
+    </div>
+</div>
+<script>
+    const dataCollectionApp = new Vue({
+        el: '#dataCollectionApp',
+        data: function () {
+            return {
+                activeName: 'first',
+                locoyConfig: {},
+                jobSet: 0,
+                comSet: 0,
+                userSet: 0,
+                resumeSet: 0,
+                accountSet: 0,
+                partSet: 0
+            }
+        },
+        components: {
+            'collection_set': httpVueLoader('./component/collectionSet.vue'),
+            'news_set': httpVueLoader('./component/newsSet.vue'),
+            'job_set': httpVueLoader('./component/jobSet.vue'),
+            'com_set': httpVueLoader('./component/comSet.vue'),
+            'user_set': httpVueLoader('./component/userSet.vue'),
+            'resume_set': httpVueLoader('./component/resumeSet.vue'),
+            'account_set': httpVueLoader('./component/accountSet.vue'),
+            'part_set': httpVueLoader('./component/partSet.vue'),
+        },
+        created(){
+            this.getCollectionConfig();
+        },
+        methods: {
+            async getCollectionConfig() {
+                let res = await httpPost('m=tool&c=dataCollection');
+                if (res.data.error == 0) {
+
+                    this.locoyConfig = res.data.data;
+                }
+            },
+            handleClick(tab, event) {
+                let that = this;
+
+                if (tab._props.name == 'third') {
+
+                    that.jobSet++;
+                } else if (tab._props.name == 'fourth') {
+
+                    that.comSet++;
+                } else if (tab._props.name == 'fifth') {
+
+                    that.userSet++;
+                } else if (tab._props.name == 'sixth') {
+
+                    that.resumeSet++;
+                } else if (tab._props.name == 'seventh') {
+
+                    that.accountSet++;
+                } else if (tab._props.name == 'eighth') {
+
+                    that.partSet++;
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

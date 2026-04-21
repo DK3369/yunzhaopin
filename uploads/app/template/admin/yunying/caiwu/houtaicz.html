@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="积分充值" name="first">
+                    <jifencz :pricename="integral_pricename"></jifencz>
+                </el-tab-pane>
+                <el-tab-pane label="企业会员开通套餐" name="second">
+                    <comhytc :ratinglist="rating_list" :ratingid="ratingid"></comhytc>
+                </el-tab-pane> 
+                <el-tab-pane label="企业会员开通增值包" name="three">
+                    <comhyzzb :service-list="service_list"></comhyzzb>
+                </el-tab-pane> 
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        function priceCk(obj){
+            obj.value = obj.value.replace(/[^0-9.]/g,'');// 去除数字和.以外其他字符
+            obj.value = obj.value.replace(/^\./g,'');// 验证第一个字符是数字
+            obj.value = obj.value.replace(/\.{2,}/g,'.');// 只保留第一个.
+            obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');// 只能输入两位小数
+        }``
+        const custoapp = new Vue({
+            el: '#moduapp',
+            data: function () {
+                return {
+                    activeName: 'first',
+                    rating_list:[],
+                    service_list :[],
+                    integral_pricename:'',
+                    integral_priceunit:'',
+                    
+                    uri:"m=yunying&c=",
+                    ratingid:''
+                }
+            },
+            created:function (){
+                this.index();
+            },
+            components: {
+                'jifencz': httpVueLoader('./component/jifencz.vue'),
+                'comhytc': httpVueLoader('./component/comhytc.vue'), 
+                'comhyzzb': httpVueLoader('./component/comhyzzb.vue'), 
+            },
+            methods: {
+                handleClick(tab, event) {
+                    console.log(tab, event);
+                },
+                index:function () {
+                    let _this = this;
+                    let  url= _this.uri+'finance_recharge&a=index';
+                    let sendData = {}
+                    httpPost(url, sendData).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            _this.rating_list = res.data.rating_list;
+                            _this.service_list = res.data.service_list;
+                            _this.integral_pricename = res.data.integral_pricename;
+                            _this.integral_priceunit = res.data.integral_priceunit;
+                            
+                            _this.ratingid = res.data.ratingid
+                            console.log(_this.rating_list);
+                        }
+                    })
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

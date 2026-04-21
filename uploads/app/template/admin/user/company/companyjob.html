@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+    <link rel="stylesheet" href="../../../admin/js/wangeditor/index.css">
+    <script src="../../../admin/js/wangeditor/index.js"></script>
+    <script src="../../../../../js/clipboard/clipboard.min.js"></script>
+    <script src="../../js/base64ToFile.js"></script>
+</head>
+<body>
+<div id="moduapp" class="moduleDome">
+    <div class="setDomeAll setDomeInte" style="height: initial;">
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+            <el-tab-pane label="全职职位" name="joball" :lazy="true">
+                <joball ref="joball" :state="state.joball" :crmindex="fromCrmIndex" :adtime="adtime" :uid="uid" :status="status" :keyword="keyword" :type="type" :scrolltop="true"></joball>
+            </el-tab-pane>
+            <el-tab-pane label="兼职职位" name="partjob" :lazy="true">
+                <partjob ref="partjob" :state="state.partjob"></partjob>
+            </el-tab-pane>
+            <el-tab-pane label="预约刷新职位" name="refresh" :lazy="true">
+                <refresh ref="refresh"></refresh>
+            </el-tab-pane>
+        </el-tabs>
+    </div>
+</div>
+<!-- script -->
+<script>
+    const custoapp = new Vue({
+        el: '#moduapp',
+        data: function () {
+            return {
+                activeName: 'joball',
+                uid: '',
+                state: {
+                    joball: '',
+                    partjob: '',
+                },
+                status: '',
+                fromCrmIndex: '',
+                adtime: '',
+                keyword:'',
+                type:'',
+            }
+        },
+        components: {
+            'joball': httpVueLoader('./component/joball.vue'),
+            'partjob': httpVueLoader('./component/partjob.vue'),
+            'refresh': httpVueLoader('./component/refresh.vue')
+        },
+        created: function () {
+            var that = this
+            let query = window.parent.homeapp.$route.query;
+
+            if (!$.isEmptyObject(query)) {
+                if (query.uid) {
+                    that.uid = query.uid;
+                }
+                if (query.status) {
+                    that.status = query.status;
+                }
+                if (query.fromCrmIndex) {
+                    that.fromCrmIndex = query.fromCrmIndex;
+                }
+                if (query.adtime) {
+                    that.adtime = query.adtime;
+                }
+                if (query.keyword){
+                    that.keyword = query.keyword;
+                }
+                if (query.type){
+                    that.type = query.type;
+                }
+                console.log(query);
+                if (query.tabs) {
+                    that.activeName = query.tabs;
+                }
+                if (query.state) {
+                    that.state[that.activeName] = query.state;
+                }
+            }
+        },
+        methods: {
+            handleClick() {
+
+            }
+        }
+    });
+</script>
+</body>
+</html>

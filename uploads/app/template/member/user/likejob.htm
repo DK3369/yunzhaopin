@@ -1,0 +1,112 @@
+{yun:}include file="$userstyle/header.htm"{/yun}
+<div class="yun_w1200">
+	{yun:}include file="$userstyle/left.htm"{/yun}
+	
+	
+	<div class="yun_m_rightsidebar">
+			<div class="user_new_tit"><span class="user_new_tit_n">职位速配</span><span class="user_new_tit_r">系统根据你创建的简历自动匹配的职位</span></div>
+	    <div class="yun_m_rightbox fltR mt20 re">
+	    
+	   
+	    <div id="gms_showclew"></div>
+	    <form action="index.php" method="get" target="supportiframe" id="myform" class="layui-form">
+	      <input type="hidden" name="c" value="favorite">
+	      <input type="hidden" name="act" value="del">
+	
+		<div class="resume_box_list  ">
+		<div class="user_new_listtit">
+						<div class=" user_new_job">岗位</div>
+					<div class=" user_new_time">薪资</div>
+					<div class=" user_new_zt">基本要求</div>
+					<div class=" user_new_yqh">匹配度</div>
+					<div class=" user_new_cz">操作</div>
+				</div>
+				
+				{yun:}foreach item=v from=$job{/yun}
+				
+				
+				<div class="jobnotice_list">
+								<div class=" user_new_job">
+							<div class=""> <a href="{yun:}url m=job c=comapply id=$v.id{/yun}" target="_blank" class="user_new_jobname">{yun:}$v.name{/yun}</a> 	</div>
+										
+							<div class="user_new_comname" style="padding-top: 10px;">  <a href="{yun:}url m=company c=show id='`$job.com_id`'{/yun}" target="_blank" title="{yun:}$job.com_name{/yun}" class="">{yun:}$v.com_name{/yun} </a> </div>
+							</div>
+				                   
+								<div class="user_new_time"><span class="user_new_xz_n">{yun:}$v.job_salary{/yun}</span>&nbsp;</div>
+				
+								<div class="user_new_zt"><span>{yun:}$v.job_edu{/yun}学历</span><span class="look_myresume_comline">|</span><span>{yun:}$v.job_exp{/yun}经验</span></div>
+				<div class=" user_new_yqh">{yun:}$v.pre{/yun}%</div>
+								<div class=" user_new_cz">
+								 <a href="{yun:}url m=job c=comapply id=$v.id{/yun}" target="_blank" class="user_new_yqh_a ">投递简历</a> 
+				
+						</div>
+							</div>
+				
+				
+				{yun:}foreachelse{/yun}
+				 
+						<div class="msg_no">
+							<p>没有匹配到相似的职位 </p>
+							<p>主动搜索合适的职位</p>
+							<a href="{yun:}url m=job{/yun}" target="_blank" class="msg_no_sq uesr_submit">立即搜索</a>
+						</div>
+					 
+				{yun:}/foreach{/yun} 
+				
+			   
+	 
+			
+			
+		
+	
+	                 
+			</div>
+	             
+	 
+	          </form>
+	  </div>
+	</div>
+	
+	<!--
+	<div class="yun_m_rightbox fltR mt20 re">
+
+		<div class="member_right_index_h1 fltL"> <span class="member_right_h1_span fltL">职位速配</span> <i class="member_right_h1_icon user_bg"></i></div>
+		<div class="resume_Prompt_box">
+			<div class="resume_Prompt"><i class="resume_Prompt_icon"></i>系统根据你创建的简历自动匹配的职位</div>
+		</div>
+
+		<div class="remindbox01 mt20">
+			<div id="gms_showclew"></div>
+			<div class="resumelistbox01 mt10">
+				<div id="" class="resume_box_list">
+					 
+ 
+						{yun:}foreach item=v from=$job{/yun}
+						
+						
+						<div class="jobnotice_list">
+							<div class=""><a href="{yun:}url m=job c=comapply id=$v.id{/yun}" target="_blank" class="ppjobname">{yun:}$v.name{/yun}</a></div>
+							
+							<div class="ppxz">{yun:}$v.job_salary{/yun}</div>
+							<div><span>{yun:}$v.job_edu{/yun}学历</span>	<span>{yun:}$v.job_exp{/yun}经验</span></div>
+							<div>{yun:}if $v.job_sex{/yun}{yun:}$v.job_sex{/yun}{yun:}else{/yun}保密{yun:}/if{/yun}</div>
+							<span>到岗时间：{yun:}$v.job_report{/yun}</span>
+						
+							<div>匹配度：{yun:}$v.pre{/yun}%</div>
+						</div>
+						{yun:}foreachelse{/yun}
+						 
+								<div class="msg_no">
+									<p>没有匹配到相似的职位 </p>
+									<p>主动搜索合适的职位</p>
+									<a href="{yun:}url m=job{/yun}" target="_blank" class="msg_no_sq uesr_submit">立即搜索</a>
+								</div>
+							 
+						{yun:}/foreach{/yun} 
+				</div>
+			</div>
+			<div class="diggg">{yun:}$pagenav{/yun}</div>
+		</div>
+	</div>
+</div>-->
+{yun:}include file="$userstyle/footer.htm"{/yun}

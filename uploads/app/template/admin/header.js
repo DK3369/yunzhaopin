@@ -1,0 +1,11 @@
+document.writeln("<meta charset=\'UTF-8\'>");
+document.writeln("<meta http-equiv=\'X-UA-Compatible\' content=\'IE=edge\'>");
+document.writeln("<meta name=\'viewport\' content=\'width=device-width, initial-scale=1.0\'>");
+document.writeln("<link rel=\'stylesheet\' href=\'../../../admin/js/element.css\'>");
+document.writeln("<script src=\'../../../admin/js/vue.min.js\'></script>");
+document.writeln("<script src=\'../../../admin/js/jquery.min.js\'></script>");
+document.writeln("<script src=\'../../../admin/js/element.js\'></script>");
+document.writeln("<script src=\'../../../admin/js/echarts.min.js\'></script>");
+document.writeln("<link rel=\'stylesheet\' href=\'../../../admin/adstyle/phpyun.css\'>");
+document.writeln("<script src=\'../../../admin/js/axios.min.js\'></script>");
+document.writeln("<script src=\'../../../admin/js/api.js\'></script>");

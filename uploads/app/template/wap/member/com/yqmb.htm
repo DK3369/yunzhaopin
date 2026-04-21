@@ -1,0 +1,193 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<div id="yqmbvue" class="wap_member_box none">
+    <div v-if="total>0">
+        <div class="invite_bm" v-for="(item ,mbkey) in list" :key="mbkey">
+			
+			<div class="">
+			    <div class="Invited_title">
+			        <div class="Invited_title_name">{{item.name}}</div>
+			        <div class="Invited_title_state"><span class="" v-if="item.status==1">已审核</span>
+                    <span class="" v-else-if="item.status==2">未通过</span>
+                    <span v-else>未审核</span></div>
+			    </div>
+			    <div class="Invited_line">
+			        <div class="Invited_line_q">
+			            <div class="line_q_left">面试时间</div>
+			            <div class="line_q_right">{{item.intertime}}</div>
+			        </div>
+			        <div class="Invited_line_icon"></div>
+			    </div>
+			   
+			    <div class="Invited_line">
+			        <div class="Invited_line_q">
+			            <div class="line_q_left">联系人</div>
+			            <div class="line_q_right">{{item.linkman}}</div>
+			        </div>
+			        <div class="Invited_line_icon"></div>
+			    </div>
+			    <div class="Invited_line">
+			        <div class="Invited_line_q">
+			            <div class="line_q_left">联系方式</div>
+			            <div class="line_q_right">{{item.linktel}}</div>
+			        </div>
+			        <div class="Invited_line_icon"></div>
+			    </div>
+			    <div class="Invited_line">
+			        <div class="Invited_line_q">
+			            <div class="line_q_left">面试地址</div>
+			            <div class="line_q_right">{{item.address}}</div>
+			        </div>
+			      
+			    </div>
+			    <div class="Invited_line">
+			        <div class="Invited_line_q">
+			            <div class="line_q_left">备注信息</div>
+			            <div class="line_q_remark">{{item.content}}</div>
+			        </div>
+			        <div class="Invited_line_icon"></div>
+			    </div>
+				<div class="Invited_line" v-if="item.status==2">
+				    <div class="Invited_line_q" v-if="item.statusbody!=''">   <div class="line_q_left">审核原因</div>
+			            <div class="line_q_remark">
+				        {{item.statusbody}}</div>
+				    </div>
+				    <div  v-else class="Invited_line_q"> <div class="line_q_left">审核原因</div>
+			            <div class="line_q_remark">审核原因</div> 暂无说明、请联系管理员</div>
+				</div>
+			    <div class="interview_card_bom">
+			       <div class="card_bom_icon">
+			           <span @click="toPage('index.php?c=yqmbedit&yid='+item.id)"><img src="{yun:}$wap_style{/yun}/images/Apply_compile.png" alt=""></span>
+			       </div>
+			       <div class="card_bom_icon">
+			           <span @click="delMb(item.id, mbkey)"> <img src="{yun:}$wap_style{/yun}/images/resume_del.png" alt=""></span>
+			       </div>
+			    </div>
+			
+			
+       
+
+  
+
+
+
+        </div>
+        <div v-if="pageTotal > 1">
+            <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange"/>
+        </div>
+    </div>
+	</div>
+    <div v-else>
+        <van-empty image="search" description="暂无面试模板"/>
+        <div class="none_position_body_btn" @click="addYqmb">立即添加</div>
+        </van-empty>
+    </div>
+</div>
+
+<script src="{yun:}$wap_style{/yun}/js/jsMath.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script>
+    var yqmbVue = new Vue({
+        el: '#yqmbvue',
+        data: {
+            list: [],
+            page: 1,
+            limit: 10,
+            total: 0,
+            pageTotal: 0,
+
+            islook: false,
+
+            isFromSearch: true,
+            searchLoading: true,
+            searchLoadingComplete: false,
+
+            maxnum: 0,
+        },
+        computed: {
+            count() {
+
+            }
+        },
+        created() {
+            this.getYqmb();
+        },
+        methods: {
+            getYqmb: function (type) {
+
+                var that = this;
+
+                if (type && type == 'refresh') {
+                    $("#yqmbvue").css('display', 'none');
+                    that.page = 1;
+                    that.list = [];
+                }
+
+                showLoading('加载中');
+
+                var paramer = {
+                    page: that.page,
+                    limit: that.limit
+                };
+                $.post('{yun:}url d=wxapp h=com m=set c=yqmb{/yun}', paramer, function (data) {
+                    hideLoading();
+                    if (data) {
+
+                        let res = data.data;
+
+                        that.pageTotal = Math.ceil(res.total / that.limit);
+
+                        if (res.list.length > 0) {
+                            that.list = that.isFromSearch ? res.list : that.list.concat(res.list);
+                            that.searchLoadingComplete = false;
+                        } else {
+                            that.searchLoadingComplete = true;
+                        }
+
+                        that.total = parseInt(res.mbnum);
+                        that.searchLoading = false;
+                        that.maxnum = res.maxnum;
+                        $("#yqmbvue").css('display', 'block');
+                    }
+
+                }, 'json');
+            },
+            pageChange: function (page) {
+                this.page = page;
+                this.getYqmb('');
+            },
+            toPage: function (url) {
+                window.location.href = url;
+            },
+            delMb: function (id, key) {
+
+                var that = this;
+                showLoading('删除中');
+                var paramer = {
+                    id: id
+                };
+                $.post('{yun:}url d=wxapp h=com m=set c=delYqmb{/yun}', paramer, function (data) {
+                    hideLoading();
+                    if (data.error == 1) {
+                        showToast('删除成功');
+                        that.list.splice(key, 1);
+                        that.total = accSub(that.total, 1);
+                    }
+                }, 'json');
+            },
+            addYqmb:function () {
+                var that = this;
+
+				if (parseInt(that.total) >= parseInt(that.maxnum)){
+                    return showModal('最多只能添加'+that.maxnum+'个模板');
+                }else{
+                    that.toPage('index.php?c=yqmbedit');
+                }
+            }
+        }
+    });
+
+    function addYqmb() {
+        yqmbVue.addYqmb();
+    }
+</script>
+</body>
+</html>

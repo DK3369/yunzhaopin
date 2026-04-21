@@ -1,0 +1,922 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+<div id="yunvue" class="none">
+	<div class="personal_details_min_body">
+		<form id="resumeson_form">
+
+			<div class="yun_createbox" v-if="type=='work'">
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">*</span>公司名称</div>
+					<div class="yun_create_text">
+						<input type="text" name="name" v-model="info.name" placeholder="请填写公司名称">
+					</div>
+				</div>
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>担任职位</div>
+					<div class="yun_create_text">
+						<input type="text" name="title" v-model="info.title" placeholder="请填写担任职位">
+					</div>
+				</div>
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>工作内容</div>
+					<div class="yun_create_select job_resume_right_two" @click="openContent" v-if="content">{{content}}
+					</div>
+					
+					<div class="yun_create_select job_resume_right_two" @click="openContent" style="color:#cecccc;"
+						v-else>请填写工作内容</div>
+
+					<div class="yun_create_fx">
+						<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+					</div>
+				</div>
+
+				<div class="yun_time_box">
+					<div class="yun_time_all">
+						<div>
+
+							<div class="yun_time_name"><span class="m_bt">*</span>入职时间</div>
+	               <div class="yun_b_xz"  @click="timeShow('workList', 'sdate')" v-if="sdate">{{sdate}}</div>
+					<div class="yun_b_xz" @click="timeShow('workList', 'sdate')"  style="color:#cecccc;" v-else>请选择</div>
+
+
+
+						</div>
+						<div class="yun_b_z">至</div>
+
+						<div>
+							<div class="yun_time_name"><span class="m_bt">*</span>离职时间</div>
+
+								<div class="yun_b_xz"  @click="timeShow('workList', 'edate')" v-if="nowday">至今</div>
+								<div class="yun_b_xz" @click="timeShow('workList', 'edate')" v-else-if="edate">{{edate}}</div>
+							 <div class="yun_b_xz" @click="timeShow('workList', 'edate')"  style="color:#cecccc;" v-else>请选择</div>
+								
+						</div>
+
+					</div>
+				</div>
+			</div>
+			<div class="yun_createbox" v-if="type=='edu'">
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span><span class="m_bt">*</span>学校名称</div>
+					<div class="yun_create_text">
+						<input type="text" name="name" v-model="info.name" placeholder="请填写学校名称">
+					</div>
+				</div>
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>专业名称</div>
+					<div class="yun_create_text">
+						<input type="text" name="specialty" v-model="info.specialty" placeholder="请填写专业">
+					</div>
+				</div>
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">*</span>最高学历</div>
+					<div class="yun_create_select" @click="eduPickerShow" v-if="eduText">{{eduText}}</div>
+					<div class="yun_create_select" @click="eduPickerShow" style="color:#cecccc;" v-else>请选择学历</div>
+                   <div class="yun_create_fx" @click="eduPickerShow">
+						<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+					</div>
+
+
+				</div>
+				<div class="yun_time_box">
+					<div class="yun_time_all">
+						<div>
+							<div class="yun_time_name"><span class="m_bt">*</span>入学时间</div>
+							 <div class="yun_b_xz"  @click="timeShow('eduList', 'sdate')" v-if="sdate">{{sdate}}</div>
+							<div class="yun_b_xz" @click="timeShow('eduList', 'sdate')"  style="color:#cecccc;" v-else>请选择</div>
+							
+						</div>
+						<div class="yun_b_z">至</div>
+						<div>
+							<div class="yun_time_name"><span class="m_bt">*</span>毕业时间</div>
+							<div class="yun_b_xz"  @click="timeShow('eduList', 'edate')" v-if="edate">{{edate}}</div>
+							<div class="yun_b_xz" @click="timeShow('eduList', 'edate')"  style="color:#cecccc;" v-else>请选择</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="yun_createbox" v-if="type=='project'">
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">*</span>项目名称</div>
+					<div class="yun_create_text">
+						<input type="text" name="name" v-model="info.name" placeholder="请填写项目名称">
+					</div>
+				</div>
+				<div class="yun_createlist">
+					<div class="yun_create_name">担任职位</div>
+					<div class="yun_create_text">
+						<input type="text" name="title" v-model="info.title" placeholder="请填写担任职位">
+					</div>
+				</div>
+				<div class="yun_createlist">
+					<div class="yun_create_name">项目内容</div>
+					
+					<div class="yun_create_select job_resume_right_two" @click="openContent" v-if="content">{{content}}
+					</div>
+					
+					<div class="yun_create_select job_resume_right_two" @click="openContent" style="color:#cecccc;"
+						v-else>请填写项目内容</div>
+					
+					
+					
+					<div class="yun_create_fx">
+						<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+					</div>
+				</div>
+
+
+
+				<div class="yun_time_box">
+					<div class="yun_time_all">
+						<div>
+							<div class="yun_time_name"><span class="m_bt">*</span>开始时间</div>
+							
+	                         <div class="yun_b_xz"  @click="timeShow('projectList', 'sdate')" v-if="sdate">{{sdate}}</div>
+							<div class="yun_b_xz" @click="timeShow('projectList', 'sdate')"  style="color:#cecccc;" v-else>请选择</div>
+						</div>
+						<div class="yun_b_z">至</div>
+						<div>
+							<div class="yun_time_name"><span class="m_bt">*</span>结束时间</div>
+						<div class="yun_b_xz"  @click="timeShow('projectList', 'edate')" v-if="edate">{{edate}}</div>
+						<div class="yun_b_xz" @click="timeShow('projectList', 'edate')"  style="color:#cecccc;" v-else>请选择</div>
+						
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="yun_createbox" v-if="type=='training'">
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">*</span>培训机构</div>
+					<div class="yun_create_text">
+						<input type="text" name="name" v-model="info.name" placeholder="请填写培训机构">
+					</div>
+				</div>
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>培训方向</div>
+					<div class="yun_create_text">
+						<input type="text" name="title" v-model="info.title" placeholder="请填写培训方向">
+					</div>
+				</div>
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>培训描述</div>
+					<div class="yun_create_select job_resume_right_two" @click="openContent" v-if="content">{{content}}
+					</div>
+					
+					<div class="yun_create_select job_resume_right_two" @click="openContent" style="color:#cecccc;"
+						v-else>请填写大概描述培训内容</div>
+						
+					<div class="yun_create_fx">
+						<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+					</div>
+				</div>
+
+
+
+				<div class="yun_time_box">
+					<div class="yun_time_all">
+						<div>
+							<div class="yun_time_name"><span class="m_bt">*</span>开始时间</div>
+						
+							<div class="yun_b_xz"  @click="timeShow('trainList', 'sdate')" v-if="sdate">{{sdate}}</div>
+							<div class="yun_b_xz" @click="timeShow('trainList', 'sdate')"  style="color:#cecccc;" v-else>请选择</div>
+						</div>
+						<div class="yun_b_z">至</div>
+						<div>
+							<div class="yun_time_name"><span class="m_bt">*</span>结束时间</div>
+							<div class="yun_b_xz"  @click="timeShow('trainList', 'edate')" v-if="edate">{{edate}}</div>
+							<div class="yun_b_xz" @click="timeShow('trainList', 'edate')"  style="color:#cecccc;" v-else>请选择</div>
+							
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="yun_createbox" v-if="type=='skill'">
+				<div class="yun_createlist">
+					<div class="yun_create_name">技能名称</div>
+					<div class="yun_create_text">
+						<input type="text" name="name" v-model="info.name" placeholder="请填写技能名称">
+					</div>
+				</div>
+				<div class="yun_createlist">
+					<div class="yun_create_name">掌握时间</div>
+					<div class="yun_create_text">
+						<input type="number" name="longtime" v-model="info.longtime" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请填写使用时长, 单位“年”">
+					</div>
+				</div>
+				<div class="yun_createlist">
+					<div class="yun_create_name">熟练程度</div>
+					
+					<div class="yun_create_select" @click="ingPickerShow" v-if="ingText">{{ingText}}</div>
+					<div class="yun_create_select" @click="ingPickerShow" style="color:#cecccc;" v-else>请选择熟练程度</div>
+					
+					
+					<div class="yun_create_fx" @click="ingPickerShow">
+
+						<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+					</div>
+				</div>
+<div class="job_resume_jn">
+				<div class="job_resume_jn_name">技能证书	</div>
+					<div class="job_resume_jn_tip">上传展示自身优势的证书</div>
+			
+				<div class="uploading_photo_box">
+					<img id="previewimg" :src="info.pic" border="0"
+						onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_skill{/yun}',2);">
+					<input type="file" name="pic" onchange="previewImage(this,'preview')" accept="image/*"
+						class="uploading_photo_file ">
+					<input type='hidden' name='preview' value='' id='preview'>
+
+				</div>	</div>
+			</div>
+			<div class="yun_createbox" v-if="type=='other'">
+				<div class="yun_createlist">
+					<div class="yun_create_name">标题</div>
+					<div class="yun_create_text">
+						<input type="text" name="name" v-model="info.name" placeholder="请填写标题">
+					</div>
+				</div>
+				<div class="yun_createlist yun_createlistend">
+					<div class="yun_create_name">内容</div>
+					<div class="yun_create_select job_resume_right_two" @click="openContent">{{content}}</div>
+					<div class="yun_create_fx">
+						<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+					</div>
+				</div>
+			</div>
+			<!--作品-->
+			<div class="personal_details_card" v-if="type=='show'">
+				<div v-if="type=='skill' || type=='show'" class="job_resume_tip" style="padding-bottom: 0.266666rem;">
+					为了您的个人信息安全，请不要公开您的电话号码、身份证号、证件号等个人证件信息；建议上传清晰自然生活照，或者您的专业代表作品。
+				</div>
+				<div>
+					<van-uploader v-model="showList" :before-delete="beforedel" :after-read="afterRead"
+						:before-read="beforeRead" :max-size="5242880" />
+				</div>
+			</div>
+			<!--自我评价-->
+			<div class="yun_my_introduce_box" v-if="type=='desc'">
+
+				<div class="yun_info_fl_c">
+
+
+					<div class="yun_info_textarea"> <textarea name="description" v-model="description" class="yun_wap_addresume_texttextAreaMsg"
+							placeholder="对自己做一个简短的评价，让用人单位快速了解你，请不要填写手机号，QQ,微信等联系方式">{{description}}</textarea></div>
+					<div class="zwpj_other" @click="intcontent=true" v-if="introduce_demo_show"><i
+							class="zwpj_other_icon"></i>看看别人怎么写</div>
+
+					<div class="">
+						<div class="yun_my_introduce_sl_box" v-if="intcontent">
+							<div class="yun_my_introduce_tb">自我介绍样本 <span @click="nextintroduce(introduce.id)"
+									class="yun_my_introduce_tb_h">换一个</span></div>
+							<div>{{introduce.content}}</div>
+
+						</div>
+						<div class="yun_my_introduce_tit"> 职业优势 <span class="yun_my_introduce_tit_s">(最多可选择5项)</span>
+						</div>
+						<div id="newtag"></div>
+						<span v-for="(item, tkey) in tag" :key="item" @click="tagchoose(item)"
+							class="yun_my_introduce_bq yun_my_introduce_bq_cur" tag-class="2">{{ item }}</span>
+						<span v-for="(items, ukey) in usertag" :key="ukey" @click="tagchoose(items)"
+							class="yun_my_introduce_bq " tag-class="1">{{ items }}</span>
+						<div class="yun_info_fl_zdy_tip"> 您也可以自定义优势</div>
+						<div class="yun_info_fl_zdy"><input type="text" name="addtag" :value="addtag"
+								@input="bindaddtagInput" tabindex="1000" placeholder="请输入标签名称">
+							<div class="yun_info_fl_zdy_tj" @click="bindaddtagChang">添加</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="Save_button" @click="submitClick" v-if="type !='show'">保存</div>
+			<div class="Save_button" @click="showSave" v-else>{{btext}}</div>
+		</form>
+	</div>
+	<!--描述-->
+	<van-popup v-model="contentBox" position="right" :style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
+		<!-- 页面头部 -->
+		<div class="workplace_header">
+			<div class="workplace_header_left" @click="contentSubmit">
+				<img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
+			</div>
+			<div class="workplace_header_center">{{contentTitle}}</div>
+			<div class="workplace_header_right"></div>
+		</div>
+		<div class="description_box">
+			<div class="yun_create_bjusertip">不能填写电话，QQ，微信等联系方式及特殊符号，性别歧视等内容  </div>
+			<div class="resume_ms_textarea"><textarea v-model="content" placeholder="请输入内容"
+					style="width: 100%;height: 300px;border: none; padding: .133333rem; outline: none;"></textarea>
+			</div>
+			<div class="Create_resume_btn" @click="contentSubmit">确认</div>
+		</div>
+	</van-popup>
+	<!--开始、结束时间选择器-->
+	<van-popup v-model="timeBox" round position="bottom">
+		<van-picker show-toolbar :columns="timeData" @cancel="timeBox = false" @confirm="timeConfirm"
+			@change="timeChange" />
+	</van-popup>
+
+	<van-popup v-model="eduShow" round position="bottom">
+		<van-picker show-toolbar :columns="edu" :default-index="eduIndex" @cancel="eduShow = false"
+			@confirm="eduConfirm" />
+	</van-popup>
+	<van-popup v-model="ingShow" round position="bottom">
+		<van-picker title="熟练程度" show-toolbar :columns="ing" :default-index="ingIndex" @cancel="ingShow = false"
+			@confirm="ingConfirm" />
+	</van-popup>
+</div>
+{yun:}if $smarty.get.type == 'skill'{/yun}
+<script src="{yun:}$wap_style{/yun}/js/compress.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$wap_style{/yun}/js/exif.js?v={yun:}$config.cachecode{/yun}"></script>
+{yun:}elseif $smarty.get.type == 'show'{/yun}
+<script src="{yun:}$wap_style{/yun}/js/compressor.min.js?v={yun:}$config.cachecode{/yun}"></script>
+{yun:}/if{/yun}
+<script type="text/javascript">
+	var eid = '{yun:}$smarty.get.eid{/yun}';
+	var id = '{yun:}$smarty.get.id{/yun}';
+	var type = '{yun:}$smarty.get.type{/yun}';
+	type = type ? type : '';
+	var timestamp = new Date();
+	var pickerType = '';
+	var pickerTime = '';
+	var uploadArr = [];
+	var uploadErr = false;
+	var yunvue = new Vue({
+		el: '#yunvue',
+		data() {
+			return {
+				eid: eid,
+				id: id,
+				info: {},
+				sdate: '',
+				edate: '',
+				type: type,
+				eduShow: false,
+				eduIndex: 0,
+				edu: [],
+				eduText: '',
+				nowday: false,
+				ing: [],
+				ingIndex: 0,
+				ingShow: false,
+				ingText: '',
+				pic: '',
+
+				formData: null,
+				disabledAfter: false,
+				hitherto: false,
+				defaultStr: '',
+				showDel: [],
+				showAdd: [],
+				showList: [],
+				showViewNum: [],
+				btext: '保存',
+				contentBox: false,
+				content: '',
+				contentTitle: '',
+				tagshow: {},
+				tagall: [],
+				addtag: '',
+				tag: [],
+				usertag: [],
+				description: '',
+				introduce_demo_show: false,
+				introduce: {},
+				intcontent: false,
+				timeData: [],
+				timeBox: false
+			};
+		},
+		created() {
+			this.infoShow();
+		},
+		methods: {
+			nextintroduce: function(id) {
+				var that = this;
+				var formData = {
+					introduceid: id
+				};
+				$.post('{yun:}url d=wxapp h=user m=resume c=getIntroduceInfo{/yun}', formData, function(data) {
+					hideLoading();
+					if (data.error == 1) {
+						that.introduce = data.data;
+					}
+				});
+			},
+			bindaddtagInput: function(e) {
+				let that = this;
+				this.addtag = e.target.value;
+			},
+			bindaddtagChang: function() {
+				var that = this;
+				var newtag = $.trim(that.addtag);
+				var tag = that.tag;
+
+				if (tag.length > 4) {
+					return showToast('最多只能选择5个');
+				} else {
+					if (newtag.length < 2 || newtag.length > 8 || newtag == '') {
+						return showToast('请输入2-8个标签字符');
+					} else {
+						if (tag.indexOf(newtag) > -1) {
+							return showToast('标签已存在');
+						} else {
+							tag.push(newtag);
+						}
+					}
+				}
+
+				that.tag = tag;
+				that.addtag = '';
+			},
+			tagchoose: function(num) {
+				var that = this;
+				var num = num;
+				var tag = that.tag;
+				var usertag = that.usertag;
+				if (tag.indexOf(num) == -1) {
+					if (tag.length > 4) {
+						return showToast('最多只能选择5个');
+					}
+					tag.push(num);
+					for (var i = 0; i < usertag.length; i++) {
+						if (usertag[i] == num) {
+							usertag.splice(i, 1);
+						}
+					}
+				} else {
+					for (var i = 0; i < tag.length; i++) {
+						if (tag[i] == num) {
+							tag.splice(i, 1);
+						}
+					}
+
+					usertag.push(num);
+				}
+
+				that.tag = tag;
+				that.usertag = usertag;
+			},
+			eduConfirm: function(e) {
+				this.eduIndex = e.value;
+				this.eduText = e.text;
+				this.eduShow = false;
+			},
+			ingConfirm: function(e) {
+
+				this.ingText = e.text;
+				this.ingIndex = e.value;
+				this.ingShow = false;
+			},
+			eduPickerShow: function() {
+				eduPicker(this.info.education);
+			},
+			ingPickerShow: function() {
+
+				ingPicker(this.info.ing);
+			},
+			beginDateConfirm: function(e) {
+				this.sdate = this.timeFormat(this.staCurrentDate);
+				this.beginDateShow = false;
+			},
+			endDateConfirm: function() {
+				this.edate = this.timeFormat(this.endCurrentDate);
+				this.endDateShow = false;
+			},
+			timeFormat: function(time) {
+				let year = time.getFullYear();
+				let month = time.getMonth() + 1;
+				if (month < 10) {
+					return year + '-0' + month;
+				} else {
+					return year + '-' + month;
+				}
+
+			},
+			infoShow: function() {
+				var self = this;
+				if (self.id > 0 || (self.type == 'show') || (self.type == 'desc')) {
+					let param = {
+						id: self.id,
+						eid: self.eid,
+						table: self.type
+					};
+					showLoading();
+					$.post('{yun:}url d=wxapp h=user m=resume c=addresumeson{/yun}', param, function(data) {
+						hideLoading();
+						if (data) {
+
+							let res = data.data.list;
+							self.info = res;
+							self.content = res.content ? res.content : '';
+							if (self.type == 'work') {
+								if (res.edate == 0 && res.id) {
+									self.nowday = true;
+								}
+							}
+							if (self.type == 'edu') {
+								self.staMaxDate = new Date();
+								self.eduIndex = res.education;
+								self.eduText = res.education_n;
+							}
+							if (self.type == 'skill') {
+								self.ingText = res.ing_n;
+								self.ingIndex = res.ing;
+							}
+							if (res.edate && res.edate != 0) {
+								self.edate = res.edate_n;
+								self.endCurrentDate = new Date(res.edate_n);
+							}
+							if (res.sdate_n) {
+								self.sdate = res.sdate_n;
+								self.staCurrentDate = new Date(res.sdate_n);
+							}
+							if (self.type == 'show') {
+
+								if (res && res.length > 0) {
+									let showViewNum = []
+									for (let i = 0; i < res.length; i++) {
+										let temp = {
+											'url': res[i].picurl,
+											'id': res[i].id
+										};
+										self.showList.push(temp);
+									}
+								}
+							}
+							if (self.type == 'desc') {
+								let list = data.data.list;
+								self.description = list.description;
+								self.tag = list.tag;
+								self.usertag = list.usertag;
+								self.introduce = data.data.info ? data.data.info : {};
+								self.introduce_demo_show = Object.keys(self.introduce).length > 0 ?
+									true : false;
+							}
+						}
+						$("#yunvue").css('display', 'block');
+					}, 'json');
+				} else {
+					if (self.type == 'edu') {
+						self.staMaxDate = new Date();
+					}
+					$("#yunvue").css('display', 'block');
+				}
+				let a = document.createElement('script');
+				a.src = "{yun:}$plusstyle{/yun}/user.cache.js?v={yun:}$config.cachecode{/yun}";
+				document.body.appendChild(a);
+
+				let b = document.createElement('script');
+				b.src = "{yun:}$wap_style{/yun}/js/userPicker.js?v={yun:}$config.cachecode{/yun}";
+				document.body.appendChild(b);
+			},
+			contentSubmit: function() {
+				this.contentBox = false;
+			},
+			openContent: function() {
+				if (this.type == 'work') {
+					this.contentTitle = "工作内容描述";
+				} else if (this.type == 'project') {
+					this.contentTitle = "项目内容描述";
+				} else if (this.type == 'training') {
+					this.contentTitle = "培训内容描述";
+				} else if (this.type == 'skill') {
+					this.contentTitle = "工作经历描述";
+				} else if (this.type == 'project') {
+					this.contentTitle = "工作经历描述";
+				}
+				this.contentBox = true;
+			},
+			beforeRead(file) {
+				return new Promise((resolve) => {
+					// compressorjs 默认开启 checkOrientation 选项
+					// 会将图片修正为正确方向
+					// 图片压缩
+					new Compressor(file, {
+						quality: 0.6,
+						success: resolve,
+						error(err) {}
+					});
+				});
+			},
+			afterRead(file, detail) {
+				//保存添加图片的上传信息
+				//拼接个对象进去
+
+				let obj = {
+					error: true,
+					url: file.content,
+					index: detail.index
+				};
+				this.showAdd.push(obj);
+
+			},
+			beforedel(file, detail) {
+				var self = this;
+				var noupload = true;
+				self.showAdd.forEach(function(val, index) {
+					if (val.index == detail.index) {
+						// 删除的是本次选择的，不是已经上传的
+						noupload = false;
+						self.showAdd.splice(index, 1);
+					}
+				});
+				if (noupload) {
+					// 删除已经上传的，需要记录
+					self.showDel.push(file);
+				}
+				return true;
+			},
+			showSave: function() {
+				let that = this;
+				let showAdd = that.showAdd;
+				let showDel = that.showDel;
+				let saveErr = false;
+				if (showAdd.length > 0) {
+					uploadArr = showAdd;
+					showLoading('上传中...');
+					that.uploadAjax();
+					return false;
+				}
+				if (showDel.length > 0) {
+					var formData = {};
+					formData.eid = that.eid;
+					formData.table = 'show';
+					let delIds = '';
+					for (let i = 0; i < showDel.length; i++) {
+						if (showDel[i].id) {
+							delIds += delIds ? ',' + showDel[i].id : showDel[i].id;
+						}
+					}
+					formData.id = delIds;
+					showLoading('删除中...');
+					$.post('{yun:}url d=wxapp h=user m=resume c=delResumeFb{/yun}', formData, function(data) {
+						hideLoading();
+						if (data.error != 1) {
+							that.btext = "重新上传";
+							showToast('保存失败');
+						} else {
+							window.localStorage.setItem("needRefresh", 1);
+							showToast("保存成功", 2, function() {
+								history.back();
+							});
+						}
+					});
+					return false;
+				}
+				if (showAdd.length == 0 && showDel.length == 0) {
+					showToast('请先选择要上传的图片');
+				}
+			},
+			uploadAjax(key = 0) {
+				var that = this;
+				if (key < uploadArr.length) {
+					var formData = {
+						eid: this.eid,
+						wappic: 1,
+						uimage: uploadArr[key].url
+					};
+					$.post("{yun:}url d=wxapp h=user m=resume c=showSave{/yun}", formData, function(data) {
+						if (data.error == 1) {
+							uploadArr[key].error = false;
+
+						} else {
+							uploadArr[key].error = true;
+							uploadErr = true;
+						}
+						key++
+						that.uploadAjax(key);
+					})
+				} else {
+					this.showAdd = [];
+					if (this.showDel.length > 0) {
+						// 有需要删除的图片，再处理删除
+						this.showSave();
+					} else {
+						if (uploadErr) {
+							this.btext = "重新上传";
+							showToast('保存失败');
+						} else {
+							// 上传完毕
+							window.localStorage.setItem("needRefresh", 1);
+							showToast("保存成功", 2, function() {
+								history.back();
+							});
+						}
+					}
+				}
+			},
+			submitClick() {
+				throttle(this.formSubmit);
+			},
+			formSubmit: function() {
+				var table = this.type;
+				var st = Date.parse(this.sdate) / 1000;
+				var ed = Date.parse(this.edate) / 1000;
+				var formData = {};
+				formData.eid = this.eid;
+				formData.table = table;
+				var field = getFormValue('resumeson_form');
+				if (table == 'work') {
+					var nowday = this.nowday;
+
+					if (field.name == '') {
+						return showToast('请填写单位名称');
+					} else if (this.sdate == "") {
+						return showToast('请填写入职时间');
+
+					} else if (this.edate == "" && !nowday) {
+						return showToast('请填写离职时间');
+
+					} else if (!nowday && this.sdate && this.edate && st > ed) {
+						return showToast('请确认日期先后顺序');
+
+					} else {
+
+						formData.name = field.name;
+						formData.sdate = this.sdate;
+						formData.edate = this.edate;
+						formData.totoday = nowday ? 1 : 0;
+						formData.title = field.title;
+						formData.content = this.content;
+					}
+				}
+				if (table == 'edu') {
+					if (field.name == '') {
+						return showToast('请填写学校名称');
+					} else if (this.eduIndex == 0) {
+						return showToast('请选择学历');
+					} else if (this.sdate == "") {
+						return showToast('请选择入学时间');
+					} else if (this.edate == "") {
+						return showToast('请选择毕业时间');
+					} else if (st > ed) {
+						return showToast('请确认日期先后顺序');
+					} else {
+						formData.name = field.name;
+						formData.sdate = this.sdate;
+						formData.edate = this.edate;
+						formData.specialty = field.specialty;
+						formData.education = this.eduIndex;
+					}
+				}
+				if (table == 'project') {
+					if (field.name == '') {
+						return showToast('请填写项目名称');
+					} else if (this.sdate == "") {
+						return showToast('请填写开始时间');
+					} else if (this.edate == "") {
+						return showToast('请填写结束时间');
+					} else if (st > ed) {
+						return showToast('请确认日期先后顺序');
+					} else {
+
+						formData.name = field.name;
+						formData.sdate = this.sdate;
+						formData.edate = this.edate;
+						formData.title = field.title;
+						formData.content = this.content;
+					}
+				}
+				if (table == 'training') {
+					if (field.name == '') {
+						return showToast('请填写培训机构');
+
+					} else if (this.sdate == "") {
+						return showToast('请填写开始时间');
+
+					} else if (this.edate == "") {
+						return showToast('请填写结束时间');
+
+					} else if (st > ed) {
+						return showToast('请确认日期先后顺序');
+
+					} else {
+
+						formData.name = field.name;
+						formData.sdate = this.sdate;
+						formData.edate = this.edate;
+						formData.title = field.title;
+						formData.content = this.content;
+					}
+				}
+				if (table == 'skill') {
+					if (field.name == '') {
+						return showToast('请填写技能名称');
+					} else if (this.ingIndex == 0) {
+						return showToast('请选择熟练程度');
+					} else {
+						formData.name = field.name;
+						formData.ing = this.ingIndex;
+						formData.longtime = field.longtime;
+						formData.wappic = 1;
+					}
+				}
+				if (table == 'other') {
+					if (field.name == '') {
+						return showToast('请填写标题');
+
+					} else if (this.content == '') {
+						return showToast('请填写内容描述');
+
+					} else {
+						formData.name = field.name;
+						formData.content = this.content;
+
+					}
+				}
+				if (table == 'desc') {
+					if (field.description == '') {
+						return showToast('请填写评价内容');
+					} else {
+						var tag = this.tag.join(',');
+						formData.table = 'resume';
+						formData.tag = tag;
+						formData.description = field.description;
+					}
+
+				}
+
+
+				if (this.id > 0) {
+					formData.id = this.id;
+				}
+
+				showLoading('保存中...');
+				if (field.preview) {
+					formData.preview = field.preview;
+					$.ajax({
+						type: "POST",
+						url: "{yun:}url d=wxapp h=user m=resume c=saveresumeson{/yun}",
+						data: formData,
+						enctype: 'multipart/form-data',
+						success: function(data) {
+							hideLoading();
+							if (data.error == 1) {
+								window.localStorage.setItem("needRefresh", 1);
+								showToast(data.msg, 2, function() {
+									history.back();
+								});
+							} else {
+								showToast(data.msg);
+							}
+						},
+
+					});
+				} else {
+					$.post('{yun:}url d=wxapp h=user m=resume c=saveresumeson{/yun}', formData, function(
+					data) {
+						hideLoading();
+						if (data.error == 1) {
+							window.localStorage.setItem("needRefresh", 1);
+							showToast(data.msg, 2, function() {
+								history.back();
+							});
+						} else {
+							showToast(data.msg);
+						}
+					});
+				}
+			},
+			// 时间picker显示
+			timeShow(type, time) {
+				pickerType = type;
+				pickerTime = time;
+				this.timeData = timePicker(type, time, this[time]);
+				let self = this;
+				setTimeout(function() {
+					self.timeBox = true;
+				})
+			},
+			// 时间picker滚动
+			timeChange: function(e) {
+				var f = e.getValues();
+				if (f[0] == '至今') {
+					this.timeData[1].values = [];
+				} else {
+					this.timeData[1].values = workMonth;
+				}
+			},
+			// 时间picker确认
+			timeConfirm: function(e) {
+				this.timeBox = false;
+				if (e[0] == '至今') {
+					var date = e[0];
+					this.nowday = 1;
+				} else {
+					var date = e.join('-');
+					if (pickerType == 'workList' && pickerTime == 'edate') {
+						this.nowday = 0;
+					}
+				}
+				this[pickerTime] = date;
+				this.timeData = [];
+			}
+		}
+	});
+
+	function fileimg() {
+		document.getElementById("image").click();
+	}
+</script>
+{yun:}include file="$wapstyle/member/public/remind.htm"{/yun}
+</body>
+</html>

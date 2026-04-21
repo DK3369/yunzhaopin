@@ -1,0 +1,191 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+<div id="yunvue" class="none">
+    <div class="m_tab ">
+          <div class="m_tabbox category">
+		<ul>
+            <li :class="type == 'look' ? 'm_tabactive' : ''" @click="pageTo('index.php?c=look&type=look')">谁看过我</li>
+            <li :class="type == 'lookjob' ? 'm_tabactive' : ''" @click="pageTo('index.php?c=look&type=lookjob')">我的足迹</li>
+        </ul> 
+    </div>    </div>
+    <div class="m_cardbox" v-if="type== 'look'">
+		       <div class="m_cardbgbox">
+       <div class="issue_post_body_card" v-for="(item, lookkey) in list" :key="lookkey" @click="pageTo(item.wapcom_url)">
+
+            <div class="Posted_card_top" >
+                <div class="Posted_card_name">{{item.com_name}}</div>                
+            </div>
+            <div class="Posted_card_cen">
+                <ul>
+                    <li v-if="item.city_n">{{item.city_n}}</li>
+                    <li v-if="item.mun_n">{{item.mun_n}}</li>
+                    <li v-if="item.pr_n">{{item.pr_n}}</li>
+                </ul>
+            </div>
+            <div class="Posted_card_bom">
+                <div class="Posted_bom_box">
+                    <div class="Posted_box_logo">
+                        <img :src="item.logo_n" alt="" width="100%" height="100%">
+                    </div>
+                    <div class="Posted_box_name">{{item.com_name}}</div>
+                </div>
+                <div class="Posted_bom_time">{{item.datetime_n}}</div>
+            </div>
+            <div class="Posted_card_look">
+                <div class="Posted_look_box">
+                    <div class="Posted_box_job">{{item.linkman}}{{item.linkjob ? '·' + item.linkjob : item.linkjob}}</div>
+                    <div class="Posted_box_text">查看了您</div>
+                </div>
+
+                <div class="Posted_look_del" @click.stop="lookdel(item.id, lookkey)">
+                    <img src="{yun:}$wap_style{/yun}/images/resume_del.png" alt="" width="100%" height="100%">
+                </div> 
+            </div>
+        </div>
+        <div v-if="count==2">
+        <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange" /> 
+        </div>   <div class="wap_member_bgcar"v-show="islook&&count==0">
+        <div class="wap_member_no">
+           暂无记录！
+        </div>          </div>  
+    </div>    </div>
+    <div class="m_cardbox" v-if="type=='lookjob'">        
+	   <div class="m_cardbgbox">
+        <div class="issue_post_body_card" v-for="(item, lkey) in list" :key="lkey">
+            <div class="Posted_card_top">
+                <div class="Posted_card_name" @click="pageTo(item.wapjob_url)">{{item.job_name}}</div>
+                <span class="">{{item.salary}}</span>
+            </div>
+            <div class="Posted_card_cen">
+                <ul>
+                    <li v-if="item.cityname">{{item.cityname}}</li>
+                    <li v-if="item.edu_n">{{item.edu_n}}</li>
+                    <li v-if="item.exp_n">{{item.exp_n}}</li>
+                </ul>
+               
+            </div>
+            <div class="Posted_card_bom">
+                <div class="Posted_bom_box" @click="pageTo(item.wapcom_url)">
+                    <div class="Posted_box_logo">
+                        <img :src="item.com_logo_n" alt="" width="100%" height="100%">
+                    </div>
+                    <div class="Posted_box_name">{{item.com_name}}</div>
+                </div>
+                <div class="Posted_bom_time">{{item.datetime_n}}</div>
+            </div>
+    
+    </div>
+         </div>
+        <div v-if="count ==2">
+            <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange" /> 
+            </div>        <div class="wap_member_bgcar"  v-show="islook&&count==0">
+        <div class="wap_member_no">
+            您还没有浏览过的职位<div><a class="wap_member_no_submit" href="{yun:}url m=wap c=job{/yun}">去搜索相关职位</a></div>
+        </div>     </div>
+    </div>   
+</div>
+<script>  
+  var currentPage = parseInt('{yun:}$smarty.get.page{/yun}');   
+  var type = '{yun:}$smarty.get.type{/yun}';
+   type = type ? type : 'look';
+      new Vue({
+        el: '#yunvue',
+        data: {
+          list: [],
+          limit:20,
+          type: type,        
+          total:0,
+          page: currentPage ? currentPage : 1,
+          islook :false
+        },
+        computed: {
+          count(){
+            if(this.total > this.limit){
+              return 2;
+            }else if(this.list.length==0){
+              return 0;
+            }else{
+                return 1;
+            }
+          }
+        },
+        created() {   
+         this.typeShow(type);
+        },
+        methods:{
+          typeShow:function(e){
+            this.page=1;
+            this.list=[];
+            this.type = e;
+            this.islook=false;
+            if(e=='look'){
+                this.getLook();
+            }else if (e=='lookjob') {
+              this.getLookJob();
+            }
+          },
+          getLook:function(){
+            showLoading();
+            var that = this;
+            var paramer = {};
+                paramer['page'] = that.page;
+                paramer['limit'] = that.limit;     
+            $.post('{yun:}url d=wxapp h=user m=resume c=look_resume{/yun}',paramer,function(res){
+              hideLoading();      
+             
+              that.list = res.data;
+              that.total = res.total;
+              that.type = type;
+              that.page = currentPage ? currentPage : 1;
+              that.islook = true 
+               $("#yunvue").css('display', 'block');
+            },'json');
+          },
+          getLookJob:function(){
+            showLoading();
+            var that = this;
+            var paramer = {};
+                paramer['page'] = that.page;
+                paramer['limit'] = that.limit;     
+            $.post('{yun:}url d=wxapp h=user m=job c=look_job{/yun}',paramer,function(res){
+              hideLoading();      
+              
+              that.list = res.data;
+              that.total = res.total;
+              that.page = currentPage ? currentPage : 1;
+              that.islook = true 
+               $("#yunvue").css('display', 'block');
+            },'json');
+          },
+          lookdel:function(id,key){
+              let that = this
+              let param = {
+                ids: id
+              };
+             
+             showConfirm('确定删除', () => {
+                showLoading('删除中...')
+                $.post('{yun:}url d=wxapp h=user m=resume c=look_resume_del{/yun}', param, function(data){
+                  hideLoading();
+                  if (data.error == 1) {
+                    showToast('删除成功',2, function() {
+                      that.list.splice(key, 1);   
+                    });
+                  } else {
+                    showToast('删除失败');
+                  }
+                });
+             });   
+             
+          },
+           pageChange:function(e){
+          
+            location.href = 'index.php?c=look&type='+this.type+'&page='+e;
+          },
+          pageTo:function(url){
+              window.location.href = url;
+          }
+        } 
+      });
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+    <link rel="stylesheet" href="../../../admin/js/wangeditor/index.css">
+    <script src="../../../admin/js/wangeditor/index.js"></script>
+    <script src="../../js/base64ToFile.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="现场招聘会" name="zph">
+                    <xczphlist ref="zph"></xczphlist>
+                </el-tab-pane>
+                <el-tab-pane label="参会企业" name="com">
+                    <xczphcom ref="com" :shstatus="status"></xczphcom>
+                </el-tab-pane>
+                <el-tab-pane label="招聘会场地" name="cd">
+                    <xczphcd ref="cd"></xczphcd>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+    const custoapp = new Vue({
+        el: '#moduapp',
+        data: function() {
+            return {
+                activeName: 'zph',
+                status: ''
+            }
+        },
+        components: {
+            'xczphlist': httpVueLoader('./component/xczphlist.vue'),
+            'xczphcd': httpVueLoader('./component/xczphcd.vue'),
+            'xczphcom': httpVueLoader('./component/xczphcom.vue'),
+        },
+        created: function() {
+            var that = this
+            let query = window.parent.homeapp.$route.query;
+            if (query.status) {
+                that.status = query.status;
+            }
+            if (query.tabs) {
+                that.activeName = query.tabs;
+            }
+            setTimeout(function () {
+                that.$nextTick(function () {
+                    if (that.activeName == 'zph') {
+                        that.$refs[that.activeName].getGroup()
+                    }
+                    that.$refs[that.activeName].getList()
+                })
+            }, 500)
+        },
+        methods: {
+            handleClick(tab) {
+                this.$refs[tab.name].getList()
+            }
+        }
+    });
+    </script>
+</body>
+
+</html>

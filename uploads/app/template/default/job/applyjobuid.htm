@@ -1,0 +1,357 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<meta name="keywords" content="{yun:}$keywords{/yun}" />
+		<meta name="description" content="{yun:}$description{/yun}" />
+		<link rel="stylesheet" href="{yun:}$style{/yun}/style/css.css?v={yun:}$config.cachecode{/yun}" type="text/css" />
+		<link rel="stylesheet" href="{yun:}$style{/yun}/style/comapply.css?v={yun:}$config.cachecode{/yun}" type="text/css" />
+	</head>
+
+	<body style="width:760px;min-width:760px">
+
+		<!--注册弹出框1-->
+		<form id="subform" action="{yun:}url m=ajax c=temporaryresume{/yun}" target="supportiframefast" method="post" onsubmit="return checkaddresume()" enctype="multipart/form-data" autocomplete="off" class="layui-form">
+			<div id="applydiv">
+				<div class="yun_reg_BasicInfo" style="overflow:hidden">
+					<div class="yun_reg_BasicInfo_h1">
+						<span class="yun_reg_BasicInfo_h1_span ">申请职位需要先创建一份简历哦，如果已有简历，可直接登录</span>
+						<a href="javascript:void(0);" onclick="OnLogin();" class="yun_reg_BasicInfo_loginbth">登录</a>
+					</div>
+					<div class="yun_reg_BasicInfo_box">
+						<div class="yun_reg_BasicInfo_left" style="height:550px">
+							<div class="yun_reg_BasicInfo_tit"><span class="">基本信息</span></div>
+							<div class="yun_reg_BasicInfo_tx" style="right: 120px;">
+								<div class="yun_figure_img">
+									<button type="button" class="yun_figure_upload_input noupload" lay-data="{imgid: 'imgicon'}">上传图片</button>
+									<input type="hidden" id="laynoupload" value="1" />
+									<img id="imgicon" class="none" src="" width="110" height="110">
+								</div>
+							</div>
+							<div class="yun_reg_BasicInfo_list">
+								<span class="yun_reg_BasicInfo_s">
+									<i class="yun_reg_BasicInfo_i">*</i>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：
+								</span>
+								<input type="text" name="uname" id="uname" class="yun_reg_BasicInfo_text yun_reg_BasicInfo_textw160" placeholder="请输入真实姓名" />
+								<div class="yun_reg_BasicInfo_sex">
+									<input type="hidden" id="sex" name="sex" value="1" />
+									{yun:}foreach from=$user_sex key=j item=v{/yun}
+									<span class="yun_info_sex {yun:}if $j==1{/yun}yun_info_sex_cur{yun:}/if{/yun}" id="sex{yun:}$j{/yun}" onclick="checksex('{yun:}$j{/yun}')">
+										<i class="usericon_sex usericon_sex{yun:}$j{/yun}"></i>{yun:}$v{/yun}
+									</span>
+									{yun:}/foreach{/yun}
+								</div>
+							</div>
+
+							<div class="yun_reg_BasicInfo_list">
+								<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i> 出生年月：</span>
+								<div class="yun_reg_BasicInfo_l_r yun_reg_BasicInfo_l_date">
+									<div class="layui-input-inline">
+										<input type="text" value="请输入出生年份" name="birthday" id="birthday" readonly class="yun_reg_BasicInfo_but" />
+									</div>
+								</div>
+							</div>
+							<div class="yun_reg_BasicInfo_list">
+								<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i>最高学历：</span>
+								<div class="yun_reg_BasicInfo_l_s_box">
+									<select name="edu" id="educid">
+										<option value="">请选择最高学历</option>
+										{yun:}foreach from=$userdata.user_edu item=v{/yun}
+										<option value="{yun:}$v{/yun}">{yun:}$userclass_name[$v]{/yun}</option>
+										{yun:}/foreach{/yun}
+									</select>
+								</div>
+							</div>
+							<div class="yun_reg_BasicInfo_list">
+								<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i>工作经验：</span>
+								<div class="yun_reg_BasicInfo_l_s_box ">
+									<select name="exp" id="expid">
+										<option value="">请选择工作经验</option>
+										{yun:}foreach from=$userdata.user_word item=v{/yun}
+										<option value="{yun:}$v{/yun}">{yun:}$userclass_name[$v]{/yun}</option>
+										{yun:}/foreach{/yun}
+									</select>
+								</div>
+							</div>
+							<div class="yun_reg_BasicInfo_list">
+								<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i>手机号码：</span>
+								{yun:}if $config.sy_msg_isopen==1 && $config.reg_real_name_check==1 && $config.sy_msg_regcode==1{/yun}
+								<input type="text" name="telphone" id="telphone" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" class="yun_reg_BasicInfo_text" placeholder="请输入手机号码" />
+								{yun:}else{/yun}
+								<input type="text" name="telphone" id="telphone" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" onblur="ckjobreg('1')" class="yun_reg_BasicInfo_text" placeholder="请输入手机号码" />
+								{yun:}/if{/yun}
+							</div>
+							<div class="yun_reg_BasicInfo_tit m10"><span class="">账号设置</span></div>
+							<div class="yun_reg_BasicInfo_list">
+								<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i><em>登录密码：</em></span>
+								<span>
+									<input type="password" name="password" placeholder="请输入6-20位{yun:}if $config.reg_pw_sp=='1' || $config.reg_pw_num=='1' || $config.reg_pw_zm=='1'{/yun}{yun:}if $config.reg_pw_num=='1'{/yun} 数字{yun:}/if{/yun}{yun:}if $config.reg_pw_zm=='1'{/yun} 字母{yun:}/if{/yun}{yun:}if $config.reg_pw_sp=='1'{/yun} 其它字符@!#.$-_{yun:}/if{/yun}{yun:}/if{/yun}" class="yun_reg_BasicInfo_text" id="reg_password" onblur="pwdCheck();"/>
+								</span>
+							</div>
+							{yun:}if $config.code_kind > 2{/yun}
+							<input type='hidden' id="verify_token"  name="verify_token" value="">
+							{yun:}if $config.code_kind == 6{/yun}
+							<input type='hidden' id="verify_str"  name="verify_str" value="">
+							{yun:}/if{/yun}
+							{yun:}else{/yun}
+							<div class="yun_reg_BasicInfo_list">
+								<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i>验证码：</span>
+								<input id="CheckCodefast" name='checkcode' type="text" class="yun_reg_BasicInfo_text yun_reg_BasicInfo_text_w155" maxlength="6" style="width:145px; margin-right:10px;" placeholder="请输入验证码" autocomplete="off" />
+								<a href="javascript:void(0);" onclick="checkCode('vcode_img_temp_fast');">
+									<img id="vcode_img_temp_fast" class="authcode" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php" />
+								</a>
+								<a href="javascript:void(0);" onclick="checkCode('vcode_img_temp_fast');" class="yzm_h">看不清？换一张</a>
+								<span class="reg_tips reg_tips_red none" id="ajax_CheckCode"></span>
+							</div>
+							{yun:}/if{/yun}
+							{yun:}if $config.sy_msg_isopen==1 && $config.reg_real_name_check==1 && $config.sy_msg_regcode==1{/yun}
+							<div class="yun_reg_BasicInfo_list">
+								<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i>手机验证：</span>
+								<input type="text" name="authcode" id="authcode" class="yun_reg_BasicInfo_text yun_reg_BasicInfo_text_w155" />
+								<a href="javascript:void(0);" class="login_m_send" id="send_msg_tips" onclick="send_msg('{yun:}url m=ajax c=regcodeks{/yun}');">发送验证码</a>
+							</div>
+							{yun:}/if{/yun}
+							<div class="yun_reg_BasicInfo_bth_box" style="{yun:}if $config.code_kind > 2{/yun}bottom:50px;{yun:}/if{/yun}"> 
+								{yun:}if $config.resume_kstd_req != 2 && ($config.resume_create_project==1 || $config.resume_create_exp==1 || $config.resume_create_edu==1){/yun}
+								<input type='hidden' id='resume_edu' value='{yun:}$config.resume_create_edu{/yun}'>
+								<input type='hidden' id='resume_exp' value='{yun:}$config.resume_create_exp{/yun}'>
+								<input type='hidden' id='resume_pro' value='{yun:}$config.resume_create_project{/yun}'>
+								<input type="button" value="下一步" class="yun_reg_BasicInfo_bth" onclick="nextaddresume()" />
+								{yun:}else{/yun}
+								<input type="submit" value="保存并投递" class="yun_reg_BasicInfo_bth" />
+								{yun:}/if{/yun}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--注册下一步 -->
+			<div id="nextaddresume" class="none">
+				<div class="yun_reg_BasicInfo">
+					<div class="yun_reg_BasicInfo_box" style="height:560px;">
+						<div class="yun_reg_BasicInfo_left">
+							<div class="yun_reg_BasicInfo_h1">
+								<span class="yun_reg_BasicInfo_h1_span ">为了提高求职成功率，请完善以下信息！</span>
+							</div>
+							{yun:}if $config.resume_create_exp=='1'{/yun}
+							<!--最近一份工作-->
+							<div class="yun_reg_BasicInfo_tit">
+								<span class="">最近一份工作</span>
+								<span id="isexpshow" style="top: -5px;left:50px; position:relative;display:none">
+									<input type="radio" name="iscreateexp" checked="checked" id="iscreateexp1" lay-filter="iscreateexp" value="1" title="有">
+									<input type="radio" name="iscreateexp" id="iscreateexp2" lay-filter="iscreateexp" value="2" title="无">
+								</span>
+							</div>
+							<div id="addwork">
+								<div class="yun_reg_BasicInfo_list">
+									<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i>公司名称：</span>
+									<input type="text" class="yun_reg_BasicInfo_text" id="workname" name="workname" value="" placeholder="请输入公司名称">
+								</div>
+								<div class="yun_reg_BasicInfo_list">
+									<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i>担任职位：</span>
+									<input type="text" class="yun_reg_BasicInfo_text" name="worktitle" id="worktitle" value="" placeholder="请输入担任职位">
+								</div>
+								<div class="yun_reg_BasicInfo_list">
+									<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i>在职时间：</span>
+									<div class="yun_reg_BasicInfo_timetext_box">
+										<input name="worksdate" id="worksdate" type="text" value="" class="yun_reg_BasicInfo_timetext" placeholder="入职时间">
+										<span class="yun_reg_BasicInfo_timeline">-</span>
+										<input name="workedate" id="workedate" type="text" value="" class="yun_reg_BasicInfo_timetext" placeholder="离职时间">
+									</div>
+								</div>
+								<div class="yun_reg_BasicInfo_list">
+									<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i>工作内容：</span>
+									<textarea class="yun_reg_BasicInfo_listtextarea" id="workcontent" name="workcontent" placeholder="请对工作内容进行简单阐述~"></textarea>
+								</div>
+							</div>
+							{yun:}/if{/yun}
+							{yun:}if $config.resume_create_edu=='1'{/yun}
+							<!-- 毕业院校 -->
+							<div class="yun_reg_BasicInfo_tit">
+								<span class="">毕业院校</span>
+
+								<span id="isedushow" style="top: -5px;left:50px; position:relative;display:none">
+									<input type="radio" name="iscreateedu" checked="checked" id="iscreateedu1" lay-filter="iscreateedu" value="1" title="有">
+									<input type="radio" name="iscreateedu" id="iscreateedu2" lay-filter="iscreateedu" value="2" title="无">
+								</span>
+							</div>
+							<div id="addedu">
+								<div class="yun_reg_BasicInfo_list">
+									<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i>学校名称：</span>
+									<input type="text" class="yun_reg_BasicInfo_text" id="eduname" name="eduname" value="" placeholder="请填写学校名称">
+								</div>
+								<div class="yun_reg_BasicInfo_list">
+									<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i>在校时间：</span>
+									<div class="yun_reg_BasicInfo_timetext_box">
+										<input name="edusdate" id="edusdate" type="text" value="" class="yun_reg_BasicInfo_timetext" placeholder="入校时间">
+										<span class="yun_reg_BasicInfo_timeline">-</span>
+										<input name="eduedate" id="eduedate" type="text" value="" class="yun_reg_BasicInfo_timetext" placeholder="毕业时间">
+									</div>
+								</div>
+								<div class="yun_reg_BasicInfo_list">
+									<span class="yun_reg_BasicInfo_s"> <i class="yun_reg_BasicInfo_i">*</i>毕业学历：</span>
+									<div class="yun_reg_BasicInfo_l_s_box">
+										<select name="education" id="educationcid">
+											<option value="">请选择毕业学历</option>
+											{yun:}foreach from=$userdata.user_edu item=v{/yun}
+											<option value="{yun:}$v{/yun}">{yun:}$userclass_name[$v]{/yun}</option>
+											{yun:}/foreach{/yun}
+										</select>
+									</div>
+								</div>
+								<div class="yun_reg_BasicInfo_list">
+									<span class="yun_reg_BasicInfo_s">所学专业：</span>
+									<input type="text" class="yun_reg_BasicInfo_text" id="eduspec" name="eduspec" value="" placeholder="请填写所学专业">
+								</div>
+							</div>
+							<!---end--->
+							{yun:}/if{/yun}
+							{yun:}if $config.resume_create_project=='1'{/yun}
+							<!--        近期项目-->
+							<div class="yun_reg_BasicInfo_tit">
+								<span class="">近期项目</span>
+								<span id="isproshow" style="top: -5px;left:50px; position:relative;display:none">
+									<input type="radio" name="iscreatepro" checked="checked" id="iscreatepro1" lay-filter="iscreatepro" value="1" title="有">
+									<input type="radio" name="iscreatepro" id="iscreatepro2" lay-filter="iscreatepro" value="2" title="无">
+								</span>
+							</div>
+							<div id="addproject">
+								<div class="yun_reg_BasicInfo_list">
+									<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i>项目名称：</span>
+									<input type="text" class="yun_reg_BasicInfo_text" name="proname" id="proname" value="" placeholder="请填写项目名称">
+								</div>
+								<div class="yun_reg_BasicInfo_list">
+									<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i>担任职位：</span>
+									<input type="text" class="yun_reg_BasicInfo_text" name="protitle" id="protitle" value="" placeholder="请填写担任职位">
+								</div>
+								<div class="yun_reg_BasicInfo_list">
+									<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i>项目时间：</span>
+									<div class="yun_reg_BasicInfo_timetext_box">
+										<input type="text" name="prosdate" id="prosdate" value="" class="yun_reg_BasicInfo_timetext" placeholder="开始时间">
+										<span class="yun_reg_BasicInfo_timeline">-</span>
+										<input type="text" name="proedate" id="proedate" value="" class="yun_reg_BasicInfo_timetext" placeholder="结束时间">
+									</div>
+								</div>
+								<div class="yun_reg_BasicInfo_list">
+									<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i>项目内容：</span>
+									<textarea class="yun_reg_BasicInfo_listtextarea" id="procontent" name="procontent" placeholder="请对工作内容进行简单阐述~"></textarea>
+								</div>
+							</div>
+							{yun:}/if{/yun}
+
+							<div style="width:100%; float:left;height:80px;"></div>
+						</div>
+						<div class="yun_reg_BasicInfo_towbth_box">
+							<input name="jobid" type="hidden" value="{yun:}$smarty.get.jobid{/yun}" />
+							<input type="submit" value="保存并投递" class="yun_reg_BasicInfo_bth" />
+							<input type="button" value="返回上一步>" class="" onclick="addresumereturn()" style="border:none; background:#fff;color:#a6a3a3;; margin-left:50px;">
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		{yun:}if $config.code_kind > 2{/yun}
+		<div class="gtdx-captcha">
+			<div id="bind-captcha" data-id='subreg' data-type='click'></div>
+			<input type='hidden' id="popup-submit">	
+			<input type='hidden' id="bind-submit">
+		</div>
+		{yun:}/if{/yun}
+		{yun:}include file="$tplstyle/jquery/jquery_js.htm"{/yun}
+		<link href="{yun:}$config.sy_weburl{/yun}/js/layui/css/layui.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet" type="text/css" />
+		<script src="{yun:}$config.sy_weburl{/yun}/js/layui/layui.js?v={yun:}$config.cachecode{/yun}"></script>
+		<script src="{yun:}$config.sy_weburl{/yun}/js/layui/phpyun_layer.js?v={yun:}$config.cachecode{/yun}"></script>
+		<script src="{yun:}$config.sy_weburl{/yun}/js/public.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+		<script src="{yun:}$config.sy_weburl{/yun}/js/member_public.js?v={yun:}$config.cachecode{/yun}"></script>
+		<script src="{yun:}$style{/yun}/js/company.js?v={yun:}$config.cachecode{/yun}"></script>
+		<script src="{yun:}$config.sy_weburl{/yun}/data/plus/job.cache.js?v={yun:}$config.cachecode{/yun}" type="text/javascript"></script>
+		<script src="{yun:}$config.sy_weburl{/yun}/data/plus/jobparent.cache.js?v={yun:}$config.cachecode{/yun}" type="text/javascript"></script>
+		<script>
+			var weburl='{yun:}$config.sy_weburl{/yun}',
+				code_kind = '{yun:}$config.code_kind{/yun}',
+				expcreate = '{yun:}$config.expcreate{/yun}',
+				educreate = '{yun:}$config.educreate{/yun}';
+			var resumename = '{yun:}$config.sy_resumename_num{/yun}';
+			layui.use(['form','laydate'], function(){
+				var form = layui.form
+					,$ = layui.$;
+				form.on('radio(iscreateedu)', function(data) {			
+					if(data.value==1){
+						$('#addedu').show();
+						$('#resume_edu').val(1);
+					}else{
+						$('#addedu').hide();
+						$('#resume_edu').val(0);
+					}
+				});
+				form.on('radio(iscreateexp)', function(data) {			
+					if(data.value==1){
+						$('#addwork').show();
+						$('#resume_exp').val(1);				
+					}else{
+						$('#addwork').hide();
+						$('#resume_exp').val(0);				
+					}
+				});
+				form.on('radio(iscreatepro)', function(data) {
+					if(data.value==1){
+						$('#addproject').show();
+						$('#resume_pro').val(1);		
+					}else{
+						$('#addproject').hide();
+						$('#resume_pro').val(0);
+					}
+				});
+
+				var birthObj = new Date(),
+					birthYear = birthObj.getFullYear(),
+					birthYearMax = parseInt(birthYear) - 16;
+				var laydate = layui.laydate;
+				laydate.render({
+					elem: '#birthday',
+					max: birthYearMax + '-12-31',
+					type: 'month',
+					value: '1990-01',
+					btns: ['clear', 'confirm']
+				});
+				monthclick(laydate,'#worksdate',1);
+				monthclick(laydate,'#workedate',1);
+				monthclick(laydate,'#edusdate',1);
+				monthclick(laydate,'#eduedate',1);
+				monthclick(laydate,'#prosdate',1);
+				monthclick(laydate,'#proedate',1);
+			});
+
+			/* 新增必填项判断Start */
+			var jobClassId	=	'{yun:}$jobClassId{/yun}';
+			var isShow	= 0;
+			var jobClassCreate='{yun:}$config.sy_resume_job_classid{/yun}';
+			$(ji).each(function (i, data) {
+				if (jobClassId == data) {
+					if (jobClassCreate.indexOf(data) > -1){
+						isShow = 1;
+					}
+				}
+				$(jt[data]).each(function (ii, data2) {
+					if (jobClassId == data2) {
+						if (jobClassCreate.indexOf(data2) > -1){
+							isShow = 1;
+						}
+					}
+					$(jt[data2]).each(function (iii, data3) {
+
+						if (jobClassId == data3) {
+							if (jobClassCreate.indexOf(data3) > -1){
+								isShow = 1;
+							}
+						}
+					});
+				});
+			});
+			/* 新增必填项判断End */
+		</script>
+		<script src="{yun:}$config.sy_weburl{/yun}/js/layui.upload.js?v={yun:}$config.cachecode{/yun}"></script>
+		<iframe id="supportiframefast" name="supportiframefast" onload="returnmessagejobfast('supportiframefast');" class="none"></iframe>
+		{yun:}include file="$tplstyle/verify/verify_js.htm"{/yun}
+	</body>
+</html>

@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+<div id="guanapp" class="moduleElenAl">
+
+    <div class="moduleSeachs">
+        <div class="moduleSeachInpt">
+			<div class="moduleInptList" style="margin-bottom: 0;">
+				<el-input placeholder="请输入关键词" v-model="search.keyword" class="input-with-select" size="small" clearable>
+					<el-select v-model="search.type" slot="prepend" placeholder="关键字类型">
+						<el-option v-for="(value, k) in keywordArr" :key="k" :label="value" :value="k"></el-option>
+					</el-select>
+				</el-input>
+			</div>
+            <div class="tableSeachInpt tableSeachInptsmall" style="margin-bottom: 0;">
+                <el-select v-model="search.rec" slot="prepend" placeholder="是否推荐" size="small" clearable @change="doUserQuery">
+                    <el-option label="未推荐" value="2"></el-option>
+                    <el-option label="推荐" value="1"></el-option>
+                </el-select>
+            </div>
+            <div class="tableSeachInpt tableSeachInptsmall" style="margin-bottom: 0;">
+                <el-select v-model="search.check" slot="prepend" size="small" placeholder="审核" clearable @change="doUserQuery">
+                    <el-option label="未审核" value="2"></el-option>
+                    <el-option label="已审核" value="1"></el-option>
+                </el-select>
+            </div>
+            <div style="overflow: hidden;position: relative;display: flex;flex-wrap: wrap;align-items: center;">
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="doUserQuery">查询</el-button>
+            </div>
+        </div>
+        <div class="moduleSeachButn">
+            <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addkeyword">添加关键词</el-button>
+        </div>
+    </div>
+    <div class="moduleElTable" style="padding-bottom: 0;">
+        <el-table ref="multipleTable" :data="tableData" border style="width: 100%" @selection-change="selectChange"
+                  :header-cell-style="{background:'#f5f7fa',color:'#606266'}" @sort-change="shortChange" height="100%" v-loading="loading" :empty-text="emptytext">
+            <el-table-column type="selection" width="55">
+            </el-table-column>
+            <el-table-column prop="id" label="编号" sortable="custom" width="100">
+            </el-table-column>
+            <el-table-column prop="key_name" label="热门关键字">
+                <template slot-scope="scope">
+                    <font :color="scope.row.color">{{scope.row.key_name}}</font>
+                </template>
+            </el-table-column>
+            <el-table-column label="关键字类型" width="100">
+                <template slot-scope="scope">
+                    {{scope.row.type?keywordArr[scope.row.type]:''}}
+                </template>
+            </el-table-column>
+            <el-table-column prop="num" label="搜索次数" width="100">
+            </el-table-column>
+            <el-table-column label="加粗" width="90">
+                <template slot-scope="scope">
+                    <el-switch v-model="scope.row.bold" active-color="#1890FF" inactive-color="#B8BDC9"
+                               @change="changeDefault(scope.row,'bold')">
+                    </el-switch>
+                </template>
+            </el-table-column>
+            <el-table-column label="推荐" width="90">
+                <template slot-scope="scope">
+                    <el-switch v-model="scope.row.tuijian" active-color="#1890FF" inactive-color="#B8BDC9"
+                               @change="changeDefault(scope.row,'tuijian')">
+                    </el-switch>
+                </template>
+            </el-table-column>
+            <el-table-column label="审核" width="90">
+                <template slot-scope="scope">
+                    <el-switch v-model="scope.row.check" active-color="#1890FF" inactive-color="#B8BDC9"
+                               @change="changeDefault(scope.row,'check')">
+                    </el-switch>
+                </template>
+            </el-table-column>
+            <el-table-column fixed="right" label="操作" width="140">
+                <template slot-scope="scope">
+                    <div class="cz_button">
+                        <el-button size="mini" @click="addKeyWordDrawer(scope.row)">修改</el-button>
+                        <el-button size="mini" type="danger" @click="del(scope.row)">删除</el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+    <div class="modulePaging">
+        <div class="modulePagButn">
+			<el-checkbox v-model="allchecked" @change="allcheckChange">全选</el-checkbox>
+            <el-button size="mini" @click="editDelBatch">批量删除</el-button>
+            <el-button size="mini" @click="CheckBatchDrawer">审核</el-button>
+            <el-button size="mini" @click="handleBatch">加粗</el-button>
+            <el-button size="mini" @click="handleBatch">推荐</el-button>
+            <el-button size="mini" @click="handleBatch">修改类型</el-button>
+        </div>
+        <div class="modulePagNum">
+            <el-pagination :total="total" @current-change="userPageChange" :page-size="pageSize"
+                           :page-sizes="pageSizes"
+                           :current-page.sync="page" layout="total, sizes, prev, pager, next, jumper"
+                           @size-change="userPageSizeChange" background :pager-count="pagerCount"></el-pagination>
+        </div>
+    </div>
+    <div class="modluDrawer">
+        <el-dialog title="关键词管理" :visible.sync="drawer" :with-header="true" :modal-append-to-body="false"
+                   :show-close="true" width="600px">
+            <div class="alogModlue">
+                <div class="alogModlList" v-if="!saveType">
+                    <div class="alogModlTite">
+                        <span>关键字名称</span>
+                    </div>
+                    <div class="alogModInpt">
+                        <el-input v-model="ruleForm.key_name" placeholder="请输入内容"></el-input>
+                    </div>
+                    <div class="alogModlTips">
+                        <el-alert title="例：phpyun" type="info" show-icon :closable="false">
+                        </el-alert>
+                    </div>
+                </div>
+                <div class="alogModlList">
+                    <div class="alogModlTite">
+                        <span>关键字类型</span>
+                    </div>
+                    <div class="alogModInpt">
+                        <el-select v-model="ruleForm.type" placeholder="请选择">
+                            <el-option v-for="(value, k) in keywordArr" :key="k" :label="value" :value="k">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="alogModlTips">
+                        <el-alert title="例：phpyun" type="info" show-icon :closable="false">
+                        </el-alert>
+                    </div>
+                </div>
+                <div class="alogModlList">
+                    <div class="alogModlTite">
+                        <span>字体大小</span>
+                    </div>
+                    <div class="alogModInpt">
+                        <el-input v-model="ruleForm.size" placeholder="请输入内容"></el-input>
+                    </div>
+                    <div class="alogModlTips">
+                        <el-alert title="例：12px" type="info" show-icon :closable="false">
+                        </el-alert>
+                    </div>
+                </div>
+                <div class="alogModlList">
+                    <div class="alogModlTite">
+                        <span>字体颜色</span>
+                    </div>
+                    <div class="alogModInpt" style="display: flex;align-items: center;">
+                        <el-input v-model="ruleForm.color" placeholder="请输入内容"></el-input>
+                        <div class="block" style="margin-left: 8px;">
+                            <el-color-picker v-model="ruleForm.color"></el-color-picker>
+                        </div>
+                    </div>
+                    <div class="alogModlTips">
+                        <el-alert title="#1890FF" type="info" show-icon :closable="false">
+                        </el-alert>
+                    </div>
+                </div>
+                <div class="alogModlList">
+                    <div class="alogModlTite">
+                        <span>是否加粗</span>
+                    </div>
+                    <div class="alogModInpt">
+                        <el-switch v-model="ruleForm.bold">
+                        </el-switch>
+                    </div>
+                </div>
+                <div class="alogModlList">
+                    <div class="alogModlTite">
+                        <span>是否推荐</span>
+                    </div>
+                    <div class="alogModInpt">
+                        <el-switch v-model="ruleForm.tuijian">
+                        </el-switch>
+                    </div>
+                </div>
+                <div class="alogModlList" v-if="saveType">
+                    <div class="alogModlTite">
+                        <span>审核操作</span>
+                    </div>
+                    <div class="alogModInpt">
+                        <el-switch v-model="ruleForm.status">
+                        </el-switch>
+                    </div>
+                </div>
+                <div class="alogModlList" v-if="!saveType">
+                    <div class="alogModlTite">
+                        <span>搜索次数</span>
+                    </div>
+                    <div class="alogModInpt">
+                        <el-input v-model="ruleForm.num" placeholder="请输入内容"></el-input>
+                    </div>
+                    <div class="alogModlTips">
+                        <el-alert title="例：大前小后" type="info" show-icon :closable="false">
+                        </el-alert>
+                    </div>
+                </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                    <el-button @click="drawer = false">取 消</el-button>
+                    <el-button type="primary" :loading="save_load" @click="changeSave">确 定</el-button>
+                </span>
+        </el-dialog>
+    </div>
+    <div class="modluDrawer">
+        <el-dialog title="批量审核" :visible.sync="shenheDrawer" :append-to-body="true" width="500px">
+            <div class="alogModlList">
+                <div class="alogModlTite">
+                    <span>审核操作:</span>
+                </div>
+                <div class="alogModInpt">
+                    <el-radio-group v-model="status">
+                        <el-radio label="0" value="0">未审核</el-radio>
+                        <el-radio label="1" value="1">已审核</el-radio>
+                    </el-radio-group>
+                </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                    <el-button @click="shenheDrawer = false">取 消</el-button>
+                    <el-button type="primary" @click="editCheckBatch">确 定</el-button>
+                </span>
+        </el-dialog>
+    </div>
+</div>
+<!-- script -->
+<script>
+    let formJSON = {
+        key_name: '',
+        type: '',
+        size: '',
+        color: '',
+        bold: false,
+        tuijian: false,
+        num: '',
+        id: 0
+    };
+    const custoapp = new Vue({
+        el: '#guanapp',
+        data: function () {
+            return {
+				pagerCount: 5,
+                emptytext: '暂无数据',
+                loading: false,
+                searchForm: [],
+                keywordArr: [],
+                input3: '',
+                select: '',
+                currentPage4: 4,
+                color2: null,
+                drawer: false,
+                shenheDrawer: false, // 审核弹窗控制
+                status: '',
+                title: '关键词管理',
+                drawer2: false,
+                input: '',
+                list: [],
+                page: 1,
+                prevPage: 0,
+                pageSizes:[],
+                pageSize: 0,
+                total: 0,
+                tableData: [],
+                search: {
+                    type: '',
+                    rec: '',
+                    keyword: '',
+                    check: ''
+                },
+                ruleForm: {
+                    key_name: '',
+                    type: '',
+                    size: '',
+                    color: '',
+                    num: '',
+                    id: 0
+                },
+                value: '',
+                idsArr: [],
+                uri: "m=system&c=",
+                //  查看是否是(新建编辑) 或者是批量操作
+                saveType: false,
+
+                
+				save_load:false,
+				
+				allchecked:false,
+            }
+        },
+        components: {},
+        created() {
+            this.getKeywordArr();
+            this.getList();
+        },
+        methods: {
+            shortChange(e) {
+                let orderMap = {ascending: 'asc', descending: 'desc'}
+                this.searchForm.t = e.order ? e.prop : null;
+                this.searchForm.order = orderMap[e.order];
+                this.doUserQuery();
+            },
+            doUserQuery() {
+                this.page = 1
+                this.getList()
+            },
+            changeSave: function () {
+                if (this.saveType == false) {
+                    this.save();
+                } else {
+                    this.batchHandle();
+                }
+            },
+            save: function () {
+                let ruleForm = this.ruleForm;
+                let _this = this;
+                let url = _this.uri + 'set_guanjianci&a=save';
+				_this.save_load = true;
+                httpPost(url, ruleForm).then(function (response) {
+					_this.save_load = false;
+                    var res = response.data;
+                    if (res.error == 0) {
+                        message.success('操作成功');
+                        _this.ruleForm = JSON.parse(JSON.stringify(formJSON));//清空表单
+                        _this.doUserQuery();
+						_this.drawer = false;
+                    } else {
+                        message.error(res.msg);
+                    }
+                    
+                })
+            },
+            batchHandle() {
+                let _this = this;
+                let ruleForm = {
+                    size: this.ruleForm.size,
+                    check: this.ruleForm.status,
+                    tuijian: this.ruleForm.tuijian,
+                    bold: this.ruleForm.bold,
+                    type: this.ruleForm.type,
+                    color: this.ruleForm.color,
+                    pid: this.idsArr
+                }
+                let url = _this.uri + 'set_guanjianci&a=status';
+				_this.save_load = true;
+                httpPost(url, ruleForm).then(function (response) {
+					_this.save_load = false;
+                    var res = response.data;
+                    if (res.error == 0) {
+                        message.success('操作成功');
+                        _this.ruleForm = JSON.parse(JSON.stringify(formJSON));//清空表单
+                        _this.doUserQuery();
+						_this.drawer = false;
+                    } else {
+                        message.error(res.msg);
+                    }
+                    
+                })
+            },
+            getKeywordArr: function () {
+                let _this = this;
+                let url = _this.uri + 'set_guanjianci&a=keyWord';
+                httpPost(url, {}).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        _this.keywordArr = res.data;
+                    }
+                })
+            },
+            getList: function () {
+                let _this = this;
+                let url = _this.uri + 'set_guanjianci&a=index';
+                let searchForm = _this.searchForm;
+                let sendData = {
+                    page: this.page,
+                    pageSize: this.pageSize,
+                    type: this.search.type,
+                    rec: this.search.rec,
+                    keyword: this.search.keyword,
+                    check: this.search.check
+                    // searchName: this.searchName,
+                    // searchValue: this.userQueryData.searchValue,
+                    // sex: this.userQueryData.sex,
+                    // status: this.userQueryData.status,
+                    // name: this.userQueryData.name,
+                    // edu_id: this.userQueryData.edu_id,
+                    // create_uid: this.userQueryData.create_uid,
+                    // showChild: this.userQueryData.checkedShowChild ? 1 : 0,
+                }
+                _this.loading = true;
+                _this.emptytext = "数据加载中";
+                httpPost(url, {...sendData, ...searchForm}).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        _this.tableData = res.data.list;
+                        _this.total = res.data.total;
+                        _this.pageSize = parseInt(res.data.pageSize);
+                        _this.pageSizes = res.data.pageSizes;
+                        if (_this.prevPage != _this.page) {
+                            _this.prevPage = _this.page;
+                            _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        }
+                        _this.loading = false;
+                        if (_this.tableData.length === 0){
+                            _this.emptytext = "暂无数据";
+                        }
+                    }
+                })
+            },
+            userPageChange(val) {
+                this.page = val
+                this.getList();
+            },
+            userPageSizeChange(val) {
+                this.pageSize = val
+                this.getList()
+            },
+            addkeyword: function () {
+                this.saveType = false;
+                this.drawer = true
+                this.ruleForm = JSON.parse(JSON.stringify(formJSON));//清空表单
+            },
+            addKeyWordDrawer: function (row) {
+                this.ruleForm = row;
+                // this.ruleForm.type = row.type);
+                this.drawer = true;
+                this.saveType = false;
+            },
+            changeDefault: function (row, type) {
+                let _this = this;
+                let url = _this.uri + 'set_guanjianci&a=recup';
+                const defaultVal = row[type];
+                let sendData = {
+                    page: this.page,
+                    type: type,
+                    rec: defaultVal,
+                    id: row.id
+                }
+                httpPost(url, sendData).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        _this.$message({
+                            message: res.msg,
+                            type: 'success',
+                            onClose: function () {
+                                _this.getList();
+                            }
+                        });
+                    }
+                })
+            },
+            selectChange: function (val) {
+                this.idsArr = [];
+                let _this = this;
+                if (val.length) {
+                    val.forEach(item => {
+                        _this.idsArr.push(item.id);
+                    });
+                }
+				
+				if (_this.idsArr.length == _this.tableData.length) {
+					_this.allchecked = true;
+				} else {
+					_this.allchecked = false;
+				}
+			},
+			allcheckChange: function () {
+			
+			    this.$refs.multipleTable.toggleAllSelection();
+			
+			},
+            del: function (row) {
+                let _this = this;
+                const id = row.id;
+                let url = _this.uri + 'set_guanjianci&a=del';
+                let sendData = {
+                    id: id
+                };
+                _this.$confirm('你确定要删除当前项吗？', '温馨提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    httpPost(url, sendData).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            message.success(res.msg, _this.getList());
+                        }
+                    })
+                })
+            },
+            // 批量操作
+            editDelBatch: function () {
+                let _this = this;
+                if (!_this.idsArr.length) {
+                    message.error('请选择要删除的关键词');
+                    return;
+                }
+                let url = _this.uri + 'set_guanjianci&a=del';
+                let sendData = {
+                    del: _this.idsArr
+                };
+                httpPost(url, sendData).then(function (response) {
+                    let res = response.data;
+                    if (res.error == 0) {
+                        message.success(res.msg, _this.getList());
+                    }
+                })
+            },
+            CheckBatchDrawer: function () {
+                let _this = this;
+                if (!_this.idsArr.length) {
+                    message.error('请选择要审核的数据');
+                    return;
+                }
+                this.shenheDrawer = true;
+            },
+            editCheckBatch: function () {
+                let _this = this;
+                if (_this.status == '') {
+                    message.error('请选择要审核的状态');
+                    return;
+                }
+
+                let url = _this.uri + 'set_guanjianci&a=state';
+                let sendData = {
+                    sid: _this.idsArr,
+                    status: _this.status
+                };
+                httpPost(url, sendData).then(function (response) {
+                    let res = response.data;
+                    if (res.error > 0) {
+                        message.error(res.msg);
+                    } else {
+                        message.success(res.msg, _this.getList())
+                        _this.shenheDrawer = false;
+                        _this.status = "";
+                    }
+                })
+            },
+            handleBatch: function () {
+                let _this = this;
+                if (!_this.idsArr.length) {
+                    message.error('请选择要操作的关键词');
+                    return;
+                }
+                _this.ruleForm = JSON.parse(JSON.stringify(formJSON));//清空表单
+                _this.drawer = true;
+                _this.saveType = true;
+            }
+        }
+    });
+</script>
+</body>
+<style>
+	.el-table .el-table__cell {
+    padding: 12px 0;
+}
+</style>
+</html>

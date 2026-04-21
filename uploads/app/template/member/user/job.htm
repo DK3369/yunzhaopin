@@ -1,0 +1,185 @@
+{yun:}include file="$userstyle/header.htm"{/yun}
+<div class="yun_w1200">
+    {yun:}include file="$userstyle/left.htm"{/yun}
+    <div class="yun_m_rightsidebar">
+        <div class="user_new_tit">
+            <span class="user_new_tit_n">申请的职位</span><span class="user_new_tit_r">您已申请 <span style="color:red;">{yun:}$total{/yun}</span> 条职位,请耐心等待企业回复！</span>
+            <div class="job_td_list_box">
+                <div class="job_td_list">
+                    投递反馈：
+                    <a href="index.php?c=job" class="{yun:}if !$smarty.get.browse{/yun}job_td_list_cur{yun:}else{/yun}job_td_list_a{yun:}/if{/yun}">不限</a>
+                    {yun:}foreach item=v from=$StateList key=key{/yun}
+                    <a href="index.php?c=job&browse={yun:}$key{/yun}" class="{yun:}if $smarty.get.browse==$key{/yun}job_td_list_cur{yun:}else{/yun}job_td_list_a{yun:}/if{/yun}">{yun:}$v{/yun}</a>
+                    {yun:}/foreach{/yun}
+                </div>
+                <div class="job_td_list ">
+                    投递时间：
+                    <a href="index.php?c=job" class="{yun:}if !$smarty.get.datetime{/yun}job_td_list_cur{yun:}else{/yun}job_td_list_a{yun:}/if{/yun}">不限</a>
+                    {yun:}foreach item=v from=$search_list key=key{/yun}
+                    <a href="index.php?c=job&datetime={yun:}$key{/yun}" class="{yun:}if $smarty.get.datetime==$key{/yun}job_td_list_cur{yun:}else{/yun}job_td_list_a{yun:}/if{/yun}">{yun:}$v{/yun}</a>
+                    {yun:}/foreach{/yun}
+                </div>
+            </div>
+        </div>
+        <div class="yun_m_rightbox fltR mt20 re">
+
+            <div class="clear"></div>
+
+            <div class="resume_box_list">
+
+                <div class="clear"></div>
+
+                <div id="gms_showclew"></div>
+
+                <form action="index.php" method="get" target="supportiframe" id='myform'>
+                    <input type="hidden" name="c" value="job"/>
+                    <input type="hidden" name="act" value="del"/>
+                    {yun:}if !empty($rows){/yun}
+                    <div class="user_new_listtit">
+                        <div class=" user_new_job" style="width:260px;">岗位</div>
+                        <div class=" user_new_time">投递时间</div>
+                        <div class=" user_new_tdzt">状态</div>
+                        <div class=" user_new_yqh">招聘状态</div>
+                        <div class=" user_new_cz">操作</div>
+                    </div>
+                    {yun:}/if{/yun}
+                    {yun:}foreach item=job from=$rows{/yun}
+
+                    <div class="jobnotice_list">
+                        <div class=" user_new_job" style="width:260px;">
+                            <div class="">
+                                {yun:}if $job.type==1{/yun}
+
+                                    <a href="{yun:}url m=job c=comapply id='`$job.job_id`'{/yun}" target="_blank" title="{yun:}$job.job_name{/yun}" class="user_new_jobname">{yun:}$job.job_name{/yun}</a>
+                                
+                                {yun:}/if{/yun}
+                            </div>
+
+                            <div class="user_new_jobxz">{yun:}$job.job_salary{/yun}</div>
+
+                            <div class="user_new_comname">
+                                
+                                    <a href="{yun:}url m=company c=show id='`$job.com_id`'{/yun}" target="_blank" title="{yun:}$job.com_name{/yun}" class="">{yun:}$job.com_name{/yun} </a>
+                                
+                            </div>
+                        </div>
+
+                        <div class="user_new_time"><span class="msg_zt_s">{yun:}$job.datetime|date_format:'%Y-%m-%d'{/yun}</span></div>
+
+                        <div class="user_new_tdzt">
+                            {yun:}if $job.invited==1{/yun}
+                                <span class="td_zt"><i class="td_zt_y"></i>已投递<i class="td_zt_q"></i><i class="td_zt_q2"></i><i class="td_zt_q3"></i><i class="td_zt_q4"></i></span>
+                                <span class="td_zt"><i class="td_zt_y"></i>已查看<i class="td_zt_q"></i><i class="td_zt_q2"></i><i class="td_zt_q3"></i><i class="td_zt_q4"></i></span>
+                                <span class="td_zt"><i class="td_zt_y"></i>已沟通<i class="td_zt_q"></i><i class="td_zt_q2"></i><i class="td_zt_q3"></i><i class="td_zt_q4"></i></span>
+                                <span class="td_zt"><i class="td_zt_xz"></i>邀面试</span>
+
+                            {yun:}else if $job.is_browse==1{/yun}
+
+                                {yun:}if $job.body!=''{/yun}
+
+                                    <span class="td_zt"><i class="td_zt_y"></i>已投递<i class="td_zt_q"></i><i class="td_zt_q2"></i><i class="td_zt_q3"></i><i class="td_zt_q4"></i></span>
+                                    <span class="td_zt"><i class="td_zt_xz"></i>已撤销</span>
+                                {yun:}else{/yun}
+
+                                    <span class="td_zt"><i class="td_zt_xz"></i>已投递<i class="td_zt_q"></i><i class="td_zt_q2"></i><i class="td_zt_q3"></i><i class="td_zt_q4"></i></span>
+                                    <span class="td_zt td_ztmy"><i class="td_zt_w"></i>已查看<i class="td_zt_q"></i><i class="td_zt_q2"></i><i class="td_zt_q3"></i><i class="td_zt_q4"></i></span>
+                                    <span class="td_zt td_ztmy"><i class="td_zt_w"></i>已面试<i class="td_zt_q"></i><i class="td_zt_q2"></i><i class="td_zt_q3"></i><i class="td_zt_q4"></i></span>
+                                    <span class="td_zt "><i class="td_zt_w"></i>已入职</span>
+                                {yun:}/if{/yun}
+                            {yun:}elseif $job.is_browse==2{/yun}
+
+                                <span class="td_zt"><i class="td_zt_y"></i>已投递<i class="td_zt_q"></i><i class="td_zt_q2"></i><i class="td_zt_q3"></i><i class="td_zt_q4"></i></span>
+                                <span class="td_zt td_ztmy"><i class="td_zt_xz"></i>已查看<i class="td_zt_q"></i><i class="td_zt_q2"></i><i class="td_zt_q3"></i><i class="td_zt_q4"></i></span>
+                                <span class="td_zt td_ztmy"><i class="td_zt_w"></i>已面试<i class="td_zt_q"></i><i class="td_zt_q2"></i><i class="td_zt_q3"></i><i class="td_zt_q4"></i></span>
+                                <span class="td_zt "><i class="td_zt_w"></i>已入职</span>
+                            {yun:}elseif $job.is_browse==3{/yun}
+
+                                <span class="td_zt"><i class="td_zt_y"></i>已投递<i class="td_zt_q"></i><i class="td_zt_q2"></i><i class="td_zt_q3"></i><i class="td_zt_q4"></i></span>
+                                <span class="td_zt"><i class="td_zt_y"></i>已查看<i class="td_zt_q"></i><i class="td_zt_q2"></i><i class="td_zt_q3"></i><i class="td_zt_q4"></i></span>
+                                <span class="td_zt td_ztmy"><i class="td_zt_xz"></i>已面试<i class="td_zt_q"></i><i class="td_zt_q2"></i><i class="td_zt_q3"></i><i class="td_zt_q4"></i></span>
+                                <span class="td_zt "><i class="td_zt_w"></i>已入职</span>
+                            {yun:}else if $job.is_browse==4{/yun}
+
+                                <span class="td_zt"><i class="td_zt_y"></i>已投递<i class="td_zt_q"></i><i class="td_zt_q2"></i><i class="td_zt_q3"></i><i class="td_zt_q4"></i></span>
+                                <span class="td_zt"><i class="td_zt_y"></i>已查看<i class="td_zt_q"></i><i class="td_zt_q2"></i><i class="td_zt_q3"></i><i class="td_zt_q4"></i></span>
+                                <span class="td_zt td_ztmy"><i class="td_zt_xz"></i>不合适<i class="td_zt_q"></i><i class="td_zt_q2"></i><i class="td_zt_q3"></i><i class="td_zt_q4"></i></span>
+                                <span class="td_zt "><i class="td_zt_w"></i>已入职</span>
+                            {yun:}elseif $job.is_browse==7{/yun}
+
+                                <span class="td_zt"><i class="td_zt_y"></i>已投递<i class="td_zt_q"></i><i class="td_zt_q2"></i><i class="td_zt_q3"></i><i class="td_zt_q4"></i></span>
+                                <span class="td_zt "><i class="td_zt_y"></i>已查看<i class="td_zt_q"></i><i class="td_zt_q2"></i><i class="td_zt_q3"></i><i class="td_zt_q4"></i></span>
+                                <span class="td_zt"><i class="td_zt_y"></i>已面试<i class="td_zt_q"></i><i class="td_zt_q2"></i><i class="td_zt_q3"></i><i class="td_zt_q4"></i></span>
+                                <span class="td_zt td_ztmy"><i class="td_zt_xz"></i>已入职</span>
+
+                            {yun:}/if{/yun}
+                        </div>
+                        <div class=" user_new_yqh">
+                            {yun:}if $job.id{/yun}
+                                {yun:}if $job.status==0{/yun}
+                                    <span class="">招聘中</span>
+                                {yun:}else{/yun}
+                                    <span class=" ">已下架</span>
+                                {yun:}/if{/yun}
+                            {yun:}else{/yun}
+                                <span class=" ">已下架</span>
+                            {yun:}/if{/yun}
+                        </div>
+                        <div class=" user_new_cz">
+                            {yun:}if $job.body!=''{/yun} <span class="List_dete" style="color:#999;"></span>{yun:}/if{/yun}
+                            {yun:}if $job.is_browse=='1'&&$job.body==''{/yun}
+
+                                <a href="javascript:void(0)" onclick="canceljob({yun:}$job.id{/yun});" class="user_new_yqh_ch">撤回</a>
+                            {yun:}else{/yun}
+
+                                <a href="javascript:void(0)" onclick="layer_del('确定要删除？','index.php?c=job&act=del&id={yun:}$job.id{/yun}');" class="user_new_yqh_sc">删除</a>
+                            {yun:}/if{/yun}
+                        </div>
+                    </div>
+
+
+                    <div class="clear"></div>
+                    {yun:}foreachelse{/yun}
+                    <div class="msg_no">
+                        <p>亲爱的用户，您还没有申请过职位，想要获得更多工作机会</p>
+                        <p>立即搜索您感兴趣的职位并申请吧！</p>
+                        <a href="{yun:}url m=job{/yun}" target="_blank" class="msg_no_sq uesr_submit">搜索职位</a>
+                    </div>
+                    {yun:}/foreach{/yun}
+                </form>
+
+                {yun:}if $rows{/yun}
+                <div class="diggg" style="margin-top:10px; float:right">{yun:}$pagenav{/yun}</div>
+                {yun:}/if{/yun}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style=" display:none;" id='blackdiv'>
+    <div class="qxsq_box">
+        <form action="index.php?c=job&act=qs" target="supportiframe" method="post" class="layui-form">
+            <input type="hidden" value="" name="id" id="qsid">
+           <div class="qxsq_box_all">
+                <div class="qxsq_box_tip">请选择取消投递职位的原因</div>
+                <select name="body">
+                    <option value="已经找到工作">已经找到工作</option>
+                    <option value="想休息一段时间">想休息一段时间</option>
+                    <option value="生病了">生病了</option>
+                    <option value="看错信息了">看错信息了</option>
+                    <option value="很长时间没有查看">很长时间没有查看</option>
+                    <option value="其它原因">其它原因</option>
+                </select>
+           
+            <div class="qxsq_box_bth"  > <input type="submit" value="确定" class="qxsq_box_bthint"  ></div>
+			</div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    layui.use(['layer', 'form'], function () {
+        var layer = layui.layer,
+            form = layui.form,
+            $ = layui.$;
+    });
+</script>
+{yun:}include file="$userstyle/footer.htm"{/yun}

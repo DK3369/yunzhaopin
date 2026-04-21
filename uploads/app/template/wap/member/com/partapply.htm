@@ -1,0 +1,159 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+
+<div id="yunvue" class="none">
+    <div class="yunVueBox">
+        <div class="more_position_body">
+            <div v-for="(item, infokey) in info" :key="infokey">
+                <div class="com_member_hr">
+                    <div class="paylog_tit">
+                        <span @click="resumeShow(item.waprurl)" class="paylog_lx">{{item.name_n}}</span>
+                        <span @click="toresume" :data-id="item.id" :data-eid="item.eid" class="padt_bmzt">{{item.status_n}} </span>
+                    </div>
+                    <div class="padt_bm">
+                        <div class="com_member_hr_p1">
+                            <span class="member_c9">基本信息 </span>{{item.sex_n}} ·
+                            {{item.age_n}}岁·
+                            {{item.edu_n}}
+                        </div>
+                        <div class="com_member_hr_p1"><span class="member_c9">手机号码</span>{{item.telphone}}</div>
+                        <div class="com_member_hr_p1">
+                            <span class="member_c9">申请兼职 </span>
+                            <em @click="toPart(item.wapjob_url)" class="wap_m_post_user">{{item.partname}} </em>
+                        </div>
+                        <div class="com_member_hr_p1">
+                            <span class="member_c9">申请时间 </span>{{item.ctime_n}}
+                        </div>
+                    </div>
+                    <div class="interview_card_bom">
+
+                        <div class="card_bom_icon">
+                            <span @click="delApply(item.id, infokey)"> <img src="{yun:}$wap_style{/yun}/images/resume_del.png" alt=""></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div v-if="pageTotal > 1">
+                <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange"/>
+            </div>
+
+            <div class="none_position_body" v-show="islook">
+                <div class="none_position_body_img">
+                    <img src="{yun:}$wap_style{/yun}/images/none_position.png" alt="">
+                </div>
+                <div class="none_position_body_text">目前还没有用户报名哦~</div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var partid = '{yun:}$smarty.get.partid{/yun}';
+    var yunvue = new Vue({
+        el: '#yunvue',
+        data() {
+            return {
+
+                info: [],
+
+                total: 0,
+                pageTotal: 0,
+                page: 1,
+                limit: 10,
+
+                islook: false,
+
+                isFromSearch: true,
+                searchLoading: true,
+                searchLoadingComplete: false,
+            };
+        },
+        created() {
+            this.getPartApply('refresh');
+        },
+        methods: {
+
+            getPartApply: function (type) {
+                var that = this;
+                if (type && type == 'refresh') {
+                    $("#yunvue").css('display', 'none');
+                    that.page = 1;
+                    that.info = [];
+                }
+                var paramer = {
+                    partid: partid,
+                    page: that.page,
+                    limit: that.limit,
+                    keyword: that.searchKeyword
+                };
+
+                showLoading('加载中');
+                $.post('{yun:}url d=wxapp h=com m=part c=applylist{/yun}', paramer, function (data) {
+                    hideLoading();
+                    $("#yunvue").css('display', 'block');
+                    if (data.error == 0) {
+                        let res = data.data;
+                        if (res.list.length > 0) {
+                            that.info = that.isFromSearch ? res.list : that.info.concat(res.list);
+                            that.searchLoadingComplete = false;
+                        } else {
+                            that.searchLoadingComplete = true;
+                        }
+                        that.pageTotal = Math.ceil(res.total / that.limit);
+                        that.total = res.total;
+                        that.searchLoading = false;
+                    } else {
+                        that.islook = true;
+                    }
+                }, 'json')
+            },
+
+            pageChange: function (page) {
+                this.page = page;
+                this.getPartApply('');
+            },
+			toresume: function (e) {
+                var that = this;
+				var eid	 = e.currentTarget.dataset.eid;
+				var paramer = {
+					applyid: e.currentTarget.dataset.id
+				};
+				$.post('{yun:}url d=wxapp h=com m=part c=upapply{/yun}', paramer, function (data) {
+                    hideLoading();
+                    if (data.error == 1) {
+                        window.location.href= wapurl+ 'index.php?c=resume&a=show&id='+eid;
+                    } else {
+                        showToast(data.msg);
+                    }
+
+                }, 'json');
+            },
+            delApply: function (id, key) {
+                var that = this;
+                var paramer = {
+                    ids: id,
+                };
+                showConfirm('确定删除？', function () {
+                    showLoading('删除中');
+                    $.post('{yun:}url d=wxapp h=com m=part c=delapply{/yun}', paramer, function (data) {
+                        hideLoading();
+                        if (data.error == 1) {
+                            showToast('删除成功', 2, function () {
+                                that.info.splice(key, 1);
+                            });
+                        } else {
+                            showToast('删除失败');
+                        }
+                    }, 'json')
+                });
+            },
+            resumeShow: function (url) {
+                navigateTo(url)
+            },
+            toPart:function (url) {
+                navigateTo(url)
+            }
+        }
+    });
+</script>
+</body>
+</html>

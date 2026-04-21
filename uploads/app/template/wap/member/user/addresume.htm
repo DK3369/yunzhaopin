@@ -1,0 +1,1164 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+<!-- 创建简历头部 -->
+<div class="create_resume">
+    <div class="create_resume_back">
+        <a href="{yun:}if $backurl{/yun}{yun:}$backurl{/yun}{yun:}else{/yun}javascript:goBack();{yun:}/if{/yun}">
+            <img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
+        </a>
+    </div>
+    <div class="create_resume_h1">创建我的简历</div>
+    <div class="create_resume_p">完善信息，精准高薪职位推荐</div>
+    <div class="create_resume_img">
+        <img src="{yun:}$wap_style{/yun}/images/resume_title.png" alt="" width="100%" height="100%">
+    </div>
+</div>
+
+<!-- 主体部分 -->
+<div id="yunvue" class="yunVueBox none">
+    <div class="create_resume_box">
+        <form id="firstSubmit">
+            <div class="yun_createbox ">
+                <div class="yun_createlist yun_createlist_pr">
+                    <div class="yun_create_name"><span class="m_bt">*</span>姓<span class="nbsp">名</span></div>
+                    <div class="yun_create_text"><input type="text" name="realname" v-model="info.name" placeholder="请输入姓名"></div>
+                    <div class="yun_create_gender">
+                        <div :class="info.sex == 1 ? 'yun_create_genderselect' : ''" @click="changeSex(1)">男</div>
+                        <div :class="info.sex == 2 ? 'yun_create_genderselect' : ''" @click="changeSex(2)">女</div>
+                        <input type="hidden" name="sex" :value="info.sex"/>
+                    </div>
+                </div>
+
+                <div class="yun_createlist" @click="classBox('job')">
+                    <div class="yun_create_name"><span class="m_bt">*</span>工作职能</div>
+                    <div class="yun_create_select" id="jobnameshow" style="color:#cecccc;">{{jobname}}</div>
+                    <div class="yun_create_fx"><img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%"></div>
+                    <input type="hidden" id="job_classid" name="jobclassid" :value="jobclassid"/>
+                </div>
+
+                <div class="yun_createlist">
+                    <div class="yun_create_name"><span class="m_bt">*</span>求职意向</div>
+                    <div class="yun_create_select" @click="expectBox = true" v-if="expectCon">{{expectCon}}</div>
+                    <div class="yun_create_select" @click="expectBox = true" style="color:#cecccc;" v-else>{{noexpectCon}}</div>
+                    <div class="yun_create_fx"><img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%"></div>
+                </div>
+                <div class="yun_createlist">
+                    <div class="yun_create_name"><span class="m_bt">*</span>现居住地</div>
+                    <div class="yun_create_text"><input type="text" name="living" v-model="info.living" placeholder="请输入现居住地"/></div>
+                </div>
+                <div class="yun_createlist" @click="typeShow = true">
+                    <div class="yun_create_name"><span class="m_bt">*</span>工作性质</div>
+                    <div class="yun_create_select" v-if="info.type_n">{{info.type_n}}</div>
+                    <div class="yun_create_select" style="color:#cecccc;" v-else>请选择工作性质</div>
+                    <div class="yun_create_fx">
+                        <img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                    </div>
+                    <input type="hidden" id="type" name="type" :value="info.type">
+                </div>
+                <div class="yun_createlist">
+                    <div class="yun_create_name"><span class="m_bt">*</span>手机号码</div>
+                    <div class="yun_create_text" v-if="info.moblie_status==1&&info.telphone">
+                        <div class="yun_create_bkt">{{info.telphone}}</div>
+                        <i class="yun_create_tip">已验证</i>
+                        <input type="hidden" name="telphone" v-model="info.telphone">
+                    </div>
+                    <div class="yun_create_text" v-else>
+                        <input oninput="value=value.replace(/^0|[\^d]/g,'')" type="number" name="telphone" v-model="info.telphone" placeholder="请输入手机号"/>
+                    </div>
+                </div>
+                <div class="create_resume_yx">
+                    <div class="yun_more_xz ">
+                        <div class="yun_more_xz_left yun_more_yxline" onclick="birthdayPicker()">
+                            <div class="yun_more_xzname"><span class="m_bt">*</span>出生年月</div>
+                            <div class="yun_more_xz_p" v-if="info.birthYear">{{info.birthYear}}</div>
+                            <div class="yun_more_xz_p" style="color:#cecccc;" v-else>请选择</div>
+                            <input type="hidden" name="birthday" :value="info.birthday"/>
+                        </div>
+                        <div class="yun_more_xz_cen yun_more_yxline" @click="eduPicker">
+                            <div class="yun_more_xzname"><span class="m_bt">*</span>最高学历</div>
+                            <div class="yun_more_xz_p" v-if="info.edu_n">{{info.edu_n}}</div>
+                            <div class="yun_more_xz_p" style="color:#cecccc;" v-else>请选择</div>
+                            <input type="hidden" id="edu" name="edu" :value="info.edu"/>
+                        </div>
+                        <div class="yun_more_xz_right" @click="expPicker">
+                            <div class="yun_more_xzname"><span class="m_bt">*</span>工作经验</div>
+                            <div class="yun_more_xz_p" v-if="info.exp_n">{{info.exp_n}}</div>
+                            <div class="yun_more_xz_p" style="color:#cecccc;" v-else>请选择</div>
+                            <input type="hidden" id="exp" name="exp" :value="info.exp"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="Create_resume_btn" @click="firstSubmit">
+                <span v-if="info.resume_create_edu!=1 && info.resume_create_exp!=1 && info.resume_create_project!=1">保存</span>
+                <span v-else>下一步</span>
+            </div>
+        </form>
+    </div>
+
+    <!--求职意向-->
+    <van-popup v-model="expectBox" @opened="changeName" position="right" :style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
+        <!-- 页面头部 -->
+        <div class="workplace_header">
+            <div class="workplace_header_left" @click="expectBox = false">
+                <img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
+            </div>
+            <div class="workplace_header_center">求职意向</div>
+            <div class="workplace_header_right"></div>
+        </div>
+        <!-- 页面整体部分 -->
+        <div class="issue_post_body">
+            <div class="yun_createbox">
+                <form id="expectSubmit">
+                    <div class="yun_createlist">
+                        <div class="yun_create_name"><span class="m_bt">*</span>期望职位</div>
+                        <div class="yun_create_text">
+                            <input type="text" name="name" id="name" value="" placeholder="请输入期望职位名称"/>
+                        </div>
+                    </div>
+                    <div class="yun_createlist" @click="salaryBox = true">
+                        <div class="yun_create_name"><span class="m_bt">*</span>期望薪资</div>
+                        <div class="yun_create_select" v-if="salary">{{salary}}</div>
+                        <div class="yun_create_select" style="color:#cecccc;" v-else>{{nosalary}}</div>
+                        <div class="yun_create_fx"><img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%"></div>
+                        <input type="hidden" name="minsalary" :value="minsalary"/>
+                        <input type="hidden" name="maxsalary" :value="maxsalary"/>
+                    </div>
+                    <div class="yun_createlist" @click="classBox('city')">
+                        <div class="yun_create_name"><span class="m_bt">*</span>工作城市</div>
+                        <div class="yun_create_select" id="citynameshow" style="color:#cecccc;">{{cityname}}</div>
+                        <div class="yun_create_fx"><img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%"></div>
+                        <input type="hidden" id="city_classid" name="cityclassid" :value="cityclassid"/>
+                    </div>
+                    <div class="yun_createlist" @click="rjShow = true">
+                        <div class="yun_create_name"><span class="m_bt">&nbsp;</span>求职状态</div>
+                        <div class="yun_create_select">{{rjValue}}</div>
+                        <div class="yun_create_fx"><img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%"></div>
+                        <input type="hidden" name="jobstatus" :value="info.jobstatus"/>
+                        <input type="hidden" name="report" :value="info.report"/>
+                    </div>
+                    <div class="yun_createlist create_resume_listend Modify_bottom_margin" @click="hyShow = true">
+                        <div class="yun_create_name"><span class="m_bt">&nbsp;</span>从事行业</div>
+                        <div class="yun_create_select" v-if="info.hy_n">{{info.hy_n}}</div>
+                        <div class="yun_create_select" style="color:#cecccc;" v-else>请选择从事行业</div>
+                        <div class="yun_create_fx"><img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%"></div>
+                        <input type="hidden" name="hy" :value="info.hy"/>
+                    </div>
+                </form>
+            </div>
+            <div class="Create_resume_btn" @click="expectSubmit">确认</div>
+        </div>
+    </van-popup>
+
+    <van-popup v-model="typeShow" round position="bottom">
+        <van-picker show-toolbar :columns="type" :default-index="typeIndex" @cancel="typeShow = false" @confirm="typeConfirm"/>
+    </van-popup>
+
+    <van-popup v-model="birthdayShow" round position="bottom">
+        <van-datetime-picker v-model="currentYear" type="year-month" :min-date="minYear" :max-date="maxYear" @cancel="birthdayShow = false" @confirm="birthdayConfirm"/>
+    </van-popup>
+
+    <van-popup v-model="eduShow" round position="bottom">
+        <van-picker show-toolbar :columns="edu" :default-index="eduIndex" @cancel="eduShow = false" @confirm="eduConfirm"/>
+    </van-popup>
+
+    <van-popup v-model="expShow" round position="bottom">
+        <van-picker show-toolbar :columns="exp" :default-index="expIndex" @cancel="expShow = false" @confirm="expConfirm"/>
+    </van-popup>
+
+    <van-popup v-model="rjShow" round position="bottom">
+        <van-picker show-toolbar :columns="rj" @cancel="rjShow = false" @confirm="rjConfirm"/>
+    </van-popup>
+
+    <van-popup v-model="hyShow" round position="bottom">
+        <van-picker show-toolbar :columns="hy" :default-index="hyIndex" @cancel="hyShow = false" @confirm="hyConfirm"/>
+    </van-popup>
+
+    <!--期望薪资弹窗-->
+    <van-popup v-model="salaryBox" round position="bottom">
+        <van-picker show-toolbar :columns="salaryColumns" @cancel="salaryBox = false" @confirm="salarySubmit" @change="salaryChange"/>
+    </van-popup>
+    <!--<van-popup v-model="salaryBox" round position="center" round closeable :style="{ width: '80%'}">-->
+    <!--    <form id="salarySubmit">-->
+    <!--        <div class="salaryh1">期望薪资</div>-->
+    <!--        <div class="salary_list">-->
+    <!--            <div class="salaryname">最低薪资：</div>-->
+    <!--            <div class="salary_text">-->
+    <!--                <input type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" name="minsalary" :value="minsalary" placeholder="请输入最低薪资"/>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--        <div class="salary_list">-->
+    <!--            <div class="salaryname">最高薪资：</div>-->
+    <!--            <div class="salary_text">-->
+    <!--                <input type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" name="maxsalary" :value="maxsalary" placeholder="请输入最高薪资"/>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--        <div class="salary_subnew">-->
+    <!--            <div class="compensation_input_btn" @click="salarySubmit">确认</div>-->
+    <!--        </div>-->
+    <!--    </form>-->
+    <!--</van-popup>-->
+
+    <!--开始、结束时间选择器-->
+    <van-popup v-model="timeBox" round position="bottom">
+        <van-picker show-toolbar :columns="timeData" @cancel="timeBox = false" @confirm="timeConfirm" @change="timeChange"/>
+    </van-popup>
+
+    <!--描述-->
+    <van-popup v-model="contentBox" position="right" :style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
+        <!-- 页面头部 -->
+        <div class="workplace_header">
+            <div class="workplace_header_left" @click="contentSubmit">
+                <img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
+            </div>
+            <div class="workplace_header_center">{{contentTitle}}</div>
+            <div class="workplace_header_right"></div>
+        </div>
+        <div class="description_box">
+            <div class="resume_ms_textarea">
+                <textarea v-model="content" placeholder="请输入描述" style="width: 100%;height: 300px;border: none;outline: none;"></textarea>
+            </div>
+            <div class="Create_resume_btn" @click="contentSubmit">确认</div>
+        </div>
+    </van-popup>
+
+    <!--工作经历-->
+    <van-popup v-model="workBox" position="right" :style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
+        <!-- 页面头部 -->
+        <div class="workplace_header">
+            <div class="workplace_header_left" @click="workBox = false">
+                <img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
+            </div>
+            <div class="workplace_header_center">工作经历</div>
+            <div class="workplace_header_right"></div>
+        </div>
+        <div id="workBox" class="personal_details_min_body">
+            <form id="workSubmit">
+                <div class="yun_createbox yun_tj_box" v-for="(item, wk) in workList" :key="wk">
+                    <div class="yun_createlist">
+                        <div class="yun_create_name"><span class="m_bt">*</span>公司名称</div>
+                        <div class="yun_create_text yun_jl_text">
+                            <input type="text" :name="'workname_' + wk" value="" placeholder="请输入单位名称">
+                        </div>
+                        <div v-if="1 > wk > 0 " class="yun_tjicon" @click="addNewHtml('work')">
+                            <img src="{yun:}$wap_style{/yun}/images/addition.png" alt="" width="100%" height="100%">
+                        </div>
+                        <div v-if="wk > 0" @click="delNewHtml('work', wk)" class="yun_tjicon">
+                            <img src="{yun:}$wap_style{/yun}/images/delete.png" alt="" width="100%" height="100%">
+                        </div>
+                    </div>
+                    <div class="yun_createlist">
+                        <div class="yun_create_name"><span class="m_bt">*</span>担任职位</div>
+                        <div class="yun_create_text">
+                            <input type="text" :name="'worktitle_' + wk" value="" placeholder="请输入担任职位">
+                        </div>
+                    </div>
+                    <div class="yun_createlist">
+                        <div class="yun_create_name"><span class="m_bt">&nbsp;</span>工作内容</div>
+                        <div class="yun_create_select job_resume_right_two" @click="showContent('workList', wk)"
+                             v-if="item.content">{{item.content}}
+                        </div>
+                        <div class="yun_create_select job_resume_right_two" @click="showContent('workList', wk)"
+                             style="color:#cecccc;" v-else>请填写工作内容
+                        </div>
+                        <div class="yun_create_fx">
+                            <img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                        </div>
+                    </div>
+                    <div class="yun_time_box">
+                        <div class="yun_time_all">
+                            <div class="yun_b_xzp" @click="timeShow('workList',wk, 'sdate')">
+                                <div class="yun_time_name"><span class="m_bt">*</span>入职时间</div>
+                                <div class="yun_b_xz" v-if="item.sdate">{{item.sdate}}</div>
+                                <div class="yun_b_xz" style="color:#cecccc;" v-else>请选择</div>
+                                <input type="hidden" :name="'worksdate_' + wk" :value="item.sdate">
+                            </div>
+                            <div class="yun_b_z">至</div>
+                            <div class="yun_b_xzp" @click="timeShow('workList', wk, 'edate')">
+                                <div class="yun_time_name"><span class="m_bt">*</span>离职时间</span></div>
+                                <div class="yun_b_xz" v-if="item.edate">{{item.edate}}</div>
+                                <div class="yun_b_xz" style="color:#cecccc;" v-else>请选择</div>
+                                <input type="hidden" :name="'workedate_' + wk" :value="item.edate">
+                                <input type="hidden" :name="'totoday_' + wk" :value="item.totoday">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="workButton" class="Save_button" @click="workSubmit">
+                    <span v-if="info.resume_create_edu!=1 && info.resume_create_project!=1">保存</span>
+                    <span v-else>下一步</span>
+                </div>
+                <div class="tg_bth" @click="skipPage('work')" v-if="info.iscreateexpshow"><span>跳过</span></div>
+            </form>
+        </div>
+    </van-popup>
+
+    <!--教育经历-->
+    <van-popup v-model="eduBox" position="right" :style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
+        <!-- 页面头部 -->
+        <div class="workplace_header">
+            <div class="workplace_header_left" @click="eduBox = false">
+                <img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
+            </div>
+            <div class="workplace_header_center">教育经历</div>
+            <div class="workplace_header_right"></div>
+        </div>
+        <div id="eduBox" class="personal_details_min_body">
+            <form id="eduSubmit">
+                <div class="yun_createbox yun_tj_box" v-for="(item, ek) in eduList" :key="ek">
+                    <div class="yun_createlist">
+                        <div class="yun_create_name"><span class="m_bt">*</span>学校名称</div>
+                        <div class="yun_create_text yun_jl_text">
+                            <input type="text" :name="'eduname_' + ek" value="" placeholder="请输入学校名称">
+                        </div>
+                        <div v-if="1 > ek > 0 " class="yun_tjicon" @click="addNewHtml('edu')">
+                            <img src="{yun:}$wap_style{/yun}/images/addition.png" alt="" width="100%" height="100%">
+                        </div>
+                        <div v-if="ek > 0" @click="delNewHtml('edu', ek)" class="yun_tjicon">
+                            <img src="{yun:}$wap_style{/yun}/images/delete.png" alt="" width="100%" height="100%">
+                        </div>
+                    </div>
+                    <div class="yun_createlist">
+                        <div class="yun_create_name"><span class="m_bt">&nbsp;</span>专业名称</div>
+                        <div class="yun_create_text">
+                            <input type="text" :name="'specialty_' + ek" value="" placeholder="请输入专业名称">
+                        </div>
+                    </div>
+                    <div class="yun_createlist" @click="eduPicker(ek)">
+                        <div class="yun_create_name"><span class="m_bt">&nbsp;</span>最高学历</div>
+                        <div class="yun_create_select" v-if="item.edu">{{item.edu}}</div>
+                        <div class="yun_create_select" style="color:#cecccc;" v-else>请选择学历</div>
+                        <div class="yun_create_fx">
+                            <img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                        </div>
+                        <input type="hidden" :name="'eduid_' + ek" :value="item.eduid">
+                    </div>
+                    <div class="yun_time_box">
+                        <div class="yun_time_all">
+                            <div class="yun_b_xzp" @click="timeShow('eduList',ek, 'sdate')">
+                                <div class="yun_time_name"><span class="m_bt">*</span>入学时间</div>
+                                <div class="yun_b_xz" v-if="item.sdate">{{item.sdate}}</div>
+                                <div class="yun_b_xz" style="color:#cecccc;" v-else>请选择</div>
+                                <input type="hidden" :name="'edusdate_' + ek" :value="item.sdate">
+                            </div>
+                            <div class="yun_b_z">至</div>
+                            <div class="yun_b_xzp" @click="timeShow('eduList',ek, 'edate')">
+                                <div class="yun_time_name"><span class="m_bt">*</span>离校时间</div>
+                                <div class="yun_b_xz" v-if="item.edate">{{item.edate}}</div>
+                                <div class="yun_b_xz" style="color:#cecccc;" v-else>请选择</div>
+                                <input type="hidden" :name="'eduedate_' + ek" :value="item.edate">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="eduButton" class="Save_button" @click="eduSubmit">
+                    <span v-if="info.resume_create_project!=1">保存</span>
+                    <span v-else>下一步</span>
+                </div>
+                <div class="tg_bth" @click="skipPage('edu')" v-if="info.iscreateedushow"><span>跳过</span></div>
+            </form>
+        </div>
+    </van-popup>
+
+    <!--项目经历-->
+    <van-popup v-model="projectBox" position="right" :style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
+        <!-- 页面头部 -->
+        <div class="workplace_header">
+            <div class="workplace_header_left" @click="projectBox = false">
+                <img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
+            </div>
+            <div class="workplace_header_center">项目经历</div>
+            <div class="workplace_header_right"></div>
+        </div>
+
+        <div id="projectBox" class="personal_details_min_body">
+            <form id="projectSubmit">
+                <div class="yun_createbox yun_tj_box" v-for="(item, pk) in projectList" :key="pk">
+                    <div class="yun_createlist">
+                        <div class="yun_create_name"><span class="m_bt">*</span>项目名称</div>
+                        <div class="yun_create_text yun_jl_text">
+                            <input type="text" :name="'projectname_' + pk" value="" placeholder="请输入项目名称">
+                        </div>
+                        <div v-if="1 > pk > 0 " class="yun_tjicon" @click="addNewHtml('project')">
+                            <img src="{yun:}$wap_style{/yun}/images/addition.png" alt="" width="100%" height="100%">
+                        </div>
+                        <div v-if="pk > 0" @click="delNewHtml('project', pk)" class="yun_tjicon">
+                            <img src="{yun:}$wap_style{/yun}/images/delete.png" alt="" width="100%" height="100%">
+                        </div>
+                    </div>
+                    <div class="yun_createlist">
+                        <div class="yun_create_name"><span class="m_bt">*</span>担任职位</div>
+                        <div class="yun_create_text">
+                            <input type="text" :name="'projecttitle_' + pk" value="" placeholder="请输入担任职位">
+                        </div>
+                    </div>
+                    <div class="yun_createlist">
+                        <div class="yun_create_name"><span class="m_bt">&nbsp;</span>项目内容</div>
+                        <div class="yun_create_select" @click="showContent('projectList', pk)" v-if="item.content">{{item.content}}</div>
+                        <div class="yun_create_select" @click="showContent('projectList', pk)" style="color:#cecccc;" v-else>请填写项目内容</div>
+                        <div class="yun_create_fx">
+                            <img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                        </div>
+                    </div>
+                    <div class="yun_time_box">
+                        <div class="yun_time_all">
+                            <div class="yun_b_xzp" @click="timeShow('projectList',pk, 'sdate')">
+                                <div class="yun_time_name"><span class="m_bt">*</span>开始时间</div>
+                                <div class="yun_b_xz" v-if="item.sdate">{{item.sdate}}</div>
+                                <div class="yun_b_xz" style="color:#cecccc;" v-else>请选择</div>
+                                <input type="hidden" :name="'projectsdate_' + pk" :value="item.sdate">
+                            </div>
+                            <div class="yun_b_z">至</div>
+                            <div class="yun_b_xzp" @click="timeShow('projectList',pk, 'edate')">
+                                <div class="yun_time_name"><span class="m_bt">*</span>结束时间</div>
+                                <div class="yun_b_xz" v-if="item.edate">{{item.edate}}</div>
+                                <div class="yun_b_xz" style="color:#cecccc;" v-else>请选择</div>
+                                <input type="hidden" :name="'projectedate_' + pk" :value="item.edate">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="projectButton" class="Save_button" @click="projectSubmit">保存</div>
+                <div class="tg_bth" @click="skipPage('pro')" v-if="info.iscreateproshow"><span>跳过</span></div>
+            </form>
+        </div>
+    </van-popup>
+</div>
+
+<script>
+    var pickerType = '';
+    var pickerKey = 0;
+    var pickerTime = '';
+    var cmcJs = null;
+    var expectData = {};
+    var formData = {};
+    var timestamp = new Date();
+    var year = timestamp.getFullYear();
+    var workObj = {
+        name: '',
+        title: '',
+        content: '',
+        sdate: '',
+        edate: '',
+        totoday: 0
+    };
+    var eduObj = {
+        name: '',
+        specialty: '',
+        sdate: '',
+        edate: '',
+        edu: '',
+        eduid: 0
+    };
+    var projectObj = {
+        name: '',
+        title: '',
+        content: '',
+        sdate: '',
+        edate: ''
+    };
+    var yunvue = new Vue({
+        el: '#yunvue',
+        data() {
+            return {
+                info: {},
+                expectBox: false,
+                cityname: '请选择工作城市',
+                cityclassid: '',
+                jobname: '请选择工作职能',
+                jobclassid: '',
+                typeShow: false,
+                typeIndex: 0,
+                type: [],
+                eduShow: false,
+                eduIndex: 0,
+                edu: [],
+                expShow: false,
+                expIndex: 0,
+                exp: [],
+                birthdayShow: false,
+                currentYear: 0,
+                minYear: new Date(1960, 0),
+                maxYear: new Date(year-16,11),
+                rjShow: false,
+                rj: [],
+                rjValue: '请选择求职状态',
+                salary: '',
+                nosalary: '请填写期望薪资',
+                minsalary: '',
+                maxsalary: '',
+                salaryList: [],
+                salaryColumns: [],
+                salaryBox: false,
+                expectCon: '',
+                noexpectCon: '请完善求职意向',
+                workBox: false,
+                workList: [],
+                eduList: [],
+                projectList: [],
+                contentBox: false,
+                contentTitle: '',
+                content: '',
+                eduBox: false,
+                projectBox: false,
+                hyShow: false,
+                hy: [],
+                hyIndex: 0,
+                timeData: [],
+                timeBox: false,
+                eid: 0,
+
+                isShow: false   //  新增必填项判断
+            };
+        },
+        created() {
+            this.infoShow();
+        },
+        methods: {
+            infoShow: function () {
+                let self = this;
+                showLoading();
+                $.post('{yun:}url d=wxapp h=user m=resume c=addresume{/yun}', {rand: Math.random()}, function (res) {
+                    hideLoading();
+                    $('#yunvue').removeClass('none');
+                    if (res.error == 0) {
+                        var list = res.data.resume;
+                        self.info = list;
+                        // 时间选择器参数要重新处理，iOS不支持以中划线分隔的日期格式，要替换成反斜杠/
+                        var birthday = list.birthday ? list.birthday.replace(/-/g, '/') : '1988/08/08';
+                        self.currentYear = new Date(birthday);
+                        self.loadJs();
+                        if (list.sex == '') {
+                            self.changeSex(1);
+                        }
+
+                        if (res.data.salaryList.length > 0) {
+                            self.salaryList = res.data.salaryList;
+                            let minsalaryColumns = {values: [], defaultIndex: 0};
+                            maxsalaryColumns = {values: [], defaultIndex: 0};
+
+                            self.salaryList.forEach(function(item,index) {
+                                if (index < self.salaryList.length - 1) {
+                                    minsalaryColumns.values.push(item)
+                                }
+                                if (index > 0) {
+                                    maxsalaryColumns.values.push(item)
+                                }
+                            })
+                            self.salaryColumns = [minsalaryColumns, maxsalaryColumns];
+                        }
+                    } else {
+                        showModal(res.msg, function () {
+                            window.location.href = 'index.php';
+                        });
+                    }
+                    var cmcCss = document.createElement('link');
+                    cmcCss.href = "{yun:}$wap_style{/yun}/css/cmc.css?v={yun:}$config.cachecode{/yun}";
+                    cmcCss.rel = "stylesheet";
+                    document.body.appendChild(cmcCss);
+                }, 'json')
+            },
+            changeSex: function (id) {
+                this.info.sex = id;
+            },
+            typeConfirm(e) {
+                this.typeShow = false;
+                this.info.type = e.value;
+                this.info.type_n = e.text;
+            },
+            rjPicker: function () {
+                rjPicker(this.info.jobstatus, this.info.report);
+            },
+            rjConfirm(e) {
+                this.rjShow = false;
+                var rj = e[0].text;
+                if (e[1].value > 0) {
+                    rj += '-' + e[1].text;
+                }
+                this.rjValue = rj;
+                this.info.jobstatus = e[0].value;
+                this.info.report = e[1].value;
+            },
+            birthdayConfirm(e) {
+                this.birthdayShow = false;
+                this.info.birthYear = e.getFullYear();
+                this.info.birthday = timeFormat(e, 'month');
+            },
+            eduPicker: function (key) {
+                if (typeof (key) === 'number') {
+                    // 教育经历中的picker
+                    pickerType = 'eduList';
+                    pickerKey = key;
+                    eduPicker(this.eduList[key].eduid);
+                } else {
+                    pickerType = '';
+                    eduPicker(this.info.edu);
+                }
+            },
+            eduConfirm(e) {
+                this.eduShow = false;
+                if (pickerType == 'eduList') {
+                    // 教育经历中的picker
+                    this[pickerType][pickerKey].edu = e.text;
+                    this[pickerType][pickerKey].eduid = e.value;
+                } else {
+                    this.info.edu = e.value;
+                    this.info.edu_n = e.text;
+                }
+            },
+            expPicker: function () {
+                expPicker(this.info.exp);
+            },
+            expConfirm(e) {
+                this.expShow = false;
+                this.info.exp = e.value;
+                this.info.exp_n = e.text;
+            },
+            classBox: function (type) {
+                cityjobVue.$data[type + 'Show'] = true;
+                // 加载职位、地区多选js
+                if (cmcJs) {
+                    cmcJs.remove();
+                }
+                if (typeof zn_search !== "undefined") {
+                    delete (zn_search);
+                    $('.zn_search').off('input', '.inputListener');
+                    $('.classTap').off('change', 'input');
+                }
+                cmcJs = document.createElement('script');
+                cmcJs.src = "{yun:}$wap_style{/yun}/js/cmc.js?v={yun:}$config.cachecode{/yun}";
+                document.body.appendChild(cmcJs);
+            },
+            salaryChange: function(picker, value, index) {
+                let salaryList = this.salaryList,
+                    maxsalary = [];
+                if (index === 0) {
+                    salaryList.forEach(function(item, key) {
+                        if (parseInt(value[index]) < parseInt(item)) {
+                            maxsalary.push(item)
+                        }
+                    })
+                    picker.setColumnValues(1, maxsalary);
+                    picker.setColumnIndex(1, 0);
+                }
+            },
+            salarySubmit: function (value) {
+                this.minsalary = value[0];
+                this.maxsalary = value[1];
+                this.salary = value[0] + '-' + value[1] + '元';
+                this.salaryBox = false;
+
+                // var v = getFormValue('salarySubmit');
+                // if (v.minsalary.trim() == '') {
+                //     showModal('请填写期望薪资');
+                //     return false;
+                // } else if (parseInt(v.minsalary) > parseInt(v.maxsalary) && v.minsalary.trim() != '') {
+                //     showModal('请正确填写期望薪资范围');
+                //     return false;
+                // }
+                // if (v.maxsalary.trim() != '') {
+                //     this.maxsalary = v.maxsalary;
+                //     this.minsalary = v.minsalary;
+                //     this.salary = v.minsalary + '-' + v.maxsalary;
+                // } else {
+                //     this.minsalary = v.minsalary;
+                //     this.maxsalary = v.maxsalary;
+                //     this.salary = v.minsalary;
+                // }
+                // this.salaryBox = false;
+            },
+            hyConfirm(e) {
+                this.hyShow = false;
+                this.info.hy = e.value;
+                this.info.hy_n = e.text;
+            },
+            changeName() {
+                let jobnameshow = $("#jobnameshow").text();
+                let name = $("#name").val();
+
+                if (name == '' && jobnameshow != '请选择工作职能') {
+                    var jobname_arr = this.jobname.split(' ');
+                    $("#name").val(jobname_arr[0]);
+                }
+            },
+            expectSubmit: function () {
+                var v = getFormValue('expectSubmit');
+                if (v.name.length == 0) {
+                    showModal('请填写期望职位');
+                    return false;
+                }
+                if (!this.minsalary) {
+                    showModal('请填写期望薪资');
+                    return false;
+                }
+                if (v.cityclassid == 0) {
+                    showModal('请选择期望城市');
+                    return false;
+                }
+                if (v.jobstatus == 0 || v.report == 0) {
+                    showModal('请选择求职状态');
+                    return false;
+                }
+                expectData = {
+                    name: v.name,
+                    minsalary: this.minsalary,
+                    maxsalary: this.maxsalary,
+                    cityclassid: v.cityclassid,
+                    report: v.report,
+                    jobstatus: v.jobstatus,
+                    hy: v.hy
+                };
+                var cityname = document.getElementById("citynameshow").innerText;
+                this.expectCon = `${v.name} · ${this.salary} · ${cityname} · ${this.rjValue}`;
+
+                this.expectBox = false;
+            },
+            firstSubmit: function () {
+                var evalue = getFormValue('firstSubmit');
+                var that = this;
+
+                if (!evalue.realname) {
+                    showModal('请填写姓名');
+                    return false;
+                } else {
+                    var resumename = '{yun:}$config.sy_resumename_num{/yun}';
+                    if (parseInt(resumename) && parseInt(resumename) > 0 && !isChinaName(evalue.realname)) {
+                        showModal('姓名请输入2-6位汉字');
+                        return false;
+                    }
+                }
+                if (!evalue.sex) {
+                    showModal('请选择性别');
+                    return false;
+                }
+                if (!evalue.living) {
+                    showModal('请填写现居住地');
+                    return false;
+                }
+                if (!evalue.type) {
+                    showModal('请选择工作性质');
+                    return false;
+                }
+                if (!evalue.jobclassid) {
+                    showModal('请选择工作职能');
+                    return false;
+                }
+                if (!evalue.telphone) {
+                    showModal('请填写手机号码');
+                    return false;
+                }
+                if (isjsMobile(evalue.telphone) == false) {
+                    showModal('手机号码格式错误');
+                    return false;
+                }
+                if (!evalue.birthday) {
+                    showModal('请选择出生年份');
+                    return false;
+                }
+                if (!evalue.edu) {
+                    showModal('请选择最高学历');
+                    return false;
+                }
+                if (!evalue.exp) {
+                    showModal('请选择工作经验');
+                    return false;
+                }
+
+                var firstarr = Object.keys(expectData);
+                if (firstarr.length == 0) {
+                    showModal('请完善求职意向');
+                    return false;
+                }
+                formData = expectData;
+                formData['realname'] = evalue.realname;
+                formData['birthday'] = evalue.birthday;
+                formData['telphone'] = evalue.telphone;
+                formData['living'] = evalue.living;
+                formData['jobclassid'] = evalue.jobclassid;
+                formData['type'] = evalue.type;
+                formData['sex'] = evalue.sex;
+                formData['edu'] = evalue.edu;
+                formData['exp'] = evalue.exp;
+                if (this.info.resume_create_edu != 1 && this.info.resume_create_exp != 1 && this.info.resume_create_project != 1) {
+
+                    this.saveForm();
+                } else {
+
+                    showLoading();
+
+                    formData.source = 2;
+                    formData.eid = that.eid;
+                    formData.presave = 1;
+
+                    $.post('{yun:}url d=wxapp h=user m=resume c=saveaddresume{/yun}', formData, function (data) {
+                        hideLoading();
+                        if (data.error == 1) {
+
+                            that.eid = data.data.eid;
+
+                            /* 新增必填项判断Start */
+                            var jobClassArr = evalue.jobclassid.split(',');
+                            ji.forEach(one => {
+                                jobClassArr.forEach(j1 => {
+                                    if (j1 == one) {
+
+                                        if (that.info.jobClassCreate.indexOf(one) > -1) {
+
+                                            that.isShow = true;
+                                        }
+                                    }
+                                });
+                                if (typeof (jt[one]) != 'undefined') {
+                                    jt[one].forEach(two => {
+                                        jobClassArr.forEach(j2 => {
+                                            if (j2 == two) {
+                                                if (that.info.jobClassCreate.indexOf(two) > -1) {
+                                                    that.isShow = true;
+                                                }
+                                            }
+                                        });
+                                        if (typeof (jt[two]) != 'undefined') {
+                                            jt[two].forEach(three => {
+                                                jobClassArr.forEach(j3 => {
+                                                    if (j3 == three) {
+                                                        if (that.info.jobClassCreate.indexOf(three) > -1) {
+                                                            that.isShow = true;
+                                                        }
+                                                    }
+                                                });
+                                            })
+                                        }
+                                    });
+                                }
+                            });
+                            /* 新增必填项判断End */
+
+                            if (that.info.resume_create_exp == 1) {
+                                // 工作经历必填
+                                if (that.info.expcreate.includes(formData.exp) || that.isShow) {
+                                    // 工作经历可以跳过
+                                    that.info.iscreateexpshow = true;
+                                } else {
+                                    that.info.iscreateexpshow = false;
+                                }
+                                that.workBox = true;
+                                if (that.workList.length == 0) {
+                                    that.workList.push(deepClone(workObj));
+                                }
+                            } else if (that.info.resume_create_edu == 1) {
+                                // 教育经历必填
+                                if (that.info.educreate.includes(formData.edu) || that.isShow) {
+                                    // 教育经历可以跳过
+                                    that.info.iscreateedushow = true;
+                                } else {
+                                    that.info.iscreateedushow = false;
+                                }
+                                that.eduBox = true;
+                                if (that.eduList.length == 0) {
+                                    that.eduList.push(deepClone(eduObj));
+                                }
+                            } else if (that.info.resume_create_project == 1) {
+                                // 项目经历必填
+                                if (that.info.expcreate.includes(formData.exp) || that.isShow) {
+                                    // 工作经历可以跳过
+                                    that.info.iscreateproshow = true;
+                                } else {
+                                    that.info.iscreateproshow = false;
+                                }
+                                that.projectBox = true;
+                                if (that.projectList.length == 0) {
+                                    that.projectList.push(deepClone(projectObj));
+                                }
+                            }
+                        } else {
+
+                            showModal(data.msg);
+                        }
+                    }, 'json')
+                }
+            },
+            saveForm: function () {
+                showLoading();
+                formData.source = 2;
+                formData.eid = this.eid;
+                $.post('{yun:}url d=wxapp h=user m=resume c=saveaddresume{/yun}', formData, function (data) {
+                    hideLoading();
+                    if (data.error == 1) {
+                        // 将本页面历史记录改成简历管理，防止返回导致重复创建简历
+                        window.history.replaceState({}, "", 'index.php?c=resume');
+                        navigateTo('index.php?c=optimize&add=1&eid=' + data.data.eid);
+                    } else {
+                        showModal(data.msg);
+                    }
+                }, 'json')
+            },
+            showContent: function (type, key) {
+                pickerType = type;
+                pickerKey = key;
+                if (type == 'workList') {
+                    this.contentTitle = '工作内容';
+                    this.content = this.workList[key].content;
+                } else if (type == 'projectList') {
+                    this.contentTitle = '项目内容';
+                    this.content = this.projectList[key].content;
+                }
+                this.contentBox = true;
+            },
+            contentSubmit: function () {
+                this[pickerType][pickerKey]['content'] = this.content;
+                this.contentBox = false;
+            },
+            addNewHtml: function (type) {
+                if (type == 'work') {
+                    if (this.workList.length > 2) {
+                        return showModal('最多可以添加三份工作经历');
+                    }
+                    this.workList.push(deepClone(workObj));
+                    setTimeout(function () {
+                        window.location.href = '#workButton';
+                    });
+                } else if (type == 'edu') {
+                    if (this.eduList.length > 2) {
+                        return showModal('最多可以添加三份教育经历');
+                    }
+                    this.eduList.push(deepClone(eduObj));
+                    setTimeout(function () {
+                        window.location.href = '#eduButton';
+                    });
+                } else if (type == 'project') {
+                    if (this.projectList.length > 2) {
+                        return showModal('最多可以添加三份项目经历');
+                    }
+                    this.projectList.push(deepClone(projectObj));
+                    setTimeout(function () {
+                        window.location.href = '#projectButton';
+                    });
+                }
+            },
+            delNewHtml: function (type, key) {
+                if (type == 'work') {
+                    this.workList.splice(key, 1);
+                } else if (type == 'edu') {
+                    this.eduList.splice(key, 1);
+                } else if (type == 'project') {
+                    this.projectList.splice(key, 1);
+                }
+            },
+            skipPage: function (type) {
+                // 跳过
+                if (type == 'work') {
+                    this.skipOrSubmitOfWork();
+                } else if (type == 'edu') {
+                    this.skipOrSubmitOfEdu();
+                } else if (type == 'pro') {
+                    this.skipOrSubmitOfPro();
+                }
+            },
+            workSubmit: function () {
+                // // 工作经历下一步
+                var field = getFormValue('workSubmit');
+                for (var i = 0; i < this.workList.length; i++) {
+                    var st = Date.parse(field['worksdate_' + i]) / 1000,
+                        ed = Date.parse(field['workedate_' + i]) / 1000;
+                    if (!field['workname_' + i]) {
+                        showModal('请填写第' + (i + 1) + '份工作经历的公司名称');
+                        return false;
+                    } else if (!field['worktitle_' + i]) {
+                        showModal('请填写第' + (i + 1) + '份工作经历的担任职位');
+                        return false;
+                    } else if (!field['worksdate_' + i]) {
+                        showModal('请选择第' + (i + 1) + '份工作经历的入职时间');
+                        return false;
+                    } else if (!field['workedate_' + i] && parseInt(field['totoday_' + i]) == 0) {
+                        showModal('请选择第' + (i + 1) + '份工作经历的离职时间');
+                        return false;
+                    } else if (field['worksdate_' + i] && field['workedate_' + i] && st > ed) {
+                        showModal('第' + (i + 1) + '份工作经历的离职时间不能小于入职时间');
+                        return false;
+                    }
+                    field['workcontent_' + i] = this.workList[i].content;
+                }
+                Object.assign(formData, field);
+                this.skipOrSubmitOfWork();
+            },
+            skipOrSubmitOfWork: function () {
+                if (this.info.resume_create_edu != 1 && this.info.resume_create_project != 1) {
+                    this.saveForm();
+                } else {
+                    if (this.info.resume_create_edu == 1) {
+                        // 教育经历必填
+                        if (this.info.educreate.includes(formData.edu) || this.isShow) {
+                            // 教育经历可以跳过
+                            this.info.iscreateedushow = true;
+                        } else {
+                            this.info.iscreateedushow = false;
+                        }
+                        this.eduBox = true;
+                        if (this.eduList.length == 0) {
+                            this.eduList.push(deepClone(eduObj));
+                        }
+                    } else if (this.info.resume_create_project == 1) {
+                        // 项目经历必填
+                        if (this.info.expcreate.includes(formData.exp) || this.isShow) {
+                            // 项目经历可以跳过
+                            this.info.iscreateproshow = true;
+                        } else {
+                            this.info.iscreateproshow = false;
+                        }
+                        this.projectBox = true;
+                        if (this.projectList.length == 0) {
+                            this.projectList.push(deepClone(projectObj));
+                        }
+                    }
+                }
+            },
+            eduSubmit: function () {
+                // 教育经历下一步
+                var field = getFormValue('eduSubmit');
+                for (var i = 0; i < this.eduList.length; i++) {
+                    var st = Date.parse(field['edusdate_' + i]) / 1000,
+                        ed = Date.parse(field['eduedate_' + i]) / 1000;
+                    if (!field['eduname_' + i]) {
+                        showModal('请填写第' + (i + 1) + '份教育经历的学校名称');
+                        return false;
+                    } else if (!field['eduid_' + i]) {
+                        showModal('请填写第' + (i + 1) + '份教育经历的学历');
+                        return false;
+                    } else if (!field['edusdate_' + i]) {
+                        showModal('请选择第' + (i + 1) + '份教育经历的入学时间');
+                        return false;
+                    } else if (!field['eduedate_' + i]) {
+                        showModal('请选择第' + (i + 1) + '份教育经历的毕业时间');
+                        return false;
+                    } else if (field['edusdate_' + i] && field['eduedate_' + i] && st > ed) {
+                        showModal('第' + (i + 1) + '份教育经历的毕业时间不能小于入学时间');
+                        return false;
+                    }
+                }
+                Object.assign(formData, field);
+                this.skipOrSubmitOfEdu();
+            },
+            skipOrSubmitOfEdu: function () {
+                if (this.info.resume_create_project != 1) {
+                    this.saveForm();
+                } else {
+                    if (this.info.expcreate.includes(formData.exp) || this.isShow) {
+                        // 教育经历可以跳过
+                        this.info.iscreateproshow = true;
+                    } else {
+                        this.info.iscreateproshow = false;
+                    }
+                    this.projectBox = true;
+                    if (this.projectList.length == 0) {
+                        this.projectList.push(deepClone(projectObj));
+                    }
+                }
+            },
+            projectSubmit: function () {
+                var field = getFormValue('projectSubmit');
+                for (var i = 0; i < this.projectList.length; i++) {
+                    var st = Date.parse(field['projectsdate_' + i]) / 1000,
+                        ed = Date.parse(field['projectedate_' + i]) / 1000;
+                    if (!field['projectname_' + i]) {
+                        showModal('请填写第' + (i + 1) + '份项目经历的项目名称');
+                        return false;
+                    } else if (!field['projecttitle_' + i]) {
+                        showModal('请填写第' + (i + 1) + '份项目经历的担任职位');
+                        return false;
+                    } else if (!field['projectsdate_' + i]) {
+                        showModal('请选择第' + (i + 1) + '份项目经历的开始时间');
+                        return false;
+                    } else if (!field['projectedate_' + i]) {
+                        showModal('请选择第' + (i + 1) + '份项目经历的结束时间');
+                        return false;
+                    } else if (field['projectsdate_' + i] && field['projectedate_' + i] && st > ed) {
+                        showModal('第' + (i + 1) + '份项目经历的结束时间不能小于开始时间');
+                        return false;
+                    }
+                    field['projectcontent_' + i] = this.projectList[i].content;
+                }
+                Object.assign(formData, field);
+                this.skipOrSubmitOfPro();
+            },
+            skipOrSubmitOfPro: function () {
+                this.saveForm();
+            },
+            loadJs: function () {
+                let a = document.createElement('script');
+                a.src = "{yun:}$plusstyle{/yun}/user.cache.js?v={yun:}$config.cachecode{/yun}";
+                document.body.appendChild(a);
+
+                let g = document.createElement('script');
+                g.src = "{yun:}$plusstyle{/yun}/industry.cache.js?v={yun:}$config.cachecode{/yun}";
+                document.body.appendChild(g);
+
+                // js加载完成，处理默认值
+                $.getScript('{yun:}$wap_style{/yun}/js/userPicker.js?v={yun:}$config.cachecode{/yun}', function () {
+                    setTimeout(function () {
+                        typePicker(0, false);
+                        rjPicker(0, 0, false);
+                        hyPicker(0, false);
+                    }, 500);
+                });
+
+                let c = document.createElement('script');
+                c.src = "{yun:}$plusstyle{/yun}/job.cache.js?v={yun:}$config.cachecode{/yun}";
+                document.body.appendChild(c);
+
+                let d = document.createElement('script');
+                d.src = "{yun:}$plusstyle{/yun}/jobparent.cache.js?v={yun:}$config.cachecode{/yun}";
+                document.body.appendChild(d);
+
+                let e = document.createElement('script');
+                e.src = "{yun:}$plusstyle{/yun}/city.cache.js?v={yun:}$config.cachecode{/yun}";
+                document.body.appendChild(e);
+
+                let f = document.createElement('script');
+                f.src = "{yun:}$plusstyle{/yun}/cityparent.cache.js?v={yun:}$config.cachecode{/yun}";
+                document.body.appendChild(f);
+
+            },
+            // 时间picker显示
+            timeShow(type, key, time) {
+                pickerType = type;
+                pickerKey = key;
+                pickerTime = time;
+
+                this.timeData = timePicker(type, time, this[pickerType][pickerKey][pickerTime]);
+                let self = this;
+                setTimeout(function () {
+                    self.timeBox = true;
+                })
+            },
+            // 时间picker滚动
+            timeChange: function (e) {
+                var f = e.getValues();
+                if (f[0] == '至今') {
+                    this.timeData[1].values = [];
+                } else {
+                    this.timeData[1].values = workMonth;
+                }
+            },
+            // 时间picker确认
+            timeConfirm: function (e) {
+                this.timeBox = false;
+                if (e[0] == '至今') {
+                    var date = e[0];
+                    this[pickerType][pickerKey]['totoday'] = 1;
+                } else {
+                    var date = e.join('-');
+                    if (pickerType == 'workList' && pickerTime == 'edate') {
+                        this[pickerType][pickerKey]['totoday'] = 0;
+                    }
+                }
+                this[pickerType][pickerKey][pickerTime] = date;
+                this.timeData = [];
+            }
+        }
+    });
+</script>
+<!--提醒创建简历公共弹窗-->
+{yun:}include file="$wapstyle/member/public/remind.htm"{/yun}
+<!--职能、城市公共弹窗-->
+{yun:}include file="$wapstyle/member/public/resume_city_job.htm"{/yun}
+</body>
+</html>

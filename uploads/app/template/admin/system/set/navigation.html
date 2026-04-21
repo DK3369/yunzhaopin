@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="daohaapp" class="moduleElenAl">
+        <div class="moduleSeachs">
+            <div class="moduleSeachInpt moduleSeachwapsju">
+                <el-input placeholder="请输入你要搜索的关键字" v-model="keyword" class="input-with-select" size="small" clearable>
+                    <el-select v-model="nid" slot="prepend" :clearable="true" placeholder="请选择">
+                        <el-option v-for="(citem, ckey) in nclass" :label="citem" :value="ckey" :key="ckey"></el-option>
+                    </el-select>
+                </el-input>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+            </div>
+            <div class="moduleSeachButn">
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="openAdd('')">添加导航</el-button>
+				<el-button type="primary" icon="el-icon-document-add" size="mini" @click="drawerType=true">添加分类</el-button>
+            </div>
+        </div>
+        <div class="moduleElTable">
+            <el-table :data="list" border style="width: 100%" ref="multipleTable"
+                @selection-change="handleSelectionChange" :header-cell-style="{background:'#f5f7fa',color:'#606266'}"
+                height="100%" @sort-change="sortChange" v-loading="loading" :empty-text="emptytext">
+                <el-table-column type="selection" width="55">
+                </el-table-column>
+                <el-table-column prop="id" label="导航编号" width="80">
+                </el-table-column>
+                <el-table-column prop="name" label="导航名称" width="100">
+                </el-table-column>
+                <el-table-column prop="typename" label="导航类别" width="120">
+                </el-table-column>
+                <el-table-column prop="url" label="导航链接">
+                </el-table-column>
+                <el-table-column prop="type_n" label="导航类型" width="120">
+                </el-table-column>
+                <el-table-column prop="sort" sortable="custom" label="排序" width="80">
+                    <template slot-scope="scope">
+                        <div class="moduleProps moduleTrButn" v-if="scope.row[scope.column.property + 'isShow']">
+                            <el-input :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
+                                      v-model="scope.row.sort" type="number" @blur="editSort(scope)"></el-input>
+                        </div>
+                        <div class="moduleProps moduleTrButn" v-else>
+                            <span>{{ scope.row.sort }}</span>
+                            <el-button type="text" icon="el-icon-edit" @click="showSort(scope)"></el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column label="弹出窗口" width="170">
+                    <template slot-scope="scope">
+                        <el-switch v-model="scope.row.eject" active-color="#1890FF" inactive-color="#B8BDC9"
+                            @change="ejectChange($event, scope.$index)" active-text="新窗口" active-value="1"
+                            inactive-text="原窗口" inactive-value="0">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column label="显示" width="70">
+                    <template slot-scope="scope">
+                        <el-switch v-model="scope.row.display" active-color="#1890FF" inactive-color="#B8BDC9"
+                            @change="displayChange($event, scope.$index)" active-value="1" inactive-value="0">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="140">
+                    <template slot-scope="scope">
+                        <div class="cz_button">
+                            <el-button size="mini" @click="openAdd(scope.row)">修改</el-button>
+                            <el-button size="mini" @click="del(scope.$index)" type="danger">删除</el-button>
+                        </div>
+
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="modulePagButn">
+				<el-checkbox v-model="allchecked" @change="allcheckChange">全选</el-checkbox>
+                <el-button size="mini" @click="batch('del')">批量删除</el-button>
+            </div>
+            <div class="modulePagNum">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                    :current-page="page" :page-sizes="pageSizes" :page-size="limit"
+                    layout="total, sizes, prev, pager, next, jumper" :total="total">
+                </el-pagination>
+            </div>
+        </div>
+
+        <div class="modluDrawer">
+            <el-drawer :title="id ? '修改导航' : '添加导航'" :visible.sync="drawerAdd" :modal-append-to-body="false"
+                :show-close="true" :with-header="true" size="45%">
+                <navigationadd :id="id" @child-event="closeAdd" v-if="drawerAdd"></navigationadd>
+            </el-drawer>
+            <el-drawer title="导航类别" :visible.sync="drawerType" :append-to-body="true" :show-close="true"
+                :with-header="true" size="45%">
+                <navigationtype @child-event="closeType" v-if="drawerType"></navigationtype>
+            </el-drawer>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#daohaapp',
+            data: function () {
+                return {
+                    emptytext: '暂无数据',
+                    loading: false,
+                    // 列表
+                    page: 1,
+                    prevPage: 0,
+                    limit: 0,
+                    list: [],
+                    total: 0,
+                    pageSizes: [],
+                    multipleSelection: [], // 多选值存储
+                    idArr: [],
+					
+					allchecked: false,
+
+                    // 列表排序
+                    t: '',
+                    order: '',
+
+                    // 搜索条件
+                    nclass: {},
+                    nid: '',
+                    keyword: '',
+
+                    // 添加/编辑弹出框
+                    drawerAdd: false,
+                    id: 0,
+
+                    // 分类列表
+                    drawerType: false,
+                    
+                }
+            },
+            components: {
+                'navigationadd': httpVueLoader('./component/navigationadd.vue'),
+                'navigationtype': httpVueLoader('./component/navigationtype.vue'),
+            },
+            created: function () {
+                this.getList();
+            },
+            methods: {
+                handleSizeChange(val) {
+                    this.limit = val;
+                    this.getList();
+                },
+                handleCurrentChange(val) {
+                    this.page = val;
+                    this.getList();
+                },
+                sortChange(event) {
+                    this.t = event.order ? event.prop : '';
+                    this.order = event.order ? event.order == 'descending' ? 'desc' : 'asc' : '';
+                    this.search();
+                },
+                getList() {
+                    let that = this,
+                        params = {
+                            page: that.page,
+                            limit: that.limit,
+                            nid: that.nid,
+                            keyword: that.keyword,
+                            t: that.t,
+                            order: that.order,
+                        };
+                    that.loading = true;
+                    that.emptytext = "数据加载中";
+                    httpPost('m=system&c=set_navigation', params).then(function (response) {
+                        let res = response.data,
+                            data = res.data;
+
+                        that.nclass = data.nclass;
+
+                        let list = data.nav;
+
+                        list.forEach(function (item, index) {
+                            list[index].sortEdit = false; // 提前赋值，方便后边排序修改
+                        })
+
+                        that.list = list;
+                        that.total = parseInt(data.total);
+                        that.pageSizes = data.page_sizes;
+                        if (that.limit === 0) {
+                            that.limit = parseInt(data.limit); // 取系统配置默认数量
+                        }
+                        if (that.page > data.page) {
+                            that.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+                        }
+                        if (that.prevPage != that.page) {
+                            that.prevPage = that.page;
+                            that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        }
+                        that.loading = false;
+                        if (that.list.length === 0){
+                            that.emptytext = "暂无数据";
+                        }
+                    })
+                },
+                search() {
+                    this.page = 1;
+                    this.getList();
+                },
+
+                // 排序
+                showSort(scope) {
+                    let index = scope.$index;
+                    let row = scope.row;
+                    let column = scope.column;
+                    this.oldData = JSON.parse(JSON.stringify(row));
+                    let copyRow = JSON.parse(JSON.stringify(row));
+                    copyRow[column.property + "isShow"] = true;
+                    this.$set(this.list, index, copyRow);
+                    this.$nextTick(() => {
+                        let ref = column.property + index;
+                        $("#" + ref).focus();
+                    });
+                },
+                editSort(scope) {
+                    if (this.oldData == null) {
+                        return false;
+                    }
+                    let index = scope.$index;
+                    let row = scope.row;
+                    let column = scope.column;
+                    let copyRow = JSON.parse(JSON.stringify(row));
+                    copyRow[column.property + "isShow"] = false;
+                    this.$set(this.list, index, copyRow);
+                    if (row[column.property] === this.oldData[column.property]) {
+                        return false;
+                    }
+                    let _this = this;
+                    let sendData = {id: row.id};
+                    sendData[column.property] = row[column.property];
+                    httpPost('m=system&c=set_navigation&a=navsort', sendData).then(function (response) {
+                        let res = response.data;
+                        _this.oldData = null;
+                        if (res.error > 0) {
+                            message.error(res.msg);
+                        }else{
+                            message.success(res.msg,function(){
+                                _this.getList();
+                            });
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                },
+
+                ejectChange(val, idx) {
+                    let params = {
+                        type: 'eject',
+                        rec: val,
+                        id: this.list[idx].id
+                    };
+
+                    httpPost('m=system&c=set_navigation&a=navset', params).then(function (res) {
+                        if (res.data.error > 0) {
+                            message.error(res.data.msg);
+                        }else{
+                            message.success(res.data.msg);
+                        }
+                    })
+                },
+                displayChange(val, idx) {
+                    let params = {
+                        type: 'display',
+                        rec: val,
+                        id: this.list[idx].id
+                    };
+
+                    httpPost('m=system&c=set_navigation&a=navset', params).then(function (res) {
+                        if (res.data.error > 0) {
+                            message.error(res.data.msg);
+                        }else{
+                            message.success(res.data.msg);
+                        }
+                    })
+                },
+                del(idx) {
+                    let that = this,
+                        params = {},
+                        msg = '';
+
+                    if (typeof idx == 'undefined') { // 批量删除
+                        params.del = this.idArr;
+                        msg = '你确定要删除选中项吗？';
+                    } else {// 单个删除
+                        params.id = that.list[idx].id;
+                        msg = '你确定要删除当前项吗？';
+                    }
+
+                    delConfirm(this, params, function (params) {
+                        httpPost('m=system&c=set_navigation&a=del', params).then(function (res) {
+                            if (res.data.error > 0) {
+                                message.error(res.data.msg);
+                            } else {
+                                message.success(res.data.msg, function () {
+                                    // if (typeof idx == 'undefined') {
+                                    //     that.getList();
+                                    // } else {
+                                    //     that.list.splice(idx, 1);
+                                    // }
+                                    that.$refs.multipleTable.clearSelection();
+                                    that.getList();
+                                });
+                            }
+                        })
+                    }, msg)
+                },
+                handleSelectionChange(val) {
+					
+					if (this.list.length != val.length) {
+					    this.allchecked = false;
+					} else {
+					    this.allchecked = true;
+					}
+					this.multipleSelection = val;
+                },
+				allcheckChange: function () {
+				
+				    this.$refs.multipleTable.toggleAllSelection();
+				
+				},
+                batch(type) {
+                    if (this.multipleSelection.length == 0) {
+                        message.warning('请选择要操作的数据项');
+                        return false;
+                    }
+
+                    let idArr = [];
+                    this.multipleSelection.forEach(function (item) {
+                        idArr.push(item.id);
+                    })
+                    this.idArr = idArr;
+
+                    if (type == 'del') {
+                        this.del();
+                    }
+                },
+
+                openAdd(data) {
+                    this.id = data ? data.id : 0;
+                    this.drawerAdd = true;
+                },
+                closeAdd() {
+                    this.drawerAdd = false;
+                    this.getList();
+                },
+
+                closeType() {
+                    this.nid = '';
+                    this.getList();
+                },
+            }
+        });
+    </script>
+</body>
+<style>
+.el-table .el-table__cell {
+    padding: 12px 0;
+}
+</style>
+</html>

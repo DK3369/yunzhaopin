@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte" style="height: initial;">
+			<resumeall ref="all" :status="status.all"></resumeall>
+        </div>
+    </div>
+    <!-- script -->
+    <script src="../../js/base64ToFile.js"></script>
+    <script>
+        const custoapp = new Vue({
+            el: '#moduapp',
+            data: function () {
+                return {
+                    status: '',
+                }
+            },
+            components: {
+                'resumeall': httpVueLoader('./component/resumeall.vue'),
+            },
+            created: function () {
+                var that = this
+                let query = window.parent.homeapp.$route.query;
+                if (query.status) {
+                    that.status = query.status;
+                }
+				
+            },
+            methods: {
+                
+            }
+        });
+    </script>
+</body>
+
+</html>

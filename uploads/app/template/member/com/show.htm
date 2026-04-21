@@ -1,0 +1,116 @@
+{yun:}include file="$comstyle/header.htm"{/yun}
+<div class="w1000">
+  <div class="admin_mainbody">
+    {yun:}include file="$comstyle/left.htm"{/yun}
+    <div class=right_box>
+      <div class="newmember_tit">
+        <ul>
+          <li><a href="index.php?c=info">基本信息</a></li>
+          <li><a href="index.php?c=info&act=side">补充信息</a></li>
+          <li><a href="index.php?c=address">地址管理</a></li>
+          <li class="newmember_titcur"><a href="index.php?c=show"> 公司相册</a></li>
+          <li><a href="index.php?c=uppic"> 公司LOGO</a></li>
+          <li><a href="index.php?c=product">产品介绍</a></li>
+          <li><a href="index.php?c=news">公司资讯</a></li>
+          {yun:}if $config.map_key{/yun}
+          <li><a href="index.php?c=map">公司地图</a></li>
+          {yun:}/if{/yun}
+          <li><a href="index.php?c=comtpl">个性化模板</a></li>
+        </ul>
+      </div>
+      
+      <div class="newmember_screenbox">
+      <div class="newmember_screen">  
+      <div class="com_topbth_box">
+        <input  class="com_topbth_input"type="button" value="公司相册" onclick="location.href='index.php?c=show&act=addshow'" />
+         </div>
+          </div>  </div><div class="clear"></div>
+      <div class=admincont_box>
+        <div class="com_body"  >
+          <div class="com_new_tip">
+                       <span class="com_new_tip_h">温馨小提示</span>公司相册方便求职者了解贵公司的直观呈现，横版拍摄上传效果最佳
+                    </div>
+          <div id="trlisttwo">
+            <table class="com_table">
+
+              {yun:}if !empty($rows){/yun}
+              <tr>
+                <th>图片</th>
+                <th>图片介绍</th>
+                <th width="260">操作</th>
+              </tr>
+              {yun:}/if{/yun}
+              {yun:}foreach item=show from=$rows{/yun}
+              <tr>
+                <td><img src="{yun:}$show.picurl{/yun}" lay-src="{yun:}$show.picurl{/yun}" width="120"
+                    height="70" /></td>
+                <td>
+                  <div class="show_pic_list_pic_name">{yun:}$show.title{/yun}</div>
+                </td>
+
+                <td width="160">
+                  <div class="show_pic_list_opt">
+                    <a href="javascript:void(0)" onclick="showpic(this)"
+                      data_url="{yun:}$show.picurl{/yun}" class="com_bth cblue">查看</a>
+                    <a href="index.php?c=show&act=showpic&id={yun:}$show.id{/yun}"
+                      class=" com_bth cblue">修改</a>
+                    <a href="javascript:void(0)"
+                      onclick="layer_del('确定要删除？', 'index.php?c=show&&act=del&id={yun:}$show.id{/yun}'); "
+                      class=" com_bth cblue">删除</a>
+                  </div>
+                </td>
+              </tr>
+              {yun:}foreachelse{/yun}
+              <tr>
+                <td>
+                  <div class="com_msg_no">
+                    <p class="com_msg_no_name">添加公司照片</p>
+                    <p>公司照片建议选择近景前台或者其他办公环境，远景门口或者大楼</p>
+                    <input class="com_msg_no_bth com_submit" type="button" value="添加照片"
+                      onclick="location.href='index.php?c=show&act=addshow'" />
+
+                  </div>
+                </td>
+              </tr>
+
+              {yun:}/foreach{/yun}
+              <tr>
+                <td colspan="3">
+                  <div class="diggg">{yun:}$pagenav{/yun}</div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+
+    </div>
+  </div>
+  <script>
+    layui.use(['form', 'layer'], function() {
+      var $ = layui.$,
+        form = layui.form,
+        layer = layui.layer;
+      layer.photos({
+        photos: '#trlisttwo',
+        anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+      });
+    });
+
+    function showpic(obj) {
+      var url = $(obj).attr('data_url');
+      var picjson = {
+        "data": [{
+          "src": url, //原图地址
+          "thumb": url //缩略图地址
+        }]
+      }
+      layer.photos({
+        photos: picjson,
+        anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+      });
+    }
+  </script>
+  {yun:}include file="$comstyle/footer.htm"{/yun}

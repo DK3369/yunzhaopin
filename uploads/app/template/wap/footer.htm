@@ -1,0 +1,165 @@
+
+
+		<!-- 固定的手机底部 -->
+		
+		<div class="wap_footer">
+			<div class="wap_footerfixd">
+				<div class="wap_footerbox">
+					<a class="wap_footernav" href="{yun:}url m=wap{/yun}">
+						<div class="wap_footericon">
+							{yun:}if isset($indexnav){/yun}
+							<img src="{yun:}$wap_style{/yun}/images/tab_icon_home_s.png" alt="" style="width: 100%;">
+							{yun:}else{/yun}
+							<img src="{yun:}$wap_style{/yun}/images/tab_icon_home_n.png" alt="" style="width: 100%;">
+							{yun:}/if{/yun}
+						</div>
+						<div class="wap_footer_name">首页</div>
+					</a>
+					{yun:}if $usertype==1 || !$usertype{/yun}
+					<a class="wap_footernav" href="{yun:}url m=wap c=job{/yun}">
+						<div class="wap_footericon">
+							{yun:}if $smarty.get.c=='job'{/yun}
+							<img src="{yun:}$wap_style{/yun}/images/tab_icon_position_s.png" alt="" style="width: 100%;">
+							{yun:}else{/yun}
+							<img src="{yun:}$wap_style{/yun}/images/tab_icon_position_n.png" alt="" style="width: 100%;">
+							{yun:}/if{/yun}
+						</div>
+						<div class="wap_footer_name">职位</div>
+					</a>
+					{yun:}else{/yun}
+					<a class="wap_footernav" href="{yun:}url m=wap c=resume{/yun}">
+						<div class="wap_footericon">
+							{yun:}if $smarty.get.c=='resume'{/yun}
+							<img src="{yun:}$wap_style{/yun}/images/tab_icon_jl_n.png" alt="" style="width: 100%;">
+							{yun:}else{/yun}
+							<img src="{yun:}$wap_style{/yun}/images/tab_icon_jl.png" alt="" style="width: 100%;">
+							{yun:}/if{/yun}
+						</div>
+						<div class="wap_footer_name">简历</div>
+					</a>
+					{yun:}/if{/yun}
+
+					<div class="wap_footernav" onclick="fabu();">
+						<div class="wap_footer_fb ">
+							<img src="{yun:}$wap_style{/yun}/images/home_icon_release_default.png" alt=""
+								style="width: 100%;">
+						</div>	
+						<div class="wap_footer_name">{yun:}if $usertype=='1'{/yun}发布简历{yun:}elseif $usertype=='2'{/yun}发布职位{yun:}else{/yun}发布{yun:}/if{/yun}</div>
+					</div>
+
+					<a class="wap_footernav" href="{yun:}if !$username{/yun}{yun:}url m=wap c=login{/yun}{yun:}else{/yun}{yun:}url m=wap{/yun}member/index.php?c=sysnews{yun:}/if{/yun}">
+						<div class="wap_footericon">
+							<!--未读消息数量-->
+						    <div id="tzmsgNum" class="none  Unread_message"></div>
+							{yun:}if $smarty.get.c=='sysnews'{/yun}
+							<img src="{yun:}$wap_style{/yun}/images/tab_icon_news_s.png" alt="" style="width: 100%;">
+							{yun:}else{/yun}
+							<img src="{yun:}$wap_style{/yun}/images/tab_icon_news_n.png" alt="" style="width: 100%;">
+							{yun:}/if{/yun}
+						</div>
+						<div class="wap_footer_name">消息</div>
+					</a>
+					<a class="wap_footernav" href="{yun:}if !$username{/yun}{yun:}url m=wap c=login{/yun}{yun:}else{/yun}{yun:}url m=wap{/yun}member/{yun:}/if{/yun}">
+						<div class="wap_footericon">
+							{yun:}if $smarty.get.c=='login' || isset($membernav){/yun}
+							<img src="{yun:}$wap_style{/yun}/images/tab_icon_me_s.png" alt="" style="width: 100%;">
+							{yun:}else{/yun}
+							<img src="{yun:}$wap_style{/yun}/images/tab_icon_me_n.png" alt="" style="width: 100%;">
+							{yun:}/if{/yun}
+						</div>
+						<div class="wap_footer_name">我的</div>
+					</a>
+				</div>
+			</div>
+		</div>
+
+
+		<!--企业点击发布-->
+		{yun:}if $usertype=='2' && !isset($membernav){/yun}
+			<!-- 余额不足提示 -->
+			{yun:}include file="$wapstyle/publichtm/yun_modal.htm"{/yun}
+			<!-- 强制操作提醒弹出框 -->
+			{yun:}include file="$wapstyle/publichtm/yun_cert.htm"{/yun}
+			<script src="{yun:}$wap_style{/yun}/js/com.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+		{yun:}/if{/yun}
+
+		<script type="text/javascript">
+			var wapurl   = '{yun:}url m=wap{/yun}';
+			var uid  = '{yun:}$uid{/yun}';
+			var usertype  = '{yun:}$usertype{/yun}';
+			var fabu_resume_maxnum = '{yun:}$fabu_resume_maxnum{/yun}';
+			var resume_num = '{yun:}$resume_num{/yun}';
+			function fabu(){
+
+				if(parseInt(uid)>0){
+					if(usertype=='1'){
+						if(resume_num>0){
+							location.href = wapurl+"member/index.php?c=resume";
+						}else if(fabu_resume_maxnum >0 || fabu_resume_maxnum == ''){
+			      			location.href = wapurl+"member/index.php?c=addresume";
+			      		}else{
+			      			showToast("你的简历数已经达到系统设置的简历数了");
+			      		}
+					}else if(usertype=='2'){
+		                var url = "{yun:}url d=wxapp h=com m=index c=addCheck{/yun}";
+		                comjobAdd(url, { job: 'job' }, function (res) {
+							if (res.error==1) {
+			                    // 套餐不足
+			                    modalVue.$data.mb_content = res.msg;
+			                    modalVue.$data.cancelText = '不用了';
+			                    modalVue.$data.confirmText = '去购买';
+			                    modalVue.$data.yunModal = true;
+			                    modalType = 'job';
+			                } else if(res.error==2){
+			                    modalVue.$data.mb_content = res.msg;
+			                    modalVue.$data.cancelText = '取消';
+			                    modalVue.$data.confirmText = '去发布';
+			                    modalVue.$data.tourl = res.tourl;
+			                    modalVue.$data.yunModal = true;
+			                    modalType = 'toaddjob';
+			                }else {
+			                    // 强制操作
+			                    certVue.$data.checked = res;
+			                    certVue.$data.yunCert = true;
+			                }
+		                });
+					}else{
+						location.href = "{yun:}url m=wap c=register a=ident{/yun}";
+					}
+				}else{
+					navigateTo('{yun:}url m=wap c=login{/yun}');
+				}
+			}
+		</script>
+ 
+		<div id='uclogin' class='none'></div>
+		<div class='none'>{yun:}tongji{/yun}</div>
+		
+		
+		<script>
+
+			var wapurl   = '{yun:}url m=wap{/yun}';
+			$(function(){
+
+				'{yun:}if $usertype{/yun}'
+				$.get(wapurl + "index.php?c=ajax&a=msgNum", function(datas) {
+					if(datas.usertype == 1) {
+						if(datas.msgNum) {
+							$('#tzmsgNum').css('display','block');
+							$('#tzmsgNum').text(datas.msgNum);
+						}
+					}
+					if(datas.usertype == 2) {
+						if(datas.msgNum) {
+							$('#tzmsgNum').css('display','block');
+							$('#tzmsgNum').text(datas.msgNum);
+						}
+					}
+				}, 'json');
+				'{yun:}/if{/yun}'
+			})
+
+			
+		</script>
+	</body>
+</html>

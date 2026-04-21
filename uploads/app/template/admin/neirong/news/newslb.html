@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+    <link rel="stylesheet" href="../../../admin/js/wangeditor/index.css">
+    <script src="../../../admin/js/wangeditor/index.js"></script>
+</head>
+
+<body>
+    <div id="hyfl" class="moduleElenAl">
+        <div class="moduleSeachs">
+            <div class="">
+                新闻类别
+            </div>
+            <div class="nrtopbtn">
+                <el-button size="mini" @click="makeCache" :disabled="submitLoading">更新缓存</el-button>
+                <el-button type="primary" icon="el-icon-document-add" @click="addclass" size="mini">添加分类
+                </el-button>
+            </div>
+        </div>
+        <div class="moduleElTable">
+            <div class="admin_datatip"><i class="el-icon-document"></i>添加大类时，不用选择类别。 添加二级分类时，要选择类别。 分类转移只能转移二级分类。
+                点击类别名称/排序旁边的图标，可进行修改。</div>
+            <el-table :data="list" stripe border style="width: 100%;" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="calc(100% - 44px)" @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
+                <el-table-column type="selection" width="55"></el-table-column>
+                <el-table-column prop="id" label="编号" width="90">
+                </el-table-column>
+                <el-table-column label="类别名称" property="name">
+                    <template slot-scope="scope">
+                        <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index" v-model="scope.row.name" @blur="alterData(scope, 1)"></el-input>
+                        <span v-else>{{ scope.row.name }}
+                            <img src="../../../admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14" @click="editData(scope, 1)">
+                        </span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="记录数" property="number">
+                    <template slot-scope="scope">
+                        共有文章 <font color="#0033FF">
+                            <el-link @click="newslist(scope.row.id)">{{scope.row.count != 0 ? scope.row.count :
+                                0}}</el-link>
+                        </font> 篇，子类别 <font color="#0033FF">{{scope.row.roots != 0 ? scope.row.roots : 0}}</font> 个
+                    </template>
+                </el-table-column>
+                <el-table-column label="排序" property="sort" width="80">
+                    <template slot-scope="scope">
+                        <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index" v-model="scope.row.sort" @blur="alterData(scope, 1)"></el-input>
+                        <span v-else>
+                            {{ scope.row.sort }}
+                            <img src="../../../admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14" @click="editData(scope, 1)">
+                        </span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="新闻首页" property="newsindex" width="90">
+                    <template slot-scope="scope">
+                        <el-switch v-model="scope.row.rec_news" @change="recNewsChange($event,scope.row, 1)">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column label="是否首页推荐" property="rec" width="110">
+                    <template slot-scope="scope">
+                        <el-switch v-model="scope.row.rec" @change="recNewsChange($event,scope.row, 2)">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column label="设为导航" width="90">
+                    <template slot-scope="scope">
+                        <div class="TableLink">
+                            <el-link type="primary" v-if="scope.row.is_menu == 0" @click="setmenu(scope.row.id)">设为导航</el-link>
+                            <el-link type="primary" v-if="scope.row.is_menu != 0" @click="setmenu(scope.row.id)">修改导航</el-link>
+                            <el-link type="primary" v-if="scope.row.is_menu != 0" @click="delmenu(scope.row.id)">取消导航</el-link>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" width="140" fixed="right">
+                    <template slot-scope="scope">
+                        <div class="cz_button">
+                            <el-button size="small " plain @click="editClass(scope.$index)">管理</el-button>
+                            <el-button type="danger" size="mini" @click="delrow(scope.row.id)">删除</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="">
+                <div class="">
+                    <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
+                    <el-button @click="delAllBottom" size="mini">批量删除</el-button>
+                    <el-button @click="fpClassAllBottom" size="mini">批量转移分类</el-button>
+                </div>
+            </div>
+        </div>
+        <!-- 类别管理弹窗 -->
+        <el-drawer title="类别管理" :close-on-press-escape="false" :wrapper-closable="false" :visible.sync="draweredit" append-to-body :modal-append-to-body="false" size="80%">
+            <div class="tctable_cont">
+                <div class="moduleSeachs" style="padding: 0; width: 100%;flex-wrap: wrap;">
+                    <div class="admin_datatip" style="margin-bottom: 0;"><i class="el-icon-document"></i>添加大类时，不用选择类别。
+                        添加二级分类时，要选择类别。 分类转移只能转移二级分类。 点击类别名称/排序旁边的图标，可进行修改。</div>
+                    <div class="nrtopbtn" style="padding: 8px 0;">
+                        <el-button size="mini" @click="makeCache">更新缓存</el-button>
+                        <el-button type="primary" icon="el-icon-document-add" @click="addclass" size="mini">添加分类
+                        </el-button>
+                    </div>
+                </div>
+                <el-table :data="subTableData" style="width: 100%;margin-bottom: 6px;" row-key="id" border default-expand-all :tree-props="{children: 'children', hasChildren: 'hasChildren'}" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="85%" @selection-change="handleSubTblSelectionChange" ref="multipleSubTable" v-loading="loading" :empty-text="emptytext">
+                    <el-table-column type="selection" width="55"></el-table-column>
+                    <el-table-column prop="id" label="编号" width="90">
+                    </el-table-column>
+                    <el-table-column label="类别名称" property="name">
+                        <template slot-scope="scope">
+                            <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="'edit_' + scope.column.property + scope.$index" :id="'edit_' + scope.column.property + scope.$index" v-model="scope.row.name" @blur="alterData(scope, 2)"></el-input>
+                            <span v-else>{{ scope.row.name }}
+                                <img src="../../../admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14" @click="editData(scope, 2)">
+                            </span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="记录数" property="number">
+                        <template slot-scope="scope">
+                            共有文章 <font color="#0033FF">
+                                <el-link @click="newslist(scope.row.id)">{{scope.row.count != 0 && scope.row.count ?
+                                    scope.row.count : 0}}</el-link>
+                            </font> 篇
+                            <span v-if="scope.row.children">
+                                ，子类别 <font color="#0033FF">{{scope.row.roots != 0 ? scope.row.roots : 0}}</font> 个
+                            </span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="排序" property="sort">
+                        <template slot-scope="scope">
+                            <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index" v-model="scope.row.sort" @blur="alterData(scope, 2)"></el-input>
+                            <span v-else>
+                                {{ scope.row.sort }}
+                                <img src="../../../admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14" @click="editData(scope, 2)">
+                            </span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" width="140" fixed="right">
+                        <template slot-scope="scope">
+                            <div class="cz_button">
+                                <el-button type="danger" size="small " @click="delrow(scope.row.id)">删除
+                                </el-button>
+                            </div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div style="padding-bottom: 12px;">
+                    <div class="">
+                        <div class="">
+                            <el-checkbox v-model="checkedSubTblAll" @change="selectSubTblAllBottom">全选</el-checkbox>
+                            <el-button size="mini" @click="delAllBottom">批量删除</el-button>
+                            <el-button size="mini" @click="fpClassAllBottom">批量转移分类</el-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </el-drawer>
+        <!--批量转移分类-->
+        <div class="modluDrawer">
+            <el-dialog title="批量转移分类" width="400px" :visible.sync="drawerClassMultiple" append-to-body :modal-append-to-body="false">
+                <div class="toolClasDia fenpeizhand">
+                    <div class="toolClasList">
+                        <div class="toolClasTite">
+                            <span>新闻类别：</span>
+                        </div>
+                        <div class="toolClasCont">
+                            <el-select v-model="classid" filterable placeholder="请选择新闻所属分类" clearable>
+                                <el-option v-for="item in tableData" :key="item.id" :label="item.name" :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                    <div class="toolClasList">
+                        <div class="toolClasTite">
+                            <span></span>
+                        </div>
+                        <div class="toolClasCont">
+                            <span style="color:red;">说明：不选择新闻类别，则转移为一级类别; 选择了新闻类别，则将需要转移的类别转移到选择的类别下</span>
+                        </div>
+                    </div>
+                </div>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="drawerClassMultiple = false">取 消</el-button>
+                    <el-button type="primary" @click="saveClass" :disabled="submitLoading">确 定</el-button>
+                </span>
+            </el-dialog>
+        </div>
+        <!--新闻管理-->
+        <el-drawer title="新闻管理" :close-on-press-escape="false" :wrapper-closable="false" :visible.sync="shownewslist" append-to-body :modal-append-to-body="false" size="80%">
+            <news ref="newsmanage"></news>
+        </el-drawer>
+        <!-- 添加类别弹窗 -->
+        <div class="modluDrawer">
+            <el-dialog title="添加类别" :visible.sync="draweraddclass" width="500px" append-to-body :modal-append-to-body="false">
+                <div class="wxsettip_small ">一级类别名称</div>
+                 <div class="wxsettip_Sealect">
+				<el-select v-model="classid" filterable placeholder="请选择新闻所属分类" clearable>
+                    <el-option v-for="item in tableData" :key="item.id" :label="item.name" :value="item.id">
+                    </el-option>
+                </el-select>
+				</div>
+                <div class="wxsettip_small ">类别名称
+                    <el-tooltip class="item" effect="dark" content="可以添加多条分类（请按回车键换行，一行一个）。" placement="right-start"><i class="el-icon-warning-outline"></i>
+                        <el-button>右上</el-button>
+                    </el-tooltip>
+                </div>
+                <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="classname">
+                </el-input>
+                <div class="wxsettip_small ">首页是否推荐</div>
+                <template>
+                    <el-radio v-model="rec" label="1">是</el-radio>
+                    <el-radio v-model="rec" label="0">否</el-radio>
+                </template>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="draweraddclass = false">取 消</el-button>
+                    <el-button type="primary" @click="saveAddClass" :disabled="submitLoading">确 定</el-button>
+                </span>
+            </el-dialog>
+        </div>
+        <!-- 设为导航、修改导航弹窗 -->
+        <div class="modluDrawer">
+            <el-drawer title="设置导航" :close-on-press-escape="false" :wrapper-closable="false" :visible.sync="drawersetmenu" size="800px" top="0" append-to-body :modal-append-to-body="false">
+                <div class="moduleTable" style="margin: 0 20px; width: calc(100% - 40px);">
+                    <table class="tableVue">
+                        <thead>
+                            <tr align="left">
+                                <th width="140">名称</th>
+                                <th width="340">状态</th>
+                                <th>说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="TableTite">导航类别</div>
+                                </td>
+                                <td>
+                                    <div class="TableSelect" style="display: flex;align-items: center;">
+                                        <el-select v-model="menu.nid" filterable placeholder="请选择导航类别">
+                                            <el-option v-for="item in typearr" :key="item.id" :label="item.typename" :value="item.id">
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableShuom">
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="TableTite">导航名称</div>
+                                </td>
+                                <td>
+                                    <div class="TableSelect" style="display: flex;align-items: center;">
+                                        <el-input placeholder="请输入导航名称" v-model="menu.name">
+                                        </el-input>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableShuom">
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="TableTite">链接地址</div>
+                                </td>
+                                <td>
+                                    <div class="TableSelect" style="display: flex;align-items: center;">
+                                        <el-input placeholder="请输入链接地址" v-model="menu.url">
+                                        </el-input>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableShuom">
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="TableTite">伪静态地址</div>
+                                </td>
+                                <td>
+                                    <div class="TableSelect" style="display: flex;align-items: center;">
+                                        <el-input placeholder="请输入伪静态地址" v-model="menu.furl">
+                                        </el-input>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableShuom">
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="TableTite">导航类型</div>
+                                </td>
+                                <td>
+                                    <div class="TableSelect" style="display: flex;align-items: center;">
+                                        <el-radio v-model="menu.type" label="1">站内链接</el-radio>
+                                        <el-radio v-model="menu.type" label="2">原链接</el-radio>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableShuom">
+                                        <span>站内链接如：http://www.phpyun.com 原链接如：index.php?m=com</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="TableTite">排序</div>
+                                </td>
+                                <td>
+                                    <div class="TableSelect" style="display: flex;align-items: center;">
+                                        <el-input placeholder="请输入排序" v-model="menu.sort">
+                                        </el-input>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableShuom">
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="TableTite">弹出窗口</div>
+                                </td>
+                                <td>
+                                    <div class="TableSelect" style="display: flex;align-items: center;">
+                                        <el-radio v-model="menu.eject" label="1">新窗口</el-radio>
+                                        <el-radio v-model="menu.eject" label="0">原窗口</el-radio>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableShuom">
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="TableTite">状态</div>
+                                </td>
+                                <td>
+                                    <div class="TableSelect" style="display: flex;align-items: center;">
+                                        <el-radio v-model="menu.model" label="hot">热</el-radio>
+                                        <el-radio v-model="menu.model" label="new">新</el-radio>
+                                        <el-radio v-model="menu.model" label="">无</el-radio>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableShuom">
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="TableTite">加粗</div>
+                                </td>
+                                <td>
+                                    <div class="TableSelect" style="display: flex;align-items: center;">
+                                        <el-radio v-model="menu.bold" label="1">是</el-radio>
+                                        <el-radio v-model="menu.bold" label="0">否</el-radio>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableShuom">
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="TableTite">显示</div>
+                                </td>
+                                <td>
+                                    <div class="TableSelect" style="display: flex;align-items: center;">
+                                        <el-radio v-model="menu.display" label="1">是</el-radio>
+                                        <el-radio v-model="menu.display" label="0">否</el-radio>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="TableShuom">
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="setBasicButn" style="border: none;">
+                    <!-- <el-button type="primary" size="medium" @click="save">提交</el-button> -->
+                    <!-- <el-button @click="drawersetmenu = false">取 消</el-button> -->
+                    <el-button type="primary" @click="saveMenu" :disabled="submitLoading">确 定</el-button>
+                </div>
+                <!-- <div class="setdaohanNvas">
+                    <div class="wxsettip_small ">导航类别</div>
+                    <el-select v-model="menu.nid" filterable placeholder="请选择导航类别">
+                        <el-option v-for="item in typearr" :key="item.id" :label="item.typename" :value="item.id">
+                        </el-option>
+                    </el-select>
+                    <div class="wxsettip_small ">导航名称</div>
+                    <el-input placeholder="请输入导航名称" v-model="menu.name">
+                    </el-input>
+                    <div class="wxsettip_small ">链接地址</div>
+                    <el-input placeholder="请输入链接地址" v-model="menu.url">
+                    </el-input>
+                    <div class="wxsettip_small ">伪静态地址</div>
+                    <el-input placeholder="请输入伪静态地址" v-model="menu.furl">
+                    </el-input>
+                    <div class="wxsettip_small ">导航类型</div>
+                    <template>
+                        <el-radio v-model="menu.type" label="1">站内链接</el-radio>
+                        <el-radio v-model="menu.type" label="2">原链接</el-radio>
+                    </template>
+                    <div class="adminav_set_r">站内链接如：http://www.phpyun.com 原链接如：index.php?m=com </div>
+                    <div class="wxsettip_small ">排序</div>
+                    <el-input placeholder="请输入排序" v-model="menu.sort">
+                    </el-input>
+                    <div class="wxsettip_small ">弹出窗口</div>
+                    <template>
+                        <el-radio v-model="menu.eject" label="1">新窗口</el-radio>
+                        <el-radio v-model="menu.eject" label="0">原窗口</el-radio>
+                    </template>
+                    <div class="wxsettip_small ">状态</div>
+                    <template>
+                        <el-radio v-model="menu.model" label="hot">热</el-radio>
+                        <el-radio v-model="menu.model" label="new">新</el-radio>
+                        <el-radio v-model="menu.model" label="">无</el-radio>
+                    </template>
+                    <div class="wxsettip_small ">加粗</div>
+                    <template>
+                        <el-radio v-model="menu.bold" label="1">是</el-radio>
+                        <el-radio v-model="menu.bold" label="0">否</el-radio>
+                    </template>
+                    <div class="wxsettip_small ">显示</div>
+                    <template>
+                        <el-radio v-model="menu.display" label="1">是</el-radio>
+                        <el-radio v-model="menu.display" label="0">否</el-radio>
+                    </template>
+                    <div class="dialGooter">
+                        <el-button @click="drawersetmenu = false">取 消</el-button>
+                        <el-button type="primary" @click="saveMenu" :disabled="submitLoading">确 定</el-button>
+                    </div>
+                </div> -->
+            </el-drawer>
+        </div>
+    </div>
+</body>
+<script>
+const custoapp = new Vue({
+    el: '#hyfl',
+    data: function() {
+        return {
+            emptytext: '暂无数据',
+            loading: false,
+            newsindex: false,
+            draweraddclass: false,
+			list: [],
+            tableData: [],
+            subTableData: [], // 当前编辑的一级分类及子类数据
+            draweredit: false,
+            zmselect: '',
+            options: [],
+            sfoptions: [],
+            dialogVisible: false,
+            lbname: '',
+            deldialog: false,
+            oldData: null,
+            checkedAll: false,
+            checkedSubTblAll: false,
+            selectedItem: [],
+            drawerClassMultiple: false,
+            classid: '',
+            classname: '',
+            rec: '0',
+            typearr: [],
+            menu: {
+                id: '',
+                nid: '',
+                name: '',
+                url: '',
+                furl: '',
+                type: '1',
+                sort: '',
+                eject: '0',
+                model: '',
+                bold: '0',
+                display: '0',
+                did: '0'
+            },
+            drawersetmenu: false,
+            shownewslist: false,
+
+            submitLoading: false,
+            curkey: '',
+        }
+    },
+    components: {
+        'news': httpVueLoader('./component/news.vue'),
+    },
+    created: function() {
+        this.getList();
+    },
+    methods: {
+        newslist(nid) {
+            var that = this
+            that.shownewslist = true
+            setTimeout(() => {
+                that.$refs.newsmanage.cate = nid
+                this.$refs.newsmanage.getList();
+            }, 200)
+        },
+        setmenu(id) {
+            var that = this
+            httpPost('m=neirong&c=news&a=ajax_menu', { id: id }).then(function(response) {
+                var data = response.data
+                that.menu.name = data.name ? data.name : ''
+                that.menu.url = data.url ? data.url : ''
+                that.menu.furl = data.furl ? data.furl : ''
+                that.menu.id = data.id ? data.id : ''
+                that.menu.nid = data.nid ? data.nid : that.typearr[0].id
+                that.menu.sort = data.sort ? data.sort : ''
+                that.menu.eject = data.eject ? data.eject : '0'
+                that.menu.model = data.model ? data.model : ''
+                that.menu.bold = data.bold ? data.bold : '0'
+                that.menu.display = data.display ? data.display : '0'
+                that.menu.did = id
+                that.drawersetmenu = true
+            }).catch(function(error) {
+                console.log(error);
+            })
+        },
+        // 设置导航
+        saveMenu() {
+            var that = this
+            var params = that.menu
+            params.submit = 1
+            that.submitLoading = true;
+            httpPost('m=neirong&c=news&a=set_menu', params).then(function(response) {
+                if (response.data.error == 0) {
+                    message.success(response.data.msg, function() {
+                        that.getList();
+                        that.drawersetmenu = false
+                    });
+                } else {
+                    message.error(response.data.msg);
+                }
+            }).catch(function(error) {
+                console.log(error);
+            }).finally(function() {
+                that.submitLoading = false;
+            });
+        },
+        // 添加分类
+        addclass() {
+            this.classid = ''
+            this.classname = ''
+            this.rec = '0'
+            this.draweraddclass = true
+        },
+        // 添加分类保存
+        saveAddClass() {
+            var that = this
+            if (that.classname == '') {
+                message.error('类别名称不能为空！');
+                return false;
+            }
+            that.submitLoading = true;
+            httpPost('m=neirong&c=news&a=addgroup', { name: that.classname.split("\n").join("-"), fid: that.classid, rec: that.rec }).then(function(response) {
+                if (response.data.error == 0) {
+                    message.success(response.data.msg, function() {
+                        that.getList();
+                        that.draweraddclass = false;
+                    });
+                } else {
+                    message.error(response.data.msg);
+                }
+            }).catch(function(error) {
+                console.log(error);
+            }).finally(function() {
+                that.submitLoading = false;
+            });
+        },
+        fpClassAllBottom() {
+            if (!this.selectedItem.length) {
+                message.error('请选择要转移的数据项');
+                return false;
+            }
+            this.drawerClassMultiple = true
+        },
+        saveClass() {
+            let that = this;
+            let params = {
+                id: this.selectedItem.join(','),
+                nid: this.classid
+            };
+            that.submitLoading = true;
+            httpPost('m=neirong&c=news&a=changeSon', params).then(function(response) {
+                if (response.data.error == 0) {
+                    message.success(response.data.msg, function() {
+                        that.getList();
+                        for (let i = that.subTableData[0]['children'].length - 1; i >= 0; i--) {
+                            if (that.selectedItem.indexOf(that.subTableData[0]['children'][i]['id']) != -1) {
+                                that.subTableData[0]['children'].splice(i, 1);
+                            }
+                        }
+                        that.drawerClassMultiple = false
+                    });
+
+                } else {
+                    message.error(response.data.msg);
+                }
+            }).catch(function(error) {
+                console.log(error);
+            }).finally(function() {
+                that.submitLoading = false;
+            });
+        },
+        editClass(key) {
+            this.subTableData = [this.tableData[key]];
+            this.curkey = key;
+            this.draweredit = true
+        },
+        recNewsChange(val, row, type) {
+            var params = {
+                id: row.id,
+                type: type == 1 ? 'rec_news' : 'rec',
+                rec: row.rec_news == true ? 1 : 0
+            }
+            if (type == 1) {
+                params.rec = row.rec_news == true ? 1 : 0;
+            } else {
+                params.rec = row.rec == true ? 1 : 0
+            }
+            httpPost('m=neirong&c=news&a=recommend', params, { hideloading: true }).then(function(response) {
+                let res = response.data;
+                if (res.error === 0) {
+                    message.success('修改成功');
+                } else {
+                    message.error('修改失败');
+                }
+            }).catch(function(error) {
+                console.log(error);
+            });
+        },
+        editData(scope, type) {
+            let index = scope.$index;
+            let row = scope.row;
+            let column = scope.column;
+            this.oldData = JSON.parse(JSON.stringify(row));
+            let copyRow = JSON.parse(JSON.stringify(row));
+            if (type == 1) {
+                copyRow[column.property + "isShow"] = true;
+                this.$set(this.list, index, copyRow);
+            } else {
+                if (index === 0) { // 一级分类修改
+                    this.subTableData[0][column.property + "isShow"] = true;
+                } else { // 二级分类修改
+                    this.subTableData[0].children.forEach((item) => {
+                        if (item.id == row.id) {
+                            item[column.property + "isShow"] = true
+                        }
+                    })
+                }
+                var tmp = deepClone(this.subTableData)
+                this.subTableData = tmp
+            }
+            this.$nextTick(() => {
+                let ref = null
+                if (type == 1) {
+                    ref = column.property + index;
+                } else {
+                    ref = 'edit' + column.property + index;
+                }
+                $("#" + ref).focus();
+            });
+        },
+        alterData(scope, type) {
+            if (this.oldData == null) {
+                return false;
+            }
+            let index = scope.$index;
+            let row = scope.row;
+            let column = scope.column;
+            let copyRow = JSON.parse(JSON.stringify(row));
+            if (type == 1) {
+                copyRow[column.property + "isShow"] = false;
+                this.$set(this.list, index, copyRow);
+            } else { // 管理弹窗表格修改名称、排序
+                if (index === 0) { // 一级分类修改
+                    this.subTableData[0][column.property + "isShow"] = false;
+                } else { // 二级分类修改
+                    this.subTableData[0].children.forEach((item) => {
+                        if (item.id == row.id) {
+                            item[column.property + "isShow"] = false
+                        }
+                    })
+                }
+                var tmp = deepClone(this.subTableData)
+                this.subTableData = tmp
+            }
+            if (row[column.property] === this.oldData[column.property]) {
+                return false;
+            }
+            let _this = this;
+            let sendData = { id: row.id };
+            sendData[column.property] = row[column.property];
+            httpPost('m=neirong&c=news&a=ajax', sendData, { hideloading: true }).then(function(response) {
+                let res = response.data;
+                if (res.error === 0) {
+                    message.success('修改成功');
+                } else {
+                    message.error('修改失败');
+                }
+                _this.oldData = null;
+                // if (type == 1) {
+                _this.getList();
+                // }
+            }).catch(function(error) {
+                console.log(error);
+            });
+        },
+        handleSubTblSelectionChange(val) {
+            this.selectedItem = [];
+            let _this = this;
+            if (val.length) {
+                val.forEach(item => {
+                    _this.selectedItem.push(item.id);
+                });
+            }
+            if (_this.selectedItem.length == 0) {
+                _this.checkedSubTblAll = false;
+            } else {
+                var all_len = 1
+                if (this.subTableData[0].children) {
+                    all_len += this.subTableData[0].children.length
+                }
+                if (_this.selectedItem.length == all_len) {
+                    _this.checkedSubTblAll = true;
+                } else {
+                    _this.checkedSubTblAll = false;
+                }
+            }
+        },
+        handleSelectionChange(val) {
+            this.selectedItem = [];
+            let _this = this;
+            if (val.length) {
+                val.forEach(item => {
+                    _this.selectedItem.push(item.id);
+                });
+            }
+            if (_this.selectedItem.length == 0) {
+                _this.checkedAll = false;
+            } else {
+                if (_this.selectedItem.length == _this.tableData.length) {
+                    _this.checkedAll = true;
+                } else {
+                    _this.checkedAll = false;
+                }
+            }
+        },
+        selectAllBottom(value) {
+            value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+        },
+        selectSubTblAllBottom(value) {
+            // 处理嵌套数据选中
+            if (this.subTableData[0].children) {
+                this.subTableData[0].children.forEach((row) => {
+                    if (this.selectedItem.indexOf(row.id) < 0) {
+                        this.$refs.multipleSubTable.toggleRowSelection(row, value)
+                        if (value) {
+                            this.selectedItem.push(row.id)
+                        }
+                    }
+                })
+            }
+            if (!value) {
+                this.selectedItem = []
+            }
+            value ? this.$refs.multipleSubTable.toggleAllSelection() : this.$refs.multipleSubTable.clearSelection();
+        },
+        handleSizeChange(val) {
+            this.perPage = val;
+            this.getList()
+        },
+        handleCurrentChange(val) {
+            this.currentPage = val;
+            this.getList()
+        },
+        search() {
+            this.currentPage = 1;
+            this.getList();
+        },
+        async getList(nid = '') {
+            let that = this;
+            that.loading = true;
+            that.emptytext = "数据加载中";
+            httpPost('m=neirong&c=news&a=group', {}).then(function(result) {
+                var res = result.data
+                if (res.error == 0) {
+                    that.tableData = res.data.list;
+                    if (that.tableData != null) {
+                        that.tableData.forEach(item => {
+                            if (item.keyid == 0) {
+                                that.list.push(item);
+                            }
+                        });
+                    }
+
+                    that.typearr = res.data.type
+                    that.islook = true
+                    if (that.curkey !== '' && that.draweredit == true) {
+                        // that.subTableData = [that.tableData[that.curkey]];
+                        let subId = that.subTableData[0]['id'];
+                        let styIndex = that.tableData.findIndex(item => item.id === subId);
+                        that.curkey = styIndex;
+                        that.subTableData = [that.tableData[styIndex]];
+                    }
+                    that.loading = false;
+                    if (that.tableData.length === 0) {
+                        that.emptytext = "暂无数据";
+                    }
+                }
+            }).catch(function(e) {
+                console.log(e)
+            })
+        },
+        delmenu(id) {
+            delConfirm(this, id, this.deletemenu, '确定取消该导航？');
+        },
+        async deletemenu(id) {
+            let that = this;
+            let params = {
+                id: id
+            };
+            httpPost('m=neirong&c=news&a=delmenu', params).then(function(response) {
+                if (response.data.error == 0) {
+                    message.success(response.data.msg, function() {
+                        that.getList();
+                    });
+                } else {
+                    message.error(response.data.msg);
+                }
+            }).catch(function(error) {
+                console.log(error);
+            })
+        },
+        delrow(id) {
+            delConfirm(this, id, this.delete);
+        },
+        delAllBottom() {
+            if (!this.selectedItem.length) {
+                message.error('请选择要删除的数据项');
+                return false;
+            }
+            delConfirm(this, this.selectedItem, this.delete);
+        },
+        async delete(id) {
+            let that = this;
+            let params = {
+                del: id
+            };
+            httpPost('m=neirong&c=news&a=delgroup', params).then(function(response) {
+                if (response.data.error == 0) {
+                    message.success(response.data.msg, function() {
+                        that.draweredit = false
+                        that.getList();
+                    });
+                } else {
+                    message.error(response.data.msg);
+                }
+            }).catch(function(error) {
+                console.log(error);
+            })
+        },
+        async makeCache() {
+            let that = this;
+            this.submitLoading = true;
+            httpPost('m=neirong&c=news&a=make_cache', {}).then(function(response) {
+                if (response.data.error == 0) {
+                    message.success(response.data.msg);
+                } else {
+                    message.error(response.data.msg);
+                }
+            }).catch(function(error) {
+                console.log(error);
+            }).finally(function() {
+                that.submitLoading = false;
+            });
+        },
+    },
+});
+</script>
+
+</html>
+<style>
+.el-dialog__body {
+    padding: 0px 20px;
+}
+</style>

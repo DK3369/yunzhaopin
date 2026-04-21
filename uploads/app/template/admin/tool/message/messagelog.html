@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<script src="../../../admin/header.js"></script>
+		<script src="../../../admin/httpVueLoader.js"></script>
+	</head>
+
+	<body>
+		<div id="daohaapp" class="moduleElenAl">
+			<div class="moduleSeachmore">
+				<div class="tableSeachInpt  tableSeachInptsmall">
+               
+                    <el-select v-model="time" clearable @change="dateSelectChange" size="small" slot="prepend" placeholder="时间" >
+                        <el-option label="今天" value="1"></el-option>
+                        <el-option label="最近三天" value="3"></el-option>
+                        <el-option label="最近七天" value="7"></el-option>
+                        <el-option label="最近半月" value="15"></el-option>
+                        <el-option label="最近一月" value="30"></el-option>
+                    </el-select>
+                </div>
+                <div class="tableSeachInpt tableSeachInptsmalltwo"> 
+                    <el-date-picker v-model="daterange" type="daterange" @change="changedate" range-separator="至"
+                            start-placeholder="开始日期" end-placeholder="结束日期" size="samll">
+                    </el-date-picker> 
+                </div>
+				<div class="tableSeachInpt tableSeachInptsmall">
+					<el-select v-model="state" clearable size="small" slot="prepend" placeholder="发送状态" @change="search">
+						<el-option label="发送成功" value="1"></el-option>
+						<el-option label="发送失败" value="2"></el-option>
+					</el-select>
+				</div>
+                <div class="tableSeachInpt tableSeachInptsmall">
+                    <el-select v-model="port" clearable size="small" slot="prepend" placeholder="发送端口" @change="search">
+                        <el-option :label="name" :value="val" v-for="(name,val) in ports" :key="val"></el-option>
+                    </el-select>
+                </div>
+				<div class="tableSeackellsd" style="padding: 2px 0; margin-bottom: 8px;">
+					<el-input v-model="keyword" placeholder="请输入关键字" size="small" prefix-icon="el-icon-search" clearable>
+                        <el-select  v-model="type" size="small" slot="prepend" placeholder="搜索类型">
+                            <el-option label="手机号" value="1"></el-option>
+                            <el-option label="发送人" value="2"></el-option>
+                            <el-option label="接收人" value="3"></el-option>
+                            <el-option label="内容"   value="4"></el-option>
+                        </el-select>
+					</el-input>
+				</div>
+				<div class="tableSeachInpt">
+					<el-button type="primary" size="mini" icon="el-icon-search" @click="search">查询</el-button>
+				</div>
+			</div>
+			<div class="moduleElTable">
+				<el-table  ref="table" :data="tableData" v-loading="list_loading" @selection-change="selectionChange"
+                    :default-sort = "{prop: 'id', order: 'descending'}" @sort-change="sortChange" border style="width: 100%"
+					:header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" :empty-text="emptytext">
+					<el-table-column type="selection" width="55">
+					</el-table-column>
+					<el-table-column prop="id" label="	编号" width="80" sortable="custom">
+					</el-table-column>
+					<el-table-column prop="moblie" label="手机号"  width="110">
+					</el-table-column>
+
+					<el-table-column label="发送人/接收人"  width="200">
+                        <template slot-scope="scope">
+                            <div style="color:#009688">{{scope.row.fname}}</div>
+                            <div>{{scope.row.sname}}</div>
+                        </template>
+					</el-table-column>
+					<el-table-column prop="content" label="内容" min-width="300">
+					</el-table-column>
+					<el-table-column prop="ctime_n" label="IP/发送时间" sortable="custom" width="200">
+						<template slot-scope="scope">
+							<div>{{scope.row.ip}}</div>
+							<div>{{scope.row.ctime_n}}</div>
+						</template>
+					</el-table-column>
+					<el-table-column label="状态" width="110">
+						<template slot-scope="scope">
+							<span v-if="scope.row.state==0" class="admin_state1">成功</span>
+                            <el-tooltip placement="top" v-else>
+                               <div slot="content">{{scope.row.result}}</div>
+                               <el-button  size="mini" type="danger" plain>失败<i class="el-icon-info el-icon--right"></i></el-button>
+                            </el-tooltip>
+                            
+						</template>
+					</el-table-column>
+                    <el-table-column label="端口/归属地"  width="110">
+                        <template slot-scope="scope">
+                            {{scope.row.port_n}}<br/>{{scope.row.location}}
+                        </template>
+                        
+                    </el-table-column>
+					<el-table-column label="操作" width="80" fixed="right" header-align="center">
+						<template slot-scope="scope">
+							<div class="cz_button">
+
+								<el-button type="danger" size=" "  @click="deleteinfo(scope.row.id)">删除</el-button>
+							</div>
+
+						</template>
+					</el-table-column>
+
+				</el-table>
+			</div>
+			<div class="modulePaging">
+               	<div class="modulecz">
+                    <el-checkbox v-model="allchecked" @change="allcheckChange">全选</el-checkbox>
+                    <el-button  size="mini" @click="deleteAll">批量删除</el-button>
+                    <el-button   size="mini" @click="repeatSend">失败重发</el-button>
+                </div>
+                <div class="modulePagNum">
+                    <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                        :current-page="currentPage" :page-size="page_size" :page-sizes="page_sizes" :total="total"
+                        layout="total, sizes, prev, pager, next, jumper">
+                    </el-pagination>
+                </div>
+            </div>
+		</div>
+		<!-- script -->
+		<script>
+			const custoapp = new Vue({
+				el: '#daohaapp',
+				data: function() {
+					return {
+                        emptytext: '暂无数据',
+                        type:'1',
+                        keyword:'',
+                        time:'',
+                        state:'',
+
+						tableData: [],
+                        total: 0,
+                        limit: '',
+                        page_size: 0,
+                        currentPage: 1,
+						prevPage:0,
+                        page_sizes: [],
+                        sort_t:'',
+                        order:'',
+                        list_loading: false,
+                        daterange: [],
+
+                        allchecked: false,
+                        choosedata: [],
+                        ports:[],
+                        port:'',
+					}
+				},
+                created: function () {
+                    this.getList();
+                    this.getBaseData();
+                },
+				methods: {
+					async getList() {
+                        let that = this;
+                        let params = {
+                            page: that.currentPage,
+                            limit: that.limit,
+                            time:that.time,
+                            state:that.state,
+                            port:that.port,
+                            t:that.sort_t,
+                            order:that.order,
+                            type:that.type,
+                            keyword:that.keyword
+                        }
+                        if (this.daterange && this.daterange.length > 0) {
+
+                            params['date1'] = this.daterange[0].getTime()/1000;
+                            params['date2'] = this.daterange[1].getTime()/1000;
+                        }
+                        this.list_loading = true;
+                        that.emptytext = "数据加载中";
+                        httpPost('m=tool&c=messagelog&a=index', params, {hideloading: true}).then((result) => {
+                            this.list_loading = false;
+                            var res = result.data
+                            if (res.error == 0) {
+                                that.tableData = res.data.list;
+                                that.total = parseInt(res.data.total);
+                                that.page_sizes = res.data.page_sizes;
+                                that.page_size = res.data.page_size;
+								
+								if(that.prevPage != that.currentPage){
+									that.prevPage = that.currentPage;
+									that.$refs.table.bodyWrapper.scrollTop = 0;
+								}
+                                if (that.tableData.length === 0){
+                                    that.emptytext = "暂无数据";
+                                }
+                            }
+                        }).catch(function (e) {
+                            console.log(e)
+                        })
+                    },
+                    getBaseData() {
+                        let _this = this;
+                        httpPost('m=tool&c=messagelog&a=index_base_data', {}, {hideloading: true}).then(function (response) {
+                            let res = response.data;
+                            _this.ports = Object.freeze(res.data.ports);
+                        }).catch(function (error) {
+                            console.log(error);
+                        });
+                    },
+                    search: function () {
+                        this.currentPage = 1;
+                        this.getList();
+                    },
+                    sortChange:function(e){
+                        this.sort_t = e.prop;
+                        if(e.prop=='ctime_n'){
+                          this.sort_t = 'ctime';
+                        }
+                        this.order = e.order=='ascending'?'asc':'desc';
+                        this.search();
+                    },
+                    changedate: function (e) {
+                        if(e!==null){
+                            this.time = '';
+                        }
+						this.search();
+                    },
+                    dateSelectChange:function(e){
+                        if(e!=''){
+                            this.daterange = [];
+                        }
+                        this.search();
+                    },
+                    handleCurrentChange(val) {
+                        this.currentPage = val;
+                        this.getList()
+                    },
+                    handleSizeChange(val) {
+                        this.currentPage = 1
+                        this.limit = val
+                        this.getList()
+                    },
+                    allcheckChange: function () {
+
+                        this.$refs.table.toggleAllSelection();
+
+                    },
+                    selectionChange: function (e) {
+                        if (this.tableData.length != e.length) {
+                            this.allchecked = false;
+                        } else {
+                            this.allchecked = true;
+                        }
+                        this.choosedata = e;
+                    },
+                    deleteinfo: function (id) {
+                        var _this = this;
+                        
+                        var params = {
+                            del: id
+                        };
+                        delConfirm(_this, params, this.deletePost)
+                    },
+                    deleteAll: function () {
+                        var _this = this;
+                        var idarr = [];
+                        if (this.choosedata.length > 0) {
+                            for (let i in this.choosedata) {
+                                idarr.push(this.choosedata[i].id);
+                            }
+                        } else {
+                            message.error('请选择要删除的数据'); return;
+                        }
+                        var params = {
+                            del: idarr
+                        };
+
+                        delConfirm(_this, params, this.deletePost)
+                    },
+                    repeatSend:function(){
+                        var _this = this;
+                        var idarr = [];
+                        if (this.choosedata.length > 0) {
+                            for (let i in this.choosedata) {
+                                idarr.push(this.choosedata[i].id);
+                            }
+                        } else {
+                            message.error('请选择要重发的短信'); return;
+                        }
+                        var params = {
+                            id: idarr
+                        };
+                        _this.$confirm('确定重新发送短信吗？', '温馨提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            _this.repeatSendPost(params);
+                        });
+                    },
+                    async repeatSendPost(params) {
+
+                        let that = this;
+
+                        httpPost('m=tool&c=messagelog&a=repeat', params).then(function (result) {
+
+                            var res = result.data;
+                            if (res.error == 0) {
+                                message.success(res.msg, function () { that.getList();}); return;
+                            } else {
+                                message.error(res.msg); return;
+                            }
+                        }).catch(function (e) {
+                            console.log(e)
+                        })
+                    },
+                    async deletePost(params) {
+
+                        let that = this;
+
+                        httpPost('m=tool&c=messagelog&a=del', params).then(function (result) {
+
+                            var res = result.data;
+                            if (res.error == 0) {
+                                message.success(res.msg, function () { that.getList(); }); return;
+                            } else {
+                                message.error(res.msg); return;
+                            }
+                        }).catch(function (e) {
+                            console.log(e)
+                        })
+                    },
+				}
+			});
+		</script>
+	</body>
+
+</html>

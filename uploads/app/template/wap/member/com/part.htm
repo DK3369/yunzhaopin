@@ -1,0 +1,1164 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<style>
+    .box_setday_right input {
+        text-align: right;
+    }
+
+    img {
+        width: 100%;
+    }
+</style>
+    <div id="yunvue" class="none">
+      <div class=" m_taball category">
+      	<div class="m_taballbox">
+          <ul>
+                <li @click="tabChange(1)" :class="stype==1 ? 'm_taballactive' : ''">
+                    招聘中
+                    <span v-if="zp_num > 0 && zp_num < 100" class="zp_num">{{zp_num}}</span>
+                    <span v-else-if="zp_num > 99" class="zp_num">99+ </span>
+                </li>
+                <li @click="tabChange(2)" :class="stype==2 ? 'm_taballactive' : ''">
+                    待审核
+                    <span v-if="ds_num > 0 && ds_num < 100" class="zp_num">{{ds_num}}</span>
+                    <span v-else-if="ds_num >99" class="zp_num">99+</span>
+                </li>
+                <li @click="tabChange(4)" :class="stype==4 ? 'm_taballactive' : ''">
+                  已下架
+                  <span v-if="xj_num > 0 && xj_num < 100" class="zp_num">{{xj_num}}</span>
+                  <span v-else-if="xj_num >99" class="zp_num">99+</span>
+                </li>
+                <li @click="tabChange(3)" :class="stype==3 ? 'm_taballactive' : ''">
+                    已到期
+                    <span v-if="dq_num > 0 && dq_num < 100" class="zp_num">{{dq_num}}</span>
+                    <span v-else-if="dq_num >99" class="zp_num">99+</span>
+                </li>
+            </ul>
+        </div> </div>
+        <div class="more_position_body">
+
+            <div v-if="stype==1">
+                <div v-if="total>0">
+                    <div class="position_body_card" v-for="(item, infokey) in info" :key="infokey">
+                        <div class="position_body_card_top"
+                             @click="navigateTo(item.wapjob_url)">
+                            <div class="body_card_top_box">
+                                <div class="body_card_top_name">{{item.name}}</div>
+                                <div class="body_card_top_icon">
+                                    <img v-if="item.rec_n" src="{yun:}$wap_style{/yun}/images/icon_recommend.png"
+                                         alt="">
+                                </div>
+                            </div>
+                            <div class="body_card_top_time">{{item.lastupdate_n}}</div>
+                        </div>
+                        <div class="position_body_card_center">
+                            <div class="body_card_center_left">
+                                <div class="more_position_quantity">
+                                    <div class="position_quantity_exposure">
+                                        <div class="quantity_exposure_q">兼职报名：</div>
+                                        <div class="quantity_exposure_a">{{item.applynum}}</div>
+                                    </div>
+                                    <div class="position_quantity_exposure">
+                                        <div class="quantity_exposure_q">浏览量：</div>
+                                        <div class="quantity_exposure_a">{{item.hits}}</div>
+                                    </div>
+                                </div>
+                                <div class="more_position_new_time">
+                                    <div class="quantity_exposure_q">有限期至：</div>
+                                    <div class="quantity_exposure_a">{{item.end_n}}</div>
+                                </div>
+                            </div>
+                            <div class="body_card_center_right"
+                                 @click="navigateTo('index.php?c=partapply&partid=' + item.id)">
+                                <div class="more_position_deliver_number">{{item.applynum}}</div>
+                                <div class="more_position_deliver">查看报名</div>
+                            </div>
+                        </div>
+                        <div class="position_body_card_moonlight">
+                            <ul>
+                                <li v-if="item.rec_n" @click="closeRec(infokey, item)">
+                                    <div class="body_card_bom_icon">
+                                        <img src="{yun:}$wap_style{/yun}/images/moonlight_recommend.png" alt="">
+                                    </div>
+                                    <div class="body_card_bom_name">取消</div>
+                                    <div class="body_card_bom_hot">
+                                        <img src="{yun:}$wap_style{/yun}/images/job_hot.png" alt="">
+                                    </div>
+                                </li>
+                                <li v-else @click="showRec(item.id, infokey)">
+                                    <div class="body_card_bom_icon">
+                                        <img src="{yun:}$wap_style{/yun}/images/moonlight_recommend.png" alt="">
+                                    </div>
+                                    <div class="body_card_bom_name">推荐</div>
+                                    <div class="body_card_bom_hot">
+                                        <img src="{yun:}$wap_style{/yun}/images/job_hot.png" alt="">
+                                    </div>
+                                </li>
+
+                                <li @click="partRefresh(item.id)">
+                                    <div class="body_card_bom_icon">
+                                        <img src="{yun:}$wap_style{/yun}/images/job_refresh.png" alt="">
+                                    </div>
+                                    <div class="body_card_bom_name">刷新</div>
+                                </li>
+                                <li @click="statusChange(item.id, 1, infokey)">
+                                    <div class="body_card_bom_icon">
+                                        <img src="{yun:}$wap_style{/yun}/images/job_up_down.png" alt="">
+                                    </div>
+                                    <div class="body_card_bom_name">下架</div>
+                                </li>
+                                <li @click="navigateTo('index.php?c=partadd&id=' + item.id)">
+                                    <div class="body_card_bom_icon">
+                                        <img src="{yun:}$wap_style{/yun}/images/job_modification.png" alt="">
+                                    </div>
+                                    <div class="body_card_bom_name">修改</div>
+                                </li>
+                                <li @click="del" :data-id="item.id" :data-key="infokey">
+                                    <div class="body_card_bom_icon">
+                                        <img src="{yun:}$wap_style{/yun}/images/delete.png" alt="">
+                                    </div>
+                                    <div class="body_card_bom_name">删除</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div v-if="total > limit">
+                        <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses
+                                        @change="pageChange"/>
+                    </div>
+                </div>
+
+                <div class="none_position_body" v-else>
+                    <div class="none_position_body_img">
+                        <img src="{yun:}$wap_style{/yun}/images/none_position.png" alt="">
+                    </div>
+                    <div class="none_position_body_text">您还没有招聘中职位哦~</div>
+                    <div class="none_position_body_btn" @click="partadd">立即发布</div>
+                </div>
+
+            </div>
+
+            <div v-if="stype==2">
+                <div v-if="total>0">
+                    <div class="position_body_card" v-for="(item, infokey) in info" :key="infokey">
+                        <div class="position_body_card_top">
+                            <div class="body_card_top_box">
+                                <div class="body_card_top_name">{{item.name}}</div>
+                                <div class="body_card_top_icon">
+                                    <img v-if="item.rec_n" src="{yun:}$wap_style{/yun}/images/icon_recommend.png"
+                                         alt="">
+                                </div>
+                            </div>
+                            <div class="body_card_top_time">{{item.lastupdate_n}}</div>
+                        </div>
+                        <div class="position_body_card_center">
+                            <div class="body_card_center_left">
+                                <div class="more_position_quantity">
+                                    <div class="position_quantity_exposure">
+                                        <div class="quantity_exposure_q">兼职报名：</div>
+                                        <div class="quantity_exposure_a">{{item.applynum}}</div>
+                                    </div>
+                                    <div class="position_quantity_exposure">
+                                        <div class="quantity_exposure_q">浏览量：</div>
+                                        <div class="quantity_exposure_a">{{item.hits}}</div>
+                                    </div>
+                                </div>
+                                <div class="more_position_new_time">
+                                    <div class="quantity_exposure_q">有限期至：</div>
+                                    <div class="quantity_exposure_a">{{item.end_n}}</div>
+                                </div>
+                                <div class="more_position_new_time" v-if="item.state==3"
+                                     @click.stop="showReason(infokey)">
+                                    <div class="quantity_exposure_q">状态：</div>
+                                    <div class="quantity_exposure_a" style="color:#fe2f3a;">未通过</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="position_body_card_moonlight">
+                            <ul>
+                                <li @click="navigateTo('index.php?c=partadd&id=' + item.id)">
+                                    <div class="body_card_bom_icon">
+                                        <img src="{yun:}$wap_style{/yun}/images/job_modification.png" alt="">
+                                    </div>
+                                    <div class="body_card_bom_name">修改</div>
+                                </li>
+                                <li @click="del" :data-id="item.id" :data-key="infokey">
+                                    <div class="body_card_bom_icon">
+                                        <img src="{yun:}$wap_style{/yun}/images/delete.png" alt="">
+                                    </div>
+                                    <div class="body_card_bom_name">删除</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div v-if="total > limit">
+                        <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses
+                                        @change="pageChange"/>
+                    </div>
+                </div>
+
+                <div class="none_position_body" v-else>
+                    <div class="none_position_body_img">
+                        <img src="{yun:}$wap_style{/yun}/images/none_position.png" alt="">
+                    </div>
+                    <div class="none_position_body_text">您还没有待审核兼职哦~</div>
+                    <div class="none_position_body_btn" @click="partadd">立即发布</div>
+                </div>
+
+            </div>
+
+            <div v-if="stype==3">
+                <div v-if="total>0">
+                    <div class="position_body_card" v-for="(item, infokey) in info" :key="infokey">
+                        <div class="position_body_card_top">
+                            <div class="body_card_top_box">
+                                <div class="body_card_top_name">{{item.name}}</div>
+                                <div class="body_card_top_icon">
+                                    <img v-if="item.rec_n" src="{yun:}$wap_style{/yun}/images/icon_recommend.png"
+                                         alt="">
+                                </div>
+                            </div>
+                            <div class="body_card_top_time">{{item.lastupdate_n}}</div>
+                        </div>
+                        <div class="position_body_card_center">
+                            <div class="body_card_center_left">
+                                <div class="more_position_quantity">
+                                    <div class="position_quantity_exposure">
+                                        <div class="quantity_exposure_q">兼职报名：</div>
+                                        <div class="quantity_exposure_a">{{item.applynum}}</div>
+                                    </div>
+                                    <div class="position_quantity_exposure">
+                                        <div class="quantity_exposure_q">浏览量：</div>
+                                        <div class="quantity_exposure_a">{{item.hits}}</div>
+                                    </div>
+                                </div>
+                                <div class="more_position_new_time">
+                                    <div class="quantity_exposure_q">到期时间：</div>
+                                    <div class="quantity_exposure_a">{{item.edate_n}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="position_body_card_moonlight">
+                            <ul>
+                                <li @click="navigateTo('index.php?c=partadd&id=' + item.id)">
+                                    <div class="body_card_bom_icon">
+                                        <img src="{yun:}$wap_style{/yun}/images/job_modification.png" alt="">
+                                    </div>
+                                    <div class="body_card_bom_name">修改</div>
+                                </li>
+                                <li @click="del" :data-id="item.id" :data-key="infokey">
+                                    <div class="body_card_bom_icon">
+                                        <img src="{yun:}$wap_style{/yun}/images/delete.png" alt="">
+                                    </div>
+                                    <div class="body_card_bom_name">删除</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div v-if="total > limit">
+                        <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses
+                                        @change="pageChange"/>
+                    </div>
+                </div>
+
+                <div class="none_position_body" v-else>
+                    <div class="none_position_body_img">
+                        <img src="{yun:}$wap_style{/yun}/images/none_position.png" alt="">
+                    </div>
+                    <div class="none_position_body_text">您还没有已过期职位哦~</div>
+                    <div class="none_position_body_btn" @click="partadd">立即发布</div>
+                </div>
+            </div>
+
+            <div v-if="stype==4">
+                <div v-if="total>0">
+                    <div class="position_body_card" v-for="(item, infokey) in info" :key="infokey">
+                        <div class="position_body_card_top">
+                            <div class="body_card_top_box">
+                                <div class="body_card_top_name">{{item.name}}</div>
+                                <div class="body_card_top_icon">
+                                    <img v-if="item.rec_n" src="{yun:}$wap_style{/yun}/images/icon_recommend.png"
+                                         alt="">
+                                </div>
+                            </div>
+                            <div class="body_card_top_time">{{item.lastupdate_n}}</div>
+                        </div>
+                        <div class="position_body_card_center">
+                            <div class="body_card_center_left">
+                                <div class="more_position_quantity">
+                                    <div class="position_quantity_exposure">
+                                        <div class="quantity_exposure_q">兼职报名：</div>
+                                        <div class="quantity_exposure_a">{{item.applynum}}</div>
+                                    </div>
+                                    <div class="position_quantity_exposure">
+                                        <div class="quantity_exposure_q">浏览量：</div>
+                                        <div class="quantity_exposure_a">{{item.hits}}</div>
+                                    </div>
+                                </div>
+                                <div class="more_position_new_time">
+                                    <div class="quantity_exposure_q">有限期至：</div>
+                                    <div class="quantity_exposure_a">{{item.end_n}}</div>
+                                </div>
+                                <div class="more_position_new_time" v-if="item.state==3"
+                                     @click.stop="showReason(infokey)">
+                                    <div class="quantity_exposure_q">状态：</div>
+                                    <div class="quantity_exposure_a" style="color:#fe2f3a;">未通过</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="position_body_card_moonlight">
+                            <ul>
+                                <li @click="statusChange(item.id, 2, infokey)">
+                                    <div class="body_card_bom_icon">
+                                        <img src="{yun:}$wap_style{/yun}/images/job_up_down.png" alt="">
+                                    </div>
+                                    <div class="body_card_bom_name">上架</div>
+                                </li>
+                                <li @click="navigateTo('index.php?c=partadd&id=' + item.id)">
+                                    <div class="body_card_bom_icon">
+                                        <img src="{yun:}$wap_style{/yun}/images/job_modification.png" alt="">
+                                    </div>
+                                    <div class="body_card_bom_name">修改</div>
+                                </li>
+                                <li @click="del" :data-id="item.id" :data-key="infokey">
+                                    <div class="body_card_bom_icon">
+                                        <img src="{yun:}$wap_style{/yun}/images/delete.png" alt="">
+                                    </div>
+                                    <div class="body_card_bom_name">删除</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div v-if="total > limit">
+                        <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses
+                                        @change="pageChange"/>
+                    </div>
+                </div>
+
+                <div class="none_position_body" v-else>
+                    <div class="none_position_body_img">
+                        <img src="{yun:}$wap_style{/yun}/images/none_position.png" alt="">
+                    </div>
+                    <div class="none_position_body_text">您还没有已下架兼职哦~</div>
+                    <div class="none_position_body_btn" @click="partadd">立即发布</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!--职位推广设置弹出-->
+        <van-popup v-model="tc_server" position="bottom">
+            <div class="top_set_box" style="position: unset; display: block">
+                <div class="top_set_box_title">
+                    <div class="box_title_left">职位推荐</div>
+                    <div class="box_title_right" @click="closeTc">
+                        <img src="{yun:}$wap_style{/yun}/images/job.dell.png" alt="">
+                    </div>
+                </div>
+                <div class="top_set_box_bnner">
+                    <span @click="topage('index.php?c=server')"><img src="{yun:}$wap_style{/yun}/images/job_bnner.png"
+                                                                     alt=""></span>
+                </div>
+                <div class="top_set_box_day" v-if="tgPrice==0">限时福利：职位推荐金额 0 元</div>
+                <div class="top_set_box_day" v-else>
+                    <div class="set_box_day_left">您的职位推荐套餐剩余</div>
+                    <div class="set_box_day_right">{{statis.rec_num}}天</div>
+                </div>
+                <div class="top_set_box_setday">
+                    <div class="box_setday_left">推荐天数</div>
+                    <div class="box_setday_right">
+                        <input type="number" v-model='promote_day' @input="dayCheck" oninput="value=value.replace(/^0|[\^d]/g,'')" maxlength='3' placeholder="请设置天数" autocomplete="off" />
+                    </div>
+                </div>
+                <input type="hidden" v-model="promote_jobid"/>
+                <input type="hidden" v-model="promote_type"/>
+                <div class="top_set_box_btn" @click="setJobPromote">确定</div>
+            </div>
+        </van-popup>
+
+        <van-popup v-model="single_server" position="bottom">
+            <div class="top_set_deficiency_box" style="position: unset; display: block">
+                <div class="top_set_box_title">
+                    <div class="box_title_left">{{server.name}}</div>
+                    <div class="box_title_right" @click="closeSingle">
+                        <img src="{yun:}$wap_style{/yun}/images/job.dell.png" alt="">
+                    </div>
+                </div>
+                <div class="top_set_box_bnner">
+                    <span @click="topage('index.php?c=server')"><img src="{yun:}$wap_style{/yun}/images/job_bnner.png" alt=""></span>
+                </div>
+                <div class="top_set_box_setday">
+                    <div class="box_setday_left">{{server.name}}天数</div>
+                    <div class="box_setday_right">
+                        <input type="number" v-model='server.days' @input="checkDay" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请设置天数" autocomplete="off" />
+                    </div>
+                </div>
+  
+
+                <div class="top_set_box_discounts" v-if="dkShow">
+                    <div class="select_discounts_text">
+                        <div class="discounts_text_top">{{config.integral_name}}抵扣</div>
+                        <div class="discounts_text_bom">你当前有<i class="text_bom_integral">{{statis.integral}}</i>{{config.integral_name}}（1元={{config.integral_proportion}}{{config.integral_name}}）
+                        </div>
+                    </div>
+                    <div class="select_discounts_icon">
+                        <van-switch v-model="server.switchChecked" active-color="#DEAC65" inactive-color="#dcdee0"
+                                    @change="integralSwitchChange"></van-switch>
+                    </div>
+                </div>
+                <div class="top_set_box_discounts" v-if="isDk">
+                    <div class="box_setday_left">抵扣数量</div>
+                    <div class="box_setday_right">
+                        <input type="number" v-model='server.dkNum' @input="dkCheck" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请输入抵扣数量" autocomplete="off" />
+                    </div>
+                </div>
+
+                <div class="position_card_pay" v-if="payTypeShow">
+
+                    <div class="position_card_pay_box" v-if="fktype.fkal && isweixin == 2" @click="chosePayType(2)">
+                        <div class="card_pay_box_left">
+                            <div class="pay_box_left_icon">
+                                <img src="{yun:}$wap_style{/yun}/images/yun_wap_zfb.png" alt="">
+                            </div>
+                            <div class="pay_box_left_name">支付宝支付</div>
+                        </div>
+                        <div class="card_pay_box_icon">
+                            <img :src="src_alipay" alt="">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="deficiency_box_btn" v-if="payStyle == 'price'">
+                    <div class="deficiency_box_btn_left">
+                        <div class="box_btn_left_pay">应付金额：</div>
+                        <div class="box_btn_left_center">￥</div>
+                        <div class="box_btn_left_monye">{{order_price}}</div>
+                    </div>
+                    <div class="deficiency_box_btn_right" @click="buyByPrice">立即购买</div>
+                </div>
+
+                <div class="deficiency_box_btn" v-if="payStyle == 'integral'">
+                    <div class="deficiency_box_btn_left">
+                        <div class="box_btn_left_pay">支付{{config.integral_name}}：</div>
+                        <div class="box_btn_left_center"></div>
+                        <div class="box_btn_left_monye">{{order_integral}}</div>
+                    </div>
+                    <div class="deficiency_box_btn_right" @click="buyByIntegral">立即购买</div>
+                </div>
+
+
+            </div>
+        </van-popup>
+
+    </div>
+
+<script src="{yun:}$wap_style{/yun}/js/jsMath.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/com.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script>
+    var isweixin = '{yun:}$isweixin{/yun}';
+    var yunvue = new Vue({
+        el: '#yunvue',
+        data() {
+            return {
+
+                stype: 1, //tab栏
+
+                info: [],
+
+                total: 0,
+                pageTotal: 0,
+                page: 1,
+                limit: 10,
+
+                isFromSearch: true,
+                searchLoading: true,
+                searchLoadingComplete: false,
+
+                zp: 0,
+                sh: 0,
+                dq: 0,
+                xj: 0,
+
+                isname: false,
+                istel: false,
+                isemail: false,
+                isyyzz: false,
+                isxy: false,
+                isgzh: false,
+
+                searchKeyword: '',
+
+                tc_server: false,           //  推广套餐设置弹出
+                single_server: false,       //  推广消费设置弹出
+
+                server: {
+                    dkNum: ''
+                },
+                integral: {},
+
+                config: {},
+                statis: {},
+
+                promote_type: 'recpart',
+                promote_day: '',
+                promote_key: '',
+                promote_jobid: '',
+
+
+               
+                dkShow: false,      //  抵扣
+                isDk: false,        //  填写积分抵扣
+
+                payTypeShow: false,
+                payStyle: 'price',
+                order_price: 0,
+                order_integral: 0,
+                only: 0,
+                tgPrice: 0,
+
+                iosfk: 1,
+                fktype: {},
+                src_weixin: '{yun:}$wap_style{/yun}/images/dredge_To_confirm.png',
+                src_alipay: '{yun:}$wap_style{/yun}/images/dredge_To_confirm.png',
+
+                mb_content: '',
+
+                closeArr: {},
+
+                // tab数量显示
+                zp_num: 0,
+                ds_num: 0,
+                dq_num: 0,
+                xj_num: 0,
+
+                isweixin : isweixin ? isweixin : 2
+            };
+        },
+        created() {
+            this.getpart('refresh');
+            this.getpartNum();
+        },
+        methods: {
+
+            //  发布职位
+            partadd: function () {
+                var url = "{yun:}url d=wxapp h=com m=index c=addCheck{/yun}";
+                comjobAdd(url, {job: 'part'}, function (res) {
+                    if (res.error==1) {
+                        // 套餐不足
+                        modalVue.$data.mb_content = res.msg;
+                        modalVue.$data.cancelText = '不用了';
+                        modalVue.$data.confirmText = '去购买';
+                        modalVue.$data.yunModal = true;
+                        modalType = 'job';
+                    } else if(res.error==2){
+                        modalVue.$data.mb_content = res.msg;
+                        modalVue.$data.cancelText = '取消';
+                        modalVue.$data.confirmText = '去发布';
+                        modalVue.$data.tourl = res.tourl;
+                        modalVue.$data.yunModal = true;
+                        modalType = 'toaddjob';
+                    }else {
+                        // 强制操作
+                        certVue.$data.checked = res;
+                        certVue.$data.yunCert = true;
+                    }
+                });
+            },
+
+            partRefresh(id) {
+                var url = "{yun:}url d=wxapp h=com m=part c=refresh{/yun}";
+                comjobRefresh(url, {partid: id}, function (res) {
+                    modalVue.$data.singleid = id;
+                    modalVue.$data.mb_content = res.msg;
+                    modalVue.$data.cancelText = '不用了';
+                    modalVue.$data.confirmText = '去购买';
+                    modalVue.$data.yunModal = true;
+                    modalType = 'partrefresh';
+                });
+            },
+
+            /** 上下架 Start */
+            statusChange(id, status, key) {
+                var that = this,
+                    paramer = {
+                        id: id,
+                        status: status,
+                    };
+                if (status == 1) {
+                    var msg = '下架后重新上架将消耗上架职位数量，确认下架？';
+                    showConfirm(msg, function () {
+                        that.statusSave(paramer, key);
+                    }, '取消', '确定');
+                } else {
+                    if (this.statis.rating_type == 1) {
+                        var msg = '您可上架职位' + this.statis.job_num + '个，确认上架？';
+                    } else if (this.statis.rating_type == 2) {
+                        var msg = '确认上架？';
+                    } else {
+                        that.statusSave(paramer, key);
+                        return;
+                    }
+                    showConfirm(msg, function () {
+                        that.statusSave(paramer, key);
+                    }, '取消', '确定');
+                }
+            },
+            statusSave(paramer, key) {
+                var that = this;
+                showLoading('设置中');
+                $.post('{yun:}url d=wxapp h=com m=part c=ztjob{/yun}', paramer, function (data) {
+                    hideLoading();
+                    if (data.error == 0) {
+                        that.getpartNum();
+                        that.getpart('refresh');
+                        showToast('设置成功');
+                    } else if(data.error == 8){
+                        modalVue.$data.mb_content = data.msg;
+                        modalVue.$data.cancelText = '不用了';
+                        modalVue.$data.confirmText = '去购买';
+                        modalVue.$data.yunModal = true;
+                        modalType = 'job';
+                    } else {
+                        showModal(data.msg);
+                    }
+                }, 'json');
+            },
+            /** 上下架 End */
+
+            tabChange: function (e) {
+                this.stype = e;
+                this.getpart('refresh');
+            },
+            getpart: function (type) {
+                var that = this;
+                if (type && type == 'refresh') {
+                    $("#yunvue").addClass('none');
+                    that.page = 1;
+                    that.info = [];
+                }
+                var paramer = {
+                    page: that.page,
+                    limit: that.limit,
+                    keyword: that.searchKeyword,
+                    stype: that.stype,
+                };
+
+                showLoading('加载中');
+                $.post('{yun:}url d=wxapp h=com m=part c=partlist{/yun}', paramer, function (data) {
+                    hideLoading();
+                    $("#yunvue").removeClass('none');
+                    if (data) {
+                        let res = data.data;
+                        that.total = parseInt(res.total);
+                        that.pageTotal = Math.ceil(that.total / that.limit);
+                        if (res.list.length > 0) {
+                            that.info = that.isFromSearch ? res.list : that.info.concat(res.list);
+                            that.zp = res.zp;
+                            that.sh = res.sh;
+                            that.dq = res.dq;
+                            that.xj = res.xj;
+                            that.searchLoadingComplete = false;
+                        } else {
+                            that.searchLoadingComplete = true;
+                        }
+                        that.searchLoading = false;
+
+                        that.statis = res.statis;
+                        that.config = res.config;
+                        that.fktype = res.fktype;
+                        if(res.fktype.fkwx){
+                            that.chosePayType(1);
+                        }else if(res.fktype.fkal){
+                            that.chosePayType(2);
+                        }
+                    }
+                }, 'json')
+            },
+            getpartNum: function () {
+                let that = this;
+                var paramer = {
+                    keyword: that.searchKeyword,
+                };
+
+                $.post('{yun:}url d=wxapp h=com m=part c=partnum{/yun}', paramer, function (data) {
+                    if(data.error == 0){
+                        let count = data.data.count;
+                        that.zp_num = parseInt(count.zp);
+                        that.ds_num = parseInt(count.ds);
+                        that.dq_num = parseInt(count.dq);
+                        that.xj_num = parseInt(count.xj);
+                    }
+                }, 'json')
+            },
+            showRec: function (id, key) {
+
+                var self = this;
+
+                self.promote_jobid = id;
+                self.promote_key = key;
+                self.tgPrice = parseFloat(self.config.recPrice);
+
+                if (self.tgPrice === 0 || parseInt(self.statis.rec_num) > 0) {
+
+                    self.showTc();
+                } else {
+
+                    self.sendRatingNotice();
+
+                    if (self.fktype.fkwx || self.fktype.fkal){
+
+                        self.showSingle();
+
+                    }else{
+
+                        return showToast('网站已关闭支付接口，请联系管理员');
+                    }
+                }
+            },
+
+            sendRatingNotice(){
+
+                var that = this;
+                var formData = {
+                    type: 'rec'
+                };
+                try {
+                    $.post('{yun:}url d=wxapp h=com m=job c=sendRatingNotice{/yun}', formData, function (data) {
+
+                    }, 'json');
+                } catch (err) {
+                }
+            },
+
+            showTc() {
+                var self = this;
+                self.tc_server = true;
+            },
+
+            dayCheck: function () {
+                var that = this;
+                debounce(that.setCkDays);
+            },
+
+            setCkDays: function () {
+                var that = this;
+
+                if (parseInt(that.statis.rec_num) < that.promote_day && that.config.recPrice > 0) {
+                    that.promote_day = that.statis.rec_num;
+                }
+            },
+
+            setJobPromote() {
+                var that = this;
+                if (that.promote_day === '' || that.promote_day === 'undefined') {
+                    return showToast('请填写职位推广天数！');
+                }
+                var formData = {
+                    days: that.promote_day,
+                    jobid: that.promote_jobid,
+                    type: that.promote_type
+                };
+                showLoading();
+                try {
+                    $.post('{yun:}url d=wxapp h=com m=job c=setJobPromote{/yun}', formData, function (data) {
+
+                        hideLoading();
+                        showModal(data.msg);
+
+                        if (data.error === 1) {
+
+                            that.tc_server = false;
+
+                            that.info[that.promote_key].rec_n = 1;
+
+                            if (parseInt(that.promote_day) > 0) {
+
+                                that.statis.rec_num = that.config.recPrice > 0 ? accSub(parseInt(that.statis.rec_num), that.promote_day) : that.statis.rec_num;
+
+                                that.info[that.promote_key].rec_day = accAdd(that.info[that.promote_key].rec_day, accSub(that.promote_day, 1));
+                            }
+                        }
+
+                    }, 'json')
+                } catch (err) {
+                }
+                ;
+
+            },
+
+            closeTc: function () {
+                this.tc_server = false;
+            },
+
+            showSingle(type) {
+
+                var self = this;
+
+                if (self.config.recJob === '2') {
+                    self.toServer();
+                    self.single_server = false;
+                } else {
+                    self.server.name = '职位推荐';
+                    self.only = self.config.onlyRec;
+                    self.promote_type = 'partrec';
+                    self.single_server = true;
+                }
+            },
+            dkCheck: function () {
+
+                var that = this;
+                if (parseInt(that.server.dkNum) > 0) {
+
+                    debounce(that.setIntegral);
+                } else {
+                    debounce(that.resetIntegral);
+                }
+            },
+            checkDay: function () {
+
+                var that = this;
+
+               
+
+                that.dkShow = false;
+                that.server.switchChecked = false;
+                that.isDk = false;
+                that.server.dkNum = '';
+                that.order_integral = '';
+
+                that.order_price = 0;
+                that.payStyle = 'price';
+                that.payTypeShow = true;
+
+                if (parseInt(that.server.days) > 0) {
+
+                    debounce(that.setTgDays);
+
+                }
+            },
+
+            setTgDays: function () {
+
+                var that = this;
+                if (that.server.days.length > 3) {
+                    that.server.days = that.server.days.slice(0, 3);
+                }
+
+                var price = accMul(that.server.days, that.tgPrice);
+
+                if (that.config.online == 3 && that.only == 2) {     //  积分消费模式 && 不强制金额消费
+
+
+                    that.dkShow = false;
+                    that.server.dkNum = 0;
+
+                    var integral_need = accMul(parseFloat(price), that.config.integral_proportion);
+                    var integral_sub = accSub(integral_need, parseInt(that.statis.integral));
+
+                    that.order_integral = integral_need;
+
+                    if (parseInt(integral_sub) <= 0) {  //  积分充足
+
+                        that.payStyle = 'integral';
+                        that.payTypeShow = false;
+                    } else {
+
+                        var integral_pay = parseInt(integral_sub) < parseInt(that.config.integral_min) ? parseInt(that.config.integral_min) : parseInt(integral_sub);
+                        that.server.price_int = integral_pay;
+                        that.order_price = accDiv(integral_pay, that.config.integral_proportion);
+                        that.payStyle = 'price';
+                        that.payTypeShow = true;
+                    }
+
+                } else {
+
+                    that.order_price = price;
+                    that.payStyle = 'price';
+                    that.payTypeShow = true;
+
+                    if (that.config.online == 1 && that.only == 2) { //  抵扣消费模式 && 不强制金额消费
+
+                        that.dkShow = true;
+                    } else {
+
+                        that.dkShow = false;
+                    }
+                }
+            },
+
+            integralSwitchChange: function (e) {
+                var that = this;
+                that.isDk = e;
+
+                if (e === false) {
+                    debounce(that.resetIntegral);
+                }
+            },
+
+            checkIntegral: function () {
+
+                var that = this;
+                if (parseInt(that.server.dkNum) > 0) {
+
+                    debounce(that.setIntegral);
+                } else {
+                    debounce(that.resetIntegral);
+                }
+            },
+
+            setIntegral: function () {
+
+                var that = this;
+
+                var price = accMul(that.server.days, that.tgPrice);
+
+                var integral_need = parseInt(accMul(price, that.config.integral_proportion));
+
+                if (parseInt(that.statis.integral) > integral_need) {  //  积分充足
+
+                    if (parseInt(that.server.dkNum) >= integral_need) {
+
+                        that.server.dkNum = integral_need;
+                        that.order_integral = integral_need;
+                        that.payStyle = 'integral';
+                        that.payTypeShow = false;
+                    } else {
+
+                        price = accSub(price, accDiv(parseInt(that.server.dkNum), that.config.integral_proportion));
+                        that.order_price = parseFloat(price);
+                        that.payStyle = 'price';
+                        that.payTypeShow = true;
+                    }
+                } else {
+                    if (parseInt(that.server.dkNum) > parseInt(that.statis.integral)) {
+
+                        that.server.dkNum = that.statis.integral;
+
+                        that.order_price = accSub(price, accDiv(parseInt(that.statis.integral), that.config.integral_proportion));
+                        that.payStyle = 'price';
+                        that.payTypeShow = true;
+                    } else {
+
+                        that.order_price = accSub(price, accDiv(that.server.dkNum, that.config.integral_proportion));
+                        that.payStyle = 'price';
+                        that.payTypeShow = true;
+                    }
+                }
+            },
+
+            resetIntegral: function () {
+                var that = this;
+
+                var price = accMul(that.server.days, that.tgPrice);
+
+              
+                that.order_price = price;
+
+                that.dkShow = that.config.online == 1 && that.only!=1 ? true : false;
+                that.order_integral = 0;
+                that.payStyle = 'price';
+                that.payTypeShow = true;
+                that.server.dkNum = '';
+            },
+
+            chosePayType: function (e) {
+                var that = this;
+                if (e == 2) {
+
+                    that.server.paytype = 'alipay';
+                    that.src_weixin = '{yun:}$wap_style{/yun}/images/dredge_To_confirm.png';
+                    that.src_alipay = '{yun:}$wap_style{/yun}/images/dredge_affirm.png';
+                }
+            },
+
+            buyByPrice: function () {
+                var that = this;
+
+                var param = {
+                    server: that.promote_type,
+                    single_id: that.promote_jobid,
+                    days: that.server.days,
+                    paytype: that.server.paytype,
+                    integral_dk: that.server.dkNum,
+                    price_int: that.server.price_int,
+                    
+                    from: 'wap'
+                };
+
+                showLoading();
+                try {
+                    $.post('{yun:}url d=wxapp h=com m=fk c=getOrder{/yun}', param, function (data) {
+
+                        hideLoading();
+                        if (data.msg == 'ok' && data.error == 0) {
+                            let res = data.data;
+                            window.location.href = res.url;
+                        } else {
+                            showToast(data.msg);
+                        }
+
+                    }, 'json')
+                } catch (err) {
+                }
+                ;
+            },
+            buyByIntegral: function () {
+
+                var that = this;
+
+                var param = {
+                    server: that.promote_type,
+                    days: that.server.days,
+            
+                };
+
+                param.recpartid = that.promote_jobid;
+
+                showLoading();
+                try {
+                    $.post('{yun:}url d=wxapp h=com m=fk c=dkzf{/yun}', param, function (data) {
+
+                        hideLoading();
+                        showModal(data.msg);
+
+                        if (data.error === 0) {
+
+                            that.single_server = false;
+
+                            if (that.promote_key >= 0) {
+
+                                that.statis.integral = accSub(parseInt(that.statis.integral), parseInt(that.server.dkNum));
+
+                                that.info[that.promote_key].rec_n = 1;
+                                that.info[that.promote_key].rec_day = accAdd(that.info[that.promote_key].rec_day, accSub(that.server.days, 1));
+
+                            }
+                        }
+
+                    }, 'json')
+                } catch (err) {
+                }
+                ;
+            },
+            
+
+            closeSingle: function () {
+                var that = this;
+                that.server.days  =   '';
+                that.checkDay();
+                that.single_server = false;
+            },
+
+            toServer: function () {
+                modalVue.$data.mb_content = '套餐已用完，购买会员更优惠';
+                modalVue.$data.cancelText = '不用了';
+                modalVue.$data.confirmText = '去购买';
+                modalVue.$data.yunModal = true;
+                modalType = 'vip';
+            },
+
+            closeRec(key, part) {
+
+                var that = this;
+                that.closeArr.type = 'recpart';
+                that.closeArr.key = key;
+                that.closeArr.jobid = part.id;
+                that.closeArr.rec_day = part.rec_day;
+
+                var msg = that.closeArr.rec_day > 0 ? '职位推荐剩余' + that.closeArr.rec_day + '天，' : '';
+                msg = msg + '确定取消职位推荐？';
+
+                showModal(msg, function () {
+                    that.setJobPromoteClose();
+                });
+            },
+
+            setJobPromoteClose() {
+                var that = this;
+                var formData = {
+                    jobid: that.closeArr.jobid,
+                    type: that.closeArr.type
+                };
+                showLoading();
+                try {
+                    $.post('{yun:}url d=wxapp h=com m=job c=setJobPromoteClose{/yun}', formData, function (data) {
+                        hideLoading();
+                        showToast(data.msg);
+                        if (data.error === 1) {
+                            that.info[that.closeArr.key].rec_n = 0;
+                            that.info[that.closeArr.key].rec_day = 0;
+                            if (parseInt(that.closeArr.rec_day) > 0) {
+                                that.statis.rec_num = accAdd(parseInt(that.statis.rec_num), that.closeArr.rec_day);
+                            }
+                        }
+                    }, 'json')
+                } catch (err) {
+                }
+            },
+
+            del: function (e) {
+                var that = this;
+                var key = e.target.dataset.key;
+                var paramer = {
+                    id: e.currentTarget.dataset.id,
+                };
+                showConfirm('确定删除？', function () {
+                    showLoading('删除中');
+                    $.post('{yun:}url d=wxapp h=com m=part c=delpart{/yun}', paramer, function (data) {
+                        hideLoading();
+                        if (data.error == 1) {
+                            showToast('删除成功', 2, function () {
+                                that.getpartNum();
+                                that.getpart('refresh');
+                            });
+                        } else {
+                            showToast('删除失败');
+                        }
+                    }, 'json')
+                });
+            },
+            navigateTo: function (url) {
+                window.location.href = url;
+            },
+            showReason: function (key) {
+                showModal(this.info[key].statusbody)
+            },
+            pageChange: function (page) {
+                this.page = page;
+                this.getpart('');
+            },
+        }
+    });
+
+    $("#jobSearch").keydown(function (e) {
+        if (e.keyCode == 13) {
+            yunvue.searchKeyword = $("#jobSearch").val();
+            yunvue.getpart('refresh');
+            yunvue.getpartNum();
+        }
+    })
+    $("#jobSearch").on('input', function (e) {
+        let val = $(e.currentTarget).val();
+        if (val == '') {
+            if (yunvue.searchKeyword != '') {
+                yunvue.searchKeyword = '';
+                yunvue.getpart('refresh');
+                yunvue.getpartNum();
+            }
+        }
+    })
+
+    function partadd() {
+        yunvue.partadd();
+    }
+</script>
+<!-- 余额不足提示 -->
+{yun:}include file="$wapstyle/publichtm/yun_modal.htm"{/yun}
+<!-- 强制操作提醒弹出框 -->
+{yun:}include file="$wapstyle/publichtm/yun_cert.htm"{/yun}
+</body>
+</html>

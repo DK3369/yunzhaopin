@@ -1,0 +1,164 @@
+{yun:}include file="$comstyle/header.htm"{/yun}
+<div class="w1000">
+    <div class="admin_mainbody">
+        {yun:}include file="$comstyle/left.htm"{/yun}
+
+   
+   <div class=right_box>
+       <div class="newmember_tit">
+           <ul>
+               <li><a href="index.php?c=info">基本信息</a></li>
+               <li><a href="index.php?c=info&act=side">补充信息</a></li>
+               <li class="newmember_titcur"><a href="index.php?c=address">地址管理</a></li>
+               <li><a href="index.php?c=show"> 公司相册</a></li>
+               <li><a href="index.php?c=uppic"> 公司LOGO</a></li>
+               <li><a href="index.php?c=product">产品介绍</a></li>
+               <li><a href="index.php?c=news">公司资讯</a></li>
+               {yun:}if $config.map_key{/yun}
+               <li><a href="index.php?c=map">公司地图</a></li>
+               {yun:}/if{/yun}
+               <li><a href="index.php?c=comtpl">个性化模板</a></li>
+           </ul>
+       </div>
+       <div class="newmember_screenbox">
+           <div class="newmember_screen">
+               <div class="com_topbth_box">
+                   <input class="com_topbth_input newAddressBtn" type="button" value="新增地址"
+                          data-provinceid="{yun:}$defLink.provinceid{/yun}" data-cityid="{yun:}$defLink.cityid{/yun}"
+                          data-three_cityid="{yun:}$defLink.three_cityid{/yun}"
+                          data-address="{yun:}$defLink.address{/yun}" data-x="{yun:}$defLink.x{/yun}"
+                          data-y="{yun:}$defLink.y{/yun}">
+               </div>
+           </div>
+       </div>
+       <div class="clear"></div>
+       <div class=admincont_box>
+           <div class="com_body">
+               <iframe id="supportiframe" name="supportiframe" onload="returnmessage('supportiframe');"
+                       style="display:none"></iframe>
+               <form action='{yun:}$now_url{/yun}&act=delAllAddress' target="supportiframe" method="post" id='myform'
+                     class='layui-form'>
+                   <div class="  ">
+                       <table class="com_table   ">
+                           <tr>
+                               <th></th>
+                               <th>联系人</th>
+                               <th align="left">联系方式</th>
+                               <th>所在区域</th>
+                               <th>详细地址</th>
+                               <th width="230">操作</th>
+                           </tr>
+                           <tr>
+                               <td align="center">
+                                   <input type="checkbox" disabled class="newcom_user_infoheck" lay-skin="primary"/>
+                               </td>
+                               <td align="center">
+                                   {yun:}$defLink.link_man{/yun}
+                               </td>
+                               <td align="left">
+                                   {yun:}if $defLink.link_moblie{/yun}手机：{yun:}$defLink.link_moblie{/yun}<br>{yun:}/if{/yun}
+                                   {yun:}if $defLink.link_phone{/yun}固话：{yun:}$defLink.link_phone{/yun}<br>{yun:}/if{/yun}
+                                   {yun:}if $defLink.email{/yun}邮箱：{yun:}$defLink.email{/yun}{yun:}/if{/yun}
+                               </td>
+                               <td align="center">{yun:}$defLink.city{/yun}</td>
+
+                               <td align="center">{yun:}$defLink.address{/yun}</td>
+                               <td align="center">默认企业地址</td>
+                           </tr>
+
+                           {yun:}foreach item=v from=$rows{/yun}
+                           <tr>
+                               <td align="center">
+                                   <input type="checkbox" name="delid[]" value="{yun:}$v.id{/yun}"
+                                          class="newcom_user_infoheck" lay-skin="primary"/>
+                               </td>
+                               <td align="center">
+                                   {yun:}$v.link_man{/yun}
+                               </td>
+                               <td align="left">
+                                   {yun:}if $v.link_moblie{/yun}手机：{yun:}$v.link_moblie{/yun}<br>{yun:}/if{/yun}
+                                   {yun:}if $v.link_phone{/yun}固话：{yun:}$v.link_phone{/yun}<br>{yun:}/if{/yun}
+                                   {yun:}if $v.email{/yun}邮箱：{yun:}$v.email{/yun} {yun:}/if{/yun}
+                               </td>
+                               <td align="center">{yun:}$v.city{/yun}</td>
+
+                               <td align="center">{yun:}$v.link_address{/yun}</td>
+                               <td align="center">
+                                   <a href="javascript:;" class="com_bth cblue newAddressBtn"
+                                      data-id="{yun:}$v.id{/yun}" data-link_man="{yun:}$v.link_man{/yun}"
+                                      data-link_moblie="{yun:}$v.link_moblie{/yun}"
+                                      data-link_phone="{yun:}$v.link_phone{/yun}" data-email="{yun:}$v.email{/yun}"
+                                      data-provinceid="{yun:}$v.provinceid{/yun}" data-cityid="{yun:}$v.cityid{/yun}"
+                                      data-three_cityid="{yun:}$v.three_cityid{/yun}"
+                                      data-address="{yun:}$v.link_address{/yun}" data-x="{yun:}$v.x{/yun}"
+                                      data-y="{yun:}$v.y{/yun}">修改</a>
+                                   <a href="javascript:;" class="com_bth cblue delAddressA" data-id="{yun:}$v.id{/yun}">删除</a>
+                               </td>
+                           </tr>
+                           {yun:}/foreach{/yun}
+                           <tr>
+                               <td align="center">
+                                   <input type="checkbox" lay-skin="primary" lay-filter='allAddress'>
+                               </td>
+                               <td colspan="7"><input class="c_btn_02" type="button" name="subdel" value="批量删除"
+                                                      onclick="return really('delid[]');"></td>
+                           </tr>
+                           <tr>
+                               <td colspan="8" class="table_end">
+                                   <div class="diggg">{yun:}$pagenav{/yun}</div>
+                               </td>
+                           </tr>
+                       </table>
+                   </div>
+               </form>
+           </div>
+       </div>
+   </div>
+    <script>
+        layui.use(['form'], function () {
+            var form = layui.form,
+                $ = layui.$;
+
+            form.on('checkbox(allAddress)', function (data) {
+                $("input[name='delid[]']").each(function () {
+                    this.checked = data.elem.checked;
+                });
+                form.render('checkbox');
+            });
+        });
+        $('.delAddressA').off('click').on('click', function () {
+
+            var thisAddressId = parseInt($(this).attr('data-id'));
+
+            if (isNaN(thisAddressId) || thisAddressId < 1) {
+                layer.msg('地址数据错误！', 2, 8);
+                return false;
+            }
+
+            layer.confirm('确定要删除招聘地址吗？', function () {
+
+                var i = loadlayer();
+
+                $.post("index.php?c=address&act=delAddress", {id: thisAddressId}, function (data) {
+
+                    layer.closeAll();
+
+                    var res = eval('(' + data + ')');
+
+                    if (res.errcode == 9) {
+
+                        layer.msg(res.msg, 2, 9, function () {
+                            location.reload();
+                        });
+                    } else {
+
+                        layer.msg(res.msg, 2, 8);
+                    }
+                    return false;
+                });
+            });
+        });
+    </script>
+</div>
+{yun:}include file="$comstyle/newAddress.htm"{/yun}
+{yun:}include file="$comstyle/footer.htm"{/yun}

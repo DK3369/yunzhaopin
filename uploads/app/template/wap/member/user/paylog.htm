@@ -1,0 +1,182 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun} 
+<div id="yunvue" class="none">
+    <div class="detail_header">
+        <div class="detail_header_title"></div>
+        <div class="detail_header_nav category">
+            <ul>
+                <li :class="type == 'paylog' ? 'pitch_up' : ''" @click="pageTo('index.php?c=paylog&type=paylog')">订单管理</li>
+                <li :class="type == 'consume' ? 'pitch_up' : ''" @click="pageTo('index.php?c=paylog&type=consume')">消费明细</li>
+            </ul>
+        </div>
+    </div>
+    <div class="detail_body">
+        <div v-if="type=='paylog'">
+            <div class="detail_body_card" v-for="(item,fkey) in list" :key="fkey">
+                <div class="detail_card_title">
+                    <div class="detail_card_add">{{item.type_n}}</div>
+                    <div class="detail_card_state" v-if='item.order_state==1'>{{item.dingdan_state_n}}</div>
+                    <div class="detail_card_succeed" v-if='item.order_state==2'>{{item.dingdan_state_n}}</div>
+                    <div class="detail_card_succeed" v-if='item.order_state==3'>{{item.dingdan_state_n}}</div>
+                    <div class="detail_card_succeed" v-if='item.order_state==4'>{{item.dingdan_state_n}}</div>
+                    <div class="detail_card_succeed" v-if='item.order_state==0'>{{item.dingdan_state_n}}</div>
+                </div>
+                <div class="detail_card_odd">
+                    <div class="detail_odd_q">充值单号</div>
+                    <div class="detail_odd_a">{{item.dingdan_id}}</div>
+                </div>
+                <div class="detail_card_pay">
+                    <div class="detail_odd_q">支付方式</div>
+                    <div class="detail_odd_a">{{item.dingdan_type_n ? item.dingdan_type_n : '手动'}}</div>
+                </div>
+                <div class="detail_card_recharge">
+                    <div class="detail_odd_q">充值金额</div>
+                    <div class="detail_odd_a">{{item.dingdan_price}}</div>
+                </div>
+                <div class="detail_card_time">
+                    <div class="detail_odd_q">订单时间</div>
+                    <div class="detail_odd_a">{{item.dingdan_time_n}}</div>
+                </div>
+                <div class="detail_card_btns" v-if="item.dingdan_state=='1' && item.dingdan_type!='bank'">
+                    <div class="detail_card_cancel" @click="delpaylog(item.id,fkey)">取消充值</div>
+                     <div class="detail_card_yes" @click="pageTo('index.php?c=payment&id='+item.id)">去付款</div>                  
+                </div>
+            </div> 
+        </div>
+        <div v-if="type=='consume'">
+            <div class="detail_body_card" v-if="count!=0">
+                <ul>
+                    <li v-for="(item,ckey) in list" :key="ckey">
+                        <div class="detail_box">
+                            <div class="detail_box_title">{{item.fk_remark}}</div>
+                            <div class="detail_box_time">{{item.fk_time}}</div>
+                        </div>
+                        <div class="detail_integral">+{{item.dingdan_price}}{{item.type==2 ? '元': config.unit+config.pname}}</div>
+                    </li>                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    <div v-if="count ==2">
+    <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange" /> 
+    </div>
+    <div class="wap_member_no" v-show="count==0">
+      暂无记录!
+    </div>   
+</div>
+<script>  
+  var currentPage = parseInt('{yun:}$smarty.get.page{/yun}');
+      currentPage = currentPage ? currentPage : 1;
+  var type = '{yun:}$smarty.get.type{/yun}';  
+      type = type ? type : 'paylog';
+      new Vue({
+        el: '#yunvue',
+        data: {
+          list: [],
+          limit:20,       
+          total:0,
+          type: type ? type : 'paylog',
+          config:{unit:'',pname:''},
+          page: currentPage,
+          islook :false
+        },
+        computed: {
+          count(){
+            if(this.total > this.limit){
+              return 2;
+            }else if(this.list.length==0){
+              return 0;
+            }else{
+                return 1;
+            }
+          }
+        },
+        created() {   
+         this.typeShow(type);
+        },
+        methods:{
+          typeShow:function(e){
+              this.type=e;
+              this.list=[];              
+              this.islook = false; 
+             
+              if(e=='paylog'){               
+                this.getFklogs();
+              }else if (e=='consume') {
+                this.getConsumes();
+              }
+          },
+          getFklogs:function(){
+            showLoading();
+            var that = this;
+            var paramer = {};
+                paramer['page'] = that.page;
+                paramer['limit'] = that.limit;     
+            $.post('{yun:}url d=wxapp h=user m=finance c=fklog{/yun}',paramer,function(res){
+              hideLoading();      
+              
+              that.list = res.data.list;
+              that.total = res.total;
+              that.page = currentPage;
+              that.type = 'paylog';
+              that.islook = true 
+               $("#yunvue").css('display', 'block');
+            },'json');
+          },
+          getConsumes:function(){
+            showLoading();
+            var that = this;
+            var paramer = {};
+                paramer['page'] = that.page;
+                paramer['limit'] = that.limit;   
+            $.post('{yun:}url d=wxapp h=user m=finance c=consume{/yun}',paramer,function(res){
+              hideLoading();      
+              
+              that.config=res.data.config;
+              that.list = res.data.list;
+              that.total = res.total;
+              that.page = currentPage;
+              that.type = 'consume';
+              that.islook = true 
+               $("#yunvue").css('display', 'block');
+            },'json');
+          },
+          showReason: function(key){
+            if(this.list[key].order_state == 2){
+              showModal(this.list[key].order_remark);
+            }
+          },      
+          delpaylog:function(id,key){
+              let that = this
+              let param = {
+                id: id
+              };
+             
+             showConfirm('确定要取消该订单吗？', () => {
+                showLoading('取消中...')
+                $.post('{yun:}url d=wxapp h=user m=finance c=delfklog{/yun}', param, function(data){
+                  hideLoading();
+                  if (data.error == 9) {
+                    showToast(data.msg,2, function() {
+                      that.list.splice(key, 1); 
+                      
+                    });
+                  } else {
+                    showToast(data.msg);
+                  }
+                });
+             });   
+             
+          },
+           pageChange:function(e){
+          
+            location.href = 'index.php?c=paylog&type='+this.type+'&page='+e;
+          },
+          pageTo:function(url){
+              window.location.href = url;
+          }
+        } 
+      });
+</script>
+</body>
+</html>

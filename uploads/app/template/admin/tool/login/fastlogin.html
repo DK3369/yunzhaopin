@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName">
+                <el-tab-pane label="QQ登录配置" name="first">
+                    <loginqq :config="config" @post-set="postset"></loginqq>
+                </el-tab-pane>
+                <el-tab-pane label="新浪微博登录配置" name="second">
+                    <loginsina :config="config" @post-set="postset"></loginsina>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#moduapp',
+            data: function () {
+                return {
+                    activeName: 'first',
+                    config:{}
+                }
+            },
+            components: {
+                'loginqq': httpVueLoader('./component/loginqq.vue'),
+                'loginsina': httpVueLoader('./component/loginsina.vue'),
+            },
+            created:function(){
+                this.getInfo();
+            },
+            methods: {
+                async getInfo() {
+                    let that = this;
+                    
+                    httpPost('m=tool&c=fastlogin&a=index',{}).then((result)=>{
+                        
+                        var res = result.data;
+                        if (res.error == 0) {
+                            
+                            that.config =res.data;
+                            
+                        }
+                        
+                    }).catch(function(e){
+                        console.log(e)
+                    })
+                },
+                async postset(e){
+                    
+                    let that = this;
+                    if(e.type=='qq'){
+                        var param = {
+                            sy_qqlogin    : e.config.sy_qqlogin==1?1:0,
+                            sy_qqappid    : e.config.sy_qqappid,
+                            sy_qqappkey   : e.config.sy_qqappkey,
+                            sy_qqdt       : e.config.sy_qqdt==1?1:0,
+
+                        };
+                    }else if(e.type=='sina'){
+                        var param = {
+                            
+                            sy_sinalogin  : e.config.sy_sinalogin==1?1:0,
+                            sy_sinaappid  : e.config.sy_sinaappid,
+                            sy_sinaappkey : e.config.sy_sinaappkey,
+                        };
+                    }
+                    startLoading();
+                    httpPost('m=tool&c=fastlogin&a=save',param).then((result)=>{
+                        endLoading();
+                        var res = result.data;
+
+                        message.success(res.msg,this.getInfo);
+
+                    }).catch(function(e){
+                        console.log(e)
+                    })
+                },
+            }
+        });
+    </script>
+</body>
+
+</html>

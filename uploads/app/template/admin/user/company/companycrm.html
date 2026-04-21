@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+    <link rel="stylesheet" href="../../../admin/js/wangeditor/index.css">
+    <script src="../../../admin/js/wangeditor/index.js"></script>
+    <script src="../../js/base64ToFile.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte" style="height: initial;">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="企业用户" name="comuser" lazy>
+                    <companyuser ref="comuser" :status="status"></companyuser>
+                </el-tab-pane>
+                <el-tab-pane label="名企管理" name="commq" :lazy="true">
+                    <companymq ref="commq"></companymq>
+                </el-tab-pane>
+                <el-tab-pane label="过期用户" name="comexp" :lazy="true">
+                    <expire ref="comexp"></expire>
+                </el-tab-pane>
+                <el-tab-pane label="解绑记录" name="unbind" :lazy="true">
+                    <unbinding ref="unbind"></unbinding>
+                </el-tab-pane>
+                <el-tab-pane label="企业日志" name="comlog" :lazy="true">
+                    <comlog ref="comlog" :typelist="typeArr" :time="time" :scrolltop="true"></comlog>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+    const custoapp = new Vue({
+        el: '#moduapp',
+        data: function() {
+            return {
+                activeName: 'comuser',
+                typeArr: [{
+                    value: 1,
+                    label: "用户名"
+                }, {
+                    value: 3,
+                    label: "用户ID"
+                }],
+                time: [{
+                    value: 1,
+                    label: "今天"
+                }, {
+                    value: 3,
+                    label: "最近三天"
+                }, {
+                    value: 7,
+                    label: "最近七天"
+                }, {
+                    value: 15,
+                    label: "最近半月"
+                }, {
+                    value: 30,
+                    label: "最近一个月"
+                }],
+                status: '',
+            }
+        },
+        components: {
+            'companyuser': httpVueLoader('./component/companyuser.vue'),
+            'companymq': httpVueLoader('./component/companymq.vue'),
+            'expire': httpVueLoader('./component/expire.vue'),
+            'unbinding': httpVueLoader('./component/unbinding.vue'),
+            'comlog': httpVueLoader('./component/comlog.vue'),
+        },
+        created: function() {
+            var that = this
+
+            let query = window.parent.homeapp.$route.query;
+            if (query.status) {
+                that.status = query.status;
+            }
+            if (query.tabs) {
+                that.activeName = query.tabs;
+            }
+
+        },
+        methods: {
+            handleClick(tab) {
+
+            }
+        }
+    });
+    </script>
+</body>
+
+</html>

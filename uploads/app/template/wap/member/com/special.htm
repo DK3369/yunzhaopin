@@ -1,0 +1,100 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun} 
+<div id="yunvue" class="wap_member_box none">
+	<span v-for="(item, zk) in list" :key="zk">
+		<div class="com_cardlist" @click="toSpecial(item.sid)">
+			<div class="com_cardlist_tit">
+				<span class="job_list_jobname com_member_hr_cblue">{{item.title}}</span>
+			</div>
+			<div class="com_cardlist_p"><span class="com_cardlist_p_name">审核状态</span>
+				<span v-if="item.status==1">已审核</span>
+				<span v-else-if="item.status==2" class="wap_member_wtg">未通过</span>
+				<span v-else>未审核</span>
+			</div>
+			<div class="com_cardlist_p"><span class="com_cardlist_p_name">报名时间</span>{{item.spetime_n}}</div>
+			<div class="com_cardlist_p" v-if="item.status==2">
+				<span class="com_cardlist_p_name">审核原因</span>{{item.statusbody}}
+			</div>
+			<div class="com_card_cz">
+				<span class="com_card_delete" @click.stop="del(item.id, zk)"></span>
+			</div>
+		</div>
+	</span>
+	<div v-if="count ==2 && islook">
+		<van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange" /> 
+	</div>
+	<span v-show="islook&&count==0">
+		<div class="wap_member_no">目前您还没有参加的专题招聘</div>
+		<span class="wap_memberjob_fabu ">
+			<a href="{yun:}url m=wap c=special{/yun}" style="width:100%;height:43px; line-height:43px; font-size:16px; margin-top:10px; background:#F90;color:#fff; display:inline-block; text-align:center">查看招聘会信息</a>
+		</span>
+	</span>
+</div>
+<script>
+		var currentPage = parseInt('{yun:}$smarty.get.page{/yun}') || 1;
+		var yunvue = new Vue({
+			el: '#yunvue',
+			data: {
+				list: [],
+				limit: 10,
+				total: 0,
+				page: currentPage,
+				islook: false
+			},
+			computed: {
+				count() {
+					if (this.total > this.limit) {
+						return 2;
+					} else if (this.list.length == 0) {
+						return 0;
+					} else {
+						return 1;
+					}
+				}
+			},
+			created() {
+				this.getList();
+			},
+			methods: {
+				getList: function() {
+					showLoading();
+					var that = this;
+					var paramer = {};
+					paramer['page'] = this.page;
+					paramer['limit'] = this.limit;
+					var url = '{yun:}url d=wxapp h=com m=special c=speciallist{/yun}';
+					$.post(url, paramer, function(data) {
+						hideLoading();
+						if (data.error == 0) {
+							var res = data.data;
+							that.list = res.list;
+							that.total = res.total;
+						}
+						that.islook = true;
+						$("#yunvue").css('display', 'block');
+					}, 'json');
+				},
+				del(id, key){
+					var that = this;
+					var paramer = {ids: id};
+					var url = '{yun:}url d=wxapp h=com m=special c=delspecial{/yun}';
+					showConfirm('确定删除报名？', function() {
+						showLoading('删除中');
+						$.post(url , paramer, function(data){
+							if (data.error == 1) {
+								that.list.splice(key, 1);
+								showToast('删除成功');
+							}
+						},'json')
+					});
+				},
+				pageChange:function(e){
+					location.href = 'index.php?c=special&page='+e;
+				},
+				toSpecial: function(id){
+					window.location.href = wapurl + 'index.php?c=special&a=show&id=' + id;
+				}
+			}
+		})
+	</script>
+</body>
+</html>

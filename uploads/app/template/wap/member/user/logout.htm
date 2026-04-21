@@ -1,0 +1,182 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+<link rel="stylesheet"
+      href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/yunwap.css?v={yun:}$config.cachecode{/yun}"
+      type="text/css" />
+
+<div id="yunvue" class="none">
+    <div class="personal_details_min_body">
+
+        <div v-if="step == 1">
+                <div class="deposit_header_reminder">
+                   <div class="deposit_header_info"> 注销账号后将放弃以下资产和权益:</div>
+                   
+                    1. 身份信息，账户信息，会员权益将清空且无法恢复<br>
+                    2. 交易记录将被清空<br>
+                    3. 账号绑定的手机邮箱QQ等相关信息将被释放，账号将无法登陆
+                </div>
+            <div id="backpicker" class="account_td1">
+                <div id="sendtypePicker" class=" password_select_input">
+                    <span id="pickerText" class="J_listitme_text" @click="showPicker=true">{{pickerText}}</span>
+                    <van-popup v-model="showPicker" round position="bottom">
+                        <van-picker show-toolbar :columns="sendtypeData" @confirm="onConfirm" @cancel="onCancel"/>
+                    </van-popup>
+                    <input type="hidden" id="sendtype" name="sendtype" :value="sendtype">
+                </div>
+            </div>
+            <div id="passwordshow" v-show="passwordshow" class="J_listitme_group">
+                <div class="J_validate_group">
+                    <div class="password_textbox">
+                        <input class="input_295_34" name="password" id="password" v-model="password" type="password" placeholder="请输入密码">
+                    </div>
+                </div>
+                <div class="Save_button" @click="logoutApply">提交</div>
+            </div>
+            <div id="moblieshow" v-show="moblieshow" class="J_listitme_group">
+                <div class="J_validate_group">
+                    <div class="password_textbox">
+                        <input class="input_295_34" name="moblie" id="moblie" type="text" placeholder="请输入手机号" :value="telphone">
+                    </div>
+                    {yun:}if strstr($config.code_web, '找回密码'){/yun}
+                    <div>
+                        {yun:}if $config.code_kind>2{/yun}
+                        <div class="gtdx-captcha">
+                            <div id="bind-captcha" data-id='login_bth' data-type='click'></div>
+                            <input type='hidden' id="verify_token" name="verify_token" value="" />
+                            {yun:}if $config.code_kind==6{/yun}
+                            <input type='hidden' id="verify_str" name="verify_str" value="" />
+                            {yun:}/if{/yun}
+                            <input type='hidden' id="popup-submit" />
+                            <input type='hidden' id="bind-submit" />
+                        </div>
+                        {yun:}else{/yun}
+                        <div class="account_td1">
+                            <div class="password_textbox">
+                                <input name="authcode" id="authcode" maxlength="6" type="text" class="input_295_35" placeholder="请输入图片验证码">
+                                <img id="vcode_img" class="authcode" src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php" onclick="checkCode('vcode_img');"/>
+                            </div>
+                        </div>
+                        {yun:}/if{/yun}
+                    </div>
+                    {yun:}/if{/yun}
+                    <div class="account_td1">
+                        <div class="password_textbox">
+                            <input name="moblie_vcode" id="moblie_vcode" maxlength="6" type="text" class="input_295_35" placeholder="请输入短信验证码">
+                            <button class="password_tex_hq" id="send_msg_tip" onclick="send_msg()">获取验证码</button>
+                        </div>
+                    </div>
+                    <div class="Save_button" @click="logoutmsg">提交</div>
+                </div>
+            </div>
+        </div>
+        <div v-if="step==3" class="wap_member_no">
+            亲爱的用户，您已提交账户注销申请，</br>
+            工作人员正在进行处理中，注销结果将以短信或邮件的形式通知，请耐心等待~</br>
+            如果您需要再次使用，请重新注册！</br>
+        </div>
+    </div>
+</div>
+{yun:}include file="$wapstyle/verify_js.htm"{/yun}
+<link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/css.css?v={yun:}$config.cachecode{/yun}" type="text/css" />
+<script src="{yun:}$config.sy_weburl{/yun}/app/template/wap/js/forgetpw.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script>
+    var code_web = '{yun:}$config.code_web{/yun}',
+        code_kind = '{yun:}$config.code_kind{/yun}'
+    new Vue({
+        el: '#yunvue',
+        data: {
+            step: 1,
+            password: '',
+            moblieshow:true,
+            passwordshow:false,
+            succeed:false,
+            showPicker:false,
+            sendtypeData:[{
+                type: 'moblie',
+                text: '通过手机注销账号'
+            },{
+                type: 'password',
+                text: '通过密码注销账号'
+            }],
+            pickerText:'通过手机注销账号',
+            sendtype:'moblie',
+            telphone:'',
+        },
+        created() {
+            this.getInfo();
+            this.gettel();
+            $("#yunvue").css("display", "block");
+        },
+        methods: {
+            onConfirm(picker) {
+                var that = this;
+                if (picker.type == 'moblie') {
+                    that.moblieshow = true;
+                    that.passwordshow = false;
+                    that.showPicker = false;
+                } else if (picker.type == 'password') {
+                    that.moblieshow = false;
+                    that.passwordshow = true;
+                    that.showPicker = false;
+                }
+                that.pickerText = picker.text;
+                that.sendtype = picker.type;
+            },
+            onCancel(){
+                this.showPicker = false;
+            },
+            getInfo: function () {
+                showLoading();
+                var self = this;
+                $.post('{yun:}url d=wxapp h=user m=set c=getLogout{/yun}', {rand: Math.random()}, function (res) {
+                    hideLoading();
+                    $("#yunvue").css('display', 'block');
+                    if (res.error == 1) {
+                        self.step = 3;
+                    }
+                }, 'json');
+            },
+            gettel: function () {
+                var self = this;
+                $.post('{yun:}url d=wxapp h=user m=set c=gettel{/yun}', {rand: Math.random()}, function (res) {
+                    if(res){
+                        self.telphone = res.data.moblie;
+                    }
+                }, 'json');
+            },
+            logoutApply: function () {
+                var self = this;
+                if (self.password == '') {
+                    return showModal('请填写账号密码');
+                }
+                showLoading();
+                $.post('{yun:}url d=wxapp h=user m=set c=logoutApply{/yun}', {password: self.password}, function (res) {
+                    hideLoading();
+                    if (res.error == 0) {
+                        self.step = 3;
+                    } else {
+                        return showModal(res.msg);
+                    }
+                }, 'json');
+            },
+            logoutmsg: function () {
+                var self = this;
+                if (self.moblie == '') {
+                    return showModal('请填写手机号码');
+                }else if(self.moblie_vcode == ''){
+                    return showModal('请填写验证码');
+                }
+                showLoading();
+                $.post('{yun:}url d=wxapp h=user m=set c=logoutmsg{/yun}', {moblie: self.moblie}, function (res) {
+                    hideLoading();
+                    if (res.error == 0) {
+                        self.step = 3;
+                    } else {
+                        return showModal(res.msg);
+                    }
+                }, 'json');
+            },
+        }
+    })
+</script>
+</body>
+</html>

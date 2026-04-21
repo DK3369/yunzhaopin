@@ -1,0 +1,521 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <title>{yun:}$title{/yun}</title>
+    <meta name="keywords" content="{yun:}$keywords{/yun}" />
+    <meta name="description" content="{yun:}$description{/yun}" />
+    <link rel="stylesheet" href="{yun:}$style{/yun}/style/css.css?v={yun:}$config.cachecode{/yun}" type="text/css" />
+    <link rel="stylesheet" href="{yun:}$style{/yun}/style/yun_job_fairs.css?v={yun:}$config.cachecode{/yun}" type="text/css" />
+    <link href="{yun:}$config.sy_weburl{/yun}/js/layui/css/layui.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet" type="text/css" />
+    {yun:}include file="$tplstyle/jquery/jquery_js.htm"{/yun}
+    <script src="{yun:}$config.sy_weburl{/yun}/js/layui/layui.js?v={yun:}$config.cachecode{/yun}"></script>
+    <script src="{yun:}$config.sy_weburl{/yun}/js/layui/phpyun_layer.js?v={yun:}$config.cachecode{/yun}"></script>
+    <script src="{yun:}$config.sy_weburl{/yun}/js/lazyload.min.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+    <script src="{yun:}$config.sy_weburl{/yun}/js/public.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+    <script src="{yun:}$style{/yun}/js/ScrollPic.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+</head>
+<style>
+    .img_auto img {
+        max-width: 100%;
+    }
+</style>
+
+<body class="body_bg">
+    {yun:}include file="$tplstyle/header.htm"{/yun}
+    <div class="clear"></div>
+    <div class="careerfair">
+        <!-- <img src="{yun:}$Info.banner_n{/yun}" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_zphbanner_icon{/yun}',2);"> -->
+        <a style="background: url('{yun:}$Info.banner_n{/yun}') center no-repeat;" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_zphbanner_icon{/yun}',2);"></a>
+    </div>
+    <div class="clear"></div>
+    <div class="fair_show_data">
+        <ul>
+            <li>
+                <img src="{yun:}$style{/yun}/images/q_info1.png">
+                <p>{yun:}$Info.comnum{/yun} <span>家</span> </p>
+                <b>招聘企业</b>
+            </li>
+            <li>
+                <img src="{yun:}$style{/yun}/images/q_info2.png">
+                <p>{yun:}$Info.jobnum{/yun} <span>个</span> </p>
+                <b>招聘岗位</b>
+            </li>
+            <li>
+                <img src="{yun:}$style{/yun}/images/q_info3.png">
+                <p>{yun:}$Info.zpnum{/yun} <span>人</span> </p>
+                <b>招聘人数</b>
+            </li>
+            <li>
+                <img src="{yun:}$style{/yun}/images/q_info4.png">
+                <p>{yun:}$Info.sqnum{/yun} <span>次</span> </p>
+                <b>简历投递量</b>
+            </li>
+        </ul>
+    </div>
+    <div class="clear"></div>
+    <div class="careerfair_tab careerfair_tabshow">
+        <div class="tab_div">
+            <ul class="tab_title tab_title_show">
+                <li class="curshow">招聘会介绍</li>
+                <li>参会企业名录</li>
+                <li>招聘岗位</li>
+            </ul>
+            <div class="tab_cont_show on">
+                <div class="careerfair_tabintr">
+                    <div class="careerfair_tabintr_txt img_auto">
+                 
+						 <div class="zph_new_tit">活动说明 </div>
+                          <ul class="zph_new_zphsx">
+                          <li>活动时间：{yun:}$Info.starttime{/yun}至{yun:}$Info.endtime{/yun}</li>
+
+                            {yun:}if $Info.address!=""{/yun}
+                            <li>活动地点：
+                            {yun:}$Info.address{/yun}</li>
+                            {yun:}/if{/yun}
+
+                            {yun:}if $Info.organizers!=""{/yun}
+                            <li>主办方：
+                            {yun:}$Info.organizers{/yun}</li>
+                            {yun:}/if{/yun}
+
+                            <li>咨询电话：{yun:}$Info.phone{/yun}</li>
+                            <li>联 系 人：{yun:}$Info.user{/yun}</li>
+
+                            {yun:}if $Info.traffic!=""{/yun}
+                           <li> 交通路线：
+                            {yun:}$Info.traffic{/yun}</li>
+                            {yun:}/if{/yun}
+							</ul>
+	<div class="zph_new_tit">招聘会介绍</div>
+							
+							  <div class="zph_new_p">  {yun:}$Info.body{/yun}</div>
+							
+						
+							
+						
+							
+                           {yun:}if $Info.media!=""{/yun}
+                           <div class="zph_new_tit">媒体宣传</div>
+                           <div class="zph_new_p"> {yun:}$Info.media{/yun} </div>
+                           {yun:}/if{/yun}
+
+                            {yun:}if $Info.packages!=""{/yun}
+                          	<div class="zph_new_tit">服务套餐</div>
+                              <div class="zph_new_p"> {yun:}$Info.packages{/yun}</div>
+                            {yun:}/if{/yun}
+
+                            {yun:}if $Info.booth!=""{/yun}
+                           	<div class="zph_new_tit">展位设置方案</div>
+                             <div class="zph_new_p">  {yun:}$Info.booth{/yun}</div>
+                            {yun:}/if{/yun}
+
+                            {yun:}if $Info.participate!=""{/yun}
+                            	<div class="zph_new_tit">  参与办法</div>
+                             <div class="zph_new_p">  {yun:}$Info.participate{/yun}</div>
+                            {yun:}/if{/yun}
+                            
+                       
+                        {yun:}if $Image_info{/yun}
+                        <div class="zph_show_box">
+                            <div class="zph_show_box_tit"><span class="zph_show_box_tit_s"><i class="zph_show_box_tit_line"></i>展会图片</span></div>
+                            <div class="fairs_introduction_cc" >
+                                <ul class="fairs_introduction_img" id="rolling_img1">
+                                    {yun:}section name=zph loop=$Image_info{/yun}
+                                        <li> 
+                                            <a href="javascript:void(0);"> 
+                                                <img src="{yun:}$config.sy_ossurl{/yun}{yun:}$Image_info[zph].pic{/yun}" lay-src="{yun:}$config.sy_ossurl{/yun}{yun:}$Image_info[zph].pic{/yun}" width="215" height="153" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_zph_icon{/yun}',2);"/> 
+                                            </a> 
+                                        </li>
+                                    {yun:}/section{/yun}
+                                </ul>
+                            </div>
+                        </div>
+                        {yun:}/if{/yun}
+                    </div>
+                    
+                    <div class="careerfair_fixed">
+                        {yun:}if ($usertype=='1'&& !$eid) || !$uid{/yun}
+                        <div class="fixed_info fixed_info_resume">
+                            <h4>求职参会必备</h4>
+                            {yun:}if $uid{/yun}
+                                <a href="{yun:}url m=member c=expect act=add{/yun}" target='_blank'>
+                                    <img src="{yun:}$style{/yun}/images/registe.png">
+                                    <span>注册简历</span>
+                                </a>
+                            {yun:}else{/yun}
+                                <a href="javascript:void(0);" onclick="showlogin('1');">
+                                    <img src="{yun:}$style{/yun}/images/registe.png">
+                                    <span>注册简历</span>
+                                </a>
+                            {yun:}/if{/yun}
+                            <p>线上线下随时可用</p>
+                        </div>
+                        {yun:}/if{/yun}
+                        <div class="fixed_info fixed_info_weChat">
+                            
+                            <img src="{yun:}url m=ajax c=pubqrcode toc=zph toa=show toid=$Info.id{/yun}" width="130" height="130">
+                            
+                            <span>扫描场景码</span>
+                            <p>即时了解参会岗位信息</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--参会企业-->
+            <div class="tab_cont_show">
+                <div class="careerfair_tabdirectory">
+                    <ul id="comhtml">
+                        {yun:}foreach item=zc from=$zcrows key=key{/yun}
+                        <li>
+                            <div class="tabdirectory tabdirectory_top">
+                                <p>展位号： <span>{yun:}$zc.sidname{/yun} - {yun:}$zc.cidname{/yun} - {yun:}$zc.bidname{/yun}</span> </p>
+                                <div class="tabdirectory_top_img">
+                                    <img src="{yun:}$zc.logo{/yun}">
+                                </div>
+                                <h4>
+                                    <a href="{yun:}url m=company c=show id='`$zc.uid`'{/yun}" target="_blank">{yun:}$zc.comname{/yun}</a>
+                                </h4>
+                            </div>
+                           <div class="  tabdirectory_center">  {yun:}if $zc.job{/yun}
+                           
+                                {yun:}foreach from=$zc.job key=jkey item=jlist{/yun}
+                                    {yun:}if $jkey<4{/yun}
+                                    <div class="link_position"> 
+                                        <a href="{yun:}url m=job c=comapply id=$jlist.id{/yun}" target="_blank">{yun:}$jlist.name{/yun}</a> <span>{yun:}$jlist.job_salary{/yun}</span>  
+                                    </div>
+                                    {yun:}/if{/yun}
+                                {yun:}/foreach{/yun}
+                         
+                            {yun:}/if{/yun}   </div>
+                            <div class="tabdirectory tabdirectory_bottom">
+                                <a  href="{yun:}url m=company c=show id='`$zc.uid`'{/yun}" target="_blank">查看更多</a>
+                            </div>
+                        </li>
+                        {yun:}foreachelse{/yun}
+                            <div class="job_fairs_no">暂无企业报名！</div>
+                        {yun:}/foreach{/yun}
+                    </ul>
+                    {yun:}if $zcpage > 1{/yun}
+                    <div class="clear"></div>
+                    <div class="fypages">
+                        <a href="javascript:void(0)" class="fypages_a" onclick="compage('1')">上一页</a>
+                        <div class="pages_sz">
+                            <div id="nowpage_zc" class="pages_szbox" onclick="compageHtmlShow()">1</div>
+                            <div id="pagehtml_zc" class="pages_sz_s" style="display:none">
+                                {yun:}for $cp=1 to $zcpage{/yun}
+                                <a href="javascript:void(0);" onclick="tocompage('{yun:}$cp{/yun}')" class="pages_sz_a">{yun:}$cp{/yun}</a>
+                                {yun:}/for{/yun}
+                            </div>
+                        </div>
+                        <a href="javascript:void(0)" onclick="compage('2')" class="fypages_a">下一页</a><em class="fypages_a">共{yun:}$zcpage{/yun}页</em>
+                    </div>
+                    {yun:}/if{/yun}
+                </div>
+            </div>
+            <!--参会职位-->
+            <div class="tab_cont_show">
+                <div class="careerfair_tabpost">
+                    <div class="careerfair_tabpost_search">
+                        <h4>企业职位搜索</h4>
+                        <div class="tabpost_search_frame">
+                            <form>
+                                <div><input id="jobkeyword" type="text" placeholder="请输入关键词" name=""></div>
+                                <div><button onclick="getJobList();return false;">搜索</button></div>
+                            </form>
+                        </div>
+                    </div>
+                    <ul id="jobhtml">
+                        {yun:}foreach item=zj from=$zjrows key=key{/yun}
+                        <li>
+                            <h3>{yun:}$zj.name{/yun}</h3>
+                            <span>{yun:}$zj.job_salary{/yun}</span>
+                            <p>{yun:}$zj.com_name{/yun}</p>
+                            <a  href="{yun:}url m=job c=comapply id=$zj.id{/yun}" target="_blank">申请</a>
+                        </li>
+                        {yun:}foreachelse{/yun}
+                            <div class="job_fairs_no">暂无企业职位！</div>
+                        {yun:}/foreach{/yun}
+                    </ul>
+                    {yun:}if $zjpage > 1{/yun}
+                    <div class="clear"></div>
+                    <div class="fypages">
+                        <a href="javascript:void(0)" class="fypages_a" onclick="jobpage('1')">上一页</a>
+                        <div class="pages_sz">
+                            <div id="nowpage_zj" class="pages_szbox" onclick="jobPageHtmlShow()">1</div>
+                            <div id="pagehtml_zj" class="pages_sz_s" style="display:none">
+                                {yun:}for $jp=1 to $zjpage{/yun}
+                                <a href="javascript:void(0);" onclick="tojobpage('{yun:}$jp{/yun}')" class="pages_sz_a">{yun:}$jp{/yun}</a>
+                                {yun:}/for{/yun}
+                            </div>
+                        </div>
+                        <a href="javascript:void(0)" onclick="jobpage('2')" class="fypages_a">下一页</a><em class="fypages_a">共{yun:}$zjpage{/yun}页</em>
+                    </div>
+                    {yun:}/if{/yun}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    {yun:}if $Info.stime < '0'|| $Info.etime < '0'{/yun} 
+    
+    {yun:}else{/yun}    
+                
+        {yun:}if $usertype==2{/yun} 
+            <div class="enter_signup">
+                <div class="enter_signup_info">
+                    <a href="{yun:}url m=zph c=reserve id='`$Info.id`'{/yun}">
+                        <img src="{yun:}$style{/yun}/images/baoem.png">
+                        <span>企业报名</span>
+                    </a>
+                </div>
+            </div>
+        {yun:}else{/yun}
+        
+            <div class="enter_signup">
+                <div class="enter_signup_info">
+                    {yun:}if $uid{/yun} 
+                    <a href="javascript:void(0);" onclick="layer.msg('{yun:}if $config.sy_user_change==1{/yun}请先申请企业用户才能在线预订{yun:}else{/yun}只有企业用户才能在线预订{yun:}/if{/yun}', 2, 8);">
+                        <img src="{yun:}$style{/yun}/images/baoem.png">
+                        <span>企业报名</span>
+                    </a>
+                    {yun:}else{/yun} 
+                    <a href="javascript:void(0);"  onclick="showlogin('2');">
+                        <img src="{yun:}$style{/yun}/images/baoem.png">
+                        <span>企业报名</span>
+                    </a>
+                    {yun:}/if{/yun}
+                </div>
+            </div>
+        {yun:}/if{/yun}
+        
+    {yun:}/if{/yun} 
+    <div class="clear"></div>
+    
+    <!--[if IE 6]>
+<script src="{yun:}$config.sy_weburl{/yun}/js/png.js?v={yun:}$config.cachecode{/yun}"></script>
+<script>
+DD_belatedPNG.fix('.png');
+</script>
+<![endif]-->
+    <script language="javascript" type="text/javascript">
+    var zid = '{yun:}$smarty.get.id{/yun}';
+    layui.use(['layer'], function() {
+        var layer = layui.layer,
+            $ = layui.$;
+    });
+    <!--//--><![CDATA[//><!--
+    var li_num = $("#rolling_img1 li").length;
+    if (li_num > 4) {
+        var scrollPic_02 = new ScrollPic();
+        scrollPic_02.scrollContId = "rolling_img1";
+        scrollPic_02.arrLeftId = "LeftArr";
+        scrollPic_02.arrRightId = "RightArr";
+        scrollPic_02.frameWidth = 1200;
+        scrollPic_02.pageWidth = 242;
+        scrollPic_02.speed = 10;
+        scrollPic_02.space = 10;
+        scrollPic_02.autoPlay = true;
+        scrollPic_02.autoPlayTime = 2;
+        scrollPic_02.initialize();
+    }
+    //--><!]]> 
+    $(function() {
+        setTimeout(function() {
+            layer.photos({
+                photos: '#rolling_img1',
+                anim: 5
+            });
+        }, 1000);
+        $(document).on('click', function(e) {
+            if ($('#pagehtml_zc').css('display') != 'none') {
+                $('#pagehtml_zc').hide();
+            }
+            if ($('#pagehtml_zj').css('display') != 'none') {
+                $('#pagehtml_zj').hide();
+            }
+        });
+    })
+
+    var job_page = 1,
+        com_page = 1,
+        comPageAll = "{yun:}$zcpage{/yun}",
+        jobPageAll = "{yun:}$zjpage{/yun}";
+
+    
+        
+    
+
+    function compage(id){
+        if(id == '1'){
+            com_page--;
+        }else{
+            com_page++;
+        }
+        if(com_page < 1){
+            com_page = 1;
+        }else if (com_page > parseInt(comPageAll)){
+            com_page = comPageAll;
+        }
+        getComList();
+    }
+
+    function tocompage(topage){
+        if(topage){
+            com_page = topage;
+        }
+        if(com_page < 1){
+            com_page = 1;
+        }else if (com_page > parseInt(comPageAll)){
+            com_page = comPageAll;
+        }
+        getComList();
+    }
+
+    function compageHtmlShow(){
+        event.stopPropagation();
+        $('#pagehtml_zc').toggle();
+    }
+    function getComList(){
+        layer.load();
+        var param  =  {
+            zid: zid,
+            page: com_page,
+        };
+        var jlist = [];
+
+        $.post(weburl + "/index.php?m=zph&c=getComList",param, function(data) {
+            layer.closeAll('loading');
+            if(data){
+                var data = eval('(' + data + ')');
+                if(data.error==1){
+                    var comlist = data.zclist;
+                    if(comlist && comlist.length > 0){
+                        var html = '';
+                        for(var i in comlist){
+                                  
+                            html +='<li>';
+                            html +=    '<div class="tabdirectory tabdirectory_top">';
+                            html +=        '<p>展位号： <span>'+comlist[i].sidname+' - '+comlist[i].cidname+' - '+comlist[i].bidname+'</span> </p>';
+                            html +=        '<div class="tabdirectory_top_img">';
+                            html +=            '<img src="'+comlist[i].logo+'">';
+                            html +=        '</div>';
+                            html +=        '<h4>';
+
+                            html +=            '<a href="'+weburl+'/index.php?m=company&c=show&id='+comlist[i].uid+'" target="_blank">'+comlist[i].comname+'</a>';
+                            html +=        '</h4>';
+                            html +=    '</div>';
+
+                            if(comlist[i].job && comlist[i].job.length>0){
+
+                                jlist = comlist[i].job;
+                                html +=    '<div class="tabdirectory tabdirectory_center">';
+                                for(let j in jlist){
+                                    if(j<4){
+                                        html +='<div class="link_position">'; 
+                                        
+                                        html +='    <a href="'+weburl+'/index.php?m=job&c=comapply&id='+ jlist[j].id+'" target="_blank">'+ jlist[j].name+' </a><span>'+ jlist[j].job_salary+'</span>';
+                                        html +='</div>';
+                                    }
+                                }
+                                html +=    '</div>';
+                            }
+                                
+                                
+                                
+                            html +=    '<div class="tabdirectory tabdirectory_bottom">';
+                            html +=        '<a  href="'+weburl+'/index.php?m=company&c=show&id='+comlist[i].uid+'" target="_blank">查看更多</a>';
+                            html +=    '</div>';
+                            html +='</li>';
+                        }
+                        $("#comhtml").html(html);
+                        $('#nowpage_zc').text(com_page);
+                        
+                    }
+                }else{
+                    layer.msg(data.msg , 2, 8);return false;
+                }
+            }
+        });
+    }
+
+
+    function jobpage(id){
+        if(id == '1'){
+            job_page--;
+        }else{
+            job_page++;
+        }
+        if(job_page < 1){
+            job_page = 1;
+        }else if (job_page > parseInt(jobPageAll)){
+            job_page = jobPageAll;
+        }
+        getJobList();
+    }
+
+    function tojobpage(topage){
+        if(topage){
+            job_page = topage;
+        }
+        if(job_page < 1){
+            job_page = 1;
+        }else if (job_page > parseInt(jobPageAll)){
+            job_page = jobPageAll;
+        }
+        $('#pagehtml_zc')
+        getJobList();
+    }
+
+    function jobPageHtmlShow(){
+        event.stopPropagation();
+        $('#pagehtml_zj').toggle();
+    }
+
+    function getJobList(){
+        layer.load();
+        var param  =  {
+            zid: zid,
+            page: job_page,
+        };
+        var jlist = [];
+
+        var jobkeyword = $('#jobkeyword').val();
+        param.keyword = jobkeyword;
+        
+        $.post(weburl + "/index.php?m=zph&c=getJobList",param, function(data) {
+            layer.closeAll('loading');
+            if(data){
+                var data = eval('(' + data + ')');
+                if(data.error==1){
+                    var joblist = data.zjlist;
+                    if(joblist && joblist.length > 0){
+                        var html = '';
+                        for(var i in joblist){
+                            html +='<li>';
+                            html +=    '<h3>'+joblist[i].name+'</h3>';
+                            html +=    '<span>'+joblist[i].job_salary+'</span>';
+                            html +=    '<p>'+joblist[i].com_name+'</p>';
+                            html +=    '<a  href="'+weburl+'/index.php?m=job&c=comapply&id='+ joblist[i].id+'" target="_blank">申请</a>';
+                            html +='</li>';     
+                        }
+                        $("#jobhtml").html(html);
+                        $('#nowpage_zj').text(job_page);
+                        
+                    }
+                }else{
+                    layer.msg(data.msg , 2, 8);return false;
+                }
+            }
+        });
+    }
+    </script>
+    <script>
+    $(".tab_title li").click(function() {
+        $(this).addClass("curshow").siblings().removeClass('curshow');
+        $(".tab_cont_show").eq($(".tab_title li").index(this)).addClass("on").siblings().removeClass('on');
+    });
+    </script>
+    {yun:}include file="$tplstyle/public_search/login.htm"{/yun}
+    {yun:}include file="$tplstyle/footer.htm"{/yun}

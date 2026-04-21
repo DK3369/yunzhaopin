@@ -1,0 +1,105 @@
+{yun:}include file="$wapstyle/header_cont.htm"{/yun}
+<!-- 页面头部部分 -->
+<!--有招聘会状态-->
+<div class="newzph_img">
+	{yun:}if $newZph{/yun}
+    <a href="{yun:}$newZph.url_wap{/yun}">
+        <img src="{yun:}$newZph.cover_wap{/yun}" width="100%">
+    </a>
+	{yun:}/if{/yun}
+</div>
+<div class="newzph_pd" id="app">
+    <div class="newzph_tit">
+        <ul class="tab_title">
+            <li onclick="tabshow('zph')" class="newzph_tit_cur">现场招聘会</li>
+        </ul>
+    </div>
+    <div>
+		
+        <div class="newzph_list">
+            <ul>
+                {yun:}fairs ispage=1 limit=5 item=zph{/yun}
+                <a href="{yun:}url m=wap c=zph a=show id='`$zph.id`'{/yun}">
+                <li>
+                    <div class="newzph_showbox">
+                        <div class="newzph_snt">
+                            <img src="{yun:}$zph.is_themb_wap{/yun}" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_zph_icon{/yun}',2);" alt="" width="100%">
+                        </div>
+                        <div class="newzph_name">{yun:}$zph.title{/yun}</div>
+                    </div>
+                    <div class="newzph_sj">
+                        <div class="newzph_sj_n_b">
+                            <span class="newzph_sj_n">{yun:}$zph.comnum{/yun}</span>家
+                        </div>参会企业
+                    </div>
+                    <div class="newzph_sj">
+                        <div class="newzph_sj_n_b">
+                            <span class="newzph_sj_n">{yun:}$zph.jobnum{/yun}</span>个
+                        </div>参会职位
+                    </div>
+                    <div class="newzph_sj">
+                        <div class="newzph_sj_n_b">
+                            <span class="newzph_sj_n"> {yun:}$zph.zpnum{/yun}</span>人
+                        </div>招聘人数
+                    </div>
+                    {yun:}if $zph.stime<'0'&&$zph.etime>'0'{/yun}
+                        <span  class="newzph_sj_bth">查看详情</span>
+                        <div class="newzph_jxz">正在进行中...</div>
+                        {yun:}elseif $zph.stime>'0'{/yun}
+                        <span class="newzph_sj_bth">查看详情</span>
+                        <div class="newzph_bmz">火爆报名中...</div>
+                        {yun:}else{/yun}
+                        <span class="newzph_sj_bthwq">往期回顾</span>
+                        {yun:}/if{/yun}
+                </li>
+                </a>
+                {yun:}/fairs{/yun}
+            </ul>
+            
+            {yun:}if $total<=0 {/yun} 
+			<div class="newzph_notip">
+                <div class="wap_member_no">暂无招聘会信息 </div>
+			</div>
+			{yun:}else{/yun}
+			<div v-if="total>perpage">
+				<van-pagination v-model="currentPage" :total-items="total" :items-per-page="perpage" force-ellipses @change="pageZphChange" />
+			</div>
+			{yun:}/if{/yun}
+    </div>
+</div>
+</div>
+</div>
+{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+<script type="text/javascript">
+var currentPage = parseInt('{yun:}$smarty.get.page{/yun}'),
+    total = parseInt('{yun:}$total{/yun}'),
+    pagelink = '{yun:}$pagelink{/yun}';
+var type = '{yun:}$smarty.get.type{/yun}';
+var yunvue = new Vue({
+    el: "#app",
+    data: {
+        //分页相关
+        currentPage: currentPage ? currentPage : 1,
+        total: total,
+        perpage: 5,
+    },
+    methods: {
+        pageZphChange: function(e) {
+            console.info(e);
+            var pageurl = pagelink.replace('{{page}}', e + "&type=zph");
+            location.href = pageurl;
+        }
+    }
+})
+
+function tabshow(state) {
+    var url = '{yun:}url m=wap c=zph{/yun}';
+    if (state) {
+        url = '{yun:}url m=wap c=zph type="' + state + '"{/yun}';
+    }
+    window.location.href = url;
+}
+</script>
+</body>
+
+</html>

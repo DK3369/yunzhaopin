@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+    <link rel="stylesheet" href="../../../admin/js/wangeditor/index.css">
+    <script src="../../../admin/js/wangeditor/index.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName">
+                <el-tab-pane label="邮件服务器设置" name="first">
+                    <emailfwq></emailfwq>
+                </el-tab-pane>
+                <el-tab-pane label="邮件模板设置" name="second">
+                    <emailmb></emailmb>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#moduapp',
+            data: function () {
+                return {
+                    activeName: 'first'
+                }
+            },
+            components: {
+                'emailfwq': httpVueLoader('./component/emailfwq.vue'),
+                'emailmb': httpVueLoader('./component/emailmb.vue'),
+            },
+            methods: {
+
+            }
+        });
+    </script>
+</body>
+
+</html>

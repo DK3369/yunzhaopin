@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="普工简历" name="tiny">
+                    <tiny ref="tiny" :status="status"></tiny>
+                </el-tab-pane>
+                <el-tab-pane label="普工设置" name="tinyset" lazy>
+                    <tinyset ref="tinyset"></tinyset>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+    const custoapp = new Vue({
+        el: '#moduapp',
+        data: function() {
+            return {
+                activeName: 'tiny',
+                status: '',
+            }
+        },
+        components: {
+            'tiny': httpVueLoader('./component/tiny.vue'),
+            'tinyset': httpVueLoader('./component/tiny_set.vue'),
+        },
+        created: function () {
+            var that = this
+            let query = window.parent.homeapp.$route.query;
+            if (query.status) {
+                that.status = query.status;
+            }
+        },
+        methods: {
+            handleClick(tab, event) {
+                // this.$refs[tab.name].init();
+            }
+        }
+    });
+    </script>
+</body>
+
+</html>

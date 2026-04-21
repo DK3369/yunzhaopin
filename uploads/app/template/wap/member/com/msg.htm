@@ -1,0 +1,164 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<div id="yunvue" class="none">
+    <div class="m_cardbox">
+        <div class="m_cardbg m_cardboxpv" v-for="(item, listkey) in list" :key="listkey">
+            <div class="msg_user"><span class="zxuser_name">{{item.username}}</span>
+                <div class="msg_user_r">
+                    <div v-if="item.eid">
+                        <div @click="pageTo(item.wapexp_url)">
+                            <text class="yp_user_look">查看简历</text>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <text class="yp_user_look">暂无简历</text>
+                    </div>
+                </div>
+            </div>
+            <div class="msg_box">
+                <div class="zx_list" v-if="item.job_name"><span class="zx_n">咨询职位</span> {{item.job_name}}</div>
+                <div class="zx_list"><span class="zx_n">咨询内容</span> {{item.content}}</div>
+                <div class="zx_list" v-if="item.reply"><span class="zx_n">回复内容</span> {{item.reply}}</div>
+                <div class="zx_list"><span class="zx_n">咨询日期</span> {{item.datetime_n}}</div>
+            </div>
+
+            <div class="msg_hf" v-if="!item.reply" @click="replystatus(item.id,item.content)"><img src="{yun:}$wap_style{/yun}/images/Apply_compile.png" alt=""></div>
+            <div class="msg_sc" @click="delreply(item.id,listkey)"><img src="{yun:}$wap_style{/yun}/images/resume_del.png" alt=""/></div>
+
+        </div>
+        <div v-if="total>limit">
+            <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange"/>
+        </div>
+        <div class="wap_member_no" v-show="count==0">暂无记录！</div>
+    </div>
+    <!--弹出效果-->
+    <van-popup v-model="firstreply" position="bottom" round closeable/>
+
+    <form id="reply_form">
+
+        <div class="job_tckpd">
+            <div class="job_tcktit">回复咨询</div>
+            <div class="job_tcktip">{{content}}！</div>
+            <div class="job_tcktextarea">
+                <textarea class=" mt10" placeholder="回复信息，请勿输入电话，QQ，邮箱等联系方式" maxlength="-1" style="width:100%" name="reply" value=''></textarea>
+                <input class="ask_input" hidden="true" id="id" name="id" :value="replyid"/>
+            </div>
+
+            <div class="job_tckbth">
+                <div @click="savereply" class="job_tckbth_div">确定</div>
+            </div>
+        </div>
+    </form>
+    </van-popup>
+</div>
+</div>
+<script>
+    var currentPage = parseInt('{yun:}$smarty.get.page{/yun}');
+    new Vue({
+        el: '#yunvue',
+        data: {
+            list: [],
+            limit: 10,
+            total: 0,
+            page: currentPage ? currentPage : 1,
+            replyid: '',
+            firstreply: false,
+            content: '',
+        },
+        computed: {
+            count() {
+                if (this.total > this.limit) {
+                    return 2;
+                } else if (this.list.length == 0) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+            }
+        },
+        created() {
+            this.getCommsgNews();
+        },
+        methods: {
+            getCommsgNews: function (type) {
+                showLoading();
+                var that = this;
+                var paramer = {};
+                paramer['page'] = that.page;
+                paramer['limit'] = that.limit;
+                $.post('{yun:}url d=wxapp h=com m=msg c=msglist{/yun}', paramer, function (data) {
+                    hideLoading();
+                    var res = data.data;
+                    if (res.list && res.list.length > 0) {
+                        that.list = res.list;
+                    }
+                    that.total = res.total;
+                    that.page = currentPage ? currentPage : 1;
+
+                    $("#yunvue").css('display', 'block');
+                }, 'json');
+            },
+            savereply: function () {
+                var v = getFormValue('reply_form');
+                if (v.reply.length == 0) {
+                    return showToast('请填写回复描述');
+                }
+
+                var paramer = {
+                    reply: v.reply,
+                    id: v.id,
+                };
+                showLoading('回复中...');
+                $.post('{yun:}url d=wxapp h=com m=msg c=savereply{/yun}', paramer, function (data) {
+                    hideLoading();
+                    if (data.error == 1) {
+                        showToast(data.msg, 2, function () {
+                            location.reload();
+                        });
+                    } else {
+                        showToast(data.msg);
+                    }
+                }, 'json');
+            },
+            replystatus: function (id, content) {
+                var that = this;
+                var content = content;
+                var id = id;
+                that.content = content;
+                that.replyid = id;
+                that.firstreply = true;
+            },
+            delreply: function (id, key) {
+                var that = this;
+                var paramer = {
+                    id: id,
+                };
+                showConfirm("确定删除？", function () {
+                    showLoading('删除中...');
+                    $.post('{yun:}url d=wxapp h=com m=msg c=delsmsglist{/yun}', paramer, function (data) {
+                        hideLoading();
+
+                        if (data.error == 0) {
+                            that.list.splice(key, 1);
+                            showToast('删除成功');
+                        } else {
+                            showToast('删除失败');
+                        }
+                    }, 'json');
+                })
+            },
+            closeReply: function () {
+                var that = this;
+                that.firstreply = false;
+            },
+            pageChange: function (e) {
+
+                location.href = 'index.php?c=commsg&chat=1&page=' + e;
+            },
+            pageTo: function (url) {
+                window.location.href = url;
+            }
+        }
+    });
+</script>
+</body>
+</html>

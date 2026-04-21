@@ -1,0 +1,46 @@
+<div class="taoCanQuanyi">
+	<div class="taoCanCanshud">
+		<div class="taoCanHeadImg">
+			<img src="{yun:}$com_style{/yun}/images/bhge.png" alt="">
+		</div>
+		<div class="taoCanModImg">
+			<img src="{yun:}$com_style{/yun}/images/youhuiimg1.png" alt="">
+		</div>
+		<div class="taoCanModTips">
+			{yun:}if $isPaused == 1{/yun}
+			<span>当前账户会员权益已暂停，请联系客服开启服务~  </span>
+			{yun:}else if $noPermission == 1{/yun}
+			<span>联系客服，开通会员服务哦~</span>
+			{yun:}/if{/yun}
+		</div>
+		<div class="taoCanModButn" onclick="showWeChat('{yun:}$consultant.wechat{/yun}');">
+			<span>联系客服</span>
+		</div>
+		<div class="taoCanModTell">
+			{yun:}if $crm == 1{/yun}
+			<span>招聘顾问：{yun:}$consultant.name{/yun}</span>
+			<span style="color: #D31603; margin: 0 0 0 6px;">{yun:}$consultant.mobile{/yun}</span>
+			{yun:}else if $crm == 2{/yun}
+			<span>联系方式：</span>
+			<span style="color: #D31603; margin: 0 0 0 6px;">{yun:}$webTel{/yun}</span>
+			{yun:}/if{/yun}
+		</div>
+	</div>
+</div>
+<script>
+	function showWeChat(src) {
+		if (src != '') {
+			var weLyaer = layer.open({
+				type: 1,
+				title: '客服微信',
+				closeBtn: 1,
+				border: [10, 0.3, '#000', true],
+				area: ['400px', 'auto'],
+				content: $("#crmWechat"),
+				cancel:function(){
+					window.location.reload();
+				}
+			});
+		}
+	}
+</script>

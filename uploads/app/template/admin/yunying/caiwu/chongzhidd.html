@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="daohaapp" class="moduleElenAl" v-cloak>
+        <div class="moduleSeachs">
+            <div class="moduleSeachleft" style="width: calc(100% - 105px);">
+                <div class="moduleInptList">
+                    <el-input placeholder="输入你要搜索的关键字" v-model="search.keyword" size="small" class="input-with-select" clearable>
+                        <el-select v-model="search.typeca" slot="prepend" placeholder="请选择">
+                            <el-option label="充值单号" value="1"></el-option>
+                            <el-option label="用户名" value="2"></el-option>
+                            <el-option label="企业名称/姓名" value="3"></el-option>
+                        </el-select>
+                    </el-input>
+                </div>
+                <div class=" tableSeachInptsmall newsinput">
+                    <el-select v-model="search.typezf" size="small" style="margin-right: 0;" slot="prepend" placeholder="支付类型" clearable @change="doUserQuery">
+                        <el-option v-for="(val,key) in pay" :key="key" :label="val" :value="key"></el-option>
+                    </el-select>
+                </div>
+                <div class=" tableSeachInptlodsi newsinput">
+                    <el-cascader size="small"
+                        v-model="type_v"
+                        size="medium"
+                        placeholder="订单类型"
+                        :options="type_cascader"
+                        :props="{expandTrigger:'hover'}"
+                        @change="typeChange"
+                        clearable>
+                    </el-cascader>
+                </div>
+                <div class=" tableSeachInptsmall newsinput">
+                    <el-select v-model="search.order_state" style="margin-right: 0;" size="small" slot="prepend" placeholder="订单状态" clearable @change="doUserQuery">
+                        <el-option v-for="item in payArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                </div>
+                <div class="tableSeachInptsmalltwo">
+                    <el-date-picker v-model="search.times" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="doUserQuery"></el-date-picker>
+                </div>
+                <div class="newsbtnbox">
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="doUserQuery">查询</el-button>
+                </div>
+            </div>
+            <div class="moduleSeachButn">
+                <el-button type="primary" icon="el-icon-folder-checked" size="mini" @click="exportOrder">导出订单</el-button>
+            </div>
+        </div>
+
+        <div class="moduleElTable moduleElTableSizes">
+            <div class="admin_datatip"><i class="el-icon-document"></i>
+                <span class="admin_datatip_n cp_n" @click="stateFun('0')">总金额：￥{{orderSum.orderPriceAll}} </span>
+                <span class="admin_datatip_n cp_n" @click="stateFun('2')">已付款：￥{{orderSum.orderPayed}} </span>
+                <span class="admin_datatip_n cp_n" @click="stateFun('3')" v-if="orderSum.orderPaying">待确认：￥{{orderSum.orderPaying}}</span>
+                <span class="admin_datatip_n cp_n" @click="stateFun('1')" v-if="orderSum.orderPay">待付款：￥{{orderSum.orderPay}}</span>
+                <span class="admin_datatip_n">搜索结果： {{total}} 条</span>
+            </div>
+            <el-table :data="tableData" border style="width: 100%" @selection-change="selectChange"
+                @sort-change="shortChange" ref="multipleTable"
+                :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="calc(100% - 43px)"
+                v-loading="loading" :empty-text="emptytext">
+                <el-table-column type="selection" width="55"></el-table-column>
+                <el-table-column prop="id" label="编号" width="80" sortable="custom"></el-table-column>
+                <el-table-column label="公司名称（姓名）/用户名" min-width="150" show-overflow-tooltip>
+                    <template slot-scope="scope">
+                        <div class="cz_button">
+                            {{scope.row.comname}}<br />{{scope.row.username}}
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="chongzhi" label="充值单号/支付类型/订单类型" min-width="150">
+                    <template slot-scope="scope">
+                        <div class="cz_button">
+                            {{scope.row.order_id}}<br />{{scope.row.order_type_n}}<br />
+                            {{scope.row.type_n}}{{scope.row.rating_name}}
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="order_price" label="付款金额" width="120" sortable="custom">
+                    <template slot-scope="scope">
+                        <span style="color: red;">{{scope.row.order_price}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="order_time" label="订单时间" width="180" sortable="custom"></el-table-column>
+                <el-table-column prop="zt" label="状态" width="150" align="center">
+                    <template slot-scope="scope">
+                        <div v-html="scope.row.order_state_n"></div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="yewuyuan" label="业务员" width="130" align="center">
+                    <template slot-scope="scope">
+                        <div v-if="scope.row.crm_name">{{scope.row.crm_name}}</div>
+                        <div v-else><span style="color: red;">未绑定</span></div>
+                    </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="130" align="center">
+                    <template slot-scope="scope">
+                        <div class="cz_button">
+                            <el-button size="small" @click="detailFun(scope.row)" type="primary">查看</el-button>
+                            <el-button type="danger" size="small " @click="delRow(scope.row)">删除</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+
+        </div>
+        <div class="modulePaging">
+            <div class="modulecz modulePagButn">
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
+                <el-button @click="batchDel" size="mini">批量删除</el-button>
+            </div>
+            <div class="modulePagNum">
+                <el-pagination :total="total" @current-change="userPageChange" @size-change="userPageSizeChange"
+                    :page-size="pageSize" :page-sizes="pageSizes" :current-page.sync="page"
+                    layout="total, sizes, prev, pager, next, jumper">
+                </el-pagination>
+            </div>
+        </div>
+        <!-- 查看更多 -->
+
+        <el-drawer title="订单详情" :visible.sync="drawer3" :direction="direction" append-to-body size="540px"
+            :modal-append-to-body="false">
+            <div class="dd_xqbox ddanQboxcont">
+                <div class="ddanQboxBorder">
+                    <div class="dd_list">
+                        <span class="dd_name">名称</span>
+                        <span class="dd_texts">{{detail.comname}}</span>
+                    </div>
+                    <div class="dd_list">
+                        <span class="dd_name">订单号</span>
+                        <span>{{detail.order_id}}</span>
+                    </div>
+                    <div class="dd_list">
+                        <span class="dd_name">交易时间</span>
+                        <span>{{detail.order_time_ymd}}</span>
+                    </div>
+                    <div class="dd_list">
+                        <span class="dd_name">用户名</span>
+                        <div class="yun_admin_divh" v-if="detail.type==3 || detail.order_type =='bank'">
+                            {{detail.comname}}+
+                        </div>
+                        {{detail.username}}
+                    </div>
+                    <div class="dd_list">
+                        <span class="dd_name" v-if="detail.order_state==1">待付金额</span>
+                        <span class="dd_name" v-else>付款金额</span>
+                        {{detail.order_price}}元
+                    </div>
+                    <template v-if="detail.type =='3' || detail.order_type =='bank'">
+                        <div class="dd_list">
+                            <span class="dd_name">汇款银行</span> {{detail.bankname}}
+                        </div>
+                        <div class="dd_list">
+                            <span class="dd_name">汇入账号</span> {{detail.bankid}}
+                        </div>
+                        <div class="dd_list">
+                            <span class="dd_name">汇款金额</span> {{detail.order_price}}
+                        </div>
+                    </template>
+                    <template v-if="detail.type =='2'">
+                        <div class="dd_list">
+                            <span class="dd_name">所得{{integral_pricename}}</span> {{detail.integral}}
+                        </div>
+                    </template>
+
+                    <div class="dd_list"><span class="dd_name">订单类型</span> {{detail.type_n}}</div>
+                    <div class="dd_list"><span class="dd_name">支付状态</span> {{detail.order_state_n}}</div>
+                    <div class="dd_list"><span class="dd_name">合同状态</span> {{htpics.length > 0 ? '已上传' : '未上传'}}</div>
+                    <template v-if="detail.type==3 || detail.order_type =='bank'">
+                        <div class="dd_list"><span class="dd_name">上传汇款单</span>
+                            <template v-if="detail.order_state ==1 || !detail.order_pic">
+                                未上传汇款单
+                            </template>
+                            <template v-else>
+                                <img :src="detail.order_pic" alt="汇款单" width="160px" height="60px">
+                            </template>
+                        </div>
+                    </template>
+                    <template>
+                        <div class="dd_list" v-if="detail.crm_name"><span class="dd_name">业务员</span> {{detail.crm_name}}
+                        </div>
+                    </template>
+                    <div class="dd_list"><span class="dd_name">备注</span>
+                        {{detail.order_remark}}
+                    </div>
+                    <div class="dd_list" v-if="htpics">
+                        <span class="dd_name" style="float: left">合同图片</span>
+                        <el-image v-for="item in htpics" :preview-src-list="yySrcList" style="margin-right: 10px;width: 100px; height: 100px" :src="item.pic_n" :id="item.id"></el-image>
+                    </div>
+                    <!-- <div class="dd_listbth">
+                        <el-button type="primary" @click="uploadHeTong">上传合同</el-button>
+                        <el-button type="primary" @click="drawer6 = true">修改订单</el-button>
+                        <el-button type="primary" @click="confirmOrder">确认订单</el-button>
+                    </div> -->
+                </div>
+                <div class="dd_listbth">
+                    <el-button type="success" plain @click="uploadHeTong">上传合同</el-button>
+                    <el-button v-if="detail.order_state ==1 || detail.order_state == 3" type="primary" plain @click="drawer6 = true" style="margin: 0 12px;">修改订单</el-button>
+                    <el-button v-if="detail.order_state ==1 || detail.order_state == 3" type="primary" @click="confirmOrder">确认订单</el-button>
+                </div>
+            </div>
+
+            <!-- 修改订单 -->
+            <div class="modluDrawer">
+                <el-dialog title="修改订单" :visible.sync="drawer6" :with-header="true" append-to-body
+                    :modal-append-to-body="false" :show-close="true" width="450px">
+                    <div class="wxsettip_small ">修改金额</div>
+                    <el-input placeholder="" v-model="detail.order_price"></el-input>
+                    <div class="wxsettip_small ">备注</div>
+                    <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="detail.order_remark">
+                    </el-input>
+                    <span slot="footer" class="dialog-footer">
+                        <el-button @click="drawer6 = false">取 消</el-button>
+                        <el-button type="primary" @click="editOrder" :disabled="submitLoading">确 定</el-button>
+                    </span>
+                </el-dialog>
+            </div>
+
+            <!-- 上传合同 -->
+            <div class="modluDrawer">
+                <el-dialog title="上传合同" :visible.sync="drawer5" :with-header="true" append-to-body
+                    :modal-append-to-body="false" :show-close="true" width="30%">
+                    <el-upload :action="uploadAction" multiple :limit="3" list-type="picture-card" :accept="pic_accept"
+                        :on-success="handleAvatarSuccess" :file-list="fileList" ref="files" :on-exceed="exceedFun"
+                        :before-upload="onBeforeUpload">
+                        <i slot="default" class="el-icon-plus"></i>
+                        <div slot="file" slot-scope="{file}">
+                            <img class="el-upload-list__item-thumbnail" :src="file.url" alt="">
+                            <span class="el-upload-list__item-actions">
+                                <span class="el-upload-list__item-delete" @click="handleRemove(file)">
+                                    <i class="el-icon-delete"></i>
+                                </span>
+                            </span>
+                        </div>
+                    </el-upload>
+                    <div style="font-size: 12px;color: #8c939d">
+                        <i class="el-icon-warning-outline"></i>
+                        <span>只能上传jpg/png文件，且不超过500kb</span>
+                    </div>
+                    <!--            <el-upload-->
+                    <!--                    class="upload-demo"-->
+                    <!--                    :action='uploadAction'-->
+                    <!--                    :on-preview="handlePreview"-->
+                    <!--                    :on-remove="handleRemove"-->
+                    <!--                    :before-remove="beforeRemove"-->
+                    <!--                    multiple-->
+                    <!--                    :limit="3"-->
+                    <!--                    :on-exceed="handleExceed"-->
+                    <!--                    :file-list="fileList" :accept="pic_accept">-->
+                    <!--                <el-button size="small" type="primary">点击上传</el-button>-->
+                    <!--                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
+                    <!--            </el-upload>-->
+                    <span slot="footer" class="dialog-footer">
+                        <el-button @click="drawer5 = false">取 消</el-button>
+                        <el-button type="primary" @click="saveImg" :disabled="submitLoading">确 定</el-button>
+                    </span>
+                </el-dialog>
+            </div>
+        </el-drawer>
+    </div>
+    <!-- script -->
+    <script src="../../js/base64ToFile.js"></script>
+
+    <script>
+        const custoapp = new Vue({
+            el: '#daohaapp',
+            data: function () {
+                return {
+                    pic_accept: localStorage.getItem("pic_accept"),
+                    loading: false,
+                    emptytext: '暂无数据',
+
+                    checkedAll: false,
+                    drawer: false,
+                    drawer2: false,
+                    drawer3: false,
+                    direction: 'rtl',
+                    drawer5: false,
+                    drawer6: false,
+                    uploadAction: baseUrl + 'm=yunying&c=finance_company_order&a=multiupload',
+                    fileList: [],
+                    tableData: [],
+                    type_v:'',
+                    type_visible:false,
+                    search: {
+                        typeca: '1',
+                        order_state: '',
+                        typezf: '',
+                        typedd: '',
+                        pay_state: '',
+                        type: '',
+                        searchVal: '',
+                        times: [],
+                        rating: ''
+                    },
+                    searchTypedd : '',
+                    timeOptions: {
+                        shortcuts: [{
+                            text: '昨天',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                start.setTime(start.getTime() - 3600 * 1000 * 24);
+                                end.setTime(end.getTime() - 3600 * 1000 * 24);
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }, {
+                            text: '今天',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }, {
+                            text: '本周',
+                            onClick(picker) {
+                                const start = new Date(new Date().setHours(0, 0, 0) - (new Date().getDay() - 1) * 24 * 60 * 60 * 1000);
+                                const end = new Date();
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }, {
+                            text: '上周',
+                            onClick(picker) {
+                                const start = new Date(new Date().setHours(0, 0, 0) - (new Date().getDay() + 6) * 24 * 60 * 60 * 1000);
+                                const end = new Date(new Date().setHours(0, 0, 0) + (0 - new Date().getDay()) *24 * 60 * 60 *1000);
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }, {
+                            text: '本月',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 1).setHours(0, 0, 0));
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }, {
+                            text: '上月',
+                            onClick(picker) {
+                                const end = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 0).setHours(23, 59, 59, 59));
+                                const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).setHours(0, 0, 0));
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }]
+                    },
+                    select: '',
+                    value: true,
+                    currentPage4: 4,
+                    payArr: [{
+                        value: '0',
+                        label: "支付失败"
+                    }, {
+                        value: '1',
+                        label: "等待付款"
+                    }, {
+                        value: '2',
+                        label: "支付成功"
+                    }, {
+                        value: '3',
+                        label: "等待确认"
+                    },
+                    {
+                        value: '4',
+                        label: "交易关闭"
+                    }],
+                    total: 0,
+                    page: 1,
+                    idsArr: [],
+                    pageSize: 0,
+                    pageSizes: [],
+                    uri: "m=yunying&c=",
+                    orderSum: {},
+                    pay: {},
+                    ordertype: {},
+                    ratingarr: [],
+                    vipTypeShow: false,
+                    //  弹窗
+                    detail: {},
+                    htpics: [],
+                    picurl: [], // 保存图片地址
+                    integral_pricename: '',
+                    submitLoading: false,
+                    prevPage:0,
+                    yySrcList:[],
+                    
+                    type_cascader:[],
+                }
+            },
+            components: {
+                // 'navxiugai': httpVueLoader('./component/navxiugai.vue'),
+            },
+            created() {
+				var that = this
+				var pqdata={};
+				let params = window.parent.homeapp.$route.params;
+				
+                let query = window.parent.homeapp.$route.query;
+				
+				if (!$.isEmptyObject(params)) {
+					pqdata = params;
+				}else if(!$.isEmptyObject(query)){
+					pqdata = query;
+				}
+				
+				this.getParams(pqdata);
+                this.getList();
+                this.searchType();
+            },
+            methods: {
+                getParams: function (params = {}) {
+                    var that = this;
+                    var rating='',type_v = [];
+                    for (let i in params) {
+                        if (typeof that.search[i] != 'undefined') {
+                            if(i == 'typedd'){
+                                that.searchTypedd = isNaN(params[i]) ? params[i] : params[i].toString();
+                            } else {
+                                that.search[i] = isNaN(params[i]) ? params[i] : params[i].toString();
+                                if(i=='rating'){
+                                    rating = that.search[i]
+                                }
+                            }
+                        }
+                    }
+                    if(that.searchTypedd){
+                        type_v.push(that.searchTypedd);
+                    }
+                    if(rating){
+                        type_v.push(rating);
+                    }
+                    that.type_v = type_v;
+                },
+                stateFun: function ($staus) {
+                    this.type_v = [];
+                    this.search = {
+                        pay_state: '',
+                        time: '',
+                        type: '',
+                        keyword: '',
+                        times: '',
+                        typezf: '',
+                        typedd: '',
+                        rating: '',
+                        order_state: $staus ? $staus : '',
+                        typeca: ''
+                    }
+                    this.doUserQuery()
+                },
+                selectChange: function (val) {
+                    this.idsArr = [];
+                    let _this = this;
+                    if (val.length) {
+                        val.forEach(item => {
+                            _this.idsArr.push(item.id);
+                        });
+                    }
+                    if (_this.idsArr.length == 0) {
+                        _this.checkedAll = false;
+                    } else {
+                        if (_this.idsArr.length == _this.tableData.length) {
+                            _this.checkedAll = true;
+                        } else {
+                            _this.checkedAll = false;
+                        }
+                    }
+                },
+                uploadHeTong: function () {
+                    this.handleImg();
+                    this.drawer5 = true
+                },
+                handleImg() {
+                    let htpics = this.htpics;
+                    this.fileList = [];
+                    for (const key in htpics) {
+                        this.fileList.push({ name: '11111', url: htpics[key]['pic_n'], id: htpics[key]['id'] });
+                    }
+                },
+                confirmOrder: function () {
+                    let id = this.detail.id;
+                    let _this = this;
+                    let url = _this.uri + 'finance_company_order&a=setpay';
+                    let sendData = {
+                        id: id
+                    }
+                    delConfirm(_this, sendData, function (sendData) {
+                        httpPost(url, sendData).then(function (response) {
+                            let res = response.data;
+                            if (res.error == 0) {
+                                message.success(res.msg)
+                                _this.getList();
+                                _this.drawer3 = false;
+                            } else {
+                                message.error(res.msg)
+                            }
+                        })
+                    }, '确认收款系统将自动为该用户开通相应服务，是否确认？');
+                },
+                editOrder() {
+                    let id = this.detail.id;
+                    let _this = this;
+                    let url = _this.uri + 'finance_company_order&a=save';
+                    let sendData = {
+                        order_price: _this.detail.order_price,
+                        order_remark: _this.detail.order_remark,
+                        id: id
+                    }
+                    _this.submitLoading = true;
+
+                    httpPost(url, sendData).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            message.success(res.msg, _this.getList())
+                        } else {
+                            message.error(res.msg)
+                        }
+                        _this.drawer6 = false;
+                    }).catch(function (error) {
+                        console.log(error);
+                    }).finally(function () {
+                        _this.submitLoading = false;
+                    });
+                },
+                htpicsFun: function (id) {
+                    let _this = this;
+                    let url = _this.uri + 'finance_company_order&a=edit';
+                    httpPost(url, { id: id }).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            _this.htpics = res.data.htpics
+                            _this.handleImg()
+                        } else {
+                            message.error(res.msg)
+                        }
+                    })
+                },
+                detailFun: function (row) {
+                    let id = row.id;
+                    let _this = this;
+                    let url = _this.uri + 'finance_company_order&a=edit';
+                    _this.yySrcList = [];
+                    httpPost(url, { id: id }).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            _this.detail = res.data.detail
+                            _this.htpics = res.data.htpics
+                            if (_this.htpics.length>0) {
+                                for (let j in _this.htpics) {
+                                    _this.yySrcList.push(_this.htpics[j]['pic_n']);
+                                }
+                            }
+                            _this.integral_pricename = res.data.integral_pricename
+                            _this.drawer3 = true;
+                        } else {
+                            message.error(res.msg)
+                        }
+                    })
+                },
+                searchType: function () {
+                    let _this = this;
+                    let url = _this.uri + 'finance_company_order&a=searchType';
+                    httpPost(url, {}, {hideloading: true}).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            _this.pay = res.data.pay;
+                            _this.ordertype = res.data.ordertype;
+                            _this.ratingarr = res.data.ratingarr;
+							if(res.data.ratingarr.length>0){
+								res.data.ratingarr.unshift({value:0,label:'全部'});
+							}
+                            var type_cascader = [];
+                            var one = {};
+                            var onechild = [];
+                            
+                            for(let i in  _this.ordertype){
+                                one = {value:i,label:_this.ordertype[i]};
+                                if(i=='1'){
+                                    one = {value:i,label:_this.ordertype[i],children:res.data.ratingarr};
+									if(res.data.ratingarr.length>0){
+										one.children = res.data.ratingarr
+									}
+                                }
+                                type_cascader.push(one);
+                            }
+                            _this.type_cascader = type_cascader;
+                        }
+                        _this.search.typedd = _this.searchTypedd;
+                        _this.searchTypedd = '';
+                    })
+                },
+                typeChange(){
+					this.search.rating = '';
+					this.search.typedd = '';
+					if(this.type_v.length>0){
+						if(this.type_v[0]=='1' && this.type_v.length>1){
+							this.search.rating = this.type_v[1]>0?this.type_v[1]:'';
+						}
+						this.search.typedd = this.type_v[0];
+					}
+					this.doUserQuery();
+				},
+                doUserQuery() {
+                    this.page = 1
+                    this.getList()
+                },
+                
+                userPageChange(val) {
+                    this.page = val
+                    this.getList()
+                },
+                userPageSizeChange(val) {
+                    this.pageSize = val
+                    this.getList()
+                },
+                getList() {
+                    let _this = this;
+                    let url = _this.uri + 'finance_company_order&a=index';
+                    this.search.page = this.page;
+                    this.search.pageSize = this.pageSize;
+                    let sendData = deepClone(this.search);
+                    if(this.searchTypedd != ''){
+                        sendData.typedd = this.searchTypedd;
+                    }
+                    _this.loading = true;
+                    _this.emptytext = "数据加载中";
+                    httpPost(url, sendData, {hideloading: true}).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            _this.tableData = res.data.data;
+                            _this.total = res.data.total;
+                            if (res.data.hasOwnProperty('orderSum')) {
+                                _this.orderSum = res.data.orderSum;
+                            } else {
+                                _this.orderSum = {};
+                            }
+                            if(_this.prevPage != _this.page){
+                                _this.prevPage = _this.page;
+                                _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                            }
+                            _this.loading = false;
+                            _this.pageSizes = res.data.pageSizes;
+                            if (_this.tableData.length === 0) {
+                                _this.emptytext = "暂无数据";
+                            }
+                        }
+                    })
+                },
+                handleRemove(file) {
+                    let _this = this;
+                    let url = _this.uri + 'finance_company_order&a=htpic_del';
+                    let orderid = this.detail.id;
+                    this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        if (file.id) {
+                            let sendData = {
+                                delid: file.id
+                            }
+                            httpPost(url, sendData).then(function (response) {
+                                let res = response.data;
+                                if (res.error == 0) {
+                                    message.success(res.msg, _this.htpicsFun(orderid))
+                                }
+                            })
+                        } else {
+                            let picurl = file.response.picurl
+                            _this.picurl = _this.picurl.filter(item => item != picurl);
+                            _this.$refs.files.handleRemove(file)
+                        }
+                    }).catch(() => {
+                    });
+                },
+                handlePreview(file) {
+                    console.log(file);
+                },
+                onBeforeUpload: function (file) {
+                    const isJPG =
+                        file.type === 'image/jpg' || file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/gif';
+                    const isLt2M = file.size / 1024 / 1024 < 5;
+                    if (!isJPG) {
+                        this.$message.error('上传身份证图片只能是 JPG, PNG, JPEG, GIF 格式!');
+                    }
+                    if (!isLt2M) {
+                        this.$message.error('上传身份证图片大小不能超过 2MB!');
+                    }
+                    return isJPG && isLt2M;
+                },
+                beforeRemove(file, fileList) {
+                    return this.$confirm(`确定移除 ${file.name}？`);
+                },
+                handleSizeChange(val) {
+                    this.pageSize = val;
+                    this.getList();
+                },
+                handleCurrentChange(val) {
+                    console.log(`当前页: ${val}`);
+                },
+                handleAvatarSuccess(res, file) {
+                    if (res.error == 0) {
+                        this.picurl.push(res.picurl);
+                    }
+                },
+                exceedFun(files, fileList) {
+                    this.$message.error('超过上传图片最大限制!');
+                },
+                saveImg: function () {
+                    let _this = this;
+                    let url = _this.uri + 'finance_company_order&a=uploadsave';
+                    let orderid = this.detail.id;
+                    if (this.picurl.length <= 0) {
+                        return;
+                    }
+                    let sendData = {
+                        order_id: orderid,
+                        picurl: this.picurl
+                    }
+                    _this.submitLoading = true;
+                    httpPost(url, sendData).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            _this.picurl = [];
+                            message.success(res.msg, _this.htpicsFun(orderid))
+                            _this.drawer5 = false
+                            _this.submitLoading = false;
+                        } else {
+                            message.error(res.msg);
+                            _this.submitLoading = false;
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+
+                },
+                batchDel: function () {
+                    let ids = this.idsArr;
+                    if (!ids.length) {
+                        message.error('请选择需要删除的消费记录');
+                        return
+                    }
+                    let _this = this;
+                    let url = this.uri + 'finance_company_order&a=del'
+
+                    delConfirm(this, { del: ids }, function (params) {
+                        httpPost(url, params).then(function (response) {
+                            let res = response.data;
+                            if (res.error == 0) {
+                                message.success(res.msg, _this.getList());
+                            } else {
+                                message.error(res.msg);
+                            }
+                        })
+                    }, '你确定要删除选择的消费记录吗？')
+
+                },
+                delRow: function (row) {
+                    let id = row.id;
+                    let _this = this;
+                    let url = this.uri + 'finance_company_order&a=del'
+                    delConfirm(this, { id: id }, function (params) {
+                        httpPost(url, params).then(function (response) {
+                            let res = response.data;
+                            if (res.error == 0) {
+                                message.success(res.msg, _this.getList());
+                            } else {
+                                message.error(res.msg);
+                            }
+                        })
+                    }, '你确定要删除选择的消费记录吗？')
+                },
+                exportOrder: function () {
+                    let _this = this;
+                    let ids = this.idsArr;
+                    let url = this.uri + 'finance_company_order&a=xls'
+                    _this.$confirm('确定导出充值记录吗？', '温馨提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        httpPost(url, { uid: ids, time: this.search.times }).then(function (response) {
+                            let res = response.data;
+                            if (res.error > 0) {
+                                message.error(res.msg);
+                            } else {
+                                utilFile.downloadFileByByte(res.data.file, `${res.data.file_name}`)
+                            }
+
+                        })
+                    }).catch(() => {
+                    });
+                },
+                selectAllBottom: function (value) {
+                    value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+                },
+                shortChange(e) {
+                    let orderMap = { ascending: 'asc', descending: 'desc' }
+                    this.search.t = e.order ? e.prop : null;
+                    this.search.order = orderMap[e.order];
+                    this.page = 1;
+                    this.getList();
+                }
+
+            }
+        });
+    </script>
+</body>
+
+</html>
+<style>
+    [v-cloak] {
+        display: none;
+    }
+</style>

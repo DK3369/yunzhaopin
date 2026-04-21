@@ -1,0 +1,193 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+<div id="yunvue" class="none">
+	<div class="Optimization_of_a_resume">
+        <div class="Optimization_of_a_resume_word">
+            <div class="Optimization_of_a_resume_word_top">您的简历有{{errorcount}}个可优化项</div>
+            <div class="Optimization_of_a_resume_word_bom"> 优化后更易获得企业关注，提升求职成功率</div>
+			<div class="Optimization_of_img">
+				<img src="{yun:}$wap_style{/yun}/images/Optimization_banner.png" alt="" width="100%">
+			</div>
+        </div>
+   </div>
+   <div class="Optimization_of_a_newly">
+        <div class="Optimization_of_a_resume_card">
+        	<div class="Optimization_of_a_resume_card_data" v-if="expectnum==0">
+            	<div class="resume_card_header">补充求职意向</div>
+            	<div class="resume_card_body">
+                	<div class="resume_card_body_left">优先补充求职意向，更易获得关注</div>
+                	<div class="resume_card_body_right" @click="pageTo('index.php?c=addexpect&eid='+eid)">去补充</div>
+            	</div>
+          	</div>
+            <div class="Optimization_of_a_resume_card_data" v-if="worknum==0">
+            	<div class="resume_card_header">补充工作经历</div>
+            	<div class="resume_card_body">
+                	<div class="resume_card_body_left">详细的工作经历有利于招聘者了解你的过往经验，这是HR判断你是否符合岗位要求的重要依据</div>
+                	<div class="resume_card_body_right" @click="pageTo('index.php?c=addresumeson&type=work&eid='+eid)">去补充</div>
+            	</div>
+          	</div>
+          	<div class="Optimization_of_a_resume_card_data" v-if="edunum==0">
+            	<div class="resume_card_header">补充教育经历</div>
+            	<div class="resume_card_body">
+                	<div class="resume_card_body_left">教育培训经历能够反应出你的学习能力和职业技能</div>
+                	<div class="resume_card_body_right" @click="pageTo('index.php?c=addresumeson&type=edu&eid='+eid)">去补充</div>
+            	</div>
+          	</div>
+          	<div class="Optimization_of_a_resume_card_data" v-if="descriptionnum==0">
+	            <div class="resume_card_header">填写自我评价</div>
+	            <div class="resume_card_body">
+	                <div class="resume_card_body_left">个性的自我自我评价能使你脱颖而出， 建议简明地说出自己的最大优势 ！</div>
+	                <div class="resume_card_body_right" @click="pageTo('index.php?c=addresumeson&type=desc&eid='+eid)">去填写</div>
+	            </div>
+          	</div>
+          	<div class="Optimization_of_a_resume_card_data" v-if="projectnum==0">
+            	<div class="resume_card_header">补充项目经历</div>
+            	<div class="resume_card_body">
+                	<div class="resume_card_body_left">项目经验更侧重于表现你在某个专业领域内的技能水平</div>
+                	<div class="resume_card_body_right" @click="pageTo('index.php?c=addresumeson&type=project&eid='+eid)">去补充</div>
+            	</div>
+          	</div>
+          	<div class="Optimization_of_a_resume_card_data" v-if="trainnum==0">
+            	<div class="resume_card_header">补充培训经历</div>
+            	<div class="resume_card_body">
+                	<div class="resume_card_body_left">培训经历能够反应出你的学习能力和职业技能</div>
+                	<div class="resume_card_body_right" @click="pageTo('index.php?c=addresumeson&type=training&eid='+eid)">去补充</div>
+            	</div>
+          	</div>
+          	<div class="Optimization_of_a_resume_card_data" v-if="skillnum==0">
+            	<div class="resume_card_header">补充职业技能</div>
+            	<div class="resume_card_body">
+                	<div class="resume_card_body_left">概括您所掌握的技能、专长和擅长的领域</div>
+                	<div class="resume_card_body_right" @click="pageTo('index.php?c=addresumeson&type=skill&eid='+eid)">去补充</div>
+            	</div>
+          	</div>
+          	<div class="Optimization_of_a_resume_card_data" v-if="shownum==0">
+            	<div class="resume_card_header">补充个人作品</div>
+            	<div class="resume_card_body">
+                	<div class="resume_card_body_left">上传您的作品，更直观展现您的专业能力</div>
+                	<div class="resume_card_body_right" @click="pageTo('index.php?c=addresumeson&type=show&eid='+eid)">去补充</div>
+            	</div>
+          	</div>
+          	
+
+        </div>
+        <div class="Create_resume_btn" v-if="add" @click="complete"><span>完成</span></div>
+    </div>
+</div>
+<script type="text/javascript">
+	var eid = '{yun:}$smarty.get.eid{/yun}';
+	var add =  '{yun:}$smarty.get.add{/yun}';
+	var yunvue =  new Vue({
+        el:"#yunvue",
+        data:{
+			eid: eid,
+			expectnum: 0,
+			worknum: 0,
+			edunum: 0,
+			projectnum: 0,
+			trainnum: 0,
+			skillnum: 0,
+			shownum: 0,
+			descriptionnum: 0,
+			errorcount: 0,
+			add: add
+        },
+		created() {
+			this.getExpect();
+		},
+        methods: {
+			getExpect: function(){
+				var that = this;
+				showLoading();
+				$.post('{yun:}url d=wxapp h=user m=resume c=resume{/yun}', {eid: that.eid}, function(data){
+					hideLoading();
+					let list = data.data;
+					let errorcount = 0;
+					if(list.expect){
+						that.expectnum = 1;
+					}else{
+						that.expectnum = 0;
+						errorcount++;
+					}
+					if (list.work.length > 0) {
+						that.worknum = 1;
+					}else{
+						that.worknum = 0;
+						errorcount++;
+					}
+					if (list.edu.length > 0) {
+						that.edunum = 1;
+					}else{
+						that.edunum = 0;
+						errorcount++;
+					}
+					if (list.project.length > 0) {	
+						that.projectnum = 1;
+					}else{
+						that.projectnum = 0;
+						errorcount++;
+					}
+					if (list.training.length > 0) {
+						that.trainnum = 1;
+					}else{
+						that.trainnum = 0;
+						errorcount++;
+					}
+					if (list.skill.length > 0) {
+						that.skillnum = 1;
+					}else{
+						that.skillnum = 0;
+						errorcount++;
+					}
+					if (list.show.length > 0) {
+						that.shownum = 1;
+					}else{
+						that.shownum = 0;
+						errorcount++;
+					}
+					if(list.resume.description){
+						that.descriptionnum = 1
+					}else{
+						that.descriptionnum = 0;
+						errorcount++;
+					}
+					that.errorcount = errorcount;
+					if(errorcount == 0){
+						if(that.add){
+							var url = 'index.php?c=rcomplete&id=' + that.eid;
+							navigateTo(url);
+						}else{
+        				    setTimeout(function(){
+        						goBack();
+        					},100);
+						}
+					}
+					$("#yunvue").css('display', 'block');
+					// 强制刷新延迟处理，防止某些浏览器pageshow执行时机问题导致一直重复刷新
+					setTimeout(function(){
+						window.localStorage.setItem("needRefresh", 1);
+					},100);
+				});
+							
+			},
+			pageTo:function(url){
+				window.location.href = url;
+			},
+			complete: function() {
+				if(this.add){
+					var url = 'index.php?c=rcomplete&id=' + this.eid;
+					if (this.expectnum == 0 || this.worknum == 0 || this.edunum == 0 || this.projectnum == 0 || this.trainingnum == 0 || this.skillnum == 0 || this.descriptionnum == 0) {
+						showConfirm("您的简历还没有全部优化，是否确认跳过？",function(){
+							navigateTo(url);
+						}, '继续优化', '跳过')
+					} else {
+						navigateTo(url);
+					}
+				}else{
+					history.back();
+				}
+			}
+		}
+	});
+</script>
+</body>
+</html>

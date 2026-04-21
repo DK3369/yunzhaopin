@@ -1,0 +1,187 @@
+<div id="resumelist_vue">
+	<!--简历列表-->
+	{yun:}if !$isweixin || $config.sy_wxwap_list!=2{/yun}
+		<div id="listdiv" class=" ">
+			{yun:}if $smarty.get.page < 2{/yun}
+				{yun:}userlist limit=5 topdate=1 edu='auto.edu' exp='auto.exp' sex='auto.sex' uptime='auto.uptime' keyword='auto.keyword' hy='auto.hy' minsalary='auto.minsalary' maxsalary='auto.maxsalary' report='auto.report' threecityid='auto.threecityid' provinceid='auto.provinceid' cityid='auto.cityid'  job1='auto.job1' job1son='auto.job1son' jobpost='auto.jobpost' type='auto.type' tag='auto.tag' order='auto.order' post_len=14 city_len=14 ispage=1 islt=4  recg='auto.recg' integrity='auto.integrity' workexp=1 item=zduser{/yun}
+				<div class="yun_newedition_resumelist">
+					<a href="{yun:}url m=wap c=resume a=show id=$zduser.id{/yun}">
+						{yun:}if $zduser.newtime==1{/yun}<i class="yunjoblist_newicon" title="新简历"></i>{yun:}/if{/yun}
+
+						<div class="yun_newedition_resumepic">
+							{yun:}if $zduser.photo!=""{/yun}
+								<img src="{yun:}$zduser.photo{/yun}">
+							{yun:}else{/yun}
+								<img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_icon{/yun}">
+							{yun:}/if{/yun}
+							<span class="{yun:}if $zduser.sex=='女'{/yun}user_xbn{yun:}elseif $zduser.sex=='男'{/yun}user_xb{yun:}/if{/yun}"></span>
+						</div>
+
+						<div class="yun_newedition_resume_wantjob"><span class="yun_newedition_resume_wantjob_n">{yun:}if in_array($zduser.id,$eid){/yun}
+								{yun:}$zduser.uname{/yun}
+							{yun:}else{/yun}
+								{yun:}$zduser.username_n{/yun}
+							{yun:}/if{/yun}</span>{yun:}if $zduser.rec_resume{/yun}<span class="usertj"> </span>{yun:}/if{/yun}
+						</div>
+						<div class="new_userlist_info">{yun:}$zduser.exp_n{/yun}经验 · {yun:}$zduser.edu_n{/yun}学历 ·
+							{yun:}if $zduser.age == 0{/yun}保密{yun:}else{/yun}{yun:}$zduser.age{/yun}岁{yun:}/if{/yun}</div>
+						<div class="new_userlist_p">求职期望 {yun:}$zduser.name{/yun}，{yun:}$zduser.salary_n{/yun}
+						<span class="yun_newedition_resume_zd" >置顶</span></div>
+						{yun:}if $zduser.work_content || $zduser.edu_content{/yun}
+						<div class="user_undergo_box">
+							{yun:}if $zduser.edu_content{/yun}
+								<div class="user_undergo user_undergo_a">{yun:}$zduser.edu_content{/yun} </div>
+							{yun:}/if{/yun}
+							{yun:}if $zduser.work_content{/yun}
+								<div class="user_undergo user_undergo_b">{yun:}$zduser.work_content{/yun} </div>
+							{yun:}/if{/yun}
+						</div>
+						{yun:}/if{/yun}
+						{yun:}if !empty($zduser.tag){/yun}
+						<div class="yun_tjresumebox">
+							{yun:}foreach from=$zduser.tag item=tval{/yun}
+							<span class="yun_tjresume">{yun:}$tval{/yun}</span>
+							{yun:}/foreach{/yun}
+						</div>
+						{yun:}/if{/yun}
+
+						{yun:}if $zduser.isLookEd == 1{/yun}<div class="resumeeye"><img src="{yun:}$wap_style{/yun}/images/llg.png"></div>{yun:}/if{/yun}
+					</a>
+				</div>
+				{yun:}/userlist{/yun}
+			{yun:}/if{/yun}
+
+			{yun:}userlist limit=20 noid=1 edu='auto.edu' exp='auto.exp' sex='auto.sex' uptime='auto.uptime' keyword='auto.keyword' hy='auto.hy' minsalary='auto.minsalary' maxsalary='auto.maxsalary' report='auto.report' threecityid='auto.threecityid' provinceid='auto.provinceid' cityid='auto.cityid'  job1='auto.job1' job1son='auto.job1son' jobpost='auto.jobpost'  type='auto.type' tag='auto.tag' integrity='auto.integrity' order='auto.order' post_len=14 city_len=14 ispage=1 islt=4 workexp=1 recg='auto.recg' item=user{/yun}
+			<div class="yun_newedition_resumelist">
+				<a href="{yun:}url m=wap c=resume a=show id=$user.id{/yun}">
+					{yun:}if $user.newtime==1{/yun}<i class="yunjoblist_newicon" title="新简历"> </i>{yun:}/if{/yun}
+					<div class="yun_newedition_resumepic">
+						{yun:}if $user.photo!=""{/yun}
+							<img src="{yun:}$user.photo{/yun}">
+						{yun:}else{/yun}
+							<img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_icon{/yun}">
+						{yun:}/if{/yun}
+						<span class="{yun:}if $user.sex=='女'{/yun}user_xbn{yun:}elseif $user.sex=='男'{/yun}user_xb{yun:}/if{/yun}"></span>
+					</div>
+					<div class="yun_newedition_resume_wantjob"><span class="yun_newedition_resume_wantjob_n">{yun:}if in_array($user.id,$eid){/yun}
+							{yun:}$user.uname{/yun}
+						{yun:}else{/yun}
+							{yun:}$user.username_n{/yun}
+						{yun:}/if{/yun}</span>{yun:}if $user.rec_resume{/yun}<span class="usertj"> </span>{yun:}/if{/yun}
+					</div>
+
+					<div class="new_userlist_info">{yun:}$user.exp_n{/yun}经验 · {yun:}$user.edu_n{/yun}学历 · {yun:}if $user.age == 0{/yun}保密{yun:}else{/yun}{yun:}$user.age{/yun}岁{yun:}/if{/yun}</div>
+					<div class="new_userlist_p">求职期望 {yun:}$user.name{/yun}，{yun:}$user.salary_n{/yun} <span class="yun_newedition_resume_zd">{yun:}$user.time{/yun}</span></div>
+
+
+					{yun:}if $user.work_content || $user.edu_content{/yun}
+					<div class="user_undergo_box">
+						{yun:}if $user.edu_content{/yun}
+							<div class="user_undergo user_undergo_a">{yun:}$user.edu_content{/yun} </div>
+						{yun:}/if{/yun}
+						{yun:}if $user.work_content{/yun}
+						<div class="user_undergo user_undergo_b">{yun:}$user.work_content{/yun} </div>
+						{yun:}/if{/yun}
+					</div>
+					{yun:}/if{/yun}
+					{yun:}if !empty($user.tag){/yun}
+					<div class="yun_tjresumebox">
+						{yun:}foreach from=$user.tag item=tval{/yun}
+						<span class="yun_tjresume">{yun:}$tval{/yun}</span>
+						{yun:}/foreach{/yun}
+					</div>
+					{yun:}/if{/yun}
+
+					{yun:}if $user.isLookEd == 1{/yun}<div class="resumeeye"><img src="{yun:}$wap_style{/yun}/images/llg.png"></div>{yun:}/if{/yun}
+				</a>
+			</div>
+			{yun:}/userlist{/yun}
+		</div>
+
+		<!--简历列表 end-->
+
+		<!--没有搜索到人才-->
+		{yun:}if $total <= 0{/yun}
+			{yun:}if $smarty.get.keyword!="" {/yun}
+			<div class="wap_member_no">没有搜索到人才</div>
+			{yun:}else{/yun}
+			<div class="wap_member_no">暂无人才</div>
+			{yun:}/if{/yun}
+			<div class="wap_member_no_submit">
+				<a class="wap_mb_no_sr" href="{yun:}url m=wap c='resume'{/yun}">重新搜索</a>
+			</div>
+		{yun:}else{/yun}
+			{yun:}if $total>20{/yun}
+				<van-pagination v-model="currentPage" :total-items="total" :items-per-page="perpage" force-ellipses @change="pageChange" show-page-size="3" />
+			{yun:}/if{/yun}
+		{yun:}/if{/yun}
+
+		{yun:}if $total<=0 && $recnum>0{/yun}
+		<section id="muireclist">
+				<div class="user_listtit"> "  为你推荐 " </div>
+			{yun:}userlist limit=3 post_len=18 city_len=10 recg=1 item=userrec{/yun}
+			<div class="user_list_cont">
+				
+				<div class="user_list" onclick="topage('{yun:}url m=wap c=resume a=show id=$userrec.id{/yun}')">
+					<aside class="user_tj_photo">
+						<a href="{yun:}url m=wap c=resume a=show id=$userrec.id{/yun}" class="user_list_b">
+							<img src="{yun:}$userrec.photo{/yun}" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_icon{/yun}',2);" />
+						</a>
+					</aside>
+					<h3><span class="c288"><a href="{yun:}$userrec.user_url{/yun}">{yun:}if in_array($userrec.id,$eid){/yun}{yun:}$userrec.uname{/yun}{yun:}else{/yun}{yun:}$userrec.username_n{/yun}{yun:}/if{/yun}</a></span>
+						<span class="resume_t_date">
+							{yun:}$userrec.time{/yun}
+						</span>
+					</h3>
+					<aside class="user_list_p">
+						<span class="user_city_n">{yun:}$userrec.city_name_n{/yun}</span>
+						<i class="user_list_p_line">|</i>
+							<span class="user_list_jy_p">{yun:}$userrec.exp_n{/yun}</span>
+						<i class="user_list_p_line">|</i> {yun:}$userrec.edu_n{/yun}学历
+					</aside>
+					<aside class="user_list_pyxjob"> <em class="user_p_ov"><span class="user_list_j">意向职位：</span>
+			<span class="user_list_yxjob">{yun:}$userrec.job_post_n{/yun}</span></em> </aside>
+				</div>
+				
+			</div>
+
+
+
+			{yun:}/userlist{/yun}
+		</section>
+		{yun:}/if{/yun}
+	{yun:}else{/yun}
+		<div id="listdiv"></div>
+		<!--微信端上拉加载样式-->
+		<div id="pageLoading" class="lodbox none"><span class="lodbox_p"><i class="lodbox_iocn"></i>正在加载...</span></div>
+		<div id="pageNoMore" class="lodbox none"> -没有更多了-</div>
+	{yun:}/if{/yun}
+</div>
+{yun:}if $isweixin && $config.sy_wxwap_list==2{/yun}
+{yun:}include file="$wapstyle/resumelist_vue.htm"{/yun}
+{yun:}/if{/yun}
+<script type="text/javascript">
+  var currentPage = parseInt('{yun:}$smarty.get.page{/yun}'),
+    total = parseInt('{yun:}$total{/yun}'),
+    pagelink=  '{yun:}$pagelink{/yun}';
+
+  var resumelist_vue =  new Vue({
+      el: '#resumelist_vue',
+      data: {
+        //分页相关
+        currentPage:currentPage?currentPage:1,
+            total:total,
+            perpage:20,
+        },
+        methods:{
+          pageChange:function(e){
+            var pageurl = pagelink.replace('{{page}}',e);
+            location.href = pageurl;
+          }
+        }
+    })
+  function topage(url){
+  	window.location.href = url
+  }
+</script>
+

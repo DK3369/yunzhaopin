@@ -1,0 +1,24 @@
+{yun:}include file="$wapstyle/header_cont.htm"{/yun}
+ 
+<!--内容-->
+<div class="evaluate_show">
+<div class="evaluate_name">{yun:}$info.name{/yun}</div>
+<div class="evaluate_pall">{yun:}$info.description{/yun}</div>
+<div class="evaluate_cs"><span class="evaluate_cs_n">共{yun:}$questions{/yun}题</span>{yun:}$info.visits{/yun}人访问过</div>
+
+ 
+
+</div><div class="evaluate_cs_bth"><a href="{yun:}url m=wap c=evaluate a=exampaper id=$info.id{/yun}">开始测试</a></div>
+<script>
+    var config = {
+        url: '{yun:}url m=wap c=evaluate a=show id=$info.id{/yun}',
+        title: '{yun:}$info.name{/yun}-{yun:}$config.sy_webname{/yun}',
+        desc: '',
+        img: '{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_sharelogo{/yun}',
+        img_title: '{yun:}$info.name{/yun}',
+        from: '{yun:}$config.sy_webname{/yun}'
+    };
+</script>
+{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+</body>
+</html>

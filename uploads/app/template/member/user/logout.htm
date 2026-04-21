@@ -1,0 +1,175 @@
+{yun:}include file="$userstyle/header.htm"{/yun}
+
+<div class="yun_w1200">
+
+    {yun:}include file="$userstyle/left.htm"{/yun}
+
+    <div class="yun_m_rightbox fltR mt20 re">
+
+        <div class="member_right_index_h1 fltL"><span class="member_right_h1_span fltL">注销账号</span> <i class="member_right_h1_icon user_bg"></i></div>
+        <div class="resume_box_list">
+            {yun:}if $step == 1{/yun}
+            <div class="wxts_box" style="padding: 30px">
+                <div class="wxts">温馨提示：注销账号后将放弃以下资产和权益</div>
+                1. 身份信息，账户信息，会员权益将清空且无法恢复<br>
+                2. 交易记录将被清空<br>
+                3. 账号绑定的手机邮箱QQ等相关信息将被释放，账号将无法登陆
+            </div>
+			<div class="clear"></div>
+            <form class="layui-form" style="padding:0 30px;">
+<div style="height:40px;">
+            <div class="password_chlose"  id="pw_style" style="width:252px;">
+
+                <select name="type" lay-filter="type">
+                    <option value="1">通过密码申请注销</option>
+                    <option value="2">通过手机申请注销</option>
+                </select>
+
+                <!--<input type="hidden" id="zstype" name="zstype" value="password">-->
+            </div>
+			</div>
+            <div style="" id="pw_type">
+                <div class="Binding_pop_box_list">
+                    <input type="password" name="password" id="password" value="" class="Binding_pop_box_list_text Binding_pop_box_list_textw200" style="padding-left:10px;" placeholder="请输入密码"/>
+                </div>
+                <a href="javascript:;" onclick="logoutApply();" class="msg_no_sq uesr_submit" style="padding: 10px 60px;">申请注销</a>
+            </div>
+
+            <div style="display:none" id="mobile_type" >
+                <div class="Binding_pop_box_list">
+                    <input class="Binding_pop_box_list_text Binding_pop_box_list_textw200" name="mobile" id="mobile" type="text" style="padding-left:10px;" placeholder="请输入手机号" value="{yun:}$tel.moblie{/yun}" onblur="isChecked('mobile')">
+                </div>
+                <div class="account_td1">
+                    {yun:}if strpos($config.code_web,"找回密码")!==false{/yun}
+                    {yun:}if $config.code_kind>2{/yun}
+                    <div class="gtdx-captcha">
+
+                        <div id="bind-captcha" data-id='subform' data-type='submit'></div>
+                        <input type='hidden' id="verify_token"  name="verify_token" value="">
+                        {yun:}if $config.code_kind==6{/yun}
+                        <input type='hidden' id="verify_str" name="verify_str" value="" />
+                        {yun:}/if{/yun}
+                        <input type='hidden' id="popup-submit">
+                        <input type='hidden' id="bind-submit">
+                    </div>
+                    {yun:}else{/yun}
+                    <div class="account_td1" style="display:inline-block;margin-top: 20px;">
+                        <div class="code_all">
+                            <input name="authcode" id="authcode" type="text" style="width:251px;" class="Binding_pop_box_list_text Binding_pop_box_list_textw200" placeholder="请输入图片验证码">
+                            <img id="vcodeimgs" onclick="checkCode('vcodeimgs');" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php" style="width: 100px; height: 38px;border:1px solid #eee" />
+                        </div>
+                    </div>
+                    {yun:}/if{/yun}
+                    {yun:}/if{/yun}
+                    <div class="code_all">
+                        <input name="mobile_vcode" style="padding-left:10px;margin-top: 20px;" id="mobile_vcode" type="text" class="Binding_pop_box_list_text Binding_pop_box_list_textw200" placeholder="请输入短信验证码" >
+                        <input type="button" class="btn_yell J_hoverbut msg_tip logout_yzm" id="send_msg_tip"  onclick="send_msg()" value="获取验证码" style="color:#06a7ff">
+                    </div>
+                    <a href="javascript:;" onclick="logoutmsg();" class="msg_no_sq uesr_submit" style="padding: 10px 60px;">申请注销</a>
+                </div>
+            </div>
+
+            {yun:}else{/yun}
+            <div class="msg_no">
+                <p>亲爱的用户，您已提交账户注销申请，</p>
+                <p>工作人员正在进行处理中，注销结果将以短信或邮件的形式通知，请耐心等待~</p>
+                <p>如果您需要再次使用，请重新注册！</p>
+            </div>
+            {yun:}/if{/yun}
+            </form>
+        </div>
+    </div>
+</div>
+{yun:}include file="$tplstyle/verify/verify_js.htm"{/yun}
+<style>
+   
+    .logout_yzm{
+        border: none;
+        background: #fff;
+        position: absolute;
+        left: 170px;
+        bottom: 11px;
+    }
+    .code_all {position: relative;}
+    .layui-form-select dl{
+        position: relative;
+        top: 0;
+    }
+    .dx_captcha_basic-style-popup{
+        z-index: 9999999;
+    }
+    .dx_captcha_loading_overlay{
+        z-index: 999998;
+    }
+	.layui-select-title{height:40px;position: relative;}
+</style>
+<script src="{yun:}$style{/yun}/js/forgetpw.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script>
+    var code_web = '{yun:}$config.code_web{/yun}',
+    code_kind = '{yun:}$config.code_kind{/yun}'
+    layui.use(['form', 'layer'], function() {
+        var form = layui.form,
+            $ = layui.$;
+
+        form.on('select(type)', function(data) {
+            if(data.value == 1) {
+                $("#mobile_type").hide();
+                $("#pw_type").show();
+            } else if(data.value == 2) {
+                $("#mobile_type").show();
+                $("#pw_type").hide();
+            }
+        });
+    });
+    function logoutApply() {
+        var password = $('#password').val();
+        if (password == ''){
+            layer.msg('请填写账户密码',2,8);
+            return false;
+        }
+        layer.load('执行中，请稍候...',0);
+        $.post('index.php?c=logout&act=logoutApply', {password: password}, function (data) {
+            if (data) {
+                layer.closeAll();
+                var data = eval('('+data+')');
+
+                if (data.errcode == 9){
+                    layer.msg(data.msg, 2, 9,function () {
+                        location.reload();
+                    });
+                }else{
+                    layer.msg(data.msg, 2, 8);
+                }
+
+            }
+        })
+    }
+    function logoutmsg() {
+        var mobile = $('#mobile').val();
+        var code = $('#mobile_vcode').val();
+        if (mobile == ''){
+            layer.msg('请填写手机号',2,8);
+            return false;
+        }else if(code == ''){
+            layer.msg('请填写验证码',2,8);
+            return false;
+        }
+        layer.load('执行中，请稍候...',0);
+        $.post('index.php?c=logout&act=logoutmsg', {moblie: mobile}, function (data) {
+            if (data) {
+                layer.closeAll();
+                var data = eval('('+data+')');
+
+                if (data.errcode == 9){
+                    layer.msg(data.msg, 2, 9,function () {
+                        location.reload();
+                    });
+                }else{
+                    layer.msg(data.msg, 2, 8);
+                }
+
+            }
+        })
+    }
+</script>
+{yun:}include file="$userstyle/footer.htm"{/yun}

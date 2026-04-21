@@ -1,0 +1,120 @@
+{yun:}include file="$wapstyle/header_cont.htm"{/yun}
+<link rel="stylesheet" href="{yun:}$wap_style{/yun}/hb/reset.css?v={yun:}$config.cachecode{/yun}" type="text/css"/>
+<style>
+    .hb_btn_hyz{width: 6.906667rem;height: .96rem;line-height: .96rem;background: #3a7bfe;color: #fff;display: inline-block;border-radius: .08rem;position: relative;font-size: .373333rem;}
+</style>
+<div id="app">
+    <ul class="poster-list pdb10 overflow ">
+        {yun:}foreach from=$comHb item=v{/yun}
+        <li class="">
+            <span class="hb_listbox" @click="showSelJob('{yun:}$v.style{/yun}', '{yun:}$v.num{/yun}');">
+                <div class="poster_pic"><img src="{yun:}$v.pic_n{/yun}"/></div>
+                <div class="hb_listbox_name">
+                    <span class="hb_listbox_sc">生成</span>
+                </div>
+            </span>
+        </li>
+        {yun:}/foreach{/yun}
+    </ul>
+
+    <van-popup v-model="jobShow" round position="bottom">
+        <div style="text-align: center; width: 100%; padding: 15px 0; font-size: 20px;">选择海报展示职位信息</div>
+        <van-checkbox-group v-model="result" :max='max' @change="changeResult" style="overflow: auto; max-height: 300px;">
+            <van-cell-group>
+                <van-cell v-for="(item, index) in list" clickable :key="item.id" :title="`${item.name}`" @click="toggle(index)" >
+                    <van-checkbox :name="item" ref="jobChecks" shape="square" />
+                </van-cell>
+            </van-cell-group>
+        </van-checkbox-group>
+		<div style="padding:0.533333rem;">
+        <van-button type="info" block @click="getComHb" style="border-radius:8px; font-size: 15px;">生成海报</van-button>
+		</div>
+    </van-popup>
+
+    <van-popup v-model="hbShow" round closeable :style="{height:'90%',width:'90%',background: 'none'}">
+        <div class="hb_tc">
+            <img :src="hbSrc" style="max-width: 100%;">
+            <div class="hb_tc_bth">
+                <div @click="hbShow=!hbShow" class="hb_btn_hyz">长按图片保存</div>
+            </div>
+        </div>
+    </van-popup>
+</div>
+<style>
+    .van-cell__value{max-width: 10%;}
+</style>
+
+<script src="{yun:}$wap_style{/yun}/js/jquery.min.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/vue.min.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$config_wapdomain{/yun}/js/vant/lib/vant.min.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$config_wapdomain{/yun}/js/vant/phpyun_vant.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$wap_style{/yun}/js/public.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+
+<script>
+
+    var  wapurl = '{yun:}url m=wap{/yun}',
+        uid = '{yun:}$id{/yun}',
+        jobList =  [];
+
+    '{yun:}foreach from=$jobList item=v{/yun}'
+    jobList.push({id: '{yun:}$v.id{/yun}', name: '{yun:}$v.name{/yun}'})
+    '{yun:}/foreach{/yun}'
+
+    var hbVue = new Vue({
+        el: '#app',
+        data: {
+            jobShow: false,
+            list: jobList,
+            result: [],
+            jobIds: [],
+
+            style: 0,
+            max: 0,
+            hbShow: false,
+            hbSrc: ''
+        },
+        methods: {
+            showSelJob:function (style, max) {
+                var that = this;
+                that.style = style;
+                that.max = parseInt(max);
+                that.jobShow = true;
+            },
+            toggle(index) {
+                var that = this;
+
+                that.$refs.jobChecks[index].toggle();
+            },
+            changeResult:function () {
+
+                var that = this;
+                that.jobIds = [];
+                that.result.forEach((v,i)=>{
+                    that.jobIds.push(v.id);
+                },this);
+            },
+            getComHb: function () {
+                var that = this;
+
+                if (that.jobIds){
+                    var jobids = that.jobIds.toString();
+                }
+
+                showLoading('生成中...');
+
+                const src = wapurl + 'index.php?c=ajax&a=getComHb&uid=' + uid + '&style=' + that.style +'&jobids='+jobids;
+                that.hbSrc = src;
+
+                var hbImg = new Image();
+                hbImg.src = src;
+
+                hbImg.onload = function(){
+                    hideLoading();
+                    that.hbSrc = hbImg.src;
+                    that.jobShow = false;
+                    that.hbShow = true;
+                }
+            }
+        }
+    })
+</script>

@@ -1,0 +1,732 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+
+	<div id="yunvue" class="none">		
+		<div class="Edit_your_resume_hint" id="privacy" v-if="(expect.status==2||expect.status==3)&&privacy==''">
+			<div class="resume_hint_left">
+				<div class="resume_hint_eye">
+					<img src="{yun:}$wap_style{/yun}/images/conceal_1.png" alt="" width="100%" height="100%">
+				</div>
+				<div class="resume_hint_word">
+					
+					<div v-if="expect.status==2" class="inlineblock resume_hint_word">
+					<span class="resume_hint_word_color">简历已隐藏，</span>
+					<span class="resume_hint_word_black">企业无法主动发现你</span>
+					</div>
+				
+					<div v-if="expect.status==3">
+					<span class="resume_hint_word_color">简历仅投递企业可见</span>
+					</div>
+					
+				</div>
+			</div>
+			<div class="resume_hint_right">
+				
+				<div v-if="expect.status==2" class="hint_right_none" onclick="navigateTo('index.php?c=privacy')">取消隐藏</div>
+				
+				<div v-if="expect.status==3" class="hint_right_none" onclick="navigateTo('index.php?c=privacy')">修改设置</div>	
+			</div>
+			<div class="hint_right_del" onclick="closePrivacy()">
+				<img src="{yun:}$wap_style{/yun}/images/remove.png" alt="" width="100%" height="100%">
+			</div>
+		</div>
+
+		<div style="padding: 0.266667rem 0.266667rem 0.233333rem; width: 100%; background-color: #f3f3f3;height: auto;" v-if="expect.state==3">
+			<div class="resume_min_body_cord">
+				<span class="resume_hint_word_color">审核未通过</span>
+				<span class="resume_hint_word_black" v-if="expect.statusbody">: {{expect.statusbody}}</span>
+			</div>
+		</div>
+		
+		<!-- 页面整体内容 -->
+		<div id="resumeBody" class="Edit_your_resume_min_body" :style="privacy==''&& expect.status!=1?'':''">
+		
+			<!-- 页面主题卡片视图 -->
+			<div class="resume_min_body_cord">
+				<!-- 用户基本资料 -->
+				<div class="resume_min_body_cord_data">
+					<div class="resume_min_body_cord_data_left" onclick="navigateTo('index.php?c=info')">
+						<div class="data_left_nameandmodification">
+							<div class="data_left_name">{{info.name}}</div>
+							<div class="data_left_modification">
+								<img src="{yun:}$wap_style{/yun}/images/icon_question.png" alt="" width="100%" height="100%">
+							</div>
+						</div>
+	                    <div class="data_left_condition" style="margin-top: 0.266666rem;">
+	                        <ul>
+	                            <li v-if="info.exp_n">{{info.exp_n}}经验 · </li>
+	                            <li v-if="info.edu_n">{{info.edu_n}}学历 ·</li>
+	                            <li v-if="info.age==0">保密</li>
+	                            <li v-else>{{info.age}}岁</li>
+	                        </ul>
+	                    </div>
+					</div>
+					<div class="resume_min_body_cord_data_logo" onclick="navigateTo('index.php?c=photo')">
+                    <img :src="info.photo" alt="" width="100%" height="100%" />
+					</div>
+				</div>
+				<!-- 求职意向 -->
+				<div class="resume_min_body_cord_intention">
+					<div class="cord_intention_top">
+						<div class="cord_intention_top_word">求职意向</div>
+					</div>
+					<div class="cord_intention_bom" @click="pageTo('index.php?c=addexpect&eid='+expect.id)">
+						<div class="data_left_condition">
+							<ul>
+								<li>{{expect.name}}</li>								
+								<li v-if="expect.salary">· {{expect.salary}}</li>	
+								<li v-if="expect.city_classname">· {{expect.city_classname}}</li>
+							</ul>
+						</div>
+						<div class="cord_intention_bom_icon">
+							<img src="{yun:}$wap_style{/yun}/images/icon_more.png" alt="" width="100%" height="100%">
+						</div>
+					</div>
+				</div>
+				<!-- 工作经历 -->
+				<div class="resume_min_body_cord_work_experience">
+					<div class="cord_work_experience_one">
+						<div class="cord_intention_top_word">工作经历</div>
+						<div class="cord_intention_top_icon" @click="pageTo('index.php?c=addresumeson&eid='+expect.id+'&type=work')">
+							<img src="{yun:}$wap_style{/yun}/images/addition.png" alt="" width="100%" height="100%">
+						</div>
+					</div>
+					
+					<div @click="pageTo('index.php?c=addresumeson&type=work&eid='+expect.id+'&id='+rwork.id)"  v-for="(rwork, wkey) in work" :key="wkey" class="work_list">
+						<div class="cord_work_experience_two">
+							<div class="cord_work_experience_two_word">{{rwork.name}}</div>
+							<div class="cord_work_experience_two_icon">
+								<img src="{yun:}$wap_style{/yun}/images/icon_more.png" alt="" width="100%" height="100%">
+							</div>
+						</div>
+						<div class="cord_work_experience_three">
+							<div class="experience_three_timeline">
+							{{rwork.date_n}}
+							</div>
+							<div class="experience_three_job" vv-if="rwork.title">{{rwork.title}}</div>
+						</div>
+						<div class="cord_work_experience_four" v-if="rwork.content">{{rwork.content}}</div>
+					</div>
+					
+				</div>
+				<!-- 教育经历 -->
+				<div class="resume_min_body_cord_education_experience">
+					<div class="cord_work_experience_one">
+						<div class="cord_intention_top_word">教育经历</div>
+						<div class="cord_intention_top_icon" @click="pageTo('index.php?c=addresumeson&eid='+expect.id+'&type=edu')">
+							<img src="{yun:}$wap_style{/yun}/images/addition.png" alt="" width="100%" height="100%">
+						</div>
+					</div>					
+					<div @click="pageTo('index.php?c=addresumeson&type=edu&eid='+expect.id+'&id='+redu.id)" v-for="(redu, ekey) in edu" :key="ekey">
+						<div class="cord_work_experience_two">
+							<div class="cord_work_experience_two_word">{{redu.name}}</div>
+							<div class="cord_work_experience_two_icon">
+								<img src="{yun:}$wap_style{/yun}/images/icon_more.png" alt="" width="100%" height="100%">
+							</div>
+						</div>
+						<div class="cord_work_experience_three">
+							<div class="experience_three_timeline">{{redu.date_n}}</div>
+							<div class="experience_three_job" v-if="redu.education_n && redu.education_n!=''">
+								{{redu.education_n}}学历
+							</div>							
+							<div class="experience_three_major" v-if="redu.specialty&&redu.specialty!=''">
+								{{redu.specialty}}
+							</div>							
+						</div>
+					</div>
+				</div>
+				<!-- 个人优势 -->
+				<div class="resume_min_body_cord_work_experience">
+					<div class="cord_work_experience_one">
+						<div class="cord_intention_top_word">个人优势</div>
+						<div class="cord_intention_top_icon" @click="pageTo('index.php?c=addresumeson&eid='+expect.id+'&type=desc')">
+							<img src="{yun:}$wap_style{/yun}/images/icon_question.png" alt="" width="100%" height="100%">
+						</div>
+					</div>
+					<div v-if="info.description">
+						<div class="cord_work_experience_four">{{info.description}}</div>
+						<div v-if="info.arrayTag">
+							<span class="yun_usermember_resumebq" v-for="(tag, rtag) in info.arrayTag" :key="rtag">{{tag}}</span>
+						</div>
+					</div>
+				</div>
+				<!-- 项目经历 -->
+				<div class="resume_min_body_cord_work_experience">
+					<div class="cord_work_experience_one">
+						<div class="cord_intention_top_word">项目经历</div>
+						<div class="cord_intention_top_icon" @click="pageTo('index.php?c=addresumeson&eid='+expect.id+'&type=project')">
+							<img src="{yun:}$wap_style{/yun}/images/addition.png" alt="" width="100%" height="100%">
+						</div>
+					</div>
+					
+					<div @click="pageTo('index.php?c=addresumeson&type=project&eid='+expect.id+'&id='+rproject.id)" v-for="(rproject, pkey) in project" :key="pkey"class="work_list">
+						<div class="cord_work_experience_two">
+							<div class="cord_work_experience_two_word">{{rproject.name}}</div>
+							<div class="cord_work_experience_two_icon">
+								<img src="{yun:}$wap_style{/yun}/images/icon_more.png" alt="" width="100%" height="100%">
+							</div>
+						</div>
+						<div class="cord_work_experience_three">
+							<div class="experience_three_timeline">
+								{{rproject.date_n}}
+							</div>							
+							<div class="experience_three_job" v-if="rproject.title">担任{{rproject.title}}</div>
+							
+						</div>						
+						<div class="cord_work_experience_four" v-if="rproject.content">{{rproject.content}}</div>						
+					</div>
+					
+				</div>
+				<!-- 培训经历 -->
+				<div class="resume_min_body_cord_work_experience">
+					<div class="cord_work_experience_one">
+						<div class="cord_intention_top_word">培训经历</div>
+						<div class="cord_intention_top_icon" @click="pageTo('index.php?c=addresumeson&eid='+expect.id+'&type=training')">
+							<img src="{yun:}$wap_style{/yun}/images/addition.png" alt="" width="100%" height="100%">
+						</div>
+					</div>
+					
+					<div @click="pageTo('index.php?c=addresumeson&type=training&eid='+expect.id+'&id='+rtran.id)" v-for="(rtran, tkey) in train" :key="tkey"class="work_list">
+						<div class="cord_work_experience_two">
+							<div class="cord_work_experience_two_word">{{rtran.name}}</div>
+							<div class="cord_work_experience_two_icon">
+								<img src="{yun:}$wap_style{/yun}/images/icon_more.png" alt="" width="100%" height="100%">
+							</div>
+						</div>
+						<div class="cord_work_experience_three">
+							<div class="experience_three_timeline">{{rtran.date_n}}</div>							
+							<div class="experience_three_job">{{rtran.title}}</div>							
+						</div>						
+						<div class="cord_work_experience_four" v-if="rtran.content">{{rtran.content}}</div>						
+					</div>
+					
+				</div>
+				<!-- 职业技能 -->
+				<div class=" ">
+					<div class="cord_intention_top">
+						<div class="cord_intention_top_word">职业技能</div>
+						<div class="cord_intention_top_icon" @click="pageTo('index.php?c=addresumeson&eid='+expect.id+'&type=skill')">
+							<img src="{yun:}$wap_style{/yun}/images/addition.png" alt="" width="100%" height="100%">
+						</div>
+					</div>
+					
+					<div class="cord_intention_bom" @click="pageTo('index.php?c=addresumeson&type=skill&eid='+expect.id+'&id='+rskill.id)" v-for="(rskill, skey) in skill" :key="skey">
+						<div class="data_left_skill">
+							<ul>
+								<li class="cord_intention_jnmane">{{rskill.name}}</li>								
+								<li v-if="rskill.longtime>0">掌握时间：{{rskill.longtime}}年</li>								
+								<li v-if="rskill.ing_n">熟练程度：{{rskill.ing_n}}</li>
+							</ul>
+						</div>						
+						<div v-if="rskill.pic && rskill.pic!=''" class="rskillimg">
+							<img :src="rskill.pic" alt="" width="40" height="40">
+						</div>						
+					</div>					
+				</div>
+				<!-- 其它信息 -->
+				<div class="resume_min_body_cord_work_experience">
+					<div class="cord_work_experience_one">
+						<div class="cord_intention_top_word">其它信息</div>
+						<div class="cord_intention_top_icon" @click="pageTo('index.php?c=addresumeson&eid='+expect.id+'&type=other')">
+							<img src="{yun:}$wap_style{/yun}/images/addition.png" alt="" width="100%" height="100%">
+						</div>
+					</div>
+					
+					<div @click="pageTo('index.php?c=addresumeson&type=other&eid='+expect.id+'&id='+oitem.id)" v-for="(oitem, okey) in other" :key="okey"class="work_list">
+						<div class="cord_work_experience_two">
+							<div class="cord_work_experience_two_word">{{oitem.name}}</div>
+							<div class="cord_work_experience_two_icon">
+								<img src="{yun:}$wap_style{/yun}/images/icon_more.png" alt="" width="100%" height="100%">
+							</div>
+						</div>										
+						<div class="cord_work_experience_four" v-if="oitem.content">{{oitem.content}}</div>						
+					</div>					
+				</div>				
+				<!-- 个人作品 -->
+				<div class="resume_min_body_Individual_works">
+					<div class="cord_intention_top">
+						<div class="cord_intention_top_word">个人作品</div>
+						<div class="cord_intention_top_icon" @click="pageTo('index.php?c=addresumeson&eid='+expect.id+'&type=show')">
+							<img src="{yun:}$wap_style{/yun}/images/addition.png" alt="" width="100%" height="100%">
+						</div>
+					</div>
+					<div class="resume_min_body_Individual_works_photo">
+						<ul>							
+							<li v-for="(rshow, shkey) in show" :key="shkey" >
+								<img :src="rshow.picurl" alt="" width="100%" height="100%">
+							</li>							
+						</ul>
+					</div>
+				</div>				
+			</div>
+		</div>
+
+		<!-- 固定的手机尾部 -->
+		<div class="resume_bot">
+			<div class="Edit_your_resume_tail" >
+				<!-- 优化简历提示 -->
+				<div class="optimize_resume_box" v-if="errorcount!=0">
+					<div class="resume_box_del" @click="errorcount=0">
+						<img src="{yun:}$wap_style{/yun}/images/optimizing_del.png" alt="" width="100%" height="100%">
+					</div>
+					<div class="resume_box_info" @click="pageTo('index.php?c=optimize&eid='+eid)">
+	                    检测到简历有<i>{{errorcount}}</i>个可优化项
+						<div class="resume_box_icon">
+							<img src="{yun:}$wap_style{/yun}/images/optimizing_icon.png" alt="" width="100%">
+						</div>
+					</div>
+				</div>
+				<div class="Edit_your_resume_Update_your_resume" onclick="resumeMaskShow()">升级简历</div>
+				<div class="Edit_your_resume_Preview_your_resume" @click="previewResume">预览简历</div>
+			</div>	
+		</div>
+		<!-- 升级简历弹出框 -->
+		<van-popup v-model="trShow" position="bottom" round>
+	
+			
+			<div id="resume_mask_box">
+				<div id="resume_mask_box_top">
+					<div class="resume_top_box">
+						<div class="resume_top_box_left">
+							<div class="top_box_icon_new">
+								<img src="{yun:}$wap_style{/yun}/images/resume_top.png" alt="" width="100%">
+							</div>
+							<div class="top_box_text">
+								<div class="top_box_name">置顶 <span  class="jl_sjtip" v-if="day>0"> 已置顶 </span></div>
+								<div class="top_box_word">简历靠前，更多曝光机会</div>
+							</div>
+						</div>
+						<div class="top_box_btn" @click="topCheck">立即置顶</div>
+					</div>
+					<div class="resume_refresh_box resume_top_box">
+						<div class="resume_top_box_left">
+							<div class="top_box_icon_new">
+								<img src="{yun:}$wap_style{/yun}/images/resume_refresh.png" alt=""  width="100%">
+							</div>
+							<div class="top_box_text">
+								<div class="top_box_name">刷新</div>
+								<div class="top_box_word">快速排名提升</div>
+							</div>
+						</div>
+						<div class="top_box_btn" @click="refreshResume">立即刷新</div>
+					</div>
+					
+					
+				</div>
+				<div id="resume_mask_box_bom" @click="trShow = false">取消</div>
+			</div>
+		</van-popup>
+    	<van-popup v-model="elistShow" position="bottom" :style="{ height: '45%' }">
+        	<van-picker show-toolbar :columns="elist" :default-index="defIndex" @cancel="elistShow = false" @confirm="changeConfirm"/>
+		</van-popup>
+    	<van-popup v-model="topResumeShow" :closeable="true" :close-on-click-overlay="false" position="bottom" :style="{ height: '50%' }">
+			<div class="entrust_box">
+					<div class="entrust_box_title">简历置顶</div>
+					<div class="entrust_box_now">
+						<div class="entrust_box_text">当前简历</div>
+						<div class="entrust_box_text">{{expect.name}}</div>
+					</div>
+					<div class="entrust_box_now" v-if="day>0">
+						<div class="entrust_box_text">当前简历置顶剩余{{day}}天</div>
+					</div>
+					<div class="entrust_box_now">
+						<div class="entrust_box_text">置顶天数</div>
+						<div class="entrust_box_text"><input type="number" maxlength="2" :value="days" @input="dayInput" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请设置置顶天数" style="text-align: right;" /></div>
+					</div>
+				
+				 
+				<div class="zd_pay_box">
+					<div v-if="fktype.fkal && isweixin == 2" class="zd_pay_list">
+						
+						<div class="zd_pay_icon"> <img src="{yun:}$wap_style{/yun}/images/dredge_zfb.png" alt="" width="100%" height="100%"></div>
+						<div class="zd_pay_name">支付宝支付</div>
+						<div  @click="changefk('fkal')" class="zd_pay_xz">
+					    <div v-if="fk=='fkal'" class=" ">
+					    <img src="{yun:}$wap_style{/yun}/images/dredge_affirm.png" alt="" width="100%" height="100%" >
+					    </div>
+					    <div v-if="fk!='fkal'" class=" ">
+					    <img src="{yun:}$wap_style{/yun}/images/dredge_To_confirm.png" alt="" width="100%" height="100%">
+					    </div>
+						</div>
+					</div>
+				</div>
+				<div class="zd_pay_fk">应付金额: <span class="zd_pay_fk_dw">￥<span 
+						class="zd_pay_fk_n">{{order_price}}</span></span>
+					<div @click="buyResumeTop" class="zd_pay_bth">立即购买</div>
+				</div>
+			</div>
+		</van-popup>
+		
+		<van-action-sheet v-model="moreShow" :actions="sheetList" @select="onSelect" cancel-text="取消" @cancel="moreShow = false" />
+	</div>
+
+		<script src="{yun:}$wap_style{/yun}/js/user.js?v={yun:}$config.cachecode{/yun}"></script>
+		<script>
+			var wapurl = '{yun:}url m=wap{/yun}';
+			var privacy = '{yun:}$smarty.cookies.privacy{/yun}';
+    		var sheetListDefalut = [
+				{name: '匹配职位'},
+				{name: '隐私设置'},
+				{name: '创建新简历'},
+				{name: '删除简历'}
+			];
+			var isweixin = '{yun:}$isweixin{/yun}';
+			var yunvue =  new Vue({
+		        el:"#yunvue",
+		        data:{
+					eid: '{yun:}$smarty.get.id{/yun}',
+					info: {},
+					expect: {},
+					work: [],
+					edu: [],
+					train: [],
+					project: [],
+					skill: [],
+					other: [],
+					show: [],
+					elist: [],
+					privacy:privacy,
+					trShow: false,
+					moreShow:false,
+					elistShow:false,
+					defIndex:0,
+            		maxnum: 0,
+					sheetList:[],
+		          	errorcount:0,
+		          	days:'',
+		          	day:'',
+		          	order_price:0,
+		          	price:0,
+		          	topResumeShow:false,
+		          	fktype:{},
+		          	fk:'',
+		          	upgradeResumeShow:false,
+		          	user_trust_number:0,
+		          	trust_price:0,
+		          	heightone:0,
+		          	heighttwo:0,
+
+					isweixin: isweixin ? isweixin : 2
+		        },
+				created() {
+					this.resumeList();
+				},
+		        methods: {
+					resumeList: function(){
+						showLoading();
+						var self = this;
+						self.elist = [];
+						$.post('{yun:}url d=wxapp h=user m=resume c=resume{/yun}', {eid: this.eid}, function(data){
+							hideLoading();
+							var list = data.data;
+							self.eid = list.expect ? list.expect.id : '';
+							self.info = list.resume ? list.resume : {};
+							self.expect = list.expect ? list.expect : {};
+							self.work = list.work ? list.work : [];
+							self.edu = list.edu ? list.edu : [];
+							self.project = list.project ? list.project : [];
+							self.train = list.training ? list.training : [];
+							self.skill = list.skill ? list.skill : [];
+							self.other = list.other ? list.other : [];							
+							self.show = list.show ? list.show : [];
+                    		self.maxnum = list.maxnum ? list.maxnum : 0;
+		                    self.sheetList = deepClone(sheetListDefalut);
+
+		                    if (self.maxnum <= 0) {
+		                        self.sheetList.splice(2,1);
+		                    }
+							self.day = list.expect.top_day;
+							self.price = list.top_price;
+							self.fktype = list.fktype;
+							self.user_trust_number = list.user_trust_number;
+							self.trust_price = list.trust_price;
+							self.heightone = list.heightone;
+							self.heighttwo = list.heighttwo;
+							self.errorcount = 0;
+							if(self.expect.status == 2 || self.expect.status == 3){
+								self.privacy = '';
+							}
+							if(self.fktype.fkwx){
+								self.changefk('fkwx');
+							}else if(self.fktype.fkal){
+								self.changefk('fkal');
+							}
+							// 按条件处理选项
+							var jlqh = true,jlmr = true,jlwt = true;
+                    
+							self.sheetList.forEach(function(val,index){
+								if(val.name == '切换简历'){
+									jlqh = false;
+									if(list.elist.length == 1){
+										// 只有一份简历，去除切换简历选项
+										self.sheetList.splice(index, 1);
+									}
+								}else if(val.name == '设置默认'){
+									jlmr = false;
+									if(self.expect.defaults == 1){
+										// 简历已是默认简历
+										self.sheetList.splice(index, 1);
+									}
+								}
+							});
+							// 有多份简历，增加切换简历选项
+							if(jlqh && list.elist.length > 1){
+								self.sheetList.unshift({name: '切换简历'});
+							}
+							// 非默认简历
+							if(jlmr && self.expect.defaults != 1){
+								self.sheetList.unshift({name: '设置默认'});
+							}
+							
+							
+							if(!self.expect){
+								self.errorcount += 1;
+							}
+							if(self.work.length==0){
+								self.errorcount += 1;
+							}
+							if(self.edu.length==0){
+								self.errorcount += 1;
+								
+							}
+							if(self.project.length==0){
+								self.errorcount += 1;
+								
+							}
+							if(self.train.length==0){
+								self.errorcount += 1;
+								
+							}
+							if(self.skill.length==0){
+								self.errorcount += 1;
+							}
+							if(self.show.length==0){
+								self.errorcount += 1;
+							}
+							if(!self.info.description){
+								self.errorcount += 1;
+							}
+							if (list.elist) {
+								for(let i in list.elist){ 						
+									self.elist.push({
+										'keyId':list.elist[i].id,
+										'text':list.elist[i].name,
+									});
+									if(list.elist[i].id == self.eid){
+										self.defIndex = i;
+									}
+								}
+							}
+
+							$("#yunvue").css('display', 'block');
+						},'json');
+					},
+					buyResumeTop:function(){
+						var that = this;
+						if(that.days == ''){
+							return showToast('请输入置顶天数');
+						}
+						if (that.fk == ''){
+							return showToast('请选择支付方式');
+						}
+						let	formData = {
+							id: that.eid,
+							rdays: that.days,							
+							fktype: that.fk,
+							type:'wap',
+							server: 'zdresume'
+						}; 
+						showLoading('购买中');
+						$.post('{yun:}url d=wxapp h=user m=finance c=setServer{/yun}',formData,function(data){
+			                hideLoading();      
+			                if(data.msg == 'ok'){
+			                    let res = data.data;
+			                    if(res.goto){
+			                    	window.location.href=res.url;
+			                    }else{
+			                    	
+			                    	showToast('置顶成功',2,function(){
+			                    		location.reload();
+			                    	});
+			                    }
+			                    
+			                }else{
+			                    showToast(data.msg);
+			                }    
+			       
+			            },'json'); 
+					},
+					changefk:function(e){
+						this.fk = e;
+					},
+					dayInput:function(e){
+						
+						if (e.target.value != '') {
+							this.days = e.target.value;
+							this.order_price = this.accMul(parseInt(e.target.value), parseFloat(this.price));
+						}else{
+							this.days = '';
+							this.order_price = 0;
+						}
+					},
+					//乘
+					accMul: function(arg1, arg2) {
+						var m = 0,
+							s1 = arg1.toString(),
+							s2 = arg2.toString();
+						try {
+							m += s1.split(".")[1].length
+						} catch (e) {}
+						try {
+							m += s2.split(".")[1].length
+						} catch (e) {}
+					
+						return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m);
+					},
+				    onSelect:function(item) {
+				    	var that = this;
+				      	that.moreShow = false;
+				      
+				      	if(item.name=="匹配职位"){
+				      		location.href = "index.php?c=likejob&id=" + that.expect.id;	
+				      	}else if (item.name=="隐私设置") {
+				      		location.href = "index.php?c=privacy";	
+				      	}else if (item.name=="切换简历") {
+				      		that.elistShow = true;				      		
+				      	}else if (item.name=="创建新简历") {				      	
+				      		if(that.maxnum >0 || that.maxnum == ''){
+				      			location.href = "index.php?c=addresume";
+				      		}else{
+				      			showToast("你的简历数已经达到系统设置的简历数了");
+				      		}
+				      	}else if (item.name=="删除简历") {
+				      		showConfirm("确定要删除此份简历吗?",function(){
+				      			that.delResume();
+				      		});
+				      	}else if (item.name=="设置默认") {
+				      		that.defaults();
+				      	}
+				    },
+				    delResume:function(){
+				    	var that = this;
+				    	var param = {
+							id: that.eid,							
+							table: 'expect'
+						};
+						
+						showLoading('删除中...');
+						$.post("{yun:}url d=wxapp h=user m=resume c=del_resume{/yun}", param, function(data) {
+							hideLoading();
+							if (data.error == 1) {
+								showToast('删除成功',2, function(){
+									that.eid = '';
+									that.resumeList();
+								});
+							} else {
+								showToast(data.msg);
+							}
+						});
+				    },
+				    defaults:function(){
+				    	var that = this;
+				    	let param = {
+							id: that.eid,							
+						};
+						showLoading('设置中...');
+						$.post("{yun:}url d=wxapp h=user m=resume c=default_resume{/yun}", param, function(data) {
+							hideLoading();
+							if (data.error == 1) {
+								showToast(data.msg,2, function(){
+									that.resumeList();
+								});
+							} else {
+								showToast(data.msg);
+							}
+						});
+				    },
+				    changeConfirm:function(e){
+				    	
+				    	this.elistShow = false;	
+				    	this.eid = e.keyId;
+                this.elist = [];
+				    	this.resumeList();
+						window.history.replaceState({}, "", "?c=resume&id=" + e.keyId);
+				    },
+				    pageTo:function(url){
+				    	window.location.href = url;
+				    },
+				    previewResume:function(){
+				  		if(!this.expect.id){
+							showToast('请先创建简历');
+						}else{
+							window.location.href = wapurl + '?c=resume&a=show&id=' + this.expect.id;
+						}
+				  	},
+					topCheck: function(){
+						var that = this;
+						if(!that.eid){
+							showToast('请先创建简历');
+						}else{
+							if(that.expect.state != '1'){
+								showToast('简历还未审核，无法置顶');
+							}else{
+								showLoading();
+								that.trShow = false;
+								var eid = that.eid;
+								$.post("{yun:}url d=wxapp h=user m=resume c=topCheck{/yun}", {
+									eid: eid
+								}, function(data) {
+									hideLoading();
+									if(data.msg){
+										showToast(data.msg);
+									}else{
+										if (that.fktype.fkwx || that.fktype.fkal){
+											that.topResumeShow = true;
+										}else{
+											showToast('网站已关闭支付接口，请联系管理员');
+										}
+									}
+								}, 'json');
+							}
+						}
+						
+					},
+					refreshResume: function(){
+						if(!this.eid){
+							showToast('请先创建简历');
+						}else{
+							showLoading();
+							this.trShow = false;
+							$.post("{yun:}url d=wxapp h=user m=resume c=refresh_resume{/yun}", {
+								eid: this.eid,
+							}, function(data) {
+								hideLoading();
+								if (data.error == 1) {
+									showToast('刷新成功');
+								} else {
+									showToast(data.msg);
+								}
+							});
+						}
+					}
+			  	},
+			  	
+			  	
+		    });
+			function closePrivacy(){
+				$('#privacy').animate({
+					opacity: 0
+				}, 'fast', function(){
+					yunvue.$data.privacy=1;
+				});
+				
+				$.post("index.php?c=setPrivacyCookie",{rand:Math.random()});
+			}
+			function resumeMaskShow(){
+				yunvue.$data.trShow = true;
+			}
+			function resumeMore(){
+				yunvue.$data.moreShow = true;
+			}
+		</script>
+	</body>
+</html>

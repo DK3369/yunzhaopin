@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+<div id="moduapp" class="moduleDome">
+    <div class="setDomeAll setDomeInte">
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+			<el-tab-pane label="简历被下载记录" name="first" :lazy="true">
+                <userlog_down ref="first"></userlog_down>
+            </el-tab-pane>
+            <el-tab-pane label="简历被浏览记录" name="second" :lazy="true">
+                <userlog_lookresume ref="second"></userlog_lookresume>
+            </el-tab-pane>
+            <el-tab-pane label="简历被收藏记录" name="third" :lazy="true">
+                <userlog_talentpool ref="third"></userlog_talentpool>
+            </el-tab-pane>
+            <el-tab-pane label="简历刷新记录" name="fourth" :lazy="true">
+                <userlog_sxlog ref="fourth"></userlog_sxlog>
+            </el-tab-pane>
+            <el-tab-pane label="简历推送记录" name="fifth" :lazy="true">
+                <userlog_trust ref="fifth"></userlog_trust>
+            </el-tab-pane>
+			<el-tab-pane label="简历免费下载记录" name="sixth" :lazy="true">
+                <userlog_freedown ref="sixth"></userlog_freedown>
+            </el-tab-pane>
+        </el-tabs>
+    </div>
+</div>
+<!-- script -->
+<script>
+    const custoapp = new Vue({
+        el: '#moduapp',
+        data: function () {
+            return {
+                activeName: 'first'
+            }
+        },
+        components: {
+            'userlog_sxlog': httpVueLoader('./component/userlog_sxlog.vue'),
+            'userlog_trust': httpVueLoader('./component/userlog_trust.vue'),
+            'userlog_lookresume': httpVueLoader('./component/userlog_lookresume.vue'),
+            'userlog_down': httpVueLoader('./component/userlog_down.vue'),
+            'userlog_talentpool': httpVueLoader('./component/userlog_talentpool.vue'),
+			'userlog_freedown': httpVueLoader('./component/userlog_freedown.vue'),
+        },
+		created(){
+			var that = this;
+		    let params = window.parent.homeapp.$route.params;
+			let query = window.parent.homeapp.$route.query;
+		    
+			if (!$.isEmptyObject(query.params)) {
+				params = {...params,...query.params};
+			}
+			
+			if (!$.isEmptyObject(params)) {
+				if(typeof params.activeName!='undefined' && params.activeName!=''){
+					that.activeName = params.activeName;
+				}
+			}
+		},
+        methods: {
+            handleClick(tab, event) {
+                //console.log(tab, event);
+            }
+        }
+    });
+</script>
+</body>
+
+</html>

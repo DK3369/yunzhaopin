@@ -1,0 +1,446 @@
+{yun:}include file="$wapstyle/member/header.htm"{/yun}
+<link rel="stylesheet" type="text/css" href="{yun:}$wap_style{/yun}/js/webapppic/cropper.css?v={yun:}$config.cachecode{/yun}"/>
+<script src="{yun:}$wap_style{/yun}/js/alloy/transform.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/alloy/alloy-finger.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/alloy-crop.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/compress.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/exif.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<div id="yunvue" class="none">
+	<div class="personal_details_min_body" id="wholeBody">
+		<!-- 页面卡片式图 -->
+		<div class="yun_createbox">
+			<form id="infoForm">
+			 
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>头<span class="nbsp">像</span></div>
+					<div class="yun_create_text">
+							<div class="yun_create_tx">真实头像可提升求职成功率</div>
+					<div class="yun_create_tximg" @click="openPhoto">
+						<img :src="infoShow.photo" alt="" width="100%" height="100%">
+					</div>
+					</div>
+				</div>
+				<div class="yun_createlist yun_createlist_pr">
+					<div class="yun_create_name"><span class="m_bt">*</span>姓<span class="nbsp">名</span></div>
+					<div class="yun_create_text">
+						<input type="text" name="name" placeholder="请输入姓名" :value="infoShow.name" :disabled="infoShow.idcard_status==1" />
+						<input type="hidden" id="idcard_status" name="idcard_status" :value="infoShow.idcard_status"  />
+					</div>
+			
+		
+			
+					<div class="yun_create_gender">
+							<div @click="changeSex(1)" :class="sexid==1?'yun_create_genderselect':''">男</div>
+							<div @click="changeSex(2)" :class="sexid==2?'yun_create_genderselect':''">女</div>
+							</div>
+										
+					<input type="hidden" name="sex" id="sex" :value="sexid" />
+			
+				</div>
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">*</span>现居住地</div>
+					<div class="yun_create_text">
+						<input type="text" name="living" v-model="infoShow.living" placeholder="请输入现居住地">
+					</div>
+				</div>
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">*</span>手机号码</div>
+					<div class="yun_create_text" v-if="infoShow.moblie_status==1&&infoShow.telphone">						
+						<div class="yun_create_bkt">{{infoShow.telphone}} </div>
+						<i class="yun_create_tip">已验证</i>
+						<input type="hidden" name="telphone" v-model="infoShow.telphone">	
+					</div>
+					<div class="yun_create_text" v-else>						
+						<input type="number" name="telphone" oninput="value=value.replace(/^0|[\^d]/g,'')" v-model="infoShow.telphone" placeholder="请输入手机号码" >
+					</div>					
+				</div>
+				
+			
+			 
+						<div onclick="birthdayPicker()" class="yun_createlist">
+							<div class="yun_create_name"><span class="m_bt">*</span>出生年月</div>
+						
+					
+							<div class="yun_create_select" v-if="dateValue">{{dateValue}}</div>
+							<div class="yun_create_select" style="color:#cecccc;" v-else>请选择</div>
+                      <input type="hidden" id="birthday" name="birthday" :value="dateValue">
+					<div class="yun_create_fx">
+						<img src="{yun:}$wap_style{/yun}/images/yunfx.png"alt="" width="100%" height="100%">
+					</div>
+						</div>
+						 	<div class="yun_createlist"@click="eduPicker">
+					<div class="yun_create_name"><span class="m_bt">*</span>最高学历</div>
+							
+						
+								<div class="yun_create_select" v-if="edu_n">{{edu_n}}</div>
+						<div class="yun_create_select" style="color:#cecccc;" v-else>请选择</div>
+							
+							
+							<input type="hidden" id="edu" name="edu" :value="infoShow.edu">
+							<div class="yun_create_fx">
+								<img src="{yun:}$wap_style{/yun}/images/yunfx.png"alt="" width="100%" height="100%">
+							</div>
+						</div>
+						<div @click="expPicker"class="yun_createlist">
+								<div class="yun_create_name"><span class="m_bt">*</span>工作经验</div>
+							
+							
+								<div class="yun_create_select" id="expValue" v-if="exp_n">{{exp_n}}</div>
+							<div class="yun_create_select"  style="color:#cecccc;" v-else>请选择</div>
+							<input type="hidden" id="exp" name="exp" :value="infoShow.exp">
+						<div class="yun_create_fx">
+							<img src="{yun:}$wap_style{/yun}/images/yunfx.png"alt="" width="100%" height="100%">
+						</div>
+						</div>  
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>详细地址</div>
+					<div class="yun_create_text">
+						<input type="text" name="address" v-model="infoShow.address" placeholder="XXX省XXX市XXX区XXX街道">
+					</div>
+				</div>
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>身<span class="nbsp">高</span></div>
+					<div class="yun_create_text">
+						<input type="text" name="height" v-model="infoShow.height" placeholder="请输入身高。单位：厘米">
+					</div>
+				</div>
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>体<span class="nbsp">重</span></div>
+					<div class="yun_create_text">
+						<input type="text" name="weight" v-model="infoShow.weight" placeholder="请输入体重。单位：公斤">
+					</div>
+				</div>
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>民<span class="nbsp">族</span></div>
+					<div class="yun_create_text">
+						<input type="text" name="nationality" v-model="infoShow.nationality" placeholder="例：汉">
+					</div>
+				</div>
+		 
+					<div class="yun_createlist"@click="marriagePicker">
+						<div class="yun_create_name"><span class="m_bt">&nbsp;</span>婚<span class="nbsp">姻</span></div>
+					
+						<div class="yun_create_select" v-if="marriage_n" id="marriageValue">{{marriage_n}}</div>
+						<div class="yun_create_select" id="marriageValue" style="color:#cecccc;" v-else>请选择婚姻</div>
+                        <input type="hidden" id="marriage" name="marriage" :value="infoShow.marriage">
+				
+					<div class="yun_create_fx">
+						<img src="{yun:}$wap_style{/yun}/images/yunfx.png"alt="" width="100%" height="100%">
+					</div>
+				</div>
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>户<span class="nbsp">籍</span></div>
+					<div class="yun_create_text">
+						<input type="text" name="domicile" v-model="infoShow.domicile" placeholder="例：江苏-南京">
+					</div>
+				</div>
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>微&nbsp;信&nbsp;&nbsp;号</div>
+					<div class="yun_create_text">
+						<input type="text" name="wxid" v-model="infoShow.wxid" placeholder="微信号可用于聊天时使用">
+					</div>
+				</div>
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>电子邮箱</div>
+					<div class="yun_create_text" v-if="infoShow.email_status==1&&infoShow.email">
+						<div class="yun_create_bkt">{{infoShow.email}} </div>
+						<i class="yun_create_tip">已验证</i>
+						<input type="hidden" name="email" v-model="infoShow.email">
+						 
+					</div>
+					<div class="yun_create_text" v-else>
+						<input type="text" name="email" v-model="infoShow.email" placeholder="请输入电子邮箱" >
+					</div>
+				</div>
+				<input type="hidden" name="url" value="{yun:}url d=wxapp h=user m=info c=saveinfo{/yun}">
+				
+				<div class="yun_createlist">
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>姓名展示</div>
+				
+					<div class="yun_create_select"  @click="namePicker" id="nameValue"v-if="nametype_n">{{nametype_n}}</div>
+					<div class="yun_create_select"  @click="namePicker" id="nameValue"style="color:#cecccc;" v-else>完全公开</div>
+
+
+					<input type="hidden" id="nametype" name="nametype" :value="infoShow.nametype">
+					<div class="yun_create_fx">
+						<img src="{yun:}$wap_style{/yun}/images/yunfx.png"alt="" width="100%" height="100%">
+					</div>
+				</div>
+				<div class="yun_createlist create_resume_listend">
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>头像展示</div>
+					<div class="yun_create_select" v-if="infoShow.phototype==1" @click="photoPicker" id="photoValue">不公开</div>
+					<div class="yun_create_select" v-else @click="photoPicker" id="photoValue">公开</div>
+					<input type="hidden" id="phototype" name="phototype" :value="infoShow.phototype">
+					
+				<div class="yun_create_fx">
+					<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+					</div>
+				</div>
+				
+			</form>
+		</div>	<div class="yun_create_bthbox">
+		<div class="yun_create_bth " id="headSave" onclick="headSave('{yun:}$smarty.get.c{/yun}')">保存</div>	</div>
+	</div>
+	<div>
+		<!--picker选择器-->
+		<van-popup v-model="photoShow" round position="bottom">
+			<van-picker show-toolbar :columns="photo" :default-index="photoIndex" 
+			 @cancel="photoShow = false" @confirm="photoConfirm"/>
+		</van-popup>
+		<van-popup v-model="nameShow" round position="bottom">
+			<van-picker show-toolbar :columns="name" :default-index="nameIndex" 
+			 @cancel="nameShow = false" @confirm="nameConfirm"/>
+		</van-popup>
+		<van-popup v-model="eduShow" round position="bottom">
+			<van-picker show-toolbar :columns="edu" :default-index="eduIndex" 
+			 @cancel="eduShow = false" @confirm="eduConfirm"/>
+		</van-popup>
+		<van-popup v-model="expShow" round position="bottom">
+			<van-picker show-toolbar :columns="exp" :default-index="expIndex" 
+			 @cancel="expShow = false" @confirm="expConfirm"/>
+		</van-popup>
+		<van-popup v-model="marriageShow" round position="bottom">
+			<van-picker show-toolbar :columns="marriage" :default-index="marriageIndex" 
+			 @cancel="marriageShow = false" @confirm="marriageConfirm"/>
+		</van-popup>
+		<van-popup v-model="birthdayShow" round position="bottom">
+			<van-datetime-picker 
+				v-model="currentDate"
+				type="year-month" :min-date="minDate" :max-date="maxDate"
+				@cancel="birthdayShow = false" @confirm="birthdayConfirm"/>
+		</van-popup>
+		<van-popup v-model="photoBoxShow" position="right" :style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
+		
+		    <div class="comheader">
+		        <a class="comheader_return" @click="photoBoxShow = false"></a>
+		        <div class="comheader_tit">上传头像</div>
+		    </div>
+		    <div class="verify">
+		        <div class="photo_i_box_v">
+		            <div class="photo_i_box_v_c">
+		                <div id="showResult">
+		                    <div id="changeAvatar" class="photo_i_box">
+		                        <img :src="infoShow.photo ? infoShow.photo : ''"width="120" height="120">
+		                    </div>
+		                    <div class="clear"></div>
+		                    <div class="photo_xz">
+		                        <input id="image" type="file" accept="image/*" onchange="photoChange(this)"/> 选择上传头像
+		
+		                    </div>
+		                    <div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>选择上传头像点击提交按钮即可上传
+		                        <span v-if="infoShow.photo_n">
+		                            (
+		                            <font v-if="infoShow.photo_status == '1'" color="red">审核中</font>
+		                            <font v-else-if="infoShow.photo_status == '2'" color="red">未通过</font>
+		                            <font v-else color="red">已审核</font>
+		                            )
+		                        </span>
+		                    </div>
+		                </div>
+		
+		                <input type="hidden" value="" id="preview">
+		            </div>
+		            <div class="photo_tj">
+		                <input name="submit" type="button" onclick="photo()" value="提交" class="yunset_bth"/>
+		            </div>
+		        </div>
+		    </div>
+		</van-popup>
+	</div>
+</div>
+<script src="{yun:}$plusstyle{/yun}/user.cache.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$wap_style{/yun}/js/userPicker.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$wap_style{/yun}/js/user.js?v={yun:}$config.cachecode{/yun}"></script>
+
+<script src="{yun:}$wap_style{/yun}/js/alloy/transform.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/alloy/alloy-finger.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/alloy-crop.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/compress.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/exif.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script>
+	// 时间选择器参数要重新处理，iOS不支持以中划线分隔的日期格式，要替换成反斜杠/
+	
+	var savephotourl = '{yun:}url d=wxapp h=user m=info c=savephoto{/yun}';
+	var resumename = '{yun:}$config.sy_resumename_num{/yun}';
+	var timestamp = new Date();
+	var year = timestamp.getFullYear();
+	var yunvue =  new Vue({
+		el: '#yunvue',
+		data() {
+		    return {
+				photoShow: false,
+				photoIndex: 0,
+				photo: [{value: 0, text: '公开'},{value: 1, text: '不公开'}],
+				nameShow: false,
+				nameIndex: 0,
+				name: [],
+				nametype_n:'',
+				eduShow: false,
+				eduIndex: 0,
+				edu: [],
+				expShow: false,
+				edu_n:'',
+				expIndex: 0,
+				exp: [],
+				exp_n:'',
+				marriageShow: false,
+				marriageIndex: 0,
+				marriage: [],
+				marriage_n:'',
+				birthdayShow: false,
+				currentDate: '',
+				minDate: new Date(1960, 0),
+				maxDate: new Date(year-16, 11),
+				infoShow: {},
+				sexid:'',
+				dateValue:'',				
+				year:'1988',
+				photoBoxShow: false
+		    };
+		},
+		created() {
+			this.getInfo();					
+		},
+		methods:{
+			getInfo:function(){
+				showLoading();
+				var self = this;
+				$.post('{yun:}url d=wxapp h=user m=info c=getinfo{/yun}',{rand: Math.random()},function(res){
+					hideLoading();
+					$("#yunvue").css('display', 'block');
+					self.infoShow = res.data;
+					
+					if(res.data){
+						self.setDdefault();
+						self.edu_n = res.data.edu_n;
+						self.exp_n = res.data.exp_n;
+						self.marriage_n = res.data.marriage_n;
+						self.sexid = res.data.sex;					
+						self.nametype_n = res.data.nametype_n;
+						if(res.data.birthday){
+							self.dateValue = res.data.birthday;						
+							self.year = res.data.birthYear;
+							let birthday = res.data.birthday.replace(/-/g, '/');
+							self.currentDate = new Date(birthday);
+						}else{
+							let birthday = '1988/08/08';
+							self.currentDate = new Date(birthday);
+						}	
+					}						
+							
+				},'json');
+			},
+			eduPicker:function(){
+				eduPicker(this.infoShow.edu);
+			},
+			expPicker:function(){
+				expPicker(this.infoShow.exp);
+			},
+			marriagePicker:function(){
+				marriagePicker(this.infoShow.marriage);
+			},
+			changeSex:function(e){
+				this.sexid = e;						
+			},
+			setDdefault:function(){						
+				this.photoIndex = this.infoShow.phototype;
+			},
+			photoConfirm(e){
+				this.photoShow = false;	
+				this.infoShow.phototype = e.value;						
+			},
+			namePicker:function(){
+				namePicker(this.infoShow.nametype);
+			},
+			photoPicker:function(){
+				this.photoShow = true;
+			},
+			nameConfirm(e){
+				this.nameShow = false;
+				this.infoShow.nametype = e.value;
+				this.nametype_n = e.text;
+				
+			},
+			eduConfirm(e){
+				this.eduShow = false;
+				this.infoShow.edu = e.value;
+				this.edu_n = e.text;				
+			},
+			expConfirm(e){
+				this.expShow = false;
+				this.infoShow.exp = e.value;
+				this.exp_n = e.text;				
+			},
+			marriageConfirm(e){
+				this.marriageShow = false;
+				this.infoShow.marriage = e.value;
+				this.marriage_n = e.text;				
+			},
+			birthdayConfirm(e){
+				this.birthdayShow = false;
+				this.dateValue = timeFormat(e, 'month');
+				this.year = e.getFullYear();
+			},
+			// 上传头像
+			openPhoto: function () {
+			    this.photoBoxShow = true;
+			},
+		}
+	});
+	// 裁剪logo
+	function toAlloyCrop(pic) {
+	    let yd = yunvue.$data;
+	    new AlloyCrop({
+	        image_src: pic,
+	        width: 200,
+	        height: 200,
+	        output: 1,
+	        ok: function (base64, canvas) {
+	            yd.infoShow.photo = base64;
+	            $("#preview").val(base64);
+	            // $('#showResult').fadeIn();
+	        },
+	        cancel: function () {
+	            // $('#showResult').fadeIn();
+	        },
+	        ok_text: '确定',
+	        cancel_text: '取消'
+	    });
+	}
+	
+	// 上传logo
+	function photo() {
+	    let yd = yunvue.$data;
+	    var uimage = $("#preview").val();
+	    if (uimage == '') {
+	        showToast('请选择图片后再提交');
+	        return false;
+	    } else {
+	        var regS = new RegExp("\\+", "gi");
+	        uimage = uimage.replace(regS, "#");
+	        showLoading('上传中');
+	        $.ajax({
+	            type: 'POST',
+	            url: '{yun:}url d=wxapp h=user m=info c=savephoto{/yun}',
+	            cache: false,
+	            dataType: 'json',
+	            data: {
+	                uimage: uimage,
+	                source: 'wap'
+	            },
+	            success: function (data) {
+	                hideLoading();
+	                if (data.error == 1) {
+	                    showToast(data.msg, 2, function () {
+	                        $("#preview").val('');
+	                    });
+	                } else {
+	                    showModal(data.msg);
+	                }
+	            }
+	        });
+	    }
+	}
+</script>
+	</body>
+</html>

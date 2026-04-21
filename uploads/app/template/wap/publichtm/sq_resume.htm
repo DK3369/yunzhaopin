@@ -1,0 +1,83 @@
+<div id="sq_resume_vue">
+	<van-dialog v-model="ajaxShow" title="温馨提示" :show-cancel-button="true" :show-confirm-button="false">
+        <div v-html="ajaxHtml"></div>
+	</van-dialog>
+</div>
+<script type="text/javascript">
+var wapurl = "{yun:}url m=wap{/yun}";
+var sq_resume_vue =  new Vue({
+		el: '#sq_resume_vue',
+		data: {
+			ajaxHtml:'',
+			ajaxShow:false,
+		},	
+	    methods:{
+	    	
+		}
+	});
+
+function issq_resume(obj){
+	showConfirm('TA没有向你投递简历，确定邀请？',function(){
+		sq_resume(obj)
+	}); 
+}
+function sq_resume(obj){
+	
+	var uid = $(obj).attr("uid");
+	var jobid = $(obj).attr("jobid");
+	var jobtype = $(obj).attr("jobtype");
+	showLoading();
+	
+	// 判断是否达到每天最大操作次数
+	$.post(wapurl + 'index.php?c=ajax&a=ajax_day_action_check', {'type' : 'interview'},
+		function(data){
+		
+			hideLoading();
+		
+			data = eval('(' + data + ')');
+			
+			if(data.status == -1){
+				
+				showToast(data.msg, 2);return false;
+			} else if(data.status == 1){
+		 		
+				$.post(wapurl+"index.php?c=ajax&a=indexajaxresume",{show_job:1,jobid:jobid,jobtype:jobtype, ruid:uid},function(data){
+					
+					var data 	= 	eval('('+data+')');
+					var status	=	data.status;
+					
+					if(status == 1){
+						// 强制操作
+						certVue.$data.checked = data.msgList;
+						certVue.$data.yunCert = true;
+					}else if(status == 2){
+
+						showConfirm(data.msg,function(){
+							window.location.href = wapurl + "member/index.php?c=server&server=invite&id="+ uid;
+						});
+					}else if(status == 3){
+						
+						if(jobid){
+							location.href = wapurl + 'index.php?c=resume&a=invite&uid='+uid+'&jobid='+jobid;
+						}else{
+							location.href = wapurl + 'index.php?c=resume&a=invite&uid='+uid;
+						}
+						
+					}else{
+						
+						if(data.login == 1){
+							
+							pleaselogin('您还未登录企业账号，是否登录？',wapurl+'/index.php?c=login')
+						}else{
+							
+							showModal(data.msg,null,'我知道了');
+							return false;
+						}
+						
+					}
+				});
+			}
+		}
+	);
+}
+</script>

@@ -1,0 +1,47 @@
+{yun:}include file="$wapstyle/header_cont.htm"{/yun}
+<!-- <link rel="stylesheet" href="{yun:}$config_wapdomain{/yun}/js/mui/css/mui.min.css?v={yun:}$config.cachecode{/yun}" type="text/css" /> -->
+<link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/style.css?v={yun:}$config.cachecode{/yun}" type="text/css"/>
+<div class="evaluate_box" id="app">
+    <!--列表-->
+    {yun:}if $rows{/yun}
+        {yun:}foreach from=$rows item=v{/yun}
+        <div class="evaluate_list">
+            <a href="{yun:}url m=wap c=evaluate a=show id=$v.id{/yun}">
+                <div class="evaluate_pic"><img src="{yun:}$v.pic_n{/yun}" width="90"/></div>
+                <div class="evaluate_name">{yun:}$v.name{/yun}</div>
+                <div class="evaluate_p">{yun:}$v.description{/yun}</div>
+                <div class="evaluate_cs">{yun:}$v.visits{/yun}人访问过<span class="evaluate_p_bth">开始测试 ></span></div>
+            </a>
+        </div>
+        {yun:}/foreach{/yun}
+        {yun:}if $total > 20{/yun}
+        <van-pagination v-model="currentPage" :total-items="total" :items-per-page="perpage" force-ellipses @change="pageChange" />
+        {yun:}/if{/yun}
+    {yun:}else{/yun}
+    <div class="wap_member_nosearch">
+        <div class="wap_member_no_tip"> 很抱歉,这个星球没有测评试卷呢！</div>
+    </div>
+    {yun:}/if{/yun}
+</div>
+{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
+<script>
+    var currentPage = parseInt('{yun:}$smarty.get.page{/yun}'),
+        total = parseInt('{yun:}$total{/yun}'),
+        pagelink = '{yun:}$pagelink{/yun}';
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            //分页相关
+            currentPage: currentPage ? currentPage : 1,
+            total: total,
+            perpage: 20,
+        },
+        methods: {
+            pageChange: function (e) {
+                var pageurl = pagelink.replace('{{page}}', e);
+                location.href = pageurl;
+            }
+        }
+    })
+</script>

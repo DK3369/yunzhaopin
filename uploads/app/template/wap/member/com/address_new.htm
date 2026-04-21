@@ -1,0 +1,444 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<!-- 页面整体部分 -->
+<div id="yunvue" class="none">
+
+    <div class="issue_post_body">
+        <form onsubmit="return formSubmit(this)">
+            <div class=" yun_createbox">
+
+                <div class="yun_createlist">
+
+                    <div class="yun_create_name"><span class="m_bt">*</span>联&nbsp;&nbsp;系&nbsp;&nbsp;人</div>
+                    <div class="yun_create_text">
+                        <input name="link_man" id="link_man" placeholder="请输入联系人" v-model="info.link_man"  onblur="notNumber(this)"/>
+                    </div>
+                </div>
+                <div class="yun_createlist">
+                    <div class="yun_create_name"><span class="m_bt">*</span>手机号码</div>
+                    <div class="yun_create_text">
+                        <input name="link_moblie" placeholder="请输入手机号码" v-model="info.link_moblie" oninput="value=value.replace(/^0|[\^d]/g,'')" type="number"  maxlength="11"/>
+                    </div>
+                </div>
+                <div class="yun_createlist">
+                    <div class="yun_create_name"> 固定电话</div>
+                    <div class="yun_create_text">
+                        <input name="link_phone" placeholder="请输入固定电话" v-model="info.link_phone" type="text"  />
+                    </div>
+                </div>
+                <div class="yun_createlist">
+                    <div class="yun_create_name"><span class="m_bt">&nbsp;</span>联系邮箱</div>
+                    <div class="yun_create_text">
+                        <input name="email" placeholder="请输入联系邮箱" v-model="info.email" type="text"/>
+                    </div>
+                </div>
+                <div class="yun_createlist">
+                    <div class="yun_create_name"><span class="m_bt">*</span>所在地区</div>
+                    <div class="yun_create_text_p" @click="areaShow=true" style="color: #666;">{{city}}</div>
+                    <input hidden="true" name="provinceid" :value="provinceid"/>
+                    <input hidden="true" name="cityid" :value="cityid"/>
+                    <input hidden="true" name="three_cityid" :value="threecityid"/>
+
+                    <div class="yun_create_fx">
+                        <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
+                    </div>
+                </div>
+                <div class="yun_createlist create_resume_listend">
+                    <div class="yun_create_name"><span class="m_bt">*</span>详细地址</div>
+                    <div class="yun_create_text">
+                        <input name="link_address" placeholder="请输入详细地址" v-model="address"/>
+                    </div>
+
+                    <div class="yun_create_fx" @click="openAddress" v-if="map_key!=''">
+                        <img src="{yun:}$wap_style{/yun}/images/issue_location.png" alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="security_bth">
+                <button type="submit" class="security_bth_but">保 存</button>
+            </div>
+        </form>
+    </div>
+
+    <van-popup v-model="addressShow" position="bottom">
+        <div class="issue_post_body">
+            <form onsubmit="return jobAddress(this)">
+                <div class="comWapMapSubct">
+                    <div class="comWapMapOnes">
+                        <div class="comWapMapTwos" v-if="map_key!=''">
+                            <div class="body_card_job_box">
+                                请单击下方地图完成地址标记
+                            </div>
+                            <div id="map_container"  style="width:100%;height:280px;overflow: hidden;margin:0;font-family:'微软雅黑';" v-if="map_key!=''"></div>
+                        </div>
+                        <div class="comWapMapShows">
+                            <div class="comWapMapEatel">
+                                <div class="yun_createlist">
+                                    <div class="yun_create_name">详细地址</div>
+                                    <div class="yun_create_text">
+                                        <input placeholder="请输入详细地址" v-model="address" name="address"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="comWapMapTishi" v-if="poi.length > 0">
+                                <span>可以选择搜索结果设置企业位置</span>
+                            </div>
+                            <ul>
+                                <li v-for="(item,pk) in poi" :key="pk">
+                                    <div @click="poiClick(pk)">
+                                        <span>{{item.name}}</span>
+                                        <b>{{item.address}}</b>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="security_bth" style="padding-top: 0;">
+                    <button type="submit" class="security_bth_but">确 定</button>
+                </div>
+            </form>
+        </div>
+    </van-popup>
+
+    <!--城市选择-->
+    <van-popup v-model="areaShow" round position="bottom">
+        <van-cascader v-model="areaValue" title="请选择工作区域" :options="areaOptions" @close="areaShow = false" @finish="onAreaFinish"/>
+    </van-popup>
+</div>
+
+<script src="{yun:}$wap_style{/yun}/js/jsMath.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+{yun:}if $config.map_key{/yun}
+<script type="text/javascript">
+    window._AMapSecurityConfig = {
+        securityJsCode:'{yun:}$config.map_secret{/yun}'
+    }
+</script>
+<script type="text/javascript" src="{yun:}$config.mapurl{/yun}"></script>
+{yun:}/if{/yun}
+<script src="{yun:}$plusstyle{/yun}/city.cache.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$wap_style{/yun}/js/category.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+
+<script>
+    function notNumber(obj){
+        obj.value = obj.value.replace(/[-_ ]/g,'');// 去掉空格
+        if(!obj.value){
+            return ;
+        }
+        var  test = obj.value.replace(/[0-9]/g,'');
+        if (!test){
+            showToast('联系人不支持全数字', 2);
+            obj.value = ''
+            $('#link_man').focus()
+            return false;
+        }else{
+            if(/\d/.test(obj.value)){
+                if(obj.value.length>8){
+                    // obj.value = obj.value.substring(0,8);
+                    showToast('联系人填写字数不能超过8个', 2);
+                    obj.value = ''
+                    $('#link_man').focus()
+                    return false;
+                }
+            }
+        }
+    }
+    var map_key = '{yun:}$config.map_key{/yun}';
+    var addressId = parseInt('{yun:}$smarty.get.id{/yun}');
+
+    var cityParam = {
+        one_all: false,
+        two_all: false,
+    };
+    var cityData = cityCategory(cityParam);
+    var map = null;
+    var yunvue = new Vue({
+        el: '#yunvue',
+        data: {
+
+            islook: false,
+
+            info: {},
+
+            city: '请选择所在城市',
+
+            areaShow: false,
+            areaValue: 0,
+            areaName: '',
+
+            areaOptions: cityData,
+
+            provinceid: 0,
+            cityid: 0,
+            threecityid: 0,
+
+            latitude: '',
+            longitude: '',
+
+            address: '',
+            addressShow: false,
+
+            addressId: addressId ? addressId : '',
+			map_key: map_key,
+            poi:[]
+        },
+        created() {
+            this.getAddressInfo();
+        },
+        watch: {
+            address: function (value) {
+                if (value) {
+                    this.info.link_address = value;
+                    if (this.map_key !='' && this.addressShow){
+                        debounce(this.localsearch(),1000);
+                    }
+                }
+            },
+        },
+        methods: {
+
+            onAreaFinish({selectedOptions}) {
+
+                this.provinceid = 0;
+                this.cityid = 0;
+                this.threecityid = 0;
+
+                let cityStr = '';
+
+                if (selectedOptions[0] && selectedOptions[0].value > 0) {
+                    if (selectedOptions[0]) {
+                        this.provinceid = selectedOptions[0].value;
+                        cityStr += selectedOptions[0].text;
+                        this.areaName = selectedOptions[0].text;
+                    }
+                }
+                if (selectedOptions[1] && selectedOptions[1].value > 0) {
+                    if (selectedOptions[1]) {
+                        this.cityid = selectedOptions[1].value;
+                        cityStr += ' ' + selectedOptions[1].text;
+                        this.areaName = selectedOptions[0].text;
+                    }
+                }
+                if (selectedOptions[2] && selectedOptions[2].value > 0) {
+                    if (selectedOptions[1]) {
+                        this.threecityid = selectedOptions[2].value;
+                        cityStr += ' ' + selectedOptions[2].text;
+                    }
+                }
+                this.city = cityStr ? cityStr : citydefault;
+                this.areaShow = false;
+            },
+            localsearch: function () {
+				var that = this;
+                if(that.info.link_address.length > 3){
+                    $.post('index.php?c=poi', {address: that.info.link_address}, function(e){
+                        if(e.status == '1' && e.tips.length > 0){
+                            that.poi = e.tips;
+                        }
+                    }, 'json');
+                }
+            },
+            poiClick: function(key){
+                map.clearMap();
+                var location = this.poi[key].location;
+                var lngLat = location.split(',');
+                this.longitude = lngLat[0];
+                this.latitude = lngLat[1];
+                var point = new AMap.LngLat(lngLat[0], lngLat[1]);
+                map.setZoomAndCenter(17, point);
+                var marker = new AMap.Marker({
+                    position: point
+                });
+                map.add(marker);
+            },
+            getAddressInfo: function () {
+                showLoading();
+                var that = this;
+                var paramer = {id: that.addressId, source: 'wap', rand: Math.random()};
+                $.post('{yun:}url d=wxapp h=com m=set c=getAddressInfo{/yun}', paramer, function (data) {
+                    hideLoading();
+                    if (data) {
+                        let res = data.data;
+                        that.info = res;
+                        that.city = res.provinceid ? res.city_one + ' ' + res.city_two + ' ' + (res.city_three ? res.city_three : '') : that.city
+                        that.provinceid = res.provinceid ? parseInt(res.provinceid) : 0;
+                        that.cityid = res.cityid ? parseInt(res.cityid) : 0;
+                        that.threecityid = res.three_cityid ? parseInt(res.three_cityid) : 0;
+                        if (res.x && res.y) {
+                            that.longitude = res.x;
+                            that.latitude = res.y;
+                        }
+                        that.address = that.info.link_address
+                        that.islook = true;
+                        $('#yunvue').removeClass('none');
+                    }
+                }, 'json');
+            },
+
+            openAddress: function () {
+
+                this.addressShow = true;
+                let that = this;
+
+                setTimeout(() => {
+                    if (!map) {
+                        map = new AMap.Map("map_container");
+                    }else{
+                        map.clearMap();
+                    }
+
+                    if (that.latitude && that.longitude) {
+                        var point = new AMap.LngLat(that.longitude, that.latitude);
+                        map.setZoomAndCenter(17, point);
+                        var marker = new AMap.Marker({
+                            position: point
+                        });
+                        map.add(marker);
+                    } else if (this.city || this.info.link_address) {
+
+                        debounce(this.localsearch());
+                    } else {
+
+                        AMap.plugin('AMap.Geolocation', function() {
+                           var geolocation = new AMap.Geolocation();
+                        
+                          geolocation.getCurrentPosition(function(status,result){
+                                if(status=='complete' && result.info == 'SUCCESS'){
+                                    var position = result.position;
+                                    that.longitude = position.lng;
+                                    that.latitude = position.lat;
+                                    
+                                    map.setZoomAndCenter(17, new AMap.LngLat(that.longitude, that.latitude));
+                                }
+                          });
+                        });
+                    }
+                    setTimeout(() => {
+                        map.on("click", function (e) {
+                            var lngLat = e.lnglat;
+                            that.latitude = lngLat.lat;
+                            that.longitude = lngLat.lng;
+                            map.clearMap();
+                            var marker = new AMap.Marker({
+                                position: new AMap.LngLat(lngLat.lng, lngLat.lat)
+                            });
+                            map.add(marker);
+                        });
+                    }, 500)
+                }, 600)
+            }
+        }
+    });
+
+    function jobAddress(e) {
+
+        let yd = yunvue.$data;
+        try {
+            let link_address = e.address.value;
+
+            if (link_address.length == 0) {
+                showModal('请填写详细地址');
+                return false;
+            }
+
+            yd.addressShow = false;
+        } catch (e) {
+        }
+
+        return false; // 阻止form提交
+    }
+
+    function formSubmit(e) {
+
+        var that = this,
+            yd = yunvue.$data,
+            obj = {
+                link_man: e.link_man.value,
+                link_moblie: e.link_moblie.value,
+                link_phone: e.link_phone.value,
+                email: e.email.value,
+                link_address: e.link_address.value
+            };
+        try {
+
+            if (obj.link_man.length == 0) {
+                showModal('请填写联系人');
+                return false;
+            }else{
+                var link_man = obj.link_man.replace(/[-_ ]/g,'');// 去掉空格
+                if(!link_man){
+                    return ;
+                }
+                var  test = link_man.replace(/[0-9]/g,'');
+                if (!test){
+                    showModal('联系人不支持全数字');
+                    return false;
+                }else{
+                    if(/\d/.test(link_man)){
+                        if(link_man.length>8){
+                            showModal('联系人填写字数不能超过8个');
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            if (obj.link_moblie.length == 0 && obj.link_phone.length == 0) {
+                showModal('请填写联系电话');
+                return false;
+            }
+            if (obj.link_moblie.length > 0) {
+                if (isjsMobile(obj.link_moblie) == false) {
+                    showModal('联系手机格式错误');
+                    return false;
+                }
+            }
+
+            obj.provinceid = yd.provinceid
+            obj.cityid = yd.cityid
+            obj.three_cityid = yd.threecityid
+
+            if (obj.provinceid == 0) {
+                showModal('请选择所在城市');
+                return false;
+            }
+            if (ct[obj.provinceid]) {
+                if (obj.cityid == 0) {
+                    showModal('所在城市请选择二级类别');
+                    return false;
+                }
+            }
+            if (obj.link_address.length == 0) {
+                showModal('请填写企业地址');
+                return false;
+            }
+
+            // 处理下一步
+            yd.firstData = obj;
+
+            let formData = {};
+
+            formData.x = yd.longitude;
+            formData.y = yd.latitude;
+            formData.source = 'wap';
+
+            formData.id = that.addressId;
+
+            Object.assign(formData, yd.firstData);
+
+            showLoading('保存中');
+            $.post('{yun:}url d=wxapp h=com m=set c=saveAddress{/yun}', formData, function (data) {
+                hideLoading();
+                if (data.error == 1) {
+                    showModal(data.msg, function () {
+                        navigateTo('index.php?c=address');
+                    });
+                } else {
+                    showModal(data.msg);
+                }
+            }, 'json')
+        } catch (err) {
+        }
+
+        return false;
+    }
+</script>

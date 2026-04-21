@@ -1,0 +1,505 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+      xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <xml>
+        <w:WordDocument>
+      <w:View>Print</w:View>
+      <w:DoNotOptimizeForBrowser/>
+      <w:Compatibility>
+        <w:DontGrowAutofit/>
+      </w:Compatibility>
+    </w:WordDocument>
+    </xml>
+    <title>简历</title>
+</head>
+<body>
+<style>
+        @page
+	{
+        /*mso-page-orientation: landscape;*/
+       /* size:29.7cm 21cm;    margin:1cm 1cm 1cm 1cm;*/
+	margin:33.0pt 33.15pt 33.0pt 33.15pt;
+	size:595.5000pt 842.0000pt;
+
+	}
+    @page Section1 {
+        mso-header-margin: 0;
+        mso-footer-margin: .3in;
+        mso-header: h1;
+        mso-footer: f1;
+    }
+    div.Section1 {
+        page: Section1;
+    }
+    table#hrdftrtbl {
+        margin: 0in 0in 0in 900in;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+    }
+    p.MsoFooter, li.MsoFooter, div.MsoFooter {
+        margin: 0in;
+        margin-bottom: .0001pt;
+        mso-pagination: widow-orphan;
+        tab-stops: center 3.0in right 6.0in;
+        font-size: 12.0pt;
+        text-align: right
+    }
+    table, th, td {
+        line-height: 28px;
+        padding: 0px;
+        margin: 0;
+        font-family: 微软雅黑;
+    }
+    table {
+        border-collapse: collapse;
+        font-size: 14px;
+        font-family: 微软雅黑;
+    }
+    .jl-xx tr {
+        height: 30px;
+        line-height: 30px;
+    }
+    .jl-xx tr td {
+        color: #FFF;
+        padding: 0 5px;
+    }
+    .jl-tit {
+        margin: auto;
+    }
+    .jl-li {
+        margin: auto;
+        font-size: 14px;
+    }
+    .jl-li td {
+        padding: 0 5px;
+        height: 28px;
+        line-height: 28px;
+    }
+    .footer-img {
+        width: 700px;
+        margin: auto;
+    }
+    .footer-img td {
+        text-align: right;
+    }
+    .footer-img td a {
+        text-decoration: none;
+    }
+</style>
+{yun:}if $Info.sqInfo{/yun}
+<p style="padding-top:10px; padding-bottom:15px;color:#666; font-size:14px;">
+            投递职位：<b style="color:#f00">{yun:}$Info.sqInfo.sq_job_name{/yun}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      投递时间：{yun:}$Info.sqInfo.sq_job_time{/yun}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            近期登录：{yun:}$Info.login_date_n{/yun}
+</p>
+{yun:}/if{/yun}
+<table width="100%" align="center" style="background:#3fb2a4; margin:auto;border-collapse:collapse;">
+    <tr>
+        <td width="190" align="center" valign="right" bgcolor="#3da89c">
+            <img width="100" height="100" src="{yun:}$Info.photo{/yun}" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_icon{/yun}',2);">
+        </td>
+        <td style="padding-top:10px; padding-bottom:15px;">
+            <table width="580" class="jl-xx" style="border-collapse:collapse;">
+                <tr>
+                    <td align="center" width="84"><b>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 :</b></td>
+                    <td width="200">{yun:}$Info.name{/yun}
+                        {yun:}if $UserMember.source==6 && $UserMember.claim==0 && $UserMember.email!=""{/yun} <a class="resume_rz " href="javascript:void(0);" onClick="claim('{yun:}url m=ajax c=claim uid=$Info.uid{/yun}')">认领</a> {yun:}/if{/yun}&nbsp;
+                    </td>
+                    <td align="center" width="84"><b>性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别 :</b></td>
+                    <td width="200">{yun:}$Info.job_sex{/yun}&nbsp;</td>
+                </tr>
+                <tr>
+                    <td align="center"><b>手机号码 :</b></td>
+                    <td>{yun:}if $Info.privacy_status == 1{/yun}为保护隐私，请到网站查看{yun:}else{/yun}{yun:}$Info.telphone{/yun}{yun:}/if{/yun}&nbsp;</td>
+                    <td align="center"><b>年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;龄 :</b></td>
+                    <td>{yun:}$Info.age{/yun}岁</td>
+                </tr>
+                <tr>
+                    <td align="center"><b>电子邮件 :</b></td>
+                    <td>{yun:}$Info.email{/yun}&nbsp;</td>
+                    <td align="center"><b>教育程度 :</b></td>
+                    <td>{yun:}$Info.useredu{/yun}&nbsp;</td>
+                </tr>
+                <tr>
+                    <td align="center"><b>工作年限 :</b></td>
+                    <td>{yun:}$Info.user_exp{/yun}&nbsp;</td>
+                    <td align="center"><b>婚姻状况 :</b></td>
+                    <td>{yun:}$Info.user_marriage{/yun}&nbsp;</td>
+                </tr>
+                <tr>
+                    <td align="center"><b>籍&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;贯 :</b></td>
+                    <td>{yun:}$Info.domicile{/yun}&nbsp;</td>
+                    <td align="center"><b>现所在地 :</b></td>
+                    <td>{yun:}$Info.living{/yun}&nbsp;</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+<br>
+<table width="100%" align="center" class="jl-tit">
+    <tr>
+        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">求 职 意 向</th>
+        <th height="30">
+            <hr style="width:100%;height:1px; color:#3fb2a4; vertical-align:middle">
+        </th>
+    </tr>
+    <tr>
+        <td height="10" colspan="2"></td>
+    </tr>
+</table>
+<table  width="100%"  align="center" class="jl-tit">
+    <tr>
+        <td></td>
+        <td width="100%">
+            <table  width="100%"  align="center" class="jl-li">
+                <tr>
+                    <td width="70"><b>期望职位：</b></td>
+                    <td>{yun:}$Info.customjob{/yun}&nbsp;</td>
+                </tr>
+                <tr>
+                    <td><b>期望行业：</b></td>
+                    <td>{yun:}$Info.hy{/yun}&nbsp;</td>
+                </tr>
+                <tr>
+                    <td><b>工作地点：</b></td>
+                    <td>{yun:}foreach from=$Info.expectcity key=key item=v{/yun}
+                        {yun:}if $key< 5{/yun}
+                        {yun:}$v{/yun}&nbsp;
+                        {yun:}/if{/yun}
+                        {yun:}/foreach{/yun}&nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>期望薪资：</b></td>
+                    <td>{yun:}$Info.salary{/yun}&nbsp;</td>
+                </tr>
+                <tr>
+                    <td><b>到岗时间：</b></td>
+                    <td>{yun:}$Info.report{/yun}&nbsp;</td>
+                </tr>
+                <tr>
+                    <td><b>求职状态：</b></td>
+                    <td>{yun:}$Info.jobstatus{/yun}&nbsp;</td>
+                </tr>
+                <tr>
+                    <td><b>工作性质：</b></td>
+                    <td>{yun:}$Info.type{/yun}&nbsp;</td>
+                </tr>
+                <tr>
+                    <td><b>工作职能：</b></td>
+                    <td>{yun:}$Info.jobname{/yun}&nbsp;</td>
+                </tr>
+            </table>
+        </td>
+        <td></td>
+    </tr>
+</table>
+
+{yun:}if is_array($Info.user_work) && !empty($Info.user_work){/yun}
+<!--工作经历-->
+<table width="100%" align="center" class="jl-tit">
+    <tr>
+        <td height="15" colspan="2"></td>
+    </tr>
+    <tr>
+        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">工 作 经 历</th>
+        <th width="575">
+            <hr style="color:#3fb2a4" width="100%" size="1" noshade="" align="center">
+        </th>
+    </tr>
+</table>
+<table  width="100%"  align="center" class="jl-tit">
+    <tr>
+        <td></td>
+        <td  width="100%" >
+            <table  width="100%"  align="center" class="jl-li">
+                {yun:}foreach item=one from=$Info.user_work{/yun}
+                <tr>
+                    <td style=" padding-top:15px">
+                        <div><b>{yun:}$one.sdate|date_format:"%Y.%m"{/yun}-{yun:}if
+                            $one.edate{/yun}{yun:}$one.edate|date_format:"%Y.%m"{/yun}{yun:}else{/yun}至今{yun:}/if{/yun}</b>&nbsp;&nbsp;&nbsp;&nbsp;<b>{yun:}$one.name{/yun}</b>&nbsp;&nbsp;&nbsp;&nbsp;<span
+                                class="yun_resume_exp_name_job"><b>{yun:}$one.title{/yun}</b></span></div>
+                        {yun:}if $one.content{/yun}
+                        <div><b>工作职责：</b> {yun:}$one.content{/yun}</div>
+                        {yun:}/if{/yun}
+                    </td>
+                </tr>
+                {yun:}/foreach{/yun}
+            </table>
+        </td>
+        <td></td>
+    </tr>
+</table>
+{yun:}/if{/yun}
+
+{yun:}if is_array($Info.user_edu) && !empty($Info.user_edu){/yun}
+<!--教育经历-->
+<table  width="100%"  align="center" class="jl-tit">
+    <tr>
+        <td height="15" colspan="2"></td>
+    </tr>
+    <tr>
+        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">教 育 经 历</th>
+        <th width="575">
+            <hr style="color:#3fb2a4" width="100%" size="1" noshade="" align="center">
+        </th>
+    </tr>
+</table>
+<table  width="100%"  align="center" class="jl-tit">
+    <tr>
+        <td></td>
+        <td  width="100%" >
+
+            <table  width="100%"  align="center" class="jl-li">
+                {yun:}foreach item=one from=$Info.user_edu{/yun}
+                <tr>
+                    <td style="padding-top:15px;">
+                        <div><b>{yun:}$one.sdate|date_format:"%Y.%m"{/yun}-{yun:}$one.edate|date_format:"%Y.%m"{/yun}</b>&nbsp;&nbsp;&nbsp;&nbsp;{yun:}$one.name{/yun}&nbsp;&nbsp;&nbsp;&nbsp;{yun:}$one.specialty{/yun}&nbsp;&nbsp;&nbsp;&nbsp;{yun:}$one.education_n{/yun}学历</div>
+                    </td>
+                </tr>
+                {yun:}/foreach{/yun}
+            </table>
+        </td>
+        <td></td>
+    </tr>
+</table>
+{yun:}/if{/yun}
+
+{yun:}if is_array($Info.user_tra) && !empty($Info.user_tra){/yun}
+<!--培训经历-->
+<table  width="100%"  align="center" class="jl-tit">
+    <tr>
+        <td height="15" colspan="2"></td>
+    </tr>
+    <tr>
+        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">培 训 经 历</th>
+        <th width="575">
+            <hr style="color:#3fb2a4" width="100%" size="1" noshade="" align="center">
+        </th>
+    </tr>
+</table>
+<table  width="100%"  align="center" class="jl-tit">
+    <tr>
+        <td></td>
+        <td  width="100%" >
+            <table  width="100%"  align="center" class="jl-li">
+                {yun:}foreach item=one from=$Info.user_tra{/yun}
+                <tr>
+                    <td style="padding-top:15px;">
+                        <div><b>{yun:}$one.sdate|date_format:"%Y.%m"{/yun} - {yun:}$one.edate|date_format:"%Y.%m"{/yun}</b>&nbsp;&nbsp;&nbsp;&nbsp;{yun:}$one.name{/yun}&nbsp;&nbsp;&nbsp;&nbsp;{yun:}$one.title{/yun}</div>
+                        {yun:}if $one.content{/yun}
+                        <div><b>描述：</b>{yun:}$one.content{/yun}</div>
+                        {yun:}/if{/yun}
+                    </td>
+                </tr>
+                {yun:}/foreach{/yun}
+            </table>
+        </td>
+        <td></td>
+    </tr>
+</table>
+{yun:}/if{/yun}
+
+{yun:}if is_array($Info.user_skill) && !empty($Info.user_skill){/yun}
+<!--职业技能-->
+<table  width="100%"  align="center" class="jl-tit">
+    <tr>
+        <td height="15" colspan="2"></td>
+    </tr>
+    <tr>
+        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">职 业 技 能</th>
+        <th width="575">
+            <hr style="color:#3fb2a4" width="100%" size="1" noshade="" align="center">
+        </th>
+    </tr>
+</table>
+<table  width="100%"  align="center" class="jl-tit">
+    <tr>
+        <td></td>
+        <td  width="100%" >
+            <table  width="100%"  align="center" class="jl-li">
+                {yun:}foreach item=one from=$Info.user_skill{/yun}
+                <tr>
+                    <td style="padding-top:15px;">
+                        <div><b>技能名称：{yun:}$one.name{/yun}{yun:}if $one.longtime{/yun}</b>&nbsp;&nbsp;&nbsp;&nbsp;掌握时间：{yun:}$one.longtime{/yun}年{yun:}/if{/yun}</div>
+                        {yun:}if $one.picurl{/yun}
+                        <div class=" zs_imgbox">
+                            技能证书：<img src="{yun:}$one.picurl{/yun}" width="95" height="70" style="vertical-align:middle">
+                        </div>
+                        {yun:}/if{/yun}
+                    </td>
+                </tr>
+                {yun:}/foreach{/yun}
+            </table>
+        </td>
+        <td></td>
+    </tr>
+</table>
+{yun:}/if{/yun}
+
+{yun:}if is_array($Info.user_xm) && !empty($Info.user_xm){/yun}
+<!--项目经历-->
+<table  width="100%"  align="center" class="jl-tit">
+    <tr>
+        <td height="15" colspan="2"></td>
+    </tr>
+    <tr>
+        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">项 目 经 历</th>
+        <th width="575">
+            <hr style="color:#3fb2a4" width="100%" size="1" noshade="" align="center">
+        </th>
+    </tr>
+</table>
+<table  width="100%"  align="center" class="jl-tit">
+    <tr>
+        <td></td>
+        <td  width="100%" >
+            <table  width="100%"  align="center" class="jl-li">
+                {yun:}foreach item=one from=$Info.user_xm{/yun}
+                <tr>
+                    <td style="padding-top:15px;">
+                        <div><b>{yun:}$one.sdate|date_format:"%Y.%m"{/yun} - {yun:}$one.edate|date_format:"%Y.%m"{/yun}&nbsp;&nbsp;&nbsp;&nbsp;{yun:}$one.name{/yun}&nbsp;&nbsp;&nbsp;&nbsp;{yun:}$one.title{/yun}</b></div>
+                        <div><b>项目描述：</b> {yun:}$one.content{/yun}</div>
+                    </td>
+                </tr>
+                {yun:}/foreach{/yun}
+            </table>
+        </td>
+        <td></td>
+    </tr>
+</table>
+{yun:}/if{/yun}
+
+{yun:}if is_array($Info.user_other) && !empty($Info.user_other){/yun}
+<!--附加信息-->
+<table  width="100%"  align="center" class="jl-tit">
+    <tr>
+        <td height="15" colspan="2"></td>
+    </tr>
+    <tr>
+        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">附 加 信 息</th>
+        <th width="575">
+            <hr style="color:#3fb2a4" width="100%" size="1" noshade="" align="center">
+        </th>
+    </tr>
+</table>
+<table  width="100%"  align="center" class="jl-tit">
+    <tr>
+        <td></td>
+        <td  width="100%" >
+            <table  width="100%"  align="center" class="jl-li">
+                {yun:}foreach item=one from=$Info.user_other{/yun}
+                <tr>
+                    <td style="padding-top:15px;">
+                        <div>标题：<b>{yun:}$one.name{/yun}</b></div>
+                        {yun:}if $one.content{/yun}
+                        <div class="yun_resume_exp_p">内容：{yun:}$one.content{/yun}</div>
+                        {yun:}/if{/yun}
+                    </td>
+                </tr>
+                {yun:}/foreach{/yun}
+            </table>
+        </td>
+        <td></td>
+    </tr>
+</table>
+{yun:}/if{/yun}
+
+<!-- 我的作品-->
+{yun:}if is_array($Info.user_show) && !empty($Info.user_show){/yun}
+<table  width="100%"  align="center" class="jl-tit">
+    <tr>
+        <td height="15" colspan="2"></td>
+    </tr>
+    <tr>
+        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">我 的 作 品</th>
+        <th width="575">
+            <hr style="color:#3fb2a4" width="100%" size="1" noshade="" align="center">
+        </th>
+    </tr>
+</table>
+<table  width="100%"  align="center" class="jl-tit">
+    <tr>
+        <td></td>
+        <td  width="100%" >
+            <table  width="100%"  align="center" class="jl-li">
+                <tr>
+                    <td class="resume_table_td_p" style="line-height:25px; padding-top:10px;">
+                        <div class="fairs_introduction_p">
+                            <div class="fairs_introduction_img">
+                                {yun:}foreach item=v from=$Info.user_show{/yun}
+                                <img src="{yun:}$v.picurl{/yun}" width="180" height="130" style="margin-right:5px;"/>&nbsp;
+                                {yun:}/foreach{/yun}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <td></td>
+    </tr>
+</table>
+{yun:}/if{/yun}
+
+{yun:}if !empty($Info.description){/yun}
+<!--自我评价-->
+<table  width="100%"  align="center" class="jl-tit">
+    <tr>
+        <td height="15" colspan="2"></td>
+    </tr>
+    <tr>
+        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">自 我 评 价</th>
+        <th width="575">
+            <hr style="color:#3fb2a4" width="100%" size="1" noshade="" align="center">
+        </th>
+    </tr>
+</table>
+<table  width="100%"  align="center" class="jl-tit">
+    <tr>
+        <td></td>
+        <td  width="100%" >
+            <table  width="100%"  align="center" class="jl-li">
+                <tr>
+                    <td style="padding-top:15px;">
+                        <div class="resume_skill resume_skill_table">
+                            <div class=""><i class="resume_skill_icon"></i>
+                                <div class="yun_resume_exp_p">{yun:}$Info.description{/yun}</div>
+                            </div>
+                        </div>
+                        {yun:}if $Info.arrayTag{/yun}
+                        <div class="yun_resume_exp_p">
+                            {yun:}foreach from=$Info.arrayTag item=v{/yun} <span class="resume_user_bq">{yun:}$v{/yun}</span> {yun:}/foreach{/yun}
+                        </div>
+                        {yun:}/if{/yun}
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <td></td>
+    </tr>
+</table>
+{yun:}/if{/yun}
+
+<div class="Section1">
+ 
+    <table id='hrdftrtbl' border='0' cellspacing='0' cellpadding='0'>
+        <tr>
+            <td>
+                <div style='mso-element:footer' id=f1>
+                    <span style='position:relative;z-index:-1;right:0'>
+                    <p class=MsoFooter><img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_logo{/yun}" width="300" height="45"></p>
+                    </span>
+                </div>
+               
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

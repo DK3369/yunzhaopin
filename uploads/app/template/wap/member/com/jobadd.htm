@@ -1,0 +1,1950 @@
+{yun:}include file="$wapstyle/member/cheader.htm"{/yun}
+<link href="{yun:}$wap_style{/yun}/css/cmc.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet" />
+
+<!-- 页面整体部分 -->
+<div id="yunvue" class="none">
+    <div>
+        <div id="jobAddMain">
+            <div v-show="jobfirst" class="issue_post_body">
+                <form onsubmit="return formSubmitjob(this)">
+                    <div class="yun_createbox">
+                        <div class="yun_createlist">
+
+                                <div class="yun_create_name"><span class="m_bt">*</span>职位名称</div>
+                                <div class="yun_create_text">
+                                    <input v-if="joblock==1 && jobid>0" name="name" placeholder="请填写职位名称" v-model="info.name" disabled/>
+                                    <input v-else name="name" placeholder="请填写职位名称" v-model="info.name"/>
+                                </div>
+
+                        </div>
+                        <div class="yun_createlist"  @click="classBox('job')">
+                            <div class="yun_create_name"><span class="m_bt">*</span>职位类别</div>
+                            <input class="ask_input" hidden="true" id="job_classid"  :value="jobclassid" name="jobclassid"/>
+                            <div class="yun_create_select" id="jobnameshow"  :style="jobname?'':'color:#cecccc;'">{{jobname?jobname:'请选择职位类别'}}</div>
+                            <div class="yun_create_fx">
+                                <img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                            </div>
+                        </div>
+                        <div class="yun_createlist" @click="opensalary">
+                            <div class="yun_create_name"><span class="m_bt">*</span>薪资待遇</div>
+
+								<div class="yun_create_select" v-if="info.salary_n">{{info.salary_n}}</div>
+								<div class="yun_create_select" style="color:#cecccc;" v-else>请填写薪资待遇</div>
+
+                            <div class="yun_create_fx">
+                            	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                            </div>
+                        </div>
+                        <div class="yun_createlist">
+                            <div class="yun_create_name"><span class="m_bt">*</span>招聘人数</div>
+                                <div class="yun_create_text">
+                                    <input name="zp_num" v-model="info.zp_num" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请填写招聘人数"/>
+                                </div>
+                        </div>
+                        <div class="yun_createlist" @click="expShow = true">
+                            <div class="yun_create_name"><span class="m_bt">&nbsp;</span>经验要求</div>
+                                <div class="yun_create_select" >
+                                    {{exp.name[expIndex]}}
+                                    <input hidden="true" name="exp" :value="info.exp ? info.exp : exp.id[expIndex]"/>
+                                </div>
+                            <div class="yun_create_fx">
+                            	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                            </div>
+                        </div>
+                        <!--经验要求选择器-->
+                        <van-popup v-model="expShow" round position="bottom">
+                            <van-picker show-toolbar :default-index="expIndex" @cancel="expShow = false" :columns="exp.name" @confirm="bindexpChange"/>
+                        </van-popup>
+                        <div class="yun_createlist" @click="eduShow = true">
+
+                                <div class="yun_create_name"><span class="m_bt">&nbsp;</span>学历要求</div>
+                                <div class="yun_create_select" >
+                                    {{edu.name[eduIndex]}}
+                                    <input hidden="true" name="edu" :value="info.edu ? info.edu : edu.id[eduIndex]"/>
+                                </div>
+
+                            <div class="yun_create_fx">
+                            	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                            </div>
+                        </div>
+                        <!--学历要求选择器-->
+                        <van-popup v-model="eduShow" round position="bottom">
+                            <van-picker show-toolbar :default-index="eduIndex" @cancel="eduShow = false" :columns="edu.name" @confirm="bindeduChange"/>
+                        </van-popup>
+                        <div class="yun_createlist" @click="opendesc">
+
+                                <div class="yun_create_name"><span class="m_bt">*</span>职位描述</div>
+
+
+								<div class="yun_create_select" v-if="info.description_t">{{info.description_t}}</div>
+								<div class="yun_create_select" style="color:#cecccc;" v-else>介绍工作内容，任职要求</div>
+
+
+                            <div class="yun_create_fx">
+                            	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                            </div>
+                        </div>
+
+                        <div class="yun_createlist" @click="linkShow = true">
+
+                                <div class="yun_create_name"><span class="m_bt">*</span>工作地址</div>
+
+								<div class="yun_create_text_p yunCtreate"  v-if="city">{{link_msg}}</div>
+								<div class="yun_create_text_p yunCtreate" style="color:#cecccc;" v-else>{{nolink_msg}}</div>
+
+
+                            <div class="yun_create_fx">
+                            	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                            </div>
+                        </div>
+
+                        <div class="yun_createlist create_resume_listend" @click="firstlink = true">
+
+                                <div class="yun_create_name"><span class="m_bt">&nbsp;</span>设置</div>
+                                <div class="yun_create_text_p" >
+                                    <span>联系方式设置</span>
+                                </div>
+
+                            <div class="yun_create_fx">
+                            	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                            </div>
+                        </div>
+                    </div>
+                    <input type="submit" value="下一步" class="issue_post_body_btn">
+                </form>
+            </div>
+            <div v-show="!jobfirst" class="issue_post_body">
+                <form onsubmit="return formSubmit(this)">
+                    <div class="yun_createbox">
+                        <div class="yun_createlist" @click="hyShow = true">
+
+                                <div class="yun_create_name">从事行业</div>
+                                <div class="yun_create_select" >
+                                    {{hy.name[hyIndex]}}
+                                    <input hidden="true" name="hy" :value="info.hy"/>
+
+                            </div>
+                           <div class="yun_create_fx">
+                           	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                           </div>
+                        </div>
+                        <!--从事行业选择器-->
+                        <van-popup v-model="hyShow" round position="bottom">
+                            <van-picker show-toolbar :default-index="hyIndex" @cancel="hyShow = false" :columns="hy.name" @confirm="bindhyChange"/>
+                        </van-popup>
+                        <div class="yun_createlist" @click="reportShow = true">
+
+                                <div class="yun_create_name">到岗时间</div>
+                                <div class="yun_create_select" >
+                                    {{report.name[reportIndex]}}
+                                    <input hidden="true" name="report" :value="info.report"/>
+                                </div>
+
+                            <div class="yun_create_fx">
+                            	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                            </div>
+                        </div>
+                        <!--到岗时间选择器-->
+                        <van-popup v-model="reportShow" round position="bottom">
+                            <van-picker show-toolbar :default-index="reportIndex" @cancel="reportShow = false" :columns="report.name" @confirm="bindreportChange"/>
+                        </van-popup>
+                        <div class="yun_createlist" @click="firstage = true">
+                            <div class="yun_create_name">年龄要求</div>
+                            <div class="yun_create_select" >
+                                {{!info.zp_age ? '请填写年龄要求' : info.zp_age}}
+                            </div>
+                            <div class="yun_create_fx">
+                            	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                            </div>
+                        </div>
+                        <div class="yun_createlist" @click="sexShow = true" v-if="com_job_sexswitch==1">
+
+                                <div class="yun_create_name">性别要求</div>
+                                <div class="yun_create_select" >
+                                    {{sex.name[sexIndex]}}
+                                    <input hidden="true" name="sex" :value="info.sex ? info.sex : sex.id[sexIndex]"/>
+
+                            </div>
+                           <div class="yun_create_fx">
+                           	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                           </div>
+                        </div>
+                        <!--性别要求选择器-->
+                        <van-popup v-model="sexShow" round position="bottom">
+                            <van-picker show-toolbar :default-index="sexIndex" @cancel="sexShow = false" :columns="sex.name" @confirm="bindsexChange"/>
+                        </van-popup>
+                        <div class="yun_createlist" @click="marriageShow = true">
+
+                                <div class="yun_create_name">婚姻状况</div>
+                                <div class="yun_create_select" >
+                                    {{marriage.name[marriageIndex]}}
+                                    <input hidden="true" name="marriage" :value="info.marriage"/>
+                                </div>
+
+                            <div class="yun_create_fx">
+                            	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                            </div>
+                        </div>
+                        <!--婚姻状况选择器-->
+                        <van-popup v-model="marriageShow" round position="bottom">
+                            <van-picker show-toolbar :default-index="marriageIndex" @cancel="marriageShow = false" :columns="marriage.name" @confirm="bindmarriageChange"/>
+                        </van-popup>
+                        <div class="yun_createlist" @click="firstlang = true">
+
+                                <div class="yun_create_name">语言要求</div>
+                                <div class="yun_create_select">
+                                    {{langt ? langt : '请选择语言'}}
+                                    <input name="lang" :value="langid" hidden="true"/>
+                                </div>
+
+                            <div class="yun_create_fx">
+                            	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                            </div>
+                        </div>
+                        <div class="yun_createlist" @click="firstwelfare = true">
+
+                                <div class="yun_create_name">福利待遇</div>
+                                <div class="yun_create_select">
+                                    {{welfareval ? welfareval : '请选择福利待遇'}}
+                                    <input name="welfare" :value="welfareval?welfareval:''" hidden="true"/>
+                                </div>
+
+                            <div class="yun_create_fx">
+                            	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
+                            </div>
+                        </div>
+
+                        <div class="yun_createlist yun_createlistend">
+                            <div class="yun_create_name">应届生</div>
+                            <div class="yun_create_text_p" style="color:#999; font-size: 12px;">是否接受应届生
+                               <div class="yun_create_text_kg"> <van-switch v-model="is_graduate" active-color="#2778f8" inactive-color="#dcdee0" size="26"/>
+                            </div>  </div>
+                        </div>
+                    </div>
+                    <div class="issue_post_require_card" v-if="sqjob_req != 2">
+                        <div class="require_card_title">
+                            <img src="{yun:}$wap_style{/yun}/images/issue_post_title.png" alt="">
+                        </div>
+                        <div v-if="sqjob_req==0" style="color:#999; padding-top: 0.266666rem;">不符合条件的求职者，将自动标记为不合适。</div>
+                        <div v-else style="color:#999">不符合条件的求职者，将无法投递简历。</div>
+                        <div class="require_card_box" style="margin-top: 0.266666rem;">
+
+                            <div class="require_card_box_left">
+                                <div class="card_box_left_q">经验</div>
+                                <div class="card_box_left_a" @click="expReqShow = true">
+                                    {{expreqIndex == 0 ? '请选择' : exp_req.name[expreqIndex]}}
+                                    <input hidden="true" name="exp_req" :value="expreqid"/>
+                                </div>
+                            </div>
+                            <!--经验要求选择器-->
+                            <van-popup v-model="expReqShow" round position="bottom">
+                                <van-picker show-toolbar :default-index="expreqIndex" @cancel="expReqShow = false" :columns="exp_req.name" @confirm="bindexpreqChange"/>
+                            </van-popup>
+                            <div class="require_card_box_left">
+                                <div class="card_box_left_q">学历</div>
+                                <div class="card_box_left_a" @click="eduReqShow = true">
+                                    {{edureqIndex == 0 ? '请选择' : edu_req.name[edureqIndex]}}
+                                    <input hidden="true" name="edu_req" :value="edureqid"/>
+                                </div>
+                            </div>
+                            <!--学历要求选择器-->
+                            <van-popup v-model="eduReqShow" round position="bottom">
+                                <van-picker show-toolbar :default-index="edureqIndex" @cancel="eduReqShow = false" :columns="edu_req.name" @confirm="bindedureqChange"/>
+                            </van-popup>
+                            <div class="require_card_box_left">
+                                <div class="card_box_left_q">年龄</div>
+                                <div class="card_box_left_a" @click="ageReqShow = true">
+                                    {{!info.age_req ? '请填写' : info.age_req}}
+                                    <input hidden="true" name="minage_req" :value="info.minage_req"/>
+                                    <input hidden="true" name="maxage_req" :value="info.maxage_req"/>
+                                </div>
+                            </div>
+                            <div class="require_card_box_left" v-if="com_job_sexswitch==1">
+                                <div class="card_box_left_q">性别</div>
+                                <div class="card_box_left_a" @click="sexReqShow = true">
+                                    {{sex_req.name[sexreqIndex]}}
+                                    <input hidden="true" name="sex_req" :value="info.sex_req ? info.sex_req : sex_req.id[sexreqIndex]"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="submit" value="立即发布" class="issue_post_body_btn">
+                    <div class="issue_post_body_btn" style="background-color: #ffffff;    background: linear-gradient(270deg,#ffffff,#ffffff); color: #0a0a0a" @click="jobfirst = true">返回上一步</div>
+                </form>
+            </div>
+        </div>
+        <!--性别要求选择器-->
+        <van-popup v-model="sexReqShow" round position="bottom">
+            <van-picker show-toolbar :default-index="sexreqIndex" @cancel="sexReqShow = false" :columns="sex_req.name" @confirm="bindsexReqChange"/>
+        </van-popup>
+
+        <!--工作地址弹出层-->
+        <van-popup v-model="linkShow" round position="bottom">
+            <div class="tel_tck">
+                <div class="tel_tck_bg"></div>
+                <div class="yun_jobadd_touch">
+                    <div class="yun_jobadd_touch_tit">
+                        <span class="yun_jobadd_touch_s">工作地址</span><span style="float: right; color: #000; font-size: 16px;" @click="openAddressManage">管理</span>
+                    </div>
+                    <div :class="info.is_link==1 ? 'yun_t_list yun_t_list_cur':'yun_t_list'" @click="bindlinkChang"
+                         data-num="1" :data-linkmsg="defLink.linkmsg" :data-provinceid="defLink.provinceid"
+                         :data-cityid="defLink.cityid" :data-three_cityid="defLink.three_cityid"
+                         :data-x="defLink.x" :data-y="defLink.y">
+                        <i class="yun_t_icon"></i>
+                        <div class="yun_t_user">{{defLink.link_man}}<span class="yun_t_user_telmr">默认</span></div>
+                        <div class="yun_t_add">{{defLink.phone_n}}<span :class="defLink.phone_n ? 'yun_t_user_tel' : ''">{{defLink.tel_n}}</span></div>
+                        <div class="yun_t_add">{{defLink.cityStr}}{{defLink.link_address}}</div>
+                    </div>
+                    <div v-for="(item, lak) in linkAddress" :key="lak">
+                        <div :class="info.is_link == 2 && info.link_id == item.id ? 'yun_t_list yun_t_list_cur':'yun_t_list'"
+                             @click="bindAddressChose" data-num="2" :data-address="item.id" :data-linkmsg="item.linkmsg"
+                             :data-provinceid="item.provinceid" :data-cityid="item.cityid"
+                             :data-three_cityid="item.three_cityid" :data-x="item.x" :data-y="item.y">
+                            <i class="yun_t_icon"></i>
+                            <div class="yun_t_user">{{item.link_man}}</div>
+                            <div class="yun_t_add">{{item.link_moblie}}<span :class="item.link_moblie ? 'yun_t_user_tel' : ''">{{item.link_phone}}</span></div>
+                            <div class="yun_t_add">{{item.city}}{{item.link_address}}</div>
+                        </div>
+                    </div>
+                    <div class="yun_jobadd_qd">
+                        <button class="yun_jobadd_qd_bth" @click="linkShow = false">确认</button>
+                    </div>
+                </div>
+            </div>
+        </van-popup>
+
+        <!--地址管理弹出层-->
+        <van-popup v-model="addressManage" position="right" :overlay="false" :style="{ height: '100%',width:'100%',backgroundColor:'#f2f3f3'}">
+            <div class="comheader">
+                <a class="comheader_return" @click="closeAddressManage"></a>
+                <div class="comheader_tit">地址管理</div>
+            </div>
+            <div>
+                <section class="wap_member_box">
+                    <div class="Subclass">
+                        <div class="com_cardlist_tit">
+                            <a href="javascript:void(0);" >{{defLink.link_address}}【默认企业地址】</a>
+                        </div>
+
+                        <div class="com_member_hr_p1">
+                            <span class="member_c9">所在区域 </span>{{defLink.cityStr}}
+                        </div>
+
+                        <div class="com_member_hr_p1">
+                            <span class="member_c9">联&nbsp;&nbsp;系&nbsp;&nbsp;人 </span>{{defLink.link_man}}
+                        </div>
+                        <div class="com_member_hr_p1">
+                            <span class="member_c9">联系电话 </span>{{defLink.phone_n}} &nbsp;&nbsp;&nbsp;{{defLink.tel_n}}
+                        </div>
+                    </div>
+                    <div class="Subclass" v-for="(item, akey) in linkAddress" :key="akey">
+                        <div class="com_cardlist_tit">
+                            <a href="javascript:void(0);" >{{item.link_address}}</a>
+                        </div>
+
+                        <div class="com_member_hr_p1">
+                            <span class="member_c9">所在区域 </span>{{item.city}}
+                        </div>
+
+                        <div class="com_member_hr_p1">
+                            <span class="member_c9">联&nbsp;&nbsp;系&nbsp;&nbsp;人 </span>{{item.link_man}}
+                        </div>
+                        <div class="com_member_hr_p1">
+                            <span class="member_c9">联系电话 </span>{{item.link_moblie}}<template v-if="item.link_moblie"> &nbsp;&nbsp;&nbsp;</template>{{item.link_phone}}
+                        </div>
+                        <div class="interview_card_bom">
+                            <div class="card_bom_icon">
+                                <a href="javascript:void(0);" @click="openNewAddress(item.id)"><img src="{yun:}$wap_style{/yun}/images/Apply_compile.png" alt=""></a>
+                            </div>
+                            <div class="card_bom_icon">
+                                <a href="javascript:void(0);" @click="delAddress(item.id,akey)" class=" "><img src="{yun:}$wap_style{/yun}/images/resume_del.png" alt=""></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div @click="openNewAddress"> <div class="issue_post_body_btn">添加新地址</div></div>
+                </section>
+            </div>
+        </van-popup>
+
+        <van-popup v-model="newAddress" position="right" :overlay="false" :style="{ height: '100%',width:'100%',backgroundColor:'#f2f3f3'}">
+            <div class="comheader">
+                <a class="comheader_return" @click="closeNewAddress"></a>
+                <div class="comheader_tit">新建工作地址</div>
+            </div>
+            <div class="issue_post_body">
+                <form onsubmit="return newAddressFormSubmit(this)">
+                    <div class=" ">
+
+                        <div class=" yun_createbox">
+                            <div class="yun_createlist">
+                                <div class="yun_create_name"><span class="m_bt">*</span>联&nbsp;&nbsp;系&nbsp;&nbsp;人</div>
+                                <div class="yun_create_text">
+                                    <input name="link_man" id="link_man" placeholder="请输入联系人" v-model="linkA.link_man" onblur="notNumber(this)" />
+                                </div>
+                            </div>
+                            <div class="yun_createlist">
+                                <div class="yun_create_name"><span class="m_bt">*</span>手机号码</div>
+                                <div class="yun_create_text">
+                                    <input name="link_moblie" placeholder="请输入联系手机" v-model="linkA.link_moblie" oninput="value=value.replace(/^0|[\^d]/g,'')" type="number" maxlength="11"/>
+                                </div>
+                            </div>
+                            <div class="yun_createlist">
+                                <div class="yun_create_name"> 固定电话</div>
+                                <div class="yun_create_text">
+                                    <input name="link_phone" placeholder="请输入固定电话" v-model="linkA.link_phone" type="text" />
+                                </div>
+                            </div>
+                            <div class="yun_createlist">
+                                <div class="yun_create_name"><span class="m_bt">&nbsp;</span>联系邮箱</div>
+                                <div class="yun_create_text">
+                                    <input name="email" placeholder="请输入联系邮箱" v-model="linkA.email" type="text"/>
+                                </div>
+                            </div>
+                            <div class="yun_createlist">
+                                <div class="yun_create_name"><span class="m_bt">*</span>所在地区</div>
+                                <div class="yun_create_text_p" @click="areaShow=true" style="color: #666;">{{linkCity}}</div>
+                                <input hidden="true" name="provinceid" :value="linkA.provinceid"/>
+                                <input hidden="true" name="cityid" :value="linkA.cityid"/>
+                                <input hidden="true" name="three_cityid" :value="linkA.three_cityid"/>
+
+                                <div class="yun_create_fx">
+                                    <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
+                                </div>
+                            </div>
+                            <div class="yun_createlist" style="border-bottom:none">
+                                <div class="yun_create_name"><span class="m_bt">*</span>详细地址</div>
+                                <div class="yun_create_text">
+                                    <input name="link_address" placeholder="请输入详细地址" v-model="linkA_address"/>
+                                </div>
+                                <div class="yun_create_fx" @click="chooseLocation" v-if="map_key!=''">
+                                    <img src="{yun:}$wap_style{/yun}/images/issue_location.png" alt="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="security_bth">
+                            <button type="submit" class="security_bth_but">保 存</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </van-popup>
+
+        <van-popup v-model="addressShow" position="bottom">
+            <div class="issue_post_body">
+                <form onsubmit="return submitLinkAddress(this)">
+                    <div class="comWapMapSubct">
+                        <div class="comWapMapOnes">
+                            <div class="comWapMapTwos" v-if="map_key!=''">
+                                <div class="body_card_job_box">
+                                    请单击下方地图完成地址标记
+                                </div>
+                                <div id="map_container"  style="width:100%;height:280px;overflow: hidden;margin:0;font-family:'微软雅黑';" v-if="map_key!=''"></div>
+                            </div>
+                            <div class="comWapMapShows">
+                                <div class="comWapMapEatel">
+                                    <div class="yun_createlist">
+                                        <div class="yun_create_name">详细地址</div>
+                                        <div class="yun_create_text">
+                                            <input placeholder="请输入详细地址" v-model="linkA_address" name="link_address"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="comWapMapTishi" v-if="poi.length > 0">
+                                    <span>可以选择搜索结果设置企业位置</span>
+                                </div>
+                                <ul>
+                                    <li v-for="(item,pk) in poi" :key="pk">
+                                        <div @click="poiClick(pk)">
+                                            <span>{{item.name}}</span>
+                                            <b>{{item.address}}</b>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="security_bth" style="padding-top: 0;">
+                        <button type="submit" class="security_bth_but">确 定</button>
+                    </div>
+                </form>
+            </div>
+        </van-popup>
+
+        <!--城市选择-->
+        <van-popup v-model="areaShow" round position="bottom">
+            <van-cascader v-model="areaValue" title="请选择工作区域" :options="areaOptions" @close="areaShow = false" @finish="onAreaFinish"/>
+        </van-popup>
+
+        <!--联系方式弹出层-->
+        <van-popup v-model="firstlink" round position="bottom" closeable @click-overlay="mapshow = false">
+            <div v-show="!mapshow" class="tel_tck">
+                <div class="tel_tck_bg"></div>
+                <form onsubmit="return linkSubmit(this)">
+                    <div class="yun_jobadd_touch">
+                        <div class="yun_jobadd_touch_tit">
+                            <span class="yun_jobadd_touch_s">联系方式设置</span>
+                        </div>
+						<div class="yun_t_setlist">
+						<div class="yun_t_setname">同步联系方式  </div>
+						<div class="yun_t_set_p">同步联系方式，工作地址到其他职位</div>
+						<div class="yun_t_set_kg"> <van-switch v-model="is_tblink" active-color="#1989fa" inactive-color="#dcdee0" size="26"/></div>
+						</div>
+						<div class="yun_t_setlist">
+						<div class="yun_t_setname">隐藏联系方式  </div>
+						<div class="yun_t_set_p">是否对求职者公开联系方式</div>
+						<div class="yun_t_set_kg">  <van-switch v-model="is_hide" active-color="#1989fa" inactive-color="#dcdee0" size="26"/> </div>
+						</div>
+						<div class="yun_t_setlist">
+						<div class="yun_t_setname">短信通知  </div>
+						<div class="yun_t_set_p">求职者投递简历将会收到短信通知</div>
+						<div class="yun_t_set_kg"> <van-switch v-model="is_message" active-color="#1989fa" inactive-color="#dcdee0" size="26"/></div>
+						</div>
+						<div class="yun_t_setlist">
+						<div class="yun_t_setname">邮件通知  </div>
+						<div class="yun_t_set_p">求职者投递简历将会通过邮件通知</div>
+						<div class="yun_t_set_kg">    <van-switch v-model="is_email" active-color="#1989fa" inactive-color="#dcdee0" size="26"/></div>
+						</div>
+                       
+                        <div class="yun_jobadd_qd">
+                            <button formType="submit" class="yun_jobadd_qd_bth">确认</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </van-popup>
+
+        <!--薪资待遇-->
+        <van-popup v-model="firstsalary" round position="bottom"/>
+        <div class="issue_post_body_card">
+            <form onsubmit="return upSalary(this)">
+                <div class="post_body_card_job" style="margin-bottom: 0px;;">
+                    <div class="post_body_card_job_left" style="font-weight: 600; color: #0a0a0a">薪资待遇</div>
+                    <div class="" @click="firstsalary = false">
+                        <img style="height: .6rem" src="{yun:}$wap_style{/yun}/images/job.dell.png">
+                    </div>
+                </div>
+				<div class="yun_t_jobxztip">请填写薪资范围，薪资单位（元/月）</div>
+				 <div class="yun_t_jobxztextbox">
+				 <div class="yun_t_jobxztext">
+				 <input name="minsalary" :value="info.minsalary" :disabled="salarydis" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请填写最低薪资"/></div>
+				<div class="yun_t_jobxztextbox_z"> -</div>
+				  <div class="yun_t_jobxztext"> <input name="maxsalary" :value="info.maxsalary" :disabled="salarydis" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请填写最高薪资"/></div>
+				 </div>
+				<div class="yun_t_jobxz_my"  v-if="com_job_myswitch==1">  薪资面议	<span class="yun_t_jobxz_my_kg"><van-switch v-model="info.salarytype==1 ? true : false" @change="salaryChange" active-color="#1989fa" inactive-color="#dcdee0" size="26"/> </span></div>
+               
+               
+              
+                <div>
+                    <input class="issue_post_body_btn" type="submit" value="确定">
+                </div>
+            </form>
+        </div>
+        </van-popup>
+
+        <!--职位描述弹出-->
+        <van-popup v-model="descshow" position="right" :style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
+            <div class="comheader">
+                <a class="comheader_return" @click="descshow = false"></a>
+                <div class="comheader_tit">职位描述</div>
+            </div>
+            <div class="issue_post_body">
+              <div class="yun_createbox">
+              	<div class="yun_create_bjtip">不能填写电话，QQ，微信等联系方式及特殊符号，性别歧视等内容  </div>
+                    <textarea id="content" placeholder="简单描述工作内容,职位要求~" maxlength="-1" style="width:100%;height: 300px;" name="description" :value="info.description"></textarea>
+                </div>
+                <div class="security_bth">
+                    <button type="submit" class="security_bth_but" @click="upDesc">保 存</button>
+                </div>
+            </div>
+        </van-popup>
+        <!--年龄要求-->
+        <van-popup v-model="firstage" round position="bottom"/>
+        <div class="issue_post_body_card">
+            <form onsubmit="return upAge(this)">
+                <div class="post_body_card_job">
+                    <div class="post_body_card_job_left" style="font-weight: 600; color: #0a0a0a">年龄要求</div>
+                    <div class="" @click="firstage = false">
+                        <img style="height: .6rem" src="{yun:}$wap_style{/yun}/images/job.dell.png">
+                    </div>
+                </div>
+                <div class="post_body_card_job">
+                    <div class="body_card_job_box">
+                        <div class="card_job_box_post">最小年龄</div>
+                        <div class="card_job_box_name">
+                            <input name="zp_minage" placeholder="请填写最小年龄" :value="info.zp_minage" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" />
+                        </div>
+                    </div>
+                    <div class="body_card_job_icon">岁</div>
+                </div>
+                <div class="post_body_card_job">
+                    <div class="body_card_job_box">
+                        <div class="card_job_box_post">最大年龄</div>
+                        <div class="card_job_box_name">
+                            <input name="zp_maxage" placeholder="请填写最大年龄" :value="info.zp_maxage" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" />
+                        </div>
+                    </div>
+                    <div class="body_card_job_icon">岁</div>
+                </div>
+                <div>
+                    <input class="issue_post_body_btn" type="submit" value="确定">
+                </div>
+            </form>
+        </div>
+        </van-popup>
+        <!--投递要求年龄限制-->
+        <van-popup v-model="ageReqShow" round position="bottom"/>
+        <div class="issue_post_body_card">
+            <form onsubmit="return upAgeReq(this)">
+                <div class="post_body_card_job">
+                    <div class="post_body_card_job_left" style="font-weight: 600; color: #0a0a0a">年龄要求</div>
+                    <div class="" @click="ageReqShow = false">
+                        <img style="height: .6rem" src="{yun:}$wap_style{/yun}/images/job.dell.png">
+                    </div>
+                </div>
+                <div class="post_body_card_job">
+                    <div class="body_card_job_box">
+                        <div class="card_job_box_post">最小年龄</div>
+                        <div class="card_job_box_name">
+                            <input name="minage_req" placeholder="请填写最小年龄" :value="info.minage_req" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" />
+                        </div>
+                    </div>
+                    <div class="body_card_job_icon">岁</div>
+                </div>
+                <div class="post_body_card_job">
+                    <div class="body_card_job_box">
+                        <div class="card_job_box_post">最大年龄</div>
+                        <div class="card_job_box_name">
+                            <input name="maxage_req" placeholder="请填写最大年龄" :value="info.maxage_req" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" />
+                        </div>
+                    </div>
+                    <div class="body_card_job_icon">岁</div>
+                </div>
+                <div>
+                    <input class="issue_post_body_btn" type="submit" value="确定">
+                </div>
+            </form>
+        </div>
+        </van-popup>
+        <!--语言要求弹框-->
+        <van-popup v-model="firstlang" round position="bottom"  @close="firstwelfare=false"/>
+        <div class="tel_tck">
+            <div class="tel_tck_bg"></div>
+            <div class="yun_jobadd_touch">
+                <div class="jstextarea_tck_c_between xztextarea_tck_tit_box ">
+                    <div class="xztextarea_tck_tit">语言要求</div>
+                </div>
+                <div class="lag_textmax welfare_box_new">
+                    <div class="lag_text" v-for="(item, langkey) in lang" :key="langkey">
+                        <div class="flbutton_tabh" :class="item.checked?'flbutton_tab':''" @click="bindlangChang(langkey)">{{item.name}}
+                        </div>
+                    </div>
+                </div>
+         
+			    <div class="lag_text_qd">
+                    <div class="lag_text_qd_bth" @click="firstlang = false">确认</div>
+                </div>
+            </div>
+        </div>
+        </van-popup>
+        <!--福利待遇弹框-->
+        <van-popup v-model="firstwelfare" round position="bottom" :closeable="true" @close="firstwelfare=false"/>
+        <div class="tel_tckfl">
+            <div class="tel_tck_bg"></div>
+            <div class="yun_jobadd_touch">
+                <div class="jstextarea_tck_c_between">
+                    <div class="xztextarea_tck_tit">福利待遇</div>
+                </div>
+                <div class="flbutton welfare_box_new">
+                    <div v-for="(item, welfarekey) in welfareall" :key="welfarekey">
+                        <div :class="item.ischecked==1 ? 'flbutton_tab':''" class="flbutton_tabh"
+                             @click="bindwelfareChang(welfarekey)" :id="'w' + (welfarekey + 1)">{{item.name}}
+                        </div>
+                    </div>
+                </div>
+                <div class="fl_textbox welfare_box">
+                    <div class="fl_text welfare_laft">
+                        <input type="text" name="addwelfare" placeholder="填写福利名称"v-model="welfareAdd"/>
+                    </div>
+                    <div class="fl_but welfare_right">
+                        <button @click="bindwelfareAdd">添加</button>
+                    </div>
+                </div>
+                <div class="lag_text_qd">
+                    <div class="lag_text_qd_bth" @click="firstwelfare = false">确认</div>
+                </div>
+            </div>
+        </div>
+        </van-popup>
+    </div>
+</div>
+
+<link rel="stylesheet" href="{yun:}$wap_style{/yun}/js/umeditor/themes/default/css/umeditor.min.css?v={yun:}$config.cachecode{/yun}" type="text/css"/>
+<script src="{yun:}$wap_style{/yun}/js/umeditor/umeditor.config.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$wap_style{/yun}/js/umeditor/umeditor.min.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$plusstyle{/yun}/com.cache.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$plusstyle{/yun}/industry.cache.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$plusstyle{/yun}/user.cache.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$wap_style{/yun}/js/comPicker.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$plusstyle{/yun}/city.cache.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$plusstyle{/yun}/job.cache.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script src="{yun:}$plusstyle{/yun}/jobparent.cache.js?v={yun:}$config.cachecode{/yun}"></script>
+<script src="{yun:}$wap_style{/yun}/js/category.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+{yun:}if $config.map_key{/yun}
+<script type="text/javascript">
+    window._AMapSecurityConfig = {
+        securityJsCode:'{yun:}$config.map_secret{/yun}'
+    }
+</script>
+<script type="text/javascript" src="{yun:}$config.mapurl{/yun}"></script>
+{yun:}/if{/yun}
+<!--职能、城市公共弹窗-->
+{yun:}include file="$wapstyle/member/public/resume_city_job.htm"{/yun}
+<script>
+    function notNumber(obj){
+        obj.value = obj.value.replace(/[-_ ]/g,'');// 去掉空格
+        if(!obj.value){
+            return ;
+        }
+        var  test = obj.value.replace(/[0-9]/g,'');
+        if (!test){
+            showModal('联系人不支持全数字', 2);
+            obj.value = ''
+            $('#link_man').focus()
+            return false;
+        }else{
+            if(/\d/.test(obj.value)){
+                if(obj.value.length>8){
+                    // obj.value = obj.value.substring(0,8);
+                    showModal('联系人填写字数不能超过8个', 2);
+                    obj.value = ''
+                    $('#link_man').focus()
+                    return false;
+                }
+            }
+        }
+    }
+
+    var map_key = '{yun:}$config.map_key{/yun}';
+    var cmcJs = null;
+    var cityParam = {
+        one_all: false,
+    };
+    var cityData = cityCategory(cityParam);
+    var jobclass = '',
+        jobclassname = '',
+        jobclassidData = [];
+
+    var map = null;
+    var umeditor = {};
+    var citydefault = '请选择工作地点',
+        jobdefault = '请选择职位类别';
+  
+    var yunvue = new Vue({
+            el: '#yunvue',
+            data() {
+                return {
+                    islook: false,
+                    jobid: 0,
+                    info: {},
+                    salarytype: false,
+                    is_graduate: false,
+
+                    // 工作地点选择
+                    areaShow: false,
+                    areaValue: 0,
+                    areaOptions: cityData,
+
+
+                    // 联系方式
+                    mapshow: false,
+                    geolocation: {
+                        x: '',
+                        y: ''
+                    },
+                    tblink: false,
+                    firstlink: false,
+
+                    link_msg: '',
+				    nolink_msg: '请设置工作地址',
+                    is_tblink: false,
+                    is_hide: false,
+                    is_message: true,
+                    is_email: true,
+
+                    linkShow: false,
+                    comLinkShow: false,
+                    defLink:[],
+                    linkAddress: [],
+                    addressManage: false,
+                    newAddress: false,
+                    linkA: [],
+                    linkCity: '请选择所在城市',
+                    addressShow: false,
+
+                    addressId: '',
+                    linkA_address: '',
+
+                    linkAddressInfo:[],
+
+                    latitude: '',
+                    longitude: '',
+
+
+                    jobfirst: true,
+                    firstlang: false,
+                    firstwelfare: false,
+                    firstsalary: false,
+                    firstage: false,
+                    hy: {
+                        name: [],
+                        id: []
+                    },
+                    hyIndex: 0,
+                    number: {
+                        name: [],
+                        id: []
+                    },
+                    numberIndex: 0,
+                    exp: {
+                        name: [],
+                        id: []
+                    },
+                    expIndex: 0,
+                    report: {
+                        name: [],
+                        id: []
+                    },
+                    reportIndex: 0,
+                    age: {
+                        name: [],
+                        id: []
+                    },
+                    ageIndex: 0,
+                    sex: {
+                        name: [],
+                        id: []
+                    },
+                    sexIndex: 0,
+                    edu: {
+                        name: [],
+                        id: []
+                    },
+                    eduIndex: 0,
+                    marriage: {
+                        name: [],
+                        id: []
+                    },
+                    marriageIndex: 0,
+                    lang: {},
+                    langIndex: 0,
+                    linkphone: '',
+                    langid: '0',
+                    langshow: [],
+                    langname: [],
+                    langt: '',
+
+                    city: citydefault,
+
+                    provinceid: 0,
+                    cityid: 0,
+                    three_cityid: 0,
+
+                    mjobIndex: [45, 0, 0],
+                    multiJob: [],
+                    
+                    linkData: {},
+                    firstData: {},
+                    editorCtx: null,
+                    langData: {},
+                    welfare: [],
+                    welfareval: '',
+                    welfareall: [],
+                    welfareAdd: '',
+                    salarydis: false,
+                    nowtype: '',
+                    desexample: '',
+                    jobname: '',
+                    jobclassid: '',
+                    descrip: false,
+                    joblock: 0,
+                    com_job_myswitch: 0,
+					com_job_sexswitch: 0,
+                    langhave: false,
+
+                    exp_req: {
+                        name: [],
+                        id: []
+                    },
+                    edu_req: {
+                        name: [],
+                        id: []
+                    },
+                    sex_req: {
+                        name: [],
+                        id: []
+                    },
+                    sexreqIndex: 0,
+                    expreqIndex: 0,
+                    edureqIndex: 0,
+                    expreqid: 0,
+                    edureqid: 0,
+                    descshow: false,
+                    welid: 'w1',
+                    formData: null,
+
+                    sqjob_req:0,
+
+
+                    // pickker 弹出参数
+                    expShow: false,
+                    eduShow: false,
+                    hyShow: false,
+                    reportShow: false,
+                    sexShow: false,
+                    marriageShow: false,
+                    expReqShow: false,
+                    eduReqShow: false,
+                    ageReqShow: false,
+                    sexReqShow: false,
+
+                    map_key:map_key,
+                    poi: []
+                };
+            },
+            created() {
+                let that = this,
+                    id = getUrlKey('id');
+                if (id) {
+                    that.jobid = id;
+                }
+
+                that.exp = getExp(); // 获取经验要求
+                that.edu = getEdu(); // 获取学历要求
+                that.hy = getHy('不限'); // 获取行业
+                that.report = getReport(); // 获取到岗时间
+                that.sex = getSex(); // 获取性别要求
+                that.sex_req = getSexReq();
+              
+                that.marriage = getMarriage(); // 获取婚姻状况
+                that.exp_req = getExpReq(); // 获取经验要求
+                that.edu_req = getEduReq(); // 获取学历要求
+                that.lang = getLang(); // 获取语言要求
+      
+                that.jobinfo();
+                
+                that.jobAddress();
+            },
+            watch: {
+                linkA_address: function (value) {
+                    if (value) {
+                        this.linkA.link_address = value;
+                        if (this.map_key !='' && this.addressShow){
+                            debounce(this.localsearch(),1000);
+                        }
+                    }
+                },
+            },
+            methods: {
+                jobinfo: function () {
+                    let that = this,
+                        param = {
+                            id: that.jobid,
+                            source: 'wap'
+                        };
+
+                    showLoading();
+                    $.post('{yun:}url d=wxapp h=com m=job c=jobadd{/yun}', param, function (data) {
+                        hideLoading();
+
+                        if (data && data.error == 0) {
+
+                            let res = data.data;
+                            that.joblock = res.joblock;
+                            that.com_job_myswitch = res.com_job_myswitch;
+							that.com_job_sexswitch = res.com_job_sexswitch;
+                            that.info = res;
+                            that.info.age_req = "请填写";
+                            that.info.zp_age = "";
+                            that.sqjob_req = res.sqjob_req;
+                            if (!res.description) {
+                                that.info.description = '';
+                            }
+                            if (res.linkmsg){
+                                that.link_msg = res.linkmsg;
+                            }
+
+                            if (data.data.comLink) {
+
+                                that.comLinkShow = true;
+                                that.defLink = data.data.comLink;
+                            }
+
+                            that.linkAddressInfo.provinceid = res.provinceid;
+                            that.linkAddressInfo.cityid = res.cityid;
+                            that.linkAddressInfo.three_cityid = res.three_cityid;
+                            that.linkAddressInfo.x = res.x;
+                            that.linkAddressInfo.y = res.y;
+                            that.linkAddressInfo.is_link = res.is_link;
+
+                            that.linkData.is_link = res.is_link;
+                            that.linkData.is_message = res.is_message;
+                            that.linkData.is_email = res.is_email;
+
+                            if (res.is_message == '2'){
+                                that.is_message =   false;
+                            }
+                            if (res.is_email == '3'){
+                                that.is_email = false;
+                            }
+
+                            if (res.is_link == '3'){
+                                that.is_hide = true;
+                            }
+
+							let hyIndex = that.hy.id.indexOf(res.hy ? parseInt(res.hy) : 0);
+							that.hyIndex = hyIndex < 0 ? 0 : hyIndex;
+								
+                            if (that.jobid) {
+                                
+                                that.info.age_req = ageStr(res.minage_req, res.maxage_req);
+                                
+
+                                that.provinceid = res.provinceid ? parseInt(res.provinceid) : 0;
+                                that.cityid = res.cityid ? parseInt(res.cityid) : 0;
+                                that.three_cityid = res.three_cityid ? parseInt(res.three_cityid) : 0;
+                                that.city = res.job_address;
+
+                                if (that.three_cityid > 0) {
+                                    that.areaValue = that.three_cityid
+                                } else if (that.cityid > 0) {
+                                    that.areaValue = that.cityid
+                                } else {
+                                    that.areaValue = that.provinceid;
+                                }
+                                that.lang.forEach(function(item) {
+                                    res.lang.find(function (value) {
+                                        if (value == item.id) {
+                                            item.checked = true;
+                                        }
+                                    })
+                                });
+                                that.langshow = res.lang;
+                                that.langname = res.langname;
+                                that.welfareall = res['welfareAll'];
+                                if (res['arraywelfare'] != '') {
+                                    that.welfare = res['arraywelfare'];
+                                    that.welfareval = res['welfare'];
+                                }
+                                that.langid = that.langshow.join(',');
+                                that.langt = that.langname.join(',');
+
+
+                                that.expreqid = res.exp_req ? res.exp_req : 0;
+                                that.edureqid = res.edu_req ? res.edu_req : 0;
+
+                                if (res.salarytype == true) {
+                                    that.salarydis = true;
+                                } else {
+                                    that.salarydis = false;
+                                }
+                                if (that.info.zp_minage == 0) {
+                                    that.info.zp_minage = "";
+                                }
+                                if (that.info.zp_maxage == 0) {
+                                    that.info.zp_maxage = "";
+                                }
+                                that.info.zp_age = ageStr(that.info.zp_minage, that.info.zp_maxage);
+                                if (that.info.minage_req == 0) {
+                                    that.info.minage_req = "";
+                                }
+                                if (that.info.maxage_req == 0){
+                                    that.info.maxage_req = '';
+                                }
+
+                                // umeditor.setContent(that.info.description)
+                                cityjobVue.$data.jobnameArr = res.jobnameArr;
+
+                                jobclass = res.jobclassid;
+                                jobclassname = res.jobname;
+                                jobclassidData = [];
+                                for(let i in res.jobArr){
+                                    jobclassidData.push({
+                                        value: res.jobArr[i]
+                                    });
+                                }
+                                that.jobclassid = res.jobclassid ? res.jobclassid : '';
+                                that.jobname = res.jobname ? res.jobname : '';
+
+                                that.is_graduate = (res.is_graduate && res.is_graduate == 1) ? true : false;
+                                
+                                // 下标赋值
+                                //     that.langIndex = data.langIndex;
+                                let reportIndex = that.report.id.indexOf(res.report ? parseInt(res.report) : 0);
+                                that.reportIndex = reportIndex < 0 ? 0 : reportIndex;
+                                let eduIndex = that.edu.id.indexOf(res.edu ? parseInt(res.edu) : 0);
+                                that.eduIndex = eduIndex < 0 ? 0 : eduIndex;
+                                let expIndex = that.exp.id.indexOf(res.exp ? parseInt(res.exp) : 0);
+                                that.expIndex = expIndex < 0 ? 0 : expIndex;
+                                let marriageIndex = that.marriage.id.indexOf(res.marriage ? parseInt(res.marriage) : 0);
+                                that.marriageIndex = marriageIndex < 0 ? 0 : marriageIndex;
+                                let sexIndex = that.sex.id.indexOf(res.sex ? parseInt(res.sex) : 0);
+                                that.sexIndex = sexIndex < 0 ? 0 : sexIndex;
+                                let sexreqIndex = that.sex_req.id.indexOf(res.sex_req ? parseInt(res.sex_req) : 0);
+                                that.sexreqIndex = sexreqIndex < 0 ? 0 : sexreqIndex;
+                                
+
+                                let expreqIndex = that.exp_req.id.indexOf(res.exp_req ? parseInt(res.exp_req) : 0);
+                                that.expreqIndex = expreqIndex < 0 ? 0 : expreqIndex;
+                                let edureqIndex = that.edu_req.id.indexOf(res.edu_req ? parseInt(res.edu_req) : 0);
+                                that.edureqIndex = edureqIndex < 0 ? 0 : edureqIndex;
+                            } else {
+                                that.welfareall = res['welfareAll'];
+                                if (res['arraywelfare'] != '') {
+                                    that.welfare = res['arraywelfare'];
+                                    that.welfareval = res['welfare'];
+                                }
+                            }
+                        } else {
+                            showModal(data.msg, function () {
+                                if(data.error == -2){
+                                    navigateTo('index.php?c=server&server=issuejob');
+                                }else{
+                                    goBack();
+                                }
+                            });
+                        }
+                        that.islook = true;
+                        $('#yunvue').removeClass('none');
+                    }, 'json')
+                },                
+                jobAddress: function(){
+                    let that = this,
+                        param = {source: 'wap'};
+                    $.post('{yun:}url d=wxapp h=com m=job c=getJobAddress{/yun}', param, function (data) {
+                        if (data && data.error == 0) {
+                            let res = data.data;
+                            that.linkAddress = res.linkAddress;
+                        }
+                    }, 'json')
+                },
+                
+                opensalary: function () {
+                    this.firstsalary = true;
+                },
+                salaryChange: function(e) {
+                    this.info.salarytype=e;
+                    if (e == true) {
+                        this.info.minsalary = 0;
+                        this.info.maxsalary = 0;
+                        this.salarydis = true;
+                    } else {
+                        this.info.minsalary = '';
+                        this.info.maxsalary = '';
+                        this.salarydis = false;
+                    }
+                },
+                bindexpChange: function (value, index) {
+                    this.expIndex = index;
+                    this.info.exp = this.exp.id[index]
+                    this.expShow = false;
+                },
+                bindeduChange: function (value, index) {
+                    this.eduIndex = index;
+                    this.info.edu = this.edu.id[index]
+                    this.eduShow = false;
+                },
+                opendesc: function () {
+                    this.descshow = true;
+                    umeditor = UM.getEditor('content', {
+                        toolbar: false,
+                        elementPathEnabled: false,
+                        wordCount: false,
+                        autoHeightEnabled: false
+                    });
+
+                    let that = this;
+                    umeditor.addListener('ready', function () {
+                        umeditor.setContent(that.info.description)
+                    })
+                },
+                upDesc: function () {
+                    let that = this;
+                    var content = umeditor.getContent();
+                    if (content != "") {
+                        that.info.description = content;
+                        that.info.description_t = content.replace(/<[^>]+>/g, "");
+                    } else {
+                        that.info.description = '';
+                        that.info.description_t = '';
+                    }
+                    that.descshow = false;
+                },
+                setexample: function () {
+                    let that = this;
+                    if (that.info.description) {
+                        umeditor.setContent(that.info.description)
+                    }
+                },
+                classBox: function(type){
+                    cityjobVue.$data.jobheader = '职位类别选择';
+                    cityjobVue.$data[type + 'Show'] = true;
+                    
+                    // 加载职位、地区多选js
+                    if(cmcJs){
+                        cmcJs.remove();
+                    }
+                    if(typeof zn_search !== "undefined"){
+                        delete(zn_search);
+                        $('.zn_search').off('input','.inputListener');
+                        $('.classTap').off('change','input');
+                    }
+                    $('#jobnum').val(1);
+                    cmcJs = document.createElement('script');
+                    cmcJs.src = "{yun:}$wap_style{/yun}/js/cmc.js?v={yun:}$config.cachecode{/yun}";
+                    document.body.appendChild(cmcJs);
+                },
+                // 工作地点选择
+                onAreaFinish({selectedOptions}) {
+                    this.provinceid = 0;
+                    this.cityid = 0;
+                    this.three_cityid = 0;
+
+                    let cityStr = '';
+
+                    if (selectedOptions[0] && selectedOptions[0].value > 0) {
+                        if (selectedOptions[0]) {
+                            this.provinceid = selectedOptions[0].value;
+                            cityStr += selectedOptions[0].text;
+                        }
+
+                    }
+                    if (selectedOptions[1] && selectedOptions[1].value > 0) {
+                        if (selectedOptions[1]) {
+                            this.cityid = selectedOptions[1].value;
+                            cityStr += ' ' + selectedOptions[1].text;
+                        }
+                    }
+                    if (selectedOptions[2] && selectedOptions[2].value > 0) {
+                        if (selectedOptions[1]) {
+                            this.three_cityid = selectedOptions[2].value;
+                            cityStr += ' ' + selectedOptions[2].text;
+                        }
+                    }
+                    this.linkCity = cityStr ? cityStr : citydefault;
+                    this.areaShow = false;
+                },
+
+                bindhyChange: function (value, index) {
+                    this.hyIndex = index;
+                    this.info.hy = this.hy.id[index];
+                    this.hyShow = false;
+                },
+                bindreportChange: function (value, index) {
+                    this.reportIndex = index;
+                    this.info.report = this.report.id[index];
+                    this.reportShow = false;
+                },
+                bindsexChange: function (value, index) {
+                    this.sexIndex = index;
+                    this.info.sex = this.sex.id[index];
+                    this.sexShow = false;
+                },
+                bindsexReqChange :function(value, index){					
+                    this.sexreqIndex = index;
+                    this.info.sex_req = this.sex_req.id[index];
+                    this.sexReqShow = false;                   
+                },
+                bindmarriageChange: function (value, index) {
+                    this.marriageIndex = index;
+                    this.info.marriage = this.marriage.id[index];
+                    this.marriageShow = false;
+                },
+                bindexpreqChange: function (value, index) {
+                    this.expreqIndex = index;
+                    this.expreqid = this.exp_req.id[index];
+                    this.expReqShow = false;
+                },
+                bindedureqChange: function (value, index) {
+                    this.edureqIndex = index;
+                    this.edureqid = this.edu_req.id[index];
+                    this.eduReqShow = false;
+                },
+                bindlinkChang: function (e) {
+                    this.info.is_link = e.currentTarget.dataset.num;
+                    this.info.link_id = -1;
+                    this.link_msg = e.currentTarget.dataset.linkmsg;
+
+                    this.linkAddressInfo.provinceid = e.currentTarget.dataset.provinceid;
+                    this.linkAddressInfo.cityid = e.currentTarget.dataset.cityid;
+                    this.linkAddressInfo.three_cityid = e.currentTarget.dataset.three_cityid;
+                    this.linkAddressInfo.x = e.currentTarget.dataset.x;
+                    this.linkAddressInfo.y = e.currentTarget.dataset.y;
+
+                    this.linkAddressInfo.is_link = 1;
+                    this.linkData.is_link = 1;
+                },
+                bindAddressChose: function (e){
+
+                    this.info.is_link = e.currentTarget.dataset.num;
+                    this.info.link_id = e.currentTarget.dataset.address;
+                    this.link_msg = e.currentTarget.dataset.linkmsg;
+
+                    this.linkAddressInfo.provinceid = e.currentTarget.dataset.provinceid;
+                    this.linkAddressInfo.cityid = e.currentTarget.dataset.cityid;
+                    this.linkAddressInfo.three_cityid = e.currentTarget.dataset.three_cityid;
+                    this.linkAddressInfo.x = e.currentTarget.dataset.x;
+                    this.linkAddressInfo.y = e.currentTarget.dataset.y;
+
+                    this.linkAddressInfo.is_link = 2;
+                },
+                openAddressManage: function(){
+
+                    this.addressManage = true;
+                    this.linkShow = false;
+                    $('#jobAddMain').hide();
+                },
+                delAddress:function(id, key){
+                    var that = this;
+                    var paramer = {
+                        id: id,
+                    };
+                    showConfirm('确定删除?', () => {
+                        showLoading('删除中...')
+                        $.post('{yun:}url d=wxapp h=com m=set c=delAddress{/yun}', paramer, function (data) {
+                            hideLoading();
+                            if (data.error == 1) {
+                                showToast(data.msg, 2, function () {
+                                    that.linkAddress.splice(key, 1);
+                                });
+
+                                if (id == that.info.link_id){
+
+                                    that.info.link_id = 0;
+
+                                    that.info.is_link = 1;
+                                    that.linkData.is_link = 1;
+                                    that.linkAddressInfo.is_link = 1;
+
+                                    that.link_msg = that.defLink.linkmsg;
+
+                                    that.linkAddressInfo.provinceid = that.defLink.provinceid;
+                                    that.linkAddressInfo.cityid = that.defLink.cityid;
+                                    that.linkAddressInfo.three_cityid = that.defLink.three_cityid;
+                                    that.linkAddressInfo.x = that.defLink.x;
+                                    that.linkAddressInfo.y = that.defLink.y;
+                                }
+
+                            } else {
+                                showToast(data.msg);
+                            }
+                        });
+                    });
+                },
+                closeAddressManage: function(){
+
+                    this.jobAddress();
+
+                    this.addressManage = false;
+                    this.newAddress = false;
+                    this.linkShow = true;
+                    $('#jobAddMain').show();
+                },
+                openNewAddress: function(id){
+
+                    let that = this,
+                        param = {source: 'wap'};
+
+                    if (parseInt(id).toString() != 'NaN'){
+                        param.id = id;
+                        that.addressId = id;
+                    }
+                    showLoading();
+                    $.post('{yun:}url d=wxapp h=com m=set c=getAddressInfo{/yun}', param, function (data) {
+                        hideLoading();
+                        if (data && data.error == 0) {
+                            let res = data.data;
+                            that.linkA = res;
+                            that.linkCity = res.provinceid ? res.city_one + ' ' + res.city_two + ' ' + (res.city_three ? res.city_three : '') : '请选择所在城市';
+                            that.provinceid = res.provinceid;
+                            that.cityid = res.cityid;
+                            that.three_cityid = res.three_cityid;
+                            that.linkA_address = res.link_address;
+                            if (res.x && res.y) {
+                                that.longitude = res.x;
+                                that.latitude = res.y;
+                            }
+                        }
+                    }, 'json')
+
+                    this.addressManage = false;
+                    this.linkShow = false;
+                    $('#jobAddMain').hide();
+                    this.newAddress = true;
+                },
+                closeNewAddress: function(){
+
+                    this.jobAddress();
+                    this.addressManage = true;
+                    this.linkShow = false;
+                    $('#jobAddMain').hide();
+                    this.newAddress = false;
+                },
+                chooseLocation: function () {
+                    let that = this;
+                    this.addressShow = true;
+
+                    setTimeout(() => {
+                        if (!map) {
+                            map = new AMap.Map("map_container");
+                        }else{
+                            map.clearMap();
+                        }
+                        var mapx = this.linkA.x,
+                            mapy = this.linkA.y;
+                        if (mapx && mapy) {
+                        
+                            this.setLocation(mapx, mapy);
+                        } else if(this.linkCity || this.linkAddress){
+
+                            debounce(this.localsearch());
+                        } else {
+
+                            AMap.plugin('AMap.Geolocation', function() {
+                               var geolocation = new AMap.Geolocation();
+                            
+                              geolocation.getCurrentPosition(function(status,result){
+                                    if(status=='complete' && result.info == 'SUCCESS'){
+                                        var position = result.position;
+                                        that.geolocation = {
+                                            x: position.lng,
+                                            y: position.lat
+                                        }
+                                        
+                                        that.setLocation(position.lng, position.lat);
+                                    }
+                              });
+                            });
+                        }
+                    }, 300)
+                },
+                localsearch: function () {
+					var that = this;
+                    if(that.linkA.link_address.length > 3){
+                        $.post('index.php?c=poi', {address: that.linkA.link_address}, function(e){
+                            if(e.status == '1' && e.tips.length > 0){
+                                that.poi = e.tips;
+                            }
+                        }, 'json');
+                    }
+                },
+                poiClick: function(key){
+                    map.clearMap();
+                    var location = this.poi[key].location;
+                    var lngLat = location.split(',');
+                    this.longitude = lngLat[0];
+                    this.latitude = lngLat[1];
+                    var point = new AMap.LngLat(lngLat[0], lngLat[1]);
+                    map.setZoomAndCenter(17, point);
+                    var marker = new AMap.Marker({
+                        position: point
+                    });
+                    map.add(marker);
+                },
+                
+                setLocation: function (x, y) {
+                    let that = this;
+                    if (!x && !y) {
+                        x = '116.404';
+                        y = '39.915';
+                    }
+                    var point = new AMap.LngLat(x, y);
+                    map.setZoomAndCenter(17, point);
+                    var marker = new AMap.Marker({
+                        position: point
+                    });
+                    map.add(marker);
+                    // 解决移动端 click事件点击无效
+                    map.on("touchmove", function (e) {
+                        map.setStatus({
+                            dragEnable: true
+                        });
+                    });
+                    //  触摸结束时触发次此事件  此时开启禁止拖动
+                    map.on("touchend", function (e) {
+                        map.setStatus({
+                            dragEnable: false
+                        });
+                    });
+                    // 初始化地图 禁止拖动   注：虽禁止拖动，但是可以出发拖动事件
+                    map.setStatus({
+                        dragEnable: false
+                    });
+                    map.on("click", function (e) {
+                        var lngLat = e.lnglat;
+                        that.geolocation.y = lngLat.lat;
+                        that.geolocation.x = lngLat.lng;
+                        map.clearMap();
+                        var marker = new AMap.Marker({
+                            position: new AMap.LngLat(lngLat.lng, lngLat.lat)
+                        });
+                        map.add(marker);
+                    });
+                },
+                closemap: function () {
+                    this.info.x = this.geolocation.x;
+                    this.info.y = this.geolocation.y;
+                    this.mapshow = false
+                },
+
+                bindlangChang: function (num) {
+                    var langshow = this.langshow;
+                    var langname = this.langname;
+
+                    if (this.lang[num].checked) {
+                        this.lang[num].checked = false;
+                        langshow = langshow.filter(item => item != this.lang[num].id);
+                        langname = langname.filter(item => item != this.lang[num].name);
+                    } else {
+                        langshow.push(this.lang[num].id);
+                        langname.push(this.lang[num].name);
+                        this.lang[num].checked = true;
+                    }
+                    this.langid = langshow.join(',');
+                    this.langt = langname.join(',');
+                },
+                bindwelfareChang: function (index) {
+                    let windex = '',
+                        welfareall = this.welfareall,
+                        welfare = this.welfare;
+                    if (welfareall[index]['ischecked'] != 1) {
+                        welfareall[index]['ischecked'] = 1;
+                        welfare.push(welfareall[index]['name']);
+                    } else {
+                        welfareall[index]['ischecked'] = 0;
+                        windex = welfare.indexOf(welfareall[index]['name']);
+
+                        if (windex > -1) {
+                            welfare.splice(windex, 1);
+                        }
+                    }
+
+                    this.welfare = welfare;
+                    this.welfareval = welfare.join(',');
+                    this.welfareall = welfareall;
+                },
+                bindwelfareAdd: function (e) {
+                    let welfareAdd = $.trim(this.welfareAdd),
+                        welfareall = this.welfareall,
+                        welfareval = this.welfareval != '' ? this.welfareval.split(',') : [],
+                        welnameall = [];
+
+                    for (let i in welfareall) {
+                        welnameall.push(welfareall[i]['name']);
+                    }
+
+                    if ($.trim(welfareAdd) != '' && welfareAdd.length >= 2 && welfareAdd.length <= 8) {
+                        //判断信息是否已经存在
+                        if (welnameall.indexOf(welfareAdd) > -1) {
+                            showModal('相同福利信息已存在，请重新填写');
+                            return;
+                        }
+
+                        welfareall.push({
+                            'name': welfareAdd,
+                            'ischecked': 1
+                        });
+                        welfareval.push(welfareAdd);
+
+                        this.welfareall = welfareall;
+                        this.welfareval = welfareval.join(',');
+                        this.welfare.push(welfareAdd)
+                        this.welfareAdd = '';
+                        this.welid = 'w' + welfareall.length;
+                    } else {
+                        showModal('请填写2-8个福利字符！');
+                    }
+                },
+            }
+        });
+
+    function submitLinkAddress(e) {
+
+        let yd = yunvue.$data;
+        try {
+            let link_address = e.link_address.value,
+                latitude = yd.latitude,
+                longitude = yd.longitude;
+
+            if (link_address.length == 0) {
+                showModal('请填写详细地址');
+                return false;
+            }
+
+            yd.addressShow = false;
+        } catch (e) {
+        }
+
+        return false; // 阻止form提交
+    }
+
+    function newAddressFormSubmit(e) {
+
+        var that = this,
+            yd = yunvue.$data,
+            obj = {
+                link_man: e.link_man.value,
+                link_moblie: e.link_moblie.value,
+                link_phone: e.link_phone.value,
+                email: e.email.value,
+                link_address: e.link_address.value
+            };
+        try {
+
+            if (obj.link_man.length == 0) {
+                showModal('请填写联系人');
+                return false;
+            }else{
+                var link_man = obj.link_man.replace(/[-_ ]/g,'');// 去掉空格
+                if(!link_man){
+                    return ;
+                }
+                var  test = link_man.replace(/[0-9]/g,'');
+                if (!test){
+                    showModal('联系人不支持全数字');
+                    return false;
+                }else{
+                    if(/\d/.test(link_man)){
+                        if(link_man.length>8){
+                            // obj.value = obj.value.substring(0,8);
+                            showModal('联系人填写字数不能超过8个');
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            if (obj.link_moblie.length == 0 && obj.link_phone.length == 0) {
+                showModal('请填写联系电话');
+                return false;
+            }
+            if (obj.link_moblie.length > 0) {
+                if (isjsMobile(obj.link_moblie) == false) {
+                    showModal('联系手机格式错误');
+                    return false;
+                }
+            }
+
+            obj.provinceid = yd.provinceid
+            obj.cityid = yd.cityid
+            obj.three_cityid = yd.three_cityid
+
+            if (obj.provinceid == 0) {
+                showModal('请选择所在城市');
+                return false;
+            }
+            if (ct[obj.provinceid]) {
+                if (obj.cityid == 0) {
+                    showModal('所在城市请选择二级类别');
+                    return false;
+                }
+            }
+            if (obj.link_address.length == 0) {
+                showModal('请填写工作地址');
+                return false;
+            }
+            yd.firstData = obj;
+
+            let formData = {};
+
+            formData.x = yd.longitude;
+            formData.y = yd.latitude;
+            formData.source = 'wap';
+
+            formData.id = yd.addressId;
+
+            Object.assign(formData, yd.firstData);
+
+            showLoading('保存中');
+            $.post('{yun:}url d=wxapp h=com m=set c=saveAddress{/yun}', formData, function (data) {
+                hideLoading();
+                if (data.error == 1) {
+                    showModal(data.msg, function () {
+
+                        yunvue.jobAddress();
+                        yd.addressManage = true;
+                        yd.linkShow = false;
+                        $('#jobAddMain').hide();
+                    });
+                } else {
+                    showModal(data.msg);
+                }
+            }, 'json')
+        } catch (err) {
+        }
+
+        return false;
+    }
+
+    function upSalary(e) {
+
+        if (yunvue.$data.info.salarytype == false || typeof(yunvue.$data.info.salarytype)=='undefined') {
+            if (e.minsalary.value.trim() == '') {
+                showModal('请填写薪资待遇');
+                return false;
+            } else if (parseInt(e.minsalary.value) > parseInt(e.maxsalary.value) && e.maxsalary.value !=0) {
+                showModal('最高工资必须大于最低工资！');
+                return false;
+            }else if (parseInt(e.minsalary.value) == parseInt(e.maxsalary.value)) {
+                showModal('最高工资必须大于最低工资，如是固定工资只需填写最低工资！');
+                return false;
+            }
+            if (e.maxsalary.value.trim() != '' && e.maxsalary.value.trim() != 0) {
+                yunvue.$data.info.maxsalary = e.maxsalary.value;
+                yunvue.$data.info.minsalary = e.minsalary.value;
+                yunvue.$data.info.salary_n = e.minsalary.value + '-' + e.maxsalary.value + '元/月';
+            } else {
+                yunvue.$data.info.maxsalary = '';
+                yunvue.$data.info.minsalary = e.minsalary.value;
+                yunvue.$data.info.salary_n = e.minsalary.value + '元/月';
+            }
+        } else {
+            yunvue.$data.info.maxsalary = 0;
+            yunvue.$data.info.minsalary = 0;
+            yunvue.$data.info.salary_n = '面议';
+            
+        }
+        yunvue.$data.firstsalary = false;
+        return false;
+    }
+
+    function linkSubmit(e) {
+
+        let yd = yunvue.$data,
+            linkData = {};
+
+        linkData.is_tblink =   yd.is_tblink == true ? 1 : 0;
+        linkData.is_link =   yd.is_hide == true ? 3 : 1;
+        linkData.is_message =   yd.is_message == true ? 1 : 2;
+        linkData.is_email   =   yd.is_email == true ? 1 : 3;
+
+        yd.linkData = linkData;
+        yd.firstlink = false;
+        return false;
+    }
+
+    function formSubmitjob(e) {
+        var yd = yunvue.$data;
+
+        if (e.name.value.length == 0) {
+            showModal('请填写职位名称');
+            return false;
+        }
+
+        if (e.jobclassid.value == '') {
+            showModal('请选择职位类别');
+            return false;
+        }
+
+        if (yd.salarydis == false) {
+            if (yd.info.minsalary) {
+                if (yd.info.minsalary.length == 0 || yd.info.minsalary == 0) {
+                    showModal('请填写薪资待遇');
+                    return false;
+                } else if (parseInt(yd.info.minsalary) > parseInt(yd.info.maxsalary) && yd.info.maxsalary.length > 0 && yd.info.maxsalary != 0) {
+
+                    showModal('最高工资必须大于最低工资！');
+                    return false;
+                }else if (parseInt(yd.info.minsalary) == parseInt(yd.info.maxsalary)) {
+                    showModal('最高工资必须大于最低工资，如是固定工资只需填写最低工资！');
+                    return false;
+                }
+            } else {
+                showModal('请填写薪资待遇');
+                return false;
+            }
+        }
+        if(e.zp_num.value == 0 || e.zp_num.value == 0){
+            showModal('请填写招聘人数');
+            return false;
+        }
+        let description = yd.info.description.replace(/<[^>]+>/g, "");
+        if (description.trim() == '') {
+            showModal('请填写职位描述');
+            return false;
+        }
+
+        let firstData = {
+
+            name: e.name.value,
+
+            jobclassid: e.jobclassid.value,
+
+            minsalary: yd.info.minsalary,
+            maxsalary: yd.info.maxsalary,
+
+            zp_num: e.zp_num.value,
+
+            exp: e.exp.value,
+            edu: e.edu.value,
+
+            description: yd.info.description,
+
+            provinceid: yd.linkAddressInfo.provinceid,
+            cityid: yd.linkAddressInfo.cityid,
+            three_cityid: yd.linkAddressInfo.three_cityid,
+
+            x: yd.linkAddressInfo.x,
+            y: yd.linkAddressInfo.y,
+
+            link_id: yd.info.link_id
+        }
+
+        //处理下一步
+        Object.assign(firstData, yd.linkData);
+
+        if (yd.linkData.is_link == 1){
+
+            firstData.is_link = yd.linkAddressInfo.is_link;
+        }
+
+
+        yd.firstData = firstData;
+        yd.jobfirst = false;
+        return false;
+    }
+
+    function upAge(e) {
+        if (e.zp_minage.value.trim() != '' ) {
+            if (e.zp_minage.value > 0 && e.zp_minage.value.trim() < 16) {
+                showModal('法律规定：禁止招收未满16周岁未成年人！');
+                return false;
+            }
+        }
+        if (e.zp_maxage.value.trim() != '') {
+            if (e.zp_maxage.value > 0 && e.zp_maxage.value.trim() < 16) {
+                showModal('最大年龄需大于16周岁！');
+                return false;
+            } else if (e.zp_maxage.value && e.zp_maxage.value.trim() > 99) {
+                showModal('请设置合理的年龄区间！');
+                return false;
+            }
+        }
+        let zp_minage = e.zp_minage.value,
+            zp_maxage = e.zp_maxage.value;
+        yunvue.$data.info.zp_minage = zp_minage == '' || zp_minage == '0' ? '' : parseInt(zp_minage);
+        yunvue.$data.info.zp_maxage = zp_maxage == '' || zp_maxage == '0' ? '' : parseInt(zp_maxage);
+        yunvue.$data.info.zp_age = ageStr(zp_minage, zp_maxage);
+        yunvue.$data.firstage = false;
+        return false;
+    }
+
+    function upAgeReq(e) {
+        if (e.minage_req.value.trim() != '' ) {
+            if (e.minage_req.value > 0 && e.minage_req.value.trim() < 16) {
+                showModal('法律规定：禁止招收未满16周岁未成年人！');
+                return false;
+            }
+        }
+        if (e.maxage_req.value.trim() != '') {
+            if (e.maxage_req.value > 0 && e.maxage_req.value.trim() < 16) {
+                showModal('最大年龄需大于16周岁！');
+                return false;
+            } else if (e.maxage_req.value.trim() > 99) {
+                showModal('请设置合理的年龄区间！');
+                return false;
+            }
+        }
+        let minage_req = e.minage_req.value,
+            maxage_req = e.maxage_req.value,
+            minage_req_s = minage_req == '' || minage_req == '0' ? '' : parseInt(minage_req),
+            maxage_req_s = maxage_req == '' || maxage_req == '0' ? '' : parseInt(maxage_req);
+        yunvue.$data.info.minage_req = minage_req_s;
+        yunvue.$data.info.maxage_req = maxage_req_s;
+        yunvue.$data.info.age_req = ageStr(minage_req_s, maxage_req_s);
+        yunvue.$data.ageReqShow = false;
+        return false;
+    }
+
+    function ageStr(minage, maxage) {
+        minage = minage == '' ? 0 : parseInt(minage);
+        maxage = maxage == '' ? 0 : parseInt(maxage);
+        if (minage && maxage) {
+            return minage + '-' + maxage;
+        } else if (minage && minage > 0) {
+            return minage + '周岁以上'
+        } else if (maxage && maxage > 0) {
+            return maxage + '周岁以下'
+        } else {
+            return '';
+        }
+    }
+
+    function formSubmit(e) {
+        let yd = yunvue.$data;
+        try {
+            var formData = {
+                submit: '1',
+                id: yd.jobid,
+                hy: e.hy.value,
+                number: 0,
+                report: e.report.value,
+                age: 0,
+                lang: e.lang.value,
+                marriage: e.marriage.value,
+                welfare: e.welfare.value,
+                is_graduate: yd.is_graduate == true ? 1 : 0,
+
+                zp_minage: yd.info.zp_minage,
+                zp_maxage: yd.info.zp_maxage,
+                source: '2'
+            };
+			if (yd.com_job_sexswitch==1){
+                formData.sex = e.sex.value;
+            }
+            if (yd.sqjob_req !=2){
+                formData.exp_req = e.exp_req.value;
+                formData.edu_req = e.edu_req.value;                
+                formData.minage_req = yd.info.minage_req;
+                formData.maxage_req = yd.info.maxage_req;
+                if (yd.com_job_sexswitch==1) {
+                    formData.sex_req = e.sex_req.value;
+                }
+            }
+            Object.assign(formData, yd.firstData);
+            yd.formData = formData;
+        } catch (err) {}
+
+        if (yd.joblock == 0 || yd.jobid > 0) {
+            toformSubmit();
+        } else {
+            showConfirm('发布后,职位名称将不可修改是否继续?', function (e) {
+                toformSubmit();
+            }, '取消', '继续');
+        }
+        return false;
+    }
+
+    function toformSubmit() {
+        showLoading('正在提交');
+        $.post('{yun:}url d=wxapp h=com m=job c=saveJob{/yun}', yunvue.$data.formData, function (data) {
+            hideLoading();
+            if (data.error == 9) {
+                window.localStorage.setItem("needRefresh", 1);
+
+                showModal(data.msg, function () {
+                    if(data.data.tg_show=='1'){
+                        navigateTo(`index.php?c=saveJobSuccess&jobid=${data.data.nid}`);
+                    }else{
+                        history.go(-1);
+                    }
+                });
+            } else {
+                showModal(data.msg);
+            }
+        }, 'json')
+    }
+
+</script>
+</body>
+</html>

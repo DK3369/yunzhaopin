@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+    <!-- 配置文件 -->
+    <script type="text/javascript" src="../../../../../js/ueditor/ueditor.config.js"></script>
+    <!-- 编辑器源码文件 -->
+    <script type="text/javascript" src="../../../../../js/ueditor/ueditor.all.min.js"></script>
+    <!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
+    <!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
+    <script type="text/javascript" charset="utf-8" src="../../../../../js/ueditor/lang/zh-cn/zh-cn.js"></script>
+</head>
+<body>
+    <div id="cityfl" class="moduleElenAl">
+        <div class="moduleSeachs">
+            <div class="moduleSeachleft">
+                <div class="  newsinput">
+                    <el-input placeholder="请输入搜索内容" v-model="keyword" size="small" clearable
+                              prefix-icon="el-icon-search">
+                    </el-input>
+                </div>
+                <div class="  tableSeachInptsmall newsinput">
+                    <el-select v-model="end" size="small" slot="prepend" placeholder="发布时间" clearable @change="search">
+                        <el-option label="今天" value="1"></el-option>
+                        <el-option label="最近三天" value="3"></el-option>
+                        <el-option label="最近七天" value="7"></el-option>
+                        <el-option label="最近半月" value="15"></el-option>
+                        <el-option label="最近一个月" value="30"></el-option>
+                    </el-select>
+                </div>
+                <div class="newsbtnbox">
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                </div>
+            </div>
+            <div class="nrtopbtn">
+                <el-button type="primary" icon="el-icon-document-add" size="mini"
+                       @click="add({id: ''})">添加公招
+                </el-button>
+            </div>
+        </div>
+        <div class="moduleElTable">
+            <el-table :data="tableData" stripe border
+                style="width: 100%;" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%"
+                @selection-change="handleSelectionChange" ref="multipleTable" :empty-text="emptytext"
+                :default-sort="{ prop: 'id', order: 'descending' }" @sort-change="sortChange" v-loading="loading">
+                <el-table-column type="selection" width="55"></el-table-column>
+                <el-table-column prop="id" label="编号" width="90" sortable="custom">
+                </el-table-column>
+                <el-table-column prop="title" label="公招标题" min-width="240">
+                </el-table-column>
+                <el-table-column prop="datetime_n" label="发布时间" width="110">
+                </el-table-column>
+                <el-table-column prop="startime_n" label="开始时间" width="110">
+                </el-table-column>
+                <el-table-column prop="endtime_n" label="结束时间" width="110">
+                </el-table-column>
+                <el-table-column prop="fz" label="分站" width="110">
+                    <template slot-scope="scope">
+                        <div class="moduleProps">
+                            <div>{{ dnamearr[scope.row.did] }}</div>
+                            <el-button type="text" @click="openDomain(scope.row)" style="padding: 0;">分配</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="tj" label="推荐" width="110">
+                    <template slot-scope="scope">
+                        <el-switch v-model="scope.row.isRec" @change="setRec(scope.row)">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column prop=" " label="外宣海报" width="110">
+                    <template slot-scope="scope">
+                        <el-link type="primary" @click="drawershowhb(scope.row)"><i
+                                class="el-icon-view el-icon--left"></i>查看</el-link>
+                    </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="160">
+                    <template slot-scope="scope">
+                        <div class="cz_button">
+                            <el-button size="mini" @click="add(scope.row)">修改</el-button>
+                            <el-button type="danger" size="mini" @click="delrow(scope.row.id)">删除</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="">
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
+                <el-button @click="delAllBottom" size="mini">批量删除</el-button>
+                <el-button @click="openDomain('')" size="mini">批量选择分站</el-button>
+            </div>
+            <div class="modulePagNum">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                    :current-page="currentPage" :page-sizes="pageSizes" :page-size="perPage"
+                    layout="total, sizes, prev, pager, next, jumper" :total="total">
+                </el-pagination>
+            </div>
+        </div>
+        <!--外宣海报弹窗-->
+        <div class="modluDrawer">
+            <el-drawer :title="'外宣海报'" :visible.sync="drawerhb" :modal-append-to-body="false" append-to-body
+                :show-close="true" :with-header="true" size="45%">
+                <div class="waixunHaib">
+                    <ul>
+                        <li class="" v-for="(item,index) in hbarr" :key="index">
+                            <div class="hb_listbox">
+                                <div class="poster_pic"><img :src="item.pic_n"></div>
+                                <div class="hb_listbox_name" style="background:#fff;">
+                                    <div class="hb_cz">
+                                        <a href="javascript:;" @click="showHb(item.id)">预览</a>
+                                        <a href="javascript:;" @click="downHb(item.id)">下载</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </el-drawer>
+        </div>
+        <!-- 海报预览弹窗 -->
+        <div class="tck_setbox">
+            <el-dialog title="海报预览" :visible.sync="showhb" :with-header="true" append-to-body
+                :modal-append-to-body="false" :show-close="true" width="300px" @closed="drawerhb = true">
+                <div id="qyQrCode" class="code_img" style="display:flex;justify-content: center;margin-bottom: 15px;">
+                    <img :src="hburl" width="260">
+                </div>
+            </el-dialog>
+        </div>
+        <div class="modluDrawer">
+            <!-- 新增、修改弹窗 -->
+            <el-drawer :title="info.id ? '公招修改' : '公招添加'" :visible.sync="draweradd" :modal-append-to-body="false"
+                :show-close="true" :wrapper-closable="false" :with-header="true" size="900px">
+                <div class="drawerModlue">
+                    <div class="tableDome_tip tableDoAlert">
+                        <div class="shiTopAllTips">
+                            <span>公招内容中如提供文档、表格等附件供下载，请从编辑器上传附件，不要从其他地方直接复制。</span>
+                        </div>
+                    </div>
+                    <div class="drawerModInfo">
+                        <div class="drawerModLis">
+                            <div class="drawerModTite">
+                                <span>公招标题</span>
+                            </div>
+                            <div class="drawerModInpt w_400">
+                                <el-input v-model="info.title" placeholder="请输入公招标题"></el-input>
+                            </div>
+                        </div>
+                        <div class="drawerModLis">
+                            <div class="drawerModTite">
+                                <span>使用范围</span>
+                            </div>
+                            <div class="drawerModInpt">
+                                <el-select v-model="info.did" placeholder="请选择" filterable>
+                                    <el-option v-for="(item,index) in dnamearr" :key="index" :label="item" :value="index"></el-option>
+                                </el-select>
+                            </div>
+                        </div>
+                        <div class="drawerModLis" v-if="info.chat_type == '1'">
+                            <div class="drawerModTite">
+                                <span>关键词</span>
+                            </div>
+                            <div class="drawerModInpt">
+                                <el-input placeholder="请输入关键词" v-model="info.keyword"></el-input>
+                            </div>
+                            <div class="drawerModTips">
+                                <el-alert title="多关键字,请用,隔开,请不要为空" type="info" show-icon :closable="false">
+                                </el-alert>
+                            </div>
+                        </div>
+                        <div class="drawerModLis">
+                            <div class="drawerModTite">
+                                <span>开始时间</span>
+                            </div>
+                            <div class="drawerModInpt">
+                                <el-date-picker v-model="info.startime_n" value-format="yyyy-MM-dd" type="date" style="width: 100%;"
+                                    placeholder="选择当前时间">
+                                </el-date-picker>
+                            </div>
+                            <div class="drawerModTips">
+                                <el-alert title="默认当前时间" type="info" show-icon :closable="false">
+                                </el-alert>
+                            </div>
+                        </div>
+                        <div class="drawerModLis">
+                            <div class="drawerModTite">
+                                <span>结束时间</span>
+                            </div>
+                            <div class="drawerModInpt">
+                                <el-date-picker v-model="info.endtime_n" value-format="yyyy-MM-dd" type="date" style="width: 100%;"
+                                    placeholder="选择结束时间">
+                                </el-date-picker>
+                            </div>
+                            <div class="drawerModTips">
+                                <el-alert title="默认时间为永久" type="info" show-icon :closable="false">
+                                </el-alert>
+                            </div>
+                        </div>
+                        <div class="drawerModLis">
+                            <div class="drawerModTite">
+                                <span>描述</span>
+                            </div>
+                            <div class="drawerModInpt">
+                                <el-input type="textarea" placeholder="请输入描述" v-model="info.description"></el-input>
+                            </div>
+                        </div>
+                        <div class="drawerModLis">
+                            <div class="drawerModTite">
+                                <span>略缩图</span>
+                            </div>
+                            <div class="drawerModInpt" style="flex-wrap: wrap;">
+                                <el-upload class="avatar-uploader" :action="''" :auto-upload="false" :show-file-list="false" :on-change="picChange" :accept="pic_accept">
+                                    <img style="width:200px;" v-if="info.pic_n" :src="info.pic_n" class="avatar">
+                                    <el-button v-else type="primary" icon="el-icon-document-add">上传图片</el-button>
+                                </el-upload>
+                            </div>
+                            <div class="drawerModTips">
+                                <el-alert title="仅用作外宣海报。尺寸：960px*538px" type="info" show-icon :closable="false">
+                                </el-alert>
+                            </div>
+                        </div>
+                        <div class="drawerModLis">
+                            <div class="drawerModTite">
+                                <span>公招内容</span>
+                            </div>
+                            <div class="drawerModInpt">
+                                <div class="TableInpt">
+                                    <textarea type="textarea" id="projectBasis" class="editor" name="projectBasis" cols="150" rows="30" style="width: 80%">
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="setBasicButn" style="border: none;">
+                        <el-button v-if="info.send == '1'" type="primary" size="medium" @click="draweradd = false">返回
+                        </el-button>
+                        <el-button v-if="info.send != '1'" type="primary" size="medium" @click="save">提交</el-button>
+                    </div>
+                </div>
+            </el-drawer>
+
+            <!--分站切换-->
+            <el-dialog title="分配站点" :visible.sync="dialogDomain" :modal-append-to-body="false"
+                       :show-close="true" width="500px">
+                <div class="toolClasDia fenpeizhand">
+                    <div class="toolClasList" v-if="detail.id">
+                        <div class="toolClasTite">
+                            <span>公招标题：</span>
+                        </div>
+                        <div class="toolClasCont">
+                            <span>{{ detail.title }}</span>
+                        </div>
+                    </div>
+                    <div class="toolClasList">
+                        <div class="toolClasTite">
+                            <span>切换站点：</span>
+                        </div>
+                        <div class="toolClasCont">
+                            <el-select v-model="ruleFormDomain.did" filterable placeholder="请选择">
+                                <el-option v-for="(item, key) in dnamearr" :key="key" :label="item" :value="key">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                </div>
+                <span slot="footer" class="dialog-footer">
+					<el-button @click="dialogDomain = false">取 消</el-button>
+					<el-button type="primary" @click="saveDomain">确 定</el-button>
+				</span>
+            </el-dialog>
+        </div>
+    </div>
+</body>
+<script>
+    var ue = null;
+    const custoapp = new Vue({
+        el: '#cityfl',
+        data: function () {
+            return {
+                emptytext: '暂无数据',
+                loading: false,
+                checkedAll: false,
+                selectedItem: [],
+                tableData: [],
+                currentPage: 1,
+                perPage: 0,
+                pageSizes: [],
+                total: 0,
+                keyword: '',
+                end: '',
+                draweradd: false,
+                info: {},
+                dnamearr: {},
+                piclist: [],
+                today: '',
+                sort_type: '',
+                sort_col: '',
+                hbarr: [],
+                gzid: '',
+                drawerhb: false,
+                showhb: false,
+                hburl: '',
+                hbkey: '',
+                pic_accept: localStorage.getItem("pic_accept"),
+                islook: false,
+
+                saveLoading: false,
+
+                detail: {},
+
+                // 分站切换
+                dialogDomain: false,
+                ruleFormDomain: {},
+                prevPage:0
+            }
+        },
+        created: function () {
+            this.getGroup()
+            this.getList();
+        },
+        methods: {
+            downHb(hb) {
+                var that = this
+                let image = new Image()
+                image.setAttribute('crossOrigin', 'anonymous')
+                that.hburl = baseUrl + 'm=neirong&c=gongzhao&a=getgongzhaoHb&&id=' + this.gzid + '&hb=' + hb + '&pytoken=' + localStorage.getItem('pytoken')
+                image.src = that.hburl
+                image.onload = () => {
+                    let canvas = document.createElement('canvas')
+                    canvas.width = image.width
+                    canvas.height = image.height
+                    let ctx = canvas.getContext('2d')
+                    ctx.drawImage(image, 0, 0, image.width, image.height)
+                    canvas.toBlob((blob) => {
+                        let url = URL.createObjectURL(blob)
+                        download(url, 'gzhb_' + that.gzid)
+                        // 用完释放URL对象
+                        URL.revokeObjectURL(url)
+                    })
+                }
+                function download(href, name) {
+                    let eleLink = document.createElement('a')
+                    eleLink.download = name
+                    eleLink.href = href
+                    eleLink.click()
+                    eleLink.remove()
+                }
+            },
+            drawershowhb(row) {
+                var that = this
+                if (that.hbarr.length == 0) {
+                    httpPost('m=neirong&c=gongzhao&a=whb', {}).then(function (response) {
+                        if (response.data.error == 0) {
+                            that.hbarr = response.data.data;
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                }
+                this.drawerhb = true
+                this.gzid = row.id
+            },
+            showHb(hb) {
+                this.hburl = baseUrl + 'm=neirong&c=gongzhao&a=getgongzhaoHb&&id=' + this.gzid + '&hb=' + hb + '&pytoken=' + localStorage.getItem('pytoken')
+                this.hbkey = Math.random()
+                this.showhb = true
+            },
+            setRec(e) {
+                let params = {
+                    del: e.id,
+                    rec: e.isRec ? 1 : 0
+                };
+                httpPost('m=neirong&c=gongzhao&a=setRec', params).then(function (response) {
+                    if (response.data.error == 0) {
+                        message.success(response.data.msg);
+                    } else {
+                        message.error(response.data.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+            picChange(file) {
+                var tmp = deepClone(this.info)
+                // 预览文件处理
+                tmp.pic_n = URL.createObjectURL(file.raw);
+                // 复刻文件信息
+                this.piclist[0] = file.raw;
+                this.info = tmp
+            },
+            initEditor() {
+                var that = this
+                ue = UE.getEditor('projectBasis', {
+                    //focus时自动清空初始化时的内容
+                    // 关闭字数统计
+                    wordCount:false,
+                    /* maximumWords:8000, */       //允许的最大字符数
+                    //关闭elementPath 元素路径
+                    elementPathEnabled:false,
+                    //默认的编辑区域高度
+                    initialFrameHeight:300,
+                    initialFrameWidth:600  //初始化编辑器宽度,默认1000
+                });
+                ue.ready(function () {
+                    if (that.info.content) {
+                        ue.setContent(that.info.content);
+                    } else {
+                        ue.setContent('');
+                    }
+                });
+            },
+            add(row) {
+                var that = this
+
+                httpPost('m=neirong&c=gongzhao&a=add', {add:1}, {hideloading: true}).then(function (result) {
+                    that.draweradd = true
+                    if (row.id) {
+                        that.info = deepClone(row);
+                        if (that.info.startime_n == '永久显示') {
+                            that.info.startime_n = '';
+                        }
+                        if (that.info.endtime_n == '永久显示') {
+                            that.info.endtime_n = '';
+                        }
+                        delete that.info.rec
+                    } else {
+                        that.info = { id: '', content: '', startime_n: that.today, did: '0' }
+                    }
+                    setTimeout(function () {
+                        that.initEditor();
+                    }, 100)
+
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            handleSelectionChange(val) {
+                this.selectedItem = [];
+                let _this = this;
+                if (val.length) {
+                    val.forEach(item => {
+                        _this.selectedItem.push(item.id);
+                    });
+                }
+                if (_this.selectedItem.length == 0) {
+                    _this.checkedAll = false;
+                } else {
+                    if (_this.selectedItem.length == _this.tableData.length) {
+                        _this.checkedAll = true;
+                    } else {
+                        _this.checkedAll = false;
+                    }
+                }
+            },
+            selectAllBottom(value) {
+                value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
+            },
+            handleSizeChange(val) {
+                this.perPage = val;
+                this.getList()
+            },
+            handleCurrentChange(val) {
+                this.currentPage = val;
+                this.getList()
+            },
+            sortChange: function (column) {
+                if (column.order == 'descending') {
+                    this.sort_type = 'desc';
+                } else if (column.order == 'ascending') {
+                    this.sort_type = 'asc';
+                } else {
+                    this.sort_type = '';
+                }
+                this.sort_col = column.prop
+                this.search();
+            },
+            search() {
+                this.currentPage = 1;
+                this.getList();
+            },
+            async getGroup(){
+                let that = this;
+
+                that.loading = true;
+                that.emptytext = "数据加载中";
+                httpPost('m=neirong&c=gongzhao&a=getGroup', {}, {hideloading: true}).then(function (result) {
+                    var res = result.data
+                    if (res.error == 0) {
+                        that.dnamearr = res.data.Dname
+                        that.today = res.data.today
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            async getList() {
+                let that = this;
+                let params = {
+                    page: that.currentPage,
+                    pageSize: that.perPage
+                }
+                if (that.keyword) {
+                    params.keyword = that.keyword
+                }
+                if (that.end) {
+                    params.end = that.end
+                }
+                if (that.sort_type && that.sort_col) {
+                    params.order = that.sort_type
+                    params.t = that.sort_col
+                }
+                that.loading = true;
+                that.emptytext = "数据加载中";
+                httpPost('m=neirong&c=gongzhao&a=index', params, {hideloading: true}).then(function (result) {
+                    var res = result.data
+                    if (res.error == 0) {
+                        that.tableData = res.data.list
+                        that.perPage = parseInt(res.data.perPage)
+                        that.pageSizes = res.data.pageSizes
+                        that.total = parseInt(res.data.total)
+                        if(that.prevPage != that.currentPage){
+                            that.prevPage = that.currentPage;
+                            that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        }
+                        that.loading = false;
+                        if (that.tableData.length === 0){
+                            that.emptytext = "暂无数据";
+                        }
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            save() {
+                var that = this
+                if (!that.info.title) {
+                    message.error('请输入公招标题');
+                    return false;
+                }
+
+                if (that.saveLoading) {
+                    return false;
+                }
+                that.saveLoading = true;
+
+                that.info.content = UE.getEditor('projectBasis').getContent();
+
+                let params = that.info;
+                var formData = new FormData();
+                Object.keys(params).forEach((key) => {
+                    if (Array.isArray(params[key])) {
+                        params[key].forEach((v) => {
+                            formData.append(key + '[]', v);
+                        });
+                    } else {
+                        formData.append(key, params[key]);
+                    }
+                });
+                if (that.piclist.length) {
+                    formData.append('pic[]', this.piclist[0])
+                }
+                httpPost('m=neirong&c=gongzhao&a=add', formData).then(function (result) {
+                    var res = result.data
+                    if (res.error == 0) {
+                        message.success(res.msg, function () {
+                            that.draweradd = false
+                            that.saveLoading = false;
+                            that.keyword = ''
+                            that.end = ''
+                            that.getList()
+                        })
+                    } else {
+                        that.saveLoading = false;
+                        message.error(res.msg);
+                    }
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            delrow(id) {
+                delConfirm(this, id, this.delete);
+            },
+            delAllBottom() {
+                if (!this.selectedItem.length) {
+                    message.error('请选择要删除的数据项');
+                    return false;
+                }
+                delConfirm(this, this.selectedItem, this.delete);
+            },
+            async delete(id) {
+                let that = this;
+                let params = {
+                    del: id
+                };
+                httpPost('m=neirong&c=gongzhao&a=del', params).then(function (response) {
+                    if (response.data.error == 0) {
+                        message.success('操作成功');
+                        that.getList();
+                    } else {
+                        message.error(response.data.msg);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            },
+
+            // 分站设置
+            openDomain(row) {
+                if (row === '') { // 批量操作
+                    if (!this.selectedItem.length) {
+                        message.error('请选择要操作的数据项');
+                        return false;
+                    }
+
+                    this.detail = {};
+                    this.$set(this.ruleFormDomain, 'id', this.selectedItem);
+                    this.$set(this.ruleFormDomain, 'did', '');
+                } else { // 单个操作
+                    this.detail = row;
+                    this.$set(this.ruleFormDomain, 'id', row.id);
+                    this.$set(this.ruleFormDomain, 'did', '' + row.did + '');
+                }
+
+                this.dialogDomain = true;
+            },
+
+            saveDomain() {
+                let that = this,
+                    ruleForm = that.ruleFormDomain;
+
+                if (!ruleForm.did) {
+                    message.error('请选择需要切换的站点');
+                    return false;
+                }
+
+                if (that.saveLoading) {
+                    return false;
+                }
+                that.saveLoading = true;
+
+                httpPost('m=neirong&c=gongzhao&a=checksitedid', ruleForm).then(function (response) {
+                    let res = response.data;
+
+                    that.saveLoading = false;
+                    if (res.error > 0) {
+                        message.error(res.msg);
+                    } else {
+                        that.dialogDomain = false;
+                        that.getList();
+                        that.$refs.multipleTable.clearSelection();
+                        message.success(res.msg)
+                    }
+                })
+            },
+        }
+    });
+</script>
+
+</html>
+<style>
+
+    .waixunHaib{
+        overflow: hidden;
+        position: relative;
+        padding: 0 20px;
+        width: 100%;
+    }
+    .waixunHaib ul{
+        overflow: hidden;
+        position: relative;
+        width: calc(100% - 16px);
+        display: flex;
+        padding: 0 8px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .waixunHaib ul::after{
+        overflow: hidden;
+        position: relative;
+        display: block;
+        content: "";
+        width: calc(33.33% - 8px);
+    }
+    .waixunHaib ul li{
+        overflow: hidden;
+        position: relative;
+        width: calc(33.33% - 12px);
+        margin-bottom: 15px;
+    }
+
+    .cell span {
+        display: flex;
+        align-items: center;
+    }
+
+    .poster-list-a {
+        padding-right: 10px;
+    }
+
+    .poster-list-a li {
+        width: 19%;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        display: inline-block
+    }
+
+    .pdb10 {
+        padding-bottom: 10px;
+    }
+
+    .overflow {
+        overflow: hidden;
+    }
+
+    .hb_listbox {
+        overflow: hidden;
+        position: relative;
+    }
+
+    .poster_pic {
+        width: 100%;
+    }
+
+    .poster_pic img {
+        width: 100%;
+        border-radius: 3px;
+        box-shadow: 0px 5px 10px 0px rgba(111, 116, 132, 0.1);
+    }
+
+    .hb_listbox_name {
+        font-size: 15px;
+        width: 100%;
+        text-align: center;
+        padding-top: 10px;
+    }
+
+    .hb_cz {
+        padding-top: 10px;
+    }
+</style>

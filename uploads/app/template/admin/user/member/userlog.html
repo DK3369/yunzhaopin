@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="moduapp" class="moduleDome">
+        <div class="setDomeAll setDomeInte">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="个人日志" name="first" :lazy="true">
+                    <userslog :typelist="typeArr" :time="time"></userslog>
+                </el-tab-pane>
+                <el-tab-pane label="企业日志" name="second" :lazy="true">
+                    <comlog :typelist="typeArr" :time="time"></comlog>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+    const custoapp = new Vue({
+        el: '#moduapp',
+        data: function() {
+            return {
+                activeName: 'first',
+                typeArr: [{
+                    value: 1,
+                    label: "用户名"
+                }, {
+                    value: 3,
+                    label: "用户ID"
+                }],
+                time: [{
+                    value: 1,
+                    label: "今天"
+                }, {
+                    value: 3,
+                    label: "最近三天"
+                }, {
+                    value: 7,
+                    label: "最近七天"
+                }, {
+                    value: 15,
+                    label: "最近半月"
+                }, {
+                    value: 30,
+                    label: "最近一个月"
+                }],
+                uid: ''
+            }
+        },
+        components: {
+            'userslog': httpVueLoader('./component/userslog.vue'),
+            'comlog': httpVueLoader('./component/comlog.vue'),
+            'gqlog': httpVueLoader('./component/gqlog.vue'),
+        },
+        mounted() {
+            let params = window.parent.homeapp.$route.params;
+            if (params.tab == 'five') {
+                this.uid = params.uid;
+                this.activeName = params.tab;
+            }
+        },
+        created: function() {
+        },
+        methods: {
+            handleClick(tab, event) {
+                console.log(tab, event);
+            }
+        }
+    });
+    </script>
+</body>
+
+</html>

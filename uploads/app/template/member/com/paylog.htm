@@ -1,0 +1,236 @@
+{yun:}include file="$comstyle/header.htm"{/yun}
+<div class="w1000">
+    <div class="admin_mainbody"> {yun:}include file="$comstyle/left.htm"{/yun}
+       <div class="right_box">
+        <div class="newmember_tit">
+			<ul>
+			<li> <a href="index.php?c=right">会员服务</a></li>
+			<li > <a  href="index.php?c=pay" >充值服务</a></li>
+			<li class="newmember_titcur"> <a  href="index.php?c=paylogtc" class=" ">我的服务</a></li>
+			<li><a  href="index.php?c=integral">{yun:}$config.integral_pricename{/yun}管理</a></li>
+			</ul>
+		</div>
+       <div class="newmember_screenbox">
+        <div class="newmember_screen">
+			<ul>
+                <li  class=""><a  href="index.php?c=paylogtc" >我的服务</a></li>
+                <li  class="job_list_tit_cur "><a href="index.php?c=paylog&consume=ok" >订单管理</a></li>
+            </ul>
+       
+           <div class="newmember_screendd ">
+			   <ul class="">
+				   <li {yun:}if $smarty.get.c=="paylog" &&$smarty.get.consume!="ok" {/yun} class="hyfw_qh_cur" {yun:}/if{/yun}>
+					   <a href="index.php?c=paylog">记录</a>
+				   </li>
+	   
+				   <li {yun:}if $smarty.get.c=="paylog" &&$smarty.get.consume=="ok" {/yun} class="hyfw_qh_cur" {yun:}/if{/yun}>
+					   <a href="index.php?c=paylog&consume=ok">明细</a>
+				   </li>
+			   </ul>
+	   
+		   </div>
+        
+       </div></div> 
+            <div class="clear"></div>
+           <div class=admincont_box>
+            
+               <div class="com_body">   
+            
+    
+            
+          
+
+                <div class=" "  >
+                        <iframe id="supportiframe" name="supportiframe" onload="returnmessage('supportiframe');" style="display:none"></iframe>
+                        <form action="{yun:}$now_url{/yun}" target="supportiframe" method="post">
+                            <div class="  "> 
+                            
+                                {yun:}if $ordertype{/yun}
+                                <table class="com_table" id="job_checkbokid">
+                                    {yun:}if $rows{/yun}
+                                    <tr>
+                                        <th>流水单号</th>
+                                        <th>金额</th>
+                                        <th>状态</th>
+                                        <th> 备注</th>
+                                        <th>时间</th>
+                                    </tr>
+                                    {yun:}/if{/yun} {yun:}foreach from=$rows item=log{/yun} {yun:}assign var="state" value=$log.pay_state{/yun}
+                                    <tr>
+                                        <td  align="left">{yun:}$log.order_id{/yun}</td>
+                                        <td  align="center">{yun:}$log.order_price_n{/yun}{yun:}if $log.type==3{/yun}元{yun:}else if $log.type==2{/yun}元{yun:}else{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}{yun:}/if{/yun}</td>
+                                        <td align="center">{yun:}$arr_data.paystate.$state{/yun}</td>
+                                        <td align="center">{yun:}$log.pay_remark{/yun}&nbsp;</td>
+                                        <td align="center">{yun:}$log.pay_time_n{/yun}</td>
+                                    </tr>
+                                    {yun:}foreachelse{/yun}
+                                    <tr>
+                                        <td colspan="6" class="table_end">
+                                            <div class="msg_no">您还没有记录。</div>
+                                        </td>
+                                    </tr>
+                                    {yun:}/foreach{/yun}
+                                </table>
+                                {yun:}else{/yun}
+                                <table class="com_table" id="job_checkbokid">
+                                    {yun:}if $rows{/yun}
+                                    <tr>
+                                        <th>充值单号</th>
+                                        <th>支付类型</th>
+                                        <th>支付形式</th>
+                                        <th>充值金额</th>
+                                        <th>支付状态</th>
+                                        <th> 时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    {yun:}/if{/yun}
+                                    {yun:}foreach from=$rows item=log{/yun}
+                                    {yun:}assign var="state" value=$log.order_state{/yun}
+                                    {yun:}assign var="type" value=$log.order_type{/yun}
+                                    <tr>
+                                        <td align="center">{yun:}$log.order_id{/yun}</td>
+                                        <td align="center">
+                                            {yun:}if $log.type==1{/yun}购买会员
+                                            {yun:}elseif $log.type=='2'{/yun} {yun:}$config.integral_pricename{/yun}充值
+                                            {yun:}elseif $log.type=='3'{/yun}银行转帐
+                                            {yun:}elseif $log.type=='4'{/yun}金额充值
+                                            {yun:}elseif $log.type=='5'{/yun}增值服务
+                                            {yun:}elseif $log.type=='10'{/yun}职位置顶
+                                            {yun:}elseif $log.type=='11'{/yun}紧急招聘
+                                            {yun:}elseif $log.type=='12'{/yun}职位推荐
+                                            {yun:}elseif $log.type=='13'{/yun}职位自动刷新
+                                            {yun:}elseif $log.type=='16'{/yun}职位刷新
+                                            {yun:}elseif $log.type=='17'{/yun}兼职刷新
+                                            {yun:}elseif $log.type=='18'{/yun}职位刷新
+                                            {yun:}elseif $log.type=='19'{/yun}下载简历
+                                            {yun:}elseif $log.type=='20'{/yun}上架职位
+                                            {yun:}elseif $log.type=='21'{/yun}上架兼职
+                                            {yun:}elseif $log.type=='23'{/yun}面试邀请
+                                            {yun:}elseif $log.type=='24'{/yun}兼职推荐
+                                            {yun:}elseif $log.type=='28'{/yun}预定招聘会
+                                            {yun:}/if{/yun}&nbsp;
+                                        </td>
+                                        <td align="center">{yun:}if $type{/yun}{yun:}$arr_data.pay.$type{/yun}{yun:}else{/yun}手动{yun:}/if{/yun}</td>
+                                        <td align="center">{yun:}$log.order_price{/yun}</td>
+                                        <td align="center">{yun:}$arr_data.paystate.$state{/yun}</td>
+                                        <td align="center">{yun:}$log.order_time|date_format:'%Y-%m-%d %H:%M:%S'{/yun}</td>
+                                        <td align="center">
+                                            
+                                            {yun:}if $log.order_type=='bank'&&$log.order_state!='2'{/yun}
+                                            <a href="javascript:;" id="{yun:}$log.id{/yun}" class="com_bth cblue status" remark="{yun:}$log.order_remark{/yun}">备注修改</a>
+                                            {yun:}/if{/yun} 
+                                            
+                                            {yun:}if $log.order_state=='1' && $log.order_type!='bank'{/yun}
+                                                <a href="index.php?c=payment&id={yun:}$log.id{/yun}" class="com_bth cblue">付款</a>
+                                                <a href="javascript:void(0)" onclick="del_pay({yun:}$log.id{/yun})" class="com_bth cblue">取消</a>
+                                            {yun:}else{/yun} 
+                                                {yun:}$arr_data.paystate.$state{/yun} 
+                                            {yun:}/if{/yun}
+
+                                        </td>
+                                    </tr>
+                                    {yun:}foreachelse{/yun}
+                                    <tr>
+                                        <td colspan="6" class="table_end">
+                                            <div class="msg_no">您还没有充值记录。</div>
+                                        </td>
+                                    </tr>
+                                    {yun:}/foreach{/yun}
+                                </table>
+                                {yun:}/if{/yun}
+                            </div>
+                            <div>
+                                <div style="clear:both"></div>
+                                <div style=" padding-top:20px;">
+                                <div class="diggg">{yun:}$pagenav{/yun}</div>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<div class="infoboxp22" id="infobox" style="display:none;width: 303px; height:152px;">
+    <div>
+        <form action="index.php?c=paylog" method="post" id="formstatus" target="supportiframe" onsubmit="return paylog_remark();">
+            <div class="jb_infobox" style="width: 100%;">
+                <input name="id" id='paylog_id' type="hidden">
+                <textarea id="alertcontent" style="width:310px;margin:5px;height:80px" name="order_remark" cols="30" rows="9" class="hr_textarea"></textarea>
+            </div>
+            <div class="jb_infobox" style="width: 100%;">
+                <button type="submit" name='submit' value='1' class="com_pop_bth_qd" style="margin-left:80px;">确认</button> &nbsp;&nbsp;
+                <button type="button" class="com_pop_bth_qx">取消</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="use_card" style="display:none; width: 400px;">
+    <div class="job_box_div" style="width:340px;">
+        <iframe id="supportiframe" name="supportiframe" onload="returnmessage('supportiframe');" style="display:none"></iframe>
+        <form action="index.php?c=paylog&act=card" target="supportiframe" method="post" id='myform'>
+            <div class="job_box_inp" style="padding:10px 5px 5px 20px">
+                <span class="fltL"> 卡号：</span>
+                <input name="card" class="com_info_text placeholder fltL" type="text" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" style="width:240px;" />
+            </div>
+            <div class="job_box_inp" style="padding:10px 5px 5px 20px">
+                <span class="fltL"> 密码：</span>
+                <input name="password" class="com_info_text placeholder fltL" type="text" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" style="width:240px;" />
+            </div>
+            <span class="job_box_botton" style="width:100%;"> 
+                <a class="job_box_yes job_box_botton2" href="javascript:void(0);" onclick="setTimeout(function(){$('#myform').submit()},0);">确定</a> 
+            </span>
+        </form>
+    </div>
+</div>
+<script>
+    function use_card() {
+        $.layer({
+            type: 1,
+            title: '使用充值卡充值',
+            closeBtn: [0, true],
+            border: [10, 0.3, '#000', true],
+            area: ['380px', '250px'],
+            page: {
+                dom: '#use_card'
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        var layindex = '';
+        $('.com_pop_bth_qx').click(function() {
+            layer.close(layindex);
+        });
+        $(".status").click(function() {
+            $("#paylog_id").val($(this).attr("id"));
+            $("#alertcontent").val($(this).attr("remark"));
+            layindex = $.layer({
+                type: 1,
+                title: '备注',
+                closeBtn: [0, true],
+                border: [10, 0.3, '#000', true],
+                area: ['325px', '210px'],
+                page: {
+                    dom: "#infobox"
+                }
+            });
+        });
+    });
+    function paylog_remark(){ 
+        var id=$("#paylog_id").val();
+        var content=$.trim($("#alertcontent").val());
+        if(id<1){
+            layer.msg('非法操作！', 2, 8);return false; 
+        }
+        if(content==''){
+            layer.msg('备注内容不能为空！', 2, 8);return false; 
+        } 
+    }
+</script>
+{yun:}include file="$comstyle/footer.htm"{/yun}

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+	<link rel="stylesheet" href="../../../admin/js/wangeditor/index.css">
+	<script src="../../../admin/js/wangeditor/index.js"></script>
+</head>
+
+<body>
+    <div id="daohaapp" class="moduleElenAl">
+		<div class="moduleSeachs">
+		    <div class="moduleSeachleft">
+				<div class="moduleInptList">
+				    <el-input placeholder="输入你要搜索的关键字" size="small" v-model="searchForm.keyword" class="input-with-select" clearable>
+				        <el-select v-model="searchForm.ctype" slot="prepend" placeholder="请选择">
+				            <el-option label="商品名称" value="1"></el-option>
+				            <el-option :label="'兑换'+integral_pricename" value="2"></el-option>
+				        </el-select>
+				    </el-input>
+				</div>
+				<div v-for="(searchItem, searchIndex) in searchList" class="tableSeachInptsmall newsinput">
+                    <el-select v-model="searchForm[searchItem.param]" size="small" slot="prepend" :clearable="true" :placeholder="searchItem.name" @change="search">
+                        <el-option v-for="(searchLabel, searchValue) in searchItem.value" :label="searchLabel" :value="searchValue"></el-option>
+                    </el-select>
+                </div>
+		        <div class="newsbtnbox"  >
+		            <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+		        </div>
+		    </div>
+			<div class="moduleSeachButn">
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="openAdd('')">添加商品</el-button>
+            </div>
+		</div>
+			
+        
+        <div class="moduleElTable">
+            <el-table :data="list" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange" @sort-change="sortChange"
+				:default-sort = "{prop: 'id', order: 'descending'}"
+                :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" v-loading="loading">
+                <template slot="empty">
+                    <p>{{dataText}}</p>
+                </template>
+                <el-table-column type="selection" width="55">
+                </el-table-column>
+                <el-table-column prop="id" label="编号" width="80" sortable="custom">
+                </el-table-column>
+                <el-table-column prop="name" label="商品名称">
+                </el-table-column>
+                <el-table-column prop="classname" label="类别" width="180">
+                </el-table-column>
+                <el-table-column prop="integral" :label="'兑换'+integral_pricename" width="120">
+                </el-table-column>
+                <el-table-column prop="number" label="限购数量" width="120">
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.restriction==0">不限</span>
+                        <span v-else>{{scope.row.restriction}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="stock" label="库存" width="120">
+                </el-table-column>
+                <el-table-column prop="sort" label="排序" width="90">
+                </el-table-column>
+                <el-table-column label="状态" width="70">
+                    <template slot-scope="scope">
+                        <el-switch v-model="scope.row.status_n" active-color="#1890FF" inactive-color="#B8BDC9" @change="checkStatus(scope.row.status_n,scope.row.id)">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column label="推荐" width="70">
+                    <template slot-scope="scope">
+                        <el-switch v-model="scope.row.rec_n" active-color="#1890FF" inactive-color="#B8BDC9" @change="checkRec(scope.row.rec_n,scope.row.id)">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column label="热门" width="70">
+                    <template slot-scope="scope">
+                        <el-switch v-model="scope.row.hot_n" active-color="#1890FF" inactive-color="#B8BDC9" @change="checkHot(scope.row.hot_n,scope.row.id)">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="130"  align="center">
+                    <template slot-scope="scope">
+                        <div class="cz_button">
+              			    <el-button  size="small" @click="openAdd(scope.row)" type=" " >修改</el-button>
+              		        <el-button type="danger" size="small "  @click="del(scope.$index)">删除</el-button>
+                      
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="modulePaging">
+            <div class="modulecz modulePagButn">
+                <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">全选</el-checkbox>
+                <el-button @click="batch('del')">批量删除</el-button>
+            </div>
+            <div class="modulePagNum">
+                <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                   :current-page="page" :page-sizes="pageSizes" :page-size="limit"
+                   layout="total, sizes, prev, pager, next, jumper" :total="total">
+                </el-pagination>
+            </div>
+        </div>
+		<div class="modluDrawer">
+		    <el-drawer :title="infotitle" :visible.sync="infoBox" :modal-append-to-body="false" :show-close="true"
+		        :with-header="true" size="68%">
+                <div style="overflow: hidden; position: relative; padding: 0 20px; height: 100%;">
+                    <addshop :id_p="id" @child-event="closeAdd" v-if="infoBox"></addshop>
+                </div>
+		        
+		    </el-drawer>
+		</div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#daohaapp',
+            data: function () {
+                return {
+                    loading: false,
+                    dataText: '数据加载中',
+                    // 搜索筛选项
+                    searchList: [],
+                    searchForm: {
+                        ctype: '1',
+                        keyword: ''
+                    },
+                    page: 1,
+                    limit: 0,
+                    list: [],
+                    total: 0,
+                    pageSizes: [],
+
+                    checkedAll: false, // 全选
+                    checkedAllIndeterminate: false,
+                    multipleSelection: [], // 多选值存储
+                    idArr: [],
+
+                    integral_pricename:'',
+					
+					infoBox:false,
+					infotitle:'',
+                    id: '',
+					sort_t:'',
+					order:'',
+                    prevPage:0
+                }
+            },
+			components: {
+			    'addshop': httpVueLoader('./component/addshop.vue'),
+			},
+            created: function () {
+                this.getList();
+                this.getPriceName();
+                this.getBaseData();
+            },
+            methods: {
+				closeAdd() {
+				    this.infoBox = false;
+					this.id = '';
+				    this.getList();
+				},
+                openAdd(data) {
+					if (data != ''){
+						this.id = data.id;
+						this.infotitle = "修改商品";
+					}else{
+						this.id = '';
+						this.infotitle = "添加商品";
+					}
+                    this.infoBox = true;
+                },
+                checkStatus(status,id){
+                    var that = this;
+                    if (status == true) {
+                        status = 1;
+                    }else{
+                        status = 0;
+                    }
+                    httpPost('m=yunying&c=shop_reward&a=status', {id:id,status:status}).then(function (res) {
+                        if (res.data.error == 0) {
+                            message.success(res.data.msg, function () {
+                                that.getList();
+                            });
+                        } else {
+                            message.error(res.data.msg);
+                        }
+                    });
+                },
+                checkRec(rec,id){
+                    var that = this;
+                    if(rec == true){
+                        rec = 1;
+                    }else{
+                        rec = 0;
+                    }
+                    httpPost('m=yunying&c=shop_reward&a=rec', {id:id,rec:rec}).then(function (res) {
+                        if (res.data.error == 0) {
+                            message.success(res.data.msg, function () {
+                                that.getList();
+                            });
+                        } else {
+                            message.error(res.data.msg);
+                        }
+                    });
+                },
+                checkHot(hot,id){
+                    var that = this;
+                    if (hot == true) {
+                        hot = 1;
+                    }else{
+                        hot = 0;
+                    }
+                    httpPost('m=yunying&c=shop_reward&a=hot', {id:id,hot:hot}).then(function (res) {
+                        if (res.data.error == 0) {
+                            message.success(res.data.msg, function () {
+                                that.getList();
+                            });
+                        } else {
+                            message.error(res.data.msg);
+                        }
+                    });
+                },
+                
+                handleSizeChange(val) {
+                    this.limit = val;
+                    this.getList();
+                },
+                handleCurrentChange(val) {
+                    this.page = val;
+                    this.getList();
+                },
+				sortChange:function(e){
+				    this.sort_t = e.prop;
+				    this.order = e.order=='ascending'?'asc':'desc';
+				    this.search();
+				},
+                search() {
+                    this.page = 1;
+                    this.getList();
+                },
+                getList() {
+                    let that = this,
+                        searchForm = that.searchForm,
+                        params = {
+                            page: that.page,
+                            limit: that.limit,
+							t:that.sort_t,
+							order:that.order,
+                        };
+                    that.loading = true;
+                    httpPost('m=yunying&c=shop_reward', {...params, ...searchForm}, {hideloading: true}).then(function (response) {
+                        let res = response.data,
+                            data = res.data;
+
+                        that.list = data.list;
+                        that.total = parseInt(data.total);
+                        that.pageSizes = data.page_sizes;
+                        if (that.limit === 0) {
+                            that.limit = parseInt(data.limit); // 取系统配置默认数量
+                        }
+                        if (that.page > data.page) {
+                            that.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+                        }
+                        if(that.prevPage != that.page){
+                            that.prevPage = that.page;
+                            that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        }
+                        that.loading = false;
+                        if (that.list.length === 0) {
+                            that.dataText = "暂无数据";
+                        }
+                    })
+                },
+                getPriceName() {
+                    let url = 'm=common&c=cache&a=getPriceName'
+                    let that = this;
+                    httpPost(url, {}, {hideloading: true}).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            that.integral_pricename = res.data.integral_pricename;
+                        }
+                    })
+                },
+                getBaseData() {
+                    let _this = this;
+                    httpPost('m=yunying&c=shop_reward&a=index_base_data', {}, {hideloading: true}).then(function (response) {
+                        let res = response.data;
+                        _this.searchList = Object.freeze(res.data.search_list);
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                },
+                handleSelectionChange(val) {
+                    if (val.length == 0) {
+                        this.checkedAll = false;
+                        this.checkedAllIndeterminate = false;
+                    } else {
+                        if (val.length === this.list.length) {
+                            this.checkedAll = true;
+                            this.checkedAllIndeterminate = false;
+                        } else {
+                            this.checkedAll = false;
+                            this.checkedAllIndeterminate = true;
+                        }
+                    }
+                    this.multipleSelection = val;
+                },
+                batch(type) {
+                    if (this.multipleSelection.length == 0) {
+                        message.error('请选择要删除的数据');
+                        return false;
+                    }
+
+                    let idArr = [];
+                    this.multipleSelection.forEach(function(item) {
+                        idArr.push(item.id);
+                    })
+                    this.idArr = idArr;
+
+                    if (type == 'del') {
+                        this.del();
+                    }
+                },
+                checkAll(val) {
+                    val ? this.checkedAllIndeterminate = false : '';
+                    this.$refs.multipleTable.toggleAllSelection();
+                },
+                del(idx) {
+                    let that = this,
+                        params = {},
+                        msg = '';
+
+                    if (typeof idx == 'undefined') { // 批量删除
+                        params.del = this.idArr;
+                        msg = '你确定要删除选中项吗？';
+                    } else {// 单个删除
+                        params.del = that.list[idx].id;
+                        msg = '你确定要删除当前项吗？';
+                    }
+
+                    delConfirm(this, params, function (params) {
+                        httpPost('m=yunying&c=shop_reward&a=del', params).then(function(res) {
+                            if (res.data.error > 0) {
+                                message.error(res.data.msg);
+                            } else {
+                                message.success(res.data.msg, function () {
+                                    that.$refs.multipleTable.clearSelection();
+                                    that.getList();
+                                });
+                            }
+                        })
+                    }, msg)
+                },
+                sortChange(event) {
+                    this.searchForm.t = event.order ? event.prop : '';
+                    this.searchForm.order = event.order ? event.order == 'descending' ? 'desc' : 'asc' : '';
+                    this.search();
+                },
+            }
+        });
+    </script>
+</body>
+
+</html>

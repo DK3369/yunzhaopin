@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="../../../admin/header.js"></script>
+    <script src="../../../admin/httpVueLoader.js"></script>
+</head>
+
+<body>
+    <div id="setapp" class="moduleElenAl">
+        <div class="setDomeAll">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="基本设置" name="first">
+                    <jibenset :list="list" @get-list="getList" v-if="activeName == 'first'"></jibenset>
+                </el-tab-pane>
+                <el-tab-pane label="安全设置" name="second">
+                    <anquanset :list="list" @get-list="getList" v-if="activeName == 'second'"></anquanset>
+                </el-tab-pane>
+                <el-tab-pane label="验证码设置" name="third">
+                    <yanzhenm :list="list" @get-list="getList" v-if="activeName == 'third'"></yanzhenm>
+                </el-tab-pane>
+                <el-tab-pane label="网站LOGO" name="fourth">
+                    <logopeiz :list="list" @get-list="getList" v-if="activeName == 'fourth'"></logopeiz>
+                </el-tab-pane>
+                <el-tab-pane label="地图设置" name="fifth">
+                    <ditu :list="list" @get-list="getList" v-if="activeName == 'fifth'"></ditu>
+                </el-tab-pane>
+                <el-tab-pane label="缓存设置" name="sixth">
+                    <huancun :list="list" @get-list="getList" v-if="activeName == 'sixth'"></huancun>
+                </el-tab-pane>
+                <el-tab-pane label="上传设置" name="seventh">
+                    <uploadset :list="list" @get-list="getList" v-if="activeName == 'seventh'"></uploadset>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+    <!-- script -->
+    <script>
+        const custoapp = new Vue({
+            el: '#setapp',
+            data: function () {
+                return {
+                    activeName: 'first',
+                    list: {},
+                    uri: "m=system&c=",
+                }
+            },
+            components: {
+                'jibenset': httpVueLoader('./component/jibenset.vue'),
+                'uploadset': httpVueLoader('./component/uploadset.vue'),
+                'anquanset': httpVueLoader('./component/anquan.vue'),
+                'yanzhenm': httpVueLoader('./component/yanzhenm.vue'),
+                'logopeiz': httpVueLoader('./component/logopeiz.vue'),
+                'ditu': httpVueLoader('./component/ditu.vue'),
+                'huancun': httpVueLoader('./component/huancun.vue'),
+            },
+            created() {
+                this.getList();
+            },
+            methods: {
+                handleClick(tab, event) {
+                    //console.log(tab, event);
+                },
+                getList: function () {
+                    let _this = this;
+                    let url = _this.uri + 'set_config&a=index';
+                    httpPost(url, {}).then(function (response) {
+                        let res = response.data;
+                        if (res.error == 0) {
+                            _this.list = res.data;
+							var systemTab = localStorage.getItem('systemTab');
+							if(systemTab){
+								_this.activeName = systemTab;
+								localStorage.removeItem('systemTab');
+							}
+                        }
+                    })
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
