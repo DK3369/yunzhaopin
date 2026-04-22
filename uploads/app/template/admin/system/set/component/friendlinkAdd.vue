@@ -54,7 +54,7 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>例：http://www.phpyun.com</span>
+                                <span>例：http://www.ov6.com</span>
                             </div>
                         </td>
                     </tr>

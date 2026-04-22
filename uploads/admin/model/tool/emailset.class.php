@@ -107,7 +107,7 @@ class emailset_controller extends adminCommon{
             
             $emailData['subject']       =   $this->config['sy_webname']." - 测试邮件";
             
-            $emailData['content']       =   "恭喜你，该邮件帐户可以正常使用<br> ".$this->config['sy_webname']."- Powered by PHPYun.";
+            $emailData['content']       =   "恭喜你，该邮件帐户可以正常使用<br> ".$this->config['sy_webname']."- Powered by OV6.";
             
             $sendid = $notice->sendEmail($emailData);
             

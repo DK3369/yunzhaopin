@@ -7,7 +7,7 @@
 					title="如果整合失败导致后台无法进入或者出现前台用户混乱，请将根目录下/data/plus/config.php 打开找到 sy_pw_type 将PW_UC置空,再登录后台关闭PW_UC"
 					type="info" :closable="false">
 					<template>
-						教程：<el-link type="primary" href="http://www.phpyun.com/bbs/thread-4210-1-1.html"
+						教程：<el-link type="primary" href="http://www.ov6.com/bbs/thread-4210-1-1.html"
 							target="_blank">点击查看</el-link>
 					</template>
 				</el-alert>

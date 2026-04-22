@@ -1,13 +1,5 @@
 <?php
-/*
-* $Author ：PHPYUN开发团队
-*
-* 官网: http://www.phpyun.com
-*
-* 版权所有 2009-2021 宿迁鑫潮信息技术有限公司，并保留所有权利。
-*
-* 软件声明：未经授权前提下，不得用于商业运营、二次开发以及任何形式的再次发布。
- */
+
 class index_controller extends common{
     /*
      *zip解压
@@ -60,7 +52,7 @@ class index_controller extends common{
                 die;
             }
             // 根据当前系统版本请求综合平台获取是否有新版更新包
-            $r = CurlPost('https://u.phpyun.com/back/package/getUpdatePack', array('version' => $version, 'appSecret' => $this->config['sy_update_secret']));
+            $r = CurlPost('https://u.ov6.com/back/package/getUpdatePack', array('version' => $version, 'appSecret' => $this->config['sy_update_secret']));
             $r = json_decode($r, 1);
             if (intval($r['code']) == 404) {
                 echo $r['message'] ? $r['message'] : '自动升级安全码无效';

@@ -320,7 +320,7 @@ module.exports = {
             window.parent.homeapp.checkMenuTwo(1, 6, 40, '职位管理', '/companyjob', params);
         },
         tomsg: function() {
-            window.open('https://u.phpyun.com/');
+            window.open('https://u.ov6.com/');
         },
         
     },

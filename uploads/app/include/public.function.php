@@ -1,17 +1,5 @@
 <?php
 
-/*
- * $Author ：PHPYUN开发团队
- *
- * 官网: http://www.phpyun.com
- *
- * 版权所有 2009-2021 宿迁鑫潮信息技术有限公司，并保留所有权利。
- *
- * 软件声明：未经授权前提下，不得用于商业运营、二次开发以及任何形式的再次发布。
- *
- */
-
-
 /**
  * 功能性通用函数库
  */
@@ -294,7 +282,7 @@ function getIpAddress($ip){
 
     $ip_address = '';
     if ($config['sy_ip'] == 1) {
-        $url = 'https://u.phpyun.com/ip2addr';
+        $url = 'https://u.ov6.com/ip2addr';
         $url .= '?appSecret=' . $config['sy_ip_appsecret'] . '&appKey=' . $config['sy_ip_appkey'] . '&ip=' . $ip;
         $file_contents = CurlGet($url);
         if ($file_contents) {
@@ -320,7 +308,7 @@ function getMoblieAddress($phone){
     include(PLUS_PATH . 'config.php');
     $moblie_address = '';
     if ($config['sy_mobile'] == 1) {
-        $url = 'https://u.phpyun.com/mlocation';
+        $url = 'https://u.ov6.com/mlocation';
         $url .= '?appSecret=' . $config['sy_mobile_appsecret'] . '&appKey=' . $config['sy_mobile_appkey'] . '&phone=' . $phone;
         $location_contents = CurlGet($url);
         if ($location_contents) {

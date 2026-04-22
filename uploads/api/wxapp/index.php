@@ -1,25 +1,22 @@
 <?php
-/*
- * $Author ：PHPYUN开发团队
- *
- * 官网: http://www.phpyun.com
- *
- * 版权所有 2009-2021 宿迁鑫潮信息技术有限公司，并保留所有权利。
- *
- * 软件声明：未经授权前提下，不得用于商业运营、二次开发以及任何形式的再次发布。
- */
+
 
 include (dirname(dirname(dirname(__FILE__))) . '/global.php');
-// 判断处理h5跨域
+// 处理跨域（CORS）
+$allowOrigin = '*';
 if (!empty($config['sy_wapdomain'])){
-    
-    $protocol = isset($config['sy_wapssl']) && $config['sy_wapssl']=='1' ? 'https://' : 'http://';
-    $wapurl   = $protocol.$config['sy_wapdomain'];
-    
-    header("Access-Control-Allow-Origin: ".$wapurl); // 允许跨域的域名
-    header('Access-Control-Allow-Methods:POST,GET'); // 允许请求的类型
-    header('Access-Control-Allow-Credentials: true'); // 设置是否允许发送 cookies
-    header('Access-Control-Allow-Headers: xcxcode, codeplat, mcsdk'); // 设置允许自定义请求头的字段
+    $protocol   = isset($config['sy_wapssl']) && $config['sy_wapssl']=='1' ? 'https://' : 'http://';
+    $allowOrigin = $protocol.$config['sy_wapdomain'];
+}
+header('Access-Control-Allow-Origin: ' . $allowOrigin);
+header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
+header('Access-Control-Allow-Credentials: true');
+header('Access-Control-Allow-Headers: Content-Type, Accept, xcxcode, codeplat, mcsdk');
+header('Access-Control-Max-Age: 86400');
+// 处理 OPTIONS 预检请求
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
 }
 
 $pageType = 'wxapp';

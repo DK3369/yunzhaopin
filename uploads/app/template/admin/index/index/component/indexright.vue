@@ -100,7 +100,7 @@ module.exports = {
             window.parent.homeapp.checkMenuTwo(item.menudata.nval, item.menudata.oval, item.menudata.tval, item.menudata.name, item.menudata.path, item.menudata.query)
         },
         tomsg: function() {
-            window.open('https://u.phpyun.com/');
+            window.open('https://u.ov6.com/');
         },
 
     },

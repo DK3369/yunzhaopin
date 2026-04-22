@@ -155,7 +155,7 @@
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-link type="primary" href="https://u.phpyun.com/" target="_blank">购买地址</el-link>
+								<el-link type="primary" href="https://u.ov6.com/" target="_blank">购买地址</el-link>
 							</div>
 						</td>
 						<td>
@@ -319,7 +319,7 @@
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-link type="primary" href="https://u.phpyun.com/" target="_blank">购买地址</el-link>
+								<el-link type="primary" href="https://u.ov6.com/" target="_blank">购买地址</el-link>
 							</div>
 						</td>
 						<td>

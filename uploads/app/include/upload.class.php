@@ -1,13 +1,5 @@
 <?php
-/*
-* $Author ：PHPYUN开发团队
-*
-* 官网: http://www.phpyun.com
-*
-* 版权所有 2009-2021 宿迁鑫潮信息技术有限公司，并保留所有权利。
-*
-* 软件声明：未经授权前提下，不得用于商业运营、二次开发以及任何形式的再次发布。
- */
+
 class Upload {
 	var $imgname='';
 	var $previewname='';			     // 添加这两个变量用于记录，图片全名，以及缩略图全名
@@ -17,7 +9,7 @@ class Upload {
 	var $addwatermark=false;		     //$addwatermark=1加水印，其它不加水印
 	var $watertype='img';			     //水印类型(txt为文字,img为图片)
     var $waterimg='/images/logo.png';    //水印图片
-	var $waterstring='www.phpyun.com';	 //水印字符
+	var $waterstring='www.ov6.com';	 //水印字符
 	var $ttf='';		                 //默认字体
 	var $alpha='50';				     //透明度
     var $position=1;				     //水印位置 1左上,2:上中3:右上4:中左5居中6中右7左下8底中9底右

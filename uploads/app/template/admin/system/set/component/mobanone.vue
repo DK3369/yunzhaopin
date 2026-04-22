@@ -2,7 +2,7 @@
 	<div class="moduleElHight">
 		<div class="tableDome_tip">
 			<el-alert type="success" :closable="false">
-				<div slot="title">更换模板后，如果是静态页面需重新生成！【<el-link type="primary" :underline="false" href='http://www.phpyun.com/tpl.php' target="_blank">获取更多模板</el-link>】</div>
+				<div slot="title">更换模板后，如果是静态页面需重新生成！【<el-link type="primary" :underline="false" href='http://www.ov6.com/tpl.php' target="_blank">获取更多模板</el-link>】</div>
 			</el-alert>
 		</div>
 		<div class="moduleElTable" style="height: calc(100% - 105px);">

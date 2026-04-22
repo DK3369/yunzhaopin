@@ -45,7 +45,7 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span><el-link type="primary" href="https://u.phpyun.com" target="_blank">前往申请手机号归属地秘钥</el-link></span>
+                            <span><el-link type="primary" href="https://u.ov6.com" target="_blank">前往申请手机号归属地秘钥</el-link></span>
                         </div>
                     </td>
                 </tr>

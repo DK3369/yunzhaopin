@@ -37,14 +37,14 @@ class gsdConfig_controller extends adminCommon
         if ($_POST['type'] == 'ip'){
             if (!empty($this->config['sy_ip_appkey']) && !empty($this->config['sy_ip_appsecret'])) {
 
-                $url    =   'https://u.phpyun.com/feature';
+                $url    =   'https://u.ov6.com/feature';
                 $url    .=  '?appKey='.$this->config['sy_ip_appkey'].'&appSecret='.$this->config['sy_ip_appsecret'];
             }
         }else if ($_POST['type'] == 'phone'){
 
             if (!empty($this->config['sy_mobile_appkey']) && !empty($this->config['sy_mobile_appsecret'])) {
 
-                $url    =   'https://u.phpyun.com/feature';
+                $url    =   'https://u.ov6.com/feature';
                 $url    .=  '?appKey='.$this->config['sy_mobile_appkey'].'&appSecret='.$this->config['sy_mobile_appsecret'];
             }
         }

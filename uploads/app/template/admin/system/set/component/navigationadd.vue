@@ -91,7 +91,7 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>站内链接如：job/ 外部链接如：http://www.phpyun.com/job/</span>
+                            <span>站内链接如：job/ 外部链接如：http://www.ov6.com/job/</span>
                         </div>
                     </td>
                 </tr>

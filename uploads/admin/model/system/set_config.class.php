@@ -3,7 +3,7 @@
 /*
  * $Author ：gengzs
  *
- * 官网: http://www.phpyun.com
+ * 官网: http://www.ov6.com
  *
  * 版权所有 2009-2023 宿迁鑫潮信息技术有限公司，并保留所有权利。
  *

@@ -1,0 +1,537 @@
+<?php /* Smarty version Smarty-3.1.21-dev, created on 2026-04-22 17:34:38
+         compiled from "/www/wwwroot/zzzz.com/uploads/app/template/wap/publichtm/search_new.htm" */ ?>
+<?php /*%%SmartyHeaderCode:117889140169e8962e7e78d3-49614908%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+$_valid = $_smarty_tpl->decodeProperties(array (
+  'file_dependency' => 
+  array (
+    '02cedcb2d13971d0bec8e3085f5f0ed3ea612563' => 
+    array (
+      0 => '/www/wwwroot/zzzz.com/uploads/app/template/wap/publichtm/search_new.htm',
+      1 => 1700725936,
+      2 => 'file',
+    ),
+  ),
+  'nocache_hash' => '117889140169e8962e7e78d3-49614908',
+  'function' => 
+  array (
+  ),
+  'variables' => 
+  array (
+    'config_wapdomain' => 0,
+    'wap_style' => 0,
+    'plusstyle' => 0,
+    'config' => 0,
+  ),
+  'has_nocache_code' => false,
+  'version' => 'Smarty-3.1.21-dev',
+  'unifunc' => 'content_69e8962e7ebdb2_60711535',
+),false); /*/%%SmartyHeaderCode%%*/?>
+<?php if ($_valid && !is_callable('content_69e8962e7ebdb2_60711535')) {function content_69e8962e7ebdb2_60711535($_smarty_tpl) {?><div id="searchhtml" class="none">
+    <template v-if="!classShow">
+        <!-- 头部 -->
+        <div class="wap_search_header">
+            <div class="wap_search_header_c">
+                <div class="wap_search_headerqx" onclick="searchhtmlhide()"></div>
+                <form method="get" action="<?php echo $_smarty_tpl->tpl_vars['config_wapdomain']->value;?>
+/index.php">
+                    <input type="hidden" id="type" name="c" value="job" />
+                    <div class="wap_search_text">
+                        <input type="text" value="<?php echo $_GET['keyword'];?>
+" onkeyup="this.value = this.value.replace(/[,]/g,'');" id="input_search" name="keyword" class="search_input" placeholder="请输入<?php if ($_GET['c']=='job'||!$_GET['c']) {?>职位名/公司名<?php } elseif ($_GET['c']=='resume') {?>关键字<?php }?>">
+                        <div class="wap_search_hbth"><input type="submit" value="搜索" class="searchbtn_input" style="background: #2778f8;border-radius: 16px;"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="scrollDomens">
+            <div class="Search_jobs_body" v-if="historyShow">
+                <div class="search_history_tit">
+                    <span class=" ">历史搜索</span>
+                    <img src="<?php echo $_smarty_tpl->tpl_vars['wap_style']->value;?>
+/images/search_del.png" alt="" width="14" height="14" @click="clearHis">
+                </div>
+                <div  class="search_history_tag_box">
+                    <div v-for="(item,hisK) in historyList" :key="hisK" class="search_history_tag"><a @click="toPage('index.php?c=job&keyword='+item.key_name);">{{item.key_name}}</a></div>
+                </div>
+            </div>
+            <van-tabs v-model="active" scrollspy sticky>
+                <van-tab title="">
+                    <div slot="title">
+                        <div class="scrollVatNav">
+                            <div>
+                                <img class="imgOne" src="<?php echo $_smarty_tpl->tpl_vars['wap_style']->value;?>
+/images/search_left_item1.png" alt="">
+                                <img class="imgTwo" src="<?php echo $_smarty_tpl->tpl_vars['wap_style']->value;?>
+/images/search_left_item1_a.png" alt="">
+                                <span>选岗位</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search_scroll_right_item" style="padding-top: 0.32rem;">
+                        <div class="xgw_itemtwobox">
+                            <template v-for="(j_id, jk) in jobIndexArr" :key="jk">
+                                <div class="xgw_itemtwo" v-if="jk<3" @click="toPage('index.php?c=job&job1='+j_id)">{{jobNameArr[j_id]}}</div>
+                            </template>
+                        </div>
+                        <div class="xgw_btn" @click="setClassShow('job');">
+                            全部岗位分类
+                            <img src="<?php echo $_smarty_tpl->tpl_vars['wap_style']->value;?>
+/images/xgw_btnright.png" alt="" width="12" height="12" style="margin-left: 4px;">
+                        </div>
+                    </div>
+                </van-tab>
+                <van-tab title="">
+                    <div slot="title">
+                        <div class="scrollVatNav">
+                            <div>
+                                <img class="imgOne" src="<?php echo $_smarty_tpl->tpl_vars['wap_style']->value;?>
+/images/search_left_item2.png" alt="">
+                                <img class="imgTwo" src="<?php echo $_smarty_tpl->tpl_vars['wap_style']->value;?>
+/images/search_left_item2_a.png" alt="">
+                                <span>选地点</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search_scroll_right_item">
+                        <div class="search_scroll_right_item_tit">找附近的工作</div>
+                        <div class="xdd_itembox">
+                            <div class="xdd_item" @click="toPage('index.php?c=job&mapjob=1')">
+                                <img src="<?php echo $_smarty_tpl->tpl_vars['wap_style']->value;?>
+/images/xdd_item1.png" alt="" width="50" height="50">
+                                <div class="xdd_item_right">
+                                    <div class="xdd_item_right_name">附近的工作</div>
+                                    <div class="xdd_item_right_tip">根据你的位置推荐工作</div>
+                                </div>
+                            </div>
+                            <div class="xdd_item" @click="setClassShow('city');">
+                                <img src="<?php echo $_smarty_tpl->tpl_vars['wap_style']->value;?>
+/images/xdd_item2.png" alt="" width="50" height="50">
+                                <div class="xdd_item_right">
+                                    <div class="xdd_item_right_name">指定地点的工作</div>
+                                    <div class="xdd_item_right_tip">找特点区域的工作</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </van-tab>
+                <van-tab title="">
+                    <div slot="title">
+                        <div class="scrollVatNav">
+                            <div>
+                                <img class="imgOne" src="<?php echo $_smarty_tpl->tpl_vars['wap_style']->value;?>
+/images/search_left_item3.png" alt="">
+                                <img class="imgTwo" src="<?php echo $_smarty_tpl->tpl_vars['wap_style']->value;?>
+/images/search_left_item3_a.png" alt="">
+                                <span>选福利</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search_scroll_right_item">
+                        <div class="search_scroll_right_item_tit">选福利好的工作</div>
+                        <div class="xfl_itembox">
+                            <template v-for="(wel, wek) in comData.job_welfare" :key="wek">
+                                <div class="xfl_item" @click="toPage('index.php?c=job&welfare='+wel);">
+                                    <div class="xfl_tit">{{comClassName[wel]}}</div>
+                                    <img src="<?php echo $_smarty_tpl->tpl_vars['wap_style']->value;?>
+/images/xfl_right.png" alt="" width="12" height="12">
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </van-tab>
+                <van-tab title="">
+                    <div slot="title">
+                        <div class="scrollVatNav">
+                            <div>
+                                <img class="imgOne" src="<?php echo $_smarty_tpl->tpl_vars['wap_style']->value;?>
+/images/search_left_item4.png" alt="">
+                                <img class="imgTwo" src="<?php echo $_smarty_tpl->tpl_vars['wap_style']->value;?>
+/images/search_left_item4_a.png" alt="">
+                                <span>查薪资</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search_scroll_right_item">
+                        <div class="kxz_contbox">
+                            <div class="kxz_cont">
+                                <div class="kxz_itembox_top">
+                                    <div class="kxz_itembox_top_one">发现新机会</div>
+                                    <div class="kxz_itembox_top_two">根据你的条件，快速匹配工作</div>
+                                </div>
+                                <div class="search_scroll_right_item_tit">看薪资</div>
+                                <div class="kxz_itembox">
+                                    <template v-for="(salV, salK) in salaryArr" :key="salK">
+                                        <div class="kxz_item" :class="salary==salV.min ? 'kxz_item_active' : ''" @click="salary=salV.min">{{salV.name}}</div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </van-tab>
+                <van-tab title="">
+                    <div slot="title">
+                        <div class="scrollVatNav">
+                            <div>
+                                <img class="imgOne" src="<?php echo $_smarty_tpl->tpl_vars['wap_style']->value;?>
+/images/search_left_item5.png" alt="">
+                                <img class="imgTwo" src="<?php echo $_smarty_tpl->tpl_vars['wap_style']->value;?>
+/images/search_left_item5_a.png" alt="">
+                                <span>学历</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search_scroll_right_item">
+                        <div class="kxz_cont">
+                            <div class="search_scroll_right_item_tit">看学历</div>
+                            <div class="kxz_itembox">
+                                <template v-for="(eduV, eduK) in comData.job_edu" :key="eduK">
+                                    <div class="kxz_item" :class="edu==eduV ? 'kxz_item_active' : ''" @click="edu=eduV">{{comClassName[eduV]}}</div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </van-tab>
+                <van-tab title="">
+                    <div slot="title">
+                        <div class="scrollVatNav">
+                            <div>
+                                <img class="imgOne" src="<?php echo $_smarty_tpl->tpl_vars['wap_style']->value;?>
+/images/search_left_item6.png" alt="">
+                                <img class="imgTwo" src="<?php echo $_smarty_tpl->tpl_vars['wap_style']->value;?>
+/images/search_left_item6_a.png" alt="">
+                                <span>经验</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search_scroll_right_item">
+                        <div class="kxz_cont">
+                            <div class="search_scroll_right_item_tit">看经验</div>
+                            <div class="kxz_itembox">
+                                <template v-for="(expV, expK) in comData.job_exp" :key="expK">
+                                    <div class="kxz_item" :class="exp==expV ? 'kxz_item_active' : ''" @click="exp=expV">{{comClassName[expV]}}</div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </van-tab>
+                <van-tab title="">
+                    <div slot="title">
+                        <div class="scrollVatNav">
+                            <div>
+                                <img class="imgOne" src="<?php echo $_smarty_tpl->tpl_vars['wap_style']->value;?>
+/images/search_left_item7.png" alt="">
+                                <img class="imgTwo" src="<?php echo $_smarty_tpl->tpl_vars['wap_style']->value;?>
+/images/search_left_item7_a.png" alt="">
+                                <span>更多</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search_scroll_right_item">
+                        <div class="kxz_cont">
+                            <div class="search_scroll_right_item_tit">企业类型</div>
+                            <div class="kxz_itembox">
+                                <template v-for="(prV, prK) in comData.job_pr" :key="prK">
+                                    <div class="kxz_item" :class="pr==prV ? 'kxz_item_active' : ''" @click="pr=prV">{{comClassName[prV]}}</div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search_scroll_right_item">
+                        <div class="kxz_cont">
+                            <div class="search_scroll_right_item_tit">企业规模</div>
+                            <div class="kxz_itembox">
+                                <template v-for="(munV, munK) in comData.job_mun" :key="munK">
+                                    <div class="kxz_item" :class="mun==munV ? 'kxz_item_active' : ''" @click="mun=munV">{{comClassName[munV]}}</div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search_scroll_right_item" style="padding-bottom: 2rem;">
+                        <div class="kxz_cont">
+                            <div class="search_scroll_right_item_tit">更新时间</div>
+                            <div class="kxz_itembox">
+                                <template v-for="(upV, upK) in upTime" :key="upK">
+                                    <div class="kxz_item" :class="uptime==upK ? 'kxz_item_active' : ''" @click="uptime=upK">{{upV}}</div>
+                                </template>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="search_tj_btn" id="scrollBtn" @click="searchJob">提交</div>
+                </van-tab>
+            </van-tabs>
+        </div>
+    </template>
+    <?php echo $_smarty_tpl->getSubTemplate (((string)$_smarty_tpl->tpl_vars['wapstyle']->value)."/publichtm/search_class.htm", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+
+</div>
+<?php echo '<script'; ?>
+ src="<?php echo $_smarty_tpl->tpl_vars['plusstyle']->value;?>
+/city.cache.js?v=<?php echo $_smarty_tpl->tpl_vars['config']->value['cachecode'];?>
+" language="javascript"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="<?php echo $_smarty_tpl->tpl_vars['plusstyle']->value;?>
+/cityparent.cache.js?v=<?php echo $_smarty_tpl->tpl_vars['config']->value['cachecode'];?>
+" language="javascript"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="<?php echo $_smarty_tpl->tpl_vars['plusstyle']->value;?>
+/job.cache.js?v=<?php echo $_smarty_tpl->tpl_vars['config']->value['cachecode'];?>
+" language="javascript"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="<?php echo $_smarty_tpl->tpl_vars['plusstyle']->value;?>
+/jobparent.cache.js?v=<?php echo $_smarty_tpl->tpl_vars['config']->value['cachecode'];?>
+" language="javascript"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+>
+    var searchVue = new Vue({
+        el: '#searchhtml',
+        data() {
+            return {
+                historyShow: false,
+                historyList: [],
+                active: 0,
+                jobIndexArr: ji,
+                jobNameArr: jn,
+                jobTypeArr: jt,
+                jobParentArr: job_parent,
+                job1: 0,
+                job1_son: 0,
+                job_post: 0,
+
+                cityIndexArr: ci,
+                cityNameArr: cn,
+                cityTypeArr: ct,
+                cityParentArr: city_parent,
+                provinceid: 0,
+                cityid: 0,
+                three_cityid: 0,
+
+
+                comData: [],
+                comClassName: [],
+                upTime: [],
+                salaryArr: [],
+                exp: '',
+                edu: '',
+                salary: '',
+                pr: '',
+                mun: '',
+                uptime: '',
+                welfare: '',
+                classShow: false,
+
+                category: '',
+
+                searchClassVal: '',
+                searchClassShow: false,
+                searchClassList: []
+            };
+        },
+        methods: {
+            getComData: function() {
+                let that = this;
+                let paramer = {
+                    refer: 'job_search'
+                }
+                $.post(wapurl + "index.php?c=search&a=getComData", paramer, function(data) {
+                    that.comData = data.comData;
+                    that.comClassName = data.comClassName;
+                    that.upTime = data.upTime;
+                    that.salaryArr = data.salaryArr;
+                }, 'json');
+            },
+            getHistory: function() {
+                let that = this;
+                let paramer = {
+                    type: 'job',
+                    limit: 8
+                }
+                $.post(wapurl + "index.php?c=search&a=history", paramer, function(data) {
+                    if (data.list.length > 0) {
+                        that.historyList = data.list;
+                        that.historyShow = true;
+                    } else {
+                        that.historyList = [];
+                        that.historyShow = false;
+                    }
+                }, 'json');
+            },
+            clearHis: function() {
+                let that = this;
+                $.post("index.php?c=search&a=del", { type: 3 }, function(data) {
+                    if (data) {
+                        showToast("历史搜索已清除！", 2);
+                        that.historyList = [];
+                        that.historyShow = false;
+                    } else {
+                        showToast("操作失败！");
+                        return false;
+                    }
+                });
+            },
+            toPage: function(url) {
+                location.href = url;
+            },
+            searchJob: function() {
+                var that = this;
+                location.href = 'index.php?c=job&minsalary=' + that.salary + '&exp=' + that.exp + '&edu=' + that.edu + '&pr=' + that.pr + '&mun=' + that.mun + '&uptime=' + that.uptime + '&welfare=' + that.welfare;
+            },
+            setClassShow: function(type) {
+                let that = this;
+                that.category = type;
+                if (type == 'job') {
+                    that.job1 = that.jobIndexArr[0];
+                } else if (type == 'city') {
+                    that.provinceid = that.cityIndexArr[0];
+                }
+                that.classShow = true;
+            },
+            bindSearch: function(e) {
+                var that = this;
+                that.searchClassVal = e.target.value;
+                debounce(this.searchClass(that.searchClassVal));
+            },
+            searchClass: function() {
+                var that = this;
+                if (that.searchClassVal == '') {
+                    that.searchClassShow = false
+                } else {
+                    var fsn = {},
+                        fst = {},
+                        fsPar = {},
+                        fsTwo = [],
+                        fsThr = [],
+                        thisClass = [],
+                        fsArr = [];
+
+                    if (that.category == 'job') {
+
+                        fsn = that.jobNameArr;
+                        fsPar = that.jobParentArr;
+                    } else if (that.category == 'city') {
+
+                        fsn = that.cityNameArr;
+                        fsPar = that.cityParentArr;
+                    }
+
+                    var fsnKeyArr = Object.keys(fsn);
+                    if (fsnKeyArr.length > 0) {
+                        var inputv = that.searchClassVal.toLowerCase(),
+                            itemv = '';
+
+                        for (let key in fsn) {
+                            itemv = fsn[key].toLowerCase();
+                            if (itemv.indexOf(inputv) != -1) {
+                                thisClass.push(key);
+                            }
+                        }
+                    }
+
+                    if (thisClass.length > 0) {
+                        for (var i = 0; i < thisClass.length; i++) {
+                            var t = thisClass[i];
+                            for (var lev = 1; fsPar[t] > 0; t = fsPar[t]) {
+                                lev++;
+                            }
+                            if (lev == 2) {
+                                fsTwo.push(thisClass[i]);
+                            } else {
+                                fsThr.push(thisClass[i]);
+                            }
+                        }
+                        if (fsTwo.length > 0) {
+                            for (var m = 0; m < fsTwo.length; m++) {
+                                fsArr.push({
+                                    "name": fsn[fsTwo[m]],
+                                    "two": fsTwo[m],
+                                    "one": fsPar[fsTwo[m]],
+                                    "fname": fsn[fsPar[fsTwo[m]]]
+                                });
+                            }
+                        }
+
+                        if (fsThr.length > 0) {
+                            for (var t = 0; t < fsThr.length; t++) {
+                                fsArr.push({
+                                    "name": fsn[fsThr[t]],
+                                    "value": fsThr[t],
+                                    "one": fsPar[fsPar[fsThr[t]]],
+                                    "two": fsPar[fsThr[t]],
+                                    "fname": fsn[fsPar[fsThr[t]]]
+                                });
+                            }
+                        }
+                    }
+                    if (fsArr.length > 0) {
+                        this.searchClassList = fsArr;
+                        this.searchClassShow = true;
+                    }
+                }
+            },
+            clearSearch: function() {
+                var that = this;
+                that.searchClassVal = '';
+                that.searchClassShow = false;
+            },
+            checkClassOne: function(value) {
+                var that = this;
+                if (that.category == 'job') {
+                    that.job1 = value;
+                } else if (that.category == 'city') {
+                    that.provinceid = value;
+                }
+            },
+            setSearchJobClass: function(one, two, three) {
+                var that = this;
+                if (that.category == 'job') {
+
+                    that.job1 = one ? one : '';
+                    that.job1_son = two ? two : '';
+                    that.job_post = three ? three : '';
+
+                    location.href = 'index.php?c=job&job1=' + that.job1 + '&job1_son=' + that.job1_son + '&job_post=' + that.job_post;
+                } else if (that.category == 'city') {
+
+                    that.provinceid = one ? one : '';
+                    that.cityid = two ? two : '';
+                    that.three_cityid = three ? three : '';
+
+                    location.href = 'index.php?c=job&provinceid=' + that.provinceid + '&cityid=' + that.cityid + '&three_cityid=' + that.three_cityid;
+                }
+            }
+        }
+    });
+
+    function searchhtmlhide() {
+        $("#searchhtml").addClass('none');
+        $("#app").removeClass('none');
+    }
+    $(document).ready(function() {
+        $(".searchnew").on('click', function() {
+            $("#app").addClass('none');
+            $("#searchhtml").removeClass('none');
+            searchVue.getHistory();
+            searchVue.getComData();
+        })
+    });
+
+
+
+    const targetElement = document.getElementById('scrollBtn'); // 目标元素
+    const targetDistance = 850; // 目标距离，滚动超过此距离将显示目标元素
+
+    window.addEventListener('scroll', function() {
+        const scrollDistance = window.pageYOffset || document.documentElement.scrollTop;
+        if (scrollDistance > targetDistance) {
+            targetElement.classList.remove('btnhidden');
+        } else {
+            targetElement.classList.add('btnhidden');
+        }
+    });
+
+<?php echo '</script'; ?>
+><?php }} ?>

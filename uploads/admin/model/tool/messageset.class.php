@@ -11,7 +11,7 @@ class messageset_controller extends adminCommon{
         if (!empty($this->config['sy_msg_appkey']) && !empty($this->config['sy_msg_appsecret'])) {
 
             //短信检测
-            $url = 'https://u.phpyun.com/feature';
+            $url = 'https://u.ov6.com/feature';
             $url .= '?appKey=' . $this->config['sy_msg_appkey'] . '&appSecret=' . $this->config['sy_msg_appsecret'];
 
             if (extension_loaded('curl')) {
@@ -33,7 +33,7 @@ class messageset_controller extends adminCommon{
 
         if (!empty($this->config['sy_kh_appkey']) && !empty($this->config['sy_kh_appsecret'])) {
             //空号检测
-            $url = 'https://u.phpyun.com/feature';
+            $url = 'https://u.ov6.com/feature';
             $url .= '?appKey=' . $this->config['sy_kh_appkey'] . '&appSecret=' . $this->config['sy_kh_appsecret'];
             if (extension_loaded('curl')) {
 
@@ -53,7 +53,7 @@ class messageset_controller extends adminCommon{
 
         if (!empty($this->config['sy_tyc_appkey']) && !empty($this->config['sy_tyc_appsecret'])) {
             //天眼查检测
-            $url = 'https://u.phpyun.com/feature';
+            $url = 'https://u.ov6.com/feature';
             $url .= '?appKey=' . $this->config['sy_tyc_appkey'] . '&appSecret=' . $this->config['sy_tyc_appsecret'];
 
             if (extension_loaded('curl')) {

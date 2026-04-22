@@ -1,14 +1,9 @@
 <?php
-/*
- * $Author ：PHPYUN开发团队
- *
- * 官网: http://www.phpyun.com
- *
- * 版权所有 2009-2021 宿迁鑫潮信息技术有限公司，并保留所有权利。
- *
- * 软件声明：未经授权前提下，不得用于商业运营、二次开发以及任何形式的再次发布。
- */
-error_reporting(0);
+
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+ini_set('error_log', '/tmp/phpyun_debug.log');
 
 define('APP_PATH',dirname(__FILE__).'/');
 define('CONFIG_PATH',APP_PATH.'config/');
