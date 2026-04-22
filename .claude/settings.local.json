@@ -1,7 +1,14 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python3 -)"
+      "Bash(python3 -)",
+      "Bash(git -C /Users/dd/Desktop/2222/github/yunzhaopin diff --stat HEAD)",
+      "Bash(git -C /Users/dd/Desktop/2222/github/yunzhaopin status --short)",
+      "Bash(curl -v http://d.com/)",
+      "Bash(curl -v http://d.com/admin/index.php)",
+      "Read(//etc/nginx/**)",
+      "Read(//usr/local/etc/nginx/**)",
+      "Read(//opt/homebrew/etc/nginx/**)"
     ]
   }
 }
