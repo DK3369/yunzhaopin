@@ -1097,7 +1097,7 @@
                         </el-alert>
                     </div>
                     <div class="wxsettip_small " v-if="multitw == false">企业名称</div>
-                    <el-input v-if="multitw == false" placeholder="宿迁鑫潮信息技术有限公司" v-model="tw_data.name"
+                    <el-input v-if="multitw == false" placeholder="OV6" v-model="tw_data.name"
                         :disabled="true"></el-input>
                     <div class="wxsettip_small">标签</div>
                     <el-checkbox v-model="jj">加急</el-checkbox>

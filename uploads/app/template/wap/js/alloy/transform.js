@@ -1,4 +1,4 @@
-﻿/* transformjs
+/* transformjs
  * By dntzhang
  */
 ;(function () {

@@ -457,7 +457,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			        		for(var i=0;i<fsone.length;i++){
 			        			hastwo = false;
 			        			fsArr.push({"name":fsn[fsone[i]],"value":fsone[i],"selected":'',"disabled":''});
-			        			//江苏
 			        			if(fst && fst.length>0 && fst!='new Array()'){
 					        		for(var j=0;j<fst[fsone[i]].length;j++){//先判断选项里是否有二级属于此一级
 					        			if(fstwo.indexOf(parseInt(fst[fsone[i]][j]))!=-1){
@@ -476,7 +475,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 						        					for(var t=0;t<fsthr.length;t++){
 							        					if(fst[fstwo[m]] && (fst[fstwo[m]].indexOf(fsthr[t])!=-1 || fst[fstwo[m]].indexOf(fsthr[t].toString())!=-1)){
 							        						fsArr.push({"name":fsn[fsthr[t]],"value":fsthr[t],"selected":'',"disabled":'',"upclass":2});
-							        						//江苏-宿迁-沭阳
 							        						fsthr.splice(t,1);
 							        						t--;
 							        					}
@@ -492,7 +490,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 					        			rfs.forEach(function(item,index){
 											if(parseInt(item.one) == parseInt(fsone[i])){//
 												fsArr.push({"name":fsn[item.three],"value":item.three,"selected":'',"disabled":'',"upclass":1,"upname":fsn[item.two]});
-												//江苏-沭阳
 												fsthr.splice(fsthr.indexOf(parseInt(item.three)),1);
 											}
 								        })
@@ -505,12 +502,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			        		for(var m=0;m<fstwo.length;m++){
 			        			
 		        				fsArr.push({"name":fsn[fstwo[m]],"value":fstwo[m],"selected":'',"disabled":'',"upname":fsn[fs_parent[fstwo[m]]]});
-		        				//宿迁
+		        				//OV6
 		        				if(fsthr.length>0){
 		        					for(var t=0;t<fsthr.length;t++){
 			        					if(fst[fstwo[m]] && (fst[fstwo[m]].indexOf(fsthr[t])!=-1 || fst[fstwo[m]].indexOf(fsthr[t].toString())!=-1)){
 			        						fsArr.push({"name":fsn[fsthr[t]],"value":fsthr[t],"selected":'',"disabled":'',"upclass":1});
-			        						//宿迁-沭阳
+			        						//OV6-OV6
 			        						fsthr.splice(t,1);
 			        						t--;
 			        					}
@@ -523,7 +520,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			        	if(fsthr.length>0){
 			        		for(var t=0;t<fsthr.length;t++){
 	        					fsArr.push({"name":fsn[fsthr[t]],"value":fsthr[t],"selected":'',"disabled":'',"upname":fsn[fs_parent[fsthr[t]]]});
-        						//沭阳
+        						//OV6
 							}
 			        	}
 

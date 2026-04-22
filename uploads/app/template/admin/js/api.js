@@ -715,7 +715,6 @@ function jobcityclass_slist(obj={}){
                     oneselected = isSelected(fsone[i]);
 
                     fsArr.push({"name":fsn[fsone[i]],"value":fsone[i],"selected":oneselected,"disabled":false,"upname":''});
-                    //江苏
                     if(fst && fst.length>0 && fst!='new Array()'){
                         for(var j=0;j<fst[fsone[i]].length;j++){//先判断选项里是否有二级属于此一级
                             if(fstwo.indexOf(parseInt(fst[fsone[i]][j]))!=-1){
@@ -740,7 +739,6 @@ function jobcityclass_slist(obj={}){
 
                                             if(fst[fstwo[m]] && (fst[fstwo[m]].indexOf(fsthr[t])!=-1 || fst[fstwo[m]].indexOf(fsthr[t].toString())!=-1)){
                                                 fsArr.push({"name":fsn[fsthr[t]],"value":fsthr[t],"selected":threeselected,"disabled":(oneselected || twoselected),"upclass":2,"upname":''});
-                                                //江苏-宿迁-沭阳
                                                 fsthr.splice(t,1);
                                                 t--;
                                             }
@@ -759,7 +757,6 @@ function jobcityclass_slist(obj={}){
                                     threeselected = isSelected(item.three);
 
                                     fsArr.push({"name":fsn[item.three],"value":item.three,"selected":threeselected,"disabled":oneselected,"upclass":1,"upname":fsn[item.two]});
-                                    //江苏-沭阳
                                     fsthr.splice(fsthr.indexOf(parseInt(item.three)),1);
                                 }
                             })
@@ -778,7 +775,6 @@ function jobcityclass_slist(obj={}){
                     twoselected = isSelected(fstwo[m]);
 
                     fsArr.push({"name":fsn[fstwo[m]],"value":fstwo[m],"selected":twoselected,"disabled":oneselected,"upname":fsn[fs_parent[fstwo[m]]]});
-                    //宿迁
                     if(fsthr.length>0){
                         for(var t=0;t<fsthr.length;t++){
                             if(fst[fstwo[m]] && (fst[fstwo[m]].indexOf(fsthr[t])!=-1 || fst[fstwo[m]].indexOf(fsthr[t].toString())!=-1)){
@@ -786,7 +782,6 @@ function jobcityclass_slist(obj={}){
                                 threeselected = isSelected(fsthr[t]);
 
                                 fsArr.push({"name":fsn[fsthr[t]],"value":fsthr[t],"selected":threeselected,"disabled":(oneselected || twoselected),"upclass":1,"upname":''});
-                                //宿迁-沭阳
                                 fsthr.splice(t,1);
                                 t--;
                             }
@@ -815,7 +810,6 @@ function jobcityclass_slist(obj={}){
                     threeselected = isSelected(fsthr[t]);
 
                     fsArr.push({"name":fsn[fsthr[t]],"value":fsthr[t],"selected":threeselected,"disabled":(oneselected || twoselected),"upname":fsn[fs_parent[fsthr[t]]]});
-                    //沭阳
                 }
             }
 

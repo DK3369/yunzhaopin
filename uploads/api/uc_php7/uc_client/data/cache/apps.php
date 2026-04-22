@@ -1,4 +1,4 @@
-<?php
+<?php
 $_CACHE['apps'] = array (
   1 => 
   array (
@@ -37,4 +37,4 @@ $_CACHE['apps'] = array (
     'recvnote' => '1',
   ),
   'UC_API' => 'http://x.ghzpb.com/uc_server',
-);
+);
