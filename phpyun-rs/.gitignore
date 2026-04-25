@@ -1,0 +1,6 @@
+/target
+/.env
+/sqlx-data.json
+**/*.rs.bk
+Cargo.lock.backup
+.DS_Store

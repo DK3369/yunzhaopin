@@ -1,0 +1,113 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/core",
+    "crates/auth",
+    "crates/models",
+    "crates/services",
+    "crates/handlers",
+    "crates/app",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["PHPYun-RS Team"]
+license = "Proprietary"
+repository = "https://example.com/phpyun-rs"
+
+[workspace.dependencies]
+# ---- HTTP / Web ----
+axum = "0.8"
+tower = { version = "0.5", features = ["limit", "timeout", "util"] }
+tower-http = { version = "0.6", features = [
+    "trace", "cors", "limit", "compression-gzip",
+    "request-id", "timeout", "set-header",
+] }
+tower_governor = "0.8"
+
+# ---- Async runtime ----
+tokio = { version = "1.52", features = [
+    "rt-multi-thread", "macros", "sync", "net", "time",
+    "signal", "io-util", "fs", "parking_lot",
+] }
+tokio-util = { version = "0.7", features = ["rt"] }
+tokio-stream = "0.1"
+
+# ---- CPU data parallelism ----
+rayon = "1.12"
+
+# ---- DB / Redis / outbound HTTP ----
+sqlx = { version = "0.8", features = [
+    "mysql", "runtime-tokio-rustls", "chrono", "json", "migrate",
+] }
+redis = { version = "1.2", features = ["tokio-comp", "connection-manager"] }
+reqwest = { version = "0.13", default-features = false, features = ["json", "rustls", "http2"] }
+
+# ---- Auth ----
+jsonwebtoken = { version = "10", default-features = false, features = ["rust_crypto"] }
+argon2 = "0.5"
+md-5 = "0.10"  # 0.11 changed the Digest return type with a costly migration; we keep 0.10 (only used for compat with PHPYun's legacy md5 passwords).
+sha1 = "0.10" # WeChat OA signature verification (SHA1(token+timestamp+nonce)).
+
+# ---- Serialization ----
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# ---- Logging / observability ----
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+metrics = "0.24"
+metrics-exporter-prometheus = { version = "0.16", default-features = false, features = ["http-listener"] }
+metrics-tracing-context = "0.17"
+metrics-util = "0.18"
+
+# ---- Errors ----
+thiserror = "2"
+anyhow = "1"
+# Lock-free atomic Arc swap; used by dict_service's global cache read path, ~10ns and fully lock-free.
+arc-swap = "1"
+
+# ---- Internationalization ----
+# At compile time, locales/*.json is embedded into the binary's `.rodata` segment;
+# zero I/O, zero locking at runtime.
+# JSON format: the backend, app, and web frontends can share the same translation files.
+# Three languages: zh-CN (default) / zh-TW / en; fallback chain ends at the default locale.
+rust-i18n = "3"
+
+# ---- Tools ----
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1", features = ["v4", "v7", "serde"] }
+dotenvy = "0.15"
+cron = "0.16"          # cron expression parsing for the scheduler
+async-trait = "0.1"    # used by the storage trait
+base64 = "0.22"        # used by idempotency body caching
+bytes = "1"            # used by storage writes
+captcha = "0.0.9"      # captcha PNG rendering
+
+# ---- Cache ----
+moka = { version = "0.12", features = ["future"] }
+
+# ---- Request validation ----
+validator = { version = "0.20", features = ["derive"] }
+regex = "1"
+
+# ---- Testing ----
+axum-test = "17"
+
+# ---- OpenAPI auto docs ----
+utoipa = { version = "5", features = ["axum_extras", "chrono", "uuid"] }
+utoipa-axum = "0.2"
+utoipa-swagger-ui = { version = "9", features = ["axum"] }
+
+# ---- Internal workspace crate aliases (avoid clashing with Rust's built-in `core`) ----
+phpyun_core = { path = "crates/core", package = "phpyun-core" }
+phpyun_auth = { path = "crates/auth", package = "phpyun-auth" }
+phpyun_models = { path = "crates/models", package = "phpyun-models" }
+phpyun_services = { path = "crates/services", package = "phpyun-services" }
+phpyun_handlers = { path = "crates/handlers", package = "phpyun-handlers" }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true

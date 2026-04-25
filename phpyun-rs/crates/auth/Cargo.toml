@@ -1,0 +1,17 @@
+[package]
+name = "phpyun-auth"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+serde.workspace = true
+jsonwebtoken.workspace = true
+argon2.workspace = true
+md-5.workspace = true
+chrono.workspace = true
+uuid.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+anyhow.workspace = true
+rayon.workspace = true
+phpyun_core.workspace = true

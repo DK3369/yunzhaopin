@@ -1,0 +1,137 @@
+//! Blacklist (the list of uids I have blocked).
+
+use axum::{
+    extract::{Path, State},
+    routing::{get, post},
+    Router,
+};
+use phpyun_core::{
+    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+};
+use phpyun_services::blacklist_service;
+use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
+use validator::Validate;
+
+pub fn routes() -> Router<AppState> {
+    Router::new()
+        .route("/blacklist", get(list).post(add)).route("/blacklist/delete", post(clear))
+        .route("/blacklist/{uid}", post(remove))
+}
+
+fn fmt_dt(ts: i64) -> String {
+    if ts <= 0 { return String::new(); }
+    chrono::DateTime::from_timestamp(ts, 0)
+        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
+        .unwrap_or_default()
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct BlackItem {
+    pub id: u64,
+    pub uid: u64,
+    pub blocked_uid: u64,
+    pub reason: String,
+    pub created_at: i64,
+    pub created_at_n: String,
+}
+
+impl From<phpyun_models::blacklist::entity::BlacklistEntry> for BlackItem {
+    fn from(b: phpyun_models::blacklist::entity::BlacklistEntry) -> Self {
+        Self {
+            id: b.id,
+            uid: b.uid,
+            blocked_uid: b.blocked_uid,
+            reason: b.reason,
+            created_at_n: fmt_dt(b.created_at),
+            created_at: b.created_at,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct AddForm {
+    pub blocked_uid: u64,
+    #[validate(length(max = 200))]
+    #[serde(default)]
+    pub reason: String,
+}
+
+/// My blacklist
+#[utoipa::path(
+    get,
+    path = "/v1/mcenter/blacklist",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn list(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    page: Pagination,
+) -> AppResult<ApiJson<Paged<BlackItem>>> {
+    let r = blacklist_service::list(&state, &user, page).await?;
+    Ok(ApiJson(Paged::new(
+        r.list.into_iter().map(BlackItem::from).collect(),
+        r.total,
+        page.page,
+        page.page_size,
+    )))
+}
+
+/// Block
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/blacklist",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    request_body = AddForm,
+    responses((status = 200, description = "ok"))
+)]
+pub async fn add(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<AddForm>,
+) -> AppResult<ApiOk> {
+    blacklist_service::add(&state, &user, f.blocked_uid, &f.reason).await?;
+    Ok(ApiOk("ok"))
+}
+
+/// Unblock
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/blacklist/{uid}",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    params(("uid" = u64, Path)),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn remove(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Path(blocked_uid): Path<u64>,
+) -> AppResult<ApiOk> {
+    blacklist_service::remove(&state, &user, blocked_uid).await?;
+    Ok(ApiOk("removed"))
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ClearResult {
+    pub removed: u64,
+}
+
+/// Clear my entire blacklist
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/blacklist",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok", body = ClearResult))
+)]
+pub async fn clear(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiJson<ClearResult>> {
+    let removed = blacklist_service::clear_all(&state, &user).await?;
+    Ok(ApiJson(ClearResult { removed }))
+}

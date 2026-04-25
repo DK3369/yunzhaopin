@@ -1,0 +1,137 @@
+//! Warning management (admin issues warnings).
+
+use axum::{
+    extract::{Query, State},
+    routing::get,
+    Router,
+};
+use phpyun_core::{
+    ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+};
+use phpyun_services::warning_service::{self, WarnInput};
+use serde::{Deserialize, Serialize};
+use utoipa::{IntoParams, ToSchema};
+use validator::Validate;
+
+pub fn routes() -> Router<AppState> {
+    Router::new().route("/warnings", get(list).post(issue))
+}
+
+#[derive(Debug, Deserialize, IntoParams)]
+pub struct ListQuery {
+    pub kind: Option<i32>,
+}
+
+fn fmt_dt(ts: i64) -> String {
+    if ts <= 0 { return String::new(); }
+    chrono::DateTime::from_timestamp(ts, 0)
+        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
+        .unwrap_or_default()
+}
+
+fn warn_kind_name(k: i32) -> &'static str {
+    match k { 1 => "user", 2 => "company", 3 => "job", 4 => "resume", _ => "unknown" }
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct WarningItem {
+    pub id: u64,
+    pub target_uid: u64,
+    pub target_kind: i32,
+    pub target_kind_n: String,
+    pub target_id: u64,
+    pub reason: String,
+    pub is_read: i32,
+    pub is_read_bool: bool,
+    pub issuer_uid: u64,
+    pub created_at: i64,
+    pub created_at_n: String,
+}
+
+impl From<phpyun_models::warning::entity::Warning> for WarningItem {
+    fn from(w: phpyun_models::warning::entity::Warning) -> Self {
+        Self {
+            id: w.id,
+            target_uid: w.target_uid,
+            target_kind_n: warn_kind_name(w.target_kind).to_string(),
+            target_kind: w.target_kind,
+            target_id: w.target_id,
+            reason: w.reason,
+            is_read_bool: w.is_read == 1,
+            is_read: w.is_read,
+            issuer_uid: w.issuer_uid,
+            created_at_n: fmt_dt(w.created_at),
+            created_at: w.created_at,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct WarnForm {
+    pub target_uid: u64,
+    /// 1=user 2=company 3=job 4=resume
+    #[validate(range(min = 1, max = 4))]
+    pub target_kind: i32,
+    #[serde(default)]
+    pub target_id: u64,
+    #[validate(length(min = 1, max = 500))]
+    pub reason: String,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct CreatedId {
+    pub id: u64,
+}
+
+/// Admin: list warnings
+#[utoipa::path(
+    get,
+    path = "/v1/admin/warnings",
+    tag = "admin",
+    security(("bearer" = [])),
+    params(ListQuery),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn list(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    page: Pagination,
+    Query(q): Query<ListQuery>,
+) -> AppResult<ApiJson<Paged<WarningItem>>> {
+    user.require_admin()?;
+    let r = warning_service::admin_list(&state, q.kind, page).await?;
+    Ok(ApiJson(Paged::new(
+        r.list.into_iter().map(WarningItem::from).collect(),
+        r.total,
+        page.page,
+        page.page_size,
+    )))
+}
+
+/// Admin: issue a warning
+#[utoipa::path(
+    post,
+    path = "/v1/admin/warnings",
+    tag = "admin",
+    security(("bearer" = [])),
+    request_body = WarnForm,
+    responses((status = 200, description = "ok", body = CreatedId))
+)]
+pub async fn issue(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(f): ValidatedJson<WarnForm>,
+) -> AppResult<ApiJson<CreatedId>> {
+    let id = warning_service::admin_issue(
+        &state,
+        &user,
+        WarnInput {
+            target_uid: f.target_uid,
+            target_kind: f.target_kind,
+            target_id: f.target_id,
+            reason: &f.reason,
+        },
+    )
+    .await?;
+    Ok(ApiJson(CreatedId { id }))
+}

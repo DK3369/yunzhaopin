@@ -1,0 +1,18 @@
+[package]
+name = "phpyun-app"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "app"
+path = "src/main.rs"
+
+[dependencies]
+# Minimal set required by the entry point: Tokio runtime + axum server + tracing + core itself
+axum.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+anyhow.workspace = true
+phpyun_core.workspace = true
+phpyun_handlers.workspace = true
+phpyun_services.workspace = true
