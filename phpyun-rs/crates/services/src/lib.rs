@@ -60,6 +60,7 @@ pub mod recommend_service;
 pub mod recycle_bin_service;
 pub mod redeem_service;
 pub mod referral_service;
+pub mod region_service;
 pub mod registration_service;
 pub mod remark_service;
 pub mod report_service;

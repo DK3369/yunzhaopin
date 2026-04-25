@@ -48,6 +48,7 @@ pub mod rating;
 pub mod recycle_bin;
 pub mod redeem;
 pub mod referral;
+pub mod region;
 pub mod remark;
 pub mod report;
 pub mod resume;

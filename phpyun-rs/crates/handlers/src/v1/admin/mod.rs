@@ -17,6 +17,7 @@ pub mod nav;
 pub mod orders;
 pub mod recycle;
 pub mod redeem;
+pub mod regions;
 pub mod reports;
 pub mod site_settings;
 pub mod users;
@@ -45,6 +46,7 @@ pub fn router() -> Router<AppState> {
         .merge(orders::routes())
         .merge(recycle::routes())
         .merge(redeem::routes())
+        .merge(regions::routes())
         .merge(descriptions::routes())
         .merge(merge::routes())
         .merge(account_logout::routes())

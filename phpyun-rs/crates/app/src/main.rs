@@ -65,6 +65,9 @@ async fn async_main(config: Config, worker_threads: usize) -> anyhow::Result<()>
     // for admin-triggered reloads.
     phpyun_services::dict_service::init_and_spawn_refresher(&state).await;
 
+    // Global region tree (countries / states / cities). Same caching pattern as dict_service.
+    phpyun_services::region_service::init_and_spawn_refresher(&state).await;
+
     // Background task: export DB pool metrics every minute (includes writer + reader)
     {
         let state_bg = state.clone();

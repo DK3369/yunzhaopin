@@ -33,6 +33,7 @@ pub mod poster;
 pub mod qna;
 pub mod ratings;
 pub mod redeem;
+pub mod regions;
 pub mod register;
 pub mod resume_share;
 pub mod resumes;
@@ -65,6 +66,7 @@ pub fn router() -> Router<AppState> {
         .merge(companies::routes())
         .merge(resumes::routes())
         .merge(dict::routes())
+        .merge(regions::routes())
         .merge(articles::routes())
         .merge(hot_searches::routes())
         .merge(announcements::routes())
