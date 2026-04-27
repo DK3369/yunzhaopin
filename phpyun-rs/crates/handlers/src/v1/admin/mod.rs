@@ -7,6 +7,7 @@ pub mod audit_log;
 pub mod broadcasts;
 pub mod categories;
 pub mod company_cert;
+pub mod countries;
 pub mod dashboard;
 pub mod descriptions;
 pub mod dict_i18n;
@@ -47,6 +48,7 @@ pub fn router() -> Router<AppState> {
         .merge(recycle::routes())
         .merge(redeem::routes())
         .merge(regions::routes())
+        .merge(countries::routes())
         .merge(descriptions::routes())
         .merge(merge::routes())
         .merge(account_logout::routes())

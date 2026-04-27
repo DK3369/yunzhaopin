@@ -109,6 +109,16 @@ pub struct Config {
     /// Business-side callback URL where the WeChat callback lands (triggered by
     /// the client). When empty, inferred automatically from `web_base_url`.
     pub wechat_oauth_redirect: Option<String>,
+
+    // QQ Connect (open.qq.com) OAuth — code → access_token → openid.
+    pub qq_appid: Option<String>,
+    pub qq_appsecret: Option<String>,
+    pub qq_oauth_redirect: Option<String>,
+
+    // Weibo (open.weibo.com) OAuth — code → access_token → uid.
+    pub weibo_appid: Option<String>,
+    pub weibo_appsecret: Option<String>,
+    pub weibo_oauth_redirect: Option<String>,
 }
 
 fn env_parse<T: std::str::FromStr>(key: &str, default: T) -> T {
@@ -206,6 +216,16 @@ impl Config {
             wechat_appid: env::var("WECHAT_APPID").ok().filter(|s| !s.is_empty()),
             wechat_appsecret: env::var("WECHAT_APPSECRET").ok().filter(|s| !s.is_empty()),
             wechat_oauth_redirect: env::var("WECHAT_OAUTH_REDIRECT")
+                .ok()
+                .filter(|s| !s.is_empty()),
+
+            qq_appid: env::var("QQ_APPID").ok().filter(|s| !s.is_empty()),
+            qq_appsecret: env::var("QQ_APPSECRET").ok().filter(|s| !s.is_empty()),
+            qq_oauth_redirect: env::var("QQ_OAUTH_REDIRECT").ok().filter(|s| !s.is_empty()),
+
+            weibo_appid: env::var("WEIBO_APPID").ok().filter(|s| !s.is_empty()),
+            weibo_appsecret: env::var("WEIBO_APPSECRET").ok().filter(|s| !s.is_empty()),
+            weibo_oauth_redirect: env::var("WEIBO_OAUTH_REDIRECT")
                 .ok()
                 .filter(|s| !s.is_empty()),
         }

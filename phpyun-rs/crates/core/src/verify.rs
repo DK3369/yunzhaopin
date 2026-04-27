@@ -32,6 +32,10 @@ pub enum VerifyKind {
     SmsLogin,
     SmsResetPw,
     SmsMobileChange,
+    /// Anonymous one-shot shop-posting flow (PHPYun `wap/once::sendmsg`).
+    SmsOnceJob,
+    /// Anonymous tiny-resume flow (PHPYun `wap/tiny::sendmsg`).
+    SmsTinyResume,
     EmailReset,
     EmailChange,
 }
@@ -44,6 +48,8 @@ impl VerifyKind {
             Self::SmsLogin => "verify:sms:login",
             Self::SmsResetPw => "verify:sms:reset",
             Self::SmsMobileChange => "verify:sms:mchange",
+            Self::SmsOnceJob => "verify:sms:once",
+            Self::SmsTinyResume => "verify:sms:tiny",
             Self::EmailReset => "verify:email:reset",
             Self::EmailChange => "verify:email:change",
         }
@@ -162,6 +168,8 @@ mod tests {
             VerifyKind::SmsLogin.prefix(),
             VerifyKind::SmsResetPw.prefix(),
             VerifyKind::SmsMobileChange.prefix(),
+            VerifyKind::SmsOnceJob.prefix(),
+            VerifyKind::SmsTinyResume.prefix(),
             VerifyKind::EmailReset.prefix(),
             VerifyKind::EmailChange.prefix(),
         ];

@@ -30,6 +30,8 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/eval-papers", get(list_papers))
         .route("/eval-papers/{id}", get(paper_detail))
+        .route("/eval-papers/{id}/messages", get(list_messages))
+        .route("/eval-papers/{id}/recent-examinees", get(list_recent_examinees))
 }
 
 /// Assessment list item — all 7 columns of phpyun_eval_paper + CDN URL + formatted time.
@@ -181,4 +183,101 @@ pub async fn paper_detail(
             })
             .collect(),
     }))
+}
+
+// ==================== Paper messages (read) ====================
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct PaperMessageItem {
+    pub id: u64,
+    pub examid: u32,
+    pub uid: String,
+    pub usertype: Option<i32>,
+    pub message: Option<String>,
+    pub ctime: i64,
+    pub ctime_n: String,
+}
+
+impl From<phpyun_models::eval::repo::PaperMessage> for PaperMessageItem {
+    fn from(m: phpyun_models::eval::repo::PaperMessage) -> Self {
+        Self {
+            id: m.id,
+            examid: m.examid,
+            uid: m.uid,
+            usertype: m.usertype,
+            message: m.message,
+            ctime_n: fmt_dt(m.ctime),
+            ctime: m.ctime,
+        }
+    }
+}
+
+/// Public list of leave-messages on an assessment paper. Counterpart of PHP
+/// `evaluate.model.php::getMessageList`. Read-only — write side lives at
+/// `POST /v1/mcenter/eval-papers/{id}/messages`.
+#[utoipa::path(
+    get,
+    path = "/v1/wap/eval-papers/{id}/messages",
+    tag = "wap",
+    params(("id" = u64, Path)),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn list_messages(
+    State(state): State<AppState>,
+    Path(id): Path<u64>,
+    page: Pagination,
+) -> AppResult<ApiJson<Paged<PaperMessageItem>>> {
+    let examid = id as u32;
+    let pool = state.db.reader();
+    let (list, total) = tokio::join!(
+        phpyun_models::eval::repo::list_paper_messages(pool, examid, page.offset, page.limit),
+        phpyun_models::eval::repo::count_paper_messages(pool, examid),
+    );
+    Ok(ApiJson(Paged::new(
+        list?.into_iter().map(PaperMessageItem::from).collect(),
+        total?,
+        page.page,
+        page.page_size,
+    )))
+}
+
+// ==================== Recent examinees (social-proof sidebar) ====================
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ExamineeItem {
+    pub uid: u64,
+    pub last_taken_at: i64,
+    pub last_taken_at_n: String,
+    pub papers_taken: u64,
+}
+
+impl From<phpyun_models::eval::repo::ExamineeBrief> for ExamineeItem {
+    fn from(b: phpyun_models::eval::repo::ExamineeBrief) -> Self {
+        Self {
+            uid: b.uid,
+            last_taken_at_n: fmt_dt(b.last_taken_at),
+            last_taken_at: b.last_taken_at,
+            papers_taken: b.papers_taken,
+        }
+    }
+}
+
+/// Recent examinees who have taken this paper, grouped by uid. Counterpart
+/// of PHP `evaluate.model.php::getEvaluateLogList(groupby:uid, orderby:ctime,desc)`
+/// — drives the "他们也参加了测评" sidebar on the result page. PHP defaults
+/// `limit=12`; we accept 1..=50.
+#[utoipa::path(
+    get,
+    path = "/v1/wap/eval-papers/{id}/recent-examinees",
+    tag = "wap",
+    params(("id" = u64, Path)),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn list_recent_examinees(
+    State(state): State<AppState>,
+    Path(id): Path<u64>,
+) -> AppResult<ApiJson<Vec<ExamineeItem>>> {
+    let rows = phpyun_models::eval::repo::list_recent_examinees(state.db.reader(), id as u32, 12)
+        .await?;
+    Ok(ApiJson(rows.into_iter().map(ExamineeItem::from).collect()))
 }

@@ -1,11 +1,12 @@
 //! Public article / news browsing. Aligned with PHPYun `wap/article`.
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::get,
+    extract::{Path, State},
+    routing::{get, post},
     Router,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination};
+use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedQuery};
+use validator::Validate;
 use phpyun_models::article::repo::ArticleFilter;
 use phpyun_services::article_service;
 use serde::{Deserialize, Serialize};
@@ -15,15 +16,19 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/articles", get(list_articles))
         .route("/articles/{id}", get(article_detail))
+        .route("/articles/{id}/hits", post(bump_hits))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ArticleListQuery {
+    #[validate(length(max = 64))]
     pub category: Option<String>,
+    #[validate(length(max = 100))]
     pub keyword: Option<String>,
     #[serde(default)]
     pub rec_only: Option<bool>,
     #[serde(default = "default_did")]
+    #[validate(range(max = 9_999_999))]
     pub did: u32,
 }
 fn default_did() -> u32 {
@@ -232,7 +237,7 @@ impl ArticleDetail {
 pub async fn list_articles(
     State(state): State<AppState>,
     page: Pagination,
-    Query(q): Query<ArticleListQuery>,
+    ValidatedQuery(q): ValidatedQuery<ArticleListQuery>,
 ) -> AppResult<ApiJson<Paged<ArticleSummary>>> {
     let filter = ArticleFilter {
         category: q.category.as_deref(),
@@ -269,4 +274,27 @@ pub async fn article_detail(
 ) -> AppResult<ApiJson<ArticleDetail>> {
     let a = article_service::get_public(&state, id).await?;
     Ok(ApiJson(ArticleDetail::from_with_ctx(a, &state)))
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ArticleHitsResp {
+    pub hits: u64,
+}
+
+/// Bump and return the new hit count. Counterpart of PHP
+/// `wap/article::GetHits_action` (PHP echoes a `document.write(...)` snippet;
+/// Rust returns clean JSON).
+#[utoipa::path(
+    post,
+    path = "/v1/wap/articles/{id}/hits",
+    tag = "wap",
+    params(("id" = u64, Path)),
+    responses((status = 200, description = "ok", body = ArticleHitsResp))
+)]
+pub async fn bump_hits(
+    State(state): State<AppState>,
+    Path(id): Path<u64>,
+) -> AppResult<ApiJson<ArticleHitsResp>> {
+    let hits = phpyun_models::article::repo::bump_and_get_hits(state.db.pool(), id).await?;
+    Ok(ApiJson(ArticleHitsResp { hits }))
 }

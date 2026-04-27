@@ -2,13 +2,16 @@
 
 use axum::{
     extract::{Path, Query, State},
-    routing::get,
+    routing::{get, post},
     Router,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination};
+use phpyun_core::{
+    ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedQuery
+};
 use phpyun_services::special_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use validator::Validate;
 
 fn fmt_date(ts: i64) -> String {
     if ts <= 0 {
@@ -31,6 +34,7 @@ pub fn routes() -> Router<AppState> {
         .route("/specials/{id}", get(detail))
         .route("/specials/{id}/companies", get(companies))
         .route("/specials/{id}/jobs", get(jobs))
+        .route("/specials/{id}/apply", post(apply))
 }
 
 /// Special list item — aligned with all 20 columns of phpyun_special + CDN URL + formatted timestamps.
@@ -298,12 +302,51 @@ pub async fn companies(
     )))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct JobQuery {
     #[serde(default = "default_limit")]
     pub limit: u64,
 }
 fn default_limit() -> u64 { 50 }
+
+// ==================== Sign-up ====================
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ApplyResp {
+    pub id: u64,
+    /// Points deducted from the company's balance (0 if the event was free).
+    pub integral_spent: i32,
+}
+
+/// Company signs up to a special event — counterpart of PHP
+/// `wap/special::apply_action`. Requires `usertype=2` (employer); validation
+/// errors return 400 with a stable `param_invalid: <code>` tag (e.g.
+/// `special_signup_closed`, `special_already_applied`, `special_full`,
+/// `company_no_active_job`, `company_rating_not_eligible`,
+/// `insufficient_integral`).
+#[utoipa::path(
+    post,
+    path = "/v1/wap/specials/{id}/apply",
+    tag = "wap",
+    security(("bearer" = [])),
+    params(("id" = u64, Path)),
+    responses(
+        (status = 200, description = "ok", body = ApplyResp),
+        (status = 400, description = "Validation failed (see tag)"),
+        (status = 403, description = "Only employers (usertype=2) may apply"),
+    )
+)]
+pub async fn apply(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Path(id): Path<u64>,
+) -> AppResult<ApiJson<ApplyResp>> {
+    let r = special_service::apply(&state, &user, id).await?;
+    Ok(ApiJson(ApplyResp {
+        id: r.id,
+        integral_spent: r.integral_spent,
+    }))
+}
 
 /// Jobs inside a special (reuses the rich JobSummary: 34 fields with dictionary translations)
 #[utoipa::path(
@@ -316,7 +359,7 @@ fn default_limit() -> u64 { 50 }
 pub async fn jobs(
     State(state): State<AppState>,
     Path(id): Path<u64>,
-    Query(q): Query<JobQuery>,
+    ValidatedQuery(q): ValidatedQuery<JobQuery>,
 ) -> AppResult<ApiJson<Vec<SpecialJob>>> {
     let list = special_service::list_jobs(&state, id, q.limit.clamp(1, 200)).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;

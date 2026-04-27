@@ -69,11 +69,13 @@ pub async fn count_exchanges_by_user(_pool: &MySqlPool, _uid: u64) -> Result<u64
 }
 
 // ---------- User points ----------
-// Migrated to the real PHPYun field `phpyun_member.integral`.
+// PHPYun stores user points in `phpyun_member_statis.integral` (varchar(10)).
+// `phpyun_member` itself does NOT have an `integral` column — earlier code
+// queried the wrong table and 1054'd at runtime.
 
 pub async fn get_balance(pool: &MySqlPool, uid: u64) -> Result<UserIntegral, sqlx::Error> {
     let row: Option<(i64,)> =
-        sqlx::query_as("SELECT CAST(COALESCE(integral, 0) AS SIGNED) FROM phpyun_member WHERE uid = ?")
+        sqlx::query_as("SELECT CAST(COALESCE(integral, 0) AS SIGNED) FROM phpyun_member_statis WHERE uid = ?")
             .bind(uid)
             .fetch_optional(pool)
             .await?;
@@ -90,8 +92,11 @@ pub async fn try_deduct(
     delta: u32,
     _now: i64,
 ) -> Result<u64, sqlx::Error> {
+    // integral is varchar(10) in PHPYun; CAST forces numeric comparison.
     let res = sqlx::query(
-        "UPDATE phpyun_member SET integral = integral - ? WHERE uid = ? AND integral >= ?",
+        "UPDATE phpyun_member_statis \
+         SET integral = CAST(integral AS SIGNED) - ? \
+         WHERE uid = ? AND CAST(integral AS SIGNED) >= ?",
     )
     .bind(delta)
     .bind(uid)
@@ -107,10 +112,14 @@ pub async fn add_balance(
     delta: i32,
     _now: i64,
 ) -> Result<(), sqlx::Error> {
-    sqlx::query("UPDATE phpyun_member SET integral = GREATEST(CAST(integral AS SIGNED) + ?, 0) WHERE uid = ?")
-        .bind(delta)
-        .bind(uid)
-        .execute(pool)
-        .await?;
+    sqlx::query(
+        "UPDATE phpyun_member_statis \
+         SET integral = GREATEST(CAST(integral AS SIGNED) + ?, 0) \
+         WHERE uid = ?",
+    )
+    .bind(delta)
+    .bind(uid)
+    .execute(pool)
+    .await?;
     Ok(())
 }

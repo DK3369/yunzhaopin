@@ -11,10 +11,11 @@ use axum::{
     routing::get,
     Router,
 };
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, InfraError, MaybeUser};
+use phpyun_core::{ApiJson, AppError, AppResult, AppState, InfraError, MaybeUser, ValidatedQuery};
 use phpyun_services::poster_service::{self, PosterSpec, PosterTemplateView};
 use serde::Deserialize;
 use utoipa::IntoParams;
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -39,7 +40,7 @@ pub async fn list_templates(
     ))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct RenderQuery {
     /// Optional: specify the template id; if omitted, use the default template (highest sort/num under the same kind)
     pub hb: Option<u64>,
@@ -64,7 +65,7 @@ pub struct RenderQuery {
 pub async fn render_spec(
     State(state): State<AppState>,
     Path((kind, id)): Path<(String, u64)>,
-    Query(q): Query<RenderQuery>,
+    ValidatedQuery(q): ValidatedQuery<RenderQuery>,
 ) -> AppResult<ApiJson<PosterSpec>> {
     let spec = match kind.as_str() {
         "job" => poster_service::job_poster_spec(&state, q.hb, id).await?,
@@ -84,7 +85,7 @@ pub async fn render_spec(
 /// Aligned with PHPYun `getInviteRegHb_action`:
 /// - `uid` defaults to the currently logged-in user
 /// - When not logged in and `?uid=X` is passed, use `X` (matches PHP behavior)
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct InviteRegQuery {
     pub hb: Option<u64>,
     /// "Promoter uid" used when not logged in; ignored when logged in
@@ -101,7 +102,7 @@ pub struct InviteRegQuery {
 pub async fn invite_reg_self(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
-    Query(q): Query<InviteRegQuery>,
+    ValidatedQuery(q): ValidatedQuery<InviteRegQuery>,
 ) -> AppResult<ApiJson<PosterSpec>> {
     let inviter_uid = match user {
         Some(u) => u.uid,

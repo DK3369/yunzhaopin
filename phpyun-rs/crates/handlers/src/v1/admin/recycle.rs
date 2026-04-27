@@ -5,10 +5,11 @@ use axum::{
     routing::get,
     Router,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedQuery};
 use phpyun_services::recycle_bin_service::{self, RecycleView};
 use serde::Deserialize;
 use utoipa::IntoParams;
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -16,7 +17,7 @@ pub fn routes() -> Router<AppState> {
         .route("/recycle-bin/{id}", get(detail).post(purge))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
     pub tablename: Option<String>,
 }
@@ -34,7 +35,7 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<ListQuery>,
+    ValidatedQuery(q): ValidatedQuery<ListQuery>,
 ) -> AppResult<ApiJson<Paged<RecycleView>>> {
     user.require_admin()?;
     let r = recycle_bin_service::list(&state, q.tablename.as_deref(), page).await?;

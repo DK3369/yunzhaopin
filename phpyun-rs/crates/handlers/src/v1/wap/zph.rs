@@ -39,6 +39,7 @@ pub fn routes() -> Router<AppState> {
         .route("/zph", get(list))
         .route("/zph/{id}", get(detail))
         .route("/zph/{id}/companies", get(list_companies))
+        .route("/zph/{id}/jobs", get(list_jobs))
 }
 
 /// Job-fair list item -- mirrors all phpyun_zhaopinhui columns + city name + CDN URL + formatted timestamps.
@@ -483,4 +484,72 @@ pub async fn list_companies(
         page.page,
         page.page_size,
     )))
+}
+
+// ==================== Jobs participating in a fair ====================
+//
+// PHP `app/zph/index::getJobList_action` computes the active job set for a
+// fair by reading every signed-up company's `phpyun_zhaopinhui_com.jobid`
+// (CSV) and then loading those rows from `phpyun_company_job`. We mirror the
+// same shape: parse the CSVs, dedupe, and reuse `JobSummary` so the front
+// end can render the same card it uses elsewhere.
+
+use super::jobs::JobSummary;
+
+/// Jobs participating in a recruitment fair. Counterpart of PHP
+/// `app/zph/index::getJobList_action` — loads the job ids signed up for the
+/// fair (`phpyun_zhaopinhui_com.jobid` CSV per company), dedupes, then
+/// returns the live job rows that are still on-shelf (`state=1, r_status=1`).
+#[utoipa::path(
+    get,
+    path = "/v1/wap/zph/{id}/jobs",
+    tag = "wap",
+    params(("id" = u64, Path)),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn list_jobs(
+    State(state): State<AppState>,
+    Path(id): Path<u64>,
+) -> AppResult<ApiJson<Vec<JobSummary>>> {
+    let csvs = phpyun_models::zph::repo::jobid_csvs_for_zph(state.db.reader(), id).await?;
+
+    // Flatten + dedupe, preserving first-seen order so the listing roughly
+    // matches the PHP "sort DESC, ctime ASC" company ordering.
+    let mut seen: std::collections::HashSet<u64> = std::collections::HashSet::new();
+    let mut job_ids: Vec<u64> = Vec::new();
+    for csv in &csvs {
+        for piece in csv.split(',') {
+            if let Ok(jid) = piece.trim().parse::<u64>() {
+                if jid > 0 && seen.insert(jid) {
+                    job_ids.push(jid);
+                }
+            }
+        }
+    }
+    if job_ids.is_empty() {
+        return Ok(ApiJson(Vec::new()));
+    }
+
+    // Pull live rows in a single query; filter to on-shelf in-memory so we
+    // can keep the CSV-derived ordering. The PHP page caps the list at 40 —
+    // we keep that cap to avoid exploding the response on busy fairs.
+    let mut jobs =
+        phpyun_models::job::repo::list_by_ids(state.db.reader(), &job_ids)
+            .await
+            .unwrap_or_default();
+    jobs.retain(|j| j.state == 1 && j.r_status == 1 && j.status == 0);
+    let mut by_id: std::collections::HashMap<u64, phpyun_models::job::entity::Job> =
+        jobs.into_iter().map(|j| (j.id, j)).collect();
+
+    let dicts = phpyun_services::dict_service::get(&state).await?;
+    let now = phpyun_core::clock::now_ts();
+
+    let items: Vec<JobSummary> = job_ids
+        .into_iter()
+        .take(40)
+        .filter_map(|jid| by_id.remove(&jid))
+        .map(|j| JobSummary::from_with_dict_fav(j, &dicts, now, false))
+        .collect();
+
+    Ok(ApiJson(items))
 }

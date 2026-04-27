@@ -6,7 +6,7 @@ use axum::{
     Router,
 };
 use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
 };
 use phpyun_services::admin_service;
 use serde::{Deserialize, Serialize};
@@ -20,7 +20,7 @@ pub fn routes() -> Router<AppState> {
         .route("/jobs/batch/state", post(batch_set_state))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct JobListQuery {
     /// 0=pending / 1=approved / 2=rejected
     pub state: Option<i32>,
@@ -44,7 +44,7 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<JobListQuery>,
+    ValidatedQuery(q): ValidatedQuery<JobListQuery>,
 ) -> AppResult<ApiJson<Paged<AdminJobItem>>> {
     user.require_admin()?;
     let r = admin_service::list_jobs(&state, q.state, page).await?;

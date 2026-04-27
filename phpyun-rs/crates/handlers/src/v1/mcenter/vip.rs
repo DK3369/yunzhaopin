@@ -19,7 +19,8 @@ pub fn routes() -> Router<AppState> {
         .route("/vip/packages", get(list_packages))
         .route("/vip/current", get(get_current))
         .route("/vip/orders", post(create_order).get(list_orders))
-        .route("/vip/orders/{order_no}", post(cancel_order));
+        .route("/vip/orders/{order_no}", post(cancel_order))
+        .route("/vip/quote/{kind}/{id}", get(quote_price));
 
     // mock-paid is only mounted in debug builds; the release binary does not include this route.
     #[cfg(debug_assertions)]
@@ -286,4 +287,70 @@ pub async fn mock_paid(
     let fake_tx = format!("MOCK-{}", uuid::Uuid::now_v7().simple());
     vip_service::mark_paid(&state, &order_no, &fake_tx).await?;
     Ok(ApiJson(json::json!({ "ok": true, "pay_tx_id": fake_tx })))
+}
+
+// ==================== Price quote ====================
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct PriceQuoteView {
+    pub id: u64,
+    pub name: String,
+    pub service_price: f64,
+    pub yh_price: f64,
+    pub price: f64,
+    /// 1=cash, 2=integral-pay, 3=insufficient-integral fallback to cash.
+    pub style: i32,
+    pub promo_active: bool,
+    pub user_integral: i64,
+}
+
+impl From<phpyun_services::vip_service::PriceQuote> for PriceQuoteView {
+    fn from(p: phpyun_services::vip_service::PriceQuote) -> Self {
+        Self {
+            id: p.id,
+            name: p.name,
+            service_price: p.service_price,
+            yh_price: p.yh_price,
+            price: p.price,
+            style: p.style,
+            promo_active: p.promo_active,
+            user_integral: p.user_integral,
+        }
+    }
+}
+
+/// Compute the effective price the current user pays for a package.
+///
+/// Counterpart of PHP `ajax::getPackPrice_action` (`kind=pack`) and
+/// `ajax::getVipPrice_action` (`kind=vip`). Combines:
+///   - rating-tier discount (`service_discount`)
+///   - active promo window (`time_start < now < time_end`)
+///   - integral-payment availability (`com_integral_online == 3` and `kind`
+///     not in `sy_only_price`)
+///   - the user's integral balance
+///
+/// Returns 403 for non-employers; 400 when the package id is unknown or
+/// `kind` is not `pack` / `vip`.
+#[utoipa::path(
+    get,
+    path = "/v1/mcenter/vip/quote/{kind}/{id}",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    params(
+        ("kind" = String, Path, description = "pack / vip"),
+        ("id" = u64, Path),
+    ),
+    responses(
+        (status = 200, description = "ok", body = PriceQuoteView),
+        (status = 400, description = "Invalid kind / package not found"),
+        (status = 403, description = "Not an employer"),
+    )
+)]
+pub async fn quote_price(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Path((kind, id)): Path<(String, u64)>,
+) -> AppResult<ApiJson<PriceQuoteView>> {
+    let q = vip_service::quote_package_price(&state, &user, id, &kind).await?;
+    Ok(ApiJson(PriceQuoteView::from(q)))
 }

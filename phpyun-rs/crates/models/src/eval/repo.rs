@@ -109,6 +109,58 @@ pub async fn create_log(
     Ok(res.last_insert_id())
 }
 
+/// Look up a single log by id (with owner check). Used by `gradeshow_action`
+/// equivalent. Returns `None` when the log doesn't exist OR doesn't belong
+/// to the caller (avoids leaking other users' grades).
+pub async fn find_log_for_owner(
+    pool: &MySqlPool,
+    log_id: u64,
+    uid: u64,
+) -> Result<Option<EvalLog>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {LOG_FIELDS} FROM phpyun_evaluate_log \
+         WHERE id = ? AND uid = ? LIMIT 1"
+    );
+    sqlx::query_as::<_, EvalLog>(&sql)
+        .bind(log_id)
+        .bind(uid)
+        .fetch_optional(pool)
+        .await
+}
+
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize, serde::Deserialize)]
+pub struct ExamineeBrief {
+    pub uid: u64,
+    pub last_taken_at: i64,
+    /// Number of distinct papers this user has taken (PHP groups by uid).
+    pub papers_taken: u64,
+}
+
+/// Recent examinees who have taken any paper, grouped by uid. Counterpart
+/// of PHP `evaluate.model.php::getEvaluateLogList(groupby:uid, orderby:ctime,desc)`
+/// — drives the "他们也参加了测评" sidebar.
+pub async fn list_recent_examinees(
+    pool: &MySqlPool,
+    examid: u32,
+    limit: u64,
+) -> Result<Vec<ExamineeBrief>, sqlx::Error> {
+    sqlx::query_as::<_, ExamineeBrief>(
+        "SELECT \
+            CAST(uid AS UNSIGNED) AS uid, \
+            CAST(MAX(ctime) AS SIGNED) AS last_taken_at, \
+            CAST(COUNT(DISTINCT examid) AS UNSIGNED) AS papers_taken \
+         FROM phpyun_evaluate_log \
+         WHERE uid > 0 AND examid = ? \
+         GROUP BY uid \
+         ORDER BY last_taken_at DESC \
+         LIMIT ?",
+    )
+    .bind(examid)
+    .bind(limit)
+    .fetch_all(pool)
+    .await
+}
+
 pub async fn list_logs_by_user(
     pool: &MySqlPool,
     uid: u64,
@@ -136,5 +188,83 @@ pub async fn count_logs_by_user(
             .bind(uid)
             .fetch_one(pool)
             .await?;
+    Ok(n.max(0) as u64)
+}
+
+// ==================== Eval paper leave-message ====================
+//
+// Counterpart of PHP `evaluate/exampaper::message_action` writes +
+// `evaluate.model.php::getMessageList` reads. Backed by
+// `phpyun_evaluate_leave_message`.
+
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize, serde::Deserialize)]
+pub struct PaperMessage {
+    pub id: u64,
+    pub examid: u32,
+    pub uid: String,
+    pub usertype: Option<i32>,
+    pub message: Option<String>,
+    pub ctime: i64,
+}
+
+const PMSG_FIELDS: &str = "\
+    CAST(id AS UNSIGNED) AS id, \
+    CAST(COALESCE(examid, 0) AS UNSIGNED) AS examid, \
+    COALESCE(uid, '') AS uid, \
+    CAST(usertype AS SIGNED) AS usertype, \
+    message, \
+    CAST(COALESCE(ctime, 0) AS SIGNED) AS ctime";
+
+pub async fn insert_paper_message(
+    pool: &MySqlPool,
+    examid: u32,
+    uid: u64,
+    usertype: i32,
+    message: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "INSERT INTO phpyun_evaluate_leave_message (examid, uid, usertype, message, ctime) \
+         VALUES (?, ?, ?, ?, ?)",
+    )
+    .bind(examid)
+    .bind(uid.to_string())
+    .bind(usertype)
+    .bind(message)
+    .bind(now)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
+pub async fn list_paper_messages(
+    pool: &MySqlPool,
+    examid: u32,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PaperMessage>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {PMSG_FIELDS} FROM phpyun_evaluate_leave_message \
+         WHERE examid = ? \
+         ORDER BY ctime DESC, id DESC LIMIT ? OFFSET ?"
+    );
+    sqlx::query_as::<_, PaperMessage>(&sql)
+        .bind(examid)
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await
+}
+
+pub async fn count_paper_messages(
+    pool: &MySqlPool,
+    examid: u32,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_evaluate_leave_message WHERE examid = ?",
+    )
+    .bind(examid)
+    .fetch_one(pool)
+    .await?;
     Ok(n.max(0) as u64)
 }

@@ -161,13 +161,26 @@ pub struct TransferItem {
 
 impl From<phpyun_models::integral_transfer::entity::IntegralTransfer> for TransferItem {
     fn from(t: phpyun_models::integral_transfer::entity::IntegralTransfer) -> Self {
+        // The new ledger model is "one row per side" (debit + credit), not
+        // "one row per transfer". For the API response we collapse: if
+        // order_price > 0 this is the credit side (current uid is recipient);
+        // if < 0, current uid is sender. We can't recover the COUNTERPARTY
+        // uid from PHPYun's `phpyun_company_pay` schema (no `to_uid` column),
+        // so set the unknown side to 0 — front-ends should rely on `points`
+        // sign + `note` rather than the resolved peer for this view.
+        let points_signed = t.order_price as i64;
+        let (from_uid, to_uid, points) = if points_signed >= 0 {
+            (0, t.com_id, points_signed as u32)
+        } else {
+            (t.com_id, 0, (-points_signed) as u32)
+        };
         Self {
             id: t.id,
-            from_uid: t.from_uid,
-            to_uid: t.to_uid,
-            points: t.points,
-            note: t.note,
-            created_at: t.created_at,
+            from_uid,
+            to_uid,
+            points,
+            note: t.pay_remark,
+            created_at: t.pay_time,
         }
     }
 }

@@ -5,10 +5,11 @@ use axum::{
     routing::get,
     Router,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination};
+use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedQuery};
 use phpyun_services::gongzhao_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use validator::Validate;
 
 fn fmt_date(ts: i64) -> String {
     if ts <= 0 {
@@ -40,7 +41,7 @@ pub fn routes() -> Router<AppState> {
         .route("/gongzhao/{id}", get(detail))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
     pub tag: Option<String>,
 }
@@ -193,7 +194,7 @@ impl GzDetail {
 pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
-    Query(q): Query<ListQuery>,
+    ValidatedQuery(q): ValidatedQuery<ListQuery>,
 ) -> AppResult<ApiJson<Paged<GzSummary>>> {
     let r = gongzhao_service::list(&state, q.tag.as_deref(), page).await?;
     Ok(ApiJson(Paged::new(

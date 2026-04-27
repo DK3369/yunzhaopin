@@ -6,7 +6,7 @@ use axum::{
     Router,
 };
 use phpyun_core::{
-    json, ApiJson, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson,
+    json, ApiJson, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson, ValidatedQuery
 };
 use phpyun_services::once_service::{self, ManageOp, OnceSearch, UpsertInput};
 use serde::{Deserialize, Serialize};
@@ -19,9 +19,10 @@ pub fn routes() -> Router<AppState> {
         .route("/once-jobs/{id}", get(show).post(update))
         .route("/once-jobs/{id}/verify", post(verify))
         .route("/once-jobs/{id}/refresh", post(refresh))
+        .route("/once-jobs/{id}/pay", post(pay))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
     pub keyword: Option<String>,
     pub province_id: Option<i32>,
@@ -73,7 +74,7 @@ impl From<phpyun_models::once_job::entity::OnceJob> for OnceListItem {
 pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
-    Query(q): Query<ListQuery>,
+    ValidatedQuery(q): ValidatedQuery<ListQuery>,
 ) -> AppResult<ApiJson<Paged<OnceListItem>>> {
     let search = OnceSearch {
         keyword: q.keyword,
@@ -318,3 +319,71 @@ pub async fn refresh(
 
 // Delete a one-off recruitment: now triggered via `POST /v1/wap/once-jobs/{id}` body `{"password":..., "status":2}`.
 // The underlying repo::delete_with_password has been changed to UPDATE SET status=2; no physical DELETE.
+
+// ==================== Pay ====================
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct PayForm {
+    /// Posting password (md5-hashed by the server before comparison).
+    #[validate(length(min = 4, max = 64))]
+    pub password: String,
+    /// Gateway tag — `alipay` / `wxpay` / `wxh5` etc. Just a label here; the
+    /// downstream gateway endpoint reads it.
+    #[validate(length(min = 1, max = 32))]
+    pub paytype: String,
+    /// `phpyun_once_price_gear.id` — the duration package the user picked.
+    pub oncepricegear: i32,
+    /// Multi-site identifier (PHP `did`); 1 by default.
+    #[serde(default = "default_did")]
+    pub did: u32,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct PayCreated {
+    pub order_id: String,
+    pub price: f64,
+    pub days: i32,
+    /// 1 = pending payment (call the gateway), 2 = already paid (free gear).
+    pub state: i32,
+    pub fast: String,
+}
+
+/// Create a payment order for a one-off shop posting — counterpart of PHP
+/// `wap/once::getOrder_action`. The downstream gateway redirect (alipay /
+/// wxpay) is **not** performed here; the front-end uses `order_id` + the
+/// existing `/v1/wap/pay-callback/*` endpoints to drive the gateway.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/once-jobs/{id}/pay",
+    tag = "wap",
+    params(("id" = u64, Path)),
+    request_body = PayForm,
+    responses(
+        (status = 200, description = "ok", body = PayCreated),
+        (status = 400, description = "Invalid gear / wrong password / once-job not found"),
+    )
+)]
+pub async fn pay(
+    State(state): State<AppState>,
+    Path(id): Path<u64>,
+    ValidatedJson(f): ValidatedJson<PayForm>,
+) -> AppResult<ApiJson<PayCreated>> {
+    let r = once_service::create_pay_order(
+        &state,
+        once_service::PayInput {
+            once_id: id,
+            password: &f.password,
+            pay_type: &f.paytype,
+            gear_id: f.oncepricegear,
+            did: f.did as i32,
+        },
+    )
+    .await?;
+    Ok(ApiJson(PayCreated {
+        order_id: r.order_id,
+        price: r.price,
+        days: r.days,
+        state: r.state,
+        fast: r.fast,
+    }))
+}

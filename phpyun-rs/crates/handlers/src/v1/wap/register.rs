@@ -12,7 +12,7 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use phpyun_core::{validators, ApiJson, AppResult, AppState, ClientIp, ValidatedJson};
+use phpyun_core::{validators, ApiJson, AppResult, AppState, ClientIp, ValidatedJson, ValidatedQuery};
 use phpyun_models::user::repo as user_repo;
 use phpyun_services::registration_service::{self, RegisterInput};
 use serde::{Deserialize, Serialize};
@@ -147,7 +147,7 @@ pub async fn register(
 
 // ==================== Pre-check & rules ====================
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct CheckQuery {
     /// Field category to check: `username` / `mobile` / `email`
     pub field: String,
@@ -176,7 +176,7 @@ pub struct CheckResult {
 )]
 pub async fn check_availability(
     State(state): State<AppState>,
-    Query(q): Query<CheckQuery>,
+    ValidatedQuery(q): ValidatedQuery<CheckQuery>,
 ) -> AppResult<ApiJson<CheckResult>> {
     let db = state.db.reader();
     let taken = match q.field.as_str() {

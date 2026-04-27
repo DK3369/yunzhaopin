@@ -10,7 +10,7 @@
 
 use phpyun_auth::md5_hex;
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, AppResult, AppState, InfraError, Pagination};
+use phpyun_core::{clock, AppError, AppResult, AppState, InfraError, Pagination};
 use phpyun_models::once_job::entity::OnceJob;
 use phpyun_models::once_job::repo as once_repo;
 
@@ -274,4 +274,131 @@ pub async fn usage_today(state: &AppState, login_ip: &str) -> AppResult<(u64, u6
         once_repo::count_today_total(state.db.reader(), begin),
     );
     Ok((by_ip?, total?))
+}
+
+// ==================== Pay flow ====================
+
+pub struct PayResult {
+    pub order_id: String,
+    pub price: f64,
+    pub days: i32,
+    /// 1 = pending payment (gateway redirect needed), 2 = already paid
+    /// (gear price was 0, no gateway round-trip required).
+    pub state: i32,
+    pub fast: String,
+}
+
+#[derive(Debug, Clone)]
+pub struct PayInput<'a> {
+    pub once_id: u64,
+    pub password: &'a str,
+    pub pay_type: &'a str,
+    pub gear_id: i32,
+    pub did: i32,
+}
+
+/// Create a payment order for a once-job posting.
+/// Counterpart of PHP `wap/once::getOrder_action` + `once.model.php::payOnce`.
+///
+/// Caller authenticates via the once_job's posting password (md5), so this is
+/// a public endpoint — no JWT required (mirrors PHP).
+pub async fn create_pay_order(state: &AppState, input: PayInput<'_>) -> AppResult<PayResult> {
+    if input.once_id == 0 {
+        return Err(InfraError::InvalidParam("once_id".into()).into());
+    }
+    if input.password.is_empty() {
+        return Err(InfraError::InvalidParam("password".into()).into());
+    }
+    if input.gear_id == 0 {
+        return Err(InfraError::InvalidParam("oncepricegear".into()).into());
+    }
+
+    let pool = state.db.pool();
+    let pwd_md5 = md5_hex(input.password);
+    if !once_repo::verify_password(pool, input.once_id, &pwd_md5).await? {
+        return Err(TinyError::PasswordMismatch.into());
+    }
+
+    let (days, price) = once_repo::find_price_gear(pool, input.gear_id)
+        .await?
+        .ok_or_else(|| AppError::new(InfraError::InvalidParam("gear_not_found".into())))?;
+
+    // Wipe stale pending orders on the same once_job before creating a new one.
+    let _ = once_repo::delete_pending_orders_for_once(pool, input.once_id).await;
+
+    let now = clock::now_ts();
+    let suffix1 = uuid::Uuid::new_v4().as_u128() as u32 % 100_000;
+    let suffix2 = uuid::Uuid::new_v4().as_u128() as u32 % 100_000;
+    let order_id = format!("{}{:05}", now, suffix1);
+    let fast = format!("{}{:05}", now, suffix2);
+
+    let state_code = if price <= 0.0 { 2 } else { 1 };
+    let _ = once_repo::insert_once_order(
+        pool,
+        once_repo::OrderInsert {
+            uid: 0, // PHP doesn't fill uid for once orders (anonymous posters)
+            order_id: &order_id,
+            pay_type: input.pay_type,
+            price,
+            now,
+            state: state_code,
+            did: input.did,
+            once_id: input.once_id,
+            fast: &fast,
+        },
+    )
+    .await?;
+
+    if state_code == 2 {
+        let _ = once_repo::mark_once_paid(pool, input.once_id).await;
+    }
+
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("once.pay_order_created", Actor::anonymous()).target(&order_id),
+    )
+    .await;
+
+    Ok(PayResult {
+        order_id,
+        price,
+        days,
+        state: state_code,
+        fast,
+    })
+}
+
+pub struct PendingOrdersPage {
+    pub list: Vec<phpyun_models::once_job::repo::OnceOrder>,
+    pub total: u64,
+}
+
+pub async fn list_my_pending_orders(
+    state: &AppState,
+    user: &phpyun_core::AuthenticatedUser,
+    page: Pagination,
+) -> AppResult<PendingOrdersPage> {
+    user.require_employer()?;
+    let pool = state.db.reader();
+    let (list, total) = tokio::join!(
+        once_repo::list_pending_once_orders(pool, user.uid, page.offset, page.limit),
+        once_repo::count_pending_once_orders(pool, user.uid),
+    );
+    Ok(PendingOrdersPage {
+        list: list?,
+        total: total?,
+    })
+}
+
+pub async fn cancel_pending_order(
+    state: &AppState,
+    user: &phpyun_core::AuthenticatedUser,
+    order_id: u64,
+) -> AppResult<()> {
+    user.require_employer()?;
+    let n = once_repo::cancel_pending_once_order(state.db.pool(), user.uid, order_id).await?;
+    if n == 0 {
+        return Err(InfraError::InvalidParam("order_not_cancellable".into()).into());
+    }
+    Ok(())
 }

@@ -1,17 +1,18 @@
 //! Message center.
 
 use axum::{
-    extract::{Path, Query, State},
+    extract::{Path, State},
     routing::{get, post},
     Router,
 };
 use phpyun_core::json;
 use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+    ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedQuery,
 };
-use phpyun_services::message_service;
+use phpyun_services::{broadcast_service, chat_service, message_service, warning_service};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -19,10 +20,12 @@ pub fn routes() -> Router<AppState> {
         .route("/messages/{id}/read", post(mark_read))
         .route("/messages/read-all", post(mark_all_read))
         .route("/messages/{id}", post(remove))
+        .route("/messages/unread-summary", get(unread_summary))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct MessageListQuery {
+    #[validate(length(max = 64))]
     pub category: Option<String>,
     #[serde(default)]
     pub unread_only: Option<bool>,
@@ -37,52 +40,63 @@ fn fmt_dt(ts: i64) -> String {
         .unwrap_or_default()
 }
 
-/// Message item — all 9 columns of `phpyun_message` + formatted time + ref_kind name + derived `is_read` bool.
+/// Message item — backed by `phpyun_sysmsg`.
+///
+/// PHP `phpyun_sysmsg` only stores `content` + `usertype` + `remind_status`;
+/// no `category` / `title` / `ref_kind` / `ref_id` columns. We keep those
+/// fields on the DTO (as constants) for backward-compatible response shape:
+///   - `category` → "system"
+///   - `title`    → "" (PHP merges title into content at write-time)
+///   - `ref_kind` → 0 / "none"
+///   - `ref_id`   → 0
+/// Frontends that ignored these fields keep working; ones that read them
+/// see harmless defaults.
 #[derive(Debug, Serialize, ToSchema)]
 pub struct MessageItem {
     pub id: u64,
     pub uid: u64,
+    /// 1=jobseeker / 2=employer (PHP `usertype`).
+    pub usertype: i32,
+    /// Always "system" — kept for response-shape stability with old clients.
     pub category: String,
+    /// Always empty — kept for response-shape stability.
     pub title: String,
+    /// Message text (PHP `content`).
     pub body: Option<String>,
+    /// Always 0 — kept for response-shape stability.
     pub ref_kind: i32,
-    /// ref_kind text (none/job/company/resume/apply/interview)
+    /// Always "none" — kept for response-shape stability.
     pub ref_kind_n: String,
+    /// Always 0 — kept for response-shape stability.
     pub ref_id: u64,
+    /// PHP `remind_status`: 1=unread, 0=read.
+    pub remind_status: i32,
     pub is_read_int: i32,
     pub is_read: bool,
     pub created_at: i64,
     pub created_at_n: String,
-}
-
-fn ref_kind_name(k: i32) -> &'static str {
-    use phpyun_models::message::entity as me;
-    match k {
-        me::REF_NONE => "none",
-        me::REF_JOB => "job",
-        me::REF_COMPANY => "company",
-        me::REF_RESUME => "resume",
-        me::REF_APPLY => "apply",
-        me::REF_INTERVIEW => "interview",
-        _ => "unknown",
-    }
+    pub username: Option<String>,
 }
 
 impl From<phpyun_models::message::entity::Message> for MessageItem {
     fn from(m: phpyun_models::message::entity::Message) -> Self {
+        let is_read = m.remind_status == 0;
         Self {
             id: m.id,
             uid: m.uid,
-            category: m.category,
-            title: m.title,
-            body: m.body,
-            ref_kind_n: ref_kind_name(m.ref_kind).to_string(),
-            ref_kind: m.ref_kind,
-            ref_id: m.ref_id,
-            is_read: m.is_read == 1,
-            is_read_int: m.is_read,
+            usertype: m.usertype,
+            category: "system".to_string(),
+            title: String::new(),
+            body: Some(m.body),
+            ref_kind: 0,
+            ref_kind_n: "none".to_string(),
+            ref_id: 0,
+            remind_status: m.remind_status,
+            is_read_int: if is_read { 1 } else { 0 },
+            is_read,
             created_at_n: fmt_dt(m.created_at),
             created_at: m.created_at,
+            username: m.username,
         }
     }
 }
@@ -100,7 +114,7 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<MessageListQuery>,
+    ValidatedQuery(q): ValidatedQuery<MessageListQuery>,
 ) -> AppResult<ApiJson<Paged<MessageItem>>> {
     let r = message_service::list(
         &state,
@@ -168,4 +182,52 @@ pub async fn remove(
 ) -> AppResult<ApiJson<json::Value>> {
     message_service::delete(&state, &user, id).await?;
     Ok(ApiJson(json::json!({ "ok": true })))
+}
+
+// ==================== Aggregate unread badge ====================
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct UnreadSummary {
+    /// `phpyun_sysmsg` (system messages, the legacy table the message centre reads).
+    pub messages: u64,
+    /// `phpyun_chat` private messages between users.
+    pub chat: u64,
+    /// `phpyun_broadcast` system-wide broadcasts.
+    pub broadcasts: u64,
+    /// `phpyun_warning` risk-control warnings shown to the user.
+    pub warnings: u64,
+    /// Sum of all four — the number to badge on the bell icon.
+    pub total: u64,
+}
+
+/// Aggregate unread counts across every notification channel — counterpart of
+/// PHP `wap/ajax::msgNum_action`. Avoids 4 frontend round-trips on every page.
+#[utoipa::path(
+    get,
+    path = "/v1/mcenter/messages/unread-summary",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok", body = UnreadSummary))
+)]
+pub async fn unread_summary(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiJson<UnreadSummary>> {
+    let (messages, chat, broadcasts, warnings) = tokio::join!(
+        message_service::unread_count(&state, &user),
+        chat_service::unread_count(&state, &user),
+        broadcast_service::unread_count(&state, &user),
+        warning_service::unread_count(&state, &user),
+    );
+    let messages = messages.unwrap_or(0);
+    let chat = chat.unwrap_or(0);
+    let broadcasts = broadcasts.unwrap_or(0);
+    let warnings = warnings.unwrap_or(0);
+    Ok(ApiJson(UnreadSummary {
+        messages,
+        chat,
+        broadcasts,
+        warnings,
+        total: messages + chat + broadcasts + warnings,
+    }))
 }

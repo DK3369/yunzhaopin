@@ -72,6 +72,38 @@ pub async fn list_children(
         .await
 }
 
+/// Recommended categories — counterpart of PHP `category::getHotJobClass(rec=1)`.
+/// Filters by the `rec = 1` flag (only `phpyun_job_class` and `phpyun_comclass`
+/// have this column; other kinds get an empty list rather than an error).
+pub async fn list_recommended(
+    pool: &MySqlPool,
+    kind: &str,
+    limit: u64,
+) -> Result<Vec<Category>, sqlx::Error> {
+    let Some((table, pc)) = resolve(kind) else {
+        return Ok(vec![]);
+    };
+    // Only `phpyun_job_class` ships a `rec` column; other tables (comclass,
+    // city_class, partclass, q_class) don't, so fall back to "top-N by sort"
+    // — same UX as PHP's default "热门类别" widget.
+    let has_rec = table == "phpyun_job_class";
+    let sql = if has_rec {
+        format!(
+            "{} WHERE COALESCE(rec, 0) = 1 ORDER BY sort DESC, id ASC LIMIT ?",
+            select_sql(table, pc, kind)
+        )
+    } else {
+        format!(
+            "{} ORDER BY sort DESC, id ASC LIMIT ?",
+            select_sql(table, pc, kind)
+        )
+    };
+    sqlx::query_as::<_, Category>(&sql)
+        .bind(limit)
+        .fetch_all(pool)
+        .await
+}
+
 // ---------- admin CRUD ----------
 
 pub async fn admin_list_by_kind(

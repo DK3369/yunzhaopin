@@ -1,10 +1,27 @@
 <?php
+/*
+ * ============================================================
+ *  安全审计禁用 — 2026-04-26
+ * ------------------------------------------------------------
+ *  此控制器原本提供"一键升级"功能,但链路上存在以下严重问题:
+ *    1. step1 从远端拉取下载地址,无 host 白名单
+ *    2. step2 down_file 无 SSL 证书强校验、无下载源校验
+ *    3. step3 deal_zip 用 ZipArchive::extractTo,无 zip-slip 防护
+ *    4. step4 copy_merge 递归覆盖 APP_PATH 任意 PHP 文件
+ *  完整分析见 SECURITY_AUDIT_REPORT.md 的 CR-4 条目。
+ *
+ *  处理方式:每个方法的方法体用 /* ... 注释标记包裹禁用,原始代码完整保留,
+ *  方法签名与类签名保持不变,PHP 解析器可正常加载;调用时方法返回 null。
+ *  未来如需恢复此功能必须先修复上述 4 点,然后删除每个方法体首尾的注释标记即可。
+ * ============================================================
+ */
 
 class index_controller extends common{
     /*
      *zip解压
      */
     function deal_zip($file, $todir){
+        /* SECURITY DISABLED 2026-04-26 — CR-4
         if (trim($file) == '' || trim($todir) == '') {
             return false;
         }
@@ -22,12 +39,14 @@ class index_controller extends common{
         } else {
             return false;
         }
+        */
     }
 
     /**
      * 自动升级
      */
     function index_action(){
+        /* SECURITY DISABLED 2026-04-26 — CR-4
         session_start();
         if (!$this->config['sy_update_secret']) {
             echo '请先配置自动升级秘钥！';
@@ -91,6 +110,7 @@ class index_controller extends common{
             }
             echo '准备完毕，<a href="'.$this->config[sy_weburl].'/update/index.php">开始升级</a>';
         }
+        */
     }
 
     /*
@@ -101,6 +121,7 @@ class index_controller extends common{
      * $return int 处理的文件数
      */
     function copy_merge($source, $target, $currVersion){
+        /* SECURITY DISABLED 2026-04-26 — CR-4
         if (trim($source) == '' || trim($target) == '') {
             return false;
         }
@@ -143,6 +164,7 @@ class index_controller extends common{
             }
         }
         return $cnt;
+        */
     }
 
     /*
@@ -151,6 +173,7 @@ class index_controller extends common{
      * $return bool 成功与否
      */
     function deldir($dir){
+        /* SECURITY DISABLED 2026-04-26 — CR-4
         if (trim($dir) == '') {
             return false;
         }
@@ -173,6 +196,7 @@ class index_controller extends common{
         } else {
             return false;
         }
+        */
     }
 
     /*
@@ -182,6 +206,7 @@ class index_controller extends common{
      * $return res 成功返回下载的信息 失败返回false
      */
     function down_file($url, $save_dir){
+        /* SECURITY DISABLED 2026-04-26 — CR-4
         if (trim($url) == '' || trim($save_dir) == '') {
             return false;
         }
@@ -204,6 +229,7 @@ class index_controller extends common{
             'file_name' => $filename,
             'save_path' => $save_dir . $filename
         );
+        */
     }
 }
 ?>

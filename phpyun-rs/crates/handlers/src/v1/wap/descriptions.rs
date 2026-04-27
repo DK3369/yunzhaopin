@@ -5,16 +5,19 @@ use axum::{
     routing::get,
     Router,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination};
+use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedQuery};
 use phpyun_services::description_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/descriptions/classes", get(list_classes))
         .route("/descriptions", get(list))
         .route("/descriptions/{id}", get(get_one))
+        .route("/descriptions/by-name/{name}", get(get_by_name))
+        .route("/legal/{slug}", get(get_legal_page))
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -62,7 +65,7 @@ pub async fn list_classes(
     Ok(ApiJson(l.iter().cloned().map(ClassItem::from).collect()))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
     pub class_id: Option<u64>,
 }
@@ -116,7 +119,7 @@ impl From<phpyun_models::description::entity::Description> for DescItem {
 pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
-    Query(q): Query<ListQuery>,
+    ValidatedQuery(q): ValidatedQuery<ListQuery>,
 ) -> AppResult<ApiJson<Paged<DescItem>>> {
     let r = description_service::list(&state, q.class_id, true, page).await?;
     Ok(ApiJson(Paged::new(
@@ -181,5 +184,75 @@ pub async fn get_one(
             "description_hidden".into(),
         )));
     }
+    Ok(ApiJson(d.into()))
+}
+
+/// Look up a description by its hand-typed `name` (PHPYun's `phpyun_description.name`).
+/// Used for any `getDes(array('name' => ...))` PHP equivalent — accepts the
+/// raw URL-encoded Chinese string.
+#[utoipa::path(
+    get,
+    path = "/v1/wap/descriptions/by-name/{name}",
+    tag = "wap",
+    params(("name" = String, Path)),
+    responses(
+        (status = 200, description = "ok", body = DescDetail),
+        (status = 404, description = "Not found"),
+    )
+)]
+pub async fn get_by_name(
+    State(state): State<AppState>,
+    Path(name): Path<String>,
+) -> AppResult<ApiJson<DescDetail>> {
+    let row = phpyun_models::description::repo::find_by_name(state.db.reader(), &name).await?;
+    let d = row.ok_or_else(|| {
+        phpyun_core::AppError::new(phpyun_core::error::InfraError::InvalidParam(
+            "description_not_found".into(),
+        ))
+    })?;
+    Ok(ApiJson(d.into()))
+}
+
+/// Stable-slug shortcut for PHP `wap/index::about/contact/privacy/protocol`.
+/// Maps `slug` → the PHP-defined Chinese `phpyun_description.name` value:
+///
+/// - `about`    → `关于我们`
+/// - `contact`  → `联系我们`
+/// - `privacy`  → `隐私政策`
+/// - `protocol` → `注册协议`
+///
+/// Anything else returns 400.
+#[utoipa::path(
+    get,
+    path = "/v1/wap/legal/{slug}",
+    tag = "wap",
+    params(("slug" = String, Path, description = "about / contact / privacy / protocol")),
+    responses(
+        (status = 200, description = "ok", body = DescDetail),
+        (status = 400, description = "Unknown slug"),
+        (status = 404, description = "No matching description configured"),
+    )
+)]
+pub async fn get_legal_page(
+    State(state): State<AppState>,
+    Path(slug): Path<String>,
+) -> AppResult<ApiJson<DescDetail>> {
+    let name = match slug.as_str() {
+        "about" => "关于我们",
+        "contact" => "联系我们",
+        "privacy" => "隐私政策",
+        "protocol" => "注册协议",
+        _ => {
+            return Err(phpyun_core::AppError::param_invalid(format!(
+                "slug: {slug}"
+            )))
+        }
+    };
+    let row = phpyun_models::description::repo::find_by_name(state.db.reader(), name).await?;
+    let d = row.ok_or_else(|| {
+        phpyun_core::AppError::new(phpyun_core::error::InfraError::InvalidParam(
+            "description_not_found".into(),
+        ))
+    })?;
     Ok(ApiJson(d.into()))
 }

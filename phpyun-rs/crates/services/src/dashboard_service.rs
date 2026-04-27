@@ -124,3 +124,80 @@ pub async fn com_counts(
         integral_balance: bal.map(|b| b.balance).unwrap_or(0),
     })
 }
+
+// ==================== Annual report (HR side) ====================
+
+/// Yearly stats payload — counterpart of PHP `wap/ajax::lastYearReport_action`.
+/// PHP renders the values into a poster image server-side; the Rust port
+/// returns the data and lets the frontend assemble the artwork.
+#[derive(Debug, Default)]
+pub struct YearReport {
+    pub login_days: u32,
+    pub job_count: u32,
+    pub view_count: u32,
+    pub received_resumes: u32,
+    pub viewed_resumes: u32,
+    pub invited_count: u32,
+    pub night_work_count: u32,
+    /// Unix seconds of the latest "night work" event; `0` if absent.
+    pub last_night_work_at: i64,
+    pub company_name: String,
+    pub linkman: String,
+}
+
+pub async fn year_report(
+    state: &AppState,
+    user: &AuthenticatedUser,
+) -> AppResult<YearReport> {
+    user.require_employer()?;
+    let db = state.db.reader();
+
+    let log_row: Option<(i32, i32, i32, i32, i32, i32, i32, i64)> = sqlx::query_as(
+        "SELECT \
+            CAST(COALESCE(login, 0) AS SIGNED), \
+            CAST(COALESCE(job, 0) AS SIGNED), \
+            CAST(COALESCE(lookjob, 0) AS SIGNED), \
+            CAST(COALESCE(sqjob, 0) AS SIGNED), \
+            CAST(COALESCE(lookresume, 0) AS SIGNED), \
+            CAST(COALESCE(yq, 0) AS SIGNED), \
+            CAST(COALESCE(nightwork, 0) AS SIGNED), \
+            CAST(COALESCE(lastwork, 0) AS SIGNED) \
+         FROM phpyun_hr_log WHERE uid = ? LIMIT 1",
+    )
+    .bind(user.uid)
+    .fetch_optional(db)
+    .await?;
+
+    let (login, job, lookjob, sqjob, lookresume, yq, nightwork, lastwork) =
+        log_row.unwrap_or((0, 0, 0, 0, 0, 0, 0, 0));
+
+    let info_row: Option<(Option<String>, Option<String>, Option<String>)> = sqlx::query_as(
+        "SELECT name, shortname, linkman FROM phpyun_company WHERE uid = ? LIMIT 1",
+    )
+    .bind(user.uid)
+    .fetch_optional(db)
+    .await?;
+    let (company_name, linkman) = match info_row {
+        Some((name, short, link)) => {
+            let display = short
+                .filter(|s| !s.is_empty())
+                .or(name)
+                .unwrap_or_default();
+            (display, link.unwrap_or_default())
+        }
+        None => (String::new(), String::new()),
+    };
+
+    Ok(YearReport {
+        login_days: login.max(0) as u32,
+        job_count: job.max(0) as u32,
+        view_count: lookjob.max(0) as u32,
+        received_resumes: sqjob.max(0) as u32,
+        viewed_resumes: lookresume.max(0) as u32,
+        invited_count: yq.max(0) as u32,
+        night_work_count: nightwork.max(0) as u32,
+        last_night_work_at: lastwork,
+        company_name,
+        linkman,
+    })
+}

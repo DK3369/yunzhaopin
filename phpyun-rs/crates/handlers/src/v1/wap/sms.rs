@@ -55,6 +55,12 @@ pub async fn send(
         "register" => SmsScene::Register,
         "login" => SmsScene::Login,
         "reset_pw" => SmsScene::ResetPw,
+        // Anonymous-posting scenes — counterparts of PHP `wap/once::sendmsg`
+        // and `wap/tiny::sendmsg`. The downstream `once::create` /
+        // `tiny::create` flows can later consume the issued code via
+        // `verify::verify(SmsOnceJob | SmsTinyResume)`.
+        "once" | "once_job" => SmsScene::OnceJob,
+        "tiny" | "tiny_resume" => SmsScene::TinyResume,
         _ => return Err(AppError::param_invalid("scene")),
     };
     sms_service::send_sms_code(&state, &f.moblie, scene).await?;

@@ -10,6 +10,7 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/dashboard", get(counts))
         .route("/com-dashboard", get(com_counts))
+        .route("/dashboard/year-report", get(year_report))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -86,5 +87,54 @@ pub async fn com_counts(
         unread_chats: d.unread_chats,
         unread_messages: d.unread_messages,
         integral_balance: d.integral_balance,
+    }))
+}
+
+// ==================== Annual report ====================
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct YearReportView {
+    pub login_days: u32,
+    pub job_count: u32,
+    pub view_count: u32,
+    pub received_resumes: u32,
+    pub viewed_resumes: u32,
+    pub invited_count: u32,
+    pub night_work_count: u32,
+    pub last_night_work_at: i64,
+    pub company_name: String,
+    pub linkman: String,
+}
+
+/// HR-side yearly report data — counterpart of PHP `wap/ajax::lastYearReport_action`.
+/// PHP returns a rendered PNG poster; the Rust port returns just the
+/// underlying numbers and lets the frontend assemble the artwork. Restricted
+/// to employers (`usertype=2`).
+#[utoipa::path(
+    get,
+    path = "/v1/mcenter/dashboard/year-report",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    responses(
+        (status = 200, description = "ok", body = YearReportView),
+        (status = 403, description = "Not a company account"),
+    )
+)]
+pub async fn year_report(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiJson<YearReportView>> {
+    let d = dashboard_service::year_report(&state, &user).await?;
+    Ok(ApiJson(YearReportView {
+        login_days: d.login_days,
+        job_count: d.job_count,
+        view_count: d.view_count,
+        received_resumes: d.received_resumes,
+        viewed_resumes: d.viewed_resumes,
+        invited_count: d.invited_count,
+        night_work_count: d.night_work_count,
+        last_night_work_at: d.last_night_work_at,
+        company_name: d.company_name,
+        linkman: d.linkman,
     }))
 }

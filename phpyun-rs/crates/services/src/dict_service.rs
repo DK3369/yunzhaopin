@@ -44,6 +44,28 @@ pub struct DictTable {
 }
 
 impl DictTable {
+    /// Reverse lookup: find an id by name (matches translations + primary
+    /// zh-CN names). Linear scan — cheap for the few hundred rows each
+    /// dict table holds. Used by write paths that accept `*_classname`
+    /// text from forms instead of `*_classid` numbers.
+    pub fn find_id_by_name(&self, name: &str) -> Option<i32> {
+        let target = name.trim();
+        if target.is_empty() {
+            return None;
+        }
+        for ((id, _lang), text) in self.by_id_lang.iter() {
+            if text == target {
+                return Some(*id);
+            }
+        }
+        for (id, text) in self.default_zh.iter() {
+            if text == target {
+                return Some(*id);
+            }
+        }
+        None
+    }
+
     /// Look up following the fallback chain.
     ///
     /// - For the `ZhCN` node on the chain: first check `by_id_lang[(id, ZhCN)]` (an explicit zh-CN
@@ -144,6 +166,28 @@ pub struct LocalizedDicts {
 impl LocalizedDicts {
     pub fn lang(&self) -> Lang {
         self.lang
+    }
+
+    /// Reverse-lookup helper used by write paths that accept `*_classname`
+    /// text from forms (PHPYun front-ends often send the human-readable name
+    /// alongside the id). Returns `None` if `kind` is unknown or no entry
+    /// matches — caller decides whether that's a 400 or a silent 0.
+    ///
+    /// Supported kinds: `"job"`, `"industry"`, `"city"`, `"part"`,
+    /// `"question"`, `"comclass"`. Lookup is across all languages plus the
+    /// primary `default_zh` table — so a form that sends Chinese works even
+    /// when the request language is `en`.
+    pub fn find_id_by_name(&self, kind: &str, name: &str) -> Option<i32> {
+        let table = match kind {
+            "job" => &self.inner.job,
+            "industry" => &self.inner.industry,
+            "city" => &self.inner.city,
+            "part" => &self.inner.part,
+            "question" | "qa" | "q" => &self.inner.question,
+            "comclass" => &self.inner.comclass,
+            _ => return None,
+        };
+        table.find_id_by_name(name)
     }
 
     pub fn job(&self, id: i32) -> &str {

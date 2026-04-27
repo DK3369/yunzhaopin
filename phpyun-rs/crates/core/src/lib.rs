@@ -7,6 +7,7 @@
 // `t!` macro in submodules cannot find the generated static symbols.
 rust_i18n::i18n!("../../locales", fallback = "zh-CN");
 
+pub mod admin_guard;
 pub mod audit;
 pub mod background;
 pub mod cache;
@@ -45,6 +46,7 @@ pub use error::{ApiError, AppError, AppResult, InfraError, SharedError, SystemEr
 pub use events::{EventBus, EventBusBackend};
 pub use extractors::{
     AuthenticatedUser, ClientIp, MaybeUser, Pagination, ValidatedForm, ValidatedJson,
+    ValidatedQuery,
 };
 pub use i18n::{t, t_args, Lang};
 pub use kv::Kv;

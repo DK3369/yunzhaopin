@@ -5,16 +5,17 @@ use axum::{
     routing::get,
     Router,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedQuery};
 use phpyun_services::audit_log_service::{self, Filter};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/audit-log", get(list))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct AuditQuery {
     /// e.g. `admin.` / `user.`
     pub action_prefix: Option<String>,
@@ -74,8 +75,9 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<AuditQuery>,
+    ValidatedQuery(q): ValidatedQuery<AuditQuery>,
 ) -> AppResult<ApiJson<Paged<AuditItem>>> {
+    user.require_admin()?;
     let f = Filter {
         action_prefix: q.action_prefix.as_deref(),
         actor_uid: q.actor_uid,

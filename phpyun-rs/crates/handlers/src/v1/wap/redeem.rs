@@ -5,10 +5,11 @@ use axum::{
     routing::get,
     Router,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination};
+use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedQuery};
 use phpyun_services::redeem_service::{self, RewardFilter};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use validator::Validate;
 
 fn fmt_dt(ts: i64) -> String {
     if ts <= 0 {
@@ -32,7 +33,7 @@ pub fn routes() -> Router<AppState> {
         .route("/redeem/rewards/{id}", get(get_reward))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ClassQuery {
     pub parent_id: Option<u64>,
 }
@@ -71,13 +72,13 @@ impl From<phpyun_models::redeem::entity::RedeemClass> for ClassItem {
 )]
 pub async fn list_classes(
     State(state): State<AppState>,
-    Query(q): Query<ClassQuery>,
+    ValidatedQuery(q): ValidatedQuery<ClassQuery>,
 ) -> AppResult<ApiJson<Vec<ClassItem>>> {
     let list = redeem_service::list_classes(&state, q.parent_id).await?;
     Ok(ApiJson(list.iter().cloned().map(ClassItem::from).collect()))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct RewardListQuery {
     pub nid: Option<u64>,
     pub tnid: Option<u64>,
@@ -177,7 +178,7 @@ impl From<phpyun_models::redeem::entity::Reward> for RewardItem {
 pub async fn list_rewards(
     State(state): State<AppState>,
     page: Pagination,
-    Query(q): Query<RewardListQuery>,
+    ValidatedQuery(q): ValidatedQuery<RewardListQuery>,
 ) -> AppResult<ApiJson<Paged<RewardItem>>> {
     let f = RewardFilter { only_active: true, nid: q.nid, tnid: q.tnid };
     let r = redeem_service::list_rewards(&state, &f, page).await?;

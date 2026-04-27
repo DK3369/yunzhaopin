@@ -15,7 +15,7 @@ use axum::{
     Router,
 };
 use phpyun_core::{
-    json, ApiJson, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson,
+    json, ApiJson, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson, ValidatedQuery
 };
 use phpyun_services::tiny_service::{self, ManageOp, TinySearch, UpsertInput};
 use serde::{Deserialize, Serialize};
@@ -32,7 +32,7 @@ pub fn routes() -> Router<AppState> {
 
 // ==================== list ====================
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
     pub keyword: Option<String>,
     pub province_id: Option<i32>,
@@ -86,7 +86,7 @@ impl From<phpyun_models::tiny::entity::TinyResume> for TinyListItem {
 pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
-    Query(q): Query<ListQuery>,
+    ValidatedQuery(q): ValidatedQuery<ListQuery>,
 ) -> AppResult<ApiJson<Paged<TinyListItem>>> {
     let search = TinySearch {
         keyword: q.keyword,

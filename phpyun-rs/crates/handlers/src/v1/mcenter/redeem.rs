@@ -5,7 +5,7 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery};
 use phpyun_services::redeem_service::{self, RedeemForm};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -62,7 +62,7 @@ pub async fn redeem(
     Ok(ApiJson(RedeemCreated { order_id: id }))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListMineQuery {
     pub status: Option<i32>,
 }
@@ -141,7 +141,7 @@ pub async fn list_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<ListMineQuery>,
+    ValidatedQuery(q): ValidatedQuery<ListMineQuery>,
 ) -> AppResult<ApiJson<Paged<OrderItem>>> {
     let r = redeem_service::list_my_orders(&state, &user, q.status, page).await?;
     Ok(ApiJson(Paged::new(

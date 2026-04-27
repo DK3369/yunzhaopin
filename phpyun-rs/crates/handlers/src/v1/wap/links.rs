@@ -5,16 +5,17 @@ use axum::{
     routing::get,
     Router,
 };
-use phpyun_core::{ApiJson, AppResult, AppState};
+use phpyun_core::{ApiJson, AppResult, AppState, ValidatedQuery};
 use phpyun_services::friend_link_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/friend-links", get(list))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct LinkQuery {
     pub category: Option<String>,
 }
@@ -46,7 +47,7 @@ impl From<phpyun_models::friend_link::entity::FriendLink> for LinkItem {
 #[utoipa::path(get, path = "/v1/wap/friend-links", tag = "wap", params(LinkQuery), responses((status = 200, description = "ok")))]
 pub async fn list(
     State(state): State<AppState>,
-    Query(q): Query<LinkQuery>,
+    ValidatedQuery(q): ValidatedQuery<LinkQuery>,
 ) -> AppResult<ApiJson<Vec<LinkItem>>> {
     let list = friend_link_service::list(&state, q.category.as_deref()).await?;
     Ok(ApiJson(list.iter().cloned().map(LinkItem::from).collect()))

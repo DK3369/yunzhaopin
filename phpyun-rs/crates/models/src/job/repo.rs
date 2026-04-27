@@ -553,3 +553,126 @@ pub async fn admin_set_state(
         .await?;
     Ok(res.rows_affected())
 }
+
+// ==================== Job hits counter ====================
+//
+// `phpyun_company_job.jobhits` is bumped on each detail-page view in PHP
+// (`addJobHits` + `getInfo({field:jobhits})`). The Rust port already
+// auto-tracks views via `view_service::record_async` in `wap/jobs::detail`,
+// but PHP also exposes a standalone `GetHits_action` that does write+read in
+// one go (used by client-side counter widgets like "今日浏览 X 次").
+
+pub async fn incr_jobhits(pool: &MySqlPool, id: u64) -> Result<(), sqlx::Error> {
+    sqlx::query("UPDATE phpyun_company_job SET jobhits = jobhits + 1 WHERE id = ?")
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(())
+}
+
+pub async fn get_jobhits(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
+    let row: Option<(i64,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(jobhits, 0) AS SIGNED) FROM phpyun_company_job WHERE id = ? LIMIT 1",
+    )
+    .bind(id)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(n,)| n.max(0) as u64).unwrap_or(0))
+}
+
+pub async fn bump_and_get_jobhits(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
+    incr_jobhits(pool, id).await?;
+    get_jobhits(pool, id).await
+}
+
+// ==================== Job contact (getJobLink) ====================
+//
+// Counterpart of PHP `job.model.php::getJobLink` + `getContactNew`. A job row
+// exposes one of three contact resolutions selected by `is_link`:
+//   * 1 = use the company's default contact (linkman/linktel/linkphone/etc.)
+//   * 2 = prefer the alternate per-job contact (`company_job_link.id =
+//         job.link_id`); fall back to the default if the row is missing.
+//   * 3 = use the alternate contact (no fallback to default).
+
+#[derive(Debug, Clone, Default)]
+pub struct JobContact {
+    pub linkman: String,
+    pub linktel: String,
+    pub linkphone: String,
+    pub linkmail: String,
+    pub address: String,
+    pub cityid: i32,
+    pub x: String,
+    pub y: String,
+}
+
+pub async fn get_job_contact(
+    pool: &MySqlPool,
+    job_id: u64,
+) -> Result<Option<JobContact>, sqlx::Error> {
+    let job: Option<(u64, i32, u64)> = sqlx::query_as(
+        "SELECT CAST(uid AS UNSIGNED) AS uid, \
+                COALESCE(is_link, 1) AS is_link, \
+                CAST(COALESCE(link_id, 0) AS UNSIGNED) AS link_id \
+           FROM phpyun_company_job WHERE id = ? LIMIT 1",
+    )
+    .bind(job_id)
+    .fetch_optional(pool)
+    .await?;
+    let Some((com_uid, is_link, link_id)) = job else { return Ok(None) };
+
+    let default_row: Option<(String, String, String, String, String, i32, String, String)> = sqlx::query_as(
+        "SELECT COALESCE(linkman, ''), COALESCE(linktel, ''), COALESCE(linkphone, ''), \
+                COALESCE(linkmail, ''), COALESCE(address, ''), COALESCE(cityid, 0), \
+                COALESCE(x, ''), COALESCE(y, '') \
+           FROM phpyun_company WHERE uid = ? LIMIT 1",
+    )
+    .bind(com_uid)
+    .fetch_optional(pool)
+    .await?;
+    let default_contact = default_row.map(
+        |(linkman, linktel, linkphone, linkmail, address, cityid, x, y)| JobContact {
+            linkman,
+            linktel,
+            linkphone,
+            linkmail,
+            address,
+            cityid,
+            x,
+            y,
+        },
+    );
+
+    let alt: Option<JobContact> = if link_id > 0 {
+        let alt_row: Option<(String, String, String, String, i32, String, String)> = sqlx::query_as(
+            "SELECT COALESCE(link_man, ''), COALESCE(link_moblie, ''), \
+                    COALESCE(link_phone, ''), COALESCE(link_address, ''), \
+                    COALESCE(cityid, 0), COALESCE(x, ''), COALESCE(y, '') \
+               FROM phpyun_company_job_link WHERE id = ? LIMIT 1",
+        )
+        .bind(link_id)
+        .fetch_optional(pool)
+        .await?;
+        alt_row.map(
+            |(link_man, link_moblie, link_phone, link_address, cityid, x, y)| JobContact {
+                linkman: link_man,
+                linktel: link_moblie,
+                linkphone: link_phone,
+                linkmail: String::new(),
+                address: link_address,
+                cityid,
+                x,
+                y,
+            },
+        )
+    } else {
+        None
+    };
+
+    let resolved = match is_link {
+        2 => alt.or(default_contact),
+        3 => alt,
+        _ => default_contact,
+    };
+    Ok(resolved)
+}

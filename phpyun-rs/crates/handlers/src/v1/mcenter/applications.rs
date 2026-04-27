@@ -7,7 +7,7 @@ use axum::{
 };
 use phpyun_core::json;
 use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
+    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson, ValidatedQuery
 };
 use phpyun_models::apply::repo::ApplyFilter;
 use phpyun_services::apply_service;
@@ -23,7 +23,7 @@ pub fn routes() -> Router<AppState> {
         .route("/applications/{id}/invite", post(invite))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ApplicationsQuery {
     /// Show only unread (unbrowsed)
     #[serde(default)]
@@ -106,7 +106,7 @@ pub async fn list_received(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<ApplicationsQuery>,
+    ValidatedQuery(q): ValidatedQuery<ApplicationsQuery>,
 ) -> AppResult<ApiJson<Paged<ApplicantSummary>>> {
     let filter = ApplyFilter {
         unread_only: q.unread_only,

@@ -7,7 +7,7 @@ use axum::{
 };
 use phpyun_core::json;
 use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
+    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson, ValidatedQuery
 };
 use phpyun_services::apply_service;
 use serde::{Deserialize, Serialize};
@@ -113,7 +113,7 @@ impl From<phpyun_models::apply::entity::Apply> for MyApplySummary {
     }
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct MyAppliesQuery {
     /// Filter by application feedback state (aligned with phpyun `is_browse` enum):
     /// 1=unviewed / 0=viewed / 3=interviewed / 4=not suitable / 7=hired.
@@ -135,7 +135,7 @@ pub async fn list_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<MyAppliesQuery>,
+    ValidatedQuery(q): ValidatedQuery<MyAppliesQuery>,
 ) -> AppResult<ApiJson<Paged<MyApplySummary>>> {
     let r = apply_service::list_mine(&state, &user, q.state, page).await?;
     Ok(ApiJson(Paged::new(

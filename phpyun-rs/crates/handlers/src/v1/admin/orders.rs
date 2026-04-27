@@ -6,7 +6,7 @@ use axum::{
     Router,
 };
 use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
 };
 use phpyun_services::admin_service;
 use serde::{Deserialize, Serialize};
@@ -19,7 +19,7 @@ pub fn routes() -> Router<AppState> {
         .route("/orders/{order_no}/status", post(set_status))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct OrderListQuery {
     /// 0=pending 1=paid 2=refunded 3=cancelled; omit for all
     pub status: Option<i32>,
@@ -95,7 +95,7 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<OrderListQuery>,
+    ValidatedQuery(q): ValidatedQuery<OrderListQuery>,
 ) -> AppResult<ApiJson<Paged<OrderItem>>> {
     user.require_admin()?;
     let r = admin_service::list_orders(&state, q.status, page).await?;

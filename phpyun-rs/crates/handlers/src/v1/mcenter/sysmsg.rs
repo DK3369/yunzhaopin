@@ -2,6 +2,12 @@
 //!
 //! This set reads/writes the **original PHPYun** `phpyun_sysmsg` table (migration compatibility).
 //! Messages for new business (via notification_consumers) go through `/v1/mcenter/messages`.
+//!
+//! ⚠️ **Deprecated**: kept only so legacy data written by PHPYun is still
+//! accessible through the API. New code MUST write to `/v1/mcenter/messages`
+//! (which is also `phpyun_sysmsg`-backed but goes through the unified
+//! [`message_service`] with i18n + WebSocket fan-out support). Don't add new
+//! endpoints here.
 
 use axum::{
     extract::{Path, Query, State},
@@ -9,7 +15,7 @@ use axum::{
     Router,
 };
 use phpyun_core::{
-    json, ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    json, ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
 };
 use phpyun_services::sysmsg_service;
 use serde::{Deserialize, Serialize};
@@ -60,7 +66,7 @@ impl From<phpyun_models::sysmsg::entity::SysMsg> for SysMsgView {
     }
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
     #[serde(default)]
     pub unread_only: bool,
@@ -78,7 +84,7 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<ListQuery>,
+    ValidatedQuery(q): ValidatedQuery<ListQuery>,
 ) -> AppResult<ApiJson<Paged<SysMsgView>>> {
     let r = sysmsg_service::list_mine(&state, &user, q.unread_only, page).await?;
     Ok(ApiJson(Paged::new(

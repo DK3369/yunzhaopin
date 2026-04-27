@@ -49,6 +49,7 @@ pub async fn download(
             state.db.pool(),
             message_repo::MessageCreate {
                 uid: target_uid,
+                recipient_usertype: 1, // jobseeker (their resume was downloaded)
                 category: "download",
                 title: &dl_title,
                 body: None,

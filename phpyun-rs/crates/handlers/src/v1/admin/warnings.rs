@@ -6,7 +6,7 @@ use axum::{
     Router,
 };
 use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
 };
 use phpyun_services::warning_service::{self, WarnInput};
 use serde::{Deserialize, Serialize};
@@ -17,7 +17,7 @@ pub fn routes() -> Router<AppState> {
     Router::new().route("/warnings", get(list).post(issue))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
     pub kind: Option<i32>,
 }
@@ -96,7 +96,7 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<ListQuery>,
+    ValidatedQuery(q): ValidatedQuery<ListQuery>,
 ) -> AppResult<ApiJson<Paged<WarningItem>>> {
     user.require_admin()?;
     let r = warning_service::admin_list(&state, q.kind, page).await?;
@@ -122,6 +122,7 @@ pub async fn issue(
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<WarnForm>,
 ) -> AppResult<ApiJson<CreatedId>> {
+    user.require_admin()?;
     let id = warning_service::admin_issue(
         &state,
         &user,

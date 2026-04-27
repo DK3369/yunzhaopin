@@ -4,6 +4,7 @@ pub mod account_logout;
 pub mod activity;
 pub mod applications;
 pub mod apply;
+pub mod atn;
 pub mod blacklist;
 pub mod broadcasts;
 pub mod chat;
@@ -18,15 +19,18 @@ pub mod dashboard;
 pub mod entrust;
 pub mod entrust_search;
 pub mod eval;
+pub mod fans;
 pub mod favorites;
 pub mod feedback;
 pub mod integral;
 pub mod interview_tpl;
 pub mod interviews;
 pub mod invite;
+pub mod job_messages;
 pub mod jobs;
 pub mod messages;
 pub mod oauth_bindings;
+pub mod once_orders;
 pub mod part;
 pub mod password;
 pub mod profile;
@@ -81,9 +85,11 @@ pub fn router() -> Router<AppState> {
         .merge(resume_language::routes())
         .merge(company::routes())
         .merge(jobs::routes())
+        .merge(job_messages::routes())
         .merge(apply::routes())
         .merge(applications::routes())
         .merge(favorites::routes())
+        .merge(fans::routes())
         .merge(views::routes())
         .merge(interviews::routes())
         .merge(messages::routes())
@@ -128,6 +134,8 @@ pub fn router() -> Router<AppState> {
         .merge(company_skin::routes())
         .merge(sysmsg::routes())
         .merge(account_logout::routes())
+        .merge(atn::routes())
+        .merge(once_orders::routes())
         .merge(company_content::routes())
         .merge(resume_tpl::routes())
         .merge(username::routes())

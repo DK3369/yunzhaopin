@@ -136,6 +136,53 @@ pub async fn count_collectors_of_job(
     Ok(n.max(0) as u64)
 }
 
+/// "Fans" — distinct users who have favorited any job belonging to this
+/// company (`com_id` == company-side uid). Aligned with PHP
+/// `com.class.php::attention_me_action`, which renders a list of users
+/// "interested in me" on the company center.
+///
+/// Returns `(uid, fav_count, last_datetime)` ordered by most recent activity.
+pub async fn list_fans_by_com_uid(
+    pool: &MySqlPool,
+    com_uid: u64,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<(u64, u64, i64)>, sqlx::Error> {
+    let rows: Vec<(u64, i64, i64)> = sqlx::query_as(
+        r#"SELECT
+              CAST(uid AS UNSIGNED)            AS uid,
+              CAST(COUNT(*) AS SIGNED)         AS fav_count,
+              CAST(MAX(datetime) AS SIGNED)    AS last_datetime
+           FROM phpyun_fav_job
+           WHERE com_id = ? AND uid > 0
+           GROUP BY uid
+           ORDER BY last_datetime DESC, uid DESC
+           LIMIT ? OFFSET ?"#,
+    )
+    .bind(com_uid)
+    .bind(limit)
+    .bind(offset)
+    .fetch_all(pool)
+    .await?;
+    Ok(rows
+        .into_iter()
+        .map(|(uid, n, ts)| (uid, n.max(0) as u64, ts))
+        .collect())
+}
+
+pub async fn count_fans_by_com_uid(
+    pool: &MySqlPool,
+    com_uid: u64,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(DISTINCT uid) FROM phpyun_fav_job WHERE com_id = ? AND uid > 0",
+    )
+    .bind(com_uid)
+    .fetch_one(pool)
+    .await?;
+    Ok(n.max(0) as u64)
+}
+
 /// Batch lookup: which of `job_ids` has `uid` favorited.
 /// Returns the set of favorited job ids (caller checks containment per row).
 /// Empty input → empty result, no DB call.

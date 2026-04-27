@@ -5,10 +5,11 @@ use axum::{
     routing::get,
     Router,
 };
-use phpyun_core::{ApiJson, AppResult, AppState};
+use phpyun_core::{ApiJson, AppResult, AppState, ValidatedQuery};
 use phpyun_services::home_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -16,7 +17,7 @@ pub fn routes() -> Router<AppState> {
         .route("/home/aggregate", get(aggregate))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct HomeQuery {
     #[serde(default = "default_did")]
     pub did: u32,
@@ -77,7 +78,7 @@ fn fmt_date(ts: i64) -> String {
 #[utoipa::path(get, path = "/v1/wap/home", tag = "wap", params(HomeQuery), responses((status = 200, description = "ok", body = HomeData)))]
 pub async fn home(
     State(state): State<AppState>,
-    Query(q): Query<HomeQuery>,
+    ValidatedQuery(q): ValidatedQuery<HomeQuery>,
 ) -> AppResult<ApiJson<HomeData>> {
     let p = home_service::home(&state, q.did).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
@@ -137,7 +138,7 @@ pub async fn home(
 // Recommended jobs / recommended companies are **not here** -- they involve paid recommendation / activity reward logic and are
 // served by their own dedicated endpoints (`/v1/wap/jobs?rec=1`, `/v1/wap/companies?rec=1`, etc.).
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct AggregateQuery {
     /// Sub-site id
     #[serde(default = "default_did")]
@@ -218,7 +219,7 @@ pub struct AggregateData {
 )]
 pub async fn aggregate(
     State(state): State<AppState>,
-    Query(q): Query<AggregateQuery>,
+    ValidatedQuery(q): ValidatedQuery<AggregateQuery>,
 ) -> AppResult<ApiJson<AggregateData>> {
     let db = state.db.reader();
     let now = phpyun_core::clock::now_ts();

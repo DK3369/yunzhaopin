@@ -408,3 +408,63 @@ pub async fn invalidate_profile(state: &AppState, uid: u64) {
     state.cache.user.invalidate(&uid).await;
     let _ = state.redis.del(&profile_key(uid)).await;
 }
+
+// ==================== First-time usertype selection ====================
+
+/// One-shot user-type assignment for accounts that registered via OAuth and
+/// haven't picked a role yet. Mirrors PHP `wap/login::setutype_action`:
+/// allowed only when `usertype = 0`; sets it to 1/2/3 and seeds the
+/// per-role satellite row (`phpyun_member_statis` for jobseeker,
+/// `phpyun_company_statis` + `phpyun_company` shell for employer).
+///
+/// Idempotent on satellite rows (UPSERT). Returns `UserError::ConflictUsertypeSet`
+/// when a usertype is already chosen — caller should surface that as 409.
+pub async fn set_usertype(state: &AppState, uid: u64, usertype: u8) -> AppResult<()> {
+    if !matches!(usertype, 1 | 2 | 3) {
+        return Err(AppError::param_invalid("usertype"));
+    }
+    let pool = state.db.pool();
+    let updated = user_repo::set_usertype_if_unset(pool, uid, usertype).await?;
+    if updated == 0 {
+        return Err(AppError::new(phpyun_core::SharedError::new(
+            409,
+            "usertype_already_set",
+        )));
+    }
+    seed_role_rows(state, uid, usertype).await;
+    invalidate_profile(state, uid).await;
+    Ok(())
+}
+
+async fn seed_role_rows(state: &AppState, uid: u64, usertype: u8) {
+    let pool = state.db.pool();
+    match usertype {
+        1 => {
+            let _ = sqlx::query(
+                "INSERT IGNORE INTO phpyun_member_statis \
+                    (uid, integral, fav_jobnum, resume_num, sq_jobnum, message_num, down_num) \
+                 VALUES (?, '', 0, 0, 0, 0, 0)",
+            )
+            .bind(uid)
+            .execute(pool)
+            .await;
+            let _ = sqlx::query("INSERT IGNORE INTO phpyun_resume (uid) VALUES (?)")
+                .bind(uid)
+                .execute(pool)
+                .await;
+        }
+        2 | 3 => {
+            let _ = sqlx::query(
+                "INSERT IGNORE INTO phpyun_company_statis (uid) VALUES (?)",
+            )
+            .bind(uid)
+            .execute(pool)
+            .await;
+            let _ = sqlx::query("INSERT IGNORE INTO phpyun_company (uid) VALUES (?)")
+                .bind(uid)
+                .execute(pool)
+                .await;
+        }
+        _ => {}
+    }
+}

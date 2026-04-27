@@ -9,6 +9,7 @@ pub mod categories;
 pub mod claim;
 pub mod companies;
 pub mod company_sub;
+pub mod countries;
 pub mod data_show;
 pub mod descriptions;
 pub mod dict;
@@ -20,6 +21,7 @@ pub mod home;
 pub mod hot_searches;
 pub mod hr_docs;
 pub mod integral;
+pub mod job_messages;
 pub mod jobs;
 pub mod links;
 pub mod login;
@@ -63,10 +65,12 @@ pub fn router() -> Router<AppState> {
         .merge(captcha::routes())
         .merge(oauth::routes())
         .merge(jobs::routes())
+        .merge(job_messages::routes())
         .merge(companies::routes())
         .merge(resumes::routes())
         .merge(dict::routes())
         .merge(regions::routes())
+        .merge(countries::routes())
         .merge(articles::routes())
         .merge(hot_searches::routes())
         .merge(announcements::routes())

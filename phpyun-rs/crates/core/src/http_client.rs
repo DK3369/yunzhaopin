@@ -123,6 +123,44 @@ impl Http {
         .await
     }
 
+    /// POST `application/x-www-form-urlencoded` body, read JSON response.
+    /// Used by OAuth2 token endpoints that won't accept JSON bodies (Weibo,
+    /// some legacy gateways). No retries — these are non-idempotent.
+    pub async fn post_form_to_json<T: DeserializeOwned>(
+        &self,
+        url: &str,
+        form_body: &str,
+    ) -> AppResult<T> {
+        let host = host_of(url);
+        let span = tracing::info_span!("http.post_form", url = %url, host = %host);
+        async move {
+            let started = Instant::now();
+            let res = self
+                .inner
+                .post(url)
+                .header("content-type", "application/x-www-form-urlencoded")
+                .body(form_body.to_string())
+                .send()
+                .await
+                .and_then(|r| r.error_for_status());
+            let (text, status) = match res {
+                Ok(resp) => {
+                    let status = resp.status().as_u16();
+                    (resp.text().await.map_err(map_reqwest_err)?, status)
+                }
+                Err(e) => return Err(map_reqwest_err(e)),
+            };
+            m::histogram_ms(
+                "http.client.latency_ms",
+                started.elapsed().as_secs_f64() * 1000.0,
+            );
+            record_status(&host, status);
+            json::from_str::<T>(&text)
+        }
+        .instrument(span)
+        .await
+    }
+
     /// POST a plain-text body and read text in return (common for SMS /
     /// payment XML gateways).
     pub async fn post_text(&self, url: &str, body: String) -> AppResult<String> {

@@ -61,6 +61,7 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
 ) -> AppResult<ApiJson<Vec<SettingItem>>> {
+    user.require_admin()?;
     let list = site_setting_service::admin_list(&state, &user).await?;
     Ok(ApiJson(list.into_iter().map(SettingItem::from).collect()))
 }
@@ -92,6 +93,7 @@ pub async fn upsert(
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<UpsertForm>,
 ) -> AppResult<ApiOk> {
+    user.require_admin()?;
     site_setting_service::admin_upsert(
         &state,
         &user,
@@ -120,6 +122,7 @@ pub async fn remove(
     user: AuthenticatedUser,
     Path(key): Path<String>,
 ) -> AppResult<ApiOk> {
+    user.require_admin()?;
     site_setting_service::admin_delete(&state, &user, &key).await?;
     Ok(ApiOk("deleted"))
 }

@@ -8,7 +8,7 @@ use phpyun_core::{
     background::spawn_periodic, config::Config, db, idempotency, metrics::install_prometheus,
     rayon_pool, shutdown, telemetry, AppState, CancellationToken, Scheduler,
 };
-use phpyun_handlers::build_router;
+use phpyun_handlers::build_router_with_state;
 use std::time::Duration;
 
 fn main() -> anyhow::Result<()> {
@@ -148,7 +148,10 @@ async fn async_main(config: Config, worker_threads: usize) -> anyhow::Result<()>
     //
     // Router + cross-cutting middleware + state injection, then append the idempotency middleware
     // (idempotency needs AppState to attach, so it goes after with_state)
-    let app = build_router(&config)
+    // build_router_with_state stacks the admin role-guard middleware on the
+    // /v1/admin/* nest so any unguarded admin handler still rejects non-admin
+    // tokens at the router boundary.
+    let app = build_router_with_state(&config, state.clone())
         .with_state(state.clone())
         .layer(axum::middleware::from_fn_with_state(
             state.clone(),

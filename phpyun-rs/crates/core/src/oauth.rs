@@ -47,6 +47,13 @@ pub enum ProviderKind {
     /// The business layer calls `oauth_service::login_with_wechat_code` directly,
     /// not via `OAuth::verify`.
     WeChat,
+    /// QQ Connect (open.qq.com). Code → access_token → openid; same shape as
+    /// the WeChat snsapi_base path (no id_token, business goes through
+    /// `oauth_service::login_with_qq_code`).
+    QQ,
+    /// Weibo (open.weibo.com). Code → access_token + uid; business goes through
+    /// `oauth_service::login_with_weibo_code`.
+    Weibo,
 }
 
 impl ProviderKind {
@@ -56,6 +63,8 @@ impl ProviderKind {
             Self::Facebook => "facebook",
             Self::Apple => "apple",
             Self::WeChat => "wechat",
+            Self::QQ => "qq",
+            Self::Weibo => "weibo",
         }
     }
 
@@ -65,6 +74,8 @@ impl ProviderKind {
             "facebook" => Some(Self::Facebook),
             "apple" => Some(Self::Apple),
             "wechat" | "wx" | "weixin" => Some(Self::WeChat),
+            "qq" | "qqconnect" => Some(Self::QQ),
+            "weibo" | "sina" | "sinaconnect" => Some(Self::Weibo),
             _ => None,
         }
     }
@@ -76,6 +87,8 @@ impl ProviderKind {
             Self::Facebook => "fb_id",
             Self::Apple => "apple_sub",
             Self::WeChat => "wxid",
+            Self::QQ => "qqid",
+            Self::Weibo => "sinaid",
         }
     }
 }

@@ -187,6 +187,23 @@ pub async fn set_reward_flags(
     is_rec: Option<i32>,
     is_hot: Option<i32>,
 ) -> AppResult<()> {
+    admin.require_admin()?;
+    if id == 0 {
+        return Err(AppError::param_invalid("reward_id"));
+    }
+    // Defense-in-depth: even with handler-level validation, refuse anything
+    // outside {0, 1} so a misbehaving caller can't shove arbitrary ints into
+    // the column.
+    if let Some(v) = is_rec {
+        if v < 0 || v > 1 {
+            return Err(AppError::param_invalid("is_rec"));
+        }
+    }
+    if let Some(v) = is_hot {
+        if v < 0 || v > 1 {
+            return Err(AppError::param_invalid("is_hot"));
+        }
+    }
     let n = redeem_repo::set_reward_flags(state.db.pool(), id, is_rec, is_hot).await?;
     if n == 0 {
         return Err(AppError::new(InfraError::InvalidParam("reward_not_found".into())));

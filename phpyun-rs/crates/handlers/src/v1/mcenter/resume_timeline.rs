@@ -5,16 +5,17 @@ use axum::{
     routing::get,
     Router,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedQuery};
 use phpyun_services::resume_timeline_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/resume/timeline", get(list))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct TimelineQuery {
     #[serde(default = "default_limit")]
     pub limit: usize,
@@ -44,7 +45,7 @@ pub struct TimelineItem {
 pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Query(q): Query<TimelineQuery>,
+    ValidatedQuery(q): ValidatedQuery<TimelineQuery>,
 ) -> AppResult<ApiJson<Vec<TimelineItem>>> {
     let list = resume_timeline_service::list(&state, &user, q.limit).await?;
     Ok(ApiJson(

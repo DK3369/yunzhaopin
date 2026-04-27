@@ -182,3 +182,101 @@ pub async fn incr_hits(pool: &MySqlPool, uid: u64) -> Result<(), sqlx::Error> {
         .await?;
     Ok(())
 }
+
+// ==================== Hot / featured companies (homepage banner) ====================
+
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize, serde::Deserialize)]
+pub struct HotCompany {
+    pub uid: u64,
+    pub name: String,
+    pub shortname: Option<String>,
+    pub logo: Option<String>,
+    pub hot_pic: Option<String>,
+    /// 0 = ordered by paid `sort`, 1 = ordered by job `lastupdate`, 2 = random.
+    /// Echoed back so clients can short-cache appropriately.
+    pub sort_mode: i32,
+}
+
+// ==================== Autocomplete ====================
+
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize, serde::Deserialize)]
+pub struct CompanyBrief {
+    pub uid: u64,
+    pub name: String,
+    pub logo: Option<String>,
+}
+
+/// Quick autocomplete for company name search — counterpart of PHP
+/// `ajax::getComBySearch_action`. Returns up to `limit` rows whose `name`
+/// matches `LIKE %keyword%` and have been approved (`r_status = 1`).
+/// Designed for typeahead widgets, NOT general search — fewer columns and
+/// no expensive joins.
+pub async fn search_brief(
+    pool: &MySqlPool,
+    keyword: &str,
+    limit: u64,
+) -> Result<Vec<CompanyBrief>, sqlx::Error> {
+    let pattern = format!("%{}%", keyword);
+    sqlx::query_as::<_, CompanyBrief>(
+        "SELECT \
+            CAST(uid AS UNSIGNED) AS uid, \
+            COALESCE(name, '') AS name, \
+            logo \
+         FROM phpyun_company \
+         WHERE r_status = 1 AND name LIKE ? \
+         ORDER BY hits DESC, uid DESC \
+         LIMIT ?",
+    )
+    .bind(pattern)
+    .bind(limit)
+    .fetch_all(pool)
+    .await
+}
+
+/// Featured companies on the homepage — counterpart of PHP
+/// `wap/index::getmq_action`. Joins `phpyun_hotjob` (paid promo banners)
+/// with `phpyun_company`, filtering by:
+///   - `phpyun_company.hottime > now` (company-level paid window)
+///   - `phpyun_company.r_status = 1`  (approved)
+///   - `phpyun_hotjob.time_start < now AND time_end > now` (active banner)
+///
+/// `sort_mode`: 0 = `sort` ASC (default), 1 = `lastupdate` DESC, 2 = `RAND()`.
+pub async fn list_hot(
+    pool: &MySqlPool,
+    sort_mode: i32,
+    limit: u64,
+    now: i64,
+) -> Result<Vec<HotCompany>, sqlx::Error> {
+    // ORDER BY clause is whitelisted (not user-supplied) — building it from
+    // a static match is safe and avoids an extra lookup.
+    let order_clause = match sort_mode {
+        1 => "h.lastupdate DESC, h.id DESC",
+        2 => "RAND()",
+        _ => "h.sort ASC, h.id DESC",
+    };
+    let sql = format!(
+        "SELECT \
+            CAST(c.uid AS UNSIGNED) AS uid, \
+            COALESCE(c.name, '') AS name, \
+            c.shortname, \
+            c.logo, \
+            h.hot_pic, \
+            CAST(? AS SIGNED) AS sort_mode \
+         FROM phpyun_hotjob h \
+         JOIN phpyun_company c ON c.uid = h.uid \
+         WHERE c.hottime > ? \
+           AND c.r_status = 1 \
+           AND h.time_start < ? \
+           AND h.time_end > ? \
+         ORDER BY {order_clause} \
+         LIMIT ?"
+    );
+    sqlx::query_as::<_, HotCompany>(&sql)
+        .bind(sort_mode)
+        .bind(now)
+        .bind(now)
+        .bind(now)
+        .bind(limit)
+        .fetch_all(pool)
+        .await
+}

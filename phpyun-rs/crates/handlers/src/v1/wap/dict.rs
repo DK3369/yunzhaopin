@@ -18,15 +18,18 @@ use serde::Serialize;
 use utoipa::ToSchema;
 
 pub fn routes() -> Router<AppState> {
-    Router::new()
+    // Two cities routes are explicitly deprecated; we still register them so
+    // existing clients stay green while they migrate to /v1/wap/regions.
+    #[allow(deprecated)]
+    let r = Router::new()
         .route("/dict/cities", get(cities))
-        .route("/dict/industries", get(industries))
+        .route("/dict/cities/{province_id}", get(cities_of_province));
+    r.route("/dict/industries", get(industries))
         .route("/dict/job-categories", get(job_categories))
         .route("/dict/educations", get(educations))
         .route("/dict/experiences", get(experiences))
         .route("/dict/salaries", get(salaries))
         .route("/dict/job-types", get(job_types))
-        .route("/dict/cities/{province_id}", get(cities_of_province))
 }
 
 /// Dictionary item as seen by the client. `name` is a string resolved using the current request language.
@@ -61,24 +64,35 @@ fn render(entries: &[DictEntry], lang: Lang) -> Vec<DictItem> {
 }
 
 /// Province / centrally-administered municipality dictionary
+///
+/// ⚠️ **Deprecated** in favour of `GET /v1/wap/regions?country=CN&level=1`,
+/// which is i18n-aware and returns the live region tree (not the static
+/// hand-coded list this endpoint serves). Kept for backward compatibility
+/// with existing clients.
 #[utoipa::path(
     get,
     path = "/v1/wap/dict/cities",
     tag = "wap",
-    responses((status = 200, description = "ok"))
+    responses((status = 200, description = "DEPRECATED — prefer GET /v1/wap/regions"))
 )]
+#[deprecated(note = "use GET /v1/wap/regions?country=CN&level=1 instead")]
 pub async fn cities() -> AppResult<ApiJson<Vec<DictItem>>> {
     Ok(ApiJson(render(PROVINCES, current_lang())))
 }
 
 /// Cities under a given province
+///
+/// ⚠️ **Deprecated** in favour of
+/// `GET /v1/wap/regions/{id}/children` (live, i18n-aware, all provinces
+/// supported — not just hand-coded BJ/SH). Kept for backward compatibility.
 #[utoipa::path(
     get,
     path = "/v1/wap/dict/cities/{province_id}",
     tag = "wap",
     params(("province_id" = i32, Path)),
-    responses((status = 200, description = "ok"))
+    responses((status = 200, description = "DEPRECATED — prefer GET /v1/wap/regions/{id}/children"))
 )]
+#[deprecated(note = "use GET /v1/wap/regions/{id}/children instead")]
 pub async fn cities_of_province(
     Path(pid): Path<i32>,
 ) -> AppResult<ApiJson<Vec<DictItem>>> {

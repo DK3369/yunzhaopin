@@ -6,7 +6,7 @@ use axum::{
     Router,
 };
 use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
 };
 use phpyun_services::ad_service::{self, AdInput, AdPatch};
 use serde::{Deserialize, Serialize};
@@ -19,7 +19,7 @@ pub fn routes() -> Router<AppState> {
         .route("/ads/{id}", post(update))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
     pub slot: Option<String>,
 }
@@ -125,8 +125,9 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<ListQuery>,
+    ValidatedQuery(q): ValidatedQuery<ListQuery>,
 ) -> AppResult<ApiJson<Paged<AdItem>>> {
+    user.require_admin()?;
     let r = ad_service::admin_list(&state, &user, q.slot.as_deref(), page).await?;
     Ok(ApiJson(Paged::new(
         r.list.into_iter().map(AdItem::from).collect(),
@@ -142,6 +143,7 @@ pub async fn create(
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<AdForm>,
 ) -> AppResult<ApiJson<CreatedId>> {
+    user.require_admin()?;
     let id = ad_service::admin_create(
         &state,
         &user,
@@ -167,6 +169,7 @@ pub async fn update(
     Path(id): Path<u64>,
     ValidatedJson(f): ValidatedJson<AdPatchForm>,
 ) -> AppResult<ApiOk> {
+    user.require_admin()?;
     if f.status == Some(2) {
         ad_service::admin_delete(&state, &user, id).await?;
         return Ok(ApiOk("deleted"));

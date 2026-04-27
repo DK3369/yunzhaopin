@@ -122,3 +122,83 @@ where
     local.invalidate(key).await;
     let _ = kv.del(key).await;
 }
+
+// ============================================================================
+// SimpleCache — single-tier in-process cache for small lookup data.
+//
+// Use this for:
+//   - small curated reference data (countries, categories, friend links)
+//   - admin-edited data with infrequent writes
+//   - per-instance staleness up to TTL is acceptable
+//
+// Use `get_or_load` (above) instead when you need:
+//   - cross-instance invalidation via Redis
+//   - persistence across process restarts
+//   - shared cache across an autoscaling fleet
+//
+// `SimpleCache` deliberately does NOT expose moka types — callers should never
+// `use moka::*` outside of this file. If a feature you need from moka isn't
+// exposed here, add it to `SimpleCache` rather than reaching past the wrapper.
+// ============================================================================
+
+use std::hash::Hash;
+
+/// Single-tier in-process cache with singleflight semantics.
+///
+/// Wraps `moka::future::Cache` so callers don't need a direct `use moka::*`.
+/// On a cache miss, N concurrent requests for the same key only trigger the
+/// loader once; the rest await its result.
+pub struct SimpleCache<K, V>
+where
+    K: Eq + Hash + Send + Sync + 'static,
+    V: Send + Sync + 'static,
+{
+    inner: Cache<K, Arc<V>>,
+}
+
+impl<K, V> SimpleCache<K, V>
+where
+    K: Eq + Hash + Send + Sync + Clone + 'static,
+    V: Send + Sync + 'static,
+{
+    /// Build a new cache with `max_capacity` entries and a per-entry TTL.
+    ///
+    /// `max_capacity = 1` is fine for "all-of-it" caches keyed by `()`.
+    pub fn new(max_capacity: u64, ttl: Duration) -> Self {
+        Self {
+            inner: Cache::builder()
+                .max_capacity(max_capacity)
+                .time_to_live(ttl)
+                .build(),
+        }
+    }
+
+    /// Lookup `key`; on miss, run `loader` and cache the result.
+    ///
+    /// Singleflight: concurrent calls for the same key share one loader future.
+    /// The loader returns a plain `V`; the cache wraps it in `Arc` internally
+    /// so subsequent reads are zero-copy.
+    pub async fn get_or_load<F, Fut>(&self, key: K, loader: F) -> Result<Arc<V>, AppError>
+    where
+        F: FnOnce() -> Fut + Send,
+        Fut: Future<Output = Result<V, AppError>> + Send,
+    {
+        self.inner
+            .try_get_with(key, async move {
+                let v = loader().await?;
+                Ok::<_, AppError>(Arc::new(v))
+            })
+            .await
+            .map_err(AppError::from_arc)
+    }
+
+    /// Drop a single entry. Subsequent `get_or_load` will re-run the loader.
+    pub async fn invalidate(&self, key: &K) {
+        self.inner.invalidate(key).await;
+    }
+
+    /// Drop every entry. Cheap (marks for eviction; actual removal is lazy).
+    pub fn invalidate_all(&self) {
+        self.inner.invalidate_all();
+    }
+}

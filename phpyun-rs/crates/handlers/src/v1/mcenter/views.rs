@@ -6,12 +6,12 @@
 //!     * `kind=3`: jobseeker sees "who (company) has viewed my resume"
 
 use axum::{
-    extract::{Query, State},
+    extract::State,
     routing::get,
     Router,
 };
 use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+    ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedQuery,
 };
 use phpyun_services::view_service;
 use serde::{Deserialize, Serialize};
@@ -23,9 +23,10 @@ pub fn routes() -> Router<AppState> {
         .route("/profile-views", get(list_profile_views))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, validator::Validate, IntoParams)]
 pub struct KindQuery {
     /// 1=job / 2=company / 3=resume
+    #[validate(range(min = 1, max = 3))]
     pub kind: i32,
 }
 
@@ -86,7 +87,7 @@ pub async fn list_my_views(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<KindQuery>,
+    ValidatedQuery(q): ValidatedQuery<KindQuery>,
 ) -> AppResult<ApiJson<Paged<ViewItem>>> {
     let r = view_service::list_by_viewer(&state, &user, q.kind, page).await?;
     Ok(ApiJson(Paged::new(
@@ -113,7 +114,7 @@ pub async fn list_profile_views(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<KindQuery>,
+    ValidatedQuery(q): ValidatedQuery<KindQuery>,
 ) -> AppResult<ApiJson<Paged<ViewItem>>> {
     let r = view_service::list_on_target(&state, &user, q.kind, page).await?;
     Ok(ApiJson(Paged::new(

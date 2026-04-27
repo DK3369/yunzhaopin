@@ -6,7 +6,7 @@ use axum::{
     Router,
 };
 use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
 };
 use phpyun_services::redeem_service::{self, NewRewardForm};
 use serde::{Deserialize, Serialize};
@@ -29,7 +29,7 @@ pub fn routes() -> Router<AppState> {
         .route("/redeem-orders/{id}/reject", post(reject_order))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ClassQuery {
     pub parent_id: Option<u64>,
 }
@@ -61,7 +61,7 @@ impl From<phpyun_models::redeem::entity::RedeemClass> for ClassItem {
 pub async fn list_classes(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Query(q): Query<ClassQuery>,
+    ValidatedQuery(q): ValidatedQuery<ClassQuery>,
 ) -> AppResult<ApiJson<Vec<ClassItem>>> {
     user.require_admin()?;
     let l = redeem_service::list_classes(&state, q.parent_id).await?;
@@ -123,7 +123,7 @@ pub async fn delete_class(
 
 // ---------- rewards ----------
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct RewardListQuery {
     /// Default false (admin sees everything)
     #[serde(default)]
@@ -198,7 +198,7 @@ pub async fn list_rewards(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<RewardListQuery>,
+    ValidatedQuery(q): ValidatedQuery<RewardListQuery>,
 ) -> AppResult<ApiJson<Paged<RewardItem>>> {
     user.require_admin()?;
     let f = redeem_service::RewardFilter { only_active: q.only_active, nid: q.nid, tnid: q.tnid };
@@ -311,9 +311,13 @@ pub async fn set_reward_status(
     Ok(ApiOk("ok"))
 }
 
-#[derive(Debug, Deserialize, ToSchema)]
+#[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct FlagsForm {
+    /// 0 = unset, 1 = recommended. Anything else is rejected at validation.
+    #[validate(range(min = 0, max = 1))]
     pub is_rec: Option<i32>,
+    /// 0 = unset, 1 = hot.
+    #[validate(range(min = 0, max = 1))]
     pub is_hot: Option<i32>,
 }
 
@@ -331,7 +335,7 @@ pub async fn set_reward_flags(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     Path(id): Path<u64>,
-    axum::Json(f): axum::Json<FlagsForm>,
+    ValidatedJson(f): ValidatedJson<FlagsForm>,
 ) -> AppResult<ApiOk> {
     user.require_admin()?;
     redeem_service::set_reward_flags(&state, &user, id, f.is_rec, f.is_hot).await?;
@@ -340,7 +344,7 @@ pub async fn set_reward_flags(
 
 // ---------- orders ----------
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct OrderListQuery {
     pub status: Option<i32>,
 }
@@ -404,7 +408,7 @@ pub async fn list_orders(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<OrderListQuery>,
+    ValidatedQuery(q): ValidatedQuery<OrderListQuery>,
 ) -> AppResult<ApiJson<Paged<OrderItem>>> {
     user.require_admin()?;
     let r = redeem_service::list_orders_admin(&state, q.status, page).await?;

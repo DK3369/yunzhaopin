@@ -20,12 +20,25 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/oauth/{provider}/login", post(oauth_login))
         .route("/oauth/{provider}/bind", post(oauth_bind))
-        // WeChat Official Account snsapi_base only (code flow, not id_token)
+        // Code-flow providers (no id_token, third-party returns `code`).
+        // WeChat Official Account snsapi_base
         .route(
             "/oauth/wechat/authorize-url",
             axum::routing::get(wechat_authorize_url),
         )
         .route("/oauth/wechat/code-login", post(wechat_code_login))
+        // QQ Connect
+        .route(
+            "/oauth/qq/authorize-url",
+            axum::routing::get(qq_authorize_url),
+        )
+        .route("/oauth/qq/code-login", post(qq_code_login))
+        // Weibo
+        .route(
+            "/oauth/weibo/authorize-url",
+            axum::routing::get(weibo_authorize_url),
+        )
+        .route("/oauth/weibo/code-login", post(weibo_code_login))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -233,6 +246,203 @@ pub async fn wechat_code_login(
         .unwrap_or("")
         .to_string();
     let r = oauth_service::login_with_wechat_code(&state, &f.code, &ip, &ua).await?;
+    Ok(ApiJson(OAuthLoginData {
+        uid: r.uid,
+        usertype: r.usertype,
+        access_token: r.access,
+        access_exp: r.access_exp,
+        refresh_token: r.refresh,
+        refresh_exp: r.refresh_exp,
+    }))
+}
+
+// ==================== QQ Connect ====================
+
+const QQ_STATE_PREFIX: &str = "oauth:qq:state:";
+const QQ_STATE_TTL_SECS: u64 = 600;
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct QqAuthorizeData {
+    pub authorize_url: String,
+    pub state: String,
+}
+
+/// Generate the QQ Connect authorization redirect URL.
+/// Counterpart of PHP `wap/qqconnect::qqlogin_action` step 1.
+#[utoipa::path(
+    get,
+    path = "/v1/wap/oauth/qq/authorize-url",
+    tag = "auth",
+    responses(
+        (status = 200, description = "ok", body = QqAuthorizeData),
+        (status = 400, description = "qq_appid / qq_oauth_redirect not configured"),
+    )
+)]
+pub async fn qq_authorize_url(
+    State(state): State<AppState>,
+) -> AppResult<ApiJson<QqAuthorizeData>> {
+    let appid = state
+        .config
+        .qq_appid
+        .as_deref()
+        .ok_or_else(|| AppError::param_invalid("qq_appid_missing"))?;
+    let redirect = state
+        .config
+        .qq_oauth_redirect
+        .as_deref()
+        .ok_or_else(|| AppError::param_invalid("qq_oauth_redirect_missing"))?;
+
+    let state_val = uuid::Uuid::now_v7().simple().to_string();
+    state
+        .redis
+        .set_ex(
+            &format!("{QQ_STATE_PREFIX}{state_val}"),
+            "1",
+            QQ_STATE_TTL_SECS,
+        )
+        .await?;
+
+    let url = oauth_service::qq_authorize_url(appid, redirect, &state_val);
+    Ok(ApiJson(QqAuthorizeData {
+        authorize_url: url,
+        state: state_val,
+    }))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct CodeLoginForm {
+    /// Code returned by the third-party callback.
+    #[validate(length(min = 1, max = 256))]
+    pub code: String,
+    /// State returned by the third-party callback — must match the value
+    /// returned by the `authorize-url` endpoint (CSRF protection).
+    #[validate(length(min = 1, max = 128))]
+    pub state: String,
+}
+
+/// Exchange a QQ Connect code for a JWT.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/oauth/qq/code-login",
+    tag = "auth",
+    request_body = CodeLoginForm,
+    responses(
+        (status = 200, description = "Login successful", body = OAuthLoginData),
+        (status = 400, description = "qq not configured / invalid code / invalid state"),
+        (status = 401, description = "openid not bound to member"),
+    )
+)]
+pub async fn qq_code_login(
+    State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
+    headers: axum::http::HeaderMap,
+    ValidatedJson(f): ValidatedJson<CodeLoginForm>,
+) -> AppResult<ApiJson<OAuthLoginData>> {
+    let key = format!("{QQ_STATE_PREFIX}{}", f.state);
+    if !state.redis.exists(&key).await {
+        return Err(AppError::param_invalid("invalid_state"));
+    }
+    let _ = state.redis.del(&key).await;
+
+    let ua = headers
+        .get(axum::http::header::USER_AGENT)
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("")
+        .to_string();
+    let r = oauth_service::login_with_qq_code(&state, &f.code, &ip, &ua).await?;
+    Ok(ApiJson(OAuthLoginData {
+        uid: r.uid,
+        usertype: r.usertype,
+        access_token: r.access,
+        access_exp: r.access_exp,
+        refresh_token: r.refresh,
+        refresh_exp: r.refresh_exp,
+    }))
+}
+
+// ==================== Weibo (Sina) ====================
+
+const WEIBO_STATE_PREFIX: &str = "oauth:weibo:state:";
+const WEIBO_STATE_TTL_SECS: u64 = 600;
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct WeiboAuthorizeData {
+    pub authorize_url: String,
+    pub state: String,
+}
+
+/// Generate the Weibo authorization redirect URL.
+/// Counterpart of PHP `wap/sinaconnect::index_action` step 1.
+#[utoipa::path(
+    get,
+    path = "/v1/wap/oauth/weibo/authorize-url",
+    tag = "auth",
+    responses(
+        (status = 200, description = "ok", body = WeiboAuthorizeData),
+        (status = 400, description = "weibo_appid / weibo_oauth_redirect not configured"),
+    )
+)]
+pub async fn weibo_authorize_url(
+    State(state): State<AppState>,
+) -> AppResult<ApiJson<WeiboAuthorizeData>> {
+    let appid = state
+        .config
+        .weibo_appid
+        .as_deref()
+        .ok_or_else(|| AppError::param_invalid("weibo_appid_missing"))?;
+    let redirect = state
+        .config
+        .weibo_oauth_redirect
+        .as_deref()
+        .ok_or_else(|| AppError::param_invalid("weibo_oauth_redirect_missing"))?;
+
+    let state_val = uuid::Uuid::now_v7().simple().to_string();
+    state
+        .redis
+        .set_ex(
+            &format!("{WEIBO_STATE_PREFIX}{state_val}"),
+            "1",
+            WEIBO_STATE_TTL_SECS,
+        )
+        .await?;
+
+    let url = oauth_service::weibo_authorize_url(appid, redirect, &state_val);
+    Ok(ApiJson(WeiboAuthorizeData {
+        authorize_url: url,
+        state: state_val,
+    }))
+}
+
+/// Exchange a Weibo code for a JWT.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/oauth/weibo/code-login",
+    tag = "auth",
+    request_body = CodeLoginForm,
+    responses(
+        (status = 200, description = "Login successful", body = OAuthLoginData),
+        (status = 400, description = "weibo not configured / invalid code / invalid state"),
+        (status = 401, description = "uid not bound to member"),
+    )
+)]
+pub async fn weibo_code_login(
+    State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
+    headers: axum::http::HeaderMap,
+    ValidatedJson(f): ValidatedJson<CodeLoginForm>,
+) -> AppResult<ApiJson<OAuthLoginData>> {
+    let key = format!("{WEIBO_STATE_PREFIX}{}", f.state);
+    if !state.redis.exists(&key).await {
+        return Err(AppError::param_invalid("invalid_state"));
+    }
+    let _ = state.redis.del(&key).await;
+
+    let ua = headers
+        .get(axum::http::header::USER_AGENT)
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("")
+        .to_string();
+    let r = oauth_service::login_with_weibo_code(&state, &f.code, &ip, &ua).await?;
     Ok(ApiJson(OAuthLoginData {
         uid: r.uid,
         usertype: r.usertype,

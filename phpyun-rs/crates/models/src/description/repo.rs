@@ -114,6 +114,25 @@ pub async fn get(pool: &MySqlPool, id: u64) -> Result<Option<Description>, sqlx:
         .await
 }
 
+/// Find the first description whose `name` column matches `name` (e.g.
+/// "关于我们" / "联系我们" / "隐私政策" / "注册协议"). Mirrors PHP
+/// `description::getDes(array('name' => ...))` which back-queries the
+/// `phpyun_description.name` slug column directly.
+pub async fn find_by_name(
+    pool: &MySqlPool,
+    name: &str,
+) -> Result<Option<Description>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {DESC_FIELDS} FROM phpyun_description \
+         WHERE name = ? \
+         ORDER BY sort ASC, id DESC LIMIT 1"
+    );
+    sqlx::query_as::<_, Description>(&sql)
+        .bind(name)
+        .fetch_optional(pool)
+        .await
+}
+
 pub struct UpsertDesc<'a> {
     pub id: Option<u64>,
     pub class_id: u64,

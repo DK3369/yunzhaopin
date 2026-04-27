@@ -11,10 +11,11 @@ use axum::{
     routing::get,
     Router,
 };
-use phpyun_core::{ApiJson, AppResult, AppState};
+use phpyun_core::{ApiJson, AppResult, AppState, ValidatedQuery};
 use phpyun_services::map_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -38,7 +39,7 @@ fn pic_n(state: &AppState, raw: Option<&str>) -> String {
     )
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct GeoQuery {
     pub x: f64,
     pub y: f64,
@@ -103,7 +104,7 @@ pub struct NearCompany {
 )]
 pub async fn jobs_near(
     State(state): State<AppState>,
-    Query(q): Query<GeoQuery>,
+    ValidatedQuery(q): ValidatedQuery<GeoQuery>,
 ) -> AppResult<ApiJson<Vec<NearJob>>> {
     let list = map_service::jobs_near(&state, q.x, q.y, q.radius_km, q.limit).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
@@ -145,7 +146,7 @@ pub async fn jobs_near(
 )]
 pub async fn companies_near(
     State(state): State<AppState>,
-    Query(q): Query<GeoQuery>,
+    ValidatedQuery(q): ValidatedQuery<GeoQuery>,
 ) -> AppResult<ApiJson<Vec<NearCompany>>> {
     let list = map_service::companies_near(&state, q.x, q.y, q.radius_km, q.limit).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;

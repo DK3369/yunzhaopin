@@ -73,3 +73,62 @@ pub async fn my_reservation(
 ) -> AppResult<Option<ZphReservation>> {
     Ok(zph_repo::find_my_reservation(state.db.reader(), zid, user.uid).await?)
 }
+
+// ==================== Pre-apply status check (PHP `wap/ajax::ajaxComjob`) ====================
+
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize, serde::Deserialize)]
+pub struct OwnJobBrief {
+    pub id: u64,
+    pub name: String,
+}
+
+pub enum ComStatusOutcome {
+    /// Already applied — `status` echoes `phpyun_zhaopinhui_com.status`
+    /// (0 pending review, 1 approved, 2 rejected).
+    Applied { status: i32 },
+    /// Hasn't applied yet — present a list of own published jobs to attach.
+    NotApplied { jobs: Vec<OwnJobBrief> },
+    /// Hasn't applied AND has no published jobs — caller must publish first.
+    NoJobs,
+}
+
+/// Counterpart of PHP `wap/ajax::ajaxComjob_action`. Returns either the
+/// employer's existing application status for a fair, or — when not yet
+/// applied — the list of their own active jobs (so the form can pre-fill
+/// the "which jobs to bring" field). PHP also short-circuits with a clear
+/// "no jobs" path when the company has nothing to offer.
+pub async fn com_status_for_fair(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    zid: u64,
+) -> AppResult<ComStatusOutcome> {
+    user.require_employer()?;
+    let reader = state.db.reader();
+
+    if let Some(existing) = zph_repo::find_my_reservation(reader, zid, user.uid).await? {
+        return Ok(ComStatusOutcome::Applied {
+            status: existing.status,
+        });
+    }
+
+    // Mirror PHP filter: state=1 (active), status=0 (open), r_status<>2 (not rejected company-wide)
+    let now = clock::now_ts();
+    let rows: Vec<OwnJobBrief> = sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(name, '') AS name \
+         FROM phpyun_company_job \
+         WHERE uid = ? AND state = 1 AND status = 0 AND r_status != 2 \
+           AND (edate IS NULL OR edate > ?) \
+         ORDER BY lastupdate DESC, id DESC \
+         LIMIT 50",
+    )
+    .bind(user.uid)
+    .bind(now)
+    .fetch_all(reader)
+    .await?;
+
+    if rows.is_empty() {
+        Ok(ComStatusOutcome::NoJobs)
+    } else {
+        Ok(ComStatusOutcome::NotApplied { jobs: rows })
+    }
+}

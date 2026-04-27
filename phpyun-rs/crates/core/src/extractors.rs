@@ -355,6 +355,38 @@ where
     }
 }
 
+/// Same shape as `ValidatedJson`, but reads from query string. Use this on
+/// any handler that accepts a `Query<T>` whose fields end up in DB queries
+/// (LIKE / WHERE / IN), so length / range / regex constraints are enforced
+/// before SQL runs.
+///
+/// Migration tip: change `Query(q): Query<MyQuery>` →
+/// `ValidatedQuery(q): ValidatedQuery<MyQuery>` and add `Validate` to the
+/// struct's `derive`. Defaults set by `#[serde(default = "...")]` continue to
+/// work because `serde::Deserialize` runs before `validator::Validate`.
+pub struct ValidatedQuery<T>(pub T);
+
+impl<S, T> FromRequestParts<S> for ValidatedQuery<T>
+where
+    S: Send + Sync,
+    T: DeserializeOwned + validator::Validate,
+{
+    type Rejection = AppError;
+
+    async fn from_request_parts(
+        parts: &mut Parts,
+        state: &S,
+    ) -> Result<Self, Self::Rejection> {
+        let Query(value) = Query::<T>::from_request_parts(parts, state)
+            .await
+            .map_err(|e| AppError::param_invalid(format!("query: {e}")))?;
+        value
+            .validate()
+            .map_err(|e| AppError::param_invalid(first_validation_key(&e)))?;
+        Ok(ValidatedQuery(value))
+    }
+}
+
 /// Same as `ValidatedJson`, but reads `application/x-www-form-urlencoded`.
 pub struct ValidatedForm<T>(pub T);
 

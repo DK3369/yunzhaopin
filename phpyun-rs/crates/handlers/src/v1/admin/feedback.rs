@@ -6,7 +6,7 @@ use axum::{
     Router,
 };
 use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
 };
 use phpyun_services::admin_service;
 use serde::{Deserialize, Serialize};
@@ -20,7 +20,7 @@ pub fn routes() -> Router<AppState> {
         .route("/feedback/batch/status", post(batch_set_status))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct FeedbackListQuery {
     /// 0=pending / 1=resolved
     pub status: Option<i32>,
@@ -81,7 +81,7 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<FeedbackListQuery>,
+    ValidatedQuery(q): ValidatedQuery<FeedbackListQuery>,
 ) -> AppResult<ApiJson<Paged<AdminFeedbackItem>>> {
     user.require_admin()?;
     let r = admin_service::list_feedback(&state, q.status, page).await?;

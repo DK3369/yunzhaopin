@@ -125,6 +125,117 @@ pub async fn list_company_uid_ids(
     Ok(rows.into_iter().map(|(u,)| u).collect())
 }
 
+// ==================== Company sign-up to a special ====================
+
+pub async fn already_applied(
+    pool: &MySqlPool,
+    sid: u64,
+    uid: u64,
+) -> Result<bool, sqlx::Error> {
+    let row: Option<(i64,)> = sqlx::query_as(
+        "SELECT 1 FROM phpyun_special_com WHERE sid = ? AND uid = ? LIMIT 1",
+    )
+    .bind(sid)
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.is_some())
+}
+
+pub async fn count_signups(pool: &MySqlPool, sid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_special_com WHERE sid = ?")
+            .bind(sid)
+            .fetch_one(pool)
+            .await?;
+    Ok(n.max(0) as u64)
+}
+
+pub async fn count_active_jobs_by_company(
+    pool: &MySqlPool,
+    uid: u64,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_company_job \
+         WHERE uid = ? AND state = 1 AND sdate < ?",
+    )
+    .bind(uid)
+    .bind(now)
+    .fetch_one(pool)
+    .await?;
+    Ok(n.max(0) as u64)
+}
+
+/// Read the company's stored rating tier (1..n) — used to gate `info.rating`.
+pub async fn get_company_rating(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<i32, sqlx::Error> {
+    let row: Option<(i32,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(rating, 0) AS SIGNED) FROM phpyun_company_statis \
+         WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(r,)| r).unwrap_or(0))
+}
+
+/// Read the company's integral balance.
+pub async fn get_company_integral(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<i64, sqlx::Error> {
+    let row: Option<(i64,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(integral, '0') AS SIGNED) FROM phpyun_company_statis \
+         WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(n,)| n).unwrap_or(0))
+}
+
+/// Atomic deduction. Returns `1` on success, `0` when balance is insufficient.
+pub async fn try_deduct_company_integral(
+    pool: &MySqlPool,
+    uid: u64,
+    points: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_company_statis \
+            SET integral = CAST(integral AS SIGNED) - ? \
+          WHERE uid = ? AND CAST(integral AS SIGNED) >= ?",
+    )
+    .bind(points)
+    .bind(uid)
+    .bind(points)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn insert_special_com(
+    pool: &MySqlPool,
+    sid: u64,
+    uid: u64,
+    integral: i32,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "INSERT INTO phpyun_special_com (sid, uid, integral, status, time) \
+         VALUES (?, ?, ?, 0, ?)",
+    )
+    .bind(sid)
+    .bind(uid)
+    .bind(integral)
+    .bind(now)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
 /// Active job postings for multiple companies in a special event (batched via `IN(...)`).
 pub async fn list_jobs_for_uids(
     pool: &MySqlPool,

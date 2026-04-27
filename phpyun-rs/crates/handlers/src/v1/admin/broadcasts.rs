@@ -82,6 +82,7 @@ pub async fn list(
     user: AuthenticatedUser,
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<BroadcastItem>>> {
+    user.require_admin()?;
     let r = broadcast_service::admin_list(&state, &user, page).await?;
     Ok(ApiJson(Paged::new(
         r.list.into_iter().map(BroadcastItem::from).collect(),
@@ -97,6 +98,7 @@ pub async fn create(
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<CreateForm>,
 ) -> AppResult<ApiJson<CreatedId>> {
+    user.require_admin()?;
     let id =
         broadcast_service::admin_create(&state, &user, &f.title, &f.body, f.target_usertype)
             .await?;
@@ -109,6 +111,7 @@ pub async fn remove(
     user: AuthenticatedUser,
     Path(id): Path<u64>,
 ) -> AppResult<ApiOk> {
+    user.require_admin()?;
     broadcast_service::admin_delete(&state, &user, id).await?;
     Ok(ApiOk("deleted"))
 }

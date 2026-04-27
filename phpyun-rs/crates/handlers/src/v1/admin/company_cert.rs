@@ -124,6 +124,7 @@ pub async fn review(
     Path(uid): Path<u64>,
     ValidatedJson(f): ValidatedJson<ReviewForm>,
 ) -> AppResult<ApiOk> {
+    user.require_admin()?;
     company_cert_service::review(&state, &user, uid, f.approve, &f.note).await?;
     Ok(ApiOk("ok"))
 }

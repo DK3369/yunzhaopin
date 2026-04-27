@@ -1,12 +1,13 @@
 //! Public job browsing (WAP, aligned with `wap/job::index_action` / detail portion of `wap/job::comapply_action`).
 
 use axum::{
-    extract::{Path, Query, State},
+    extract::{Path, State},
     routing::{get, post},
     Router,
 };
 use phpyun_core::{
     json, ApiJson, AppResult, AppState, ClientIp, MaybeUser, Paged, Pagination, ValidatedJson,
+    ValidatedQuery,
 };
 use validator::Validate;
 use phpyun_services::hot_search_service;
@@ -33,22 +34,38 @@ pub fn routes() -> Router<AppState> {
         .route("/jobs/{id}/same-company", get(same_company_jobs))
         .route("/companies/{uid}/jobs", get(company_jobs))
         .route("/jobs/{id}/tel-click", post(log_tel_click))
+        .route("/jobs/{id}/share-text", get(share_text))
+        .route("/jobs/{id}/hits", post(bump_jobhits))
+        .route("/jobs/{id}/contact", get(job_contact))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct JobListQuery {
+    /// Free-text search; capped at 100 chars to keep LIKE plans sane and
+    /// guard against memory-exhaustion via 10MB-keyword requests.
+    #[validate(length(max = 100))]
     pub keyword: Option<String>,
+    #[validate(range(min = 0, max = 9_999_999))]
     pub province_id: Option<i32>,
+    #[validate(range(min = 0, max = 9_999_999))]
     pub city_id: Option<i32>,
+    #[validate(range(min = 0, max = 9_999_999))]
     pub three_city_id: Option<i32>,
+    #[validate(range(min = 0, max = 9_999_999))]
     pub job1: Option<i32>,
+    #[validate(range(min = 0, max = 1_000_000))]
     pub min_salary: Option<i32>,
+    #[validate(range(min = 0, max = 1_000_000))]
     pub max_salary: Option<i32>,
+    #[validate(range(min = 0, max = 99))]
     pub exp: Option<i32>,
+    #[validate(range(min = 0, max = 99))]
     pub edu: Option<i32>,
     /// 1 = full-time / 2 = part-time / 3 = internship / 4 = temporary
+    #[validate(range(min = 0, max = 4))]
     pub job_type: Option<i32>,
     #[serde(default = "default_did")]
+    #[validate(range(max = 9_999_999))]
     pub did: u32,
 }
 fn default_did() -> u32 {
@@ -227,7 +244,7 @@ pub async fn list_jobs(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     page: Pagination,
-    Query(q): Query<JobListQuery>,
+    ValidatedQuery(q): ValidatedQuery<JobListQuery>,
 ) -> AppResult<ApiJson<Paged<JobSummary>>> {
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "job", kw.trim().to_string());
@@ -467,9 +484,10 @@ pub async fn job_detail(
     })))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct RecQuery {
     #[serde(default = "default_rec_limit")]
+    #[validate(range(min = 1, max = 30))]
     pub limit: u64,
 }
 fn default_rec_limit() -> u64 { 6 }
@@ -486,7 +504,7 @@ pub async fn similar_jobs(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     Path(id): Path<u64>,
-    axum::extract::Query(q): axum::extract::Query<RecQuery>,
+    ValidatedQuery(q): ValidatedQuery<RecQuery>,
 ) -> AppResult<ApiJson<Vec<JobSummary>>> {
     let list = job_service::list_similar(&state, id, q.limit.clamp(1, 30)).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
@@ -516,7 +534,7 @@ pub async fn same_company_jobs(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     Path(id): Path<u64>,
-    axum::extract::Query(q): axum::extract::Query<RecQuery>,
+    ValidatedQuery(q): ValidatedQuery<RecQuery>,
 ) -> AppResult<ApiJson<Vec<JobSummary>>> {
     let list = job_service::list_same_company(&state, id, q.limit.clamp(1, 30)).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
@@ -602,4 +620,197 @@ pub async fn log_tel_click(
     let viewer_uid = user.as_ref().map(|u| u.uid);
     job_service::log_tel_click(&state, viewer_uid, id, b.com_id, b.source, &ip).await?;
     Ok(ApiJson(json::json!({ "ok": true })))
+}
+
+// ==================== Share text (copyable / Weibo / WeChat) ====================
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct JobShareText {
+    pub job_id: u64,
+    pub job_name: String,
+    pub com_name: String,
+    /// `{salary} | {city} | {edu}` — primary one-line summary suitable for
+    /// chat / Weibo card. Empty fields are omitted.
+    pub summary: String,
+    /// Plain-text card the user pastes elsewhere. Pre-rendered with
+    /// short URL (`share_url`) appended.
+    pub plain_text: String,
+    pub share_url: String,
+}
+
+/// Get pre-formatted share text — counterpart of PHP `wap/job::getJobWb_action`.
+/// PHP renders the text inside the `wxpubtemp` template; we expose the data
+/// directly so any client (Weibo / WeChat / clipboard) can reuse it.
+#[utoipa::path(
+    get,
+    path = "/v1/wap/jobs/{id}/share-text",
+    tag = "wap",
+    params(("id" = u64, Path)),
+    responses(
+        (status = 200, description = "ok", body = JobShareText),
+        (status = 404, description = "Job not found"),
+    )
+)]
+pub async fn share_text(
+    State(state): State<AppState>,
+    Path(id): Path<u64>,
+) -> AppResult<ApiJson<JobShareText>> {
+    let row: Option<(u64, String, String, i32, i32, i32, i32)> = sqlx::query_as(
+        "SELECT \
+            CAST(id AS UNSIGNED), \
+            COALESCE(name, ''), \
+            COALESCE(com_name, ''), \
+            CAST(COALESCE(minsalary, 0) AS SIGNED), \
+            CAST(COALESCE(maxsalary, 0) AS SIGNED), \
+            CAST(COALESCE(provinceid, 0) AS SIGNED), \
+            CAST(COALESCE(edu, 0) AS SIGNED) \
+         FROM phpyun_company_job \
+         WHERE id = ? AND state = 1 AND status = 0 AND r_status = 1 \
+         LIMIT 1",
+    )
+    .bind(id)
+    .fetch_optional(state.db.reader())
+    .await?;
+
+    let (jid, job_name, com_name, minsalary, maxsalary, prov_id, edu_id) = row
+        .ok_or_else(|| {
+            phpyun_core::AppError::new(phpyun_core::InfraError::InvalidParam("job_not_found".into()))
+        })?;
+
+    let dicts = phpyun_services::dict_service::get(&state).await?;
+    // Salary: derive from the explicit numeric range. PHPYun's legacy `salary`
+    // bucket column was dropped from the schema we observe today.
+    let salary = if minsalary > 0 && maxsalary > 0 && maxsalary != minsalary {
+        format!("{minsalary}-{maxsalary}元")
+    } else if minsalary > 0 {
+        format!("{minsalary}元以上")
+    } else {
+        String::new()
+    };
+    let city = dicts.city(prov_id).to_string();
+    // Edu id → raw number; client renders the localized label. Keeps this
+    // endpoint dictionary-agnostic.
+    let _ = edu_id;
+
+    let mut parts = Vec::with_capacity(2);
+    if !salary.is_empty() {
+        parts.push(salary.clone());
+    }
+    if !city.is_empty() {
+        parts.push(city.clone());
+    }
+    let summary = parts.join(" | ");
+
+    let share_url = state
+        .config
+        .web_base_url
+        .as_deref()
+        .map(|b| format!("{b}/wap/job/comapply?id={jid}"))
+        .unwrap_or_else(|| format!("/wap/job/comapply?id={jid}"));
+
+    let plain_text = format!(
+        "【{}】{}：{}\n{}",
+        com_name,
+        job_name,
+        if summary.is_empty() {
+            "查看详情"
+        } else {
+            summary.as_str()
+        },
+        share_url
+    );
+
+    Ok(ApiJson(JobShareText {
+        job_id: jid,
+        job_name,
+        com_name,
+        summary,
+        plain_text,
+        share_url,
+    }))
+}
+
+// ==================== Job hits counter ====================
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct JobHitsResp {
+    pub hits: u64,
+}
+
+/// Bump and return the new job-hit count. Counterpart of PHP
+/// `wap/job::GetHits_action` (which echoes a `document.write(N)` snippet;
+/// we return clean JSON). The hit goes to `phpyun_company_job.jobhits`.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/jobs/{id}/hits",
+    tag = "wap",
+    params(("id" = u64, Path)),
+    responses((status = 200, description = "ok", body = JobHitsResp))
+)]
+pub async fn bump_jobhits(
+    State(state): State<AppState>,
+    Path(id): Path<u64>,
+) -> AppResult<ApiJson<JobHitsResp>> {
+    let hits = phpyun_models::job::repo::bump_and_get_jobhits(state.db.pool(), id).await?;
+    Ok(ApiJson(JobHitsResp { hits }))
+}
+
+// ==================== Job contact reveal (getJobLink) ====================
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct JobContactView {
+    pub job_id: u64,
+    pub linkman: String,
+    pub linktel: String,
+    pub linkphone: String,
+    pub linkmail: String,
+    pub address: String,
+    pub city_id: i32,
+    pub city_name: String,
+    /// Longitude (BD-09 normalised same way as the company detail endpoint).
+    pub x: String,
+    /// Latitude
+    pub y: String,
+}
+
+/// Resolve the contact info for a single job. Counterpart of PHP
+/// `app/job/comapply::getJobLink_action`. The job row's `is_link` field
+/// selects between the company's default contact (1), the per-job alternate
+/// (`company_job_link`, with fallback to default — 2), and the alternate
+/// without fallback (3). 404 when the job is missing.
+#[utoipa::path(
+    get,
+    path = "/v1/wap/jobs/{id}/contact",
+    tag = "wap",
+    params(("id" = u64, Path)),
+    responses(
+        (status = 200, description = "ok", body = JobContactView),
+        (status = 404, description = "Job not found"),
+    )
+)]
+pub async fn job_contact(
+    State(state): State<AppState>,
+    Path(id): Path<u64>,
+) -> AppResult<ApiJson<JobContactView>> {
+    let c = phpyun_models::job::repo::get_job_contact(state.db.reader(), id)
+        .await?
+        .ok_or_else(|| phpyun_core::AppError::param_invalid("job_not_found"))?;
+
+    // Resolve city name from the dict cache so the front-end doesn't need a
+    // second round-trip just to render it.
+    let dicts = phpyun_services::dict_service::get(&state).await?;
+    let city_name = dicts.city(c.cityid).to_string();
+
+    Ok(ApiJson(JobContactView {
+        job_id: id,
+        linkman: c.linkman,
+        linktel: c.linktel,
+        linkphone: c.linkphone,
+        linkmail: c.linkmail,
+        address: c.address,
+        city_id: c.cityid,
+        city_name,
+        x: c.x,
+        y: c.y,
+    }))
 }

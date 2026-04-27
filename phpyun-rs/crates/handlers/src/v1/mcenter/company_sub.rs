@@ -1,4 +1,11 @@
 //! Company sub-page management: products / news (requires `require_employer`).
+//!
+//! ⚠️ **Deprecated** in favour of [`super::company_content`], which exposes a
+//! single parameterised CRUD surface (`/v1/mcenter/company-contents/{kind}`)
+//! covering products, news, addresses, galleries, and any future content type.
+//! These endpoints stay registered so existing clients keep working — please
+//! migrate to `company-contents` for new integrations and don't extend this
+//! module.
 
 use axum::{
     extract::{Path, State},

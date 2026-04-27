@@ -5,16 +5,17 @@ use axum::{
     routing::get,
     Router,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedQuery};
 use phpyun_services::audit_log_service::{self, Filter};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/activity", get(list))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ActivityQuery {
     pub action_prefix: Option<String>,
     pub since: Option<i64>,
@@ -73,7 +74,7 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<ActivityQuery>,
+    ValidatedQuery(q): ValidatedQuery<ActivityQuery>,
 ) -> AppResult<ApiJson<Paged<ActivityItem>>> {
     let f = Filter {
         action_prefix: q.action_prefix.as_deref(),

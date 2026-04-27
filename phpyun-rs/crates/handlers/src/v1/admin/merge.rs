@@ -47,6 +47,7 @@ pub async fn merge(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<MergeForm>,
 ) -> AppResult<ApiJson<MergeDone>> {
+    user.require_admin()?;
     let r = transfer_service::merge_into_company(&state, &user, f.user_uid, f.company_uid, &ip)
         .await?;
     Ok(ApiJson(MergeDone {

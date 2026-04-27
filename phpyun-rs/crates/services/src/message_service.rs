@@ -53,3 +53,7 @@ pub async fn delete(
     let _ = message_repo::delete(state.db.pool(), id, user.uid).await?;
     Ok(())
 }
+
+pub async fn unread_count(state: &AppState, user: &AuthenticatedUser) -> AppResult<u64> {
+    Ok(message_repo::count(state.db.reader(), user.uid, None, true).await?)
+}

@@ -2,21 +2,23 @@
 
 use axum::{
     extract::{Path, Query, State},
-    routing::get,
+    routing::{get, post},
     Router,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination};
+use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedQuery};
 use phpyun_services::hr_doc_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/hr-docs", get(list))
         .route("/hr-docs/{id}", get(detail))
+        .route("/hr-docs/{id}/download", post(track_download))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct HrQuery {
     pub cid: Option<u64>,
 }
@@ -105,7 +107,7 @@ impl From<phpyun_models::hr_doc::entity::HrDoc> for HrDetail {
 pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
-    Query(q): Query<HrQuery>,
+    ValidatedQuery(q): ValidatedQuery<HrQuery>,
 ) -> AppResult<ApiJson<Paged<HrSummary>>> {
     let r = hr_doc_service::list(&state, q.cid, page).await?;
     Ok(ApiJson(Paged::new(
@@ -130,4 +132,42 @@ pub async fn detail(
 ) -> AppResult<ApiJson<HrDetail>> {
     let d = hr_doc_service::get(&state, id).await?;
     Ok(ApiJson(HrDetail::from(d)))
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct HrDownloadResp {
+    /// CDN-resolved download URL the client should redirect to.
+    pub url: String,
+    /// Original raw URL stored on `phpyun_toolbox_doc.url`.
+    pub raw_url: String,
+    /// New `downnum` value after the increment.
+    pub hits: u32,
+}
+
+/// Track a download click — counterpart of PHP `hr/index::ajax_action`.
+/// Atomically `downnum +=1` then returns the file URL so the client can
+/// redirect (PHP echoes `checkpic($row['url'])` directly; we wrap in JSON).
+#[utoipa::path(
+    post,
+    path = "/v1/wap/hr-docs/{id}/download",
+    tag = "wap",
+    params(("id" = u64, Path)),
+    responses(
+        (status = 200, description = "ok", body = HrDownloadResp),
+        (status = 404, description = "Not found"),
+    )
+)]
+pub async fn track_download(
+    State(state): State<AppState>,
+    Path(id): Path<u64>,
+) -> AppResult<ApiJson<HrDownloadResp>> {
+    let _ = phpyun_models::hr_doc::repo::incr_hit(state.db.pool(), id).await?;
+    let d = hr_doc_service::get(&state, id).await?;
+    let web_base = state.config.web_base_url.as_deref();
+    let url_n = state.storage.normalize_legacy_url(&d.url, web_base);
+    Ok(ApiJson(HrDownloadResp {
+        url: url_n,
+        raw_url: d.url,
+        hits: d.hits,
+    }))
 }

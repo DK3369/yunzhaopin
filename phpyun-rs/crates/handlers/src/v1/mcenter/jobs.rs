@@ -7,7 +7,7 @@ use axum::{
 };
 use phpyun_core::json;
 use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
+    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson, ValidatedQuery
 };
 use phpyun_services::job_mgmt_service::{self, CreateJobInput, UpdateJobInput};
 use serde::{Deserialize, Serialize};
@@ -267,7 +267,7 @@ pub async fn refresh(
 
 // ==================== List + Detail ====================
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct MyJobsQuery {
     /// Optional review-state filter: 0 pending / 1 approved / 2 closed / 3 rejected
     pub state: Option<i32>,
@@ -292,7 +292,7 @@ pub async fn list_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<MyJobsQuery>,
+    ValidatedQuery(q): ValidatedQuery<MyJobsQuery>,
 ) -> AppResult<ApiJson<Paged<MyJobSummary>>> {
     let r = job_mgmt_service::list_mine(&state, &user, q.state, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;

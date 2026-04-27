@@ -9,10 +9,11 @@ use axum::{
     Router,
 };
 use phpyun_core::i18n::{current_lang, Lang};
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, InfraError};
+use phpyun_core::{ApiJson, AppError, AppResult, AppState, InfraError, ValidatedQuery};
 use phpyun_services::region_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -20,6 +21,7 @@ pub fn routes() -> Router<AppState> {
         .route("/regions/{id}", get(by_id))
         .route("/regions/{id}/children", get(children))
         .route("/regions/by-code/{code}", get(by_code))
+        .route("/regions/city-domain", get(city_domain))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -57,7 +59,7 @@ fn to_view(node: &region_service::RegionNode, lang: Lang, has_children: bool) ->
     }
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
     /// ISO 3166-1 alpha-2 (CN/US/JP/...). When supplied the result is restricted to that country.
     pub country: Option<String>,
@@ -79,7 +81,7 @@ pub struct ListQuery {
 )]
 pub async fn list(
     State(state): State<AppState>,
-    Query(q): Query<ListQuery>,
+    ValidatedQuery(q): ValidatedQuery<ListQuery>,
 ) -> AppResult<ApiJson<Vec<RegionView>>> {
     let tree = region_service::get(&state).await?;
     let lang = current_lang();
@@ -149,6 +151,49 @@ pub async fn by_code(
         .find_by_code(&code)
         .ok_or_else(|| AppError::new(InfraError::InvalidParam("region_not_found".into())))?;
     Ok(ApiJson(to_view(node, lang, tree.has_children(node.region.id))))
+}
+
+// ==================== City → sub-site domain lookup ====================
+
+#[derive(Debug, Deserialize, Validate, IntoParams)]
+pub struct CityDomainQuery {
+    /// Longitude (Baidu BD-09 coordinates, matches PHP `wap/index::getCityDomain` `x` param)
+    pub x: Option<f64>,
+    /// Latitude (BD-09)
+    pub y: Option<f64>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct CityDomainResp {
+    /// 0 = no match, 1 = matched, 2 = sub-site disabled (mirrors PHP `error` field)
+    pub error: i32,
+    pub domain: Option<String>,
+    pub city: Option<String>,
+}
+
+/// Resolve a `(lng, lat)` to the configured sub-site domain — counterpart of
+/// PHP `wap/index::getCityDomain_action`.
+///
+/// Multi-site mode is not yet wired in Rust (needs Baidu Maps reverse-geocoding
+/// + the `phpyun_domain` table); this endpoint always returns `error: 2`,
+/// which matches PHP's "sub-site disabled" branch and lets clients render the
+/// fall-through state without 404s.
+#[utoipa::path(
+    get,
+    path = "/v1/wap/regions/city-domain",
+    tag = "wap",
+    params(CityDomainQuery),
+    responses((status = 200, description = "ok", body = CityDomainResp))
+)]
+pub async fn city_domain(
+    State(_state): State<AppState>,
+    ValidatedQuery(_q): ValidatedQuery<CityDomainQuery>,
+) -> AppResult<ApiJson<CityDomainResp>> {
+    Ok(ApiJson(CityDomainResp {
+        error: 2,
+        domain: None,
+        city: None,
+    }))
 }
 
 /// Direct children of a node — used by cascading dropdowns.

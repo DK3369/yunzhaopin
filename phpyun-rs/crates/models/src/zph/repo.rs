@@ -110,6 +110,23 @@ pub async fn list_companies(
         .await
 }
 
+/// Pull every job-id signed up to a recruitment fair. The PHP schema stores
+/// these as a CSV string per `phpyun_zhaopinhui_com.jobid`, so this just
+/// loads the raw CSVs and lets the caller flatten + dedupe them.
+pub async fn jobid_csvs_for_zph(
+    pool: &MySqlPool,
+    zid: u64,
+) -> Result<Vec<String>, sqlx::Error> {
+    let rows: Vec<(String,)> = sqlx::query_as(
+        "SELECT COALESCE(jobid, '') FROM phpyun_zhaopinhui_com \
+           WHERE zid = ? AND status = 1",
+    )
+    .bind(zid)
+    .fetch_all(pool)
+    .await?;
+    Ok(rows.into_iter().map(|(s,)| s).filter(|s| !s.is_empty()).collect())
+}
+
 pub async fn count_companies(pool: &MySqlPool, zid: u64) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM phpyun_zhaopinhui_com WHERE zid = ? AND status = 1",

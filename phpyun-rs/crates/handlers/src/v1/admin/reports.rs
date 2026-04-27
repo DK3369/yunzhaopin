@@ -6,7 +6,7 @@ use axum::{
     Router,
 };
 use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
 };
 use phpyun_services::admin_service;
 use serde::{Deserialize, Serialize};
@@ -20,7 +20,7 @@ pub fn routes() -> Router<AppState> {
         .route("/reports/batch/status", post(batch_set_status))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ReportListQuery {
     /// 0=pending / 1=approved / 2=rejected; omit = all
     pub status: Option<i32>,
@@ -87,7 +87,7 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<ReportListQuery>,
+    ValidatedQuery(q): ValidatedQuery<ReportListQuery>,
 ) -> AppResult<ApiJson<Paged<AdminReportItem>>> {
     user.require_admin()?;
     let r = admin_service::list_reports(&state, q.status, page).await?;

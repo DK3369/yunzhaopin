@@ -10,7 +10,7 @@
 use axum::{extract::{Query, State}, routing::{get, post}, Router};
 use phpyun_core::{
     ApiJson, ApiMsg, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
-    ValidatedJson,
+    ValidatedJson, ValidatedQuery
 };
 use phpyun_services::entrust_service;
 use serde::{Deserialize, Serialize};
@@ -55,7 +55,7 @@ impl From<phpyun_models::entrust::entity::Entrust> for EntrustItem {
     }
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {}
 
 /// List my headhunter bindings (paginated, newest first)
@@ -71,7 +71,7 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(_q): Query<ListQuery>,
+    ValidatedQuery(_q): ValidatedQuery<ListQuery>,
 ) -> AppResult<ApiJson<Paged<EntrustItem>>> {
     let r = entrust_service::list_mine(&state, &user, page).await?;
     let items: Vec<EntrustItem> = r.list.into_iter().map(EntrustItem::from).collect();

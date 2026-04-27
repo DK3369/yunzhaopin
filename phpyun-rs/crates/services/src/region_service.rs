@@ -44,13 +44,17 @@ pub struct RegionNode {
 }
 
 impl RegionNode {
-    /// Display name following the request's lang -> zh-CN -> en -> raw `name` chain.
+    /// Display name for the requested language.
+    ///
+    /// Lookup is intentionally non-cascading across languages: if the exact
+    /// `lang` has no translation row we fall straight back to the `name`
+    /// column rather than chaining through other languages. This avoids the
+    /// surprising case where an `en` request silently returns Chinese just
+    /// because a zh-CN translation happens to exist.
     pub fn display_name(&self, lang: Lang) -> &str {
-        for &l in lang.fallback_chain() {
-            if let Some(s) = self.translations.get(&l) {
-                if !s.is_empty() {
-                    return s;
-                }
+        if let Some(s) = self.translations.get(&lang) {
+            if !s.is_empty() {
+                return s;
             }
         }
         &self.region.name

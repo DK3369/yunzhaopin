@@ -6,7 +6,7 @@ use axum::{
     Router,
 };
 use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
 };
 use phpyun_services::remark_service;
 use serde::{Deserialize, Serialize};
@@ -55,7 +55,7 @@ impl From<phpyun_models::remark::entity::Remark> for RemarkView {
     }
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
     /// 1=resume 2=company 3=apply; omit = all
     pub kind: Option<i32>,
@@ -84,7 +84,7 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<ListQuery>,
+    ValidatedQuery(q): ValidatedQuery<ListQuery>,
 ) -> AppResult<ApiJson<Paged<RemarkView>>> {
     let r = remark_service::list(&state, &user, q.kind, page).await?;
     Ok(ApiJson(Paged::new(

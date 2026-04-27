@@ -15,7 +15,7 @@ use axum::{
 };
 use phpyun_core::{
     ApiJson, ApiMsg, ApiMsgData, AppResult, AppState, AuthenticatedUser, ClientIp, Paged,
-    Pagination, ValidatedJson,
+    Pagination, ValidatedJson, ValidatedQuery
 };
 use phpyun_services::collect_service;
 use serde::{Deserialize, Serialize};
@@ -98,7 +98,7 @@ pub async fn remove(
 // (salary / city / edu / exp / com_logo / is_favorited / ... all included).
 use super::super::wap::jobs::JobSummary;
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
     /// 1=job / 2=company / 3=resume
     pub kind: i32,
@@ -119,7 +119,7 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<ListQuery>,
+    ValidatedQuery(q): ValidatedQuery<ListQuery>,
 ) -> AppResult<ApiJson<Paged<JobSummary>>> {
     let r = collect_service::list(&state, &user, q.kind, page).await?;
 

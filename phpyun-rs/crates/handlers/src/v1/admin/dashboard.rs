@@ -5,10 +5,11 @@ use axum::{
     routing::get,
     Router,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedQuery};
 use phpyun_services::admin_dashboard_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -42,6 +43,7 @@ pub async fn overview(
     State(state): State<AppState>,
     user: AuthenticatedUser,
 ) -> AppResult<ApiJson<OverviewView>> {
+    user.require_admin()?;
     let o = admin_dashboard_service::overview(&state, &user).await?;
     Ok(ApiJson(OverviewView {
         pending_company_certs: o.pending_company_certs,
@@ -57,7 +59,7 @@ pub async fn overview(
     }))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct RecentQuery {
     #[serde(default = "default_limit")]
     pub limit: u64,
@@ -108,8 +110,9 @@ pub struct RecentUser {
 pub async fn recent_signups(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Query(q): Query<RecentQuery>,
+    ValidatedQuery(q): ValidatedQuery<RecentQuery>,
 ) -> AppResult<ApiJson<Vec<RecentUser>>> {
+    user.require_admin()?;
     let list = admin_dashboard_service::recent_signups(&state, &user, q.limit).await?;
     Ok(ApiJson(
         list.into_iter()

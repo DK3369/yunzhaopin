@@ -1,14 +1,15 @@
 //! Personal search history (matching PHPYun `search::history`).
 
 use axum::{
-    extract::{Path, Query, State},
+    extract::{Path, State},
     routing::{get, post},
     Router,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedQuery};
 use phpyun_services::search_history_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -16,16 +17,19 @@ pub fn routes() -> Router<AppState> {
         .route("/search-history/{id}", post(remove))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
+    #[validate(length(max = 16))]
     pub scope: Option<String>,
     #[serde(default = "default_limit")]
+    #[validate(range(min = 1, max = 200))]
     pub limit: u64,
 }
 fn default_limit() -> u64 { 20 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ClearQuery {
+    #[validate(length(max = 16))]
     pub scope: Option<String>,
 }
 
@@ -76,7 +80,7 @@ pub struct ClearResult {
 pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Query(q): Query<ListQuery>,
+    ValidatedQuery(q): ValidatedQuery<ListQuery>,
 ) -> AppResult<ApiJson<Vec<HistoryItem>>> {
     let list = search_history_service::list(&state, &user, q.scope.as_deref(), q.limit).await?;
     Ok(ApiJson(list.into_iter().map(HistoryItem::from).collect()))
@@ -94,7 +98,7 @@ pub async fn list(
 pub async fn clear(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Query(q): Query<ClearQuery>,
+    ValidatedQuery(q): ValidatedQuery<ClearQuery>,
 ) -> AppResult<ApiJson<ClearResult>> {
     let n = search_history_service::clear(&state, &user, q.scope.as_deref()).await?;
     Ok(ApiJson(ClearResult { removed: n }))

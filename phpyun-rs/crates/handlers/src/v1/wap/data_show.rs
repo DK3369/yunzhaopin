@@ -10,10 +10,11 @@ use axum::{
     routing::get,
     Router,
 };
-use phpyun_core::{ApiJson, AppResult, AppState};
+use phpyun_core::{ApiJson, AppResult, AppState, ValidatedQuery};
 use phpyun_services::data_show_service::{self, DistItem, TimePoint};
 use serde::Deserialize;
 use utoipa::IntoParams;
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -30,7 +31,7 @@ pub fn routes() -> Router<AppState> {
         .route("/data-show/company-login-trend", get(company_login_trend))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct CityLevelQuery {
     /// 1=province / 2=city / 3=district (default 2)
     #[serde(default = "default_level")]
@@ -76,7 +77,7 @@ pub async fn resume_age(State(state): State<AppState>) -> AppResult<ApiJson<Vec<
 )]
 pub async fn resume_city(
     State(state): State<AppState>,
-    Query(q): Query<CityLevelQuery>,
+    ValidatedQuery(q): ValidatedQuery<CityLevelQuery>,
 ) -> AppResult<ApiJson<Vec<DistItem>>> {
     let list = data_show_service::resume_city_distribution(&state, q.level).await?;
     Ok(ApiJson((*list).clone()))
@@ -93,7 +94,7 @@ pub async fn resume_city(
 )]
 pub async fn company_city(
     State(state): State<AppState>,
-    Query(q): Query<CityLevelQuery>,
+    ValidatedQuery(q): ValidatedQuery<CityLevelQuery>,
 ) -> AppResult<ApiJson<Vec<DistItem>>> {
     let list = data_show_service::company_city_distribution(&state, q.level).await?;
     Ok(ApiJson((*list).clone()))

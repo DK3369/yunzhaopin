@@ -72,6 +72,7 @@ async fn handle_apply_created(
         state.db.pool(),
         message_repo::MessageCreate {
             uid: p.com_id,
+            recipient_usertype: 2, // employer
             category: "apply",
             title: &title,
             body: Some(&body),
@@ -122,6 +123,7 @@ async fn handle_vip_activated(
         state.db.pool(),
         message_repo::MessageCreate {
             uid: p.uid,
+            recipient_usertype: 1, // VIP grants to jobseeker by default; safe fallback
             category: "system",
             title: &title,
             body: Some(&body),

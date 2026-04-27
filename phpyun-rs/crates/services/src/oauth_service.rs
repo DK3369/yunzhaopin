@@ -244,6 +244,308 @@ pub fn wechat_authorize_url(appid: &str, redirect_uri: &str, state_val: &str) ->
     )
 }
 
+// ==================== QQ Connect (code → access_token → openid) ====================
+
+/// Mirrors PHPYun `wap/qqconnect::qqlogin_action` — exchange `code` for an
+/// `access_token`, then call `/oauth2.0/me` to fetch the openid; finally look
+/// up the bound member by `qqid`. Identical control flow to `login_with_wechat_code`.
+pub async fn login_with_qq_code(
+    state: &AppState,
+    code: &str,
+    client_ip: &str,
+    user_agent: &str,
+) -> AppResult<OAuthLoginResult> {
+    let appid = state
+        .config
+        .qq_appid
+        .as_deref()
+        .ok_or_else(|| AppError::new(InfraError::InvalidParam("qq_appid_missing".into())))?;
+    let appsecret = state
+        .config
+        .qq_appsecret
+        .as_deref()
+        .ok_or_else(|| AppError::new(InfraError::InvalidParam("qq_appsecret_missing".into())))?;
+    let redirect = state.config.qq_oauth_redirect.as_deref().ok_or_else(|| {
+        AppError::new(InfraError::InvalidParam(
+            "qq_oauth_redirect_missing".into(),
+        ))
+    })?;
+
+    // 1) /oauth2.0/token returns text in url-encoded form: access_token=xxx&expires_in=7776000&refresh_token=yyy
+    let token_url = format!(
+        "https://graph.qq.com/oauth2.0/token?grant_type=authorization_code&client_id={appid}&client_secret={secret}&code={code}&redirect_uri={redir}&fmt=json",
+        appid = urlencoding_minimal(appid),
+        secret = urlencoding_minimal(appsecret),
+        code = urlencoding_minimal(code),
+        redir = urlencoding_minimal(redirect),
+    );
+
+    #[derive(serde::Deserialize)]
+    struct QqTokenResp {
+        #[serde(default)]
+        access_token: Option<String>,
+        #[serde(default)]
+        error: Option<i64>,
+        #[serde(default)]
+        error_description: Option<String>,
+    }
+
+    let resp: QqTokenResp = state.http.get_json(&token_url).await?;
+    if let Some(err) = resp.error {
+        let msg = resp.error_description.unwrap_or_default();
+        return Err(AppError::new(InfraError::Upstream(format!(
+            "qq token error={err} msg={msg}"
+        ))));
+    }
+    let Some(access_token) = resp.access_token else {
+        return Err(AppError::new(InfraError::Upstream(
+            "qq oauth returned no access_token".into(),
+        )));
+    };
+
+    // 2) /oauth2.0/me with fmt=json returns {"client_id": "...", "openid": "..."}
+    let me_url = format!(
+        "https://graph.qq.com/oauth2.0/me?access_token={tok}&fmt=json",
+        tok = urlencoding_minimal(&access_token),
+    );
+    #[derive(serde::Deserialize)]
+    struct QqMeResp {
+        #[serde(default)]
+        openid: Option<String>,
+        #[serde(default)]
+        unionid: Option<String>,
+        #[serde(default)]
+        error: Option<i64>,
+        #[serde(default)]
+        error_description: Option<String>,
+    }
+    let me: QqMeResp = state.http.get_json(&me_url).await?;
+    if let Some(err) = me.error {
+        let msg = me.error_description.unwrap_or_default();
+        return Err(AppError::new(InfraError::Upstream(format!(
+            "qq /me error={err} msg={msg}"
+        ))));
+    }
+    let Some(openid) = me.openid else {
+        return Err(AppError::new(InfraError::Upstream(
+            "qq oauth returned no openid".into(),
+        )));
+    };
+
+    // 3) Look up bound member by qqid
+    let member = user_repo::find_by_oauth_id(state.db.reader(), "qqid", &openid).await?;
+    let Some(user) = member else {
+        auth_event("oauth_not_bound", Some("qq"));
+        return Err(AppError::new(InfraError::InvalidParam(format!(
+            "oauth_not_bound:qq:{openid}"
+        ))));
+    };
+    if user.status == 2 {
+        auth_event("oauth_login_fail", Some("locked"));
+        return Err(AppError::locked());
+    }
+
+    let JwtIssued {
+        access,
+        refresh,
+        access_exp,
+        refresh_exp,
+        jti_access,
+        jti_refresh,
+    } = issue_pair(
+        &state.config,
+        user.uid,
+        user.usertype as u8,
+        user.did as u32,
+    )?;
+
+    let _ = crate::user_session_service::record_login(
+        state,
+        crate::user_session_service::LoginRecord {
+            uid: user.uid,
+            usertype: user.usertype as u8,
+            jti_access: &jti_access,
+            jti_refresh: &jti_refresh,
+            access_exp,
+            refresh_exp,
+            ip: client_ip,
+            ua: user_agent,
+        },
+    )
+    .await;
+
+    auth_event("oauth_login_success", Some("qq"));
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("oauth.login", Actor::uid(user.uid))
+            .meta(&serde_json::json!({ "via": "qq", "openid": openid })),
+    )
+    .await;
+
+    Ok(OAuthLoginResult {
+        uid: user.uid,
+        usertype: user.usertype as u8,
+        access,
+        refresh,
+        access_exp,
+        refresh_exp,
+        provider_sub: openid,
+        email_from_provider: me.unionid,
+        name_from_provider: None,
+    })
+}
+
+pub fn qq_authorize_url(appid: &str, redirect_uri: &str, state_val: &str) -> String {
+    format!(
+        "https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id={appid}&redirect_uri={redir}&state={state}",
+        appid = urlencoding_minimal(appid),
+        redir = urlencoding_minimal(redirect_uri),
+        state = urlencoding_minimal(state_val),
+    )
+}
+
+// ==================== Weibo (Sina) (code → access_token + uid) ====================
+
+/// Mirrors PHPYun `wap/sinaconnect` — Weibo uses `oauth2/access_token` (POST)
+/// to exchange the code for `(access_token, uid)`. Then we look up the bound
+/// member by `sinaid`.
+pub async fn login_with_weibo_code(
+    state: &AppState,
+    code: &str,
+    client_ip: &str,
+    user_agent: &str,
+) -> AppResult<OAuthLoginResult> {
+    let appid = state
+        .config
+        .weibo_appid
+        .as_deref()
+        .ok_or_else(|| AppError::new(InfraError::InvalidParam("weibo_appid_missing".into())))?;
+    let appsecret = state.config.weibo_appsecret.as_deref().ok_or_else(|| {
+        AppError::new(InfraError::InvalidParam("weibo_appsecret_missing".into()))
+    })?;
+    let redirect = state.config.weibo_oauth_redirect.as_deref().ok_or_else(|| {
+        AppError::new(InfraError::InvalidParam(
+            "weibo_oauth_redirect_missing".into(),
+        ))
+    })?;
+
+    // Weibo expects POST application/x-www-form-urlencoded.
+    let body = format!(
+        "client_id={cid}&client_secret={sec}&grant_type=authorization_code&code={code}&redirect_uri={redir}",
+        cid = urlencoding_minimal(appid),
+        sec = urlencoding_minimal(appsecret),
+        code = urlencoding_minimal(code),
+        redir = urlencoding_minimal(redirect),
+    );
+
+    #[derive(serde::Deserialize)]
+    struct WeiboTokenResp {
+        #[serde(default)]
+        access_token: Option<String>,
+        /// Weibo returns `uid` as a stringified integer.
+        #[serde(default)]
+        uid: Option<String>,
+        #[serde(default)]
+        error: Option<String>,
+        #[serde(default)]
+        error_code: Option<i64>,
+        #[serde(default)]
+        error_description: Option<String>,
+    }
+
+    let resp: WeiboTokenResp = state
+        .http
+        .post_form_to_json("https://api.weibo.com/oauth2/access_token", &body)
+        .await?;
+    if let Some(err) = resp.error {
+        if !err.is_empty() {
+            let msg = resp
+                .error_description
+                .or_else(|| resp.error_code.map(|c| c.to_string()))
+                .unwrap_or_default();
+            return Err(AppError::new(InfraError::Upstream(format!(
+                "weibo error={err} msg={msg}"
+            ))));
+        }
+    }
+    let Some(uid_str) = resp.uid else {
+        return Err(AppError::new(InfraError::Upstream(
+            "weibo oauth returned no uid".into(),
+        )));
+    };
+
+    // Look up the bound member by sinaid
+    let member = user_repo::find_by_oauth_id(state.db.reader(), "sinaid", &uid_str).await?;
+    let Some(user) = member else {
+        auth_event("oauth_not_bound", Some("weibo"));
+        return Err(AppError::new(InfraError::InvalidParam(format!(
+            "oauth_not_bound:weibo:{uid_str}"
+        ))));
+    };
+    if user.status == 2 {
+        auth_event("oauth_login_fail", Some("locked"));
+        return Err(AppError::locked());
+    }
+
+    let JwtIssued {
+        access,
+        refresh,
+        access_exp,
+        refresh_exp,
+        jti_access,
+        jti_refresh,
+    } = issue_pair(
+        &state.config,
+        user.uid,
+        user.usertype as u8,
+        user.did as u32,
+    )?;
+
+    let _ = crate::user_session_service::record_login(
+        state,
+        crate::user_session_service::LoginRecord {
+            uid: user.uid,
+            usertype: user.usertype as u8,
+            jti_access: &jti_access,
+            jti_refresh: &jti_refresh,
+            access_exp,
+            refresh_exp,
+            ip: client_ip,
+            ua: user_agent,
+        },
+    )
+    .await;
+
+    auth_event("oauth_login_success", Some("weibo"));
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("oauth.login", Actor::uid(user.uid))
+            .meta(&serde_json::json!({ "via": "weibo", "uid": uid_str })),
+    )
+    .await;
+
+    Ok(OAuthLoginResult {
+        uid: user.uid,
+        usertype: user.usertype as u8,
+        access,
+        refresh,
+        access_exp,
+        refresh_exp,
+        provider_sub: uid_str,
+        email_from_provider: resp.access_token,
+        name_from_provider: None,
+    })
+}
+
+pub fn weibo_authorize_url(appid: &str, redirect_uri: &str, state_val: &str) -> String {
+    format!(
+        "https://api.weibo.com/oauth2/authorize?client_id={appid}&redirect_uri={redir}&response_type=code&state={state}",
+        appid = urlencoding_minimal(appid),
+        redir = urlencoding_minimal(redirect_uri),
+        state = urlencoding_minimal(state_val),
+    )
+}
+
 /// Minimal URL encoding — only escapes characters that would break the WeChat URL syntax,
 /// avoiding the need to pull in a new `urlencoding` / `percent-encoding` crate.
 fn urlencoding_minimal(s: &str) -> String {

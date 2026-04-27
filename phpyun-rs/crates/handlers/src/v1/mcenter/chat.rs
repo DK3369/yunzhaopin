@@ -7,7 +7,7 @@ use axum::{
 };
 use phpyun_core::json;
 use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedJson,
+    ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedJson, ValidatedQuery
 };
 use phpyun_services::chat_service;
 use serde::{Deserialize, Serialize};
@@ -93,7 +93,7 @@ impl From<phpyun_models::chat::entity::Chat> for ChatItem {
     }
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ChatWithQuery {
     pub before_id: Option<u64>,
     #[serde(default = "default_limit")]
@@ -116,7 +116,7 @@ pub async fn list_with(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     Path(peer): Path<u64>,
-    Query(q): Query<ChatWithQuery>,
+    ValidatedQuery(q): ValidatedQuery<ChatWithQuery>,
 ) -> AppResult<ApiJson<Vec<ChatItem>>> {
     let list = chat_service::list_with(&state, &user, peer, q.before_id, q.limit).await?;
     Ok(ApiJson(list.into_iter().map(ChatItem::from).collect()))

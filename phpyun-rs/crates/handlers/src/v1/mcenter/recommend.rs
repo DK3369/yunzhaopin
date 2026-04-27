@@ -1,23 +1,28 @@
 //! Recommendations (matching PHPYun `finder.model.php`).
 
 use axum::{
-    extract::{Query, State},
-    routing::get,
+    extract::{Path, Query, State},
+    routing::{get, post},
     Router,
 };
 use phpyun_core::i18n::{current_lang, t};
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser};
-use phpyun_services::recommend_service;
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedJson, ValidatedQuery};
+use phpyun_services::{recommend_email_service, recommend_service};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/recommend/jobs", get(jobs))
         .route("/recommend/resumes", get(resumes))
+        // Email-recommendation endpoint (PHP `wap/resume/resumeshare::index`).
+        // `kind` is `job` or `resume`.
+        .route("/recommend/email/{kind}/{id}", post(send_email))
+        .route("/recommend/email/quota", get(quota))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct RecQuery {
     #[serde(default = "recommend_service::default_limit")]
     pub limit: u64,
@@ -62,7 +67,7 @@ impl From<phpyun_models::job::entity::Job> for RecJob {
 pub async fn jobs(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Query(q): Query<RecQuery>,
+    ValidatedQuery(q): ValidatedQuery<RecQuery>,
 ) -> AppResult<ApiJson<Vec<RecJob>>> {
     let list = recommend_service::recommend_jobs_for_me(&state, &user, q.limit).await?;
     Ok(ApiJson(list.into_iter().map(RecJob::from).collect()))
@@ -113,8 +118,119 @@ impl From<phpyun_models::resume::entity::Resume> for RecResume {
 pub async fn resumes(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Query(q): Query<RecQuery>,
+    ValidatedQuery(q): ValidatedQuery<RecQuery>,
 ) -> AppResult<ApiJson<Vec<RecResume>>> {
     let list = recommend_service::recommend_resumes_for_me(&state, &user, q.limit).await?;
     Ok(ApiJson(list.into_iter().map(RecResume::from).collect()))
+}
+
+// ==================== Email recommend ====================
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct EmailRecommendForm {
+    #[validate(email)]
+    pub email: String,
+    /// Optional personal note from the sender; max 500 chars. PHP composes
+    /// this into the email body via the `sendresume.htm` template.
+    #[serde(default)]
+    #[validate(length(max = 500))]
+    pub message: Option<String>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct EmailRecommendResp {
+    pub log_id: u64,
+}
+
+/// Recommend a job (`kind=job`) or resume (`kind=resume`) to a friend via
+/// email. Counterpart of PHP `wap/resume/resumeshare::index_action`.
+///
+/// Throttling (matches PHP):
+///   - Per-user-per-day cap (default 5)
+///   - Min interval between sends (default 60s)
+///
+/// Captcha is enforced via the standard `captcha_cid + authcode` pair on the
+/// caller — handled at the front-end gate, not duplicated here.
+#[utoipa::path(
+    post,
+    path = "/v1/mcenter/recommend/email/{kind}/{id}",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    params(
+        ("kind" = String, Path, description = "job / resume"),
+        ("id"   = u64,    Path, description = "job_id when kind=job; eid when kind=resume"),
+    ),
+    request_body = EmailRecommendForm,
+    responses(
+        (status = 200, description = "ok", body = EmailRecommendResp),
+        (status = 400, description = "Invalid kind / email / target"),
+        (status = 403, description = "Only employers can recommend"),
+        (status = 429, description = "Per-day cap reached or interval too short"),
+    )
+)]
+pub async fn send_email(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Path((kind, id)): Path<(String, u64)>,
+    ValidatedJson(f): ValidatedJson<EmailRecommendForm>,
+) -> AppResult<ApiJson<EmailRecommendResp>> {
+    let input = recommend_email_service::RecommendInput {
+        target_email: &f.email,
+        message: f.message.as_deref(),
+    };
+    let r = match kind.as_str() {
+        "job" => recommend_email_service::recommend_job(&state, &user, id, input).await?,
+        "resume" => recommend_email_service::recommend_resume(&state, &user, id, input).await?,
+        _ => {
+            return Err(phpyun_core::AppError::param_invalid(format!(
+                "kind: {kind}"
+            )))
+        }
+    };
+    Ok(ApiJson(EmailRecommendResp { log_id: r.log_id }))
+}
+
+// ==================== Quota preflight ====================
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct QuotaView {
+    /// 0 = ok, 1 = daily cap reached, 2 = interval too short
+    pub status: i32,
+    pub msg: String,
+    pub used_today: u64,
+    pub day_cap: u64,
+    pub interval_secs: i64,
+    pub seconds_remaining: i64,
+}
+
+impl From<phpyun_services::recommend_email_service::QuotaStatus> for QuotaView {
+    fn from(q: phpyun_services::recommend_email_service::QuotaStatus) -> Self {
+        Self {
+            status: q.status,
+            msg: q.msg,
+            used_today: q.used_today,
+            day_cap: q.day_cap,
+            interval_secs: q.interval_secs,
+            seconds_remaining: q.seconds_remaining,
+        }
+    }
+}
+
+/// Pre-flight check for email-recommendation quota. Counterpart of PHP
+/// `ajax::ajax_recommend_interval_action`. Lets the front-end disable the
+/// "send" button proactively (or display the cooldown timer) without
+/// trying-and-being-rejected.
+#[utoipa::path(
+    get,
+    path = "/v1/mcenter/recommend/email/quota",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    responses((status = 200, description = "ok", body = QuotaView))
+)]
+pub async fn quota(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+) -> AppResult<ApiJson<QuotaView>> {
+    let q = recommend_email_service::check_quota(&state, &user).await?;
+    Ok(ApiJson(QuotaView::from(q)))
 }

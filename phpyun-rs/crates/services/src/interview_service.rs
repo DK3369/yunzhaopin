@@ -68,6 +68,7 @@ pub async fn create_by_company(
         state.db.pool(),
         message_repo::MessageCreate {
             uid: apply.uid,
+            recipient_usertype: 1, // jobseeker
             category: "interview",
             title: &invite_title,
             body: input.remark,
@@ -175,6 +176,7 @@ pub async fn respond(
             state.db.pool(),
             message_repo::MessageCreate {
                 uid: iv.com_id,
+                recipient_usertype: 2, // employer
                 category: "interview",
                 title: &title,
                 body: None,
@@ -217,6 +219,7 @@ pub async fn cancel(
             state.db.pool(),
             message_repo::MessageCreate {
                 uid: iv.uid,
+                recipient_usertype: 1, // jobseeker
                 category: "interview",
                 title: &cancel_title,
                 body: None,

@@ -30,6 +30,7 @@ pub async fn approve(
     ClientIp(ip): ClientIp,
     Path(id): Path<u64>,
 ) -> AppResult<ApiJson<json::Value>> {
+    user.require_admin()?;
     let n = member_logout_service::admin_approve(&state, &user, id, &ip).await?;
     Ok(ApiJson(json::json!({ "updated": n })))
 }
@@ -48,6 +49,7 @@ pub async fn reject(
     ClientIp(ip): ClientIp,
     Path(id): Path<u64>,
 ) -> AppResult<ApiJson<json::Value>> {
+    user.require_admin()?;
     let n = member_logout_service::admin_reject(&state, &user, id, &ip).await?;
     Ok(ApiJson(json::json!({ "updated": n })))
 }

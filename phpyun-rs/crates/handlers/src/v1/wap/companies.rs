@@ -1,11 +1,12 @@
 //! Public company browsing (mirrors PHPYun `wap/company::index_action` + `show_action`).
 
 use axum::{
-    extract::{Path, Query, State},
+    extract::{Path, State},
     routing::get,
     Router,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, MaybeUser, Paged, Pagination};
+use phpyun_core::{ApiJson, AppResult, AppState, MaybeUser, Paged, Pagination, ValidatedQuery};
+use validator::Validate;
 use phpyun_models::company::repo::CompanyFilter;
 use phpyun_services::company_service;
 use phpyun_services::hot_search_service;
@@ -16,17 +17,24 @@ use utoipa::{IntoParams, ToSchema};
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/companies", get(list_companies))
+        .route("/companies/hot", get(hot_companies))
+        .route("/companies/autocomplete", get(autocomplete))
         .route("/companies/{uid}", get(company_detail))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct CompanyListQuery {
+    #[validate(length(max = 100))]
     pub keyword: Option<String>,
+    #[validate(range(min = 0, max = 9_999_999))]
     pub province_id: Option<i32>,
+    #[validate(range(min = 0, max = 9_999_999))]
     pub city_id: Option<i32>,
     /// Industry id
+    #[validate(range(min = 0, max = 9_999_999))]
     pub hy: Option<i32>,
     #[serde(default = "default_did")]
+    #[validate(range(max = 9_999_999))]
     pub did: u32,
 }
 fn default_did() -> u32 {
@@ -105,7 +113,7 @@ impl CompanySummary {
 pub async fn list_companies(
     State(state): State<AppState>,
     page: Pagination,
-    Query(q): Query<CompanyListQuery>,
+    ValidatedQuery(q): ValidatedQuery<CompanyListQuery>,
 ) -> AppResult<ApiJson<Paged<CompanySummary>>> {
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "company", kw.trim().to_string());
@@ -416,4 +424,150 @@ pub async fn company_detail(
 
         show: show_items,
     }))
+}
+
+// ==================== Hot / featured companies (homepage banner) ====================
+
+#[derive(Debug, Deserialize, Validate, IntoParams)]
+pub struct HotCompaniesQuery {
+    /// `default` (paid sort, ASC), `recent` (job lastupdate DESC), `random`.
+    /// PHPYun config `hotcom_top` maps 0/1/2; we accept friendlier names.
+    #[serde(default)]
+    #[validate(length(max = 16))]
+    pub order: Option<String>,
+    #[serde(default = "default_hot_limit")]
+    #[validate(range(min = 1, max = 100))]
+    pub limit: u32,
+}
+
+fn default_hot_limit() -> u32 {
+    10
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct HotCompanyView {
+    pub uid: u64,
+    pub name: String,
+    pub shortname: Option<String>,
+    pub logo: Option<String>,
+    /// CDN-resolved logo URL (alongside the raw column for legacy clients).
+    pub logo_n: String,
+    pub hot_pic: Option<String>,
+    pub hot_pic_n: String,
+    /// 0=sort ASC, 1=lastupdate DESC, 2=random — echoed back so the client
+    /// can short-cache appropriately.
+    pub sort_mode: i32,
+}
+
+/// Featured companies on the homepage.
+///
+/// Counterpart of PHP `wap/index::getmq_action` (the "首页名企" widget).
+/// Uses an INNER JOIN on `phpyun_hotjob` × `phpyun_company`, filtered by
+/// `c.hottime > now AND c.r_status = 1 AND h.time_start < now AND h.time_end > now`.
+#[utoipa::path(
+    get,
+    path = "/v1/wap/companies/hot",
+    tag = "wap",
+    params(HotCompaniesQuery),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn hot_companies(
+    State(state): State<AppState>,
+    ValidatedQuery(q): ValidatedQuery<HotCompaniesQuery>,
+) -> AppResult<ApiJson<Vec<HotCompanyView>>> {
+    let sort_mode = match q.order.as_deref() {
+        Some("recent") => 1,
+        Some("random") => 2,
+        _ => 0,
+    };
+    let limit = q.limit.clamp(1, 50) as u64;
+    let now = phpyun_core::clock::now_ts();
+
+    let rows = phpyun_models::company::repo::list_hot(state.db.reader(), sort_mode, limit, now)
+        .await?;
+    let web_base = state.config.web_base_url.as_deref();
+    let storage = &state.storage;
+    let out: Vec<HotCompanyView> = rows
+        .into_iter()
+        .map(|c| {
+            let logo_n = storage.normalize_legacy_url(c.logo.as_deref().unwrap_or(""), web_base);
+            let hot_pic_n =
+                storage.normalize_legacy_url(c.hot_pic.as_deref().unwrap_or(""), web_base);
+            HotCompanyView {
+                uid: c.uid,
+                name: c.name,
+                shortname: c.shortname,
+                logo: c.logo,
+                logo_n,
+                hot_pic: c.hot_pic,
+                hot_pic_n,
+                sort_mode: c.sort_mode,
+            }
+        })
+        .collect();
+    Ok(ApiJson(out))
+}
+
+// ==================== Autocomplete ====================
+
+#[derive(Debug, Deserialize, Validate, IntoParams)]
+pub struct CompanyAutoQuery {
+    /// Free-text fragment to match against `phpyun_company.name`. Required;
+    /// empty input returns an empty list (mirrors PHP behaviour).
+    #[validate(length(min = 1, max = 100))]
+    pub keyword: String,
+    #[serde(default = "default_auto_limit")]
+    #[validate(range(min = 1, max = 20))]
+    pub limit: u32,
+}
+
+fn default_auto_limit() -> u32 {
+    10
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct CompanyAutoItem {
+    /// `uid` of the company — pass to `GET /v1/wap/companies/{uid}` to load
+    /// the full record.
+    pub value: u64,
+    /// Display string for the picker (raw company name).
+    pub name: String,
+    /// CDN-resolved logo (empty string when the row has no logo). Optional —
+    /// PHP returns only `(name, value)`, but the Rust port adds `logo_n` since
+    /// many UIs display a tiny logo next to the name.
+    pub logo_n: String,
+}
+
+/// Lightweight company name autocomplete — counterpart of PHP
+/// `ajax::getComBySearch_action`. Designed for typeahead widgets, returns up
+/// to `limit` rows (clamped to 1..=20) where `name` matches `LIKE %keyword%`.
+#[utoipa::path(
+    get,
+    path = "/v1/wap/companies/autocomplete",
+    tag = "wap",
+    params(CompanyAutoQuery),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn autocomplete(
+    State(state): State<AppState>,
+    ValidatedQuery(q): ValidatedQuery<CompanyAutoQuery>,
+) -> AppResult<ApiJson<Vec<CompanyAutoItem>>> {
+    let keyword = q.keyword.trim();
+    if keyword.is_empty() {
+        return Ok(ApiJson(Vec::new()));
+    }
+    let limit = q.limit.clamp(1, 20) as u64;
+    let rows = phpyun_models::company::repo::search_brief(state.db.reader(), keyword, limit)
+        .await?;
+    let web_base = state.config.web_base_url.as_deref();
+    let storage = &state.storage;
+    let out: Vec<CompanyAutoItem> = rows
+        .into_iter()
+        .map(|c| CompanyAutoItem {
+            value: c.uid,
+            name: c.name,
+            logo_n: storage.normalize_legacy_url(c.logo.as_deref().unwrap_or(""), web_base),
+        })
+        .collect();
+    Ok(ApiJson(out))
 }

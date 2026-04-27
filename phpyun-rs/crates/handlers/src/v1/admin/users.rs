@@ -6,7 +6,7 @@ use axum::{
     Router,
 };
 use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
 };
 use phpyun_services::admin_service::{self, UserFilter};
 use serde::{Deserialize, Serialize};
@@ -19,7 +19,7 @@ pub fn routes() -> Router<AppState> {
         .route("/users/{uid}/status", post(set_status))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct UserListQuery {
     pub keyword: Option<String>,
     pub usertype: Option<i32>,
@@ -92,7 +92,7 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<UserListQuery>,
+    ValidatedQuery(q): ValidatedQuery<UserListQuery>,
 ) -> AppResult<ApiJson<Paged<AdminUserItem>>> {
     user.require_admin()?;
     let filter = UserFilter {

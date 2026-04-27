@@ -200,3 +200,57 @@ pub async fn delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
         .await?;
     Ok(res.rows_affected())
 }
+
+// ==================== Click tracking (phpyun_adclick) ====================
+//
+// Counterpart of PHP `index/index::clickhits_action` — records the click in
+// `phpyun_adclick` and (in PHP) redirects to the ad's target URL. PHP also
+// rate-limits per-IP via `sy_adclick` (hours window) so the same IP can't
+// inflate the click count.
+
+pub async fn count_clicks_recent(
+    pool: &MySqlPool,
+    aid: u64,
+    ip: &str,
+    since: i64,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_adclick \
+         WHERE aid = ? AND ip = ? AND addtime > ?",
+    )
+    .bind(aid)
+    .bind(ip)
+    .bind(since)
+    .fetch_one(pool)
+    .await?;
+    Ok(n.max(0) as u64)
+}
+
+pub async fn insert_click(
+    pool: &MySqlPool,
+    aid: u64,
+    uid: u64,
+    ip: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "INSERT INTO phpyun_adclick (aid, uid, ip, addtime) VALUES (?, ?, ?, ?)",
+    )
+    .bind(aid)
+    .bind(uid)
+    .bind(ip)
+    .bind(now)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
+pub async fn find_target(pool: &MySqlPool, id: u64) -> Result<Option<String>, sqlx::Error> {
+    let row: Option<(String,)> = sqlx::query_as(
+        "SELECT COALESCE(pic_src, '') FROM phpyun_ad WHERE id = ? LIMIT 1",
+    )
+    .bind(id)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(s,)| s))
+}

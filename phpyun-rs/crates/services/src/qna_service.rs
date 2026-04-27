@@ -333,3 +333,19 @@ pub async fn list_hotweek(state: &AppState, limit: u64) -> AppResult<Vec<Questio
     let since = clock::now_ts() - 7 * 86_400;
     Ok(qna_repo::hotweek_questions(db, since, limit.clamp(1, 50)).await?)
 }
+
+// ==================== Top answerers leaderboard ====================
+
+pub use phpyun_models::qna::repo::AnswererBrief;
+
+/// Top answerers in the last `days` (clamped to 1..=365). Counterpart of PHP
+/// `ask::getAnswersList(groupby:uid, orderby:num)` driving the "热门回答者"
+/// sidebar on `ask/topic` and `ask/search` pages.
+pub async fn list_top_answerers(
+    state: &AppState,
+    days: i64,
+    limit: u64,
+) -> AppResult<Vec<AnswererBrief>> {
+    let since = clock::now_ts() - days.clamp(1, 365) * 86_400;
+    Ok(qna_repo::list_top_answerers(state.db.reader(), since, limit.clamp(1, 50)).await?)
+}

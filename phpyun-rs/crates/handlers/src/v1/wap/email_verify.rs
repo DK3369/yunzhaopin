@@ -5,16 +5,17 @@ use axum::{
     routing::get,
     Router,
 };
-use phpyun_core::{ApiOk, AppResult, AppState};
+use phpyun_core::{ApiOk, AppResult, AppState, ValidatedQuery};
 use phpyun_services::contact_cert_service;
 use serde::Deserialize;
 use utoipa::IntoParams;
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/cert/email/verify", get(verify))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct VerifyQuery {
     pub token: String,
 }
@@ -29,7 +30,7 @@ pub struct VerifyQuery {
 )]
 pub async fn verify(
     State(state): State<AppState>,
-    Query(q): Query<VerifyQuery>,
+    ValidatedQuery(q): ValidatedQuery<VerifyQuery>,
 ) -> AppResult<ApiOk> {
     contact_cert_service::verify_email_token(&state, &q.token).await?;
     Ok(ApiOk("email_verified"))

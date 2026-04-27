@@ -6,7 +6,7 @@ use axum::{
     Router,
 };
 use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
 };
 use phpyun_services::app_version_service::{self, VersionInput};
 use serde::{Deserialize, Serialize};
@@ -19,7 +19,7 @@ pub fn routes() -> Router<AppState> {
         .route("/app-versions/{id}", post(remove))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
     pub platform: Option<String>,
 }
@@ -95,8 +95,9 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<ListQuery>,
+    ValidatedQuery(q): ValidatedQuery<ListQuery>,
 ) -> AppResult<ApiJson<Paged<VersionItem>>> {
+    user.require_admin()?;
     let r = app_version_service::admin_list(&state, &user, q.platform.as_deref(), page).await?;
     Ok(ApiJson(Paged::new(
         r.list.into_iter().map(VersionItem::from).collect(),
@@ -112,6 +113,7 @@ pub async fn create(
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<CreateForm>,
 ) -> AppResult<ApiJson<CreatedId>> {
+    user.require_admin()?;
     let id = app_version_service::admin_create(
         &state,
         &user,
@@ -135,6 +137,7 @@ pub async fn remove(
     user: AuthenticatedUser,
     Path(id): Path<u64>,
 ) -> AppResult<ApiOk> {
+    user.require_admin()?;
     app_version_service::admin_delete(&state, &user, id).await?;
     Ok(ApiOk("deleted"))
 }

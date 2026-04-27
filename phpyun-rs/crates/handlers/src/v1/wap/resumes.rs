@@ -1,14 +1,15 @@
 //! Public resume search (company view, usertype=2 required).
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::get,
+    extract::{Path, State},
+    routing::{get, post},
     Router,
 };
 use phpyun_core::i18n::{current_lang, t};
 use phpyun_core::{
-    clock, ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+    clock, ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedQuery,
 };
+use validator::Validate;
 use phpyun_models::resume::repo::ResumeFilter;
 use phpyun_services::hot_search_service;
 use phpyun_services::view_service::{self, KIND_RESUME};
@@ -20,15 +21,22 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/resumes", get(list_resumes))
         .route("/resumes/{uid}", get(resume_detail))
+        .route("/resumes/expects/{eid}/hits", post(bump_expect_hits))
+        .route("/resumes/by-uid/{uid}/default-expect", get(default_expect_by_uid))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ResumeListQuery {
+    #[validate(length(max = 100))]
     pub keyword: Option<String>,
+    #[validate(range(min = 0, max = 99))]
     pub education: Option<i32>,
+    #[validate(range(min = 0, max = 9))]
     pub sex: Option<i32>,
+    #[validate(range(min = 0, max = 9))]
     pub marriage: Option<i32>,
     #[serde(default = "default_did")]
+    #[validate(range(max = 9_999_999))]
     pub did: u32,
 }
 fn default_did() -> u32 {
@@ -277,7 +285,7 @@ pub async fn list_resumes(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Query(q): Query<ResumeListQuery>,
+    ValidatedQuery(q): ValidatedQuery<ResumeListQuery>,
 ) -> AppResult<ApiJson<Paged<ResumeSummary>>> {
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "resume", kw.trim().to_string());
@@ -738,6 +746,71 @@ pub async fn resume_detail(
                 content: o.content,
             })
             .collect(),
+    }))
+}
+
+// ==================== Resume hits + by-uid lookup ====================
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ResumeHitsResp {
+    pub eid: u64,
+    pub hits: u64,
+}
+
+/// Bump the per-job-intent hit count on a resume. Counterpart of PHP
+/// `app/resume/show::GetHits_action`. PHP optionally inflates by a random
+/// `sy_job_hits` factor; we bump by exactly 1 here. The `eid` parameter is
+/// `phpyun_resume_expect.id` (job-intent row id), not the resume `uid`.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/resumes/expects/{eid}/hits",
+    tag = "wap",
+    params(("eid" = u64, Path, description = "phpyun_resume_expect.id")),
+    responses((status = 200, description = "ok", body = ResumeHitsResp))
+)]
+pub async fn bump_expect_hits(
+    State(state): State<AppState>,
+    Path(eid): Path<u64>,
+) -> AppResult<ApiJson<ResumeHitsResp>> {
+    let hits =
+        phpyun_models::resume::expect::bump_and_get_hits(state.db.pool(), eid, 1).await?;
+    Ok(ApiJson(ResumeHitsResp { eid, hits }))
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct DefaultExpectResp {
+    pub uid: u64,
+    /// `phpyun_resume.def_job` — the user's default job-intent id used by
+    /// PHP `wap/resume/index::showuid_action` for the legacy short URL.
+    /// `0` means the user has no published default intent.
+    pub default_eid: u64,
+}
+
+/// Resolve a jobseeker's default `phpyun_resume_expect.id` from their uid.
+/// Counterpart of PHP `wap/resume/index::showuid_action`, which uses this
+/// for the `/resume/show?uid=...` redirect. Returns `0` when the resume is
+/// hidden/draft.
+#[utoipa::path(
+    get,
+    path = "/v1/wap/resumes/by-uid/{uid}/default-expect",
+    tag = "wap",
+    params(("uid" = u64, Path)),
+    responses((status = 200, description = "ok", body = DefaultExpectResp))
+)]
+pub async fn default_expect_by_uid(
+    State(state): State<AppState>,
+    Path(uid): Path<u64>,
+) -> AppResult<ApiJson<DefaultExpectResp>> {
+    let row: Option<(u64,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(def_job, 0) AS UNSIGNED) FROM phpyun_resume \
+           WHERE uid = ? AND COALESCE(r_status, 0) = 1 LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(state.db.reader())
+    .await?;
+    Ok(ApiJson(DefaultExpectResp {
+        uid,
+        default_eid: row.map(|(n,)| n).unwrap_or(0),
     }))
 }
 

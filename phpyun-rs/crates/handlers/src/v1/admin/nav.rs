@@ -5,7 +5,7 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson, ValidatedQuery};
 use phpyun_services::nav_menu_service::{self, NavInput, NavPatch};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -17,7 +17,7 @@ pub fn routes() -> Router<AppState> {
         .route("/nav/{id}", post(update))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
     pub position: Option<String>,
 }
@@ -125,8 +125,9 @@ pub struct CreatedId {
 pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Query(q): Query<ListQuery>,
+    ValidatedQuery(q): ValidatedQuery<ListQuery>,
 ) -> AppResult<ApiJson<Vec<NavItem>>> {
+    user.require_admin()?;
     let list = nav_menu_service::admin_list(&state, &user, q.position.as_deref()).await?;
     Ok(ApiJson(list.into_iter().map(NavItem::from).collect()))
 }
@@ -137,6 +138,7 @@ pub async fn create(
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<NavForm>,
 ) -> AppResult<ApiJson<CreatedId>> {
+    user.require_admin()?;
     let id = nav_menu_service::admin_create(
         &state,
         &user,
@@ -161,6 +163,7 @@ pub async fn update(
     Path(id): Path<u64>,
     ValidatedJson(f): ValidatedJson<NavPatchForm>,
 ) -> AppResult<ApiOk> {
+    user.require_admin()?;
     if f.status == Some(2) {
         nav_menu_service::admin_delete(&state, &user, id).await?;
         return Ok(ApiOk("deleted"));

@@ -31,6 +31,10 @@ pub enum SmsTemplate {
     LoginVerify,
     PasswordReset,
     MobileChange,
+    /// Anonymous one-shot shop-posting (PHP `wap/once::sendmsg`).
+    OnceJob,
+    /// Anonymous tiny-resume posting (PHP `wap/tiny::sendmsg`).
+    TinyResume,
 }
 
 impl SmsTemplate {
@@ -40,6 +44,8 @@ impl SmsTemplate {
             Self::LoginVerify => "login_verify",
             Self::PasswordReset => "password_reset",
             Self::MobileChange => "mobile_change",
+            Self::OnceJob => "once_job",
+            Self::TinyResume => "tiny_resume",
         }
     }
 }

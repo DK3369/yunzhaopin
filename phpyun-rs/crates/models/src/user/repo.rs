@@ -73,6 +73,20 @@ pub async fn find_by_mobile(pool: &MySqlPool, mobile: &str) -> Result<Option<Mem
         .await
 }
 
+/// Case-insensitive email lookup (PHPYun stores emails verbatim, but users
+/// type them in any case — `getInfo({email:..})` collation is `utf8_general_ci`,
+/// which is case-insensitive by default).
+pub async fn find_by_email_loose(
+    pool: &MySqlPool,
+    email: &str,
+) -> Result<Option<Member>, sqlx::Error> {
+    let sql = format!("SELECT {FIELDS} FROM phpyun_member WHERE email = ? LIMIT 1");
+    sqlx::query_as::<_, Member>(&sql)
+        .bind(email)
+        .fetch_optional(pool)
+        .await
+}
+
 /// Look up by third-party id (accepts an external provider name; unknown providers return None).
 pub async fn find_by_oauth_id(
     pool: &MySqlPool,
@@ -140,6 +154,9 @@ pub async fn create_member<'e, E>(
 where
     E: sqlx::Executor<'e, Database = sqlx::MySql>,
 {
+    // PHPYun's `phpyun_member.email` and `moblie` are `NOT NULL DEFAULT ''`,
+    // so we coalesce missing values to empty strings rather than letting
+    // sqlx bind a SQL NULL (which fails with `1048 Column ... cannot be null`).
     let res = sqlx::query(
         "INSERT INTO phpyun_member \
             (username, password, salt, moblie, email, usertype, status, did, reg_date, reg_ip, login_date) \
@@ -148,8 +165,8 @@ where
     .bind(username)
     .bind(password_hash)
     .bind(salt)
-    .bind(mobile)
-    .bind(email)
+    .bind(mobile.unwrap_or(""))
+    .bind(email.unwrap_or(""))
     .bind(usertype as i32)
     .bind(did)
     .bind(reg_date)
@@ -266,6 +283,23 @@ pub async fn update_mobile(pool: &MySqlPool, uid: u64, mobile: &str) -> Result<(
         .execute(pool)
         .await?;
     Ok(())
+}
+
+/// First-time set of `usertype` (only when it is currently 0). PHPYun
+/// `wap/login::setutype_action` flow: an OAuth-registered user picks a role
+/// (1=jobseeker / 2=company / 3=campus) before entering the member centre.
+/// Returns the affected row count — 0 means usertype was already set.
+pub async fn set_usertype_if_unset(
+    pool: &MySqlPool,
+    uid: u64,
+    usertype: u8,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_member SET usertype = ? WHERE uid = ? AND usertype = 0")
+        .bind(usertype as i32)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
 }
 
 // ==================== Admin backend ====================

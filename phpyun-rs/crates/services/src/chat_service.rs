@@ -42,6 +42,7 @@ pub async fn send(
         state.db.pool(),
         message_repo::MessageCreate {
             uid: peer_uid,
+            recipient_usertype: 0, // unknown at send time; either side
             category: "chat",
             title: &chat_title,
             body: Some(&truncate(body, 80)),

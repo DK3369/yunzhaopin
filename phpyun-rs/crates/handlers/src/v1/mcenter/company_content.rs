@@ -8,7 +8,7 @@ use axum::{
 };
 use phpyun_core::{
     json, ApiJson, AppError, AppResult, AppState, AuthenticatedUser, ClientIp, InfraError, Paged,
-    Pagination, ValidatedJson,
+    Pagination, ValidatedJson, ValidatedQuery
 };
 use phpyun_models::company_content::entity::ContentKind;
 use phpyun_models::gallery::entity::GalleryKind;
@@ -246,7 +246,7 @@ impl From<phpyun_models::company_content::entity::CompanyContent> for ContentVie
     }
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ContentListQuery {
     pub keyword: Option<String>,
 }
@@ -261,7 +261,7 @@ pub async fn content_list(
     user: AuthenticatedUser,
     page: Pagination,
     Path(kind): Path<String>,
-    Query(q): Query<ContentListQuery>,
+    ValidatedQuery(q): ValidatedQuery<ContentListQuery>,
 ) -> AppResult<ApiJson<Paged<ContentView>>> {
     let kind = parse_content_kind(&kind)?;
     let r = company_content_service::list_mine(

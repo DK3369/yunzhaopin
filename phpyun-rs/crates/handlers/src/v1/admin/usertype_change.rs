@@ -36,6 +36,7 @@ pub async fn approve(
     ClientIp(ip): ClientIp,
     Path(id): Path<u64>,
 ) -> AppResult<ApiJson<phpyun_core::json::Value>> {
+    user.require_admin()?;
     let n = usertype_change_service::admin_approve(&state, &user, id, &ip).await?;
     Ok(ApiJson(phpyun_core::json::json!({ "updated": n })))
 }
@@ -54,6 +55,7 @@ pub async fn reject(
     ClientIp(ip): ClientIp,
     Path(id): Path<u64>,
 ) -> AppResult<ApiJson<phpyun_core::json::Value>> {
+    user.require_admin()?;
     let n = usertype_change_service::admin_reject(&state, &user, id, &ip).await?;
     Ok(ApiJson(phpyun_core::json::json!({ "updated": n })))
 }

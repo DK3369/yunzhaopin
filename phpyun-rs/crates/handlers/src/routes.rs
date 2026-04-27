@@ -37,3 +37,34 @@ pub fn build_router(cfg: &phpyun_core::Config) -> Router<AppState> {
         .merge(common::router())
         .merge(api_with_mw)
 }
+
+/// State-aware variant — wires a router-level admin guard onto `/v1/admin/*`
+/// in addition to everything `build_router` does. Production callers should
+/// prefer this entry-point so an unguarded admin handler can never escape
+/// the role check; per-handler `user.require_admin()` calls remain as a
+/// defense-in-depth audit signal.
+pub fn build_router_with_state(
+    cfg: &phpyun_core::Config,
+    state: AppState,
+) -> Router<AppState> {
+    let v1 = Router::new()
+        .nest("/wap", v1::wap::router())
+        .nest("/mcenter", v1::mcenter::router())
+        .nest(
+            "/admin",
+            v1::admin::router().layer(axum::middleware::from_fn_with_state(
+                state,
+                phpyun_core::admin_guard::layer,
+            )),
+        );
+
+    let api = Router::new()
+        .nest("/v1", v1)
+        .nest("/v2", v2::router())
+        .merge(openapi::swagger_ui());
+    let api_with_mw = mw::install(api, cfg);
+
+    Router::new()
+        .merge(common::router())
+        .merge(api_with_mw)
+}

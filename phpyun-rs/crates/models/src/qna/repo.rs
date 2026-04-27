@@ -567,3 +567,41 @@ pub async fn hotweek_questions(
         .fetch_all(pool)
         .await
 }
+
+// ==================== Top answerers leaderboard ====================
+//
+// Counterpart of PHP `ask::getAnswersList(groupby:uid, orderby:num)` used by
+// `topic.class.php` and `search.class.php` to render the "热门回答者" sidebar:
+// in the last 30 days, group by uid, count answers (`num`), sum support
+// votes (`support`), order by `num DESC` then `support DESC`.
+
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize, serde::Deserialize)]
+pub struct AnswererBrief {
+    pub uid: u64,
+    pub nickname: Option<String>,
+    pub answer_count: u64,
+    pub support_total: u64,
+}
+
+pub async fn list_top_answerers(
+    pool: &MySqlPool,
+    since: i64,
+    limit: u64,
+) -> Result<Vec<AnswererBrief>, sqlx::Error> {
+    sqlx::query_as::<_, AnswererBrief>(
+        "SELECT \
+            CAST(uid AS UNSIGNED) AS uid, \
+            MAX(nickname) AS nickname, \
+            CAST(COUNT(id) AS UNSIGNED) AS answer_count, \
+            CAST(COALESCE(SUM(support), 0) AS UNSIGNED) AS support_total \
+         FROM phpyun_answer \
+         WHERE add_time >= ? \
+         GROUP BY uid \
+         ORDER BY answer_count DESC, support_total DESC \
+         LIMIT ?",
+    )
+    .bind(since)
+    .bind(limit)
+    .fetch_all(pool)
+    .await
+}

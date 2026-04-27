@@ -16,13 +16,14 @@ use axum::{
     Router,
 };
 use phpyun_core::i18n::{t, Lang};
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, InfraError};
+use phpyun_core::{ApiJson, AppError, AppResult, AppState, InfraError, ValidatedQuery};
 use phpyun_services::wechat_api_service;
 use phpyun_services::wechat_service::{
     self, default_reply, parse_incoming, verify_signature, SUCCESS_ACK,
 };
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -41,7 +42,7 @@ pub struct VerifyQuery {
 /// WeChat integration verification: if the signature matches, echo `echostr` back verbatim.
 pub async fn verify(
     State(state): State<AppState>,
-    Query(q): Query<VerifyQuery>,
+    ValidatedQuery(q): ValidatedQuery<VerifyQuery>,
 ) -> Response {
     let Some(token) = state.config.wechat_token.as_deref() else {
         return plain(StatusCode::SERVICE_UNAVAILABLE, "wechat_not_configured");
@@ -55,7 +56,7 @@ pub async fn verify(
 /// WeChat event/message entry point: signature + XML parsing + reply (or `success`).
 pub async fn receive(
     State(state): State<AppState>,
-    Query(q): Query<VerifyQuery>,
+    ValidatedQuery(q): ValidatedQuery<VerifyQuery>,
     body: String,
 ) -> Response {
     let Some(token) = state.config.wechat_token.as_deref() else {
@@ -96,7 +97,7 @@ pub struct QrView {
     pub expire_seconds: u64,
 }
 
-#[derive(Debug, Deserialize, utoipa::IntoParams)]
+#[derive(Debug, Deserialize, utoipa::Validate, IntoParams)]
 pub struct QrOpts {
     /// Optional `scene_str` prefix (defaults to `weixin`).
     #[serde(default)]
@@ -130,7 +131,7 @@ fn default_expire() -> u64 {
 pub async fn qr_for_resource(
     State(state): State<AppState>,
     Path((kind, id)): Path<(String, u64)>,
-    Query(opts): Query<QrOpts>,
+    ValidatedQuery(opts): ValidatedQuery<QrOpts>,
 ) -> AppResult<ApiJson<QrView>> {
     let tag = opts.tag.as_deref().unwrap_or("weixin");
     let scene = wechat_api_service::scene_str_for(&kind, id, tag)

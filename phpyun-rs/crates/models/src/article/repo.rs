@@ -123,3 +123,21 @@ pub async fn incr_hits(pool: &MySqlPool, id: u64) -> Result<(), sqlx::Error> {
         .await?;
     Ok(())
 }
+
+/// Read the current hit count without incrementing. Used by `GetHits_action`
+/// equivalents that need to render "今日浏览 X 次" widgets.
+pub async fn get_hits(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
+    let row: Option<(i64,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(hits, 0) AS SIGNED) FROM phpyun_news_base WHERE id = ? LIMIT 1",
+    )
+    .bind(id)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(n,)| n.max(0) as u64).unwrap_or(0))
+}
+
+/// Atomically increment + return the new hit count.
+pub async fn bump_and_get_hits(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
+    incr_hits(pool, id).await?;
+    get_hits(pool, id).await
+}

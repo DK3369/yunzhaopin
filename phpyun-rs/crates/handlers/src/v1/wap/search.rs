@@ -4,26 +4,32 @@
 //! so the search page and list pages keep the same field shapes.
 
 use axum::{
-    extract::{Query, State},
+    extract::State,
     routing::get,
     Router,
 };
-use phpyun_core::{ApiJson, AppResult, AppState};
+use phpyun_core::{ApiJson, AppResult, AppState, ValidatedQuery};
 use phpyun_services::search_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/search", get(search))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct SearchQuery {
+    /// Free-text search; capped at 100 chars and required (empty `kw`
+    /// returns 400 instead of running an unbounded LIKE).
+    #[validate(length(min = 1, max = 100))]
     pub kw: String,
     /// all / job / company / article / question
     #[serde(default = "default_scope")]
+    #[validate(length(min = 1, max = 16))]
     pub scope: String,
     #[serde(default = "default_did")]
+    #[validate(range(max = 9_999_999))]
     pub did: u32,
 }
 fn default_scope() -> String {
@@ -50,7 +56,7 @@ pub struct SearchData {
 pub async fn search(
     State(state): State<AppState>,
     phpyun_core::MaybeUser(user): phpyun_core::MaybeUser,
-    Query(q): Query<SearchQuery>,
+    ValidatedQuery(q): ValidatedQuery<SearchQuery>,
 ) -> AppResult<ApiJson<SearchData>> {
     let r = search_service::global_search(&state, &q.kw, &q.scope, q.did).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;

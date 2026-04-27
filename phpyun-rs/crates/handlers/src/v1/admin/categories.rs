@@ -5,7 +5,7 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson, ValidatedQuery};
 use phpyun_services::category_service::{self, CatInput, CatPatch};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -17,7 +17,7 @@ pub fn routes() -> Router<AppState> {
         .route("/categories/{id}", post(update))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
     pub kind: String,
 }
@@ -88,8 +88,9 @@ pub struct CreatedId {
 pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Query(q): Query<ListQuery>,
+    ValidatedQuery(q): ValidatedQuery<ListQuery>,
 ) -> AppResult<ApiJson<Vec<CatItem>>> {
+    user.require_admin()?;
     let list = category_service::admin_list(&state, &user, &q.kind).await?;
     Ok(ApiJson(list.into_iter().map(CatItem::from).collect()))
 }
@@ -100,6 +101,7 @@ pub async fn create(
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<CatForm>,
 ) -> AppResult<ApiJson<CreatedId>> {
+    user.require_admin()?;
     let id = category_service::admin_create(
         &state,
         &user,
@@ -121,6 +123,7 @@ pub async fn update(
     Path(id): Path<u64>,
     ValidatedJson(f): ValidatedJson<CatPatchForm>,
 ) -> AppResult<ApiOk> {
+    user.require_admin()?;
     if f.status == Some(2) {
         category_service::admin_delete(&state, &user, id).await?;
         return Ok(ApiOk("deleted"));

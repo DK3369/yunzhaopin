@@ -1,11 +1,12 @@
 //! Public Q&A browsing (aligned with the index/list/content parts of PHPYun `wap/ask`).
 
 use axum::{
-    extract::{Path, Query, State},
+    extract::{Path, State},
     routing::get,
     Router,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, MaybeUser, Paged, Pagination};
+use phpyun_core::{ApiJson, AppResult, AppState, MaybeUser, Paged, Pagination, ValidatedQuery};
+use validator::Validate;
 use phpyun_models::qna::repo::QuestionOrder;
 use phpyun_services::qna_service::{self, QuestionListFilter};
 use serde::{Deserialize, Serialize};
@@ -35,15 +36,19 @@ pub fn routes() -> Router<AppState> {
         .route("/questions/{id}/answers", get(list_answers))
         .route("/qna/categories", get(list_categories))
         .route("/qna/hotweek", get(list_hotweek))
+        .route("/qna/top-answerers", get(list_top_answerers))
         .route("/answers/{aid}/comments", get(list_comments))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct QListQuery {
+    #[validate(length(max = 100))]
     pub keyword: Option<String>,
+    #[validate(range(min = 0, max = 9_999_999))]
     pub category_id: Option<i32>,
     /// latest / hot
     #[serde(default = "default_order")]
+    #[validate(length(min = 1, max = 16))]
     pub order: String,
 }
 fn default_order() -> String {
@@ -308,7 +313,7 @@ fn parse_order(s: &str) -> QuestionOrder {
 pub async fn list_questions(
     State(state): State<AppState>,
     page: Pagination,
-    Query(q): Query<QListQuery>,
+    ValidatedQuery(q): ValidatedQuery<QListQuery>,
 ) -> AppResult<ApiJson<Paged<QuestionSummary>>> {
     let f = QuestionListFilter {
         keyword: q.keyword.as_deref(),
@@ -551,10 +556,11 @@ pub async fn list_categories(
     Ok(ApiJson(list.iter().cloned().map(CategoryItem::from).collect()))
 }
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct HotweekQuery {
     /// Default 10, max 50
     #[serde(default = "default_hot_limit")]
+    #[validate(range(min = 1, max = 50))]
     pub limit: u64,
 }
 fn default_hot_limit() -> u64 {
@@ -565,7 +571,7 @@ fn default_hot_limit() -> u64 {
 #[utoipa::path(get, path = "/v1/wap/qna/hotweek", tag = "wap", params(HotweekQuery), responses((status = 200, description = "ok")))]
 pub async fn list_hotweek(
     State(state): State<AppState>,
-    Query(q): Query<HotweekQuery>,
+    ValidatedQuery(q): ValidatedQuery<HotweekQuery>,
 ) -> AppResult<ApiJson<Vec<QuestionSummary>>> {
     let list = qna_service::list_hotweek(&state, q.limit).await?;
     Ok(ApiJson(list.into_iter().map(QuestionSummary::from).collect()))
@@ -623,4 +629,62 @@ pub async fn list_comments(
         page.page,
         page.page_size,
     )))
+}
+
+// ==================== Top answerers leaderboard ====================
+
+#[derive(Debug, Deserialize, Validate, IntoParams)]
+pub struct TopAnswerersQuery {
+    /// Lookback window in days (1..=365). PHP hard-codes 30; we expose it for
+    /// flexibility but default to the same value.
+    #[serde(default = "default_top_days")]
+    #[validate(range(min = 1, max = 365))]
+    pub days: i64,
+    /// 1..=50; PHP defaults to 6.
+    #[serde(default = "default_top_limit")]
+    #[validate(range(min = 1, max = 50))]
+    pub limit: u64,
+}
+fn default_top_days() -> i64 {
+    30
+}
+fn default_top_limit() -> u64 {
+    6
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct TopAnswererItem {
+    pub uid: u64,
+    pub nickname: Option<String>,
+    pub answer_count: u64,
+    pub support_total: u64,
+}
+
+impl From<phpyun_services::qna_service::AnswererBrief> for TopAnswererItem {
+    fn from(a: phpyun_services::qna_service::AnswererBrief) -> Self {
+        Self {
+            uid: a.uid,
+            nickname: a.nickname,
+            answer_count: a.answer_count,
+            support_total: a.support_total,
+        }
+    }
+}
+
+/// Top answerers in the last N days — counterpart of PHP
+/// `ask::getAnswersList(groupby:uid, orderby:num)` powering the "热门回答者"
+/// sidebar on `ask/topic` and `ask/search` pages.
+#[utoipa::path(
+    get,
+    path = "/v1/wap/qna/top-answerers",
+    tag = "wap",
+    params(TopAnswerersQuery),
+    responses((status = 200, description = "ok"))
+)]
+pub async fn list_top_answerers(
+    State(state): State<AppState>,
+    ValidatedQuery(q): ValidatedQuery<TopAnswerersQuery>,
+) -> AppResult<ApiJson<Vec<TopAnswererItem>>> {
+    let rows = qna_service::list_top_answerers(&state, q.days, q.limit).await?;
+    Ok(ApiJson(rows.into_iter().map(TopAnswererItem::from).collect()))
 }

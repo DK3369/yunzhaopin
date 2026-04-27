@@ -17,6 +17,7 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/zph/{id}/reserve", post(reserve))
         .route("/zph/{id}/my-reservation", get(my_reservation))
+        .route("/zph/{id}/com-status", get(com_status))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -109,4 +110,69 @@ pub async fn my_reservation(
 ) -> AppResult<ApiJson<Option<MyReservation>>> {
     let row = zph_service::my_reservation(&state, &user, id).await?;
     Ok(ApiJson(row.map(MyReservation::from)))
+}
+
+// ==================== Pre-apply status (counterpart of `wap/ajax::ajaxComjob`) ====================
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct OwnJobBrief {
+    pub id: u64,
+    pub name: String,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ComStatusView {
+    /// `applied` (already signed up) — see `status` for the application state.
+    /// `not_applied` (eligible to apply) — see `jobs` for the picker list.
+    /// `no_jobs` (must publish at least one job before applying).
+    pub state: String,
+    /// Only present when `state == "applied"`. 0 pending / 1 approved / 2 rejected.
+    pub status: Option<i32>,
+    /// Only present when `state == "not_applied"`.
+    pub jobs: Option<Vec<OwnJobBrief>>,
+}
+
+/// Pre-apply status for an employer on a job fair.
+#[utoipa::path(
+    get,
+    path = "/v1/mcenter/zph/{id}/com-status",
+    tag = "mcenter",
+    security(("bearer" = [])),
+    params(("id" = u64, Path)),
+    responses(
+        (status = 200, description = "ok", body = ComStatusView),
+        (status = 403, description = "Not an employer"),
+    )
+)]
+pub async fn com_status(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    Path(id): Path<u64>,
+) -> AppResult<ApiJson<ComStatusView>> {
+    use zph_service::ComStatusOutcome;
+    let view = match zph_service::com_status_for_fair(&state, &user, id).await? {
+        ComStatusOutcome::Applied { status } => ComStatusView {
+            state: "applied".into(),
+            status: Some(status),
+            jobs: None,
+        },
+        ComStatusOutcome::NotApplied { jobs } => ComStatusView {
+            state: "not_applied".into(),
+            status: None,
+            jobs: Some(
+                jobs.into_iter()
+                    .map(|j| OwnJobBrief {
+                        id: j.id,
+                        name: j.name,
+                    })
+                    .collect(),
+            ),
+        },
+        ComStatusOutcome::NoJobs => ComStatusView {
+            state: "no_jobs".into(),
+            status: None,
+            jobs: Some(Vec::new()),
+        },
+    };
+    Ok(ApiJson(view))
 }

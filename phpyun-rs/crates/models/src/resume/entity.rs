@@ -9,14 +9,18 @@ pub struct Resume {
     pub uid: u64,
     pub name: Option<String>,
     /// 1 = real name public / 2 = real name hidden
+    #[sqlx(default)]
     pub nametype: i32,
     /// 0 = unset / 1 = male / 2 = female
+    #[sqlx(default)]
     pub sex: i32,
     /// Birthday in YYYY-MM-DD
     pub birthday: Option<String>,
     /// Marital status: 0 = unset / 1 = single / 2 = married
+    #[sqlx(default)]
     pub marriage: i32,
     /// Education dictionary id (PHPYun column name is `edu`, mapped via SELECT `edu AS education`)
+    #[sqlx(default)]
     pub education: i32,
     /// Contact phone number
     pub telphone: Option<String>,
@@ -27,13 +31,18 @@ pub struct Resume {
     /// Avatar (PHPYun uses the `photo` column)
     pub photo: Option<String>,
     /// Avatar type: 0 = not verified / 1 = verified
+    #[sqlx(default)]
     pub phototype: i32,
     /// Resume display status: 1 = public / 2 = hidden / 3 = visible only to companies applied to
+    #[sqlx(default)]
     pub status: i32,
     /// Account status (review workflow)
+    #[sqlx(default)]
     pub r_status: i32,
     /// Default job intent id (points to phpyun_resume_expect.id)
+    #[sqlx(default)]
     pub def_job: i32,
+    #[sqlx(default)]
     pub lastupdate: i64,
 
     // ---- New: personal info ----

@@ -14,6 +14,10 @@ pub enum SmsScene {
     Login,
     ResetPw,
     MobileChange,
+    /// Anonymous one-shot shop-posting (PHP `wap/once::sendmsg`).
+    OnceJob,
+    /// Anonymous tiny-resume posting (PHP `wap/tiny::sendmsg`).
+    TinyResume,
 }
 
 impl SmsScene {
@@ -23,6 +27,8 @@ impl SmsScene {
             Self::Login => VerifyKind::SmsLogin,
             Self::ResetPw => VerifyKind::SmsResetPw,
             Self::MobileChange => VerifyKind::SmsMobileChange,
+            Self::OnceJob => VerifyKind::SmsOnceJob,
+            Self::TinyResume => VerifyKind::SmsTinyResume,
         }
     }
 
@@ -32,6 +38,8 @@ impl SmsScene {
             Self::Login => SmsTemplate::LoginVerify,
             Self::ResetPw => SmsTemplate::PasswordReset,
             Self::MobileChange => SmsTemplate::MobileChange,
+            Self::OnceJob => SmsTemplate::OnceJob,
+            Self::TinyResume => SmsTemplate::TinyResume,
         }
     }
 
@@ -41,6 +49,8 @@ impl SmsScene {
             Self::Login => "sms_login",
             Self::ResetPw => "sms_reset",
             Self::MobileChange => "sms_mobile_change",
+            Self::OnceJob => "sms_once",
+            Self::TinyResume => "sms_tiny",
         }
     }
 }

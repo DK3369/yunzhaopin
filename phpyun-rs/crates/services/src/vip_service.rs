@@ -177,3 +177,142 @@ pub async fn get_current_vip(
 ) -> AppResult<Option<UserVip>> {
     Ok(vip_repo::find_user_vip(state.db.reader(), user.uid).await?)
 }
+
+// ==================== Pricing quote (PHPYun `getVipPrice` / `getPackPrice`) ====================
+//
+// Computes the effective price for a package. Mirrors PHP rules:
+// - Active promo window (`time_start < now < time_end`) → use `yh_price`
+// - Apply rating-tier discount (`service_discount`, percent value 0..=100)
+// - When `com_integral_online == 3` and the package is integral-eligible:
+//   integral may substitute for cash, multiplied by `integral_proportion`.
+//   Compare the integral-priced amount to the user's integral balance to
+//   decide `style`:
+//     * 1 = cash-only path (integral mode disabled or excluded)
+//     * 2 = integral covers it (user has enough)
+//     * 3 = integral mode but balance insufficient — frontend should fall
+//           back to cash with the discount still applied.
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct PriceQuote {
+    pub id: u64,
+    pub name: String,
+    /// Original (un-discounted) price in yuan.
+    pub service_price: f64,
+    /// Discounted yuan price. Falls back to `service_price` when no discount applies.
+    pub yh_price: f64,
+    /// Effective price the user will pay. Yuan when `style == 1`, integral
+    /// units when `style == 2`, yuan when `style == 3` (frontend should
+    /// route to cash payment).
+    pub price: f64,
+    /// 1=cash, 2=integral-pay, 3=insufficient-integral-fallback-to-cash.
+    pub style: i32,
+    /// Whether the promo window is currently active.
+    pub promo_active: bool,
+    /// User integral balance — let the client display "余额 X 不足".
+    pub user_integral: i64,
+}
+
+/// `kind`:
+///   * `pack` — company-package buy (PHP `getPackPrice_action`)
+///   * `vip`  — individual VIP buy (PHP `getVipPrice_action`)
+pub async fn quote_package_price(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    package_id: u64,
+    kind: &str,
+) -> AppResult<PriceQuote> {
+    user.require_employer()?;
+    let reader = state.db.reader();
+
+    let pkg = phpyun_models::vip::repo::find_package_pricing(reader, package_id)
+        .await?
+        .ok_or_else(|| {
+            phpyun_core::AppError::new(phpyun_core::error::InfraError::InvalidParam(
+                "package_not_found".into(),
+            ))
+        })?;
+
+    // Read site config (`com_integral_online`, `integral_proportion`) and
+    // `sy_only_price` (CSV of kinds that opt out of integral payment).
+    let online_mode = read_int_setting(state, "com_integral_online").await.unwrap_or(0);
+    let proportion = read_int_setting(state, "integral_proportion").await.unwrap_or(0);
+    let only_price = read_str_setting(state, "sy_only_price")
+        .await
+        .unwrap_or_default();
+    let only_price_csv: Vec<&str> = only_price.split(',').filter(|s| !s.is_empty()).collect();
+
+    let now = phpyun_core::clock::now_ts();
+    let promo_active = pkg.time_start < now && pkg.time_end > now;
+
+    let user_integral =
+        phpyun_models::vip::repo::read_company_integral(reader, user.uid).await?;
+    let discount =
+        phpyun_models::vip::repo::read_company_rating_discount(reader, user.uid).await?;
+
+    // PHP `service_discount` is a percent (e.g. 80 = 80%); divide by 100.
+    let discount_factor = (discount as f64) / 100.0;
+    let pro = proportion.max(0) as f64; // multiplier between yuan and integral
+
+    let effective_yh = if pkg.yh_price > 0.0 { pkg.yh_price } else { pkg.service_price };
+
+    // PHP separates `pack` and `vip` paths but the math is the same once
+    // discount + window are folded in. The only difference: `pack` always
+    // applies the rating discount; `vip` only applies the promo-window
+    // discount. We stay faithful to that here.
+    let (display_yh, display_service) = if kind == "pack" {
+        (
+            effective_yh * discount_factor,
+            pkg.service_price,
+        )
+    } else if kind == "vip" {
+        if promo_active {
+            (pkg.yh_price, pkg.service_price)
+        } else {
+            (pkg.service_price, pkg.service_price)
+        }
+    } else {
+        return Err(phpyun_core::AppError::param_invalid("kind"));
+    };
+
+    let integral_excluded = only_price_csv.iter().any(|s| *s == kind);
+    let integral_path = online_mode == 3 && !integral_excluded && pro > 0.0;
+
+    let (price, style) = if !integral_path {
+        (display_yh, 1)
+    } else {
+        // When paying with integral, the user pays `display_yh * pro` integral.
+        let integral_needed = (display_yh * pro) as i64;
+        if integral_needed <= user_integral {
+            (display_yh * pro, 2)
+        } else {
+            (display_yh, 3)
+        }
+    };
+
+    Ok(PriceQuote {
+        id: pkg.id,
+        name: pkg.name,
+        service_price: display_service,
+        yh_price: display_yh,
+        price,
+        style,
+        promo_active,
+        user_integral,
+    })
+}
+
+async fn read_int_setting(state: &AppState, key: &str) -> Option<i64> {
+    let row = phpyun_models::site_setting::repo::find(state.db.reader(), key)
+        .await
+        .ok()
+        .flatten()?;
+    row.value.parse::<i64>().ok()
+}
+
+async fn read_str_setting(state: &AppState, key: &str) -> Option<String> {
+    let row = phpyun_models::site_setting::repo::find(state.db.reader(), key)
+        .await
+        .ok()
+        .flatten()?;
+    Some(row.value)
+}

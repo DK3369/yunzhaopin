@@ -8,7 +8,7 @@ use axum::{
 };
 use phpyun_core::{
     ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, MaybeUser, Paged, Pagination,
-    ValidatedJson,
+    ValidatedJson, ValidatedQuery
 };
 use phpyun_services::hot_search_service;
 use phpyun_services::part_service::{self, PartSearch};
@@ -26,7 +26,7 @@ pub fn routes() -> Router<AppState> {
 
 // ==================== list ====================
 
-#[derive(Debug, Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct PartListQuery {
     pub keyword: Option<String>,
     pub province_id: Option<i32>,
@@ -257,7 +257,7 @@ pub async fn list_parts(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     page: Pagination,
-    Query(q): Query<PartListQuery>,
+    ValidatedQuery(q): ValidatedQuery<PartListQuery>,
 ) -> AppResult<ApiJson<Paged<PartSummary>>> {
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "part", kw.trim().to_string());

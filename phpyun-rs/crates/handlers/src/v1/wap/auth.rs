@@ -21,6 +21,7 @@ pub fn routes() -> Router<AppState> {
         .route("/logout", post(logout))
         .route("/refresh", post(refresh))
         .route("/me", get(me))
+        .route("/usertype/select", post(select_usertype))
 }
 
 // ==================== POST /v1/wap/logout ====================
@@ -135,4 +136,46 @@ pub async fn me(
 ) -> AppResult<ApiJson<MeData>> {
     let profile = user_service::get_profile(&state, user.uid).await?;
     Ok(ApiJson(MeData::from(profile.as_ref())))
+}
+
+// ==================== POST /v1/wap/usertype/select ====================
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct SelectUsertypeForm {
+    /// 1 = jobseeker, 2 = company, 3 = campus
+    #[validate(range(min = 1, max = 3))]
+    pub usertype: u8,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct SelectUsertypeData {
+    pub usertype: u8,
+}
+
+/// First-time role selection — counterpart of PHP `wap/login::setutype_action`.
+/// Required after OAuth registration where `usertype` is left as 0; sets it
+/// to 1/2/3 and seeds the per-role satellite rows. Returns 409 if a role has
+/// already been picked.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/usertype/select",
+    tag = "auth",
+    security(("bearer" = [])),
+    request_body = SelectUsertypeForm,
+    responses(
+        (status = 200, description = "Role assigned", body = SelectUsertypeData),
+        (status = 400, description = "Invalid usertype"),
+        (status = 401, description = "Unauthorized"),
+        (status = 409, description = "Usertype already set"),
+    )
+)]
+pub async fn select_usertype(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ValidatedJson(form): ValidatedJson<SelectUsertypeForm>,
+) -> AppResult<ApiJson<SelectUsertypeData>> {
+    user_service::set_usertype(&state, user.uid, form.usertype).await?;
+    Ok(ApiJson(SelectUsertypeData {
+        usertype: form.usertype,
+    }))
 }
