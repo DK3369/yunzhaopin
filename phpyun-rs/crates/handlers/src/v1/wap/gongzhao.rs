@@ -1,15 +1,16 @@
 //! Joint recruitment (aligned with PHPYun `wap/gongzhao`).
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::get,
+    extract::{Path, State},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedQuery};
+use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::gongzhao_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{IdBody};
 
 fn fmt_date(ts: i64) -> String {
     if ts <= 0 {
@@ -37,12 +38,13 @@ fn pic_n(state: &AppState, raw: &str) -> String {
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/gongzhao", get(list))
-        .route("/gongzhao/{id}", get(detail))
+        .route("/gongzhao", post(list))
+        .route("/gongzhao/detail", post(detail))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
+    #[validate(length(max = 100))]
     pub tag: Option<String>,
 }
 
@@ -185,8 +187,8 @@ impl GzDetail {
 
 /// Joint recruitment list
 #[utoipa::path(
-    get,
-    path = "/v1/wap/gongzhao",
+    post,
+    path = "/v1/wap/gongzhao/detail",
     tag = "wap",
     params(ListQuery),
     responses((status = 200, description = "ok"))
@@ -194,7 +196,7 @@ impl GzDetail {
 pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<ListQuery>,
+    ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Paged<GzSummary>>> {
     let r = gongzhao_service::list(&state, q.tag.as_deref(), page).await?;
     Ok(ApiJson(Paged::new(
@@ -209,17 +211,16 @@ pub async fn list(
 }
 
 /// Joint recruitment detail
-#[utoipa::path(
-    get,
-    path = "/v1/wap/gongzhao/{id}",
+#[utoipa::path(post,
+    path = "/v1/wap/gongzhao",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok", body = GzDetail))
 )]
-pub async fn detail(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<GzDetail>> {
+pub async fn detail(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<GzDetail>> {
+    let id = b.id;
     let g = gongzhao_service::get(&state, id).await?;
     Ok(ApiJson(GzDetail::from_with_ctx(g, &state)))
 }
+

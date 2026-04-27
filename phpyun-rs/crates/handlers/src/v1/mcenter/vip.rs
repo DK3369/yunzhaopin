@@ -2,29 +2,29 @@
 
 use axum::{
     extract::{Path, State},
-    routing::{get, post},
     Router,
+    routing::{get, post},
 };
 use phpyun_core::json;
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
-};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::vip_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{};
 
 pub fn routes() -> Router<AppState> {
     let r = Router::new()
-        .route("/vip/packages", get(list_packages))
-        .route("/vip/current", get(get_current))
-        .route("/vip/orders", post(create_order).get(list_orders))
-        .route("/vip/orders/{order_no}", post(cancel_order))
-        .route("/vip/quote/{kind}/{id}", get(quote_price));
+        .route("/vip/packages", post(list_packages))
+        .route("/vip/current", post(get_current))
+        .route("/vip/orders", post(create_order))
+        .route("/vip/orders/list", post(list_orders))
+        .route("/vip/orders/cancel", post(cancel_order))
+        .route("/vip/quote", post(quote_price));
 
     // mock-paid is only mounted in debug builds; the release binary does not include this route.
     #[cfg(debug_assertions)]
-    let r = r.route("/vip/orders/{order_no}/mock-paid", post(mock_paid));
+    let r = r.route("/vip/orders/mock-paid", post(mock_paid));
 
     r
 }
@@ -77,8 +77,8 @@ impl From<phpyun_models::vip::entity::VipPackage> for PackageItem {
 
 /// List of purchasable packages (filtered by current user's usertype)
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/vip/packages",
+    post,
+    path = "/v1/mcenter/vip/packages/list",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
@@ -101,7 +101,7 @@ pub struct CurrentVip {
 
 /// My current VIP status
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/vip/current",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -216,13 +216,12 @@ impl From<phpyun_models::vip::entity::PayOrder> for OrderItem {
 
 /// My orders list
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/vip/orders",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]
-pub async fn list_orders(
+)]pub async fn list_orders(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
@@ -237,22 +236,21 @@ pub async fn list_orders(
 }
 
 /// Cancel an unpaid order (orders with status=0). Cannot cancel paid / cancelled orders.
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/vip/orders/{order_no}",
+#[utoipa::path(post,
+    path = "/v1/mcenter/vip/orders",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("order_no" = String, Path)),
+    request_body = CancelOrderBody,
     responses(
         (status = 200, description = "ok"),
         (status = 400, description = "Order not found / does not belong to you / already paid / cancelled"),
     )
 )]
-pub async fn cancel_order(
-    State(state): State<AppState>,
+pub async fn cancel_order(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(order_no): Path<String>,
-) -> AppResult<ApiJson<json::Value>> {
+    ValidatedJson(b): ValidatedJson<CancelOrderBody>) -> AppResult<ApiJson<json::Value>> {
+    let order_no = b.order_no;
+    phpyun_core::validators::ensure_path_token(&order_no)?;
     vip_service::cancel_order(&state, &user, &order_no).await?;
     Ok(ApiJson(json::json!({ "ok": true })))
 }
@@ -260,19 +258,18 @@ pub async fn cancel_order(
 /// **Dev only**: simulates a payment callback (in production, signature verification of the third-party payment gateway is used).
 /// Only compiled in debug builds — this function does not exist in the release binary.
 #[cfg(debug_assertions)]
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/vip/orders/{order_no}/mock-paid",
+#[utoipa::path(post,
+    path = "/v1/mcenter/vip/orders/mock-paid",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("order_no" = String, Path)),
+    request_body = MockPaidBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn mock_paid(
-    State(state): State<AppState>,
+pub async fn mock_paid(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(order_no): Path<String>,
-) -> AppResult<ApiJson<json::Value>> {
+    ValidatedJson(b): ValidatedJson<MockPaidBody>) -> AppResult<ApiJson<json::Value>> {
+    let order_no = b.order_no;
+    phpyun_core::validators::ensure_path_token(&order_no)?;
     // Defensive check: the order must belong to the currently logged-in user, to avoid marking someone else's order as paid.
     use phpyun_core::error::InfraError;
     let order = phpyun_models::vip::repo::find_order_by_no(state.db.reader(), &order_no)
@@ -331,15 +328,22 @@ impl From<phpyun_services::vip_service::PriceQuote> for PriceQuoteView {
 ///
 /// Returns 403 for non-employers; 400 when the package id is unknown or
 /// `kind` is not `pack` / `vip`.
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct QuotePriceBody {
+    /// `pack` or `vip` — selects which price table to read.
+    #[validate(length(min = 1, max = 32), custom(function = "phpyun_core::validators::path_token"))]
+    pub kind: String,
+    /// VIP package id (`phpyun_member_pricing.id`).
+    #[validate(range(min = 1, max = 999_999_999))]
+    pub id: u64,
+}
+
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/vip/quote/{kind}/{id}",
+    post,
+    path = "/v1/mcenter/vip/quote",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(
-        ("kind" = String, Path, description = "pack / vip"),
-        ("id" = u64, Path),
-    ),
+    request_body = QuotePriceBody,
     responses(
         (status = 200, description = "ok", body = PriceQuoteView),
         (status = 400, description = "Invalid kind / package not found"),
@@ -349,8 +353,20 @@ impl From<phpyun_services::vip_service::PriceQuote> for PriceQuoteView {
 pub async fn quote_price(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path((kind, id)): Path<(String, u64)>,
+    ValidatedJson(b): ValidatedJson<QuotePriceBody>,
 ) -> AppResult<ApiJson<PriceQuoteView>> {
-    let q = vip_service::quote_package_price(&state, &user, id, &kind).await?;
+    let q = vip_service::quote_package_price(&state, &user, b.id, &b.kind).await?;
     Ok(ApiJson(PriceQuoteView::from(q)))
+}
+
+#[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
+pub struct CancelOrderBody {
+    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    pub order_no: String,
+}
+
+#[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
+pub struct MockPaidBody {
+    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    pub order_no: String,
 }

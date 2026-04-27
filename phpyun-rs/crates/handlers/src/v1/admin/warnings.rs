@@ -1,24 +1,25 @@
 //! Warning management (admin issues warnings).
 
 use axum::{
-    extract::{Query, State},
-    routing::get,
+    extract::{State},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::warning_service::{self, WarnInput};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{CreatedId};
 
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/warnings", get(list).post(issue))
+    Router::new().route("/warnings", post(issue))
+        .route("/warnings/list", post(list))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
+    #[validate(range(min = 0, max = 99))]
     pub kind: Option<i32>,
 }
 
@@ -68,35 +69,31 @@ impl From<phpyun_models::warning::entity::Warning> for WarningItem {
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct WarnForm {
+    #[validate(range(min = 1, max = 99_999_999))]
     pub target_uid: u64,
     /// 1=user 2=company 3=job 4=resume
     #[validate(range(min = 1, max = 4))]
     pub target_kind: i32,
     #[serde(default)]
+    #[validate(range(min = 1, max = 99_999_999))]
     pub target_id: u64,
     #[validate(length(min = 1, max = 500))]
     pub reason: String,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CreatedId {
-    pub id: u64,
-}
-
 /// Admin: list warnings
 #[utoipa::path(
-    get,
-    path = "/v1/admin/warnings",
+    post,
+    path = "/v1/admin/warnings/list",
     tag = "admin",
     security(("bearer" = [])),
     params(ListQuery),
     responses((status = 200, description = "ok"))
-)]
-pub async fn list(
+)]pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<ListQuery>,
+    ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Paged<WarningItem>>> {
     user.require_admin()?;
     let r = warning_service::admin_list(&state, q.kind, page).await?;

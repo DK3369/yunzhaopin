@@ -2298,6 +2298,7 @@ dependencies = [
  "tower_governor",
  "tracing",
  "tracing-subscriber",
+ "utoipa",
  "uuid",
  "validator",
 ]
@@ -2316,6 +2317,7 @@ dependencies = [
  "phpyun-models",
  "phpyun-services",
  "redis",
+ "regex",
  "serde",
  "sqlx",
  "thiserror 2.0.18",
@@ -2340,6 +2342,7 @@ dependencies = [
  "serde_json",
  "sqlx",
  "tracing",
+ "utoipa",
 ]
 
 [[package]]

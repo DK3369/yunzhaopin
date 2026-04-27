@@ -2,19 +2,20 @@
 
 use axum::{
     extract::{Path, State},
-    routing::{get, post},
     Router,
+    routing::post,
 };
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, ClientIp, MaybeUser, ValidatedQuery};
+use phpyun_core::{ApiJson, AppError, AppResult, AppState, ClientIp, MaybeUser, ValidatedJson};
 use validator::Validate;
 use phpyun_services::ad_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/ads", get(list))
-        .route("/ads/{id}/click", post(track_click))
+        .route("/ads", post(list))
+        .route("/ads/click", post(track_click))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -57,10 +58,10 @@ pub struct AdView {
 }
 
 /// List active ads for a slot
-#[utoipa::path(get, path = "/v1/wap/ads", tag = "wap", params(AdQuery), responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/wap/ads", tag = "wap", params(AdQuery), responses((status = 200, description = "ok")))]
 pub async fn list(
     State(state): State<AppState>,
-    ValidatedQuery(q): ValidatedQuery<AdQuery>,
+    ValidatedJson(q): ValidatedJson<AdQuery>,
 ) -> AppResult<ApiJson<Vec<AdView>>> {
     let list = ad_service::list_active(&state, &q.slot, q.limit).await?;
     let site_base = state.config.web_base_url.as_deref();
@@ -96,22 +97,20 @@ pub struct AdClickResp {
 /// Record an ad click. Counterpart of PHP `index/index::clickhits_action`.
 /// Per-IP rate limit window is read from `sy_adclick` (hours); a 0 / unset
 /// value disables the rate limit.
-#[utoipa::path(
-    post,
-    path = "/v1/wap/ads/{id}/click",
+#[utoipa::path(post,
+    path = "/v1/wap/ads/click",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses(
         (status = 200, description = "ok", body = AdClickResp),
         (status = 404, description = "Ad not found"),
     )
 )]
-pub async fn track_click(
-    State(state): State<AppState>,
+pub async fn track_click(State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     ClientIp(ip): ClientIp,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<AdClickResp>> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<AdClickResp>> {
+    let id = b.id;
     use phpyun_models::ad::repo as ad_repo;
     let target = ad_repo::find_target(state.db.reader(), id)
         .await?
@@ -147,3 +146,4 @@ pub async fn track_click(
         recorded,
     }))
 }
+

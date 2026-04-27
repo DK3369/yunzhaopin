@@ -6,10 +6,12 @@
 //! returns the new uid on success; the client should discard the current token (the old account's
 //! token is still valid but the resume data has already been migrated away).
 
-use axum::{extract::State, routing::post, Router};
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
+use axum::{
+    extract::State,
+    Router,
+    routing::post,
 };
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::transfer_service::{self, TransferInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;

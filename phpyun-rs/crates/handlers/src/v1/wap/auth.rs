@@ -7,8 +7,8 @@
 
 use axum::{
     extract::State,
-    routing::{get, post},
     Router,
+    routing::post,
 };
 use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::user_service::{self, UserProfile};
@@ -20,7 +20,7 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/logout", post(logout))
         .route("/refresh", post(refresh))
-        .route("/me", get(me))
+        .route("/me", post(me))
         .route("/usertype/select", post(select_usertype))
 }
 
@@ -121,7 +121,7 @@ impl From<&UserProfile> for MeData {
 
 /// Current logged-in user summary (uses L1 moka → L2 Redis → DB three-tier cache)
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/me",
     tag = "auth",
     security(("bearer" = [])),

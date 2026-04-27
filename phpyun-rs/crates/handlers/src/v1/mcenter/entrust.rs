@@ -7,11 +7,12 @@
 //! - POST  /v1/mcenter/entrust              — bind a headhunter `{lt_uid}` (idempotent)
 //! - POST  /v1/mcenter/entrust/delete       — unbind by `{lt_uid}` or `{id}`
 
-use axum::{extract::{Query, State}, routing::{get, post}, Router};
-use phpyun_core::{
-    ApiJson, ApiMsg, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
-    ValidatedJson, ValidatedQuery
+use axum::{
+    extract::{State},
+    Router,
+    routing::{get, post},
 };
+use phpyun_core::{ApiJson, ApiMsg, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::entrust_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -19,7 +20,8 @@ use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/entrust", get(list).post(bind))
+        .route("/entrust", post(bind))
+        .route("/entrust/list", post(list))
         .route("/entrust/delete", post(unbind))
 }
 
@@ -60,18 +62,17 @@ pub struct ListQuery {}
 
 /// List my headhunter bindings (paginated, newest first)
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/entrust",
+    post,
+    path = "/v1/mcenter/entrust/list",
     tag = "mcenter",
     security(("bearer" = [])),
     params(ListQuery),
     responses((status = 200, description = "ok"))
-)]
-pub async fn list(
+)]pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(_q): ValidatedQuery<ListQuery>,
+    ValidatedJson(_q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Paged<EntrustItem>>> {
     let r = entrust_service::list_mine(&state, &user, page).await?;
     let items: Vec<EntrustItem> = r.list.into_iter().map(EntrustItem::from).collect();
@@ -113,8 +114,10 @@ pub async fn bind(
 pub struct UnbindForm {
     /// Either `lt_uid` (preferred) OR `id` (the entrust row id) — at least one required.
     #[serde(default)]
+    #[validate(range(min = 1, max = 99_999_999))]
     pub lt_uid: u64,
     #[serde(default)]
+    #[validate(range(min = 0, max = 99_999_999))]
     pub id: u64,
 }
 

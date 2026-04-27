@@ -1,26 +1,26 @@
 //! Company multi-account (main company manages HRs + HR joins companies).
 
 use axum::{
-    extract::{Path, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson,
-};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::company_hr_service::{self, CodeInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{IdBody, UidBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/company/invite-codes", get(list_codes).post(create_code))
-        .route("/company/invite-codes/{id}", post(revoke_code))
-        .route("/company/hrs", get(list_hrs))
-        .route("/company/hrs/{uid}", post(remove_hr))
+        .route("/company/invite-codes", post(create_code))
+        .route("/company/invite-codes/list", post(list_codes))
+        .route("/company/invite-codes/revoke", post(revoke_code))
+        .route("/company/hrs", post(list_hrs))
+        .route("/company/hrs/remove", post(remove_hr))
         .route("/company/join", post(join))
-        .route("/company/my-companies", get(my_companies))
+        .route("/company/my-companies", post(my_companies))
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -114,8 +114,10 @@ pub struct CodeForm {
     pub note: String,
     /// 0 = unlimited
     #[serde(default)]
+    #[validate(range(min = 0, max = 99_999_999))]
     pub max_uses: u32,
     #[serde(default)]
+    #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub expires_at: i64,
 }
 
@@ -133,7 +135,7 @@ pub struct JoinedResult {
 /// Main company: generate invite code
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/company/invite-codes",
+    path = "/v1/mcenter/company/invite-codes/list",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = CodeForm,
@@ -158,8 +160,7 @@ pub async fn create_code(
 }
 
 /// Main company: list invite codes
-#[utoipa::path(get, path = "/v1/mcenter/company/invite-codes", tag = "mcenter", security(("bearer" = [])), responses((status = 200, description = "ok")))]
-pub async fn list_codes(
+#[utoipa::path(post, path = "/v1/mcenter/company/invite-codes", tag = "mcenter", security(("bearer" = [])), responses((status = 200, description = "ok")))]pub async fn list_codes(
     State(state): State<AppState>,
     user: AuthenticatedUser,
 ) -> AppResult<ApiJson<Vec<CodeView>>> {
@@ -168,18 +169,18 @@ pub async fn list_codes(
 }
 
 /// Main company: revoke invite code
-#[utoipa::path(delete, path = "/v1/mcenter/company/invite-codes/{id}", tag = "mcenter", security(("bearer" = [])), params(("id" = u64, Path)), responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/mcenter/company/invite-codes/revoke", tag = "mcenter", security(("bearer" = [])), request_body = IdBody, responses((status = 200, description = "ok")))]
 pub async fn revoke_code(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiOk> {
-    company_hr_service::revoke_code(&state, &user, id).await?;
+    company_hr_service::revoke_code(&state, &user, b.id).await?;
     Ok(ApiOk("revoked"))
 }
 
 /// Main company: list HRs
-#[utoipa::path(get, path = "/v1/mcenter/company/hrs", tag = "mcenter", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/mcenter/company/hrs", tag = "mcenter", security(("bearer" = [])), responses((status = 200, description = "ok")))]
 pub async fn list_hrs(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -189,13 +190,13 @@ pub async fn list_hrs(
 }
 
 /// Main company: remove HR
-#[utoipa::path(delete, path = "/v1/mcenter/company/hrs/{uid}", tag = "mcenter", security(("bearer" = [])), params(("uid" = u64, Path)), responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/mcenter/company/hrs/remove", tag = "mcenter", security(("bearer" = [])), request_body = UidBody, responses((status = 200, description = "ok")))]
 pub async fn remove_hr(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(uid): Path<u64>,
+    ValidatedJson(b): ValidatedJson<UidBody>,
 ) -> AppResult<ApiOk> {
-    company_hr_service::remove_hr(&state, &user, uid).await?;
+    company_hr_service::remove_hr(&state, &user, b.uid).await?;
     Ok(ApiOk("removed"))
 }
 
@@ -219,7 +220,7 @@ pub async fn join(
 
 /// HR: companies I have joined
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/company/my-companies",
     tag = "mcenter",
     security(("bearer" = [])),

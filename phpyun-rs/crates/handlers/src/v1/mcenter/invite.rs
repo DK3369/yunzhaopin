@@ -1,9 +1,11 @@
 //! Invite-to-register flow (matching PHPYun `invitereg`).
 
-use axum::{extract::State, routing::post, Router};
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
+use axum::{
+    extract::State,
+    Router,
+    routing::post,
 };
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::invite_service::{self, InviteInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;

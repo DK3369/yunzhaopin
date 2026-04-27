@@ -9,25 +9,26 @@
 
 use axum::{
     extract::{Path, State},
-    routing::{get, post},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
-};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::company_sub_service::{self, NewsInput, NewsUpdateInput, ProductInput, ProductUpdateInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{CreatedId};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         // products
-        .route("/company/products", get(list_products).post(create_product))
-        .route("/company/products/{id}", post(update_product))
+        .route("/company/products", post(create_product))
+        .route("/company/products/list", post(list_products))
+        .route("/company/products/update", post(update_product))
         // news
-        .route("/company/news", get(list_news).post(create_news))
-        .route("/company/news/{id}", post(update_news))
+        .route("/company/news", post(create_news))
+        .route("/company/news/list", post(list_news))
+        .route("/company/news/update", post(update_news))
 }
 
 // ---------- Products ----------
@@ -65,31 +66,30 @@ pub struct ProductForm {
     #[validate(length(min = 1, max = 100_000))]
     pub body: String,
     #[serde(default)]
+    #[validate(range(min = 0, max = 9_999))]
     pub sort: i32,
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct ProductPatch {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+
     #[validate(length(min = 1, max = 200))]
     pub title: Option<String>,
     #[validate(length(max = 500))]
     pub cover: Option<String>,
     #[validate(length(min = 1, max = 100_000))]
     pub body: Option<String>,
+    #[validate(range(min = 0, max = 9_999))]
     pub sort: Option<i32>,
     /// 0=offline 1=online
     #[validate(range(min = 0, max = 1))]
     pub status: Option<i32>,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CreatedId {
-    pub id: u64,
-}
-
 /// My product list
-#[utoipa::path(get, path = "/v1/mcenter/company/products", tag = "mcenter", security(("bearer" = [])), responses((status = 200, description = "ok")))]
-pub async fn list_products(
+#[utoipa::path(post, path = "/v1/mcenter/company/products/list", tag = "mcenter", security(("bearer" = [])), responses((status = 200, description = "ok")))]pub async fn list_products(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
@@ -127,13 +127,11 @@ pub async fn create_product(
 }
 
 /// Update or soft-delete a product (body with `"status":2` triggers deletion)
-#[utoipa::path(post, path = "/v1/mcenter/company/products/{id}", tag = "mcenter", security(("bearer" = [])), params(("id" = u64, Path)), request_body = ProductPatch, responses((status = 200, description = "ok")))]
-pub async fn update_product(
-    State(state): State<AppState>,
+#[utoipa::path(post, path = "/v1/mcenter/company/products", tag = "mcenter", security(("bearer" = [])), request_body = ProductPatch, responses((status = 200, description = "ok")))]
+pub async fn update_product(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<ProductPatch>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<ProductPatch>) -> AppResult<ApiOk> {
+    let id = f.id;
     user.require_employer()?;
     if f.status == Some(2) {
         company_sub_service::delete_product(&state, &user, id).await?;
@@ -193,6 +191,8 @@ pub struct NewsForm {
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct NewsPatch {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
     #[validate(length(min = 1, max = 200))]
     pub title: Option<String>,
     #[validate(length(max = 500))]
@@ -204,7 +204,7 @@ pub struct NewsPatch {
 }
 
 /// My news list
-#[utoipa::path(get, path = "/v1/mcenter/company/news", tag = "mcenter", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/mcenter/company/news", tag = "mcenter", security(("bearer" = [])), responses((status = 200, description = "ok")))]
 pub async fn list_news(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -242,13 +242,11 @@ pub async fn create_news(
 }
 
 /// Update or soft-delete a news entry (body with `"status":2` triggers deletion)
-#[utoipa::path(post, path = "/v1/mcenter/company/news/{id}", tag = "mcenter", security(("bearer" = [])), params(("id" = u64, Path)), request_body = NewsPatch, responses((status = 200, description = "ok")))]
-pub async fn update_news(
-    State(state): State<AppState>,
+#[utoipa::path(post, path = "/v1/mcenter/company/news", tag = "mcenter", security(("bearer" = [])), request_body = NewsPatch, responses((status = 200, description = "ok")))]
+pub async fn update_news(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<NewsPatch>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<NewsPatch>) -> AppResult<ApiOk> {
+    let id = f.id;
     user.require_employer()?;
     if f.status == Some(2) {
         company_sub_service::delete_news(&state, &user, id).await?;

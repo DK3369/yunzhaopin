@@ -2,19 +2,20 @@
 
 use axum::{
     extract::{Path, State},
-    routing::get,
     Router,
+    routing::{get, post},
 };
 use phpyun_core::error::InfraError;
-use phpyun_core::{ApiJson, AppError, AppResult, AppState};
+use phpyun_core::{ApiJson, AppError, AppResult, AppState, ValidatedJson};
 use phpyun_services::site_setting_service;
 use serde::Serialize;
 use utoipa::ToSchema;
+use phpyun_core::dto::{};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/site/settings", get(list))
-        .route("/site/settings/{key}", get(get_one))
+        .route("/site/settings", post(list))
+        .route("/site/settings/get", post(get_one))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -35,27 +36,32 @@ impl From<phpyun_models::site_setting::entity::SiteSetting> for SettingView {
 }
 
 /// List public settings
-#[utoipa::path(get, path = "/v1/wap/site/settings", tag = "wap", responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/wap/site/settings/get", tag = "wap", responses((status = 200, description = "ok")))]
 pub async fn list(State(state): State<AppState>) -> AppResult<ApiJson<Vec<SettingView>>> {
     let list = site_setting_service::list_public(&state).await?;
     Ok(ApiJson(list.into_iter().map(SettingView::from).collect()))
 }
 
 /// Single public setting
-#[utoipa::path(
-    get,
-    path = "/v1/wap/site/settings/{key}",
+#[utoipa::path(post,
+    path = "/v1/wap/site/settings",
     tag = "wap",
-    params(("key" = String, Path)),
+    request_body = GetOneBody,
     responses((status = 200, description = "ok", body = SettingView), (status = 404))
 )]
-pub async fn get_one(
-    State(state): State<AppState>,
-    Path(key): Path<String>,
-) -> AppResult<ApiJson<SettingView>> {
+pub async fn get_one(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<GetOneBody>) -> AppResult<ApiJson<SettingView>> {
+    let key = b.key;
+    phpyun_core::validators::ensure_path_key(&key)?;
     let row = site_setting_service::get(&state, &key)
         .await?
         .filter(|s| s.is_public == 1)
         .ok_or_else(|| AppError::new(InfraError::InvalidParam("setting_not_found".into())))?;
     Ok(ApiJson(SettingView::from(row)))
+}
+
+#[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
+pub struct GetOneBody {
+    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    pub key: String,
 }

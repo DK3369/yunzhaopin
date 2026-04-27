@@ -2,21 +2,20 @@
 
 use axum::{
     extract::{Path, State},
-    routing::{get, post},
     Router,
+    routing::post,
 };
-use phpyun_core::{
-    json, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp,
-};
+use phpyun_core::{json, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::resume_tpl_service;
 use serde::Serialize;
 use utoipa::ToSchema;
+use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/resume-tpls", get(list))
-        .route("/resume-tpls/{id}/buy", post(buy))
-        .route("/resume-tpls/{id}/apply", post(apply))
+        .route("/resume-tpls", post(list))
+        .route("/resume-tpls/buy", post(buy))
+        .route("/resume-tpls/apply", post(apply))
 }
 
 fn pic_n(state: &AppState, raw: Option<&str>) -> String {
@@ -66,7 +65,7 @@ impl From<phpyun_models::resume_tpl::entity::ResumeTpl> for TplView {
 }
 
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/resume-tpls",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -84,20 +83,18 @@ pub struct BuyView {
     pub deducted_price: i32,
 }
 
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/resume-tpls/{id}/buy",
+#[utoipa::path(post,
+    path = "/v1/mcenter/resume-tpls/buy",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok", body = BuyView))
 )]
-pub async fn buy(
-    State(state): State<AppState>,
+pub async fn buy(State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<BuyView>> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<BuyView>> {
+    let id = b.id;
     let r = resume_tpl_service::buy(&state, &user, id, &ip).await?;
     Ok(ApiJson(BuyView {
         tpl_id: r.tpl_id,
@@ -106,20 +103,19 @@ pub async fn buy(
     }))
 }
 
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/resume-tpls/{id}/apply",
+#[utoipa::path(post,
+    path = "/v1/mcenter/resume-tpls/apply",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn apply(
-    State(state): State<AppState>,
+pub async fn apply(State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<json::Value>> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<json::Value>> {
+    let id = b.id;
     let n = resume_tpl_service::apply(&state, &user, id, &ip).await?;
     Ok(ApiJson(json::json!({ "updated": n })))
 }
+

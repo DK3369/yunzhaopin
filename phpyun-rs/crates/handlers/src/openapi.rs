@@ -27,6 +27,65 @@ impl Modify for SecurityAddon {
     }
 }
 
+/// Inject the operation count into each tag's description so Swagger UI shows
+/// `<tag> [N 个接口]` in the section header. Swagger UI doesn't compute counts
+/// itself; we walk every operation, tally its tags, then prefix each existing
+/// tag description with the total. Tags absent from `tags(...)` are auto-added.
+pub struct TagCounts;
+
+impl Modify for TagCounts {
+    fn modify(&self, openapi: &mut utoipa::openapi::OpenApi) {
+        use std::collections::BTreeMap;
+        let mut counts: BTreeMap<String, usize> = BTreeMap::new();
+        for (_path, item) in openapi.paths.paths.iter() {
+            let mut count_op = |op: Option<&utoipa::openapi::path::Operation>| {
+                if let Some(op) = op {
+                    if let Some(tags) = op.tags.as_ref() {
+                        for t in tags {
+                            *counts.entry(t.clone()).or_insert(0) += 1;
+                        }
+                    }
+                }
+            };
+            count_op(item.get.as_ref());
+            count_op(item.post.as_ref());
+            count_op(item.put.as_ref());
+            count_op(item.delete.as_ref());
+            count_op(item.patch.as_ref());
+            count_op(item.head.as_ref());
+            count_op(item.options.as_ref());
+            count_op(item.trace.as_ref());
+        }
+
+        // Update existing tag entries.
+        let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+        if let Some(tags) = openapi.tags.as_mut() {
+            for t in tags.iter_mut() {
+                seen.insert(t.name.clone());
+                let n = counts.get(&t.name).copied().unwrap_or(0);
+                let base = t.description.clone().unwrap_or_default();
+                t.description = Some(format!("【{n} 个接口】 {base}").trim().to_string());
+            }
+        }
+        // Add any missing tags (operations using a tag not declared in `tags(...)`).
+        let extra: Vec<_> = counts
+            .iter()
+            .filter(|(name, _)| !seen.contains(*name))
+            .collect();
+        if !extra.is_empty() {
+            let v = openapi.tags.get_or_insert_with(Vec::new);
+            for (name, n) in extra {
+                let mut t = utoipa::openapi::tag::TagBuilder::new()
+                    .name(name)
+                    .description(Some(format!("【{n} 个接口】")))
+                    .build();
+                let _ = &mut t;
+                v.push(t);
+            }
+        }
+    }
+}
+
 /// Derive a globally unique `operationId` for each operation (`{method}_{path_slug}`).
 ///
 /// utoipa uses Rust function names as operationId by default; same-named `fn list`
@@ -625,28 +684,22 @@ impl Modify for UniqueOperationId {
             v1::mcenter::views::ViewItem,
             v1::mcenter::interviews::InterviewItem,
             v1::mcenter::interviews::CreateInterviewForm,
-            v1::mcenter::interviews::CreatedId,
             v1::mcenter::messages::MessageItem,
             v1::mcenter::resume_downloads::DownloadForm,
             v1::mcenter::resume_downloads::DownloadItem,
             v1::mcenter::resume_project::ProjectItem,
             v1::mcenter::resume_project::ProjectForm,
-            v1::mcenter::resume_project::CreatedId,
             v1::mcenter::resume_skill::SkillItem,
             v1::mcenter::resume_skill::SkillForm,
-            v1::mcenter::resume_skill::CreatedId,
             v1::mcenter::resume_language::LanguageItem,
             v1::mcenter::resume_language::LanguageForm,
-            v1::mcenter::resume_language::CreatedId,
             v1::wap::dict::DictItem,
             v1::wap::articles::ArticleSummary,
             v1::wap::articles::ArticleDetail,
             v1::mcenter::feedback::FeedbackForm,
             v1::mcenter::feedback::FeedbackItem,
-            v1::mcenter::feedback::CreatedId,
             v1::mcenter::reports::ReportForm,
             v1::mcenter::reports::ReportItem,
-            v1::mcenter::reports::CreatedId,
             v1::mcenter::chat::SendForm,
             v1::mcenter::chat::SentMessage,
             v1::mcenter::chat::ChatItem,
@@ -673,9 +726,9 @@ impl Modify for UniqueOperationId {
             v1::mcenter::zph::ReservedId,
             v1::mcenter::zph::MyReservation,
             v1::mcenter::qna::AskForm,
-            v1::mcenter::qna::AnswerForm,
-            v1::mcenter::qna::CommentForm,
-            v1::mcenter::qna::CreatedId,
+            v1::mcenter::qna::AnswerBody,
+            v1::mcenter::qna::CommentBody,
+            v1::mcenter::qna::AcceptBody,
             v1::mcenter::qna::Toggled,
             v1::mcenter::qna::MyQuestion,
             v1::mcenter::qna::MyAnswer,
@@ -696,7 +749,6 @@ impl Modify for UniqueOperationId {
             v1::wap::search::SearchData,
             // SearchData reuses per-domain Summary directly; no separate SearchJob/SearchCompany etc.
             v1::wap::advice::AdviceForm,
-            v1::wap::advice::CreatedId,
             v1::mcenter::invite::InviteForm,
             v1::mcenter::invite::Sent,
             v1::mcenter::sign::SignResp,
@@ -712,11 +764,9 @@ impl Modify for UniqueOperationId {
             v1::mcenter::company_sub::ProductPatch,
             v1::mcenter::company_sub::NewsForm,
             v1::mcenter::company_sub::NewsPatch,
-            v1::mcenter::company_sub::CreatedId,
             v1::mcenter::interview_tpl::TplItem,
             v1::mcenter::interview_tpl::TplForm,
             v1::mcenter::interview_tpl::TplPatchForm,
-            v1::mcenter::interview_tpl::CreatedId,
             v1::wap::stats::OverviewView,
             v1::wap::resume_share::SharedResume,
             v1::wap::map::NearJob,
@@ -756,16 +806,13 @@ impl Modify for UniqueOperationId {
             v1::admin::ads::AdItem,
             v1::admin::ads::AdForm,
             v1::admin::ads::AdPatchForm,
-            v1::admin::ads::CreatedId,
             v1::admin::warnings::WarningItem,
             v1::admin::warnings::WarnForm,
-            v1::admin::warnings::CreatedId,
             v1::admin::audit_log::AuditItem,
             v1::mcenter::warnings::MyWarning,
             v1::mcenter::warnings::UnreadCount,
             v1::admin::broadcasts::BroadcastItem,
             v1::admin::broadcasts::CreateForm,
-            v1::admin::broadcasts::CreatedId,
             v1::mcenter::broadcasts::BcItem,
             v1::mcenter::broadcasts::UnreadCount,
             v1::mcenter::entrust::EntrustItem,
@@ -777,17 +824,14 @@ impl Modify for UniqueOperationId {
             v1::admin::categories::CatItem,
             v1::admin::categories::CatForm,
             v1::admin::categories::CatPatchForm,
-            v1::admin::categories::CreatedId,
             v1::mcenter::recommend::RecJob,
             v1::mcenter::recommend::RecResume,
             v1::wap::app_version::VersionView,
             v1::admin::app_versions::VersionItem,
             v1::admin::app_versions::CreateForm,
-            v1::admin::app_versions::CreatedId,
             v1::mcenter::activity::ActivityItem,
             v1::mcenter::saved_searches::SavedItem,
             v1::mcenter::saved_searches::CreateForm,
-            v1::mcenter::saved_searches::CreatedId,
             v1::mcenter::saved_searches::NotifyForm,
             v1::wap::ratings::RatingItem,
             v1::wap::ratings::RatingSummary,
@@ -805,7 +849,6 @@ impl Modify for UniqueOperationId {
             v1::admin::nav::NavItem,
             v1::admin::nav::NavForm,
             v1::admin::nav::NavPatchForm,
-            v1::admin::nav::CreatedId,
             v1::mcenter::resume_timeline::TimelineItem,
             v1::admin::dashboard::OverviewView,
             v1::admin::dashboard::RecentUser,
@@ -883,9 +926,24 @@ impl Modify for UniqueOperationId {
             v1::wap::ads::AdClickResp,
             v1::mcenter::recommend::QuotaView,
             v1::wap::eval::ExamineeItem,
+            // ==== Phase A: shared DTOs (deduped from per-handler files) ====
+            phpyun_core::dto::IdBody,
+            phpyun_core::dto::UidBody,
+            phpyun_core::dto::EidBody,
+            phpyun_core::dto::AidBody,
+            phpyun_core::dto::MidBody,
+            phpyun_core::dto::PeerBody,
+            phpyun_core::dto::TokenBody,
+            phpyun_core::dto::OrderNoBody,
+            phpyun_core::dto::ProviderBody,
+            phpyun_core::dto::UidIdBody,
+            phpyun_core::dto::KindTargetIdBody,
+            phpyun_core::dto::KindTargetUidBody,
+            phpyun_core::dto::CreatedId,
+            phpyun_core::dto::Toggled,
         ),
     ),
-    modifiers(&SecurityAddon, &UniqueOperationId),
+    modifiers(&SecurityAddon, &UniqueOperationId, &TagCounts),
     tags(
         (name = "auth", description = "Login / Register / Refresh / Logout / Captcha / OAuth"),
         (name = "upload", description = "File upload"),
@@ -927,7 +985,7 @@ pub struct V1Doc;
             v1::wap::auth::MeData,
         ),
     ),
-    modifiers(&SecurityAddon, &UniqueOperationId),
+    modifiers(&SecurityAddon, &UniqueOperationId, &TagCounts),
     tags(
         (name = "auth", description = "Login / Refresh / Logout / Current user"),
     )

@@ -2,10 +2,10 @@
 
 use axum::{
     extract::{Path, State},
-    routing::get,
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination};
+use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::zph_service;
 use serde::Serialize;
 use utoipa::ToSchema;
@@ -36,10 +36,10 @@ fn pic_n(state: &AppState, raw: &str) -> String {
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/zph", get(list))
-        .route("/zph/{id}", get(detail))
-        .route("/zph/{id}/companies", get(list_companies))
-        .route("/zph/{id}/jobs", get(list_jobs))
+        .route("/zph", post(list))
+        .route("/zph/detail", post(detail))
+        .route("/zph/companies", post(list_companies))
+        .route("/zph/jobs", post(list_jobs))
 }
 
 /// Job-fair list item -- mirrors all phpyun_zhaopinhui columns + city name + CDN URL + formatted timestamps.
@@ -326,7 +326,7 @@ impl From<phpyun_models::zph::entity::Zph> for ZphDetail {
 }
 
 /// Job-fair list
-#[utoipa::path(get, path = "/v1/wap/zph", tag = "wap", responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/wap/zph/detail", tag = "wap", responses((status = 200, description = "ok")))]
 pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
@@ -345,17 +345,15 @@ pub async fn list(
 }
 
 /// Job-fair detail
-#[utoipa::path(
-    get,
-    path = "/v1/wap/zph/{id}",
+#[utoipa::path(post,
+    path = "/v1/wap/zph",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok", body = ZphDetail), (status = 404))
 )]
-pub async fn detail(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<ZphDetail>> {
+pub async fn detail(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<ZphDetail>> {
+    let id = b.id;
     let z = zph_service::get_detail(&state, id).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     Ok(ApiJson(ZphDetail::from_with_dict(z, &state, &dicts)))
@@ -390,18 +388,16 @@ pub struct ZphCompanyItem {
 }
 
 /// Participating-company list
-#[utoipa::path(
-    get,
-    path = "/v1/wap/zph/{id}/companies",
+#[utoipa::path(post,
+    path = "/v1/wap/zph/companies",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn list_companies(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
+pub async fn list_companies(State(state): State<AppState>,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<ZphCompanyItem>>> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<Paged<ZphCompanyItem>>> {
+    let id = b.id;
     let r = zph_service::list_companies(&state, id, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
 
@@ -495,22 +491,21 @@ pub async fn list_companies(
 // end can render the same card it uses elsewhere.
 
 use super::jobs::JobSummary;
+use phpyun_core::dto::{IdBody};
 
 /// Jobs participating in a recruitment fair. Counterpart of PHP
 /// `app/zph/index::getJobList_action` — loads the job ids signed up for the
 /// fair (`phpyun_zhaopinhui_com.jobid` CSV per company), dedupes, then
 /// returns the live job rows that are still on-shelf (`state=1, r_status=1`).
-#[utoipa::path(
-    get,
-    path = "/v1/wap/zph/{id}/jobs",
+#[utoipa::path(post,
+    path = "/v1/wap/zph/jobs",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn list_jobs(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<Vec<JobSummary>>> {
+pub async fn list_jobs(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<Vec<JobSummary>>> {
+    let id = b.id;
     let csvs = phpyun_models::zph::repo::jobid_csvs_for_zph(state.db.reader(), id).await?;
 
     // Flatten + dedupe, preserving first-seen order so the listing roughly
@@ -548,8 +543,9 @@ pub async fn list_jobs(
         .into_iter()
         .take(40)
         .filter_map(|jid| by_id.remove(&jid))
-        .map(|j| JobSummary::from_with_dict_fav(j, &dicts, now, false))
+        .map(|j| crate::v1::wap::jobs::job_summary_from_dict_fav(j, &dicts, now, false))
         .collect();
 
     Ok(ApiJson(items))
 }
+

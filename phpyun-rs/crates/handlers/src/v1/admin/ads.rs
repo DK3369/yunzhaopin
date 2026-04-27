@@ -1,26 +1,27 @@
 //! Ad slot management (admin).
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::{Path, State},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::ad_service::{self, AdInput, AdPatch};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{CreatedId};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/ads", get(list).post(create))
-        .route("/ads/{id}", post(update))
+        .route("/ads", post(create))
+        .route("/ads/list", post(list))
+        .route("/ads/update", post(update))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
+    #[validate(length(max = 100))]
     pub slot: Option<String>,
 }
 
@@ -90,15 +91,21 @@ pub struct AdForm {
     #[validate(length(min = 1, max = 500))]
     pub link: String,
     #[serde(default)]
+    #[validate(range(min = 0, max = 9_999))]
     pub weight: i32,
     #[serde(default)]
+    #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub start_at: i64,
     #[serde(default)]
+    #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub end_at: i64,
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct AdPatchForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+
     #[validate(length(min = 1, max = 64))]
     pub slot: Option<String>,
     #[validate(length(max = 200))]
@@ -107,25 +114,22 @@ pub struct AdPatchForm {
     pub image: Option<String>,
     #[validate(length(min = 1, max = 500))]
     pub link: Option<String>,
+    #[validate(range(min = 0, max = 9_999))]
     pub weight: Option<i32>,
+    #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub start_at: Option<i64>,
+    #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub end_at: Option<i64>,
     /// 0=offline / 1=online / 2=deleted (soft delete)
     #[validate(range(min = 0, max = 2))]
     pub status: Option<i32>,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CreatedId {
-    pub id: u64,
-}
-
-#[utoipa::path(get, path = "/v1/admin/ads", tag = "admin", security(("bearer" = [])), params(ListQuery), responses((status = 200, description = "ok")))]
-pub async fn list(
+#[utoipa::path(post, path = "/v1/admin/ads/list", tag = "admin", security(("bearer" = [])), params(ListQuery), responses((status = 200, description = "ok")))]pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<ListQuery>,
+    ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Paged<AdItem>>> {
     user.require_admin()?;
     let r = ad_service::admin_list(&state, &user, q.slot.as_deref(), page).await?;
@@ -162,13 +166,11 @@ pub async fn create(
 }
 
 /// Update or soft-delete an ad (sending `"status":2` deletes; underlying UPDATE sets status=2)
-#[utoipa::path(post, path = "/v1/admin/ads/{id}", tag = "admin", security(("bearer" = [])), params(("id" = u64, Path)), request_body = AdPatchForm, responses((status = 200, description = "ok")))]
-pub async fn update(
-    State(state): State<AppState>,
+#[utoipa::path(post, path = "/v1/admin/ads", tag = "admin", security(("bearer" = [])), request_body = AdPatchForm, responses((status = 200, description = "ok")))]
+pub async fn update(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<AdPatchForm>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<AdPatchForm>) -> AppResult<ApiOk> {
+    let id = f.id;
     user.require_admin()?;
     if f.status == Some(2) {
         ad_service::admin_delete(&state, &user, id).await?;

@@ -7,9 +7,9 @@
 //!   * `POST /v1/wap/jobs/{id}/messages/{mid}/hide` — author hides their own message
 
 use axum::{
-    extract::{Path, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::post,
 };
 use phpyun_core::{
     json, verify::{self, VerifyKind},
@@ -19,11 +19,13 @@ use phpyun_services::job_msg_service::{self, CreateInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{IdBody, MidBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/jobs/{id}/messages", get(list).post(create))
-        .route("/jobs/{id}/messages/{mid}/hide", post(hide))
+        .route("/jobs/messages", post(list))
+        .route("/jobs/messages/post", post(create))
+        .route("/jobs/messages/hide", post(hide))
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -71,18 +73,18 @@ impl From<phpyun_models::job_msg::entity::JobMsg> for JobMsgView {
 
 /// Public list of approved Q&A for a job.
 #[utoipa::path(
-    get,
-    path = "/v1/wap/jobs/{id}/messages",
+    post,
+    path = "/v1/wap/jobs/messages",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn list(
     State(state): State<AppState>,
-    Path(id): Path<u64>,
     page: Pagination,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<Paged<JobMsgView>>> {
-    let r = job_msg_service::list_public(&state, id, page).await?;
+    let r = job_msg_service::list_public(&state, b.id, page).await?;
     Ok(ApiJson(Paged::new(
         r.list.into_iter().map(JobMsgView::from).collect(),
         r.total,
@@ -93,6 +95,9 @@ pub async fn list(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct CreateMessageForm {
+    /// Job id (required when posted to the new path-param-free endpoint).
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
     /// Plain-text inquiry content. Max 1000 chars.
     #[validate(length(min = 1, max = 4000))]
     pub content: String,
@@ -113,10 +118,9 @@ pub struct CreateMessageData {
 /// Mirrors PHP `wap/ajax::pl_action` (auth check, blacklist check, captcha).
 #[utoipa::path(
     post,
-    path = "/v1/wap/jobs/{id}/messages",
+    path = "/v1/wap/jobs/messages/post",
     tag = "wap",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
     request_body = CreateMessageForm,
     responses(
         (status = 200, description = "Created", body = CreateMessageData),
@@ -128,7 +132,6 @@ pub struct CreateMessageData {
 pub async fn create(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
     ValidatedJson(f): ValidatedJson<CreateMessageForm>,
 ) -> AppResult<ApiJson<CreateMessageData>> {
     // Captcha — same scheme as register / sms send.
@@ -141,7 +144,7 @@ pub async fn create(
         &state,
         &user,
         CreateInput {
-            jobid: id,
+            jobid: f.id,
             content: &f.content,
         },
     )
@@ -152,13 +155,10 @@ pub async fn create(
 /// Author / employer hides one of their messages.
 #[utoipa::path(
     post,
-    path = "/v1/wap/jobs/{id}/messages/{mid}/hide",
+    path = "/v1/wap/jobs/messages/hide",
     tag = "wap",
     security(("bearer" = [])),
-    params(
-        ("id" = u64, Path),
-        ("mid" = u64, Path),
-    ),
+    request_body = MidBody,
     responses(
         (status = 200, description = "ok"),
         (status = 400, description = "Message not found"),
@@ -168,8 +168,8 @@ pub async fn create(
 pub async fn hide(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path((_id, mid)): Path<(u64, u64)>,
+    ValidatedJson(b): ValidatedJson<MidBody>,
 ) -> AppResult<ApiJson<json::Value>> {
-    job_msg_service::hide(&state, &user, mid).await?;
+    job_msg_service::hide(&state, &user, b.mid).await?;
     Ok(ApiJson(json::json!({ "ok": true })))
 }

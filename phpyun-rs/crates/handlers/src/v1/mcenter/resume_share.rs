@@ -1,25 +1,22 @@
 //! Resume share link management (jobseeker side).
 
 use axum::{
-    extract::{Path, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::post,
 };
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
-};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::resume_share_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{TokenBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route(
-            "/resume-share-tokens",
-            get(list_mine).post(create),
-        )
-        .route("/resume-share-tokens/{token}", post(revoke))
+        .route("/resume-share-tokens", post(create))
+        .route("/resume-share-tokens/list", post(list_mine))
+        .route("/resume-share-tokens/revoke", post(revoke))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -90,8 +87,8 @@ pub async fn create(
 
 /// My share list
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/resume-share-tokens",
+    post,
+    path = "/v1/mcenter/resume-share-tokens/list",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
@@ -113,17 +110,18 @@ pub async fn list_mine(
 /// Revoke share
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/resume-share-tokens/{token}",
+    path = "/v1/mcenter/resume-share-tokens/revoke",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("token" = String, Path)),
+    request_body = TokenBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn revoke(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(token): Path<String>,
+    ValidatedJson(b): ValidatedJson<TokenBody>,
 ) -> AppResult<ApiOk> {
-    resume_share_service::revoke(&state, &user, &token).await?;
+    phpyun_core::validators::ensure_path_hex_token(&b.token)?;
+    resume_share_service::revoke(&state, &user, &b.token).await?;
     Ok(ApiOk("revoked"))
 }

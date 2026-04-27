@@ -98,6 +98,78 @@ pub fn username(v: &str) -> Result<(), ValidationError> {
     }
 }
 
+/// Path-segment string used as a typed identifier. axum's `Path<String>`
+/// extractor URL-decodes whatever the client sends, so this is the
+/// last-mile guard for any handler that takes `Path<String>` and uses the
+/// value to dispatch services / look up DB rows. Accepts ASCII letters,
+/// digits, underscore, hyphen, dot — 1..=64 chars. Rejects anything that
+/// could break out of an identifier: NUL / whitespace / `;` / quotes /
+/// non-ASCII / over-length payloads.
+///
+/// Use this as `AppError::param_invalid("path_token")` failure case at the
+/// top of every Path<String> handler.
+pub fn path_token(v: &str) -> Result<(), ValidationError> {
+    if v.is_empty() || v.len() > 64 {
+        return Err(ValidationError::new("path_token_length"));
+    }
+    if v.bytes().all(|b| {
+        b.is_ascii_alphanumeric() || b == b'_' || b == b'-' || b == b'.'
+    }) {
+        Ok(())
+    } else {
+        Err(ValidationError::new("path_token_charset"))
+    }
+}
+
+/// Like `path_token` but tightens charset to lowercase + digits + underscore
+/// — for keys that flow into `phpyun_admin_config.key_name`-style lookups.
+/// 1..=64 chars.
+pub fn path_key(v: &str) -> Result<(), ValidationError> {
+    if v.is_empty() || v.len() > 64 {
+        return Err(ValidationError::new("path_key_length"));
+    }
+    if v.bytes()
+        .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'_')
+    {
+        Ok(())
+    } else {
+        Err(ValidationError::new("path_key_charset"))
+    }
+}
+
+/// Hex string (lower or upper), 1..=128 chars. Used for resume-share / OAuth
+/// tokens delivered via path. Wider than [`path_token`] in length but
+/// stricter in alphabet (no dot, no hyphen) — matches our token issuance
+/// (UUID-as-hex / SHA-1 / SHA-256 digests).
+pub fn path_hex_token(v: &str) -> Result<(), ValidationError> {
+    if v.is_empty() || v.len() > 128 {
+        return Err(ValidationError::new("path_hex_length"));
+    }
+    if v.bytes().all(|b| b.is_ascii_hexdigit()) {
+        Ok(())
+    } else {
+        Err(ValidationError::new("path_hex_charset"))
+    }
+}
+
+/// `AppError`-flavoured wrapper around [`path_token`] for handler use.
+///
+/// Calling pattern at handler entry:
+/// ```ignore
+/// validators::ensure_path_token(&kind)?;
+/// ```
+pub fn ensure_path_token(v: &str) -> Result<(), crate::error::AppError> {
+    path_token(v).map_err(|e| crate::error::AppError::param_invalid(e.code))
+}
+
+pub fn ensure_path_key(v: &str) -> Result<(), crate::error::AppError> {
+    path_key(v).map_err(|e| crate::error::AppError::param_invalid(e.code))
+}
+
+pub fn ensure_path_hex_token(v: &str) -> Result<(), crate::error::AppError> {
+    path_hex_token(v).map_err(|e| crate::error::AppError::param_invalid(e.code))
+}
+
 /// URL (http / https) — rejects schemes like `javascript:` / `data:`.
 pub fn http_url(v: &str) -> Result<(), ValidationError> {
     if v.starts_with("http://") || v.starts_with("https://") {

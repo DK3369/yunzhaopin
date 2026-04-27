@@ -1,36 +1,38 @@
 //! Admin integral mall: reward CRUD / classes / order approval.
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::{Path, State},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::redeem_service::{self, NewRewardForm};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{CreatedId, IdBody, StatusFilterBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         // classes
-        .route("/redeem-classes", get(list_classes).post(create_class))
-        .route("/redeem-classes/{id}", post(delete_class))
+        .route("/redeem-classes", post(create_class))
+        .route("/redeem-classes/list", post(list_classes))
+        .route("/redeem-classes/delete", post(delete_class))
         // rewards
-        .route("/rewards", get(list_rewards).post(create_reward))
-        .route("/rewards/{id}", post(delete_reward))
-        .route("/rewards/{id}/status", post(set_reward_status))
-        .route("/rewards/{id}/flags", post(set_reward_flags))
+        .route("/rewards", post(create_reward))
+        .route("/rewards/list", post(list_rewards))
+        .route("/rewards/delete", post(delete_reward))
+        .route("/rewards/status", post(set_reward_status))
+        .route("/rewards/flags", post(set_reward_flags))
         // order approval
-        .route("/redeem-orders", get(list_orders))
-        .route("/redeem-orders/{id}/approve", post(approve_order))
-        .route("/redeem-orders/{id}/reject", post(reject_order))
+        .route("/redeem-orders", post(list_orders))
+        .route("/redeem-orders/approve", post(approve_order))
+        .route("/redeem-orders/reject", post(reject_order))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ClassQuery {
+    #[validate(range(min = 1, max = 99_999_999))]
     pub parent_id: Option<u64>,
 }
 
@@ -51,17 +53,16 @@ impl From<phpyun_models::redeem::entity::RedeemClass> for ClassItem {
 
 /// List classes
 #[utoipa::path(
-    get,
-    path = "/v1/admin/redeem-classes",
+    post,
+    path = "/v1/admin/redeem-classes/list",
     tag = "admin",
     security(("bearer" = [])),
     params(ClassQuery),
     responses((status = 200, description = "ok"))
-)]
-pub async fn list_classes(
+)]pub async fn list_classes(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedQuery(q): ValidatedQuery<ClassQuery>,
+    ValidatedJson(q): ValidatedJson<ClassQuery>,
 ) -> AppResult<ApiJson<Vec<ClassItem>>> {
     user.require_admin()?;
     let l = redeem_service::list_classes(&state, q.parent_id).await?;
@@ -71,16 +72,13 @@ pub async fn list_classes(
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct ClassForm {
     #[serde(default)]
+    #[validate(range(min = 1, max = 99_999_999))]
     pub parent_id: u64,
     #[validate(length(min = 1, max = 64))]
     pub name: String,
     #[serde(default)]
+    #[validate(range(min = 0, max = 9_999))]
     pub sort: i32,
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CreatedId {
-    pub id: u64,
 }
 
 /// Create class
@@ -103,19 +101,17 @@ pub async fn create_class(
 }
 
 /// Delete class (including children)
-#[utoipa::path(
-    post,
-    path = "/v1/admin/redeem-classes/{id}",
+#[utoipa::path(post,
+    path = "/v1/admin/redeem-classes",
     tag = "admin",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn delete_class(
-    State(state): State<AppState>,
+pub async fn delete_class(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiOk> {
+    let id = b.id;
     user.require_admin()?;
     redeem_service::delete_class(&state, &user, id).await?;
     Ok(ApiOk("deleted"))
@@ -128,7 +124,9 @@ pub struct RewardListQuery {
     /// Default false (admin sees everything)
     #[serde(default)]
     pub only_active: bool,
+    #[validate(range(min = 1, max = 99_999_999))]
     pub nid: Option<u64>,
+    #[validate(range(min = 1, max = 99_999_999))]
     pub tnid: Option<u64>,
 }
 
@@ -187,7 +185,7 @@ impl From<phpyun_models::redeem::entity::Reward> for RewardItem {
 
 /// Reward list
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/admin/rewards",
     tag = "admin",
     security(("bearer" = [])),
@@ -198,7 +196,7 @@ pub async fn list_rewards(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<RewardListQuery>,
+    ValidatedJson(q): ValidatedJson<RewardListQuery>,
 ) -> AppResult<ApiJson<Paged<RewardItem>>> {
     user.require_admin()?;
     let f = redeem_service::RewardFilter { only_active: q.only_active, nid: q.nid, tnid: q.tnid };
@@ -216,18 +214,24 @@ pub struct RewardForm {
     #[validate(length(min = 1, max = 120))]
     pub name: String,
     #[serde(default)]
+    #[validate(length(max = 1024))]
     pub pic: String,
     #[serde(default)]
+    #[validate(length(min = 1, max = 5000))]
     pub content: String,
     #[validate(range(min = 1))]
     pub integral: u32,
     #[serde(default)]
+    #[validate(range(min = 0, max = 99_999_999))]
     pub stock: u32,
     #[serde(default)]
+    #[validate(range(min = 0, max = 99_999_999))]
     pub restriction: u32,
     #[serde(default)]
+    #[validate(range(min = 1, max = 99_999_999))]
     pub nid: u64,
     #[serde(default)]
+    #[validate(range(min = 1, max = 99_999_999))]
     pub tnid: u64,
 }
 
@@ -265,19 +269,17 @@ pub async fn create_reward(
 }
 
 /// Delete reward
-#[utoipa::path(
-    post,
-    path = "/v1/admin/rewards/{id}",
+#[utoipa::path(post,
+    path = "/v1/admin/rewards",
     tag = "admin",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn delete_reward(
-    State(state): State<AppState>,
+pub async fn delete_reward(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiOk> {
+    let id = b.id;
     user.require_admin()?;
     redeem_service::delete_reward(&state, &user, id).await?;
     Ok(ApiOk("deleted"))
@@ -285,27 +287,26 @@ pub async fn delete_reward(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct StatusForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+
     /// 0=offline  1=online
     #[validate(range(min = 0, max = 1))]
     pub status: i32,
 }
 
 /// Toggle online/offline
-#[utoipa::path(
-    post,
-    path = "/v1/admin/rewards/{id}/status",
+#[utoipa::path(post,
+    path = "/v1/admin/rewards/status",
     tag = "admin",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
     request_body = StatusForm,
     responses((status = 200, description = "ok"))
 )]
-pub async fn set_reward_status(
-    State(state): State<AppState>,
+pub async fn set_reward_status(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<StatusForm>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<StatusForm>) -> AppResult<ApiOk> {
+    let id = f.id;
     user.require_admin()?;
     redeem_service::set_reward_status(&state, &user, id, f.status).await?;
     Ok(ApiOk("ok"))
@@ -313,6 +314,9 @@ pub async fn set_reward_status(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct FlagsForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+
     /// 0 = unset, 1 = recommended. Anything else is rejected at validation.
     #[validate(range(min = 0, max = 1))]
     pub is_rec: Option<i32>,
@@ -322,32 +326,23 @@ pub struct FlagsForm {
 }
 
 /// Recommended / hot flags
-#[utoipa::path(
-    post,
-    path = "/v1/admin/rewards/{id}/flags",
+#[utoipa::path(post,
+    path = "/v1/admin/rewards/flags",
     tag = "admin",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
     request_body = FlagsForm,
     responses((status = 200, description = "ok"))
 )]
-pub async fn set_reward_flags(
-    State(state): State<AppState>,
+pub async fn set_reward_flags(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<FlagsForm>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<FlagsForm>) -> AppResult<ApiOk> {
+    let id = f.id;
     user.require_admin()?;
     redeem_service::set_reward_flags(&state, &user, id, f.is_rec, f.is_hot).await?;
     Ok(ApiOk("ok"))
 }
 
 // ---------- orders ----------
-
-#[derive(Debug, Deserialize, Validate, IntoParams)]
-pub struct OrderListQuery {
-    pub status: Option<i32>,
-}
 
 fn order_status_name(s: i32) -> &'static str {
     match s {
@@ -356,59 +351,23 @@ fn order_status_name(s: i32) -> &'static str {
     }
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct OrderItem {
-    pub id: u64,
-    pub uid: u64,
-    pub gid: u64,
-    pub name: String,
-    pub linkman: String,
-    pub linktel: String,
-    pub address: String,
-    pub integral: u32,
-    pub num: u32,
-    pub total_integral: u64,
-    pub status: i32,
-    pub status_n: String,
-    pub created_at: i64,
-    pub created_at_n: String,
-}
-
-impl From<phpyun_models::redeem::entity::RedeemOrder> for OrderItem {
-    fn from(o: phpyun_models::redeem::entity::RedeemOrder) -> Self {
-        Self {
-            id: o.id,
-            uid: o.uid,
-            gid: o.gid,
-            name: o.name,
-            linkman: o.linkman,
-            linktel: o.linktel,
-            address: o.address,
-            total_integral: (o.integral as u64) * (o.num as u64),
-            integral: o.integral,
-            num: o.num,
-            status_n: order_status_name(o.status).to_string(),
-            status: o.status,
-            created_at_n: fmt_dt(o.created_at),
-            created_at: o.created_at,
-        }
-    }
-}
+// Reuse mcenter's `OrderItem` — same shape and same `From<RedeemOrder>` impl.
+pub type OrderItem = crate::v1::mcenter::redeem::OrderItem;
 
 /// Order list
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/admin/redeem-orders",
     tag = "admin",
     security(("bearer" = [])),
-    params(OrderListQuery),
+    request_body = StatusFilterBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn list_orders(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<OrderListQuery>,
+    ValidatedJson(q): ValidatedJson<StatusFilterBody>,
 ) -> AppResult<ApiJson<Paged<OrderItem>>> {
     user.require_admin()?;
     let r = redeem_service::list_orders_admin(&state, q.status, page).await?;
@@ -421,39 +380,36 @@ pub async fn list_orders(
 }
 
 /// Approve order (no refund, awaiting shipment)
-#[utoipa::path(
-    post,
-    path = "/v1/admin/redeem-orders/{id}/approve",
+#[utoipa::path(post,
+    path = "/v1/admin/redeem-orders/approve",
     tag = "admin",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn approve_order(
-    State(state): State<AppState>,
+pub async fn approve_order(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiOk> {
+    let id = b.id;
     user.require_admin()?;
     redeem_service::approve_order(&state, &user, id).await?;
     Ok(ApiOk("approved"))
 }
 
 /// Reject order (refund integral + restore stock)
-#[utoipa::path(
-    post,
-    path = "/v1/admin/redeem-orders/{id}/reject",
+#[utoipa::path(post,
+    path = "/v1/admin/redeem-orders/reject",
     tag = "admin",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn reject_order(
-    State(state): State<AppState>,
+pub async fn reject_order(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiOk> {
+    let id = b.id;
     user.require_admin()?;
     redeem_service::reject_order(&state, &user, id).await?;
     Ok(ApiOk("rejected"))
 }
+

@@ -2,19 +2,20 @@
 
 use axum::{
     extract::{Path, State},
-    routing::get,
     Router,
+    routing::post,
 };
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, Paged, Pagination};
+use phpyun_core::{ApiJson, AppError, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_core::error::InfraError;
 use phpyun_services::announcement_service;
 use serde::Serialize;
 use utoipa::ToSchema;
+use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/announcements", get(list))
-        .route("/announcements/{id}", get(detail))
+        .route("/announcements", post(list))
+        .route("/announcements/detail", post(detail))
 }
 
 fn fmt_date(ts: i64) -> String {
@@ -119,8 +120,8 @@ impl From<phpyun_models::announcement::entity::Announcement> for AnnouncementDet
 
 /// Announcement list
 #[utoipa::path(
-    get,
-    path = "/v1/wap/announcements",
+    post,
+    path = "/v1/wap/announcements/detail",
     tag = "wap",
     responses((status = 200, description = "ok"))
 )]
@@ -138,19 +139,18 @@ pub async fn list(
 }
 
 /// Announcement detail (`upViewNum` semantics: async +1)
-#[utoipa::path(
-    get,
-    path = "/v1/wap/announcements/{id}",
+#[utoipa::path(post,
+    path = "/v1/wap/announcements",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok", body = AnnouncementDetail), (status = 404))
 )]
-pub async fn detail(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<AnnouncementDetail>> {
+pub async fn detail(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<AnnouncementDetail>> {
+    let id = b.id;
     let row = announcement_service::get_detail(&state, id)
         .await?
         .ok_or_else(|| AppError::new(InfraError::InvalidParam("announcement_not_found".into())))?;
     Ok(ApiJson(AnnouncementDetail::from(row)))
 }
+

@@ -1,20 +1,39 @@
 //! Public job browsing (WAP, aligned with `wap/job::index_action` / detail portion of `wap/job::comapply_action`).
 
 use axum::{
-    extract::{Path, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    json, ApiJson, AppResult, AppState, ClientIp, MaybeUser, Paged, Pagination, ValidatedJson,
-    ValidatedQuery,
-};
+use phpyun_core::{json, ApiJson, AppResult, AppState, ClientIp, MaybeUser, Paged, Pagination, ValidatedJson};
 use validator::Validate;
 use phpyun_services::hot_search_service;
 use phpyun_services::job_service::{self, JobSearch};
 use phpyun_services::view_service::{self, KIND_JOB};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use phpyun_core::dto::{IdBody, UidBody};
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct SimilarBody {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+    #[serde(default = "default_rec_limit")]
+    #[validate(range(min = 1, max = 30))]
+    pub limit: u64,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct TelClickBodyFull {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+    #[serde(default = "default_source")]
+    #[validate(range(min = 0, max = 99))]
+    pub source: i32,
+    #[serde(default)]
+    #[validate(range(min = 0, max = 99_999_999))]
+    pub com_id: u64,
+}
 
 /// UNIX timestamp -> local time string. `ts<=0` returns an empty string (aligned with PHPYun `date('Y-m-d H:i', $ts)`).
 fn fmt_ts(ts: i64, pattern: &str) -> String {
@@ -28,15 +47,15 @@ fn fmt_ts(ts: i64, pattern: &str) -> String {
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/jobs", get(list_jobs))
-        .route("/jobs/{id}", get(job_detail))
-        .route("/jobs/{id}/similar", get(similar_jobs))
-        .route("/jobs/{id}/same-company", get(same_company_jobs))
-        .route("/companies/{uid}/jobs", get(company_jobs))
-        .route("/jobs/{id}/tel-click", post(log_tel_click))
-        .route("/jobs/{id}/share-text", get(share_text))
-        .route("/jobs/{id}/hits", post(bump_jobhits))
-        .route("/jobs/{id}/contact", get(job_contact))
+        .route("/jobs", post(list_jobs))
+        .route("/jobs/detail", post(job_detail))
+        .route("/jobs/similar", post(similar_jobs))
+        .route("/jobs/same-company", post(same_company_jobs))
+        .route("/companies/jobs", post(company_jobs))
+        .route("/jobs/tel-click", post(log_tel_click))
+        .route("/jobs/share-text", post(share_text))
+        .route("/jobs/hits", post(bump_jobhits))
+        .route("/jobs/contact", post(job_contact))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -45,11 +64,11 @@ pub struct JobListQuery {
     /// guard against memory-exhaustion via 10MB-keyword requests.
     #[validate(length(max = 100))]
     pub keyword: Option<String>,
-    #[validate(range(min = 0, max = 9_999_999))]
+    #[validate(range(min = 0, max = 99_999))]
     pub province_id: Option<i32>,
-    #[validate(range(min = 0, max = 9_999_999))]
+    #[validate(range(min = 0, max = 99_999))]
     pub city_id: Option<i32>,
-    #[validate(range(min = 0, max = 9_999_999))]
+    #[validate(range(min = 0, max = 99_999))]
     pub three_city_id: Option<i32>,
     #[validate(range(min = 0, max = 9_999_999))]
     pub job1: Option<i32>,
@@ -73,166 +92,97 @@ fn default_did() -> u32 {
     0
 }
 
-/// Job list item -- aligned with the field set returned by PHPYun `JobM::getList()`.
-#[derive(Debug, Serialize, ToSchema)]
-pub struct JobSummary {
-    // Basics
-    pub id: u64,
-    pub uid: u64,
-    pub name: String,
-    pub com_name: Option<String>,
-    pub com_logo: Option<String>,
+/// Job list item — defined in `phpyun_models::job::view` and re-exported here
+/// so legacy paths (`wap::jobs::JobSummary`) keep working. See the model crate
+/// for the field reference; dict-translation builds via `job_summary_from_dict`
+/// below.
+pub use phpyun_models::job::view::JobSummary;
 
-    // Category ids
-    pub job1: i32,
-    pub job1_son: i32,
-    pub job_post: i32,
-    pub hy: i32,
-
-    // Category names (results of dictionary lookup, corresponding to PHP `job_one_n / job_two_n / job_three_n / job_hy`)
-    pub job_one_n: String,
-    pub job_two_n: String,
-    pub job_three_n: String,
-    pub job_hy: String,
-    /// Three-level job category joined as "Frontend / Web Frontend / React Developer" (PHP `jobname`)
-    pub jobname: String,
-
-    // Location
-    pub province_id: i32,
-    pub city_id: i32,
-    pub three_city_id: i32,
-    /// Province name (PHP `job_city_one`)
-    pub job_city_one: String,
-    /// City name (PHP `job_city_two`)
-    pub job_city_two: String,
-
-    // Salary
-    pub salary: i32,
-    pub min_salary: i32,
-    pub max_salary: i32,
-
-    // Requirements
-    pub exp: i32,
-    pub edu: i32,
-
-    // Promotion status (computed from rec_time / urgent_time vs. now, aligned with PHP `isrec / isurgent`)
-    pub rec: i32,
-    pub urgent: i32,
-    pub is_rec: bool,
-    pub is_urgent: bool,
-    pub rec_time: i64,
-    pub urgent_time: i64,
-
-    // Time
-    pub sdate: i64,
-    pub lastupdate: i64,
-    /// Posted within the last 2 days (PHP `newtime`)
-    pub newtime: bool,
-
-    // Stats
-    pub jobhits: i32,
-
-    /// Whether the *current* user has favorited this job. Always `false` for
-    /// unauthenticated requests. Populated in batch by the list handlers
-    /// (`collect_service::favorited_set`) so there's no N+1 query.
-    pub is_favorited: bool,
+/// Build a fully-populated `JobSummary` (dictionary names + time-derived
+/// flags). Mirrors the previous `crate::v1::wap::jobs::job_summary_from_dict` method.
+pub fn job_summary_from_dict(
+    j: phpyun_models::job::entity::Job,
+    dicts: &phpyun_services::dict_service::LocalizedDicts,
+    now: i64,
+) -> JobSummary {
+    job_summary_from_dict_fav(j, dicts, now, false)
 }
 
-impl JobSummary {
-    pub fn from_with_dict(
-        j: phpyun_models::job::entity::Job,
-        dicts: &phpyun_services::dict_service::LocalizedDicts,
-        now: i64,
-    ) -> Self {
-        Self::from_with_dict_fav(j, dicts, now, false)
-    }
+/// Same as [`job_summary_from_dict`] but stamps the `is_favorited` bit (already
+/// resolved by a batch query in the calling handler).
+pub fn job_summary_from_dict_fav(
+    j: phpyun_models::job::entity::Job,
+    dicts: &phpyun_services::dict_service::LocalizedDicts,
+    now: i64,
+    is_favorited: bool,
+) -> JobSummary {
+    let job_one_n = dicts.job(j.job1).to_string();
+    let job_two_n = dicts.job(j.job1_son).to_string();
+    let job_three_n = dicts.job(j.job_post).to_string();
+    let parts: Vec<&str> = [&job_one_n, &job_two_n, &job_three_n]
+        .iter()
+        .map(|s| s.as_str())
+        .filter(|s| !s.is_empty())
+        .collect();
+    let jobname = parts.join(" / ");
+    let job_hy = dicts.industry(j.hy).to_string();
+    let job_city_one = dicts.city(j.provinceid).to_string();
+    let job_city_two = dicts.city(j.cityid).to_string();
 
-    /// Variant that lets the caller stamp the favorited bit (already resolved
-    /// from a batch query). Use this from the list / search / home handlers.
-    pub fn from_with_dict_fav(
-        j: phpyun_models::job::entity::Job,
-        dicts: &phpyun_services::dict_service::LocalizedDicts,
-        now: i64,
-        is_favorited: bool,
-    ) -> Self {
-        let mut s = Self::from_with_dict_inner(j, dicts, now);
-        s.is_favorited = is_favorited;
-        s
-    }
+    let is_rec = j.rec == 1 && j.rec_time > now;
+    let is_urgent = j.urgent == 1 && j.urgent_time > now;
+    let newtime = j.sdate > now - 2 * 86_400;
 
-    fn from_with_dict_inner(
-        j: phpyun_models::job::entity::Job,
-        dicts: &phpyun_services::dict_service::LocalizedDicts,
-        now: i64,
-    ) -> Self {
-        let job_one_n = dicts.job(j.job1).to_string();
-        let job_two_n = dicts.job(j.job1_son).to_string();
-        let job_three_n = dicts.job(j.job_post).to_string();
-        let parts: Vec<&str> = [&job_one_n, &job_two_n, &job_three_n]
-            .iter()
-            .map(|s| s.as_str())
-            .filter(|s| !s.is_empty())
-            .collect();
-        let jobname = parts.join(" / ");
-        let job_hy = dicts.industry(j.hy).to_string();
-        let job_city_one = dicts.city(j.provinceid).to_string();
-        let job_city_two = dicts.city(j.cityid).to_string();
+    JobSummary {
+        id: j.id,
+        uid: j.uid,
+        name: j.name,
+        com_name: j.com_name,
+        com_logo: j.com_logo,
 
-        let is_rec = j.rec == 1 && j.rec_time > now;
-        let is_urgent = j.urgent == 1 && j.urgent_time > now;
-        let newtime = j.sdate > now - 2 * 86_400;
+        job1: j.job1,
+        job1_son: j.job1_son,
+        job_post: j.job_post,
+        hy: j.hy,
 
-        Self {
-            id: j.id,
-            uid: j.uid,
-            name: j.name,
-            com_name: j.com_name,
-            com_logo: j.com_logo,
+        job_one_n,
+        job_two_n,
+        job_three_n,
+        job_hy,
+        jobname,
 
-            job1: j.job1,
-            job1_son: j.job1_son,
-            job_post: j.job_post,
-            hy: j.hy,
+        province_id: j.provinceid,
+        city_id: j.cityid,
+        three_city_id: j.three_cityid,
+        job_city_one,
+        job_city_two,
 
-            job_one_n,
-            job_two_n,
-            job_three_n,
-            job_hy,
-            jobname,
+        salary: (j.minsalary + j.maxsalary) / 2,
+        min_salary: j.minsalary,
+        max_salary: j.maxsalary,
 
-            province_id: j.provinceid,
-            city_id: j.cityid,
-            three_city_id: j.three_cityid,
-            job_city_one,
-            job_city_two,
+        exp: j.exp,
+        edu: j.edu,
 
-            salary: (j.minsalary + j.maxsalary) / 2,
-            min_salary: j.minsalary,
-            max_salary: j.maxsalary,
+        rec: j.rec,
+        urgent: j.urgent,
+        is_rec,
+        is_urgent,
+        rec_time: j.rec_time,
+        urgent_time: j.urgent_time,
 
-            exp: j.exp,
-            edu: j.edu,
+        sdate: j.sdate,
+        lastupdate: j.lastupdate,
+        newtime,
 
-            rec: j.rec,
-            urgent: j.urgent,
-            is_rec,
-            is_urgent,
-            rec_time: j.rec_time,
-            urgent_time: j.urgent_time,
-
-            sdate: j.sdate,
-            lastupdate: j.lastupdate,
-            newtime,
-
-            jobhits: j.jobhits,
-            is_favorited: false,
-        }
+        jobhits: j.jobhits,
+        is_favorited,
     }
 }
 
 /// Public job list (paginated + searchable). Response `data` field looks like `{list, total, page, page_size}`.
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/jobs",
     tag = "wap",
     params(JobListQuery),
@@ -244,7 +194,7 @@ pub async fn list_jobs(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<JobListQuery>,
+    ValidatedJson(q): ValidatedJson<JobListQuery>,
 ) -> AppResult<ApiJson<Paged<JobSummary>>> {
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "job", kw.trim().to_string());
@@ -281,7 +231,7 @@ pub async fn list_jobs(
             .into_iter()
             .map(|j| {
                 let fav = fav_set.contains(&j.id);
-                JobSummary::from_with_dict_fav(j, &dicts, now, fav)
+                crate::v1::wap::jobs::job_summary_from_dict_fav(j, &dicts, now, fav)
             })
             .collect(),
         r.total,
@@ -300,10 +250,10 @@ pub async fn list_jobs(
 /// - `msg_list`: latest 5 job inquiries
 /// - `formatted`: display-ready formatted strings (timestamps, average salary)
 #[utoipa::path(
-    get,
-    path = "/v1/wap/jobs/{id}",
+    post,
+    path = "/v1/wap/jobs/detail",
     tag = "wap",
-    params(("id" = u64, Path, description = "Job id")),
+    request_body = IdBody,
     responses(
         (status = 200, description = "ok"),
         (status = 404, description = "Not found"),
@@ -313,8 +263,9 @@ pub async fn list_jobs(
 pub async fn job_detail(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<json::Value>> {
+    let id = b.id;
     let d = job_service::get_detail(&state, id).await?;
     // Logged-in user: record visit footprint + bump view count (fire-and-forget)
     if let Some(u) = user.as_ref() {
@@ -494,19 +445,19 @@ fn default_rec_limit() -> u64 { 6 }
 
 /// Similar jobs (same job1 category)
 #[utoipa::path(
-    get,
-    path = "/v1/wap/jobs/{id}/similar",
+    post,
+    path = "/v1/wap/jobs/similar",
     tag = "wap",
-    params(("id" = u64, Path), RecQuery),
+    request_body = SimilarBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn similar_jobs(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
-    Path(id): Path<u64>,
-    ValidatedQuery(q): ValidatedQuery<RecQuery>,
+    ValidatedJson(b): ValidatedJson<SimilarBody>,
 ) -> AppResult<ApiJson<Vec<JobSummary>>> {
-    let list = job_service::list_similar(&state, id, q.limit.clamp(1, 30)).await?;
+    let id = b.id;
+    let list = job_service::list_similar(&state, id, b.limit.clamp(1, 30)).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
     let job_ids: Vec<u64> = list.iter().map(|j| j.id).collect();
@@ -516,7 +467,7 @@ pub async fn similar_jobs(
         list.into_iter()
             .map(|j| {
                 let fav = fav_set.contains(&j.id);
-                JobSummary::from_with_dict_fav(j, &dicts, now, fav)
+                crate::v1::wap::jobs::job_summary_from_dict_fav(j, &dicts, now, fav)
             })
             .collect(),
     ))
@@ -524,19 +475,19 @@ pub async fn similar_jobs(
 
 /// Other jobs from the same company
 #[utoipa::path(
-    get,
-    path = "/v1/wap/jobs/{id}/same-company",
+    post,
+    path = "/v1/wap/jobs/same-company",
     tag = "wap",
-    params(("id" = u64, Path), RecQuery),
+    request_body = SimilarBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn same_company_jobs(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
-    Path(id): Path<u64>,
-    ValidatedQuery(q): ValidatedQuery<RecQuery>,
+    ValidatedJson(b): ValidatedJson<SimilarBody>,
 ) -> AppResult<ApiJson<Vec<JobSummary>>> {
-    let list = job_service::list_same_company(&state, id, q.limit.clamp(1, 30)).await?;
+    let id = b.id;
+    let list = job_service::list_same_company(&state, id, b.limit.clamp(1, 30)).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
     let job_ids: Vec<u64> = list.iter().map(|j| j.id).collect();
@@ -546,7 +497,7 @@ pub async fn same_company_jobs(
         list.into_iter()
             .map(|j| {
                 let fav = fav_set.contains(&j.id);
-                JobSummary::from_with_dict_fav(j, &dicts, now, fav)
+                crate::v1::wap::jobs::job_summary_from_dict_fav(j, &dicts, now, fav)
             })
             .collect(),
     ))
@@ -554,19 +505,19 @@ pub async fn same_company_jobs(
 
 /// Public job list for a given company (paginated)
 #[utoipa::path(
-    get,
-    path = "/v1/wap/companies/{uid}/jobs",
+    post,
+    path = "/v1/wap/companies/jobs",
     tag = "wap",
-    params(("uid" = u64, Path)),
+    request_body = UidBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn company_jobs(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
-    Path(uid): Path<u64>,
     page: Pagination,
+    ValidatedJson(b): ValidatedJson<UidBody>,
 ) -> AppResult<ApiJson<Paged<JobSummary>>> {
-    let r = job_service::list_by_company(&state, uid, page).await?;
+    let r = job_service::list_by_company(&state, b.uid, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
     let job_ids: Vec<u64> = r.list.iter().map(|j| j.id).collect();
@@ -577,7 +528,7 @@ pub async fn company_jobs(
             .into_iter()
             .map(|j| {
                 let fav = fav_set.contains(&j.id);
-                JobSummary::from_with_dict_fav(j, &dicts, now, fav)
+                crate::v1::wap::jobs::job_summary_from_dict_fav(j, &dicts, now, fav)
             })
             .collect(),
         r.total,
@@ -592,9 +543,11 @@ pub async fn company_jobs(
 pub struct TelClickBody {
     /// 1 = pc / 2 = wap / 3 = wxapp / ... source channel identifier (aligned with PHPYun `source` field)
     #[serde(default = "default_source")]
+    #[validate(range(min = 0, max = 99))]
     pub source: i32,
     /// Optional: when jobid does not exist, use this to locate the company
     #[serde(default)]
+    #[validate(range(min = 1, max = 99_999_999))]
     pub com_id: u64,
 }
 fn default_source() -> i32 {
@@ -604,21 +557,19 @@ fn default_source() -> i32 {
 /// Records a "click on job contact phone" action (aligned with PHPYun `wap/ajax::addJobTelLog_action`)
 #[utoipa::path(
     post,
-    path = "/v1/wap/jobs/{id}/tel-click",
+    path = "/v1/wap/jobs/tel-click",
     tag = "wap",
-    params(("id" = u64, Path)),
-    request_body = TelClickBody,
+    request_body = TelClickBodyFull,
     responses((status = 200, description = "ok"))
 )]
 pub async fn log_tel_click(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     ClientIp(ip): ClientIp,
-    Path(id): Path<u64>,
-    ValidatedJson(b): ValidatedJson<TelClickBody>,
+    ValidatedJson(b): ValidatedJson<TelClickBodyFull>,
 ) -> AppResult<ApiJson<json::Value>> {
     let viewer_uid = user.as_ref().map(|u| u.uid);
-    job_service::log_tel_click(&state, viewer_uid, id, b.com_id, b.source, &ip).await?;
+    job_service::log_tel_click(&state, viewer_uid, b.id, b.com_id, b.source, &ip).await?;
     Ok(ApiJson(json::json!({ "ok": true })))
 }
 
@@ -642,10 +593,10 @@ pub struct JobShareText {
 /// PHP renders the text inside the `wxpubtemp` template; we expose the data
 /// directly so any client (Weibo / WeChat / clipboard) can reuse it.
 #[utoipa::path(
-    get,
-    path = "/v1/wap/jobs/{id}/share-text",
+    post,
+    path = "/v1/wap/jobs/share-text",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses(
         (status = 200, description = "ok", body = JobShareText),
         (status = 404, description = "Job not found"),
@@ -653,8 +604,9 @@ pub struct JobShareText {
 )]
 pub async fn share_text(
     State(state): State<AppState>,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<JobShareText>> {
+    let id = b.id;
     let row: Option<(u64, String, String, i32, i32, i32, i32)> = sqlx::query_as(
         "SELECT \
             CAST(id AS UNSIGNED), \
@@ -742,16 +694,16 @@ pub struct JobHitsResp {
 /// we return clean JSON). The hit goes to `phpyun_company_job.jobhits`.
 #[utoipa::path(
     post,
-    path = "/v1/wap/jobs/{id}/hits",
+    path = "/v1/wap/jobs/hits",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok", body = JobHitsResp))
 )]
 pub async fn bump_jobhits(
     State(state): State<AppState>,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<JobHitsResp>> {
-    let hits = phpyun_models::job::repo::bump_and_get_jobhits(state.db.pool(), id).await?;
+    let hits = phpyun_models::job::repo::bump_and_get_jobhits(state.db.pool(), b.id).await?;
     Ok(ApiJson(JobHitsResp { hits }))
 }
 
@@ -779,10 +731,10 @@ pub struct JobContactView {
 /// (`company_job_link`, with fallback to default — 2), and the alternate
 /// without fallback (3). 404 when the job is missing.
 #[utoipa::path(
-    get,
-    path = "/v1/wap/jobs/{id}/contact",
+    post,
+    path = "/v1/wap/jobs/contact",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses(
         (status = 200, description = "ok", body = JobContactView),
         (status = 404, description = "Job not found"),
@@ -790,8 +742,9 @@ pub struct JobContactView {
 )]
 pub async fn job_contact(
     State(state): State<AppState>,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<JobContactView>> {
+    let id = b.id;
     let c = phpyun_models::job::repo::get_job_contact(state.db.reader(), id)
         .await?
         .ok_or_else(|| phpyun_core::AppError::param_invalid("job_not_found"))?;

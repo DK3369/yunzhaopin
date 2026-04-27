@@ -2,26 +2,24 @@
 
 use axum::{
     extract::{Path, State},
-    routing::{get, post},
     Router,
+    routing::post,
 };
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination,
-};
-use phpyun_core::ValidatedJson;
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::integral_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/integral/balance", get(balance))
-        .route("/integral/exchange/{item_id}", post(exchange))
-        .route("/integral/history", get(history))
-        .route("/integral/consumes", get(consumes))
+        .route("/integral/balance", post(balance))
+        .route("/integral/exchange", post(exchange))
+        .route("/integral/history", post(history))
+        .route("/integral/consumes", post(consumes))
         .route("/integral/transfer", post(transfer))
-        .route("/integral/transfers", get(list_transfers))
+        .route("/integral/transfers", post(list_transfers))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -32,7 +30,7 @@ pub struct BalanceView {
 
 /// My points balance
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/integral/balance",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -55,20 +53,18 @@ pub struct ExchangedId {
 }
 
 /// Exchange item
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/integral/exchange/{item_id}",
+#[utoipa::path(post,
+    path = "/v1/mcenter/integral/exchange",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("item_id" = u64, Path)),
+    request_body = ExchangeBody,
     responses((status = 200, description = "ok", body = ExchangedId))
 )]
-pub async fn exchange(
-    State(state): State<AppState>,
+pub async fn exchange(State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    Path(item_id): Path<u64>,
-) -> AppResult<ApiJson<ExchangedId>> {
+    ValidatedJson(b): ValidatedJson<ExchangeBody>) -> AppResult<ApiJson<ExchangedId>> {
+    let item_id = b.item_id;
     let id = integral_service::exchange(&state, &user, item_id, &ip).await?;
     Ok(ApiJson(ExchangedId { exchange_id: id }))
 }
@@ -96,7 +92,7 @@ impl From<phpyun_models::integral::entity::IntegralExchange> for ExchangeItemVie
 
 /// Exchange history
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/integral/history",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -118,6 +114,7 @@ pub async fn history(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct TransferForm {
+    #[validate(range(min = 1, max = 99_999_999))]
     pub to_uid: u64,
     #[validate(range(min = 1, max = 1_000_000))]
     pub points: u32,
@@ -203,7 +200,7 @@ pub struct ConsumeItem {
 /// and the `opera` enum semantics are not yet fully aligned. Returns an empty list for now so the
 /// front-end UI can attach to it; real data will be filled in once batch 2 is wired up.
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/integral/consumes",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -224,7 +221,7 @@ pub async fn consumes(
 
 /// My transfer records (received + sent)
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/integral/transfers",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -242,4 +239,10 @@ pub async fn list_transfers(
         page.page,
         page.page_size,
     )))
+}
+
+#[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
+pub struct ExchangeBody {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub item_id: u64,
 }

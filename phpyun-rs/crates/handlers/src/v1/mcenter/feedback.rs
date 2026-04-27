@@ -1,18 +1,21 @@
 //! User feedback endpoints.
 
-use axum::{extract::State, routing::post, Router};
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, MaybeUser, Paged, Pagination,
-    ValidatedJson,
+use axum::{
+    extract::State,
+    Router,
+    routing::{get, post},
 };
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, MaybeUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::feedback_service::{self, FeedbackInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{CreatedId};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/feedback", post(submit).get(list_mine))
+        .route("/feedback", post(submit))
+        .route("/feedback/list", post(list_mine))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -23,11 +26,6 @@ pub struct FeedbackForm {
     pub content: String,
     #[validate(length(max = 100))]
     pub contact: Option<String>,
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CreatedId {
-    pub id: u64,
 }
 
 /// Submit feedback (anonymous allowed)
@@ -96,13 +94,12 @@ impl From<phpyun_models::feedback::entity::Feedback> for FeedbackItem {
 
 /// Feedback I have submitted (login required)
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/feedback",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]
-pub async fn list_mine(
+)]pub async fn list_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,

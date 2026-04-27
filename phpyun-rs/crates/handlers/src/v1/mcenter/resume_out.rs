@@ -5,19 +5,22 @@
 //! - `POST   /v1/mcenter/resume-outbox`      send once
 //! - `DELETE /v1/mcenter/resume-outbox`      batch delete
 
-use axum::{extract::State, routing::{get, post}, Router};
-use phpyun_core::{
-    json, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination,
-    ValidatedJson,
+use axum::{
+    extract::State,
+    Router,
+    routing::{get, post},
 };
+use phpyun_core::{json, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::resume_out_service::{self, Limits, OutInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{IdsBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/resume-outbox", get(list).post(send))
+        .route("/resume-outbox", post(send))
+        .route("/resume-outbox/list", post(list))
         .route("/resume-outbox/delete", post(delete_many))
 }
 
@@ -58,13 +61,12 @@ impl From<phpyun_models::resume_out::entity::ResumeOut> for OutView {
 }
 
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/resume-outbox",
+    post,
+    path = "/v1/mcenter/resume-outbox/list",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]
-pub async fn list(
+)]pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
@@ -96,6 +98,7 @@ pub struct SendForm {
     pub daily_max: u32,
     /// Aligns with PHP `sy_resumeout_interval` (0 = unlimited; seconds)
     #[serde(default)]
+    #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub interval_secs: i64,
 }
 
@@ -135,12 +138,6 @@ pub async fn send(
     };
     let r = resume_out_service::send(&state, &user, &input, &limits, &ip).await?;
     Ok(ApiJson(SendCreated { id: r.id }))
-}
-
-#[derive(Debug, Deserialize, Validate, ToSchema)]
-pub struct IdsBody {
-    #[validate(length(min = 1, max = 200))]
-    pub ids: Vec<u64>,
 }
 
 #[utoipa::path(

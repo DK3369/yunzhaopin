@@ -5,24 +5,23 @@
 //! with the user-facing `/v1/wap/jobs/{id}/messages` write endpoint.
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::{Path, State},
     Router,
+    routing::post,
 };
 use phpyun_core::json;
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::job_msg_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/job-messages", get(list))
-        .route("/job-messages/{id}/reply", post(reply))
-        .route("/job-messages/{id}/hide", post(hide))
+        .route("/job-messages", post(list))
+        .route("/job-messages/reply", post(reply))
+        .route("/job-messages/hide", post(hide))
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -80,7 +79,7 @@ pub struct ListQuery {
 
 /// Employer lists every message left on any of their jobs.
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/job-messages",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -94,7 +93,7 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<ListQuery>,
+    ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Paged<EmployerMsgItem>>> {
     let r = job_msg_service::list_for_employer(&state, &user, q.only_unanswered, page).await?;
     Ok(ApiJson(Paged::new(
@@ -107,17 +106,18 @@ pub async fn list(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct ReplyForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+
     #[validate(length(min = 1, max = 4000))]
     pub reply: String,
 }
 
 /// Employer answers a single message.
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/job-messages/{id}/reply",
+#[utoipa::path(post,
+    path = "/v1/mcenter/job-messages/reply",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
     request_body = ReplyForm,
     responses(
         (status = 200, description = "ok"),
@@ -125,30 +125,27 @@ pub struct ReplyForm {
         (status = 403, description = "Not an employer"),
     )
 )]
-pub async fn reply(
-    State(state): State<AppState>,
+pub async fn reply(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<ReplyForm>,
-) -> AppResult<ApiJson<json::Value>> {
+    ValidatedJson(f): ValidatedJson<ReplyForm>) -> AppResult<ApiJson<json::Value>> {
+    let id = f.id;
     job_msg_service::employer_reply(&state, &user, id, &f.reply).await?;
     Ok(ApiJson(json::json!({ "ok": true })))
 }
 
 /// Employer hides a message they own.
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/job-messages/{id}/hide",
+#[utoipa::path(post,
+    path = "/v1/mcenter/job-messages/hide",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn hide(
-    State(state): State<AppState>,
+pub async fn hide(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<json::Value>> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<json::Value>> {
+    let id = b.id;
     job_msg_service::hide(&state, &user, id).await?;
     Ok(ApiJson(json::json!({ "ok": true })))
 }
+

@@ -1,11 +1,13 @@
 //! Forgot password (aligned with PHPYun `wap/forgetpw`). Parameter names match PHP: `moblie` / `moblie_code` / `password`.
 
-use axum::{extract::State, routing::post, Router};
+use axum::{
+    extract::State,
+    Router,
+    routing::post,
+};
 use phpyun_core::json;
 use phpyun_core::verify::{self, VerifyKind};
-use phpyun_core::{
-    validators, ApiJson, ApiOk, AppError, AppResult, AppState, ClientIp, ValidatedJson,
-};
+use phpyun_core::{validators, ApiJson, ApiOk, AppError, AppResult, AppState, ClientIp, ValidatedJson};
 use phpyun_services::password_reset_service;
 use serde::Deserialize;
 use utoipa::ToSchema;

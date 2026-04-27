@@ -2,228 +2,121 @@
 //! `wap/part::collect_action` / `wap/part::apply_action`).
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::{Path, State},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, MaybeUser, Paged, Pagination,
-    ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, MaybeUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::hot_search_service;
 use phpyun_services::part_service::{self, PartSearch};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/parts", get(list_parts))
-        .route("/parts/{id}", get(part_detail))
-        .route("/parts/{id}/collect", post(collect))
-        .route("/parts/{id}/apply", post(apply))
+        .route("/parts", post(list_parts))
+        .route("/parts/detail", post(part_detail))
+        .route("/parts/collect", post(collect))
+        .route("/parts/apply", post(apply))
 }
 
 // ==================== list ====================
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct PartListQuery {
+    #[validate(length(max = 100))]
     pub keyword: Option<String>,
+    #[validate(range(min = 0, max = 99_999))]
     pub province_id: Option<i32>,
+    #[validate(range(min = 0, max = 99_999))]
     pub city_id: Option<i32>,
+    #[validate(range(min = 0, max = 99_999))]
     pub three_city_id: Option<i32>,
     /// Part-time category id (aligned with PHPYun `partjob.type`)
+    #[validate(range(min = 0, max = 99))]
     pub part_type: Option<i32>,
+    #[validate(range(min = 0, max = 99))]
     pub salary_type: Option<i32>,
+    #[validate(range(min = 0, max = 99))]
     pub billing_cycle: Option<i32>,
+    #[validate(range(min = 0, max = 1_000_000))]
     pub min_salary: Option<i32>,
+    #[validate(range(min = 0, max = 1_000_000))]
     pub max_salary: Option<i32>,
     #[serde(default = "default_did")]
+    #[validate(range(max = 999))]
     pub did: u32,
 }
 fn default_did() -> u32 {
     1
 }
 
-/// Part-time list item -- aligned with PHP `wap/part::index_action` full-field output + dict translation + time formatting.
-#[derive(Debug, Serialize, ToSchema)]
-pub struct PartSummary {
-    // ==== Full 33 columns of master table phpyun_partjob ====
-    pub id: u64,
-    pub uid: u64,
-    pub name: String,
-    pub com_name: Option<String>,
-    /// Part-time category id (PHP `type`)
-    pub part_type: i32,
-    /// Part-time category name (dict resolve_part)
-    pub part_type_n: String,
+/// Part-time list item — defined in `phpyun_models::part::view`. The
+/// dict-aware constructor `part_summary_from_dict` lives here in handlers.
+pub use phpyun_models::part::view::PartSummary;
 
-    pub province_id: i32,
-    pub province_name: String,
-    pub city_id: i32,
-    pub city_name: String,
-    pub three_city_id: i32,
-    pub three_city_name: String,
-    pub address: Option<String>,
-
-    pub number: i32,
-    pub sex: i32,
-    pub salary: i32,
-    pub salary_type: i32,
-    pub salary_type_n: String,
-    pub billing_cycle: i32,
-    pub billing_cycle_n: String,
-    pub worktime: Option<String>,
-
-    pub sdate: i64,
-    pub sdate_n: String,
-    pub edate: i64,
-    pub edate_n: String,
-    pub addtime: i64,
-    pub addtime_n: String,
-    pub lastupdate: i64,
-    pub lastupdate_n: String,
-    pub deadline: i64,
-    pub deadline_n: String,
-    pub upstatus_time: i64,
-    pub upstatus_count: i32,
-
-    pub content: Option<String>,
-    pub linkman: Option<String>,
-    pub linktel: Option<String>,
-
-    pub state: i32,
-    pub status: i32,
-    pub r_status: i32,
-    pub rec_time: i64,
-    pub did: u32,
-
-    pub x: Option<String>,
-    pub y: Option<String>,
-    pub hits: i64,
-
-    /// 1 means currently within the pinned period (`rec_time > now`)
-    pub is_rec: bool,
-    /// 0 = long-term recruitment (`edate == 0`)
-    pub is_long_term: bool,
-}
-
-impl PartSummary {
-    pub fn from_with_dict(
-        j: phpyun_models::part::entity::PartJob,
-        state: &AppState,
-        dicts: &phpyun_services::dict_service::LocalizedDicts,
-        now: i64,
-    ) -> Self {
-        let part_type_n = dicts.part(j.r#type).to_string();
-        let salary_type_n = dicts.part(j.salary_type).to_string();
-        let billing_cycle_n = dicts.part(j.billing_cycle).to_string();
-        let province_name = dicts.city(j.provinceid).to_string();
-        let city_name = dicts.city(j.cityid).to_string();
-        let three_city_name = dicts.city(j.three_cityid).to_string();
-        let _ = state;
-        Self {
-            id: j.id,
-            uid: j.uid,
-            name: j.name,
-            com_name: j.com_name,
-            part_type: j.r#type,
-            part_type_n,
-            province_id: j.provinceid,
-            province_name,
-            city_id: j.cityid,
-            city_name,
-            three_city_id: j.three_cityid,
-            three_city_name,
-            address: j.address,
-            number: j.number,
-            sex: j.sex,
-            salary: j.salary,
-            salary_type: j.salary_type,
-            salary_type_n,
-            billing_cycle: j.billing_cycle,
-            billing_cycle_n,
-            worktime: j.worktime,
-            sdate_n: fmt_date(j.sdate),
-            sdate: j.sdate,
-            edate_n: fmt_date(j.edate),
-            edate: j.edate,
-            addtime_n: fmt_dt(j.addtime),
-            addtime: j.addtime,
-            lastupdate_n: fmt_dt(j.lastupdate),
-            lastupdate: j.lastupdate,
-            deadline_n: fmt_dt(j.deadline),
-            deadline: j.deadline,
-            upstatus_time: j.upstatus_time,
-            upstatus_count: j.upstatus_count,
-            content: j.content,
-            linkman: j.linkman,
-            linktel: j.linktel,
-            state: j.state,
-            status: j.status,
-            r_status: j.r_status,
-            is_rec: j.rec_time > now,
-            rec_time: j.rec_time,
-            did: j.did,
-            x: j.x,
-            y: j.y,
-            hits: j.hits,
-            is_long_term: j.edate == 0,
-        }
-    }
-}
-
-/// Backward-compatible call -- dict fields left empty.
-impl From<phpyun_models::part::entity::PartJob> for PartSummary {
-    fn from(j: phpyun_models::part::entity::PartJob) -> Self {
-        Self {
-            id: j.id,
-            uid: j.uid,
-            name: j.name,
-            com_name: j.com_name,
-            part_type: j.r#type,
-            part_type_n: String::new(),
-            province_id: j.provinceid,
-            province_name: String::new(),
-            city_id: j.cityid,
-            city_name: String::new(),
-            three_city_id: j.three_cityid,
-            three_city_name: String::new(),
-            address: j.address,
-            number: j.number,
-            sex: j.sex,
-            salary: j.salary,
-            salary_type: j.salary_type,
-            salary_type_n: String::new(),
-            billing_cycle: j.billing_cycle,
-            billing_cycle_n: String::new(),
-            worktime: j.worktime,
-            sdate_n: fmt_date(j.sdate),
-            sdate: j.sdate,
-            edate_n: fmt_date(j.edate),
-            edate: j.edate,
-            addtime_n: fmt_dt(j.addtime),
-            addtime: j.addtime,
-            lastupdate_n: fmt_dt(j.lastupdate),
-            lastupdate: j.lastupdate,
-            deadline_n: fmt_dt(j.deadline),
-            deadline: j.deadline,
-            upstatus_time: j.upstatus_time,
-            upstatus_count: j.upstatus_count,
-            content: j.content,
-            linkman: j.linkman,
-            linktel: j.linktel,
-            state: j.state,
-            status: j.status,
-            r_status: j.r_status,
-            is_rec: false,
-            rec_time: j.rec_time,
-            did: j.did,
-            x: j.x,
-            y: j.y,
-            hits: j.hits,
-            is_long_term: j.edate == 0,
-        }
+/// Build a fully-populated `PartSummary` (dict-translated names + `is_rec` flag).
+pub fn part_summary_from_dict(
+    j: phpyun_models::part::entity::PartJob,
+    _state: &AppState,
+    dicts: &phpyun_services::dict_service::LocalizedDicts,
+    now: i64,
+) -> PartSummary {
+    let part_type_n = dicts.part(j.r#type).to_string();
+    let salary_type_n = dicts.part(j.salary_type).to_string();
+    let billing_cycle_n = dicts.part(j.billing_cycle).to_string();
+    let province_name = dicts.city(j.provinceid).to_string();
+    let city_name = dicts.city(j.cityid).to_string();
+    let three_city_name = dicts.city(j.three_cityid).to_string();
+    PartSummary {
+        id: j.id,
+        uid: j.uid,
+        name: j.name,
+        com_name: j.com_name,
+        part_type: j.r#type,
+        part_type_n,
+        province_id: j.provinceid,
+        province_name,
+        city_id: j.cityid,
+        city_name,
+        three_city_id: j.three_cityid,
+        three_city_name,
+        address: j.address,
+        number: j.number,
+        sex: j.sex,
+        salary: j.salary,
+        salary_type: j.salary_type,
+        salary_type_n,
+        billing_cycle: j.billing_cycle,
+        billing_cycle_n,
+        worktime: j.worktime,
+        sdate_n: fmt_date(j.sdate),
+        sdate: j.sdate,
+        edate_n: fmt_date(j.edate),
+        edate: j.edate,
+        addtime_n: fmt_dt(j.addtime),
+        addtime: j.addtime,
+        lastupdate_n: fmt_dt(j.lastupdate),
+        lastupdate: j.lastupdate,
+        deadline_n: fmt_dt(j.deadline),
+        deadline: j.deadline,
+        upstatus_time: j.upstatus_time,
+        upstatus_count: j.upstatus_count,
+        content: j.content,
+        linkman: j.linkman,
+        linktel: j.linktel,
+        state: j.state,
+        status: j.status,
+        r_status: j.r_status,
+        is_rec: j.rec_time > now,
+        rec_time: j.rec_time,
+        did: j.did,
+        x: j.x,
+        y: j.y,
+        hits: j.hits,
+        is_long_term: j.edate == 0,
     }
 }
 
@@ -247,8 +140,8 @@ fn fmt_dt(ts: i64) -> String {
 
 /// Public part-time list
 #[utoipa::path(
-    get,
-    path = "/v1/wap/parts",
+    post,
+    path = "/v1/wap/parts/detail",
     tag = "wap",
     params(PartListQuery),
     responses((status = 200, description = "ok"))
@@ -257,7 +150,7 @@ pub async fn list_parts(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<PartListQuery>,
+    ValidatedJson(q): ValidatedJson<PartListQuery>,
 ) -> AppResult<ApiJson<Paged<PartSummary>>> {
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "part", kw.trim().to_string());
@@ -288,7 +181,7 @@ pub async fn list_parts(
     Ok(ApiJson(Paged::new(
         r.list
             .into_iter()
-            .map(|j| PartSummary::from_with_dict(j, &state, &dicts, now))
+            .map(|j| crate::v1::wap::part::part_summary_from_dict(j, &state, &dicts, now))
             .collect(),
         r.total,
         page.page,
@@ -384,21 +277,19 @@ fn compute_edate_state(edate: i64, now: i64) -> i32 {
 }
 
 /// Part-time detail
-#[utoipa::path(
-    get,
-    path = "/v1/wap/parts/{id}",
+#[utoipa::path(post,
+    path = "/v1/wap/parts",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses(
         (status = 200, description = "ok", body = PartDetail),
         (status = 404, description = "Not found"),
         (status = 410, description = "Off-shelf / expired"),
     )
 )]
-pub async fn part_detail(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<PartDetail>> {
+pub async fn part_detail(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<PartDetail>> {
+    let id = b.id;
     let j = part_service::get_public(&state, id).await?;
     let now = phpyun_core::clock::now_ts();
 
@@ -504,6 +395,10 @@ pub async fn part_detail(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct CollectForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+
+    #[validate(range(min = 1, max = 99_999_999))]
     pub com_id: Option<u64>,
 }
 
@@ -513,12 +408,10 @@ pub struct CollectCreated {
 }
 
 /// Favorite a part-time job (job seeker)
-#[utoipa::path(
-    post,
-    path = "/v1/wap/parts/{id}/collect",
+#[utoipa::path(post,
+    path = "/v1/wap/parts/collect",
     tag = "wap",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
     request_body = CollectForm,
     responses(
         (status = 200, description = "ok", body = CollectCreated),
@@ -526,13 +419,11 @@ pub struct CollectCreated {
         (status = 409, description = "Already favorited"),
     )
 )]
-pub async fn collect(
-    State(state): State<AppState>,
+pub async fn collect(State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<CollectForm>,
-) -> AppResult<ApiJson<CollectCreated>> {
+    ValidatedJson(f): ValidatedJson<CollectForm>) -> AppResult<ApiJson<CollectCreated>> {
+    let id = f.id;
     let com = f.com_id.unwrap_or(0);
     let id = part_service::collect(&state, &user, id, com, &ip).await?;
     Ok(ApiJson(CollectCreated { id }))
@@ -547,12 +438,11 @@ pub struct ApplyCreated {
 }
 
 /// Apply for a part-time job (job seeker)
-#[utoipa::path(
-    post,
-    path = "/v1/wap/parts/{id}/apply",
+#[utoipa::path(post,
+    path = "/v1/wap/parts/apply",
     tag = "wap",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses(
         (status = 200, description = "ok", body = ApplyCreated),
         (status = 403, description = "Role mismatch"),
@@ -561,15 +451,15 @@ pub struct ApplyCreated {
         (status = 410, description = "Off-shelf / expired"),
     )
 )]
-pub async fn apply(
-    State(state): State<AppState>,
+pub async fn apply(State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<ApplyCreated>> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<ApplyCreated>> {
+    let id = b.id;
     let r = part_service::apply(&state, &user, id, &ip).await?;
     Ok(ApiJson(ApplyCreated {
         id: r.id,
         job_id: r.job_id,
     }))
 }
+

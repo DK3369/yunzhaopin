@@ -1,13 +1,11 @@
 //! Remarks: companies note remarks on job seekers / resumes / applications.
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::get,
+    extract::State,
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{dto::KindTargetUidBody, ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::remark_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -15,8 +13,10 @@ use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/remarks", get(list).post(upsert))
-        .route("/remarks/{kind}/{target_uid}", get(get_one).post(remove))
+        .route("/remarks", post(upsert))
+        .route("/remarks/list", post(list))
+        .route("/remarks/get-one", post(get_one))
+        .route("/remarks/delete", post(remove))
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -58,11 +58,13 @@ impl From<phpyun_models::remark::entity::Remark> for RemarkView {
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
     /// 1=resume 2=company 3=apply; omit = all
+    #[validate(range(min = 0, max = 99))]
     pub kind: Option<i32>,
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct UpsertForm {
+    #[validate(range(min = 1, max = 99_999_999))]
     pub target_uid: u64,
     /// 1=resume 2=company 3=apply
     #[validate(range(min = 1, max = 3))]
@@ -73,18 +75,17 @@ pub struct UpsertForm {
 
 /// My remarks list
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/remarks",
+    post,
+    path = "/v1/mcenter/remarks/list",
     tag = "mcenter",
     security(("bearer" = [])),
     params(ListQuery),
     responses((status = 200, description = "ok"))
-)]
-pub async fn list(
+)]pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<ListQuery>,
+    ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Paged<RemarkView>>> {
     let r = remark_service::list(&state, &user, q.kind, page).await?;
     Ok(ApiJson(Paged::new(
@@ -115,36 +116,36 @@ pub async fn upsert(
 
 /// Get a specific remark
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/remarks/{kind}/{target_uid}",
+    post,
+    path = "/v1/mcenter/remarks/get-one",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("kind" = i32, Path), ("target_uid" = u64, Path)),
+    request_body = KindTargetUidBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn get_one(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path((kind, target_uid)): Path<(i32, u64)>,
+    ValidatedJson(b): ValidatedJson<KindTargetUidBody>,
 ) -> AppResult<ApiJson<Option<RemarkView>>> {
-    let r = remark_service::get(&state, &user, target_uid, kind).await?;
+    let r = remark_service::get(&state, &user, b.target_uid, b.kind).await?;
     Ok(ApiJson(r.map(RemarkView::from)))
 }
 
 /// Delete a remark
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/remarks/{kind}/{target_uid}",
+    path = "/v1/mcenter/remarks/delete",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("kind" = i32, Path), ("target_uid" = u64, Path)),
+    request_body = KindTargetUidBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn remove(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path((kind, target_uid)): Path<(i32, u64)>,
+    ValidatedJson(b): ValidatedJson<KindTargetUidBody>,
 ) -> AppResult<ApiOk> {
-    remark_service::delete(&state, &user, target_uid, kind).await?;
+    remark_service::delete(&state, &user, b.target_uid, b.kind).await?;
     Ok(ApiOk("deleted"))
 }

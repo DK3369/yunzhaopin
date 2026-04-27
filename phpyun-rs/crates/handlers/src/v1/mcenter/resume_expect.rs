@@ -1,24 +1,24 @@
 //! Job expectation CRUD (usertype=1).
 
 use axum::{
-    extract::{Path, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::{get, post},
 };
 use phpyun_core::json;
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
-};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_models::resume::expect::ExpectInput;
 use phpyun_services::resume_children_service::expect_svc;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{CreatedId};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/resume/expects", get(list).post(create))
-        .route("/resume/expects/{id}", post(update))
+        .route("/resume/expects", post(create))
+        .route("/resume/expects/list", post(list))
+        .route("/resume/expects/update", post(update))
 }
 
 /// Job expectation item — **reuses** `wap::resumes::ResumeExpectItem` (14 fields, including 3 dictionary translations + time formatting).
@@ -29,6 +29,10 @@ pub type ExpectItem = crate::v1::wap::resumes::ResumeExpectItem;
 /// accepted. Empty / missing numeric fields default to 0.
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct ExpectForm {
+    /// Required only on the update endpoint; ignored for create.
+    #[serde(default, deserialize_with = "de_loose_i64")]
+    #[validate(range(min = 0i64, max = 999_999_999i64))]
+    pub id: i64,
     #[validate(length(max = 50))]
     pub name: Option<String>,
 
@@ -36,34 +40,44 @@ pub struct ExpectForm {
     /// to resolve `job_classname` against the dictionary (fallback for
     /// front-ends that send the human-readable name).
     #[serde(default, deserialize_with = "de_loose_i64")]
+    #[validate(range(min = 0i64, max = 9_999_999i64))]
     pub job_classid: i64,
     #[serde(default)]
+    #[validate(length(max = 200))]
     pub job_classname: Option<String>,
 
     #[serde(default, deserialize_with = "de_loose_i64")]
+    #[validate(range(min = 0i64, max = 9_999_999i64))]
     pub city_classid: i64,
     #[serde(default)]
+    #[validate(length(max = 200))]
     pub city_classname: Option<String>,
 
     /// PHP table column is `salary`; the front-end UI label is "minsalary"
     /// (the user's expected minimum). We accept either key on the wire.
     #[serde(default, alias = "minsalary", deserialize_with = "de_loose_i32")]
+    #[validate(range(min = 0, max = 1_000_000))]
     pub salary: i32,
     #[serde(default, deserialize_with = "de_loose_i32_opt")]
+    #[validate(range(min = 0, max = 1_000_000))]
     pub maxsalary: Option<i32>,
 
     /// Work nature: 57=full-time / 58=part-time / etc.
     #[serde(rename = "type", default, deserialize_with = "de_loose_i32")]
     pub r#type: i32,
     #[serde(default, deserialize_with = "de_loose_i32")]
+    #[validate(range(min = 0, max = 99))]
     pub report: i32,
     #[serde(default, deserialize_with = "de_loose_i32")]
+    #[validate(range(min = 0, max = 99))]
     pub jobstatus: i32,
     #[serde(default, deserialize_with = "de_loose_i32")]
+    #[validate(range(min = 0, max = 99))]
     pub hy: i32,
 
     /// Soft delete: pass `2` to delete. Other values or None will trigger an update.
     #[serde(default)]
+    #[validate(range(min = 0, max = 99))]
     pub status: Option<i32>,
 }
 
@@ -113,20 +127,14 @@ fn de_loose_i32_opt<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Option<i32
     Ok(Some(n.clamp(i32::MIN as i64, i32::MAX as i64) as i32))
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CreatedId {
-    pub id: u64,
-}
-
 /// List job expectations
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/resume/expects",
+    post,
+    path = "/v1/mcenter/resume/expects/list",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]
-pub async fn list(
+)]pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
 ) -> AppResult<ApiJson<Vec<ExpectItem>>> {
@@ -134,7 +142,7 @@ pub async fn list(
     let dicts = phpyun_services::dict_service::get(&state).await?;
     Ok(ApiJson(
         list.into_iter()
-            .map(|e| ExpectItem::from_with_dict(e, &dicts))
+            .map(|e| crate::v1::wap::resumes::resume_expect_item_from_dict(e, &dicts))
             .collect(),
     ))
 }
@@ -163,6 +171,8 @@ pub async fn create(
             job_classid: job_id,
             city_classid: city_id,
             salary: f.salary,
+            minsalary: f.salary,
+            maxsalary: f.maxsalary,
             r#type: f.r#type,
             report: f.report,
             jobstatus: f.jobstatus,
@@ -203,10 +213,9 @@ async fn resolve_classids(
 /// Update or soft-delete a job expectation (body with `"status":2` means delete).
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/resume/expects/{id}",
+    path = "/v1/mcenter/resume/expects/update",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
     request_body = ExpectForm,
     responses((status = 200, description = "ok"))
 )]
@@ -214,9 +223,9 @@ pub async fn update(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    Path(id): Path<u64>,
     ValidatedJson(f): ValidatedJson<ExpectForm>,
 ) -> AppResult<ApiJson<json::Value>> {
+    let id = f.id as u64;
     if f.status == Some(2) {
         expect_svc::delete(&state, &user, id, &ip).await?;
         return Ok(ApiJson(json::json!({ "ok": true, "deleted": true })));
@@ -231,6 +240,8 @@ pub async fn update(
             job_classid: job_id,
             city_classid: city_id,
             salary: f.salary,
+            minsalary: f.salary,
+            maxsalary: f.maxsalary,
             r#type: f.r#type,
             report: f.report,
             jobstatus: f.jobstatus,

@@ -8,11 +8,11 @@
 //! - `regway`  (1=username / 2=mobile / 3=email; currently only recorded for audit, uniqueness is checked across all fields)
 
 use axum::{
-    extract::{Query, State},
-    routing::{get, post},
+    extract::{State},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{validators, ApiJson, AppResult, AppState, ClientIp, ValidatedJson, ValidatedQuery};
+use phpyun_core::{validators, ApiJson, AppResult, AppState, ClientIp, ValidatedJson};
 use phpyun_models::user::repo as user_repo;
 use phpyun_services::registration_service::{self, RegisterInput};
 use serde::{Deserialize, Serialize};
@@ -22,8 +22,8 @@ use validator::Validate;
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/register", post(register))
-        .route("/register/check", get(check_availability))
-        .route("/register/config", get(config))
+        .route("/register/check", post(check_availability))
+        .route("/register/config", post(config))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -67,10 +67,12 @@ pub struct RegisterForm {
 
     /// Multi-site did (default 1)
     #[serde(default = "default_did")]
+    #[validate(range(max = 999))]
     pub did: u32,
 
     /// Referrer uid (aligned with the `uid` parameter on PHPYun invite links); 0 = no referrer
     #[serde(default)]
+    #[validate(range(min = 0, max = 99_999_999))]
     pub referrer_uid: u64,
 }
 
@@ -165,7 +167,7 @@ pub struct CheckResult {
 /// **Note**: this endpoint leaks "whether the account exists" information and is for the registration page only.
 /// Do not call it from login or password-recovery flows.
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/register/check",
     tag = "auth",
     params(CheckQuery),
@@ -176,7 +178,7 @@ pub struct CheckResult {
 )]
 pub async fn check_availability(
     State(state): State<AppState>,
-    ValidatedQuery(q): ValidatedQuery<CheckQuery>,
+    ValidatedJson(q): ValidatedJson<CheckQuery>,
 ) -> AppResult<ApiJson<CheckResult>> {
     let db = state.db.reader();
     let taken = match q.field.as_str() {
@@ -209,7 +211,7 @@ pub struct RegisterConfig {
 
 /// Registration rules config: clients can use this for instant validation and display copy.
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/register/config",
     tag = "auth",
     responses((status = 200, description = "ok", body = RegisterConfig))

@@ -1,13 +1,17 @@
 //! Site statistics (matching PHPYun `tongji` + `ajax::*Data`). Public viewing.
 
-use axum::{extract::State, routing::get, Router};
+use axum::{
+    extract::State,
+    Router,
+    routing::post,
+};
 use phpyun_core::{ApiJson, AppResult, AppState};
 use phpyun_services::stats_service;
 use serde::Serialize;
 use utoipa::ToSchema;
 
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/stats/overview", get(overview))
+    Router::new().route("/stats/overview", post(overview))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -21,7 +25,7 @@ pub struct OverviewView {
 
 /// Site overview statistics
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/stats/overview",
     tag = "wap",
     responses((status = 200, description = "ok", body = OverviewView))

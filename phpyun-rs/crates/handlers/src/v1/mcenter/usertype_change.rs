@@ -3,10 +3,12 @@
 //! - `GET  /v1/mcenter/account/usertype/status`  query the current request status
 //! - `POST /v1/mcenter/account/usertype/apply`   submit a request
 
-use axum::{extract::State, routing::{get, post}, Router};
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
+use axum::{
+    extract::State,
+    Router,
+    routing::post,
 };
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::usertype_change_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -14,7 +16,7 @@ use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/account/usertype/status", get(status))
+        .route("/account/usertype/status", post(status))
         .route("/account/usertype/apply", post(apply))
 }
 
@@ -27,7 +29,7 @@ pub struct StatusView {
 }
 
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/account/usertype/status",
     tag = "mcenter",
     security(("bearer" = [])),

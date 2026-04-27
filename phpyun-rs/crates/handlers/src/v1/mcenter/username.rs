@@ -3,11 +3,13 @@
 //! Matches PHPYun `setname.htm`: each account may rename only once (enforced by the `phpyun_member.claim` field).
 //! On success, the server clears that uid's cache; clients are encouraged to refetch `/v1/mcenter/profile`.
 
-use axum::{extract::State, routing::post, Router};
-use phpyun_core::json;
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
+use axum::{
+    extract::State,
+    Router,
+    routing::post,
 };
+use phpyun_core::json;
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::mcenter_service;
 use serde::Deserialize;
 use utoipa::ToSchema;

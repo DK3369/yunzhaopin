@@ -6,23 +6,24 @@
 //! hit the in-process cache (`country_service`), so they're sub-microsecond.
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::get,
+    extract::{Path, State},
     Router,
+    routing::post,
 };
 use phpyun_core::i18n::{current_lang, Lang};
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, InfraError, ValidatedQuery};
+use phpyun_core::{ApiJson, AppError, AppResult, AppState, InfraError, ValidatedJson};
 use phpyun_models::country::entity::Country;
 use phpyun_services::country_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/countries", get(list))
-        .route("/countries/{id}", get(by_id))
-        .route("/countries/by-code/{code}", get(by_code))
+        .route("/countries", post(list))
+        .route("/countries/get", post(by_id))
+        .route("/countries/by-code", post(by_code))
 }
 
 /// Public-facing country shape. `name` is the localized display name
@@ -71,6 +72,7 @@ fn to_view(c: &Country, lang: Lang) -> CountryView {
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
     /// `AF/AN/AS/EU/NA/OC/SA`. Case-insensitive. When supplied the result is restricted to that continent.
+    #[validate(length(max = 100))]
     pub continent: Option<String>,
 }
 
@@ -79,7 +81,7 @@ pub struct ListQuery {
 /// - No params: all active countries, ordered by `sort ASC`.
 /// - `?continent=AS`: only Asian countries.
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/countries",
     tag = "wap",
     params(ListQuery),
@@ -87,7 +89,7 @@ pub struct ListQuery {
 )]
 pub async fn list(
     State(state): State<AppState>,
-    ValidatedQuery(q): ValidatedQuery<ListQuery>,
+    ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Vec<CountryView>>> {
     let lang = current_lang();
     let out: Vec<CountryView> = match q.continent.as_deref() {
@@ -106,20 +108,18 @@ pub async fn list(
 }
 
 /// Single country by surrogate `id`.
-#[utoipa::path(
-    get,
-    path = "/v1/wap/countries/{id}",
+#[utoipa::path(post,
+    path = "/v1/wap/countries/get",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses(
         (status = 200, description = "ok", body = CountryView),
         (status = 404, description = "Not found"),
     )
 )]
-pub async fn by_id(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<CountryView>> {
+pub async fn by_id(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<CountryView>> {
+    let id = b.id;
     let lang = current_lang();
     let c = country_service::find_by_id(&state, id)
         .await?
@@ -128,23 +128,28 @@ pub async fn by_id(
 }
 
 /// Single country by ISO 3166-1 alpha-2 code (case-insensitive).
-#[utoipa::path(
-    get,
-    path = "/v1/wap/countries/by-code/{code}",
+#[utoipa::path(post,
+    path = "/v1/wap/countries/by-code",
     tag = "wap",
-    params(("code" = String, Path, description = "ISO 3166-1 alpha-2: CN/US/JP/...")),
+    request_body = ByCodeBody,
     responses(
         (status = 200, description = "ok", body = CountryView),
         (status = 404, description = "Not found"),
     )
 )]
-pub async fn by_code(
-    State(state): State<AppState>,
-    Path(code): Path<String>,
-) -> AppResult<ApiJson<CountryView>> {
+pub async fn by_code(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<ByCodeBody>) -> AppResult<ApiJson<CountryView>> {
+    let code = b.code;
+    phpyun_core::validators::ensure_path_token(&code)?;
     let lang = current_lang();
     let c = country_service::find_by_code(&state, &code)
         .await?
         .ok_or_else(|| AppError::new(InfraError::InvalidParam("country_not_found".into())))?;
     Ok(ApiJson(to_view(&c, lang)))
+}
+
+#[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
+pub struct ByCodeBody {
+    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    pub code: String,
 }

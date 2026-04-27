@@ -7,34 +7,34 @@
 //! it via Canvas -- saves bandwidth and is architecturally more modern.
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::get,
+    extract::{Path, State},
     Router,
+    routing::post,
 };
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, InfraError, MaybeUser, ValidatedQuery};
+use phpyun_core::{ApiJson, AppError, AppResult, AppState, InfraError, MaybeUser, ValidatedJson};
 use phpyun_services::poster_service::{self, PosterSpec, PosterTemplateView};
 use serde::Deserialize;
 use utoipa::IntoParams;
 use validator::Validate;
+use phpyun_core::dto::{};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/posters/{kind}/templates", get(list_templates))
-        .route("/posters/{kind}/{id}", get(render_spec))
-        .route("/posters/invite-reg/me", get(invite_reg_self))
+        .route("/posters/templates", post(list_templates))
+        .route("/posters", post(render_spec))
+        .route("/posters/invite-reg/me", post(invite_reg_self))
 }
 
-#[utoipa::path(
-    get,
-    path = "/v1/wap/posters/{kind}/templates",
+#[utoipa::path(post,
+    path = "/v1/wap/posters/templates",
     tag = "wap",
-    params(("kind" = String, Path, description = "job / company / invite-reg / gongzhao")),
+    request_body = ListTemplatesBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn list_templates(
-    State(state): State<AppState>,
-    Path(kind): Path<String>,
-) -> AppResult<ApiJson<Vec<PosterTemplateView>>> {
+pub async fn list_templates(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<ListTemplatesBody>) -> AppResult<ApiJson<Vec<PosterTemplateView>>> {
+    let kind = b.kind;
+    phpyun_core::validators::ensure_path_token(&kind)?;
     Ok(ApiJson(
         poster_service::list_templates(&state, &kind).await?,
     ))
@@ -42,15 +42,20 @@ pub async fn list_templates(
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct RenderQuery {
+    /// "job" / "company" / "gongzhao"
+    #[validate(length(min = 1, max = 32))]
+    pub kind: String,
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
     /// Optional: specify the template id; if omitted, use the default template (highest sort/num under the same kind)
+    #[validate(range(min = 0, max = 99_999_999))]
     pub hb: Option<u64>,
 }
 
 /// Composition spec: kind in `job`/`company`/`gongzhao`. `invite-reg` does not go through here,
 /// because the id parameter has a different meaning (inviter uid instead of resource id); use the dedicated `/me` endpoint.
-#[utoipa::path(
-    get,
-    path = "/v1/wap/posters/{kind}/{id}",
+#[utoipa::path(post,
+    path = "/v1/wap/posters",
     tag = "wap",
     params(
         ("kind" = String, Path),
@@ -62,11 +67,11 @@ pub struct RenderQuery {
         (status = 400, description = "Invalid kind / resource not found")
     )
 )]
-pub async fn render_spec(
-    State(state): State<AppState>,
-    Path((kind, id)): Path<(String, u64)>,
-    ValidatedQuery(q): ValidatedQuery<RenderQuery>,
-) -> AppResult<ApiJson<PosterSpec>> {
+pub async fn render_spec(State(state): State<AppState>,
+    ValidatedJson(q): ValidatedJson<RenderQuery>) -> AppResult<ApiJson<PosterSpec>> {
+    let kind = q.kind;
+    let id = q.id;
+    phpyun_core::validators::ensure_path_token(&kind)?;
     let spec = match kind.as_str() {
         "job" => poster_service::job_poster_spec(&state, q.hb, id).await?,
         "company" => poster_service::company_poster_spec(&state, q.hb, id).await?,
@@ -89,11 +94,12 @@ pub async fn render_spec(
 pub struct InviteRegQuery {
     pub hb: Option<u64>,
     /// "Promoter uid" used when not logged in; ignored when logged in
+    #[validate(range(min = 1, max = 99_999_999))]
     pub uid: Option<u64>,
 }
 
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/posters/invite-reg/me",
     tag = "wap",
     params(InviteRegQuery),
@@ -102,7 +108,7 @@ pub struct InviteRegQuery {
 pub async fn invite_reg_self(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
-    ValidatedQuery(q): ValidatedQuery<InviteRegQuery>,
+    ValidatedJson(q): ValidatedJson<InviteRegQuery>,
 ) -> AppResult<ApiJson<PosterSpec>> {
     let inviter_uid = match user {
         Some(u) => u.uid,
@@ -116,3 +122,9 @@ pub async fn invite_reg_self(
     ))
 }
 
+
+#[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
+pub struct ListTemplatesBody {
+    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    pub kind: String,
+}

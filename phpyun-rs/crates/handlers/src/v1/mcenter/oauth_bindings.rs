@@ -1,23 +1,23 @@
-//! GET    /v1/mcenter/oauth-bindings              — list third-party providers bound to the current user
-//! DELETE /v1/mcenter/oauth-bindings/{provider}   — unbind the given third-party provider
+//! GET   /v1/mcenter/oauth-bindings        — list third-party providers bound to the current user
+//! POST  /v1/mcenter/oauth-bindings/unbind — unbind the given provider (provider in body)
 
 use axum::{
-    extract::{Path, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::post,
 };
 use phpyun_core::json;
-use phpyun_core::{
-    ApiJson, AppError, AppResult, AppState, AuthenticatedUser, ClientIp, ProviderKind,
-};
+use phpyun_core::{ApiJson, AppError, AppResult, AppState, AuthenticatedUser, ClientIp, ProviderKind, ValidatedJson};
 use phpyun_services::mcenter_service;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
+use validator::Validate;
+use phpyun_core::dto::{ProviderBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/oauth-bindings", get(list_bindings))
-        .route("/oauth-bindings/{provider}", post(unbind))
+        .route("/oauth-bindings", post(list_bindings))
+        .route("/oauth-bindings/unbind", post(unbind))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -28,7 +28,7 @@ pub struct BindingsData {
 
 /// Third-party providers bound to the current user
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/oauth-bindings",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -50,10 +50,10 @@ pub async fn list_bindings(
 /// Unbind the specified third-party provider
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/oauth-bindings/{provider}",
+    path = "/v1/mcenter/oauth-bindings/unbind",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("provider" = String, Path, description = "google / facebook / apple")),
+    request_body = ProviderBody,
     responses(
         (status = 200, description = "ok"),
         (status = 400, description = "Invalid provider"),
@@ -64,10 +64,11 @@ pub async fn unbind(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    Path(provider): Path<String>,
+    ValidatedJson(b): ValidatedJson<ProviderBody>,
 ) -> AppResult<ApiJson<json::Value>> {
-    let kind = ProviderKind::parse(&provider)
-        .ok_or_else(|| AppError::param_invalid(format!("provider: {provider}")))?;
+    phpyun_core::validators::ensure_path_token(&b.provider)?;
+    let kind = ProviderKind::parse(&b.provider)
+        .ok_or_else(|| AppError::param_invalid(format!("provider: {}", b.provider)))?;
     mcenter_service::unbind(&state, user.uid, kind, &ip).await?;
     Ok(ApiJson(json::json!({ "ok": true })))
 }

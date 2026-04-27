@@ -2,12 +2,10 @@
 
 use axum::{
     extract::{Path, State},
-    routing::{get, post},
     Router,
+    routing::post,
 };
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
-};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::company_cert_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -15,8 +13,8 @@ use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/company-certs", get(list_pending))
-        .route("/company-certs/{uid}/review", post(review))
+        .route("/company-certs", post(list_pending))
+        .route("/company-certs/review", post(review))
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -58,7 +56,7 @@ pub struct CertItem {
 
 /// Review queue
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/admin/company-certs",
     tag = "admin",
     security(("bearer" = [])),
@@ -102,6 +100,8 @@ pub async fn list_pending(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct ReviewForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub uid: u64,
     pub approve: bool,
     #[validate(length(max = 500))]
     #[serde(default)]
@@ -109,21 +109,17 @@ pub struct ReviewForm {
 }
 
 /// Approve / reject
-#[utoipa::path(
-    post,
-    path = "/v1/admin/company-certs/{uid}/review",
+#[utoipa::path(post,
+    path = "/v1/admin/company-certs/review",
     tag = "admin",
     security(("bearer" = [])),
-    params(("uid" = u64, Path)),
     request_body = ReviewForm,
     responses((status = 200, description = "ok"))
 )]
-pub async fn review(
-    State(state): State<AppState>,
+pub async fn review(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(uid): Path<u64>,
-    ValidatedJson(f): ValidatedJson<ReviewForm>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<ReviewForm>) -> AppResult<ApiOk> {
+    let uid = f.uid;
     user.require_admin()?;
     company_cert_service::review(&state, &user, uid, f.approve, &f.note).await?;
     Ok(ApiOk("ok"))

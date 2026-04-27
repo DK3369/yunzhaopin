@@ -6,19 +6,21 @@
 //! `base_url` is read from `state.config.web_base_url`.
 
 use axum::{
-    extract::{Path, State},
-    routing::get,
+    extract::State,
     Router,
+    routing::post,
 };
-use phpyun_core::{ApiJson, AppResult, AppState};
-use serde::Serialize;
+use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};
+use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
+use validator::Validate;
+use phpyun_core::dto::{IdBody, UidBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/share/jobs/{id}", get(job_share))
-        .route("/share/companies/{uid}", get(company_share))
-        .route("/share/resumes/{uid}", get(resume_share)) // eid = 0 indicates the user's own uid
+        .route("/share/jobs", post(job_share))
+        .route("/share/companies", post(company_share))
+        .route("/share/resumes", post(resume_share))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -42,40 +44,40 @@ fn base_of(state: &AppState) -> String {
 }
 
 /// Job share link
-#[utoipa::path(get, path = "/v1/wap/share/jobs/{id}", tag = "wap",
-    params(("id" = u64, Path)),
+#[utoipa::path(post, path = "/v1/wap/share/jobs", tag = "wap",
+    request_body = IdBody,
     responses((status = 200, description = "ok", body = ShareUrl)))]
 pub async fn job_share(
     State(state): State<AppState>,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<ShareUrl>> {
     let base = base_of(&state);
-    let url = build_url(&base, &format!("/wap/jobs/{id}"));
-    Ok(ApiJson(ShareUrl { kind: "job".into(), id, url }))
+    let url = build_url(&base, &format!("/wap/jobs/{}", b.id));
+    Ok(ApiJson(ShareUrl { kind: "job".into(), id: b.id, url }))
 }
 
 /// Company share link
-#[utoipa::path(get, path = "/v1/wap/share/companies/{uid}", tag = "wap",
-    params(("uid" = u64, Path)),
+#[utoipa::path(post, path = "/v1/wap/share/companies", tag = "wap",
+    request_body = UidBody,
     responses((status = 200, description = "ok", body = ShareUrl)))]
 pub async fn company_share(
     State(state): State<AppState>,
-    Path(uid): Path<u64>,
+    ValidatedJson(b): ValidatedJson<UidBody>,
 ) -> AppResult<ApiJson<ShareUrl>> {
     let base = base_of(&state);
-    let url = build_url(&base, &format!("/wap/companies/{uid}"));
-    Ok(ApiJson(ShareUrl { kind: "company".into(), id: uid, url }))
+    let url = build_url(&base, &format!("/wap/companies/{}", b.uid));
+    Ok(ApiJson(ShareUrl { kind: "company".into(), id: b.uid, url }))
 }
 
 /// Public resume share link (non-token version — login required to view)
-#[utoipa::path(get, path = "/v1/wap/share/resumes/{uid}", tag = "wap",
-    params(("uid" = u64, Path)),
+#[utoipa::path(post, path = "/v1/wap/share/resumes", tag = "wap",
+    request_body = UidBody,
     responses((status = 200, description = "ok", body = ShareUrl)))]
 pub async fn resume_share(
     State(state): State<AppState>,
-    Path(uid): Path<u64>,
+    ValidatedJson(b): ValidatedJson<UidBody>,
 ) -> AppResult<ApiJson<ShareUrl>> {
     let base = base_of(&state);
-    let url = build_url(&base, &format!("/wap/resumes/{uid}"));
-    Ok(ApiJson(ShareUrl { kind: "resume".into(), id: uid, url }))
+    let url = build_url(&base, &format!("/wap/resumes/{}", b.uid));
+    Ok(ApiJson(ShareUrl { kind: "resume".into(), id: b.uid, url }))
 }

@@ -1,27 +1,26 @@
 //! Interview invitations — job seekers view / respond; employers create / cancel.
 
 use axum::{
-    extract::{Path, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::post,
 };
 use phpyun_core::json;
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
-};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::interview_service::{self, InterviewCreateInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{CreatedId, IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/interviews", get(list_mine))
-        .route("/interviews/{id}/accept", post(accept))
-        .route("/interviews/{id}/reject", post(reject))
-        .route("/company/interviews", get(list_by_company))
+        .route("/interviews", post(list_mine))
+        .route("/interviews/accept", post(accept))
+        .route("/interviews/reject", post(reject))
+        .route("/company/interviews", post(list_by_company))
         .route("/company/interviews/create", post(create))
-        .route("/company/interviews/{id}/cancel", post(cancel))
+        .route("/company/interviews/cancel", post(cancel))
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -91,7 +90,7 @@ impl From<phpyun_models::interview::entity::Interview> for InterviewItem {
 
 /// Job seeker views received interview invitations
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/interviews",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -114,38 +113,38 @@ pub async fn list_mine(
 /// Accept interview
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/interviews/{id}/accept",
+    path = "/v1/mcenter/interviews/accept",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn accept(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<json::Value>> {
-    interview_service::respond(&state, &user, id, 1, &ip).await?;
+    interview_service::respond(&state, &user, b.id, 1, &ip).await?;
     Ok(ApiJson(json::json!({ "ok": true, "status": 1 })))
 }
 
 /// Reject interview
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/interviews/{id}/reject",
+    path = "/v1/mcenter/interviews/reject",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn reject(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<json::Value>> {
-    interview_service::respond(&state, &user, id, 2, &ip).await?;
+    interview_service::respond(&state, &user, b.id, 2, &ip).await?;
     Ok(ApiJson(json::json!({ "ok": true, "status": 2 })))
 }
 
@@ -153,7 +152,9 @@ pub async fn reject(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct CreateInterviewForm {
+    #[validate(range(min = 1, max = 99_999_999))]
     pub apply_id: u64,
+    #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub inter_time: i64,
     #[validate(length(min = 1, max = 255))]
     pub address: String,
@@ -163,11 +164,6 @@ pub struct CreateInterviewForm {
     pub linktel: String,
     #[validate(length(max = 2000))]
     pub remark: Option<String>,
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CreatedId {
-    pub id: u64,
 }
 
 /// Employer creates an interview invitation (based on an apply record)
@@ -204,7 +200,7 @@ pub async fn create(
 
 /// Employer views interview invitations they have sent
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/company/interviews",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -227,18 +223,18 @@ pub async fn list_by_company(
 /// Employer cancels an interview
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/company/interviews/{id}/cancel",
+    path = "/v1/mcenter/company/interviews/cancel",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn cancel(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<json::Value>> {
-    interview_service::cancel(&state, &user, id, &ip).await?;
+    interview_service::cancel(&state, &user, b.id, &ip).await?;
     Ok(ApiJson(json::json!({ "ok": true })))
 }

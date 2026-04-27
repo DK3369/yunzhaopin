@@ -1,22 +1,22 @@
 //! Interview invitation templates (aligned with PHPYun `yqmb`) — employer-side CRUD.
 
 use axum::{
-    extract::{Path, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson,
-};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::interview_template_service::{self, TplInput, TplPatch};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{CreatedId};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/interview-templates", get(list).post(create))
-        .route("/interview-templates/{id}", post(update))
+        .route("/interview-templates", post(create))
+        .route("/interview-templates/list", post(list))
+        .route("/interview-templates/update", post(update))
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -82,11 +82,14 @@ pub struct TplForm {
     pub linktel: String,
     /// unix ts; 0 = unspecified
     #[serde(default)]
+    #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub intertime: i64,
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct TplPatchForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
     #[validate(length(min = 1, max = 120))]
     pub name: Option<String>,
     #[validate(length(min = 1, max = 5000))]
@@ -97,26 +100,21 @@ pub struct TplPatchForm {
     pub linkman: Option<String>,
     #[validate(length(min = 6, max = 32))]
     pub linktel: Option<String>,
+    #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub intertime: Option<i64>,
     /// 0=offline / 1=online / 2=deleted (soft delete)
     #[validate(range(min = 0, max = 2))]
     pub status: Option<i32>,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CreatedId {
-    pub id: u64,
-}
-
 /// Interview template list
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/interview-templates",
+    post,
+    path = "/v1/mcenter/interview-templates/list",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]
-pub async fn list(
+)]pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
 ) -> AppResult<ApiJson<Vec<TplItem>>> {
@@ -159,28 +157,26 @@ pub async fn create(
 /// Update or soft-delete an interview template (body with `"status":2` triggers deletion)
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/interview-templates/{id}",
+    path = "/v1/mcenter/interview-templates/update",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
     request_body = TplPatchForm,
     responses((status = 200, description = "ok"))
 )]
 pub async fn update(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
     ValidatedJson(f): ValidatedJson<TplPatchForm>,
 ) -> AppResult<ApiOk> {
     user.require_employer()?;
     if f.status == Some(2) {
-        interview_template_service::delete(&state, &user, id).await?;
+        interview_template_service::delete(&state, &user, f.id).await?;
         return Ok(ApiOk("deleted"));
     }
     interview_template_service::update(
         &state,
         &user,
-        id,
+        f.id,
         TplPatch {
             name: f.name.as_deref(),
             content: f.content.as_deref(),

@@ -2,8 +2,8 @@
 
 use axum::{
     extract::State,
-    routing::{get, post},
     Router,
+    routing::post,
 };
 use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp};
 use phpyun_services::sign_service;
@@ -13,7 +13,7 @@ use utoipa::ToSchema;
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/sign", post(sign))
-        .route("/sign/status", get(status))
+        .route("/sign/status", post(status))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -54,7 +54,7 @@ pub struct StatusResp {
 
 /// Check-in status
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/sign/status",
     tag = "mcenter",
     security(("bearer" = [])),

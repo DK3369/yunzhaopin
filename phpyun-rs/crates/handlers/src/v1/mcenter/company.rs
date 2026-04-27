@@ -1,17 +1,20 @@
 //! Member center - company (usertype=2).
 
-use axum::{extract::State, routing::get, Router};
-use phpyun_core::json;
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
+use axum::{
+    extract::State,
+    Router,
+    routing::{get, post},
 };
+use phpyun_core::json;
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::company_service::{self, CompanyUpdateInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/company", get(get_mine).post(update_mine))
+    Router::new().route("/company", post(update_mine))
+        .route("/company/list", post(get_mine))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -36,13 +39,12 @@ pub struct CompanyData {
 
 /// Get my company profile
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/company",
+    post,
+    path = "/v1/mcenter/company/list",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok", body = CompanyData))
-)]
-pub async fn get_mine(
+)]pub async fn get_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
 ) -> AppResult<ApiJson<CompanyData>> {
@@ -73,14 +75,17 @@ pub struct UpdateCompanyForm {
     pub name: Option<String>,
     #[validate(length(max = 25))]
     pub shortname: Option<String>,
-    #[validate(range(min = 0))]
+    #[validate(range(min = 0, max = 99_999))]
     pub hy: Option<i32>,
+    #[validate(range(min = 0, max = 99_999))]
     pub provinceid: Option<i32>,
+    #[validate(range(min = 0, max = 99_999))]
     pub cityid: Option<i32>,
+    #[validate(range(min = 0, max = 99_999))]
     pub three_cityid: Option<i32>,
     #[validate(length(max = 255))]
     pub logo: Option<String>,
-    #[validate(length(max = 50000))]
+    #[validate(length(max = 10000))]
     pub content: Option<String>,
     #[validate(length(max = 50))]
     pub linkman: Option<String>,

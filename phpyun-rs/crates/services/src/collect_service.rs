@@ -26,7 +26,7 @@
 use phpyun_core::{clock, background, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::collect::entity::{Collect, KIND_JOB};
 use phpyun_models::collect::repo as collect_repo;
-use phpyun_models::sysmsg::repo as sysmsg_repo;
+use phpyun_models::message::repo as message_repo;
 
 use crate::domain_errors::CollectError;
 
@@ -192,7 +192,7 @@ pub async fn toggle(
         add_member_log(&st, uid, usertype, did, &ip_owned, &content, MEMBER_LOG_TYPE_ADD).await;
         // 3. notify the company that owns the job (PHP `addSystem` to job.uid usertype=2)
         let sysmsg_content = format!("有用户收藏了您的职位：{}", job_name);
-        let _ = sysmsg_repo::insert(st.db.pool(), com_uid, 2, &sysmsg_content, clock::now_ts()).await;
+        let _ = message_repo::insert_simple(st.db.pool(), com_uid, 2, &sysmsg_content, clock::now_ts()).await;
     });
 
     Ok(true)

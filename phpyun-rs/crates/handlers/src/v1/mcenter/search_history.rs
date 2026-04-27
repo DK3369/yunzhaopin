@@ -2,19 +2,21 @@
 
 use axum::{
     extract::{Path, State},
-    routing::{get, post},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedQuery};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::search_history_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/search-history", get(list).post(clear))
-        .route("/search-history/{id}", post(remove))
+        .route("/search-history", post(clear))
+        .route("/search-history/list", post(list))
+        .route("/search-history/delete", post(remove))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -70,17 +72,16 @@ pub struct ClearResult {
 
 /// My search history
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/search-history",
+    post,
+    path = "/v1/mcenter/search-history/list",
     tag = "mcenter",
     security(("bearer" = [])),
     params(ListQuery),
     responses((status = 200, description = "ok"))
-)]
-pub async fn list(
+)]pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedQuery(q): ValidatedQuery<ListQuery>,
+    ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Vec<HistoryItem>>> {
     let list = search_history_service::list(&state, &user, q.scope.as_deref(), q.limit).await?;
     Ok(ApiJson(list.into_iter().map(HistoryItem::from).collect()))
@@ -98,26 +99,25 @@ pub async fn list(
 pub async fn clear(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedQuery(q): ValidatedQuery<ClearQuery>,
+    ValidatedJson(q): ValidatedJson<ClearQuery>,
 ) -> AppResult<ApiJson<ClearResult>> {
     let n = search_history_service::clear(&state, &user, q.scope.as_deref()).await?;
     Ok(ApiJson(ClearResult { removed: n }))
 }
 
 /// Delete a single entry
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/search-history/{id}",
+#[utoipa::path(post,
+    path = "/v1/mcenter/search-history",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn remove(
-    State(state): State<AppState>,
+pub async fn remove(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiOk> {
+    let id = b.id;
     search_history_service::delete_one(&state, &user, id).await?;
     Ok(ApiOk("deleted"))
 }
+

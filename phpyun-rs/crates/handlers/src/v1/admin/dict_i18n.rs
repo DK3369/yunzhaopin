@@ -5,7 +5,11 @@
 //!
 //! Skipping the call is fine: a 30-minute fallback timer will pull the new data automatically.
 
-use axum::{extract::State, routing::post, Router};
+use axum::{
+    extract::State,
+    Router,
+    routing::post,
+};
 use phpyun_core::{ApiOk, AppResult, AppState, AuthenticatedUser};
 use phpyun_services::dict_service;
 

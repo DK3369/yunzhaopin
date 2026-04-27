@@ -1,26 +1,25 @@
 //! Employer views received applications + mark as read + invite to interview (usertype=2).
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::post,
 };
 use phpyun_core::json;
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_models::apply::repo::ApplyFilter;
 use phpyun_services::apply_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/applications", get(list_received))
-        .route("/applications/{id}/browse", post(mark_browsed))
-        .route("/applications/{id}/state", post(set_state))
-        .route("/applications/{id}/invite", post(invite))
+        .route("/applications", post(list_received))
+        .route("/applications/browse", post(mark_browsed))
+        .route("/applications/state", post(set_state))
+        .route("/applications/invite", post(invite))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -95,7 +94,7 @@ impl From<phpyun_models::apply::entity::Apply> for ApplicantSummary {
 
 /// Employer views all received applications
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/applications",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -106,7 +105,7 @@ pub async fn list_received(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<ApplicationsQuery>,
+    ValidatedJson(q): ValidatedJson<ApplicationsQuery>,
 ) -> AppResult<ApiJson<Paged<ApplicantSummary>>> {
     let filter = ApplyFilter {
         unread_only: q.unread_only,
@@ -124,23 +123,25 @@ pub async fn list_received(
 /// Mark as read (idempotent)
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/applications/{id}/browse",
+    path = "/v1/mcenter/applications/browse",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn mark_browsed(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<json::Value>> {
-    apply_service::mark_browsed(&state, &user, id).await?;
+    apply_service::mark_browsed(&state, &user, b.id).await?;
     Ok(ApiJson(json::json!({ "ok": true })))
 }
 
 #[derive(Debug, serde::Deserialize, Validate, ToSchema)]
-pub struct SetStateForm {
+pub struct SetStateBody {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
     /// Aligned with PHPYun `is_browse`: 1=unviewed / 0=viewed / 3=interviewed / 4=not suitable / 7=hired
     #[validate(range(min = 0, max = 7))]
     pub state: i32,
@@ -149,11 +150,10 @@ pub struct SetStateForm {
 /// Set application feedback state (richer than the binary value of /browse — accepts 5 enum values)
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/applications/{id}/state",
+    path = "/v1/mcenter/applications/state",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
-    request_body = SetStateForm,
+    request_body = SetStateBody,
     responses(
         (status = 200, description = "ok"),
         (status = 400, description = "state not in {0,1,3,4,7}"),
@@ -164,28 +164,27 @@ pub async fn set_state(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<SetStateForm>,
+    ValidatedJson(b): ValidatedJson<SetStateBody>,
 ) -> AppResult<ApiJson<json::Value>> {
-    apply_service::set_browse_state(&state, &user, id, f.state, &ip).await?;
-    Ok(ApiJson(json::json!({ "ok": true, "state": f.state })))
+    apply_service::set_browse_state(&state, &user, b.id, b.state, &ip).await?;
+    Ok(ApiJson(json::json!({ "ok": true, "state": b.state })))
 }
 
 /// Invite to interview
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/applications/{id}/invite",
+    path = "/v1/mcenter/applications/invite",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn invite(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<json::Value>> {
-    apply_service::invite_interview(&state, &user, id, &ip).await?;
+    apply_service::invite_interview(&state, &user, b.id, &ip).await?;
     Ok(ApiJson(json::json!({ "ok": true })))
 }

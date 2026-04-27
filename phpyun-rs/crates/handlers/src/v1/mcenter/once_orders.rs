@@ -6,20 +6,22 @@
 //! both safer and matches how the rest of the member centre works.
 
 use axum::{
-    extract::{Path, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::post,
 };
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::once_service;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
+use validator::Validate;
+use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/once-jobs/orders", get(list_pending))
-        .route("/once-jobs/orders/{id}/cancel", post(cancel))
+        .route("/once-jobs/orders", post(list_pending))
+        .route("/once-jobs/orders/cancel", post(cancel))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -55,7 +57,7 @@ impl From<phpyun_models::once_job::repo::OnceOrder> for OrderItem {
 
 /// My pending one-off-posting orders (`type=25`, `order_state=1`).
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/once-jobs/orders",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -78,10 +80,10 @@ pub async fn list_pending(
 /// Cancel a pending one-off-posting order (sets `order_state = 3`).
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/once-jobs/orders/{id}/cancel",
+    path = "/v1/mcenter/once-jobs/orders/cancel",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses(
         (status = 200, description = "ok"),
         (status = 400, description = "Order not cancellable (already paid / not yours / wrong type)"),
@@ -90,8 +92,8 @@ pub async fn list_pending(
 pub async fn cancel(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<json::Value>> {
-    once_service::cancel_pending_order(&state, &user, id).await?;
+    once_service::cancel_pending_order(&state, &user, b.id).await?;
     Ok(ApiJson(json::json!({ "ok": true })))
 }

@@ -1,25 +1,27 @@
 //! HR toolbox public read.
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::{Path, State},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedQuery};
+use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::hr_doc_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/hr-docs", get(list))
-        .route("/hr-docs/{id}", get(detail))
-        .route("/hr-docs/{id}/download", post(track_download))
+        .route("/hr-docs", post(list))
+        .route("/hr-docs/detail", post(detail))
+        .route("/hr-docs/download", post(track_download))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct HrQuery {
+    #[validate(range(min = 1, max = 99_999_999))]
     pub cid: Option<u64>,
 }
 
@@ -103,11 +105,11 @@ impl From<phpyun_models::hr_doc::entity::HrDoc> for HrDetail {
 }
 
 /// HR toolbox list
-#[utoipa::path(get, path = "/v1/wap/hr-docs", tag = "wap", params(HrQuery), responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/wap/hr-docs/detail", tag = "wap", params(HrQuery), responses((status = 200, description = "ok")))]
 pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<HrQuery>,
+    ValidatedJson(q): ValidatedJson<HrQuery>,
 ) -> AppResult<ApiJson<Paged<HrSummary>>> {
     let r = hr_doc_service::list(&state, q.cid, page).await?;
     Ok(ApiJson(Paged::new(
@@ -119,17 +121,15 @@ pub async fn list(
 }
 
 /// HR toolbox detail
-#[utoipa::path(
-    get,
-    path = "/v1/wap/hr-docs/{id}",
+#[utoipa::path(post,
+    path = "/v1/wap/hr-docs",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok", body = HrDetail))
 )]
-pub async fn detail(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<HrDetail>> {
+pub async fn detail(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<HrDetail>> {
+    let id = b.id;
     let d = hr_doc_service::get(&state, id).await?;
     Ok(ApiJson(HrDetail::from(d)))
 }
@@ -147,20 +147,18 @@ pub struct HrDownloadResp {
 /// Track a download click — counterpart of PHP `hr/index::ajax_action`.
 /// Atomically `downnum +=1` then returns the file URL so the client can
 /// redirect (PHP echoes `checkpic($row['url'])` directly; we wrap in JSON).
-#[utoipa::path(
-    post,
-    path = "/v1/wap/hr-docs/{id}/download",
+#[utoipa::path(post,
+    path = "/v1/wap/hr-docs/download",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses(
         (status = 200, description = "ok", body = HrDownloadResp),
         (status = 404, description = "Not found"),
     )
 )]
-pub async fn track_download(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<HrDownloadResp>> {
+pub async fn track_download(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<HrDownloadResp>> {
+    let id = b.id;
     let _ = phpyun_models::hr_doc::repo::incr_hit(state.db.pool(), id).await?;
     let d = hr_doc_service::get(&state, id).await?;
     let web_base = state.config.web_base_url.as_deref();
@@ -171,3 +169,4 @@ pub async fn track_download(
         hits: d.hits,
     }))
 }
+

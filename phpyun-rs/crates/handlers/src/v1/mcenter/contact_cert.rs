@@ -1,6 +1,10 @@
 //! Contact info change verification (aligned with PHPYun `ajax::mobliecert` / `emailcert`).
 
-use axum::{extract::State, routing::post, Router};
+use axum::{
+    extract::State,
+    Router,
+    routing::post,
+};
 use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::contact_cert_service;
 use serde::{Deserialize, Serialize};

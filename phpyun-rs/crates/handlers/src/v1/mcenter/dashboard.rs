@@ -1,6 +1,10 @@
 //! Member center aggregate (matching PHPYun `ajax::msgNum` composite counts).
 
-use axum::{extract::State, routing::get, Router};
+use axum::{
+    extract::State,
+    Router,
+    routing::post,
+};
 use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser};
 use phpyun_services::dashboard_service;
 use serde::Serialize;
@@ -8,9 +12,9 @@ use utoipa::ToSchema;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/dashboard", get(counts))
-        .route("/com-dashboard", get(com_counts))
-        .route("/dashboard/year-report", get(year_report))
+        .route("/dashboard", post(counts))
+        .route("/com-dashboard", post(com_counts))
+        .route("/dashboard/year-report", post(year_report))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -27,7 +31,7 @@ pub struct DashboardView {
 
 /// Member center — first-screen aggregate counts
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/dashboard",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -65,7 +69,7 @@ pub struct ComDashboardView {
 
 /// Company center — first-screen aggregate counts (matching PHPYun `member/com/tongji`).
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/com-dashboard",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -111,7 +115,7 @@ pub struct YearReportView {
 /// underlying numbers and lets the frontend assemble the artwork. Restricted
 /// to employers (`usertype=2`).
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/dashboard/year-report",
     tag = "mcenter",
     security(("bearer" = [])),

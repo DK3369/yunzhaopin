@@ -1,32 +1,55 @@
 //! Q&A: authenticated interactions (ask / answer / follow / upvote / accept / delete / mine).
 
 use axum::{
-    extract::{Path, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::post,
 };
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
-};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::qna_service::{self, CreateQuestionInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{AidBody, CreatedId, IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/questions", post(ask))
-        .route("/questions/{id}", post(remove))
-        .route("/questions/{id}/answers", post(answer))
-        .route("/questions/{id}/answers/{aid}/accept", post(accept))
-        .route("/questions/{id}/attention", post(toggle_attention))
-        .route("/questions/{id}/support", post(support_question))
-        .route("/answers/{id}/support", post(support_answer))
-        .route("/answers/{aid}/comments", post(post_comment))
-        .route("/comments/{id}", post(remove_comment))
-        .route("/my/questions", get(my_questions))
-        .route("/my/answers", get(my_answers))
-        .route("/my/attended-questions", get(attended))
+        .route("/questions/delete", post(remove))
+        .route("/questions/answers", post(answer))
+        .route("/questions/answers/accept", post(accept))
+        .route("/questions/attention", post(toggle_attention))
+        .route("/questions/support", post(support_question))
+        .route("/answers/support", post(support_answer))
+        .route("/answers/comments", post(post_comment))
+        .route("/comments/delete", post(remove_comment))
+        .route("/my/questions", post(my_questions))
+        .route("/my/answers", post(my_answers))
+        .route("/my/attended-questions", post(attended))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct AnswerBody {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+    #[validate(length(min = 1, max = 20000))]
+    pub content: String,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct AcceptBody {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub aid: u64,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct CommentBody {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub aid: u64,
+    #[validate(length(min = 1, max = 2000))]
+    pub content: String,
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -36,12 +59,8 @@ pub struct AskForm {
     #[validate(length(min = 1, max = 20000))]
     pub content: String,
     #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
     pub category_id: i32,
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CreatedId {
-    pub id: u64,
 }
 
 /// Ask a question
@@ -74,62 +93,54 @@ pub async fn ask(
 /// Delete my question
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/questions/{id}",
+    path = "/v1/mcenter/questions/delete",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn remove(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiOk> {
-    qna_service::delete_question(&state, &user, id).await?;
+    qna_service::delete_question(&state, &user, b.id).await?;
     Ok(ApiOk("deleted"))
-}
-
-#[derive(Debug, Deserialize, Validate, ToSchema)]
-pub struct AnswerForm {
-    #[validate(length(min = 1, max = 20000))]
-    pub content: String,
 }
 
 /// Answer
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/questions/{id}/answers",
+    path = "/v1/mcenter/questions/answers",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
-    request_body = AnswerForm,
+    request_body = AnswerBody,
     responses((status = 200, description = "ok", body = CreatedId))
 )]
 pub async fn answer(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<AnswerForm>,
+    ValidatedJson(b): ValidatedJson<AnswerBody>,
 ) -> AppResult<ApiJson<CreatedId>> {
-    let aid = qna_service::answer(&state, &user, id, &f.content).await?;
+    let aid = qna_service::answer(&state, &user, b.id, &b.content).await?;
     Ok(ApiJson(CreatedId { id: aid }))
 }
 
 /// Accept an answer (only the questioner can)
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/questions/{id}/answers/{aid}/accept",
+    path = "/v1/mcenter/questions/answers/accept",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path), ("aid" = u64, Path)),
+    request_body = AcceptBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn accept(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path((id, aid)): Path<(u64, u64)>,
+    ValidatedJson(b): ValidatedJson<AcceptBody>,
 ) -> AppResult<ApiOk> {
-    qna_service::accept_answer(&state, &user, id, aid).await?;
+    qna_service::accept_answer(&state, &user, b.id, b.aid).await?;
     Ok(ApiOk("ok"))
 }
 
@@ -141,54 +152,54 @@ pub struct Toggled {
 /// Follow / unfollow
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/questions/{id}/attention",
+    path = "/v1/mcenter/questions/attention",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok", body = Toggled))
 )]
 pub async fn toggle_attention(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<Toggled>> {
-    let on = qna_service::toggle_attention(&state, &user, id).await?;
+    let on = qna_service::toggle_attention(&state, &user, b.id).await?;
     Ok(ApiJson(Toggled { on }))
 }
 
 /// Upvote a question
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/questions/{id}/support",
+    path = "/v1/mcenter/questions/support",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok", body = Toggled))
 )]
 pub async fn support_question(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<Toggled>> {
-    let on = qna_service::toggle_support_question(&state, &user, id).await?;
+    let on = qna_service::toggle_support_question(&state, &user, b.id).await?;
     Ok(ApiJson(Toggled { on }))
 }
 
 /// Upvote an answer
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/answers/{id}/support",
+    path = "/v1/mcenter/answers/support",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok", body = Toggled))
 )]
 pub async fn support_answer(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<Toggled>> {
-    let on = qna_service::toggle_support_answer(&state, &user, id).await?;
+    let on = qna_service::toggle_support_answer(&state, &user, b.id).await?;
     Ok(ApiJson(Toggled { on }))
 }
 
@@ -216,7 +227,7 @@ impl From<phpyun_models::qna::entity::Question> for MyQuestion {
 
 /// Questions I asked
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/my/questions",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -260,7 +271,7 @@ impl From<phpyun_models::qna::entity::Answer> for MyAnswer {
 
 /// My answers
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/my/answers",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -282,7 +293,7 @@ pub async fn my_answers(
 
 /// Questions I follow
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/my/attended-questions",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -302,46 +313,38 @@ pub async fn attended(
     )))
 }
 
-#[derive(Debug, Deserialize, Validate, ToSchema)]
-pub struct CommentForm {
-    #[validate(length(min = 1, max = 2000))]
-    pub content: String,
-}
-
 /// Comment on an answer (aligned with PHP `wap/ask::forcomment_action`)
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/answers/{aid}/comments",
+    path = "/v1/mcenter/answers/comments",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("aid" = u64, Path)),
-    request_body = CommentForm,
+    request_body = CommentBody,
     responses((status = 200, description = "ok", body = CreatedId))
 )]
 pub async fn post_comment(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(aid): Path<u64>,
-    ValidatedJson(f): ValidatedJson<CommentForm>,
+    ValidatedJson(b): ValidatedJson<CommentBody>,
 ) -> AppResult<ApiJson<CreatedId>> {
-    let id = qna_service::add_review(&state, &user, aid, &f.content).await?;
+    let id = qna_service::add_review(&state, &user, b.aid, &b.content).await?;
     Ok(ApiJson(CreatedId { id }))
 }
 
 /// Delete my own comment
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/comments/{id}",
+    path = "/v1/mcenter/comments/delete",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn remove_comment(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiOk> {
-    qna_service::delete_review(&state, &user, id).await?;
+    qna_service::delete_review(&state, &user, b.id).await?;
     Ok(ApiOk("deleted"))
 }

@@ -3,10 +3,12 @@
 //! - `GET  /v1/mcenter/account/logout/status` returns the current user's request status
 //! - `POST /v1/mcenter/account/logout/apply`  submits a deletion request (password required)
 
-use axum::{extract::State, routing::{get, post}, Router};
-use phpyun_core::{
-    json, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
+use axum::{
+    extract::State,
+    Router,
+    routing::post,
 };
+use phpyun_core::{json, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::member_logout_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -14,7 +16,7 @@ use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/account/logout/status", get(status))
+        .route("/account/logout/status", post(status))
         .route("/account/logout/apply", post(apply))
 }
 
@@ -26,7 +28,7 @@ pub struct StatusView {
 }
 
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/account/logout/status",
     tag = "mcenter",
     security(("bearer" = [])),

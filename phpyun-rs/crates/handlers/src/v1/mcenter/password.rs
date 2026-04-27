@@ -1,10 +1,12 @@
 //! POST /v1/mcenter/password — the logged-in user changes their own password (must supply the old password).
 
-use axum::{extract::State, routing::post, Router};
-use phpyun_core::json;
-use phpyun_core::{
-    validators, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
+use axum::{
+    extract::State,
+    Router,
+    routing::post,
 };
+use phpyun_core::json;
+use phpyun_core::{validators, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::mcenter_service;
 use serde::Deserialize;
 use utoipa::ToSchema;

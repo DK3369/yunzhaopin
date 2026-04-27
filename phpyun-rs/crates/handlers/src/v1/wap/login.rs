@@ -39,10 +39,12 @@ pub struct LoginForm {
     /// Image captcha (PHP field name `authcode`) -- optional.
     /// Only verified when paired with `captcha_cid`; if neither or only one is supplied, verification is skipped (aligned with PHPYun `wap/login::mlogin` behavior).
     #[serde(default)]
+    #[validate(length(max = 500))]
     pub authcode: Option<String>,
 
     /// Image captcha cid (specific to phpyun-rs; PHP uses session) -- optional.
     #[serde(default)]
+    #[validate(length(max = 500))]
     pub captcha_cid: Option<String>,
 }
 

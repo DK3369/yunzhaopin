@@ -2,21 +2,21 @@
 
 use axum::{
     extract::{Path, State},
-    routing::{get, post},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
-};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::broadcast_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{CreatedId, IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/broadcasts", get(list).post(create))
-        .route("/broadcasts/{id}", post(remove))
+        .route("/broadcasts", post(create))
+        .route("/broadcasts/list", post(list))
+        .route("/broadcasts/delete", post(remove))
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -71,13 +71,7 @@ pub struct CreateForm {
     pub target_usertype: i32,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CreatedId {
-    pub id: u64,
-}
-
-#[utoipa::path(get, path = "/v1/admin/broadcasts", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
-pub async fn list(
+#[utoipa::path(post, path = "/v1/admin/broadcasts/list", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
@@ -105,13 +99,13 @@ pub async fn create(
     Ok(ApiJson(CreatedId { id }))
 }
 
-#[utoipa::path(delete, path = "/v1/admin/broadcasts/{id}", tag = "admin", security(("bearer" = [])), params(("id" = u64, Path)), responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/admin/broadcasts/delete", tag = "admin", security(("bearer" = [])), request_body = IdBody, responses((status = 200, description = "ok")))]
 pub async fn remove(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiOk> {
     user.require_admin()?;
-    broadcast_service::admin_delete(&state, &user, id).await?;
+    broadcast_service::admin_delete(&state, &user, b.id).await?;
     Ok(ApiOk("deleted"))
 }

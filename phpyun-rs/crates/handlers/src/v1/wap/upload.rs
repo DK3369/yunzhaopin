@@ -10,7 +10,7 @@
 use axum::body::Bytes;
 use axum::extract::State;
 use axum::http::{header, HeaderMap};
-use axum::routing::post;
+use axum::routing::{get, post};
 use axum::Router;
 use phpyun_core::{ApiJson, AppError, AppResult, AppState, AuthenticatedUser};
 use serde::Serialize;

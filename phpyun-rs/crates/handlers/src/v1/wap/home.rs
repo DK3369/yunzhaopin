@@ -1,11 +1,11 @@
 //! Home page aggregation (aligned with PHPYun `wap/index::index`).
 
 use axum::{
-    extract::{Query, State},
-    routing::get,
+    extract::{State},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{ApiJson, AppResult, AppState, ValidatedQuery};
+use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};
 use phpyun_services::home_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -13,13 +13,14 @@ use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/home", get(home))
-        .route("/home/aggregate", get(aggregate))
+        .route("/home", post(home))
+        .route("/home/aggregate", post(aggregate))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct HomeQuery {
     #[serde(default = "default_did")]
+    #[validate(range(max = 999))]
     pub did: u32,
 }
 fn default_did() -> u32 { 1 }
@@ -75,10 +76,10 @@ fn fmt_date(ts: i64) -> String {
 }
 
 /// Home page
-#[utoipa::path(get, path = "/v1/wap/home", tag = "wap", params(HomeQuery), responses((status = 200, description = "ok", body = HomeData)))]
+#[utoipa::path(post, path = "/v1/wap/home", tag = "wap", params(HomeQuery), responses((status = 200, description = "ok", body = HomeData)))]
 pub async fn home(
     State(state): State<AppState>,
-    ValidatedQuery(q): ValidatedQuery<HomeQuery>,
+    ValidatedJson(q): ValidatedJson<HomeQuery>,
 ) -> AppResult<ApiJson<HomeData>> {
     let p = home_service::home(&state, q.did).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
@@ -107,12 +108,12 @@ pub async fn home(
         hot_jobs: p
             .hot_jobs
             .into_iter()
-            .map(|j| super::jobs::JobSummary::from_with_dict(j, &dicts, now))
+            .map(|j| crate::v1::wap::jobs::job_summary_from_dict(j, &dicts, now))
             .collect(),
         rec_companies: p
             .rec_companies
             .into_iter()
-            .map(|c| super::companies::CompanySummary::from_with_dict(c, &dicts))
+            .map(|c| super::companies::company_summary_from_dict(c, &dicts))
             .collect(),
         new_articles: p
             .new_articles
@@ -142,8 +143,10 @@ pub async fn home(
 pub struct AggregateQuery {
     /// Sub-site id
     #[serde(default = "default_did")]
+    #[validate(range(max = 999))]
     pub did: u32,
     /// Ad slot (string corresponding to phpyun_ad.class_id)
+    #[validate(length(max = 100))]
     pub slot: Option<String>,
     /// Nav position (corresponds to phpyun_navigation.`type`); defaults to 1 (top) when omitted
     #[serde(default = "default_nav_position")]
@@ -211,7 +214,7 @@ pub struct AggregateData {
 }
 
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/home/aggregate",
     tag = "wap",
     params(AggregateQuery),
@@ -219,7 +222,7 @@ pub struct AggregateData {
 )]
 pub async fn aggregate(
     State(state): State<AppState>,
-    ValidatedQuery(q): ValidatedQuery<AggregateQuery>,
+    ValidatedJson(q): ValidatedJson<AggregateQuery>,
 ) -> AppResult<ApiJson<AggregateData>> {
     let db = state.db.reader();
     let now = phpyun_core::clock::now_ts();

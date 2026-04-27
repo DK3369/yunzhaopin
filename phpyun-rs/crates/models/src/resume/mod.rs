@@ -8,4 +8,5 @@ pub mod project;
 pub mod repo;
 pub mod skill;
 pub mod training;
+pub mod view;
 pub mod work;

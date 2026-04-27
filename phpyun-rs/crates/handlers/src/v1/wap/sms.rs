@@ -1,6 +1,10 @@
 //! POST /v1/wap/sms/send — generic SMS code dispatch (register / login / reset_pw scenes).
 
-use axum::{extract::State, routing::post, Router};
+use axum::{
+    extract::State,
+    Router,
+    routing::post,
+};
 use phpyun_core::verify::{self, VerifyKind};
 use phpyun_core::{validators, ApiOk, AppError, AppResult, AppState, ValidatedJson};
 use phpyun_services::sms_service::{self, SmsScene};
@@ -19,6 +23,7 @@ pub struct SmsSendForm {
     pub moblie: String,
 
     /// `register` / `login` / `reset_pw` (added in phpyun-rs; PHP splits into multiple separate actions, we merge them into one endpoint distinguished by scene)
+    #[validate(length(min = 1, max = 200))]
     pub scene: String,
 
     /// Image captcha cid — required (anti SMS-bombing / mobile-enumeration)

@@ -2,16 +2,17 @@
 
 use axum::{
     extract::{Path, State},
-    routing::get,
     Router,
+    routing::post,
 };
-use phpyun_core::{ApiJson, AppResult, AppState};
+use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};
 use phpyun_services::nav_menu_service;
 use serde::Serialize;
 use utoipa::ToSchema;
+use phpyun_core::dto::{};
 
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/nav/{position}", get(list))
+    Router::new().route("/nav", post(list))
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -82,17 +83,22 @@ impl From<phpyun_models::nav_menu::entity::NavMenu> for NavItem {
 }
 
 /// Get navigation for the specified position (header/footer/sidebar/mobile)
-#[utoipa::path(
-    get,
-    path = "/v1/wap/nav/{position}",
+#[utoipa::path(post,
+    path = "/v1/wap/nav",
     tag = "wap",
-    params(("position" = String, Path)),
+    request_body = ListBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn list(
-    State(state): State<AppState>,
-    Path(position): Path<String>,
-) -> AppResult<ApiJson<Vec<NavItem>>> {
+pub async fn list(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<ListBody>) -> AppResult<ApiJson<Vec<NavItem>>> {
+    let position = b.position;
+    phpyun_core::validators::ensure_path_token(&position)?;
     let list = nav_menu_service::list(&state, &position).await?;
     Ok(ApiJson(list.into_iter().map(NavItem::from).collect()))
+}
+
+#[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
+pub struct ListBody {
+    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    pub position: String,
 }

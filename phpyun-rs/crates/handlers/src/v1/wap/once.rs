@@ -1,36 +1,45 @@
 //! One-off shop recruitment (`once`) front-end. Aligned with PHPYun `once/index::{index,show,add,ajax}_action`.
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::{Path, State},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    json, ApiJson, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{json, ApiJson, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::once_service::{self, ManageOp, OnceSearch, UpsertInput};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{IdBody, IdPasswordBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/once-jobs", get(list).post(create))
-        .route("/once-jobs/{id}", get(show).post(update))
-        .route("/once-jobs/{id}/verify", post(verify))
-        .route("/once-jobs/{id}/refresh", post(refresh))
-        .route("/once-jobs/{id}/pay", post(pay))
+        .route("/once-jobs", post(create))
+        .route("/once-jobs/list", post(list))
+        .route("/once-jobs/show", post(show))
+        .route("/once-jobs/update", post(update))
+        .route("/once-jobs/delete", post(soft_delete))
+        .route("/once-jobs/verify", post(verify))
+        .route("/once-jobs/refresh", post(refresh))
+        .route("/once-jobs/pay", post(pay))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
+    #[validate(length(max = 100))]
     pub keyword: Option<String>,
+    #[validate(range(min = 0, max = 99_999))]
     pub province_id: Option<i32>,
+    #[validate(range(min = 0, max = 99_999))]
     pub city_id: Option<i32>,
+    #[validate(range(min = 0, max = 99_999))]
     pub three_city_id: Option<i32>,
+    #[validate(range(min = 0, max = 99))]
     pub exp: Option<i32>,
+    #[validate(range(min = 0, max = 99))]
     pub edu: Option<i32>,
     #[serde(default = "default_did")]
+    #[validate(range(max = 999))]
     pub did: u32,
 }
 fn default_did() -> u32 {
@@ -70,11 +79,10 @@ impl From<phpyun_models::once_job::entity::OnceJob> for OnceListItem {
     }
 }
 
-#[utoipa::path(get, path = "/v1/wap/once-jobs", tag = "wap", params(ListQuery), responses((status = 200, description = "ok")))]
-pub async fn list(
+#[utoipa::path(post, path = "/v1/wap/once-jobs/update", tag = "wap", params(ListQuery), responses((status = 200, description = "ok")))]pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<ListQuery>,
+    ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Paged<OnceListItem>>> {
     let search = OnceSearch {
         keyword: q.keyword,
@@ -135,11 +143,11 @@ fn mask_name(s: &str) -> String {
     }
 }
 
-#[utoipa::path(get, path = "/v1/wap/once-jobs/{id}", tag = "wap", params(("id" = u64, Path)), responses((status = 200, description = "ok", body = OnceDetail)))]
-pub async fn show(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<OnceDetail>> {
+#[utoipa::path(post, path = "/v1/wap/once-jobs", tag = "wap", request_body = IdBody,
+    responses((status = 200, description = "ok", body = OnceDetail)))]
+pub async fn show(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<OnceDetail>> {
+    let id = b.id;
     let j = once_service::show(&state, id).await?;
     Ok(ApiJson(OnceDetail {
         id: j.id,
@@ -165,43 +173,60 @@ pub async fn show(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct UpsertBody {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+
     #[validate(length(min = 1, max = 64))]
     pub companyname: String,
     #[validate(length(min = 1, max = 32))]
     pub linkman: String,
-    #[validate(length(min = 6, max = 20))]
+    #[validate(length(min = 11, max = 15))]
     pub linktel: String,
-    #[validate(length(min = 4, max = 64))]
+    #[validate(length(min = 6, max = 64))]
     pub password: String,
+    #[validate(range(min = 0, max = 99_999))]
     pub province_id: i32,
+    #[validate(range(min = 0, max = 99_999))]
     pub city_id: i32,
     #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
     pub three_city_id: i32,
-    #[validate(range(min = 1, max = 1000))]
+    #[validate(range(min = 1, max = 999))]
     pub number: i32,
     #[serde(default)]
+    #[validate(range(min = 0, max = 99))]
     pub job_type: i32,
     #[serde(default)]
+    #[validate(range(min = 0, max = 999))]
     pub salary: i32,
     #[serde(default)]
+    #[validate(range(min = 0, max = 99))]
     pub exp: i32,
     #[serde(default)]
+    #[validate(range(min = 0, max = 99))]
     pub edu: i32,
-    #[validate(length(min = 1, max = 5000))]
+    #[validate(length(min = 1, max = 2000))]
     pub require: String,
     #[serde(default)]
+    #[validate(length(max = 1024))]
     pub pic: String,
     #[serde(default)]
+    #[validate(length(max = 1024))]
     pub yyzz: String,
     #[serde(default = "default_status")]
+    #[validate(range(min = 0, max = 2))]
     pub default_status: i32,
     #[serde(default = "default_valid_days")]
+    #[validate(range(min = 0i64, max = 365i64))]
     pub valid_days: i64,
     #[serde(default)]
+    #[validate(range(min = 0, max = 1_000_000))]
     pub daily_total_limit: u64,
     #[serde(default)]
+    #[validate(range(min = 0, max = 1_000_000))]
     pub daily_ip_limit: u64,
     #[serde(default = "default_did")]
+    #[validate(range(max = 999))]
     pub did: u32,
 }
 fn default_status() -> i32 {
@@ -266,53 +291,42 @@ pub async fn create(
     Ok(ApiJson(upsert_common(&state, &ip, None, b).await?))
 }
 
-/// Update or soft-delete a one-off recruitment (body `{password, status:2}` deletes; otherwise UpsertBody full update)
-#[utoipa::path(post, path = "/v1/wap/once-jobs/{id}", tag = "wap", params(("id" = u64, Path)), request_body = UpsertBody, responses((status = 200, description = "ok")))]
-pub async fn update(
-    State(state): State<AppState>,
+/// Update a one-off recruitment. Body must satisfy `UpsertBody` validation
+/// (every field length / range checked before any DB code runs). Soft-delete
+/// has been split out to its dedicated route — see
+/// `POST /v1/wap/once-jobs/{id}/delete`.
+#[utoipa::path(post, path = "/v1/wap/once-jobs", tag = "wap", request_body = UpsertBody, responses((status = 200, description = "ok")))]
+pub async fn update(State(state): State<AppState>,
     ClientIp(ip): ClientIp,
-    Path(id): Path<u64>,
-    axum::Json(v): axum::Json<json::Value>,
-) -> AppResult<ApiJson<json::Value>> {
-    // Soft delete: body carries `status:2` + password, dispatch to manage(Delete)
-    if v.get("status").and_then(|x| x.as_i64()) == Some(2) {
-        let password = v.get("password").and_then(|x| x.as_str()).unwrap_or("");
-        if password.is_empty() {
-            return Err(phpyun_core::AppError::param_invalid("password_required"));
-        }
-        once_service::manage(&state, id, password, ManageOp::Delete).await?;
-        return Ok(ApiJson(json::json!({ "ok": true, "deleted": true })));
-    }
-    // Full update
-    let b: UpsertBody = phpyun_core::json::from_value(v)?;
-    b.validate()
-        .map_err(|e| phpyun_core::AppError::param_invalid(format!("validation: {e}")))?;
+    ValidatedJson(b): ValidatedJson<UpsertBody>) -> AppResult<ApiJson<json::Value>> {
+    let id = b.id;
     let r = upsert_common(&state, &ip, Some(id), b).await?;
     Ok(ApiJson(json::json!({ "id": r.id, "created": r.created })))
 }
 
-#[derive(Debug, Deserialize, Validate, ToSchema)]
-pub struct PasswordBody {
-    #[validate(length(min = 4, max = 64))]
-    pub password: String,
+/// Soft-delete a one-off recruitment. Counterpart of the legacy
+/// `{password, status:2}` update body; password is verified against the
+/// row's stored hash.
+#[utoipa::path(post, path = "/v1/wap/once-jobs/delete", tag = "wap", request_body = IdPasswordBody, responses((status = 200, description = "ok")))]
+pub async fn soft_delete(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdPasswordBody>) -> AppResult<ApiJson<json::Value>> {
+    let id = b.id;
+    once_service::manage(&state, id, &b.password, ManageOp::Delete).await?;
+    Ok(ApiJson(json::json!({ "ok": true, "deleted": true })))
 }
 
-#[utoipa::path(post, path = "/v1/wap/once-jobs/{id}/verify", tag = "wap", params(("id" = u64, Path)), request_body = PasswordBody, responses((status = 200, description = "ok")))]
-pub async fn verify(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-    ValidatedJson(b): ValidatedJson<PasswordBody>,
-) -> AppResult<ApiJson<json::Value>> {
+#[utoipa::path(post, path = "/v1/wap/once-jobs/verify", tag = "wap", request_body = IdPasswordBody, responses((status = 200, description = "ok")))]
+pub async fn verify(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdPasswordBody>) -> AppResult<ApiJson<json::Value>> {
+    let id = b.id;
     once_service::manage(&state, id, &b.password, ManageOp::Verify).await?;
     Ok(ApiJson(json::json!({ "ok": true })))
 }
 
-#[utoipa::path(post, path = "/v1/wap/once-jobs/{id}/refresh", tag = "wap", params(("id" = u64, Path)), request_body = PasswordBody, responses((status = 200, description = "ok")))]
-pub async fn refresh(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-    ValidatedJson(b): ValidatedJson<PasswordBody>,
-) -> AppResult<ApiJson<json::Value>> {
+#[utoipa::path(post, path = "/v1/wap/once-jobs/refresh", tag = "wap", request_body = IdPasswordBody, responses((status = 200, description = "ok")))]
+pub async fn refresh(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdPasswordBody>) -> AppResult<ApiJson<json::Value>> {
+    let id = b.id;
     once_service::manage(&state, id, &b.password, ManageOp::Refresh).await?;
     Ok(ApiJson(json::json!({ "refreshed": true })))
 }
@@ -324,6 +338,9 @@ pub async fn refresh(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct PayForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+
     /// Posting password (md5-hashed by the server before comparison).
     #[validate(length(min = 4, max = 64))]
     pub password: String,
@@ -332,9 +349,11 @@ pub struct PayForm {
     #[validate(length(min = 1, max = 32))]
     pub paytype: String,
     /// `phpyun_once_price_gear.id` — the duration package the user picked.
+    #[validate(range(min = 0, max = 9_999))]
     pub oncepricegear: i32,
     /// Multi-site identifier (PHP `did`); 1 by default.
     #[serde(default = "default_did")]
+    #[validate(range(max = 999))]
     pub did: u32,
 }
 
@@ -352,22 +371,18 @@ pub struct PayCreated {
 /// `wap/once::getOrder_action`. The downstream gateway redirect (alipay /
 /// wxpay) is **not** performed here; the front-end uses `order_id` + the
 /// existing `/v1/wap/pay-callback/*` endpoints to drive the gateway.
-#[utoipa::path(
-    post,
-    path = "/v1/wap/once-jobs/{id}/pay",
+#[utoipa::path(post,
+    path = "/v1/wap/once-jobs/pay",
     tag = "wap",
-    params(("id" = u64, Path)),
     request_body = PayForm,
     responses(
         (status = 200, description = "ok", body = PayCreated),
         (status = 400, description = "Invalid gear / wrong password / once-job not found"),
     )
 )]
-pub async fn pay(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<PayForm>,
-) -> AppResult<ApiJson<PayCreated>> {
+pub async fn pay(State(state): State<AppState>,
+    ValidatedJson(f): ValidatedJson<PayForm>) -> AppResult<ApiJson<PayCreated>> {
+    let id = f.id;
     let r = once_service::create_pay_order(
         &state,
         once_service::PayInput {
@@ -387,3 +402,4 @@ pub async fn pay(
         fast: r.fast,
     }))
 }
+

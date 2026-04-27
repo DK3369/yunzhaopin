@@ -1,30 +1,44 @@
 //! Peer-to-peer private messaging.
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::post,
 };
 use phpyun_core::json;
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::chat_service;
 use serde::{Deserialize, Serialize};
-use utoipa::{IntoParams, ToSchema};
+use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{PeerBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/chat/send", post(send))
-        .route("/chat/conversations", get(list_conversations))
-        .route("/chat/with/{peer}", get(list_with))
-        .route("/chat/with/{peer}/read", post(mark_read))
-        .route("/chat/unread-count", get(unread_count))
+        .route("/chat/conversations", post(list_conversations))
+        .route("/chat/with", post(list_with))
+        .route("/chat/with/read", post(mark_read))
+        .route("/chat/unread-count", post(unread_count))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ChatWithBody {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub peer: u64,
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub before_id: Option<u64>,
+    #[serde(default = "default_limit")]
+    #[validate(range(min = 1, max = 200))]
+    pub limit: u64,
+}
+fn default_limit() -> u64 {
+    50
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct SendForm {
+    #[validate(range(min = 1, max = 99_999_999))]
     pub peer_uid: u64,
     #[validate(length(min = 1, max = 5000))]
     pub body: String,
@@ -93,38 +107,27 @@ impl From<phpyun_models::chat::entity::Chat> for ChatItem {
     }
 }
 
-#[derive(Debug, Deserialize, Validate, IntoParams)]
-pub struct ChatWithQuery {
-    pub before_id: Option<u64>,
-    #[serde(default = "default_limit")]
-    pub limit: u64,
-}
-fn default_limit() -> u64 {
-    50
-}
-
 /// Fetch the most recent N messages of a conversation (ordered by id desc, paginated by before_id)
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/chat/with/{peer}",
+    post,
+    path = "/v1/mcenter/chat/with",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("peer" = u64, Path), ChatWithQuery),
+    request_body = ChatWithBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn list_with(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(peer): Path<u64>,
-    ValidatedQuery(q): ValidatedQuery<ChatWithQuery>,
+    ValidatedJson(b): ValidatedJson<ChatWithBody>,
 ) -> AppResult<ApiJson<Vec<ChatItem>>> {
-    let list = chat_service::list_with(&state, &user, peer, q.before_id, q.limit).await?;
+    let list = chat_service::list_with(&state, &user, b.peer, b.before_id, b.limit).await?;
     Ok(ApiJson(list.into_iter().map(ChatItem::from).collect()))
 }
 
 /// My conversation list (one latest message per conversation)
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/chat/conversations",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -141,18 +144,18 @@ pub async fn list_conversations(
 /// Mark all messages from the peer in a conversation as read
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/chat/with/{peer}/read",
+    path = "/v1/mcenter/chat/with/read",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("peer" = u64, Path)),
+    request_body = PeerBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn mark_read(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(peer): Path<u64>,
+    ValidatedJson(b): ValidatedJson<PeerBody>,
 ) -> AppResult<ApiJson<json::Value>> {
-    let n = chat_service::mark_read_with(&state, &user, peer).await?;
+    let n = chat_service::mark_read_with(&state, &user, b.peer).await?;
     Ok(ApiJson(json::json!({ "ok": true, "updated": n })))
 }
 
@@ -163,7 +166,7 @@ pub struct UnreadCount {
 
 /// Total count of my unread private messages (for the frontend message badge)
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/chat/unread-count",
     tag = "mcenter",
     security(("bearer" = [])),

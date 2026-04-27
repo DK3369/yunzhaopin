@@ -11,7 +11,13 @@
 //! serialization we call `phpyun_core::i18n::t()` to translate using the current request language.
 //! Translation entries are maintained under the `dict.*` namespace of `locales/<lang>.json`.
 
-use axum::{extract::Path, routing::get, Router};
+use axum::{
+    Router,
+    routing::post,
+};
+use phpyun_core::ValidatedJson;
+use serde::Deserialize;
+use validator::Validate;
 use phpyun_core::i18n::{current_lang, t, Lang};
 use phpyun_core::{ApiJson, AppResult, AppState};
 use serde::Serialize;
@@ -22,14 +28,14 @@ pub fn routes() -> Router<AppState> {
     // existing clients stay green while they migrate to /v1/wap/regions.
     #[allow(deprecated)]
     let r = Router::new()
-        .route("/dict/cities", get(cities))
-        .route("/dict/cities/{province_id}", get(cities_of_province));
-    r.route("/dict/industries", get(industries))
-        .route("/dict/job-categories", get(job_categories))
-        .route("/dict/educations", get(educations))
-        .route("/dict/experiences", get(experiences))
-        .route("/dict/salaries", get(salaries))
-        .route("/dict/job-types", get(job_types))
+        .route("/dict/cities", post(cities))
+        .route("/dict/cities/by-province", post(cities_of_province));
+    r.route("/dict/industries", post(industries))
+        .route("/dict/job-categories", post(job_categories))
+        .route("/dict/educations", post(educations))
+        .route("/dict/experiences", post(experiences))
+        .route("/dict/salaries", post(salaries))
+        .route("/dict/job-types", post(job_types))
 }
 
 /// Dictionary item as seen by the client. `name` is a string resolved using the current request language.
@@ -70,7 +76,7 @@ fn render(entries: &[DictEntry], lang: Lang) -> Vec<DictItem> {
 /// hand-coded list this endpoint serves). Kept for backward compatibility
 /// with existing clients.
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/dict/cities",
     tag = "wap",
     responses((status = 200, description = "DEPRECATED — prefer GET /v1/wap/regions"))
@@ -85,17 +91,24 @@ pub async fn cities() -> AppResult<ApiJson<Vec<DictItem>>> {
 /// ⚠️ **Deprecated** in favour of
 /// `GET /v1/wap/regions/{id}/children` (live, i18n-aware, all provinces
 /// supported — not just hand-coded BJ/SH). Kept for backward compatibility.
+#[derive(Debug, Deserialize, Validate, utoipa::ToSchema)]
+pub struct ProvinceBody {
+    #[validate(range(min = 0, max = 9_999_999))]
+    pub province_id: i32,
+}
+
 #[utoipa::path(
-    get,
-    path = "/v1/wap/dict/cities/{province_id}",
+    post,
+    path = "/v1/wap/dict/cities/by-province",
     tag = "wap",
-    params(("province_id" = i32, Path)),
-    responses((status = 200, description = "DEPRECATED — prefer GET /v1/wap/regions/{id}/children"))
+    request_body = ProvinceBody,
+    responses((status = 200, description = "DEPRECATED — prefer POST /v1/wap/regions/children"))
 )]
-#[deprecated(note = "use GET /v1/wap/regions/{id}/children instead")]
+#[deprecated(note = "use POST /v1/wap/regions/children instead")]
 pub async fn cities_of_province(
-    Path(pid): Path<i32>,
+    ValidatedJson(b): ValidatedJson<ProvinceBody>,
 ) -> AppResult<ApiJson<Vec<DictItem>>> {
+    let pid = b.province_id;
     let lang = current_lang();
     let v = match pid {
         1 => render(BEIJING_DISTRICTS, lang),
@@ -110,7 +123,7 @@ pub async fn cities_of_province(
 
 /// Industry categories
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/dict/industries",
     tag = "wap",
     responses((status = 200, description = "ok"))
@@ -121,7 +134,7 @@ pub async fn industries() -> AppResult<ApiJson<Vec<DictItem>>> {
 
 /// Top-level job categories
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/dict/job-categories",
     tag = "wap",
     responses((status = 200, description = "ok"))
@@ -132,7 +145,7 @@ pub async fn job_categories() -> AppResult<ApiJson<Vec<DictItem>>> {
 
 /// Education levels
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/dict/educations",
     tag = "wap",
     responses((status = 200, description = "ok"))
@@ -143,7 +156,7 @@ pub async fn educations() -> AppResult<ApiJson<Vec<DictItem>>> {
 
 /// Work experience
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/dict/experiences",
     tag = "wap",
     responses((status = 200, description = "ok"))
@@ -154,7 +167,7 @@ pub async fn experiences() -> AppResult<ApiJson<Vec<DictItem>>> {
 
 /// Salary ranges
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/dict/salaries",
     tag = "wap",
     responses((status = 200, description = "ok"))
@@ -165,7 +178,7 @@ pub async fn salaries() -> AppResult<ApiJson<Vec<DictItem>>> {
 
 /// Job types (full-time / part-time / internship / ...)
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/dict/job-types",
     tag = "wap",
     responses((status = 200, description = "ok"))

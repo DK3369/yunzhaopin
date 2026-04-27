@@ -1,26 +1,28 @@
 //! Hot search keywords (public endpoint).
 
 use axum::{
-    extract::{Query, State},
-    routing::get,
+    extract::{State},
     Router,
+    routing::post,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, ValidatedQuery};
+use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};
 use phpyun_services::hot_search_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/hot-searches", get(list))
+    Router::new().route("/hot-searches", post(list))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct HotQuery {
     /// job / resume / company / article
     #[serde(default = "default_scope")]
+    #[validate(length(min = 1, max = 100))]
     pub scope: String,
     #[serde(default = "default_limit")]
+    #[validate(range(min = 1, max = 200))]
     pub limit: u64,
 }
 fn default_scope() -> String {
@@ -63,7 +65,7 @@ impl From<phpyun_models::hot_search::entity::HotSearch> for HotItem {
 
 /// Top N hot search keywords
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/hot-searches",
     tag = "wap",
     params(HotQuery),
@@ -71,7 +73,7 @@ impl From<phpyun_models::hot_search::entity::HotSearch> for HotItem {
 )]
 pub async fn list(
     State(state): State<AppState>,
-    ValidatedQuery(q): ValidatedQuery<HotQuery>,
+    ValidatedJson(q): ValidatedJson<HotQuery>,
 ) -> AppResult<ApiJson<Vec<HotItem>>> {
     let list = hot_search_service::top(&state, &q.scope, q.limit).await?;
     Ok(ApiJson(list.iter().cloned().map(HotItem::from).collect()))

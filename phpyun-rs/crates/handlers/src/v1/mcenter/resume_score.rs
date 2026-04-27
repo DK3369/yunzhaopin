@@ -1,13 +1,17 @@
 //! Resume completeness score.
 
-use axum::{extract::State, routing::get, Router};
+use axum::{
+    extract::State,
+    Router,
+    routing::post,
+};
 use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser};
 use phpyun_services::resume_score_service;
 use serde::Serialize;
 use utoipa::ToSchema;
 
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/resume/completion", get(completion))
+    Router::new().route("/resume/completion", post(completion))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -18,7 +22,7 @@ pub struct Completion {
 
 /// My resume completeness
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/resume/completion",
     tag = "mcenter",
     security(("bearer" = [])),

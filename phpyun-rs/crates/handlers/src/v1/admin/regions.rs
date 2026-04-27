@@ -7,24 +7,22 @@
 
 use axum::{
     extract::{Path, State},
-    routing::post,
     Router,
+    routing::post,
 };
-use phpyun_core::{
-    clock, ApiJson, ApiOk, AppError, AppResult, AppState, AuthenticatedUser, InfraError,
-    ValidatedJson,
-};
+use phpyun_core::{clock, ApiJson, ApiOk, AppError, AppResult, AppState, AuthenticatedUser, InfraError, ValidatedJson};
 use phpyun_models::region::repo as region_repo;
 use phpyun_services::region_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{CreatedId, IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/regions", post(create))
-        .route("/regions/{id}", post(patch))
-        .route("/regions/{id}/delete", post(delete))
+        .route("/regions/patch", post(patch))
+        .route("/regions/delete", post(delete))
         .route("/regions/reload", post(reload))
 }
 
@@ -32,6 +30,7 @@ pub fn routes() -> Router<AppState> {
 pub struct CreateForm {
     /// `NULL` for country-level rows; otherwise a parent region's id.
     #[serde(default)]
+    #[validate(range(min = 1, max = 99_999_999))]
     pub parent_id: Option<u64>,
     /// ISO 3166-1 alpha-2 (CN/US/...). For non-country rows this should match the country chain.
     #[validate(length(equal = 2))]
@@ -46,14 +45,11 @@ pub struct CreateForm {
     pub name: String,
     /// Optional `AF/AN/AS/EU/NA/OC/SA` (country-level only).
     #[serde(default)]
+    #[validate(length(max = 500))]
     pub continent: Option<String>,
     #[serde(default)]
+    #[validate(range(min = 0, max = 9_999))]
     pub sort: i32,
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CreatedId {
-    pub id: u64,
 }
 
 #[utoipa::path(
@@ -94,21 +90,24 @@ pub async fn create(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct PatchForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+
     #[serde(default)]
     #[validate(length(min = 1, max = 120))]
     pub name: Option<String>,
     #[serde(default)]
+    #[validate(range(min = 0, max = 9_999))]
     pub sort: Option<i32>,
     #[serde(default)]
+    #[validate(length(max = 500))]
     pub continent: Option<String>,
 }
 
-#[utoipa::path(
-    post,
-    path = "/v1/admin/regions/{id}",
+#[utoipa::path(post,
+    path = "/v1/admin/regions",
     tag = "admin",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
     request_body = PatchForm,
     responses(
         (status = 200, description = "ok"),
@@ -116,12 +115,10 @@ pub struct PatchForm {
         (status = 404, description = "Not found"),
     )
 )]
-pub async fn patch(
-    State(state): State<AppState>,
+pub async fn patch(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<PatchForm>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<PatchForm>) -> AppResult<ApiOk> {
+    let id = f.id;
     user.require_admin()?;
     let affected = region_repo::update(
         state.db.pool(),
@@ -147,23 +144,21 @@ pub async fn patch(
 /// Soft-delete (`status=2`). Children are not auto-cascaded — the cache filters
 /// by `status != 2`, so descendants remain visible until the admin explicitly
 /// deletes them.
-#[utoipa::path(
-    post,
-    path = "/v1/admin/regions/{id}/delete",
+#[utoipa::path(post,
+    path = "/v1/admin/regions/delete",
     tag = "admin",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses(
         (status = 200, description = "Deleted"),
         (status = 403, description = "Admin required"),
         (status = 404, description = "Not found"),
     )
 )]
-pub async fn delete(
-    State(state): State<AppState>,
+pub async fn delete(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiOk> {
+    let id = b.id;
     user.require_admin()?;
     let affected = region_repo::soft_delete(state.db.pool(), id, clock::now_ts())
         .await
@@ -193,3 +188,4 @@ pub async fn reload(
     region_service::reload(&state).await?;
     Ok(ApiOk("reloaded"))
 }
+

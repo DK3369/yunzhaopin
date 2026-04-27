@@ -4,26 +4,26 @@
 
 use axum::{
     extract::{Path, State},
-    routing::{get, post},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    json, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
-};
+use phpyun_core::{json, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::{company_banner_service, company_tpl_service};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{IdBody, IdsBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         // Templates
-        .route("/company-tpls", get(tpl_list))
-        .route("/company-tpls/{id}/apply", post(tpl_apply))
+        .route("/company-tpls", post(tpl_list))
+        .route("/company-tpls/apply", post(tpl_apply))
         // Banners
-        .route("/company-banners", get(banner_list).post(banner_add))
+        .route("/company-banners", post(banner_add))
+        .route("/company-banners/list", post(banner_list))
         .route("/company-banners/delete", post(banner_delete))
-        .route("/company-banners/{id}", post(banner_update))
+        .route("/company-banners/update", post(banner_update))
 }
 
 // ==================== Template ====================
@@ -89,8 +89,8 @@ impl From<phpyun_models::company_tpl::entity::CompanyTpl> for TplView {
 }
 
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/company-tpls",
+    post,
+    path = "/v1/mcenter/company-tpls/list",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
@@ -110,24 +110,22 @@ pub struct ApplyView {
     pub deducted_kind: i32,
 }
 
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/company-tpls/{id}/apply",
+#[utoipa::path(post,
+    path = "/v1/mcenter/company-tpls/apply",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses(
         (status = 200, description = "ok", body = ApplyView),
         (status = 400, description = "Template not found or disabled / insufficient balance"),
         (status = 403, description = "Not a company account"),
     )
 )]
-pub async fn tpl_apply(
-    State(state): State<AppState>,
+pub async fn tpl_apply(State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<ApplyView>> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<ApplyView>> {
+    let id = b.id;
     let r = company_tpl_service::apply(&state, &user, id, &ip).await?;
     Ok(ApiJson(ApplyView {
         tpl_id: r.tpl_id,
@@ -190,13 +188,12 @@ impl From<phpyun_models::company_banner::entity::CompanyBanner> for BannerView {
 }
 
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/company-banners",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]
-pub async fn banner_list(
+)]pub async fn banner_list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
 ) -> AppResult<ApiJson<Vec<BannerView>>> {
@@ -211,9 +208,11 @@ pub struct BannerAddForm {
     #[validate(length(max = 512))]
     pub link: Option<String>,
     #[serde(default)]
+    #[validate(range(min = 0, max = 9_999))]
     pub sort: i32,
     /// Aligned with PHP `com_banner_num`. 0 = unlimited
     #[serde(default)]
+    #[validate(range(min = 0, max = 99_999_999))]
     pub max_per_company: u64,
 }
 
@@ -248,28 +247,28 @@ pub async fn banner_add(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct BannerUpdateForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+
     #[validate(length(min = 1, max = 512))]
     pub pic: Option<String>,
     #[validate(length(max = 512))]
     pub link: Option<String>,
+    #[validate(range(min = 0, max = 9_999))]
     pub sort: Option<i32>,
 }
 
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/company-banners/{id}",
+#[utoipa::path(post,
+    path = "/v1/mcenter/company-banners",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
     request_body = BannerUpdateForm,
     responses((status = 200, description = "ok"))
 )]
-pub async fn banner_update(
-    State(state): State<AppState>,
+pub async fn banner_update(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<BannerUpdateForm>,
-) -> AppResult<ApiJson<json::Value>> {
+    ValidatedJson(f): ValidatedJson<BannerUpdateForm>) -> AppResult<ApiJson<json::Value>> {
+    let id = f.id;
     let n = company_banner_service::update(
         &state,
         &user,
@@ -282,12 +281,6 @@ pub async fn banner_update(
     )
     .await?;
     Ok(ApiJson(json::json!({ "updated": n })))
-}
-
-#[derive(Debug, Deserialize, Validate, ToSchema)]
-pub struct IdsBody {
-    #[validate(length(min = 1, max = 200))]
-    pub ids: Vec<u64>,
 }
 
 #[utoipa::path(
@@ -306,3 +299,4 @@ pub async fn banner_delete(
     let n = company_banner_service::delete_mine(&state, &user, &b.ids).await?;
     Ok(ApiJson(json::json!({ "deleted": n })))
 }
+

@@ -1,28 +1,20 @@
 //! Admin VIP order panel.
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::{Path, State},
     Router,
+    routing::post,
 };
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{dto::StatusFilterBody, ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::admin_service;
 use serde::{Deserialize, Serialize};
-use utoipa::{IntoParams, ToSchema};
+use utoipa::ToSchema;
 use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/orders", get(list))
-        .route("/orders/{order_no}/status", post(set_status))
-}
-
-#[derive(Debug, Deserialize, Validate, IntoParams)]
-pub struct OrderListQuery {
-    /// 0=pending 1=paid 2=refunded 3=cancelled; omit for all
-    pub status: Option<i32>,
+        .route("/orders", post(list))
+        .route("/orders/status", post(set_status))
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -36,47 +28,13 @@ fn order_status_name(s: i32) -> &'static str {
     match s { 0 => "pending", 1 => "paid", 2 => "refunded", 3 => "cancelled", _ => "unknown" }
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct OrderItem {
-    pub id: u64,
-    pub order_no: String,
-    pub uid: u64,
-    pub package_code: String,
-    pub amount_cents: i32,
-    pub amount_yuan: f64,
-    pub channel: String,
-    pub status: i32,
-    pub status_n: String,
-    pub pay_tx_id: Option<String>,
-    pub created_at: i64,
-    pub created_at_n: String,
-    pub paid_at: i64,
-    pub paid_at_n: String,
-}
-
-impl From<phpyun_models::vip::entity::PayOrder> for OrderItem {
-    fn from(o: phpyun_models::vip::entity::PayOrder) -> Self {
-        Self {
-            id: o.id,
-            order_no: o.order_no,
-            uid: o.uid,
-            package_code: o.package_code,
-            amount_yuan: (o.amount_cents as f64) / 100.0,
-            amount_cents: o.amount_cents,
-            channel: o.channel,
-            status_n: order_status_name(o.status).to_string(),
-            status: o.status,
-            pay_tx_id: o.pay_tx_id,
-            created_at_n: fmt_dt(o.created_at),
-            created_at: o.created_at,
-            paid_at_n: fmt_dt(o.paid_at),
-            paid_at: o.paid_at,
-        }
-    }
-}
+// Reuse mcenter's `vip::OrderItem` — same shape and `From<PayOrder>` impl.
+pub type OrderItem = crate::v1::mcenter::vip::OrderItem;
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct SetStatusForm {
+    #[validate(length(min = 1, max = 64))]
+    pub order_no: String,
     /// 2=refund 3=cancel
     #[validate(range(min = 2, max = 3))]
     pub status: i32,
@@ -84,18 +42,18 @@ pub struct SetStatusForm {
 
 /// Global order list
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/admin/orders",
     tag = "admin",
     security(("bearer" = [])),
-    params(OrderListQuery),
+    request_body = StatusFilterBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<OrderListQuery>,
+    ValidatedJson(q): ValidatedJson<StatusFilterBody>,
 ) -> AppResult<ApiJson<Paged<OrderItem>>> {
     user.require_admin()?;
     let r = admin_service::list_orders(&state, q.status, page).await?;
@@ -108,21 +66,18 @@ pub async fn list(
 }
 
 /// Refund / cancel order
-#[utoipa::path(
-    post,
-    path = "/v1/admin/orders/{order_no}/status",
+#[utoipa::path(post,
+    path = "/v1/admin/orders/status",
     tag = "admin",
     security(("bearer" = [])),
-    params(("order_no" = String, Path)),
     request_body = SetStatusForm,
     responses((status = 200, description = "ok"))
 )]
-pub async fn set_status(
-    State(state): State<AppState>,
+pub async fn set_status(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(order_no): Path<String>,
-    ValidatedJson(f): ValidatedJson<SetStatusForm>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<SetStatusForm>) -> AppResult<ApiOk> {
+    let order_no = f.order_no;
+    phpyun_core::validators::ensure_path_token(&order_no)?;
     user.require_admin()?;
     admin_service::set_order_status(&state, &user, &order_no, f.status).await?;
     Ok(ApiOk("ok"))

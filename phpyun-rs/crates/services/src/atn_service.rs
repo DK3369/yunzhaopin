@@ -15,7 +15,7 @@
 use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::atn::entity::{Atn, KIND_COMPANY, KIND_USER};
 use phpyun_models::atn::repo as atn_repo;
-use phpyun_models::sysmsg::repo as sysmsg_repo;
+use phpyun_models::message::repo as message_repo;
 
 use crate::user_service;
 
@@ -89,7 +89,7 @@ async fn best_effort_notify(
         "用户 <a href=\"usertpl,{uid}\">{username}</a> {action}",
         uid = follower.uid,
     );
-    let _ = sysmsg_repo::insert(
+    let _ = message_repo::insert_simple(
         state.db.pool(),
         target_uid,
         usertype,

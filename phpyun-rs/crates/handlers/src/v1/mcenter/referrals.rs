@@ -1,6 +1,10 @@
 //! My referral rewards.
 
-use axum::{extract::State, routing::get, Router};
+use axum::{
+    extract::State,
+    Router,
+    routing::post,
+};
 use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_services::referral_service;
 use serde::Serialize;
@@ -8,8 +12,8 @@ use utoipa::ToSchema;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/referrals", get(list))
-        .route("/referrals/summary", get(summary))
+        .route("/referrals", post(list))
+        .route("/referrals/summary", post(summary))
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -52,7 +56,7 @@ pub struct SummaryView {
 
 /// My referral list
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/referrals",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -74,7 +78,7 @@ pub async fn list(
 
 /// Summary: number of invitees + accumulated points
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/referrals/summary",
     tag = "mcenter",
     security(("bearer" = [])),

@@ -1,24 +1,27 @@
 //! Category tree management (admin).
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::{Path, State},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson, ValidatedQuery};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::category_service::{self, CatInput, CatPatch};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{CreatedId};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/categories", get(list).post(create))
-        .route("/categories/{id}", post(update))
+        .route("/categories", post(create))
+        .route("/categories/list", post(list))
+        .route("/categories/update", post(update))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
+    #[validate(length(min = 1, max = 200))]
     pub kind: String,
 }
 
@@ -59,36 +62,37 @@ impl From<phpyun_models::category::entity::Category> for CatItem {
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct CatForm {
     #[serde(default)]
+    #[validate(range(min = 1, max = 99_999_999))]
     pub parent_id: u64,
     #[validate(length(min = 1, max = 32))]
     pub kind: String,
     #[validate(length(min = 1, max = 120))]
     pub name: String,
     #[serde(default)]
+    #[validate(range(min = 0, max = 9_999))]
     pub sort: i32,
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct CatPatchForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+
+    #[validate(range(min = 1, max = 99_999_999))]
     pub parent_id: Option<u64>,
     #[validate(length(min = 1, max = 120))]
     pub name: Option<String>,
+    #[validate(range(min = 0, max = 9_999))]
     pub sort: Option<i32>,
     /// 0=offline / 1=online / 2=deleted (soft delete)
     #[validate(range(min = 0, max = 2))]
     pub status: Option<i32>,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CreatedId {
-    pub id: u64,
-}
-
-#[utoipa::path(get, path = "/v1/admin/categories", tag = "admin", security(("bearer" = [])), params(ListQuery), responses((status = 200, description = "ok")))]
-pub async fn list(
+#[utoipa::path(post, path = "/v1/admin/categories/list", tag = "admin", security(("bearer" = [])), params(ListQuery), responses((status = 200, description = "ok")))]pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedQuery(q): ValidatedQuery<ListQuery>,
+    ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Vec<CatItem>>> {
     user.require_admin()?;
     let list = category_service::admin_list(&state, &user, &q.kind).await?;
@@ -116,13 +120,11 @@ pub async fn create(
     Ok(ApiJson(CreatedId { id }))
 }
 
-#[utoipa::path(post, path = "/v1/admin/categories/{id}", tag = "admin", security(("bearer" = [])), params(("id" = u64, Path)), request_body = CatPatchForm, responses((status = 200, description = "ok")))]
-pub async fn update(
-    State(state): State<AppState>,
+#[utoipa::path(post, path = "/v1/admin/categories", tag = "admin", security(("bearer" = [])), request_body = CatPatchForm, responses((status = 200, description = "ok")))]
+pub async fn update(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<CatPatchForm>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<CatPatchForm>) -> AppResult<ApiOk> {
+    let id = f.id;
     user.require_admin()?;
     if f.status == Some(2) {
         category_service::admin_delete(&state, &user, id).await?;

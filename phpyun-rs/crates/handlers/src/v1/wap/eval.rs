@@ -2,14 +2,15 @@
 
 use axum::{
     extract::{Path, State},
-    routing::get,
     Router,
+    routing::{get, post},
 };
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination};
+use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::eval_service;
 use serde::Serialize;
 use utoipa::ToSchema;
+use phpyun_core::dto::{IdBody};
 
 fn fmt_dt(ts: i64) -> String {
     if ts <= 0 {
@@ -28,10 +29,10 @@ fn pic_n(state: &AppState, raw: &str) -> String {
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/eval-papers", get(list_papers))
-        .route("/eval-papers/{id}", get(paper_detail))
-        .route("/eval-papers/{id}/messages", get(list_messages))
-        .route("/eval-papers/{id}/recent-examinees", get(list_recent_examinees))
+        .route("/eval-papers", post(list_papers))
+        .route("/eval-papers/detail", post(paper_detail))
+        .route("/eval-papers/messages/list", post(list_messages))
+        .route("/eval-papers/recent-examinees", post(list_recent_examinees))
 }
 
 /// Assessment list item — all 7 columns of phpyun_eval_paper + CDN URL + formatted time.
@@ -131,7 +132,7 @@ fn strip_scores(v: &json::Value) -> json::Value {
 }
 
 /// Assessment list
-#[utoipa::path(get, path = "/v1/wap/eval-papers", tag = "wap", responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/wap/eval-papers/messages/list", tag = "wap", responses((status = 200, description = "ok")))]
 pub async fn list_papers(
     State(state): State<AppState>,
     page: Pagination,
@@ -149,17 +150,15 @@ pub async fn list_papers(
 }
 
 /// Assessment detail (with questions; options exclude score — backend scores after submission)
-#[utoipa::path(
-    get,
-    path = "/v1/wap/eval-papers/{id}",
+#[utoipa::path(post,
+    path = "/v1/wap/eval-papers",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok", body = PaperDetail))
 )]
-pub async fn paper_detail(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<PaperDetail>> {
+pub async fn paper_detail(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<PaperDetail>> {
+    let id = b.id;
     let (p, qs) = eval_service::get_paper_with_questions(&state, id).await?;
     let cover_n = pic_n(&state, &p.cover);
     Ok(ApiJson(PaperDetail {
@@ -215,18 +214,16 @@ impl From<phpyun_models::eval::repo::PaperMessage> for PaperMessageItem {
 /// Public list of leave-messages on an assessment paper. Counterpart of PHP
 /// `evaluate.model.php::getMessageList`. Read-only — write side lives at
 /// `POST /v1/mcenter/eval-papers/{id}/messages`.
-#[utoipa::path(
-    get,
-    path = "/v1/wap/eval-papers/{id}/messages",
+#[utoipa::path(post,
+    path = "/v1/wap/eval-papers/messages",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn list_messages(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
+pub async fn list_messages(State(state): State<AppState>,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<PaperMessageItem>>> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<Paged<PaperMessageItem>>> {
+    let id = b.id;
     let examid = id as u32;
     let pool = state.db.reader();
     let (list, total) = tokio::join!(
@@ -266,18 +263,17 @@ impl From<phpyun_models::eval::repo::ExamineeBrief> for ExamineeItem {
 /// of PHP `evaluate.model.php::getEvaluateLogList(groupby:uid, orderby:ctime,desc)`
 /// — drives the "他们也参加了测评" sidebar on the result page. PHP defaults
 /// `limit=12`; we accept 1..=50.
-#[utoipa::path(
-    get,
-    path = "/v1/wap/eval-papers/{id}/recent-examinees",
+#[utoipa::path(post,
+    path = "/v1/wap/eval-papers/recent-examinees",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn list_recent_examinees(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<Vec<ExamineeItem>>> {
+pub async fn list_recent_examinees(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<Vec<ExamineeItem>>> {
+    let id = b.id;
     let rows = phpyun_models::eval::repo::list_recent_examinees(state.db.reader(), id as u32, 12)
         .await?;
     Ok(ApiJson(rows.into_iter().map(ExamineeItem::from).collect()))
 }
+

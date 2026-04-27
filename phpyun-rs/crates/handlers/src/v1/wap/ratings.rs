@@ -1,14 +1,25 @@
 //! Public rating reads (aligned with PHPYun `rating.model.php` detail page comment block).
 
 use axum::{
-    extract::{Path, State},
-    routing::get,
+    extract::State,
     Router,
+    routing::post,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination};
+use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::rating_service;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
+use validator::Validate;
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct RatingTargetBody {
+    /// 1=company / 2=resume / 3=job
+    #[validate(range(min = 1, max = 99))]
+    pub kind: i32,
+    /// Target uid (the entity being rated).
+    #[validate(range(min = 1, max = 999_999_999))]
+    pub uid: u64,
+}
 
 fn fmt_dt(ts: i64) -> String {
     if ts <= 0 {
@@ -21,8 +32,8 @@ fn fmt_dt(ts: i64) -> String {
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/ratings/{kind}/{uid}", get(list))
-        .route("/ratings/{kind}/{uid}/summary", get(summary))
+        .route("/ratings/list", post(list))
+        .route("/ratings/summary", post(summary))
 }
 
 /// Rating item — all 9 columns of phpyun_rating + formatted timestamps.
@@ -92,18 +103,18 @@ impl From<phpyun_models::rating::entity::RatingAggregate> for RatingSummary {
 
 /// Rating list (newest first)
 #[utoipa::path(
-    get,
-    path = "/v1/wap/ratings/{kind}/{uid}",
+    post,
+    path = "/v1/wap/ratings/list",
     tag = "wap",
-    params(("kind" = i32, Path, description = "1=company 2=resume 3=job"), ("uid" = u64, Path)),
+    request_body = RatingTargetBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn list(
     State(state): State<AppState>,
-    Path((kind, uid)): Path<(i32, u64)>,
     page: Pagination,
+    ValidatedJson(b): ValidatedJson<RatingTargetBody>,
 ) -> AppResult<ApiJson<Paged<RatingItem>>> {
-    let r = rating_service::list(&state, uid, kind, page).await?;
+    let r = rating_service::list(&state, b.uid, b.kind, page).await?;
     Ok(ApiJson(Paged::new(
         r.list.into_iter().map(RatingItem::from).collect(),
         r.total,
@@ -114,16 +125,16 @@ pub async fn list(
 
 /// Rating summary (count + avg)
 #[utoipa::path(
-    get,
-    path = "/v1/wap/ratings/{kind}/{uid}/summary",
+    post,
+    path = "/v1/wap/ratings/summary",
     tag = "wap",
-    params(("kind" = i32, Path), ("uid" = u64, Path)),
+    request_body = RatingTargetBody,
     responses((status = 200, description = "ok", body = RatingSummary))
 )]
 pub async fn summary(
     State(state): State<AppState>,
-    Path((kind, uid)): Path<(i32, u64)>,
+    ValidatedJson(b): ValidatedJson<RatingTargetBody>,
 ) -> AppResult<ApiJson<RatingSummary>> {
-    let a = rating_service::aggregate(&state, uid, kind).await?;
+    let a = rating_service::aggregate(&state, b.uid, b.kind).await?;
     Ok(ApiJson(RatingSummary::from(a)))
 }

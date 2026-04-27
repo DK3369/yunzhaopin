@@ -1,24 +1,25 @@
 //! Admin single-page CMS: class and page CRUD.
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::{Path, State},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::description_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{CreatedId, IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/desc-classes", get(list_classes).post(create_class))
-        .route("/desc-classes/{id}", post(update_class))
-        .route("/descriptions", get(list).post(upsert))
-        .route("/descriptions/{id}", post(delete_one))
+        .route("/desc-classes", post(create_class))
+        .route("/desc-classes/list", post(list_classes))
+        .route("/desc-classes/update", post(update_class))
+        .route("/descriptions", post(upsert))
+        .route("/descriptions/list", post(list))
+        .route("/descriptions/delete", post(delete_one))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -36,13 +37,12 @@ impl From<phpyun_models::description::entity::DescClass> for ClassItem {
 }
 
 #[utoipa::path(
-    get,
-    path = "/v1/admin/desc-classes",
+    post,
+    path = "/v1/admin/desc-classes/list",
     tag = "admin",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]
-pub async fn list_classes(
+)]pub async fn list_classes(
     State(state): State<AppState>,
     user: AuthenticatedUser,
 ) -> AppResult<ApiJson<Vec<ClassItem>>> {
@@ -56,12 +56,8 @@ pub struct ClassForm {
     #[validate(length(min = 1, max = 64))]
     pub name: String,
     #[serde(default)]
+    #[validate(range(min = 0, max = 9_999))]
     pub sort: i32,
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CreatedId {
-    pub id: u64,
 }
 
 #[utoipa::path(
@@ -84,29 +80,30 @@ pub async fn create_class(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct ClassPatchForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+
     #[serde(default)]
+    #[validate(range(min = 0, max = 9_999))]
     pub sort: Option<i32>,
     /// Soft delete: pass `2` to delete the class.
     #[serde(default)]
+    #[validate(range(min = 0, max = 99))]
     pub status: Option<i32>,
 }
 
 /// Update or soft-delete a class (passing `"status":2` in the body means delete)
-#[utoipa::path(
-    post,
-    path = "/v1/admin/desc-classes/{id}",
+#[utoipa::path(post,
+    path = "/v1/admin/desc-classes",
     tag = "admin",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
     request_body = ClassPatchForm,
     responses((status = 200, description = "ok"))
 )]
-pub async fn update_class(
-    State(state): State<AppState>,
+pub async fn update_class(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<ClassPatchForm>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<ClassPatchForm>) -> AppResult<ApiOk> {
+    let id = f.id;
     user.require_admin()?;
     if f.status == Some(2) {
         description_service::delete_class(&state, &user, id).await?;
@@ -120,6 +117,7 @@ pub async fn update_class(
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
+    #[validate(range(min = 1, max = 99_999_999))]
     pub class_id: Option<u64>,
     /// Default false (admin sees everything)
     #[serde(default)]
@@ -170,7 +168,7 @@ impl From<phpyun_models::description::entity::Description> for DescItem {
 }
 
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/admin/descriptions",
     tag = "admin",
     security(("bearer" = [])),
@@ -181,7 +179,7 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<ListQuery>,
+    ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Paged<DescItem>>> {
     user.require_admin()?;
     let r = description_service::list(&state, q.class_id, q.only_visible, page).await?;
@@ -195,19 +193,24 @@ pub async fn list(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct UpsertForm {
+    #[validate(range(min = 1, max = 99_999_999))]
     pub id: Option<u64>,
     #[serde(default)]
+    #[validate(range(min = 1, max = 99_999_999))]
     pub class_id: u64,
     #[validate(length(min = 1, max = 200))]
     pub title: String,
     #[serde(default)]
+    #[validate(length(min = 1, max = 5000))]
     pub content: String,
     /// 1=custom page  2=internal link  3=external link
     #[validate(range(min = 1, max = 3))]
     pub is_type: i32,
     #[serde(default)]
+    #[validate(length(max = 1024))]
     pub link_url: String,
     #[serde(default)]
+    #[validate(range(min = 0, max = 9_999))]
     pub sort: i32,
     /// 0=hidden  1=visible
     #[validate(range(min = 0, max = 1))]
@@ -246,20 +249,19 @@ pub async fn upsert(
     Ok(ApiJson(CreatedId { id }))
 }
 
-#[utoipa::path(
-    post,
-    path = "/v1/admin/descriptions/{id}",
+#[utoipa::path(post,
+    path = "/v1/admin/descriptions",
     tag = "admin",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn delete_one(
-    State(state): State<AppState>,
+pub async fn delete_one(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiOk> {
+    let id = b.id;
     user.require_admin()?;
     description_service::delete(&state, &user, id).await?;
     Ok(ApiOk("deleted"))
 }
+

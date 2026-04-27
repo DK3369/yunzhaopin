@@ -1,12 +1,12 @@
 //! Recommendations (matching PHPYun `finder.model.php`).
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::{Path, State},
     Router,
+    routing::post,
 };
 use phpyun_core::i18n::{current_lang, t};
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedJson, ValidatedQuery};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::{recommend_email_service, recommend_service};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -14,17 +14,18 @@ use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/recommend/jobs", get(jobs))
-        .route("/recommend/resumes", get(resumes))
+        .route("/recommend/jobs", post(jobs))
+        .route("/recommend/resumes", post(resumes))
         // Email-recommendation endpoint (PHP `wap/resume/resumeshare::index`).
         // `kind` is `job` or `resume`.
-        .route("/recommend/email/{kind}/{id}", post(send_email))
-        .route("/recommend/email/quota", get(quota))
+        .route("/recommend/email", post(send_email))
+        .route("/recommend/email/quota", post(quota))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct RecQuery {
     #[serde(default = "recommend_service::default_limit")]
+    #[validate(range(min = 1, max = 200))]
     pub limit: u64,
 }
 
@@ -57,7 +58,7 @@ impl From<phpyun_models::job::entity::Job> for RecJob {
 
 /// Recommend jobs based on my expectations + resume education
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/recommend/jobs",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -67,7 +68,7 @@ impl From<phpyun_models::job::entity::Job> for RecJob {
 pub async fn jobs(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedQuery(q): ValidatedQuery<RecQuery>,
+    ValidatedJson(q): ValidatedJson<RecQuery>,
 ) -> AppResult<ApiJson<Vec<RecJob>>> {
     let list = recommend_service::recommend_jobs_for_me(&state, &user, q.limit).await?;
     Ok(ApiJson(list.into_iter().map(RecJob::from).collect()))
@@ -108,7 +109,7 @@ impl From<phpyun_models::resume::entity::Resume> for RecResume {
 
 /// Company: recommend resumes based on the edu of the first active job under this company
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/recommend/resumes",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -118,7 +119,7 @@ impl From<phpyun_models::resume::entity::Resume> for RecResume {
 pub async fn resumes(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedQuery(q): ValidatedQuery<RecQuery>,
+    ValidatedJson(q): ValidatedJson<RecQuery>,
 ) -> AppResult<ApiJson<Vec<RecResume>>> {
     let list = recommend_service::recommend_resumes_for_me(&state, &user, q.limit).await?;
     Ok(ApiJson(list.into_iter().map(RecResume::from).collect()))
@@ -128,6 +129,10 @@ pub async fn resumes(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct EmailRecommendForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    pub kind: String,
     #[validate(email)]
     pub email: String,
     /// Optional personal note from the sender; max 500 chars. PHP composes
@@ -151,9 +156,8 @@ pub struct EmailRecommendResp {
 ///
 /// Captcha is enforced via the standard `captcha_cid + authcode` pair on the
 /// caller — handled at the front-end gate, not duplicated here.
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/recommend/email/{kind}/{id}",
+#[utoipa::path(post,
+    path = "/v1/mcenter/recommend/email",
     tag = "mcenter",
     security(("bearer" = [])),
     params(
@@ -168,12 +172,12 @@ pub struct EmailRecommendResp {
         (status = 429, description = "Per-day cap reached or interval too short"),
     )
 )]
-pub async fn send_email(
-    State(state): State<AppState>,
+pub async fn send_email(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path((kind, id)): Path<(String, u64)>,
-    ValidatedJson(f): ValidatedJson<EmailRecommendForm>,
-) -> AppResult<ApiJson<EmailRecommendResp>> {
+    ValidatedJson(f): ValidatedJson<EmailRecommendForm>) -> AppResult<ApiJson<EmailRecommendResp>> {
+    let kind = f.kind;
+    let id = f.id;
+    phpyun_core::validators::ensure_path_token(&kind)?;
     let input = recommend_email_service::RecommendInput {
         target_email: &f.email,
         message: f.message.as_deref(),
@@ -221,7 +225,7 @@ impl From<phpyun_services::recommend_email_service::QuotaStatus> for QuotaView {
 /// "send" button proactively (or display the cooldown timer) without
 /// trying-and-being-rejected.
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/recommend/email/quota",
     tag = "mcenter",
     security(("bearer" = [])),

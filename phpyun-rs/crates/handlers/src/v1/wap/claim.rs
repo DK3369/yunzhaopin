@@ -1,6 +1,10 @@
 //! Company claim (public: can be submitted without login).
 
-use axum::{extract::State, routing::post, Router};
+use axum::{
+    extract::State,
+    Router,
+    routing::post,
+};
 use phpyun_core::{ApiJson, AppResult, AppState, ClientIp, ValidatedJson};
 use phpyun_services::claim_service::{self, ClaimInput};
 use serde::{Deserialize, Serialize};
@@ -13,6 +17,7 @@ pub fn routes() -> Router<AppState> {
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct ClaimForm {
+    #[validate(range(min = 1, max = 99_999_999))]
     pub uid: u64,
     #[validate(length(min = 1, max = 64))]
     pub code: String,

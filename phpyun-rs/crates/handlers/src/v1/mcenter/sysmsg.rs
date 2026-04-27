@@ -10,22 +10,22 @@
 //! endpoints here.
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::{Path, State},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    json, ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{json, ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::sysmsg_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{IdBody, IdsBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/sys-messages", get(list).post(delete_many))
-        .route("/sys-messages/{id}/read", post(mark_read))
+        .route("/sys-messages", post(delete_many))
+        .route("/sys-messages/list", post(list))
+        .route("/sys-messages/read", post(mark_read))
         .route("/sys-messages/mark-all-read", post(mark_all_read))
 }
 
@@ -73,18 +73,17 @@ pub struct ListQuery {
 }
 
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/sys-messages",
+    post,
+    path = "/v1/mcenter/sys-messages/list",
     tag = "mcenter",
     security(("bearer" = [])),
     params(ListQuery),
     responses((status = 200, description = "ok"))
-)]
-pub async fn list(
+)]pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<ListQuery>,
+    ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Paged<SysMsgView>>> {
     let r = sysmsg_service::list_mine(&state, &user, q.unread_only, page).await?;
     Ok(ApiJson(Paged::new(
@@ -95,19 +94,17 @@ pub async fn list(
     )))
 }
 
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/sys-messages/{id}/read",
+#[utoipa::path(post,
+    path = "/v1/mcenter/sys-messages/read",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn mark_read(
-    State(state): State<AppState>,
+pub async fn mark_read(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<json::Value>> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<json::Value>> {
+    let id = b.id;
     let n = sysmsg_service::mark_read(&state, &user, id).await?;
     Ok(ApiJson(json::json!({ "updated": n })))
 }
@@ -127,12 +124,6 @@ pub async fn mark_all_read(
     Ok(ApiJson(json::json!({ "updated": n })))
 }
 
-#[derive(Debug, Deserialize, Validate, ToSchema)]
-pub struct IdsBody {
-    #[validate(length(min = 1, max = 200))]
-    pub ids: Vec<u64>,
-}
-
 #[utoipa::path(
     post,
     path = "/v1/mcenter/sys-messages",
@@ -149,3 +140,4 @@ pub async fn delete_many(
     let n = sysmsg_service::delete_mine(&state, &user, &b.ids).await?;
     Ok(ApiJson(json::json!({ "deleted": n })))
 }
+

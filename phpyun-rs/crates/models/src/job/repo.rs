@@ -502,9 +502,12 @@ pub async fn list_by_company_public(
     qb.push(FIELDS);
     qb.push(" FROM phpyun_company_job WHERE uid = ");
     qb.push_bind(com_uid);
-    qb.push(" AND state = 1 AND status = 0 AND r_status = 1 AND edate > ");
+    // edate semantics in PHPYun: 0 = no expiration set (treated as active),
+    // > now = active, otherwise expired. PHP's company-detail page does not
+    // filter by edate at all, so include both cases.
+    qb.push(" AND state = 1 AND status = 0 AND r_status = 1 AND (edate = 0 OR edate > ");
     qb.push_bind(now);
-    qb.push(" ORDER BY rec DESC, lastupdate DESC LIMIT ");
+    qb.push(") ORDER BY rec DESC, lastupdate DESC LIMIT ");
     qb.push_bind(limit);
     qb.push(" OFFSET ");
     qb.push_bind(offset);
@@ -518,7 +521,8 @@ pub async fn count_by_company_public(
 ) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM phpyun_company_job
-         WHERE uid = ? AND state = 1 AND status = 0 AND r_status = 1 AND edate > ?",
+         WHERE uid = ? AND state = 1 AND status = 0 AND r_status = 1
+           AND (edate = 0 OR edate > ?)",
     )
     .bind(com_uid)
     .bind(now)

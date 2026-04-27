@@ -1,13 +1,11 @@
 //! Job review (admin).
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::{Path, State},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::admin_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -15,14 +13,15 @@ use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/jobs", get(list))
-        .route("/jobs/{id}/state", post(set_state))
+        .route("/jobs", post(list))
+        .route("/jobs/state", post(set_state))
         .route("/jobs/batch/state", post(batch_set_state))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct JobListQuery {
     /// 0=pending / 1=approved / 2=rejected
+    #[validate(range(min = 0, max = 99))]
     pub state: Option<i32>,
 }
 
@@ -33,7 +32,7 @@ pub type AdminJobItem = crate::v1::wap::jobs::JobSummary;
 
 /// Job review queue
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/admin/jobs",
     tag = "admin",
     security(("bearer" = [])),
@@ -44,7 +43,7 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<JobListQuery>,
+    ValidatedJson(q): ValidatedJson<JobListQuery>,
 ) -> AppResult<ApiJson<Paged<AdminJobItem>>> {
     user.require_admin()?;
     let r = admin_service::list_jobs(&state, q.state, page).await?;
@@ -53,7 +52,7 @@ pub async fn list(
     Ok(ApiJson(Paged::new(
         r.list
             .into_iter()
-            .map(|j| AdminJobItem::from_with_dict(j, &dicts, now))
+            .map(|j| crate::v1::wap::jobs::job_summary_from_dict(j, &dicts, now))
             .collect(),
         r.total,
         page.page,
@@ -63,27 +62,25 @@ pub async fn list(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct SetJobStateForm {
+    #[validate(range(min = 1, max = 999_999_999))]
+    pub id: u64,
     /// 1=approved / 2=rejected
     #[validate(range(min = 1, max = 2))]
     pub state: i32,
 }
 
 /// Review a job
-#[utoipa::path(
-    post,
-    path = "/v1/admin/jobs/{id}/state",
+#[utoipa::path(post,
+    path = "/v1/admin/jobs/state",
     tag = "admin",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
     request_body = SetJobStateForm,
     responses((status = 200, description = "ok"))
 )]
-pub async fn set_state(
-    State(state): State<AppState>,
+pub async fn set_state(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<SetJobStateForm>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<SetJobStateForm>) -> AppResult<ApiOk> {
+    let id = f.id;
     user.require_admin()?;
     admin_service::set_job_state(&state, &user, id, f.state).await?;
     Ok(ApiOk("ok"))

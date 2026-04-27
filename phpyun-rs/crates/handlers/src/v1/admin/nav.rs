@@ -1,20 +1,22 @@
 //! Navigation management (admin).
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::{Path, State},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson, ValidatedQuery};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::nav_menu_service::{self, NavInput, NavPatch};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{CreatedId};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/nav", get(list).post(create))
-        .route("/nav/{id}", post(update))
+        .route("/nav", post(create))
+        .route("/nav/list", post(list))
+        .route("/nav/update", post(update))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -33,56 +35,9 @@ fn icon_n(state: &AppState, raw: &str) -> String {
     state.storage.normalize_legacy_url(raw, state.config.web_base_url.as_deref())
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct NavItem {
-    pub id: u64,
-    pub position: String,
-    pub label: String,
-    pub url: String,
-    pub icon: String,
-    pub icon_n: String,
-    pub parent_id: u64,
-    pub sort: i32,
-    pub status: i32,
-    pub updated_at: i64,
-    pub updated_at_n: String,
-}
-
-impl NavItem {
-    pub fn from_with_ctx(n: phpyun_models::nav_menu::entity::NavMenu, state: &AppState) -> Self {
-        Self {
-            icon_n: icon_n(state, &n.icon),
-            id: n.id,
-            position: n.position,
-            label: n.label,
-            url: n.url,
-            icon: n.icon,
-            parent_id: n.parent_id,
-            sort: n.sort,
-            status: n.status,
-            updated_at_n: fmt_dt(n.updated_at),
-            updated_at: n.updated_at,
-        }
-    }
-}
-
-impl From<phpyun_models::nav_menu::entity::NavMenu> for NavItem {
-    fn from(n: phpyun_models::nav_menu::entity::NavMenu) -> Self {
-        Self {
-            id: n.id,
-            position: n.position,
-            label: n.label,
-            url: n.url,
-            icon: n.icon.clone(),
-            icon_n: n.icon,
-            parent_id: n.parent_id,
-            sort: n.sort,
-            status: n.status,
-            updated_at_n: fmt_dt(n.updated_at),
-            updated_at: n.updated_at,
-        }
-    }
-}
+// Reuse wap's `NavItem` (identical shape and `From<NavMenu>`); admin needs no
+// extra fields here, just a different list filter on the service layer.
+pub type NavItem = crate::v1::wap::nav::NavItem;
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct NavForm {
@@ -96,36 +51,37 @@ pub struct NavForm {
     #[serde(default)]
     pub icon: String,
     #[serde(default)]
+    #[validate(range(min = 1, max = 99_999_999))]
     pub parent_id: u64,
     #[serde(default)]
+    #[validate(range(min = 0, max = 9_999))]
     pub sort: i32,
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct NavPatchForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+
     #[validate(length(min = 1, max = 120))]
     pub label: Option<String>,
     #[validate(length(min = 1, max = 500))]
     pub url: Option<String>,
     #[validate(length(max = 120))]
     pub icon: Option<String>,
+    #[validate(range(min = 1, max = 99_999_999))]
     pub parent_id: Option<u64>,
+    #[validate(range(min = 0, max = 9_999))]
     pub sort: Option<i32>,
     /// 0=offline / 1=online / 2=deleted (soft delete)
     #[validate(range(min = 0, max = 2))]
     pub status: Option<i32>,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CreatedId {
-    pub id: u64,
-}
-
-#[utoipa::path(get, path = "/v1/admin/nav", tag = "admin", security(("bearer" = [])), params(ListQuery), responses((status = 200, description = "ok")))]
-pub async fn list(
+#[utoipa::path(post, path = "/v1/admin/nav/list", tag = "admin", security(("bearer" = [])), params(ListQuery), responses((status = 200, description = "ok")))]pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedQuery(q): ValidatedQuery<ListQuery>,
+    ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Vec<NavItem>>> {
     user.require_admin()?;
     let list = nav_menu_service::admin_list(&state, &user, q.position.as_deref()).await?;
@@ -156,13 +112,11 @@ pub async fn create(
 }
 
 /// Update or soft-delete a navigation entry (sending `"status":2` deletes it)
-#[utoipa::path(post, path = "/v1/admin/nav/{id}", tag = "admin", security(("bearer" = [])), params(("id" = u64, Path)), request_body = NavPatchForm, responses((status = 200, description = "ok")))]
-pub async fn update(
-    State(state): State<AppState>,
+#[utoipa::path(post, path = "/v1/admin/nav", tag = "admin", security(("bearer" = [])), request_body = NavPatchForm, responses((status = 200, description = "ok")))]
+pub async fn update(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<NavPatchForm>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<NavPatchForm>) -> AppResult<ApiOk> {
+    let id = f.id;
     user.require_admin()?;
     if f.status == Some(2) {
         nav_menu_service::admin_delete(&state, &user, id).await?;

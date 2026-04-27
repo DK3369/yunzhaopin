@@ -103,13 +103,47 @@ where
         .layer(trace)
 }
 
-/// Allow only GET / POST / HEAD / OPTIONS; any other method returns 404.
+/// Method filter:
+///
+/// - **`/v1/*` business endpoints**: only POST is allowed (HEAD / OPTIONS pass
+///   through for browser preflights & probes). GET / PUT / PATCH / DELETE all
+///   return 405. This is the project-wide convention — every business param
+///   travels in a JSON body, never in the URL.
+/// - **Everything else** (e.g. `/health`, `/ready`, `/openapi.json`,
+///   `/docs/*` Swagger UI assets, the `/v1/wap/wechat/callback` exception
+///   for the WeChat protocol): GET / POST / HEAD / OPTIONS are all allowed;
+///   anything else returns 404 (preserves the original behaviour).
+///
+/// `/v1/wap/wechat/callback` is the only `/v1/*` route that legitimately
+/// needs GET (WeChat's verification handshake mandates GET + query string —
+/// outside our control). We allow-list it explicitly.
 async fn only_get_post(req: Request, next: Next) -> Response {
     use axum::{
         http::{Method, StatusCode},
         response::IntoResponse,
     };
-    match *req.method() {
+    let path = req.uri().path();
+    let method = req.method();
+
+    // 1) WeChat callback exception — GET allowed.
+    if path == "/v1/wap/wechat/callback" {
+        return match *method {
+            Method::GET | Method::POST | Method::HEAD | Method::OPTIONS => next.run(req).await,
+            _ => StatusCode::METHOD_NOT_ALLOWED.into_response(),
+        };
+    }
+
+    // 2) /v1/* business endpoints — POST only (+ HEAD/OPTIONS for preflight).
+    if path.starts_with("/v1/") {
+        return match *method {
+            Method::POST | Method::HEAD | Method::OPTIONS => next.run(req).await,
+            _ => StatusCode::METHOD_NOT_ALLOWED.into_response(),
+        };
+    }
+
+    // 3) All other paths (ops probes, swagger UI, openapi.json) — keep the
+    //    permissive GET / POST allowance.
+    match *method {
         Method::GET | Method::POST | Method::HEAD | Method::OPTIONS => next.run(req).await,
         _ => StatusCode::NOT_FOUND.into_response(),
     }

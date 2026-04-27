@@ -2,13 +2,11 @@
 
 use axum::{
     extract::State,
-    routing::{get, post},
     Router,
+    routing::{get, post},
 };
 use phpyun_core::json;
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
-};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::resume_service::{self, ResumeUpdateInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -16,7 +14,8 @@ use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/resume", get(get_mine).post(update_mine))
+        .route("/resume", post(update_mine))
+        .route("/resume/list", post(get_mine))
         .route("/resume/status", post(update_status))
         .route("/resume/refresh", post(refresh))
 }
@@ -42,13 +41,12 @@ pub struct ResumeData {
 
 /// Get the current job seeker's resume
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/resume",
+    post,
+    path = "/v1/mcenter/resume/list",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok", body = ResumeData))
-)]
-pub async fn get_mine(
+)]pub async fn get_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
 ) -> AppResult<ApiJson<ResumeData>> {

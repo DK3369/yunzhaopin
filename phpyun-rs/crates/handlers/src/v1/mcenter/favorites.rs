@@ -9,14 +9,11 @@
 //! frontend just calls POST and reads `data.favorited` from the response.
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    ApiJson, ApiMsg, ApiMsgData, AppResult, AppState, AuthenticatedUser, ClientIp, Paged,
-    Pagination, ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{ApiJson, ApiMsg, ApiMsgData, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::collect_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -24,9 +21,10 @@ use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/favorites", post(add).get(list))
-        .route("/favorites/{kind}/{target_id}", post(remove))
-        .route("/favorites/exists/{kind}/{target_id}", get(exists))
+        .route("/favorites", post(add))
+        .route("/favorites/list", post(list))
+        .route("/favorites/remove", post(remove))
+        .route("/favorites/exists", post(exists))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -34,6 +32,7 @@ pub struct AddFavoriteForm {
     /// 1=job / 2=company / 3=resume
     #[validate(range(min = 1, max = 3))]
     pub kind: i32,
+    #[validate(range(min = 1, max = 99_999_999))]
     pub target_id: u64,
 }
 
@@ -48,7 +47,7 @@ pub struct ToggleResp {
 /// ("添加收藏成功" / "已取消收藏" / etc.).
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/favorites",
+    path = "/v1/mcenter/favorites/list",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = AddFavoriteForm,
@@ -74,22 +73,19 @@ pub async fn add(
 /// Remove favorite
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/favorites/{kind}/{target_id}",
+    path = "/v1/mcenter/favorites/remove",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(
-        ("kind" = i32, Path, description = "1/2/3"),
-        ("target_id" = u64, Path),
-    ),
+    request_body = AddFavoriteForm,
     responses((status = 200, description = "ok"))
 )]
 pub async fn remove(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    Path((kind, target_id)): Path<(i32, u64)>,
+    ValidatedJson(b): ValidatedJson<AddFavoriteForm>,
 ) -> AppResult<ApiMsg> {
-    collect_service::remove(&state, &user, kind, target_id, &ip).await?;
+    collect_service::remove(&state, &user, b.kind, b.target_id, &ip).await?;
     Ok(ApiMsg("collect_removed"))
 }
 
@@ -101,6 +97,7 @@ use super::super::wap::jobs::JobSummary;
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
     /// 1=job / 2=company / 3=resume
+    #[validate(range(min = 0, max = 99))]
     pub kind: i32,
 }
 
@@ -108,18 +105,17 @@ pub struct ListQuery {
 /// — identical `JobSummary` so the frontend reuses the same card component.
 /// `is_favorited` is always `true` here.
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/favorites",
     tag = "mcenter",
     security(("bearer" = [])),
     params(ListQuery),
     responses((status = 200, description = "ok"))
-)]
-pub async fn list(
+)]pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<ListQuery>,
+    ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Paged<JobSummary>>> {
     let r = collect_service::list(&state, &user, q.kind, page).await?;
 
@@ -144,7 +140,7 @@ pub async fn list(
     let items: Vec<JobSummary> = ordered_ids
         .into_iter()
         .filter_map(|id| by_id.remove(&id))
-        .map(|j| JobSummary::from_with_dict_fav(j, &dicts, now, true))
+        .map(|j| crate::v1::wap::jobs::job_summary_from_dict_fav(j, &dicts, now, true))
         .collect();
 
     Ok(ApiJson(Paged::new(items, r.total, page.page, page.page_size)))
@@ -157,21 +153,18 @@ pub struct ExistsResp {
 
 /// Whether the current user has already favorited a given target (front-end button state)
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/favorites/exists/{kind}/{target_id}",
+    post,
+    path = "/v1/mcenter/favorites/exists",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(
-        ("kind" = i32, Path),
-        ("target_id" = u64, Path),
-    ),
+    request_body = AddFavoriteForm,
     responses((status = 200, description = "ok"))
 )]
 pub async fn exists(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path((kind, target_id)): Path<(i32, u64)>,
+    ValidatedJson(b): ValidatedJson<AddFavoriteForm>,
 ) -> AppResult<ApiJson<ExistsResp>> {
-    let ok = collect_service::exists(&state, &user, kind, target_id).await?;
+    let ok = collect_service::exists(&state, &user, b.kind, b.target_id).await?;
     Ok(ApiJson(ExistsResp { exists: ok }))
 }

@@ -2,12 +2,10 @@
 
 use axum::{
     extract::{Path, State},
-    routing::{get, post},
     Router,
+    routing::post,
 };
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
-};
+use phpyun_core::{dto::IdBody, ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::eval_service;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -16,16 +14,35 @@ use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/eval-papers/{id}/submit", post(submit))
-        .route("/eval-logs", get(list_logs))
-        .route("/eval-logs/{id}", get(get_log))
-        .route("/eval-papers/{id}/messages", post(post_message))
+        .route("/eval-papers/submit", post(submit))
+        .route("/eval-logs", post(list_logs))
+        .route("/eval-logs/detail", post(get_log))
+        .route("/eval-papers/messages/post", post(post_message))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct SubmitForm {
-    /// In the form `{"<question_id>": "<option_label>"}`
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+
+    /// In the form `{"<question_id>": "<option_label>"}`. Capped at 120
+    /// entries with key/value lengths bounded to prevent DoS via huge map.
+    #[validate(custom(function = "validate_answers"))]
     pub answers: HashMap<String, String>,
+}
+
+fn validate_answers(
+    answers: &HashMap<String, String>,
+) -> Result<(), validator::ValidationError> {
+    if answers.len() > 120 {
+        return Err(validator::ValidationError::new("answers_too_many"));
+    }
+    for (k, v) in answers {
+        if k.len() > 64 || v.len() > 256 {
+            return Err(validator::ValidationError::new("answer_entry_too_long"));
+        }
+    }
+    Ok(())
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -35,21 +52,17 @@ pub struct SubmitResult {
 }
 
 /// Submit assessment answers
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/eval-papers/{id}/submit",
+#[utoipa::path(post,
+    path = "/v1/mcenter/eval-papers/submit",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
     request_body = SubmitForm,
     responses((status = 200, description = "ok", body = SubmitResult))
 )]
-pub async fn submit(
-    State(state): State<AppState>,
+pub async fn submit(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<SubmitForm>,
-) -> AppResult<ApiJson<SubmitResult>> {
+    ValidatedJson(f): ValidatedJson<SubmitForm>) -> AppResult<ApiJson<SubmitResult>> {
+    let id = f.id;
     let (log_id, score) = eval_service::submit(&state, &user, id, f.answers).await?;
     Ok(ApiJson(SubmitResult { log_id, score }))
 }
@@ -89,7 +102,7 @@ impl From<phpyun_models::eval::entity::EvalLog> for LogItem {
 
 /// My assessment history
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/eval-logs",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -113,6 +126,9 @@ pub async fn list_logs(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct PaperMessageForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+
     /// Free-text comment, 1..=512 chars.
     #[validate(length(min = 1, max = 512))]
     pub message: String,
@@ -126,21 +142,17 @@ pub struct PaperMessageCreated {
 /// Leave a public message on an assessment paper. Counterpart of PHP
 /// `evaluate/exampaper::message_action`. The list view lives at
 /// `GET /v1/wap/eval-papers/{id}/messages`.
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/eval-papers/{id}/messages",
+#[utoipa::path(post,
+    path = "/v1/mcenter/eval-papers/messages",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
     request_body = PaperMessageForm,
     responses((status = 200, description = "ok", body = PaperMessageCreated))
 )]
-pub async fn post_message(
-    State(state): State<AppState>,
+pub async fn post_message(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<PaperMessageForm>,
-) -> AppResult<ApiJson<PaperMessageCreated>> {
+    ValidatedJson(f): ValidatedJson<PaperMessageForm>) -> AppResult<ApiJson<PaperMessageCreated>> {
+    let id = f.id;
     let id_u32 = id as u32;
     let now = phpyun_core::clock::now_ts();
     let new_id = phpyun_models::eval::repo::insert_paper_message(
@@ -161,11 +173,11 @@ pub async fn post_message(
 /// `evaluate/exampaper::gradeshow_action` (the data slice; the `examinee`
 /// sidebar lives at `/v1/wap/eval-papers/{id}/recent-examinees`).
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/eval-logs/{id}",
+    post,
+    path = "/v1/mcenter/eval-logs/detail",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses(
         (status = 200, description = "ok", body = LogItem),
         (status = 404, description = "Not found / not yours"),
@@ -174,8 +186,9 @@ pub async fn post_message(
 pub async fn get_log(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(log_id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<LogItem>> {
+    let log_id = b.id;
     let row = phpyun_models::eval::repo::find_log_for_owner(state.db.reader(), log_id, user.uid)
         .await?
         .ok_or_else(|| {

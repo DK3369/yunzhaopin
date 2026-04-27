@@ -4,14 +4,18 @@
 //! the company side returns rows — jobseekers receive an empty list (the
 //! reciprocal "who has viewed my resume" lives on `/v1/mcenter/profile-views`).
 
-use axum::{extract::State, routing::get, Router};
+use axum::{
+    extract::State,
+    Router,
+    routing::post,
+};
 use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_services::fan_service;
 use serde::Serialize;
 use utoipa::ToSchema;
 
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/fans", get(list_mine))
+    Router::new().route("/fans", post(list_mine))
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -52,7 +56,7 @@ impl From<fan_service::FanRow> for FanItem {
 /// Paginated list of jobseekers who have favorited my company's jobs.
 /// Job-seekers receive an empty list (only `usertype=2` has fans).
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/fans",
     tag = "mcenter",
     security(("bearer" = [])),

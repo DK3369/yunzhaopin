@@ -10,37 +10,46 @@
 //! - DELETE `/v1/wap/tiny-resumes/{id}`       delete (requires password)
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::{Path, State},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    json, ApiJson, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{json, ApiJson, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::tiny_service::{self, ManageOp, TinySearch, UpsertInput};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{IdBody, IdPasswordBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/tiny-resumes", get(list).post(create))
-        .route("/tiny-resumes/{id}", get(show).post(update))
-        .route("/tiny-resumes/{id}/verify", post(verify))
-        .route("/tiny-resumes/{id}/refresh", post(refresh))
+        .route("/tiny-resumes", post(create))
+        .route("/tiny-resumes/list", post(list))
+        .route("/tiny-resumes/show", post(show))
+        .route("/tiny-resumes/update", post(update))
+        .route("/tiny-resumes/delete", post(soft_delete))
+        .route("/tiny-resumes/verify", post(verify))
+        .route("/tiny-resumes/refresh", post(refresh))
 }
 
 // ==================== list ====================
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
+    #[validate(length(max = 100))]
     pub keyword: Option<String>,
+    #[validate(range(min = 0, max = 99_999))]
     pub province_id: Option<i32>,
+    #[validate(range(min = 0, max = 99_999))]
     pub city_id: Option<i32>,
+    #[validate(range(min = 0, max = 99_999))]
     pub three_city_id: Option<i32>,
+    #[validate(range(min = 0, max = 99))]
     pub exp: Option<i32>,
+    #[validate(range(min = 0, max = 99))]
     pub sex: Option<i32>,
     #[serde(default = "default_did")]
+    #[validate(range(max = 999))]
     pub did: u32,
 }
 fn default_did() -> u32 {
@@ -77,16 +86,15 @@ impl From<phpyun_models::tiny::entity::TinyResume> for TinyListItem {
 }
 
 #[utoipa::path(
-    get,
-    path = "/v1/wap/tiny-resumes",
+    post,
+    path = "/v1/wap/tiny-resumes/update",
     tag = "wap",
     params(ListQuery),
     responses((status = 200, description = "ok"))
-)]
-pub async fn list(
+)]pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<ListQuery>,
+    ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Paged<TinyListItem>>> {
     let search = TinySearch {
         keyword: q.keyword,
@@ -137,20 +145,18 @@ fn mask_mobile(s: &str) -> String {
     format!("{prefix}****{suffix}")
 }
 
-#[utoipa::path(
-    get,
-    path = "/v1/wap/tiny-resumes/{id}",
+#[utoipa::path(post,
+    path = "/v1/wap/tiny-resumes",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses(
         (status = 200, description = "ok", body = TinyDetail),
         (status = 404, description = "not found"),
     )
 )]
-pub async fn show(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<TinyDetail>> {
+pub async fn show(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<TinyDetail>> {
+    let id = b.id;
     let t = tiny_service::show(&state, id).await?;
     Ok(ApiJson(TinyDetail {
         id: t.id,
@@ -174,6 +180,9 @@ pub async fn show(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct UpsertBody {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+
     #[validate(length(min = 1, max = 64))]
     pub username: String,
     #[validate(range(min = 1, max = 3))]
@@ -182,26 +191,33 @@ pub struct UpsertBody {
     pub exp: i32,
     #[validate(length(min = 1, max = 128))]
     pub job: String,
-    #[validate(length(min = 6, max = 20))]
+    #[validate(length(min = 11, max = 15))]
     pub mobile: String,
-    #[validate(length(min = 4, max = 64))]
+    #[validate(length(min = 6, max = 64))]
     pub password: String,
+    #[validate(range(min = 0, max = 99_999))]
     pub province_id: i32,
+    #[validate(range(min = 0, max = 99_999))]
     pub city_id: i32,
     #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
     pub three_city_id: i32,
-    #[validate(length(min = 1, max = 5000))]
+    #[validate(length(min = 1, max = 2000))]
     pub production: String,
     /// Default status (mirrors PHP `user_wjl`; 0=pending review / 1=approved)
     #[serde(default = "default_status")]
+    #[validate(range(min = 0, max = 2))]
     pub default_status: i32,
     /// Site-wide daily limit (mirrors `sy_tiny_totalnum`; 0 = unlimited)
     #[serde(default)]
+    #[validate(range(min = 0, max = 1_000_000))]
     pub daily_total_limit: u64,
     /// Per-IP daily limit (mirrors `sy_tiny`; 0 = unlimited)
     #[serde(default)]
+    #[validate(range(min = 0, max = 1_000_000))]
     pub daily_ip_limit: u64,
     #[serde(default = "default_did")]
+    #[validate(range(max = 999))]
     pub did: u32,
 }
 fn default_status() -> i32 {
@@ -264,75 +280,63 @@ pub async fn create(
     Ok(ApiJson(r))
 }
 
-/// Update or soft-delete a tiny resume (body `{password, status:2}` triggers delete; otherwise full update via UpsertBody)
-#[utoipa::path(
-    post,
-    path = "/v1/wap/tiny-resumes/{id}",
+/// Update a tiny resume. Soft-delete has been split out to
+/// `POST /v1/wap/tiny-resumes/{id}/delete` so this body is fully strict
+/// `UpsertBody` (every field validated before any DB code runs).
+#[utoipa::path(post,
+    path = "/v1/wap/tiny-resumes",
     tag = "wap",
-    params(("id" = u64, Path)),
     request_body = UpsertBody,
     responses((status = 200, description = "updated"))
 )]
-pub async fn update(
-    State(state): State<AppState>,
+pub async fn update(State(state): State<AppState>,
     ClientIp(ip): ClientIp,
-    Path(id): Path<u64>,
-    axum::Json(v): axum::Json<json::Value>,
-) -> AppResult<ApiJson<json::Value>> {
-    // Soft delete: body has `status:2` + password
-    if v.get("status").and_then(|x| x.as_i64()) == Some(2) {
-        let password = v.get("password").and_then(|x| x.as_str()).unwrap_or("");
-        if password.is_empty() {
-            return Err(phpyun_core::AppError::param_invalid("password_required"));
-        }
-        tiny_service::manage(&state, id, password, ManageOp::Delete).await?;
-        return Ok(ApiJson(json::json!({ "ok": true, "deleted": true })));
-    }
-    let b: UpsertBody = phpyun_core::json::from_value(v)?;
-    b.validate()
-        .map_err(|e| phpyun_core::AppError::param_invalid(format!("validation: {e}")))?;
+    ValidatedJson(b): ValidatedJson<UpsertBody>) -> AppResult<ApiJson<json::Value>> {
+    let id = b.id;
     let r = upsert_common(&state, &ip, Some(id), b).await?;
     Ok(ApiJson(json::json!({ "id": r.id, "created": r.created })))
 }
 
-// ==================== verify / refresh / delete ====================
-
-#[derive(Debug, Deserialize, Validate, ToSchema)]
-pub struct PasswordBody {
-    #[validate(length(min = 4, max = 64))]
-    pub password: String,
+/// Soft-delete a tiny resume. Counterpart of the legacy `{password,
+/// status:2}` update body; password is verified against the row's stored
+/// hash.
+#[utoipa::path(post,
+    path = "/v1/wap/tiny-resumes/delete",
+    tag = "wap",
+    request_body = IdPasswordBody,
+    responses((status = 200, description = "deleted"))
+)]
+pub async fn soft_delete(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdPasswordBody>) -> AppResult<ApiJson<json::Value>> {
+    let id = b.id;
+    tiny_service::manage(&state, id, &b.password, ManageOp::Delete).await?;
+    Ok(ApiJson(json::json!({ "ok": true, "deleted": true })))
 }
 
-#[utoipa::path(
-    post,
-    path = "/v1/wap/tiny-resumes/{id}/verify",
+// ==================== verify / refresh / delete ====================
+
+#[utoipa::path(post,
+    path = "/v1/wap/tiny-resumes/verify",
     tag = "wap",
-    params(("id" = u64, Path)),
-    request_body = PasswordBody,
+    request_body = IdPasswordBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn verify(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-    ValidatedJson(b): ValidatedJson<PasswordBody>,
-) -> AppResult<ApiJson<json::Value>> {
+pub async fn verify(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdPasswordBody>) -> AppResult<ApiJson<json::Value>> {
+    let id = b.id;
     tiny_service::manage(&state, id, &b.password, ManageOp::Verify).await?;
     Ok(ApiJson(json::json!({ "ok": true })))
 }
 
-#[utoipa::path(
-    post,
-    path = "/v1/wap/tiny-resumes/{id}/refresh",
+#[utoipa::path(post,
+    path = "/v1/wap/tiny-resumes/refresh",
     tag = "wap",
-    params(("id" = u64, Path)),
-    request_body = PasswordBody,
+    request_body = IdPasswordBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn refresh(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-    ValidatedJson(b): ValidatedJson<PasswordBody>,
-) -> AppResult<ApiJson<json::Value>> {
+pub async fn refresh(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdPasswordBody>) -> AppResult<ApiJson<json::Value>> {
+    let id = b.id;
     tiny_service::manage(&state, id, &b.password, ManageOp::Refresh).await?;
     Ok(ApiJson(json::json!({ "refreshed": true })))
 }
@@ -354,3 +358,4 @@ mod tests {
         assert_eq!(mask_mobile("123"), "123");
     }
 }
+

@@ -5,17 +5,17 @@
 
 use axum::{
     extract::State,
-    routing::get,
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{ApiJson, AppResult, AppState, ValidatedQuery};
+use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};
 use phpyun_services::search_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/search", get(search))
+    Router::new().route("/search", post(search))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -52,11 +52,11 @@ pub struct SearchData {
 }
 
 /// Global search
-#[utoipa::path(get, path = "/v1/wap/search", tag = "wap", params(SearchQuery), responses((status = 200, description = "ok", body = SearchData)))]
+#[utoipa::path(post, path = "/v1/wap/search", tag = "wap", params(SearchQuery), responses((status = 200, description = "ok", body = SearchData)))]
 pub async fn search(
     State(state): State<AppState>,
     phpyun_core::MaybeUser(user): phpyun_core::MaybeUser,
-    ValidatedQuery(q): ValidatedQuery<SearchQuery>,
+    ValidatedJson(q): ValidatedJson<SearchQuery>,
 ) -> AppResult<ApiJson<SearchData>> {
     let r = search_service::global_search(&state, &q.kw, &q.scope, q.did).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
@@ -70,13 +70,13 @@ pub async fn search(
             .into_iter()
             .map(|j| {
                 let fav = fav_set.contains(&j.id);
-                super::jobs::JobSummary::from_with_dict_fav(j, &dicts, now, fav)
+                crate::v1::wap::jobs::job_summary_from_dict_fav(j, &dicts, now, fav)
             })
             .collect(),
         companies: r
             .companies
             .into_iter()
-            .map(|c| super::companies::CompanySummary::from_with_dict(c, &dicts))
+            .map(|c| super::companies::company_summary_from_dict(c, &dicts))
             .collect(),
         articles: r
             .articles

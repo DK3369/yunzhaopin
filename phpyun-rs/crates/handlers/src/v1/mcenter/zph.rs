@@ -2,26 +2,28 @@
 
 use axum::{
     extract::{Path, State},
-    routing::{get, post},
     Router,
+    routing::post,
 };
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedJson,
-};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::zph_service::{self, ReserveInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/zph/{id}/reserve", post(reserve))
-        .route("/zph/{id}/my-reservation", get(my_reservation))
-        .route("/zph/{id}/com-status", get(com_status))
+        .route("/zph/reserve", post(reserve))
+        .route("/zph/my-reservation", post(my_reservation))
+        .route("/zph/com-status", post(com_status))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct ReserveForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+
     /// Comma-separated list of job ids
     #[validate(length(min = 0, max = 500))]
     #[serde(default)]
@@ -39,21 +41,17 @@ pub struct ReservedId {
 }
 
 /// Reserve a job-fair slot
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/zph/{id}/reserve",
+#[utoipa::path(post,
+    path = "/v1/mcenter/zph/reserve",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
     request_body = ReserveForm,
     responses((status = 200, description = "ok", body = ReservedId))
 )]
-pub async fn reserve(
-    State(state): State<AppState>,
+pub async fn reserve(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<ReserveForm>,
-) -> AppResult<ApiJson<ReservedId>> {
+    ValidatedJson(f): ValidatedJson<ReserveForm>) -> AppResult<ApiJson<ReservedId>> {
+    let id = f.id;
     user.require_jobseeker()?;
     let rid = zph_service::reserve(
         &state,
@@ -95,19 +93,17 @@ impl From<phpyun_models::zph::entity::ZphReservation> for MyReservation {
 }
 
 /// My reservation for a specific job fair
-#[utoipa::path(
-    get,
-    path = "/v1/mcenter/zph/{id}/my-reservation",
+#[utoipa::path(post,
+    path = "/v1/mcenter/zph/my-reservation",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn my_reservation(
-    State(state): State<AppState>,
+pub async fn my_reservation(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<Option<MyReservation>>> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<Option<MyReservation>>> {
+    let id = b.id;
     let row = zph_service::my_reservation(&state, &user, id).await?;
     Ok(ApiJson(row.map(MyReservation::from)))
 }
@@ -133,22 +129,20 @@ pub struct ComStatusView {
 }
 
 /// Pre-apply status for an employer on a job fair.
-#[utoipa::path(
-    get,
-    path = "/v1/mcenter/zph/{id}/com-status",
+#[utoipa::path(post,
+    path = "/v1/mcenter/zph/com-status",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses(
         (status = 200, description = "ok", body = ComStatusView),
         (status = 403, description = "Not an employer"),
     )
 )]
-pub async fn com_status(
-    State(state): State<AppState>,
+pub async fn com_status(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<ComStatusView>> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<ComStatusView>> {
+    let id = b.id;
     use zph_service::ComStatusOutcome;
     let view = match zph_service::com_status_for_fair(&state, &user, id).await? {
         ComStatusOutcome::Applied { status } => ComStatusView {
@@ -176,3 +170,4 @@ pub async fn com_status(
     };
     Ok(ApiJson(view))
 }
+

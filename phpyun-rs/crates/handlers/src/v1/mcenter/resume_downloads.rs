@@ -5,13 +5,11 @@
 
 use axum::{
     extract::State,
-    routing::{get, post},
     Router,
+    routing::post,
 };
 use phpyun_core::json;
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
-};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::resume_download_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -20,12 +18,13 @@ use validator::Validate;
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/resume-downloads", post(download))
-        .route("/resume-downloads/outbox", get(list_outbox))
-        .route("/resume-downloads/inbox", get(list_inbox))
+        .route("/resume-downloads/outbox", post(list_outbox))
+        .route("/resume-downloads/inbox", post(list_inbox))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct DownloadForm {
+    #[validate(range(min = 1, max = 99_999_999))]
     pub uid: u64,
 }
 
@@ -80,7 +79,7 @@ impl From<phpyun_models::resume_download::entity::ResumeDownload> for DownloadIt
 
 /// Company view: resumes I have downloaded
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/resume-downloads/outbox",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -102,7 +101,7 @@ pub async fn list_outbox(
 
 /// Job seeker view: who has downloaded me
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/resume-downloads/inbox",
     tag = "mcenter",
     security(("bearer" = [])),

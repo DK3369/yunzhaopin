@@ -9,18 +9,19 @@
 
 use axum::{
     extract::{Path, State},
-    routing::{get, post},
     Router,
+    routing::post,
 };
-use phpyun_core::{ApiJson, ApiMsg, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{ApiJson, ApiMsg, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::user_session_service::{self, SessionItem};
 use serde::Serialize;
 use utoipa::ToSchema;
+use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/sessions", get(list))
-        .route("/sessions/{id}/revoke", post(revoke))
+        .route("/sessions", post(list))
+        .route("/sessions/revoke", post(revoke))
         .route("/sessions/revoke-others", post(revoke_others))
 }
 
@@ -65,7 +66,7 @@ impl From<SessionItem> for SessionItemDto {
 
 /// List my active login sessions
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/sessions",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -80,19 +81,17 @@ pub async fn list(
 }
 
 /// Kick a specific session (must NOT be the current one — for that, use logout)
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/sessions/{id}/revoke",
+#[utoipa::path(post,
+    path = "/v1/mcenter/sessions/revoke",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn revoke(
-    State(state): State<AppState>,
+pub async fn revoke(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-) -> AppResult<ApiMsg> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiMsg> {
+    let id = b.id;
     user_session_service::revoke_session(&state, &user, id).await?;
     Ok(ApiMsg("session_revoked"))
 }
@@ -112,3 +111,4 @@ pub async fn revoke_others(
     let _n = user_session_service::revoke_other_sessions(&state, &user).await?;
     Ok(ApiMsg("sessions_revoked"))
 }
+

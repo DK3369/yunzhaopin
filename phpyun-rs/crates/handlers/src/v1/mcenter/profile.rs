@@ -1,11 +1,13 @@
 //! GET  /v1/mcenter/profile — current user summary
 //! PUT  /v1/mcenter/profile — update email (more fields to be added later)
 
-use axum::{extract::State, routing::get, Router};
-use phpyun_core::json;
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
+use axum::{
+    extract::State,
+    Router,
+    routing::{get, post},
 };
+use phpyun_core::json;
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::{mcenter_service, user_service};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -13,7 +15,8 @@ use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/profile", get(get_profile).post(update_profile))
+        .route("/profile", post(update_profile))
+        .route("/profile/list", post(get_profile))
 }
 
 // ==================== GET ====================
@@ -30,16 +33,15 @@ pub struct ProfileData {
 
 /// Current user summary
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/profile",
+    post,
+    path = "/v1/mcenter/profile/list",
     tag = "mcenter",
     security(("bearer" = [])),
     responses(
         (status = 200, description = "ok", body = ProfileData),
         (status = 401, description = "Unauthorized"),
     )
-)]
-pub async fn get_profile(
+)]pub async fn get_profile(
     State(state): State<AppState>,
     user: AuthenticatedUser,
 ) -> AppResult<ApiJson<ProfileData>> {

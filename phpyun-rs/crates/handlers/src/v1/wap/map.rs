@@ -7,11 +7,11 @@
 //! formatting.
 
 use axum::{
-    extract::{Query, State},
-    routing::get,
+    extract::{State},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{ApiJson, AppResult, AppState, ValidatedQuery};
+use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};
 use phpyun_services::map_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -19,8 +19,8 @@ use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/map/jobs", get(jobs_near))
-        .route("/map/companies", get(companies_near))
+        .route("/map/jobs", post(jobs_near))
+        .route("/map/companies", post(companies_near))
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -46,6 +46,7 @@ pub struct GeoQuery {
     #[serde(default = "default_radius")]
     pub radius_km: f64,
     #[serde(default = "default_limit")]
+    #[validate(range(min = 1, max = 200))]
     pub limit: u64,
 }
 fn default_radius() -> f64 {
@@ -96,7 +97,7 @@ pub struct NearCompany {
 
 /// Nearby jobs
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/map/jobs",
     tag = "wap",
     params(GeoQuery),
@@ -104,7 +105,7 @@ pub struct NearCompany {
 )]
 pub async fn jobs_near(
     State(state): State<AppState>,
-    ValidatedQuery(q): ValidatedQuery<GeoQuery>,
+    ValidatedJson(q): ValidatedJson<GeoQuery>,
 ) -> AppResult<ApiJson<Vec<NearJob>>> {
     let list = map_service::jobs_near(&state, q.x, q.y, q.radius_km, q.limit).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
@@ -138,7 +139,7 @@ pub async fn jobs_near(
 
 /// Nearby companies
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/map/companies",
     tag = "wap",
     params(GeoQuery),
@@ -146,7 +147,7 @@ pub async fn jobs_near(
 )]
 pub async fn companies_near(
     State(state): State<AppState>,
-    ValidatedQuery(q): ValidatedQuery<GeoQuery>,
+    ValidatedJson(q): ValidatedJson<GeoQuery>,
 ) -> AppResult<ApiJson<Vec<NearCompany>>> {
     let list = map_service::companies_near(&state, q.x, q.y, q.radius_km, q.limit).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;

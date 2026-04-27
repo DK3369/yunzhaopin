@@ -2,10 +2,12 @@
 //!
 //! Only `usertype=3` may use this.
 
-use axum::{extract::State, routing::post, Router};
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
+use axum::{
+    extract::State,
+    Router,
+    routing::post,
 };
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::transfer_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;

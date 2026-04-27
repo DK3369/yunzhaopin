@@ -1,14 +1,12 @@
 //! Public resume search (company view, usertype=2 required).
 
 use axum::{
-    extract::{Path, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::{get, post},
 };
 use phpyun_core::i18n::{current_lang, t};
-use phpyun_core::{
-    clock, ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedQuery,
-};
+use phpyun_core::{clock, ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use validator::Validate;
 use phpyun_models::resume::repo::ResumeFilter;
 use phpyun_services::hot_search_service;
@@ -16,13 +14,14 @@ use phpyun_services::view_service::{self, KIND_RESUME};
 use phpyun_services::{resume_children_service, resume_service};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use phpyun_core::dto::{EidBody, UidBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/resumes", get(list_resumes))
-        .route("/resumes/{uid}", get(resume_detail))
-        .route("/resumes/expects/{eid}/hits", post(bump_expect_hits))
-        .route("/resumes/by-uid/{uid}/default-expect", get(default_expect_by_uid))
+        .route("/resumes", post(list_resumes))
+        .route("/resumes/detail", post(resume_detail))
+        .route("/resumes/expects/hits", post(bump_expect_hits))
+        .route("/resumes/default-expect", post(default_expect_by_uid))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -271,7 +270,7 @@ impl From<phpyun_models::resume::entity::Resume> for ResumeSummary {
 
 /// Public resume list — **searchable by companies only**
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/resumes",
     tag = "wap",
     security(("bearer" = [])),
@@ -285,7 +284,7 @@ pub async fn list_resumes(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<ResumeListQuery>,
+    ValidatedJson(q): ValidatedJson<ResumeListQuery>,
 ) -> AppResult<ApiJson<Paged<ResumeSummary>>> {
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "resume", kw.trim().to_string());
@@ -310,260 +309,71 @@ pub async fn list_resumes(
     )))
 }
 
-/// Job-expectation item — all phpyun_resume_expect columns + dictionary translations.
-#[derive(Debug, Serialize, ToSchema)]
-pub struct ResumeExpectItem {
-    pub id: u64,
-    pub uid: u64,
-    pub name: Option<String>,
-    pub job_classid: i64,
-    /// Job class name (dict resolve_job; takes the first numeric id)
-    pub job_class_n: String,
-    pub city_classid: i64,
-    /// City name (dict resolve_city)
-    pub city_class_n: String,
-    pub salary: i32,
-    /// Salary dictionary name
-    pub salary_n: String,
-    /// 1 public / 2 hidden
-    pub status: i32,
-    pub r_status: i32,
-    /// 0 pending / 1 approved / 3 rejected
-    pub state: i32,
-    pub lastupdate: i64,
-    pub lastupdate_n: String,
-}
+// View structs for resume + child tables now live in `phpyun_models::resume::view`.
+// Re-export under the old paths so all callers (mcenter/resume_*, share, etc.)
+// keep compiling unchanged.
+pub use phpyun_models::resume::view::{
+    ResumeCertItem, ResumeEduItem, ResumeExpectItem, ResumeOtherItem, ResumeProjectItem,
+    ResumeSkillItem, ResumeTrainingItem, ResumeWorkItem,
+};
 
-impl ResumeExpectItem {
-    pub fn from_with_dict(
-        e: phpyun_models::resume::expect::Expect,
-        dicts: &phpyun_services::dict_service::LocalizedDicts,
-    ) -> Self {
-        Self {
-            job_class_n: dicts.job(e.job_classid as i32).to_string(),
-            city_class_n: dicts.city(e.city_classid as i32).to_string(),
-            salary_n: dicts.comclass(e.salary).to_string(),
-            id: e.id,
-            uid: e.uid,
-            name: e.name,
-            job_classid: e.job_classid,
-            city_classid: e.city_classid,
-            salary: e.salary,
-            status: e.status,
-            r_status: e.r_status,
-            state: e.state,
-            lastupdate_n: fmt_dt(e.lastupdate),
-            lastupdate: e.lastupdate,
-        }
+/// Build `ResumeExpectItem` with dictionary-translated labels.
+pub fn resume_expect_item_from_dict(
+    e: phpyun_models::resume::expect::Expect,
+    dicts: &phpyun_services::dict_service::LocalizedDicts,
+) -> ResumeExpectItem {
+    ResumeExpectItem {
+        job_class_n: dicts.job(e.job_classid as i32).to_string(),
+        city_class_n: dicts.city(e.city_classid as i32).to_string(),
+        salary_n: dicts.comclass(e.salary).to_string(),
+        id: e.id,
+        uid: e.uid,
+        name: e.name,
+        job_classid: e.job_classid,
+        city_classid: e.city_classid,
+        salary: e.salary,
+        status: e.status,
+        r_status: e.r_status,
+        state: e.state,
+        lastupdate_n: fmt_dt(e.lastupdate),
+        lastupdate: e.lastupdate,
     }
 }
 
-/// Education item — all phpyun_resume_edu columns + education dictionary translation + formatted timestamps.
-#[derive(Debug, Serialize, ToSchema)]
-pub struct ResumeEduItem {
-    pub id: u64,
-    pub uid: u64,
-    pub eid: u64,
-    pub name: String,
-    pub sdate: i64,
-    pub sdate_n: String,
-    pub edate: i64,
-    pub edate_n: String,
-    pub specialty: Option<String>,
-    /// Education dictionary id (PHP `education`)
-    pub title: i32,
-    pub title_n: String,
-}
-
-impl ResumeEduItem {
-    pub fn from_with_dict(
-        e: phpyun_models::resume::edu::Edu,
-        dicts: &phpyun_services::dict_service::LocalizedDicts,
-    ) -> Self {
-        Self {
-            title_n: dicts.comclass(e.title).to_string(),
-            id: e.id,
-            uid: e.uid,
-            eid: e.eid,
-            name: e.name,
-            sdate_n: fmt_date(e.sdate),
-            sdate: e.sdate,
-            edate_n: fmt_date(e.edate),
-            edate: e.edate,
-            specialty: e.specialty,
-            title: e.title,
-        }
+/// Build `ResumeEduItem` with the education dict translation.
+pub fn resume_edu_item_from_dict(
+    e: phpyun_models::resume::edu::Edu,
+    dicts: &phpyun_services::dict_service::LocalizedDicts,
+) -> ResumeEduItem {
+    ResumeEduItem {
+        title_n: dicts.comclass(e.title).to_string(),
+        id: e.id,
+        uid: e.uid,
+        eid: e.eid,
+        name: e.name,
+        sdate_n: fmt_date(e.sdate),
+        sdate: e.sdate,
+        edate_n: fmt_date(e.edate),
+        edate: e.edate,
+        specialty: e.specialty,
+        title: e.title,
     }
 }
 
-/// Work-experience item — all phpyun_resume_work columns + formatted timestamps.
-#[derive(Debug, Serialize, ToSchema)]
-pub struct ResumeWorkItem {
-    pub id: u64,
-    pub uid: u64,
-    pub eid: u64,
-    pub name: String,
-    pub sdate: i64,
-    pub sdate_n: String,
-    pub edate: i64,
-    pub edate_n: String,
-    pub department: Option<String>,
-    pub title: Option<String>,
-    pub content: Option<String>,
-}
-
-impl From<phpyun_models::resume::work::Work> for ResumeWorkItem {
-    fn from(w: phpyun_models::resume::work::Work) -> Self {
-        Self {
-            id: w.id,
-            uid: w.uid,
-            eid: w.eid,
-            name: w.name,
-            sdate_n: fmt_date(w.sdate),
-            sdate: w.sdate,
-            edate_n: fmt_date(w.edate),
-            edate: w.edate,
-            department: w.department,
-            title: w.title,
-            content: w.content,
-        }
+/// Build `ResumeSkillItem` with the proficiency dict translation.
+pub fn resume_skill_item_from_dict(
+    s: phpyun_models::resume::skill::Skill,
+    dicts: &phpyun_services::dict_service::LocalizedDicts,
+) -> ResumeSkillItem {
+    ResumeSkillItem {
+        level_n: dicts.comclass(s.level).to_string(),
+        id: s.id,
+        uid: s.uid,
+        eid: s.eid,
+        name: s.name,
+        level: s.level,
+        years: s.years,
     }
-}
-
-/// Project-experience item — all phpyun_resume_project columns + formatted timestamps.
-#[derive(Debug, Serialize, ToSchema)]
-pub struct ResumeProjectItem {
-    pub id: u64,
-    pub uid: u64,
-    pub eid: u64,
-    pub name: String,
-    pub sdate: i64,
-    pub sdate_n: String,
-    pub edate: i64,
-    pub edate_n: String,
-    pub role: Option<String>,
-    pub content: Option<String>,
-}
-
-impl From<phpyun_models::resume::project::Project> for ResumeProjectItem {
-    fn from(p: phpyun_models::resume::project::Project) -> Self {
-        Self {
-            id: p.id,
-            uid: p.uid,
-            eid: p.eid,
-            name: p.name,
-            sdate_n: fmt_date(p.sdate),
-            sdate: p.sdate,
-            edate_n: fmt_date(p.edate),
-            edate: p.edate,
-            role: p.role,
-            content: p.content,
-        }
-    }
-}
-
-/// Skill item — all phpyun_resume_skill columns + dictionary translation.
-#[derive(Debug, Serialize, ToSchema)]
-pub struct ResumeSkillItem {
-    pub id: u64,
-    pub uid: u64,
-    pub eid: u64,
-    pub name: String,
-    /// PHP `skill` column: proficiency dictionary id
-    pub level: i32,
-    pub level_n: String,
-    /// PHP `longtime` column
-    pub years: i32,
-}
-
-impl ResumeSkillItem {
-    pub fn from_with_dict(
-        s: phpyun_models::resume::skill::Skill,
-        dicts: &phpyun_services::dict_service::LocalizedDicts,
-    ) -> Self {
-        Self {
-            level_n: dicts.comclass(s.level).to_string(),
-            id: s.id,
-            uid: s.uid,
-            eid: s.eid,
-            name: s.name,
-            level: s.level,
-            years: s.years,
-        }
-    }
-}
-
-/// Training-experience item — all phpyun_resume_training columns + formatted timestamps.
-#[derive(Debug, Serialize, ToSchema)]
-pub struct ResumeTrainingItem {
-    pub id: u64,
-    pub uid: u64,
-    pub eid: u64,
-    pub name: String,
-    pub sdate: i64,
-    pub sdate_n: String,
-    pub edate: i64,
-    pub edate_n: String,
-    pub title: Option<String>,
-    pub content: Option<String>,
-}
-
-impl From<phpyun_models::resume::training::Training> for ResumeTrainingItem {
-    fn from(t: phpyun_models::resume::training::Training) -> Self {
-        Self {
-            id: t.id,
-            uid: t.uid,
-            eid: t.eid,
-            name: t.name,
-            sdate_n: fmt_date(t.sdate),
-            sdate: t.sdate,
-            edate_n: fmt_date(t.edate),
-            edate: t.edate,
-            title: t.title,
-            content: t.content,
-        }
-    }
-}
-
-/// Certificate item — all phpyun_resume_cert columns + formatted timestamps.
-#[derive(Debug, Serialize, ToSchema)]
-pub struct ResumeCertItem {
-    pub id: u64,
-    pub uid: u64,
-    pub eid: u64,
-    pub name: String,
-    pub sdate: i64,
-    pub sdate_n: String,
-    pub edate: i64,
-    pub edate_n: String,
-    pub title: Option<String>,
-    pub content: Option<String>,
-}
-
-impl From<phpyun_models::resume::cert::Cert> for ResumeCertItem {
-    fn from(c: phpyun_models::resume::cert::Cert) -> Self {
-        Self {
-            id: c.id,
-            uid: c.uid,
-            eid: c.eid,
-            name: c.name,
-            sdate_n: fmt_date(c.sdate),
-            sdate: c.sdate,
-            edate_n: fmt_date(c.edate),
-            edate: c.edate,
-            title: c.title,
-            content: c.content,
-        }
-    }
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct ResumeOtherItem {
-    pub id: u64,
-    pub uid: u64,
-    pub eid: u64,
-    pub name: String,
-    pub content: Option<String>,
 }
 
 /// Resume detail — strictly aligned with the field set of PHPYun `wap/resume::show_action`.
@@ -643,11 +453,11 @@ pub struct ResumeDetail {
 ///
 /// TODO: hook into the phpyun_down_resume table to verify download permissions
 #[utoipa::path(
-    get,
-    path = "/v1/wap/resumes/{uid}",
+    post,
+    path = "/v1/wap/resumes/detail",
     tag = "wap",
     security(("bearer" = [])),
-    params(("uid" = u64, Path)),
+    request_body = UidBody,
     responses(
         (status = 200, description = "ok"),
         (status = 403, description = "Not a company account / resume is hidden"),
@@ -657,8 +467,9 @@ pub struct ResumeDetail {
 pub async fn resume_detail(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(uid): Path<u64>,
+    ValidatedJson(b): ValidatedJson<UidBody>,
 ) -> AppResult<ApiJson<ResumeDetail>> {
+    let uid = b.uid;
     let r = resume_service::get_public(&state, &user, uid).await?;
     // Recording footprints when a company views a resume (source for "who viewed me")
     view_service::record_async(&state, user.uid, KIND_RESUME, uid);
@@ -722,17 +533,17 @@ pub async fn resume_detail(
 
         expects: expects
             .into_iter()
-            .map(|e| ResumeExpectItem::from_with_dict(e, &dicts))
+            .map(|e| crate::v1::wap::resumes::resume_expect_item_from_dict(e, &dicts))
             .collect(),
         edus: edus
             .into_iter()
-            .map(|e| ResumeEduItem::from_with_dict(e, &dicts))
+            .map(|e| crate::v1::wap::resumes::resume_edu_item_from_dict(e, &dicts))
             .collect(),
         works: works.into_iter().map(ResumeWorkItem::from).collect(),
         projects: projects.into_iter().map(ResumeProjectItem::from).collect(),
         skills: skills
             .into_iter()
-            .map(|s| ResumeSkillItem::from_with_dict(s, &dicts))
+            .map(|s| crate::v1::wap::resumes::resume_skill_item_from_dict(s, &dicts))
             .collect(),
         trainings: trainings.into_iter().map(ResumeTrainingItem::from).collect(),
         certs: certs.into_iter().map(ResumeCertItem::from).collect(),
@@ -763,18 +574,18 @@ pub struct ResumeHitsResp {
 /// `phpyun_resume_expect.id` (job-intent row id), not the resume `uid`.
 #[utoipa::path(
     post,
-    path = "/v1/wap/resumes/expects/{eid}/hits",
+    path = "/v1/wap/resumes/expects/hits",
     tag = "wap",
-    params(("eid" = u64, Path, description = "phpyun_resume_expect.id")),
+    request_body = EidBody,
     responses((status = 200, description = "ok", body = ResumeHitsResp))
 )]
 pub async fn bump_expect_hits(
     State(state): State<AppState>,
-    Path(eid): Path<u64>,
+    ValidatedJson(b): ValidatedJson<EidBody>,
 ) -> AppResult<ApiJson<ResumeHitsResp>> {
     let hits =
-        phpyun_models::resume::expect::bump_and_get_hits(state.db.pool(), eid, 1).await?;
-    Ok(ApiJson(ResumeHitsResp { eid, hits }))
+        phpyun_models::resume::expect::bump_and_get_hits(state.db.pool(), b.eid, 1).await?;
+    Ok(ApiJson(ResumeHitsResp { eid: b.eid, hits }))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -791,25 +602,25 @@ pub struct DefaultExpectResp {
 /// for the `/resume/show?uid=...` redirect. Returns `0` when the resume is
 /// hidden/draft.
 #[utoipa::path(
-    get,
-    path = "/v1/wap/resumes/by-uid/{uid}/default-expect",
+    post,
+    path = "/v1/wap/resumes/default-expect",
     tag = "wap",
-    params(("uid" = u64, Path)),
+    request_body = UidBody,
     responses((status = 200, description = "ok", body = DefaultExpectResp))
 )]
 pub async fn default_expect_by_uid(
     State(state): State<AppState>,
-    Path(uid): Path<u64>,
+    ValidatedJson(b): ValidatedJson<UidBody>,
 ) -> AppResult<ApiJson<DefaultExpectResp>> {
     let row: Option<(u64,)> = sqlx::query_as(
         "SELECT CAST(COALESCE(def_job, 0) AS UNSIGNED) FROM phpyun_resume \
            WHERE uid = ? AND COALESCE(r_status, 0) = 1 LIMIT 1",
     )
-    .bind(uid)
+    .bind(b.uid)
     .fetch_optional(state.db.reader())
     .await?;
     Ok(ApiJson(DefaultExpectResp {
-        uid,
+        uid: b.uid,
         default_eid: row.map(|(n,)| n).unwrap_or(0),
     }))
 }

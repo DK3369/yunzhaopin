@@ -4,24 +4,25 @@
 //! so they are sub-microsecond and don't touch the DB.
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::get,
+    extract::{Path, State},
     Router,
+    routing::{get, post},
 };
 use phpyun_core::i18n::{current_lang, Lang};
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, InfraError, ValidatedQuery};
+use phpyun_core::{ApiJson, AppError, AppResult, AppState, InfraError, ValidatedJson};
 use phpyun_services::region_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/regions", get(list))
-        .route("/regions/{id}", get(by_id))
-        .route("/regions/{id}/children", get(children))
-        .route("/regions/by-code/{code}", get(by_code))
-        .route("/regions/city-domain", get(city_domain))
+        .route("/regions", post(list))
+        .route("/regions/get", post(by_id))
+        .route("/regions/children", post(children))
+        .route("/regions/by-code", post(by_code))
+        .route("/regions/city-domain", post(city_domain))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -64,6 +65,7 @@ pub struct ListQuery {
     /// ISO 3166-1 alpha-2 (CN/US/JP/...). When supplied the result is restricted to that country.
     pub country: Option<String>,
     /// 0=country, 1=state/province, 2=city, 3=district. Combine with `country` to scope.
+    #[validate(range(min = 0, max = 99))]
     pub level: Option<i32>,
 }
 
@@ -73,7 +75,7 @@ pub struct ListQuery {
 /// - `?country=CN`: every active node under that country (every level).
 /// - `?country=CN&level=1`: just the state/province layer of that country.
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/regions",
     tag = "wap",
     params(ListQuery),
@@ -81,7 +83,7 @@ pub struct ListQuery {
 )]
 pub async fn list(
     State(state): State<AppState>,
-    ValidatedQuery(q): ValidatedQuery<ListQuery>,
+    ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Vec<RegionView>>> {
     let tree = region_service::get(&state).await?;
     let lang = current_lang();
@@ -108,20 +110,18 @@ pub async fn list(
 }
 
 /// Single node by surrogate `id`.
-#[utoipa::path(
-    get,
-    path = "/v1/wap/regions/{id}",
+#[utoipa::path(post,
+    path = "/v1/wap/regions/get",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses(
         (status = 200, description = "ok", body = RegionView),
         (status = 404, description = "Not found"),
     )
 )]
-pub async fn by_id(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<RegionView>> {
+pub async fn by_id(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<RegionView>> {
+    let id = b.id;
     let tree = region_service::get(&state).await?;
     let lang = current_lang();
     let node = tree
@@ -131,20 +131,19 @@ pub async fn by_id(
 }
 
 /// Single node by stable code (recommended for client-side references).
-#[utoipa::path(
-    get,
-    path = "/v1/wap/regions/by-code/{code}",
+#[utoipa::path(post,
+    path = "/v1/wap/regions/by-code",
     tag = "wap",
-    params(("code" = String, Path, description = "ISO 3166-1/2 code, e.g. CN, CN-BJ, CN-BJ-CY")),
+    request_body = ByCodeBody,
     responses(
         (status = 200, description = "ok", body = RegionView),
         (status = 404, description = "Not found"),
     )
 )]
-pub async fn by_code(
-    State(state): State<AppState>,
-    Path(code): Path<String>,
-) -> AppResult<ApiJson<RegionView>> {
+pub async fn by_code(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<ByCodeBody>) -> AppResult<ApiJson<RegionView>> {
+    let code = b.code;
+    phpyun_core::validators::ensure_path_token(&code)?;
     let tree = region_service::get(&state).await?;
     let lang = current_lang();
     let node = tree
@@ -179,7 +178,7 @@ pub struct CityDomainResp {
 /// which matches PHP's "sub-site disabled" branch and lets clients render the
 /// fall-through state without 404s.
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/regions/city-domain",
     tag = "wap",
     params(CityDomainQuery),
@@ -187,7 +186,7 @@ pub struct CityDomainResp {
 )]
 pub async fn city_domain(
     State(_state): State<AppState>,
-    ValidatedQuery(_q): ValidatedQuery<CityDomainQuery>,
+    ValidatedJson(_q): ValidatedJson<CityDomainQuery>,
 ) -> AppResult<ApiJson<CityDomainResp>> {
     Ok(ApiJson(CityDomainResp {
         error: 2,
@@ -197,17 +196,15 @@ pub async fn city_domain(
 }
 
 /// Direct children of a node — used by cascading dropdowns.
-#[utoipa::path(
-    get,
-    path = "/v1/wap/regions/{id}/children",
+#[utoipa::path(post,
+    path = "/v1/wap/regions/children",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok", body = [RegionView]))
 )]
-pub async fn children(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<Vec<RegionView>>> {
+pub async fn children(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<Vec<RegionView>>> {
+    let id = b.id;
     let tree = region_service::get(&state).await?;
     let lang = current_lang();
     let nodes = tree.children_of(id);
@@ -216,4 +213,10 @@ pub async fn children(
         .map(|n| to_view(n, lang, tree.has_children(n.region.id)))
         .collect();
     Ok(ApiJson(out))
+}
+
+#[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
+pub struct ByCodeBody {
+    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    pub code: String,
 }

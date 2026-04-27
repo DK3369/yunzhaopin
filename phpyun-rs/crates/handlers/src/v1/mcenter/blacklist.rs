@@ -1,22 +1,22 @@
 //! Blacklist (the list of uids I have blocked).
 
 use axum::{
-    extract::{Path, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
-};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::blacklist_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{UidBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/blacklist", get(list).post(add)).route("/blacklist/delete", post(clear))
-        .route("/blacklist/{uid}", post(remove))
+        .route("/blacklist", post(add))
+        .route("/blacklist/list", post(list)).route("/blacklist/delete", post(clear))
+        .route("/blacklist/remove", post(remove))
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -51,6 +51,7 @@ impl From<phpyun_models::blacklist::entity::BlacklistEntry> for BlackItem {
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct AddForm {
+    #[validate(range(min = 1, max = 99_999_999))]
     pub blocked_uid: u64,
     #[validate(length(max = 200))]
     #[serde(default)]
@@ -59,13 +60,12 @@ pub struct AddForm {
 
 /// My blacklist
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/blacklist",
+    post,
+    path = "/v1/mcenter/blacklist/list",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]
-pub async fn list(
+)]pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
@@ -100,18 +100,18 @@ pub async fn add(
 /// Unblock
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/blacklist/{uid}",
+    path = "/v1/mcenter/blacklist/remove",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("uid" = u64, Path)),
+    request_body = UidBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn remove(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(blocked_uid): Path<u64>,
+    ValidatedJson(b): ValidatedJson<UidBody>,
 ) -> AppResult<ApiOk> {
-    blacklist_service::remove(&state, &user, blocked_uid).await?;
+    blacklist_service::remove(&state, &user, b.uid).await?;
     Ok(ApiOk("removed"))
 }
 

@@ -1,17 +1,16 @@
 //! Special recruitment events (aligned with PHPYun `wap/special`).
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::{Path, State},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedQuery
-};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::special_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{IdBody};
 
 fn fmt_date(ts: i64) -> String {
     if ts <= 0 {
@@ -30,11 +29,11 @@ fn pic_n(state: &AppState, raw: &str) -> String {
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/specials", get(list))
-        .route("/specials/{id}", get(detail))
-        .route("/specials/{id}/companies", get(companies))
-        .route("/specials/{id}/jobs", get(jobs))
-        .route("/specials/{id}/apply", post(apply))
+        .route("/specials", post(list))
+        .route("/specials/detail", post(detail))
+        .route("/specials/companies", post(companies))
+        .route("/specials/jobs", post(jobs))
+        .route("/specials/apply", post(apply))
 }
 
 /// Special list item — aligned with all 20 columns of phpyun_special + CDN URL + formatted timestamps.
@@ -183,7 +182,7 @@ pub struct SpecialCompanyItem {
 pub type SpecialJob = super::jobs::JobSummary;
 
 /// Special list
-#[utoipa::path(get, path = "/v1/wap/specials", tag = "wap", responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/wap/specials/detail", tag = "wap", responses((status = 200, description = "ok")))]
 pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
@@ -201,34 +200,30 @@ pub async fn list(
 }
 
 /// Special detail
-#[utoipa::path(
-    get,
-    path = "/v1/wap/specials/{id}",
+#[utoipa::path(post,
+    path = "/v1/wap/specials",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok", body = SpecialDetail))
 )]
-pub async fn detail(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<SpecialDetail>> {
+pub async fn detail(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<SpecialDetail>> {
+    let id = b.id;
     let s = special_service::get(&state, id).await?;
     Ok(ApiJson(SpecialDetail::from_with_ctx(s, &state)))
 }
 
 /// Participating companies (phpyun_special_company JOIN phpyun_company)
-#[utoipa::path(
-    get,
-    path = "/v1/wap/specials/{id}/companies",
+#[utoipa::path(post,
+    path = "/v1/wap/specials/companies",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn companies(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
+pub async fn companies(State(state): State<AppState>,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<SpecialCompanyItem>>> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<Paged<SpecialCompanyItem>>> {
+    let id = b.id;
     let r = special_service::list_companies(&state, id, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let uids: Vec<u64> = r.list.iter().map(|c| c.uid).collect();
@@ -304,7 +299,11 @@ pub async fn companies(
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct JobQuery {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+
     #[serde(default = "default_limit")]
+    #[validate(range(min = 1, max = 200))]
     pub limit: u64,
 }
 fn default_limit() -> u64 { 50 }
@@ -324,23 +323,21 @@ pub struct ApplyResp {
 /// `special_signup_closed`, `special_already_applied`, `special_full`,
 /// `company_no_active_job`, `company_rating_not_eligible`,
 /// `insufficient_integral`).
-#[utoipa::path(
-    post,
-    path = "/v1/wap/specials/{id}/apply",
+#[utoipa::path(post,
+    path = "/v1/wap/specials/apply",
     tag = "wap",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses(
         (status = 200, description = "ok", body = ApplyResp),
         (status = 400, description = "Validation failed (see tag)"),
         (status = 403, description = "Only employers (usertype=2) may apply"),
     )
 )]
-pub async fn apply(
-    State(state): State<AppState>,
+pub async fn apply(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<ApplyResp>> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<ApplyResp>> {
+    let id = b.id;
     let r = special_service::apply(&state, &user, id).await?;
     Ok(ApiJson(ApplyResp {
         id: r.id,
@@ -349,24 +346,22 @@ pub async fn apply(
 }
 
 /// Jobs inside a special (reuses the rich JobSummary: 34 fields with dictionary translations)
-#[utoipa::path(
-    get,
-    path = "/v1/wap/specials/{id}/jobs",
+#[utoipa::path(post,
+    path = "/v1/wap/specials/jobs",
     tag = "wap",
     params(("id" = u64, Path), JobQuery),
     responses((status = 200, description = "ok"))
 )]
-pub async fn jobs(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-    ValidatedQuery(q): ValidatedQuery<JobQuery>,
-) -> AppResult<ApiJson<Vec<SpecialJob>>> {
+pub async fn jobs(State(state): State<AppState>,
+    ValidatedJson(q): ValidatedJson<JobQuery>) -> AppResult<ApiJson<Vec<SpecialJob>>> {
+    let id = q.id;
     let list = special_service::list_jobs(&state, id, q.limit.clamp(1, 200)).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
     Ok(ApiJson(
         list.into_iter()
-            .map(|j| SpecialJob::from_with_dict(j, &dicts, now))
+            .map(|j| crate::v1::wap::jobs::job_summary_from_dict(j, &dicts, now))
             .collect(),
     ))
 }
+

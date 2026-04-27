@@ -2,23 +2,23 @@
 
 use axum::{
     extract::{Path, State},
-    routing::{get, post},
     Router,
+    routing::{get, post},
 };
 use phpyun_core::json;
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
-};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::saved_search_service::{self, CreateInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{CreatedId, IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/saved-searches", get(list).post(create))
-        .route("/saved-searches/{id}/notify", post(set_notify))
-        .route("/saved-searches/{id}", post(remove))
+        .route("/saved-searches", post(create))
+        .route("/saved-searches/list", post(list))
+        .route("/saved-searches/notify", post(set_notify))
+        .route("/saved-searches/delete", post(remove))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -69,31 +69,42 @@ pub struct CreateForm {
     pub name: String,
     #[validate(length(min = 1, max = 16))]
     pub kind: String,
+    /// Arbitrary search-filter JSON. Capped at ~16 KB serialized to prevent
+    /// memory bombs / SQL-payload smuggling via huge nested objects.
+    #[validate(custom(function = "validate_params_size"))]
     pub params: json::Value,
     #[serde(default = "default_notify")]
     pub notify: bool,
 }
-fn default_notify() -> bool { true }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CreatedId {
-    pub id: u64,
+fn validate_params_size(v: &json::Value) -> Result<(), validator::ValidationError> {
+    let s = match phpyun_core::json::to_string(v) {
+        Ok(s) => s,
+        Err(_) => return Err(validator::ValidationError::new("params_unserializable")),
+    };
+    if s.len() > 16 * 1024 {
+        return Err(validator::ValidationError::new("params_too_large"));
+    }
+    Ok(())
 }
+fn default_notify() -> bool { true }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct NotifyForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+
     pub notify: bool,
 }
 
 /// My saved searches
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/saved-searches",
+    post,
+    path = "/v1/mcenter/saved-searches/list",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]
-pub async fn list(
+)]pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
@@ -136,39 +147,34 @@ pub async fn create(
 }
 
 /// Toggle notification switch
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/saved-searches/{id}/notify",
+#[utoipa::path(post,
+    path = "/v1/mcenter/saved-searches/notify",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
     request_body = NotifyForm,
     responses((status = 200, description = "ok"))
 )]
-pub async fn set_notify(
-    State(state): State<AppState>,
+pub async fn set_notify(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<NotifyForm>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<NotifyForm>) -> AppResult<ApiOk> {
+    let id = f.id;
     saved_search_service::set_notify(&state, &user, id, f.notify).await?;
     Ok(ApiOk("ok"))
 }
 
 /// Delete a saved search
-#[utoipa::path(
-    post,
-    path = "/v1/mcenter/saved-searches/{id}",
+#[utoipa::path(post,
+    path = "/v1/mcenter/saved-searches",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn remove(
-    State(state): State<AppState>,
+pub async fn remove(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiOk> {
+    let id = b.id;
     saved_search_service::delete(&state, &user, id).await?;
     Ok(ApiOk("deleted"))
 }
+

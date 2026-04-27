@@ -1,22 +1,22 @@
 //! My system broadcasts.
 
 use axum::{
-    extract::{Path, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::post,
 };
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
-};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::broadcast_service;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
+use validator::Validate;
+use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/broadcasts", get(list))
-        .route("/broadcasts/unread-count", get(unread))
-        .route("/broadcasts/{id}/read", post(mark_read))
+        .route("/broadcasts", post(list))
+        .route("/broadcasts/unread-count", post(unread))
+        .route("/broadcasts/read", post(mark_read))
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -60,7 +60,7 @@ pub struct UnreadCount {
 
 /// Broadcasts visible to me
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/broadcasts",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -82,7 +82,7 @@ pub async fn list(
 
 /// Unread broadcast count
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/broadcasts/unread-count",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -99,17 +99,17 @@ pub async fn unread(
 /// Mark as read
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/broadcasts/{id}/read",
+    path = "/v1/mcenter/broadcasts/read",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn mark_read(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiOk> {
-    broadcast_service::mark_read(&state, &user, id).await?;
+    broadcast_service::mark_read(&state, &user, b.id).await?;
     Ok(ApiOk("ok"))
 }

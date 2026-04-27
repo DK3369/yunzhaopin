@@ -2,23 +2,24 @@
 //! multi-site domain switcher endpoints.
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::get,
+    extract::{Path, State},
     Router,
+    routing::{get, post},
 };
 use phpyun_core::error::InfraError;
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, ValidatedQuery};
+use phpyun_core::{ApiJson, AppError, AppResult, AppState, ValidatedJson};
 use phpyun_services::site_page_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/site/pages/{code}", get(get_page))
-        .route("/site/sub-sites", get(list_sub_sites))
-        .route("/site/sub-sites/match", get(match_sub_site))
-        .route("/site/map-config", get(map_config))
+        .route("/site/pages", post(get_page))
+        .route("/site/sub-sites", post(list_sub_sites))
+        .route("/site/sub-sites/match", post(match_sub_site))
+        .route("/site/map-config", post(map_config))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -30,17 +31,16 @@ pub struct SitePageView {
 }
 
 /// Site page
-#[utoipa::path(
-    get,
-    path = "/v1/wap/site/pages/{code}",
+#[utoipa::path(post,
+    path = "/v1/wap/site/pages",
     tag = "wap",
-    params(("code" = String, Path, description = "about/privacy/protocol/contact/appDown")),
+    request_body = GetPageBody,
     responses((status = 200, description = "ok", body = SitePageView), (status = 404))
 )]
-pub async fn get_page(
-    State(state): State<AppState>,
-    Path(code): Path<String>,
-) -> AppResult<ApiJson<SitePageView>> {
+pub async fn get_page(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<GetPageBody>) -> AppResult<ApiJson<SitePageView>> {
+    let code = b.code;
+    phpyun_core::validators::ensure_path_token(&code)?;
     let p = site_page_service::get(&state, &code)
         .await?
         .ok_or_else(|| AppError::new(InfraError::InvalidParam("page_not_found".into())))?;
@@ -111,7 +111,7 @@ pub struct SubSitesQuery {
 /// (the raw `phpyun_domain` rows behind the legacy `cron.cache.php`
 /// pre-baked dump).
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/site/sub-sites",
     tag = "wap",
     params(SubSitesQuery),
@@ -119,7 +119,7 @@ pub struct SubSitesQuery {
 )]
 pub async fn list_sub_sites(
     State(state): State<AppState>,
-    ValidatedQuery(q): ValidatedQuery<SubSitesQuery>,
+    ValidatedJson(q): ValidatedJson<SubSitesQuery>,
 ) -> AppResult<ApiJson<Vec<SubSiteView>>> {
     use phpyun_models::domain::repo as domain_repo;
     let rows = match q.fz_type {
@@ -133,10 +133,13 @@ pub async fn list_sub_sites(
 pub struct MatchSubSiteQuery {
     /// PHPYun `provinceid`. Optional but at least one of the three should be set.
     #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
     pub province_id: Option<i32>,
     #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
     pub city_id: Option<i32>,
     #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
     pub three_city_id: Option<i32>,
 }
 
@@ -145,7 +148,7 @@ pub struct MatchSubSiteQuery {
 /// the row and lets the client decide). Returns 200 with `null` body when
 /// nothing matches — the client should fall back to the main site.
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/site/sub-sites/match",
     tag = "wap",
     params(MatchSubSiteQuery),
@@ -153,7 +156,7 @@ pub struct MatchSubSiteQuery {
 )]
 pub async fn match_sub_site(
     State(state): State<AppState>,
-    ValidatedQuery(q): ValidatedQuery<MatchSubSiteQuery>,
+    ValidatedJson(q): ValidatedJson<MatchSubSiteQuery>,
 ) -> AppResult<ApiJson<Option<SubSiteView>>> {
     let p = q.province_id.unwrap_or(0);
     let c = q.city_id.unwrap_or(0);
@@ -187,7 +190,7 @@ pub struct MapConfigView {
 /// `ajax::mapconfig_action` — bundles every `map_*` site setting into one
 /// JSON payload so the client doesn't have to issue 8 setting requests.
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/site/map-config",
     tag = "wap",
     responses((status = 200, description = "ok", body = MapConfigView))
@@ -216,4 +219,10 @@ pub async fn map_config(
         map_control_xb: read(pool, "map_control_xb").await,
         map_control_scale: read(pool, "map_control_scale").await,
     }))
+}
+
+#[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
+pub struct GetPageBody {
+    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    pub code: String,
 }

@@ -2,14 +2,11 @@
 //! Aligned with PHPYun `member/com/{address,news,product,show}` + `member/user/show`.
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::post,
 };
-use phpyun_core::{
-    json, ApiJson, AppError, AppResult, AppState, AuthenticatedUser, ClientIp, InfraError, Paged,
-    Pagination, ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{json, ApiJson, AppError, AppResult, AppState, AuthenticatedUser, ClientIp, InfraError, Paged, Pagination, ValidatedJson};
 use phpyun_models::company_content::entity::ContentKind;
 use phpyun_models::gallery::entity::GalleryKind;
 use phpyun_services::{
@@ -18,30 +15,26 @@ use phpyun_services::{
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{IdsBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         // Work addresses
-        .route("/company-addresses", get(addr_list).post(addr_create))
+        .route("/company-addresses", post(addr_list))
+        .route("/company-addresses/create", post(addr_create))
         .route("/company-addresses/delete", post(addr_delete))
-        .route("/company-addresses/{id}", post(addr_update))
-        // News / products (kind ∈ {news, product})
-        .route(
-            "/company-contents/{kind}",
-            get(content_list).post(content_create),
-        )
-        .route("/company-contents/{kind}/delete", post(content_delete))
-        .route(
-            "/company-contents/{kind}/{id}",
-            get(content_get).post(content_update),
-        )
-        // Galleries (kind ∈ {company, resume})
-        .route(
-            "/galleries/{kind}",
-            get(gallery_list).post(gallery_create),
-        )
-        .route("/galleries/{kind}/delete", post(gallery_delete))
-        .route("/galleries/{kind}/{id}", post(gallery_update))
+        .route("/company-addresses/update", post(addr_update))
+        // News / products (kind ∈ {news, product}) — kind goes in body now
+        .route("/company-contents/list", post(content_list))
+        .route("/company-contents/create", post(content_create))
+        .route("/company-contents/detail", post(content_get))
+        .route("/company-contents/update", post(content_update))
+        .route("/company-contents/delete", post(content_delete))
+        // Galleries (kind ∈ {company, resume}) — kind goes in body now
+        .route("/galleries/list", post(gallery_list))
+        .route("/galleries/create", post(gallery_create))
+        .route("/galleries/update", post(gallery_update))
+        .route("/galleries/delete", post(gallery_delete))
 }
 
 // ==================== Work addresses ====================
@@ -80,6 +73,15 @@ impl From<phpyun_models::company_address::entity::CompanyAddress> for AddressVie
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct AddressUpdateBody {
+    #[validate(range(min = 1, max = 999_999_999))]
+    pub id: u64,
+    #[serde(flatten)]
+    #[validate(nested)]
+    pub form: AddressForm,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct AddressForm {
     #[validate(length(min = 1, max = 32))]
     pub link_man: String,
@@ -94,9 +96,12 @@ pub struct AddressForm {
     #[validate(length(max = 256))]
     #[serde(default)]
     pub link_address: String,
+    #[validate(range(min = 0, max = 99_999))]
     pub province_id: i32,
+    #[validate(range(min = 0, max = 99_999))]
     pub city_id: i32,
     #[serde(default)]
+    #[validate(range(min = 0, max = 99_999))]
     pub three_city_id: i32,
     #[validate(length(max = 32))]
     #[serde(default)]
@@ -150,9 +155,10 @@ pub async fn addr_create(
 pub async fn addr_update(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<AddressForm>,
+    ValidatedJson(b): ValidatedJson<AddressUpdateBody>,
 ) -> AppResult<ApiJson<json::Value>> {
+    let id = b.id;
+    let f = b.form;
     let n = company_address_service::update(
         &state,
         &user,
@@ -172,12 +178,6 @@ pub async fn addr_update(
     )
     .await?;
     Ok(ApiJson(json::json!({ "updated": n })))
-}
-
-#[derive(Debug, Deserialize, Validate, ToSchema)]
-pub struct IdsBody {
-    #[validate(length(min = 1, max = 200))]
-    pub ids: Vec<u64>,
 }
 
 pub async fn addr_delete(
@@ -246,9 +246,29 @@ impl From<phpyun_models::company_content::entity::CompanyContent> for ContentVie
     }
 }
 
-#[derive(Debug, Deserialize, Validate, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams, ToSchema)]
 pub struct ContentListQuery {
+    /// `news` or `product`.
+    #[validate(length(min = 1, max = 32), custom(function = "phpyun_core::validators::path_token"))]
+    pub kind: String,
+    #[validate(length(max = 100))]
     pub keyword: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ContentDetailBody {
+    #[validate(length(min = 1, max = 32), custom(function = "phpyun_core::validators::path_token"))]
+    pub kind: String,
+    #[validate(range(min = 1, max = 999_999_999))]
+    pub id: u64,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ContentDeleteBody {
+    #[validate(length(min = 1, max = 32), custom(function = "phpyun_core::validators::path_token"))]
+    pub kind: String,
+    #[validate(length(min = 1, max = 200))]
+    pub ids: Vec<u64>,
 }
 
 fn parse_content_kind(s: &str) -> AppResult<ContentKind> {
@@ -260,10 +280,9 @@ pub async fn content_list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Path(kind): Path<String>,
-    ValidatedQuery(q): ValidatedQuery<ContentListQuery>,
+    ValidatedJson(q): ValidatedJson<ContentListQuery>,
 ) -> AppResult<ApiJson<Paged<ContentView>>> {
-    let kind = parse_content_kind(&kind)?;
+    let kind = parse_content_kind(&q.kind)?;
     let r = company_content_service::list_mine(
         &state,
         &user,
@@ -283,15 +302,33 @@ pub async fn content_list(
 pub async fn content_get(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path((kind, id)): Path<(String, u64)>,
+    ValidatedJson(b): ValidatedJson<ContentDetailBody>,
 ) -> AppResult<ApiJson<ContentView>> {
-    let kind = parse_content_kind(&kind)?;
-    let c = company_content_service::get(&state, &user, kind, id).await?;
+    let kind = parse_content_kind(&b.kind)?;
+    let c = company_content_service::get(&state, &user, kind, b.id).await?;
     Ok(ApiJson(ContentView::from(c)))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct ContentForm {
+    /// `news` or `product`.
+    #[validate(length(min = 1, max = 32), custom(function = "phpyun_core::validators::path_token"))]
+    pub kind: String,
+    #[validate(length(min = 1, max = 128))]
+    pub title: String,
+    #[validate(length(min = 1, max = 50000))]
+    pub body: String,
+    #[validate(length(max = 512))]
+    #[serde(default)]
+    pub file: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ContentUpdateBody {
+    #[validate(length(min = 1, max = 32), custom(function = "phpyun_core::validators::path_token"))]
+    pub kind: String,
+    #[validate(range(min = 1, max = 999_999_999))]
+    pub id: u64,
     #[validate(length(min = 1, max = 128))]
     pub title: String,
     #[validate(length(min = 1, max = 50000))]
@@ -305,10 +342,9 @@ pub async fn content_create(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    Path(kind): Path<String>,
     ValidatedJson(f): ValidatedJson<ContentForm>,
 ) -> AppResult<ApiJson<json::Value>> {
-    let kind = parse_content_kind(&kind)?;
+    let kind = parse_content_kind(&f.kind)?;
     let id = company_content_service::create(
         &state,
         &user,
@@ -327,19 +363,18 @@ pub async fn content_create(
 pub async fn content_update(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path((kind, id)): Path<(String, u64)>,
-    ValidatedJson(f): ValidatedJson<ContentForm>,
+    ValidatedJson(b): ValidatedJson<ContentUpdateBody>,
 ) -> AppResult<ApiJson<json::Value>> {
-    let kind = parse_content_kind(&kind)?;
+    let kind = parse_content_kind(&b.kind)?;
     let n = company_content_service::update(
         &state,
         &user,
         kind,
-        id,
+        b.id,
         &company_content_service::ContentInput {
-            title: &f.title,
-            body: &f.body,
-            file: f.file.as_deref(),
+            title: &b.title,
+            body: &b.body,
+            file: b.file.as_deref(),
         },
     )
     .await?;
@@ -349,10 +384,9 @@ pub async fn content_update(
 pub async fn content_delete(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(kind): Path<String>,
-    ValidatedJson(b): ValidatedJson<IdsBody>,
+    ValidatedJson(b): ValidatedJson<ContentDeleteBody>,
 ) -> AppResult<ApiJson<json::Value>> {
-    let kind = parse_content_kind(&kind)?;
+    let kind = parse_content_kind(&b.kind)?;
     let n = company_content_service::delete_mine(&state, &user, kind, &b.ids).await?;
     Ok(ApiJson(json::json!({ "deleted": n })))
 }
@@ -386,13 +420,27 @@ fn parse_gallery_kind(s: &str) -> AppResult<GalleryKind> {
         .ok_or_else(|| AppError::new(InfraError::InvalidParam(format!("kind={s}"))))
 }
 
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct GalleryListBody {
+    #[validate(length(min = 1, max = 32), custom(function = "phpyun_core::validators::path_token"))]
+    pub kind: String,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct GalleryDeleteBody {
+    #[validate(length(min = 1, max = 32), custom(function = "phpyun_core::validators::path_token"))]
+    pub kind: String,
+    #[validate(length(min = 1, max = 200))]
+    pub ids: Vec<u64>,
+}
+
 pub async fn gallery_list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    Path(kind): Path<String>,
+    ValidatedJson(b): ValidatedJson<GalleryListBody>,
 ) -> AppResult<ApiJson<Paged<GalleryView>>> {
-    let kind = parse_gallery_kind(&kind)?;
+    let kind = parse_gallery_kind(&b.kind)?;
     let r = gallery_service::list_mine(&state, &user, kind, page).await?;
     Ok(ApiJson(Paged::new(
         r.list.into_iter().map(GalleryView::from).collect(),
@@ -404,12 +452,16 @@ pub async fn gallery_list(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct GalleryCreate {
+    /// `company` or `resume`.
+    #[validate(length(min = 1, max = 32), custom(function = "phpyun_core::validators::path_token"))]
+    pub kind: String,
     #[validate(length(max = 128))]
     #[serde(default)]
     pub title: String,
     #[validate(length(min = 1, max = 512))]
     pub picurl: String,
     #[serde(default)]
+    #[validate(range(min = 0, max = 9_999))]
     pub sort: i32,
 }
 
@@ -417,35 +469,38 @@ pub async fn gallery_create(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    Path(kind): Path<String>,
     ValidatedJson(f): ValidatedJson<GalleryCreate>,
 ) -> AppResult<ApiJson<json::Value>> {
-    let kind = parse_gallery_kind(&kind)?;
+    let kind = parse_gallery_kind(&f.kind)?;
     let id = gallery_service::create(&state, &user, kind, &f.title, &f.picurl, f.sort, &ip).await?;
     Ok(ApiJson(json::json!({ "id": id })))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct GalleryUpdate {
+    #[validate(length(min = 1, max = 32), custom(function = "phpyun_core::validators::path_token"))]
+    pub kind: String,
+    #[validate(range(min = 1, max = 999_999_999))]
+    pub id: u64,
     #[validate(length(max = 128))]
     pub title: Option<String>,
     #[validate(length(min = 1, max = 512))]
     pub picurl: Option<String>,
+    #[validate(range(min = 0, max = 9_999))]
     pub sort: Option<i32>,
 }
 
 pub async fn gallery_update(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path((kind, id)): Path<(String, u64)>,
     ValidatedJson(f): ValidatedJson<GalleryUpdate>,
 ) -> AppResult<ApiJson<json::Value>> {
-    let kind = parse_gallery_kind(&kind)?;
+    let kind = parse_gallery_kind(&f.kind)?;
     let n = gallery_service::update(
         &state,
         &user,
         kind,
-        id,
+        f.id,
         f.title.as_deref(),
         f.picurl.as_deref(),
         f.sort,
@@ -457,10 +512,9 @@ pub async fn gallery_update(
 pub async fn gallery_delete(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(kind): Path<String>,
-    ValidatedJson(b): ValidatedJson<IdsBody>,
+    ValidatedJson(b): ValidatedJson<GalleryDeleteBody>,
 ) -> AppResult<ApiJson<json::Value>> {
-    let kind = parse_gallery_kind(&kind)?;
+    let kind = parse_gallery_kind(&b.kind)?;
     let n = gallery_service::delete_mine(&state, &user, kind, &b.ids).await?;
     Ok(ApiJson(json::json!({ "deleted": n })))
 }

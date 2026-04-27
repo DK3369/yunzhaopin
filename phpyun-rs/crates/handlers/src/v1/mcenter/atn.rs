@@ -5,14 +5,11 @@
 //! unfollowed; `data.following` is the authoritative new state.
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::post,
 };
-use phpyun_core::{
-    ApiJson, ApiMsgData, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
-    ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{dto::KindTargetUidBody, ApiJson, ApiMsgData, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::atn_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -20,9 +17,10 @@ use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/follows", post(toggle).get(list_following))
-        .route("/follows/exists/{kind}/{target_uid}", get(exists))
-        .route("/followers", get(list_followers))
+        .route("/follows", post(toggle))
+        .route("/follows/list", post(list_following))
+        .route("/follows/exists", post(exists))
+        .route("/followers", post(list_followers))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -30,6 +28,7 @@ pub struct FollowToggleForm {
     /// 1 = user, 2 = company
     #[validate(range(min = 1, max = 2))]
     pub target_kind: i32,
+    #[validate(range(min = 1, max = 99_999_999))]
     pub target_uid: u64,
 }
 
@@ -87,26 +86,27 @@ impl From<phpyun_models::atn::entity::Atn> for FollowItem {
     }
 }
 
-#[derive(Debug, Deserialize, Validate, IntoParams)]
+#[derive(Debug, Deserialize, Validate, IntoParams, ToSchema)]
 pub struct ListQuery {
     /// 1 = user, 2 = company
+    #[validate(range(min = 0, max = 99))]
     pub kind: i32,
 }
 
 /// Targets I am following (filtered by kind).
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/follows",
+    post,
+    path = "/v1/mcenter/follows/list",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(ListQuery),
+    request_body = ListQuery,
     responses((status = 200, description = "ok"))
 )]
 pub async fn list_following(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<ListQuery>,
+    ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Paged<FollowItem>>> {
     let r = atn_service::list_following(&state, &user, q.kind, page).await?;
     Ok(ApiJson(Paged::new(
@@ -120,7 +120,7 @@ pub async fn list_following(
 /// Followers of the current user (employers see who follows their company,
 /// jobseekers see who follows them as a teacher/contact).
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/followers",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -147,21 +147,18 @@ pub struct ExistsResp {
 
 /// Cheap probe used by frontend to render the follow-button state.
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/follows/exists/{kind}/{target_uid}",
+    post,
+    path = "/v1/mcenter/follows/exists",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(
-        ("kind" = i32, Path),
-        ("target_uid" = u64, Path),
-    ),
+    request_body = KindTargetUidBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn exists(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path((kind, target_uid)): Path<(i32, u64)>,
+    ValidatedJson(b): ValidatedJson<KindTargetUidBody>,
 ) -> AppResult<ApiJson<ExistsResp>> {
-    let ok = atn_service::exists(&state, &user, kind, target_uid).await?;
+    let ok = atn_service::exists(&state, &user, b.kind, b.target_uid).await?;
     Ok(ApiJson(ExistsResp { exists: ok }))
 }

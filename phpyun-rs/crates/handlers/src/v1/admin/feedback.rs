@@ -1,29 +1,21 @@
 //! Feedback queue (admin).
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::{Path, State},
     Router,
+    routing::post,
 };
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{dto::StatusFilterBody, ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::admin_service;
 use serde::{Deserialize, Serialize};
-use utoipa::{IntoParams, ToSchema};
+use utoipa::ToSchema;
 use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/feedback", get(list))
-        .route("/feedback/{id}/status", post(set_status))
+        .route("/feedback", post(list))
+        .route("/feedback/status", post(set_status))
         .route("/feedback/batch/status", post(batch_set_status))
-}
-
-#[derive(Debug, Deserialize, Validate, IntoParams)]
-pub struct FeedbackListQuery {
-    /// 0=pending / 1=resolved
-    pub status: Option<i32>,
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -70,18 +62,18 @@ impl From<phpyun_models::feedback::entity::Feedback> for AdminFeedbackItem {
 
 /// Feedback list
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/admin/feedback",
     tag = "admin",
     security(("bearer" = [])),
-    params(FeedbackListQuery),
+    request_body = StatusFilterBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<FeedbackListQuery>,
+    ValidatedJson(q): ValidatedJson<StatusFilterBody>,
 ) -> AppResult<ApiJson<Paged<AdminFeedbackItem>>> {
     user.require_admin()?;
     let r = admin_service::list_feedback(&state, q.status, page).await?;
@@ -95,27 +87,25 @@ pub async fn list(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct SetFeedbackStatusForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
     /// 1=resolved
     #[validate(range(min = 1, max = 1))]
     pub status: i32,
 }
 
 /// Mark feedback as resolved
-#[utoipa::path(
-    post,
-    path = "/v1/admin/feedback/{id}/status",
+#[utoipa::path(post,
+    path = "/v1/admin/feedback/status",
     tag = "admin",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
     request_body = SetFeedbackStatusForm,
     responses((status = 200, description = "ok"))
 )]
-pub async fn set_status(
-    State(state): State<AppState>,
+pub async fn set_status(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<SetFeedbackStatusForm>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<SetFeedbackStatusForm>) -> AppResult<ApiOk> {
+    let id = f.id;
     user.require_admin()?;
     admin_service::set_feedback_status(&state, &user, id, f.status).await?;
     Ok(ApiOk("ok"))

@@ -1,24 +1,27 @@
 //! My activity log (filtered from `yun_rs_audit_log` where actor_uid = self).
 
 use axum::{
-    extract::{Query, State},
-    routing::get,
+    extract::{State},
     Router,
+    routing::post,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedQuery};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::audit_log_service::{self, Filter};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/activity", get(list))
+    Router::new().route("/activity", post(list))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ActivityQuery {
+    #[validate(length(max = 100))]
     pub action_prefix: Option<String>,
+    #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub since: Option<i64>,
+    #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub until: Option<i64>,
 }
 
@@ -63,7 +66,7 @@ impl From<phpyun_models::audit_log::entity::AuditLog> for ActivityItem {
 
 /// My activity log
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/activity",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -74,7 +77,7 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<ActivityQuery>,
+    ValidatedJson(q): ValidatedJson<ActivityQuery>,
 ) -> AppResult<ApiJson<Paged<ActivityItem>>> {
     let f = Filter {
         action_prefix: q.action_prefix.as_deref(),

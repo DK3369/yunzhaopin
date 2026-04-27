@@ -1,55 +1,55 @@
 //! Admin: account deletion request approvals.
 
 use axum::{
-    extract::{Path, State},
-    routing::post,
+    extract::State,
     Router,
+    routing::post,
 };
 use phpyun_core::{
-    json, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp,
+    dto::IdBody, json, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
 };
 use phpyun_services::member_logout_service;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/account-logouts/{id}/approve", post(approve))
-        .route("/account-logouts/{id}/reject", post(reject))
+        .route("/account-logouts/approve", post(approve))
+        .route("/account-logouts/reject", post(reject))
 }
 
 #[utoipa::path(
     post,
-    path = "/v1/admin/account-logouts/{id}/approve",
+    path = "/v1/admin/account-logouts/approve",
     tag = "admin",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn approve(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<json::Value>> {
     user.require_admin()?;
-    let n = member_logout_service::admin_approve(&state, &user, id, &ip).await?;
+    let n = member_logout_service::admin_approve(&state, &user, b.id, &ip).await?;
     Ok(ApiJson(json::json!({ "updated": n })))
 }
 
 #[utoipa::path(
     post,
-    path = "/v1/admin/account-logouts/{id}/reject",
+    path = "/v1/admin/account-logouts/reject",
     tag = "admin",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn reject(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<json::Value>> {
     user.require_admin()?;
-    let n = member_logout_service::admin_reject(&state, &user, id, &ip).await?;
+    let n = member_logout_service::admin_reject(&state, &user, b.id, &ip).await?;
     Ok(ApiJson(json::json!({ "updated": n })))
 }

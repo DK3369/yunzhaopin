@@ -1,11 +1,11 @@
 //! Public company browsing (mirrors PHPYun `wap/company::index_action` + `show_action`).
 
 use axum::{
-    extract::{Path, State},
-    routing::get,
+    extract::State,
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{ApiJson, AppResult, AppState, MaybeUser, Paged, Pagination, ValidatedQuery};
+use phpyun_core::{ApiJson, AppResult, AppState, MaybeUser, Paged, Pagination, ValidatedJson};
 use validator::Validate;
 use phpyun_models::company::repo::CompanyFilter;
 use phpyun_services::company_service;
@@ -13,22 +13,23 @@ use phpyun_services::hot_search_service;
 use phpyun_services::view_service::{self, KIND_COMPANY};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use phpyun_core::dto::{UidBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/companies", get(list_companies))
-        .route("/companies/hot", get(hot_companies))
-        .route("/companies/autocomplete", get(autocomplete))
-        .route("/companies/{uid}", get(company_detail))
+        .route("/companies", post(list_companies))
+        .route("/companies/hot", post(hot_companies))
+        .route("/companies/autocomplete", post(autocomplete))
+        .route("/companies/detail", post(company_detail))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct CompanyListQuery {
     #[validate(length(max = 100))]
     pub keyword: Option<String>,
-    #[validate(range(min = 0, max = 9_999_999))]
+    #[validate(range(min = 0, max = 99_999))]
     pub province_id: Option<i32>,
-    #[validate(range(min = 0, max = 9_999_999))]
+    #[validate(range(min = 0, max = 99_999))]
     pub city_id: Option<i32>,
     /// Industry id
     #[validate(range(min = 0, max = 9_999_999))]
@@ -41,70 +42,45 @@ fn default_did() -> u32 {
     1
 }
 
-/// Company list item -- mirrors the output of PHPYun `companyM::getList()`.
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CompanySummary {
-    pub uid: u64,
-    pub name: Option<String>,
-    pub shortname: Option<String>,
+/// Company list item — definition lives in `phpyun_models::company::view`,
+/// re-exported here so the legacy path keeps working. See
+/// `company_summary_from_dict` for the dict-aware constructor.
+pub use phpyun_models::company::view::CompanySummary;
 
-    // ---- Raw ids ----
-    pub hy: i32,
-    pub pr: i32,
-    pub mun: i32,
-    pub province_id: i32,
-    pub city_id: i32,
+/// Build a fully-populated `CompanySummary` (dict-translated names).
+pub fn company_summary_from_dict(
+    c: phpyun_models::company::entity::Company,
+    dicts: &phpyun_services::dict_service::LocalizedDicts,
+) -> CompanySummary {
+    CompanySummary {
+        uid: c.uid,
+        name: c.name,
+        shortname: c.shortname,
 
-    // ---- Dict names (PHP `hy_n / pr_n / mun_n / city_one / city_two`) ----
-    pub hy_n: String,
-    pub pr_n: String,
-    pub mun_n: String,
-    pub city_one: String,
-    pub city_two: String,
+        hy: c.hy,
+        pr: c.pr,
+        mun: c.mun,
+        province_id: c.provinceid,
+        city_id: c.cityid,
 
-    // ---- Other ----
-    pub logo: Option<String>,
-    pub rec: i32,
-    pub hits: i32,
-    pub rating: i32,
-    pub rating_name: Option<String>,
-}
+        hy_n: dicts.industry(c.hy).to_string(),
+        // pr / mun live in phpyun_comclass (grouped by keyid)
+        pr_n: dicts.comclass(c.pr).to_string(),
+        mun_n: dicts.comclass(c.mun).to_string(),
+        city_one: dicts.city(c.provinceid).to_string(),
+        city_two: dicts.city(c.cityid).to_string(),
 
-impl CompanySummary {
-    pub fn from_with_dict(
-        c: phpyun_models::company::entity::Company,
-        dicts: &phpyun_services::dict_service::LocalizedDicts,
-    ) -> Self {
-        Self {
-            uid: c.uid,
-            name: c.name,
-            shortname: c.shortname,
-
-            hy: c.hy,
-            pr: c.pr,
-            mun: c.mun,
-            province_id: c.provinceid,
-            city_id: c.cityid,
-
-            hy_n: dicts.industry(c.hy).to_string(),
-            // pr / mun live in phpyun_comclass (grouped by keyid)
-            pr_n: dicts.comclass(c.pr).to_string(),
-            mun_n: dicts.comclass(c.mun).to_string(),
-            city_one: dicts.city(c.provinceid).to_string(),
-            city_two: dicts.city(c.cityid).to_string(),
-
-            logo: c.logo,
-            rec: c.rec,
-            hits: c.hits,
-            rating: c.rating,
-            rating_name: c.rating_name,
-        }
+        logo: c.logo,
+        rec: c.rec,
+        hits: c.hits,
+        rating: c.rating,
+        rating_name: c.rating_name,
     }
 }
 
 /// Public company list (filter by keyword / region / industry)
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/companies",
     tag = "wap",
     params(CompanyListQuery),
@@ -113,7 +89,7 @@ impl CompanySummary {
 pub async fn list_companies(
     State(state): State<AppState>,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<CompanyListQuery>,
+    ValidatedJson(q): ValidatedJson<CompanyListQuery>,
 ) -> AppResult<ApiJson<Paged<CompanySummary>>> {
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "company", kw.trim().to_string());
@@ -128,7 +104,7 @@ pub async fn list_companies(
     let r = company_service::list_public(&state, &filter, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(|c| CompanySummary::from_with_dict(c, &dicts)).collect(),
+        r.list.into_iter().map(|c| crate::v1::wap::companies::company_summary_from_dict(c, &dicts)).collect(),
         r.total,
         page.page,
         page.page_size,
@@ -245,10 +221,10 @@ pub struct CompanyShowItem {
 
 /// Public company detail
 #[utoipa::path(
-    get,
-    path = "/v1/wap/companies/{uid}",
+    post,
+    path = "/v1/wap/companies/detail",
     tag = "wap",
-    params(("uid" = u64, Path)),
+    request_body = UidBody,
     responses(
         (status = 200, description = "ok"),
         (status = 403, description = "Company not approved / account locked"),
@@ -258,8 +234,9 @@ pub struct CompanyShowItem {
 pub async fn company_detail(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
-    Path(uid): Path<u64>,
+    ValidatedJson(b): ValidatedJson<UidBody>,
 ) -> AppResult<ApiJson<CompanyDetail>> {
+    let uid = b.uid;
     let c = company_service::get_public(&state, uid).await?;
     if let Some(u) = user.as_ref() {
         view_service::record_async(&state, u.uid, KIND_COMPANY, uid);
@@ -465,7 +442,7 @@ pub struct HotCompanyView {
 /// Uses an INNER JOIN on `phpyun_hotjob` × `phpyun_company`, filtered by
 /// `c.hottime > now AND c.r_status = 1 AND h.time_start < now AND h.time_end > now`.
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/companies/hot",
     tag = "wap",
     params(HotCompaniesQuery),
@@ -473,7 +450,7 @@ pub struct HotCompanyView {
 )]
 pub async fn hot_companies(
     State(state): State<AppState>,
-    ValidatedQuery(q): ValidatedQuery<HotCompaniesQuery>,
+    ValidatedJson(q): ValidatedJson<HotCompaniesQuery>,
 ) -> AppResult<ApiJson<Vec<HotCompanyView>>> {
     let sort_mode = match q.order.as_deref() {
         Some("recent") => 1,
@@ -542,7 +519,7 @@ pub struct CompanyAutoItem {
 /// `ajax::getComBySearch_action`. Designed for typeahead widgets, returns up
 /// to `limit` rows (clamped to 1..=20) where `name` matches `LIKE %keyword%`.
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/companies/autocomplete",
     tag = "wap",
     params(CompanyAutoQuery),
@@ -550,7 +527,7 @@ pub struct CompanyAutoItem {
 )]
 pub async fn autocomplete(
     State(state): State<AppState>,
-    ValidatedQuery(q): ValidatedQuery<CompanyAutoQuery>,
+    ValidatedJson(q): ValidatedJson<CompanyAutoQuery>,
 ) -> AppResult<ApiJson<Vec<CompanyAutoItem>>> {
     let keyword = q.keyword.trim();
     if keyword.is_empty() {

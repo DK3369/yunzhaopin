@@ -73,7 +73,13 @@ pub struct ExpectInput<'a> {
     pub name: Option<&'a str>,
     pub job_classid: i64,
     pub city_classid: i64,
+    /// Legacy salary-tier dict id (column `salary`, int(3), nullable).
     pub salary: i32,
+    /// Numeric minimum desired salary (column `minsalary`, NOT NULL — schema
+    /// has no default, so we MUST write a value, even if 0).
+    pub minsalary: i32,
+    /// Numeric maximum desired salary (column `maxsalary`, nullable).
+    pub maxsalary: Option<i32>,
     /// Aligned with PHP `saveexpect_action`: type/report/jobstatus/hy are all
     /// required by the main UI; default to 0 only when the caller deliberately
     /// omits them (legacy code paths).
@@ -91,10 +97,10 @@ pub async fn create(
 ) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         r#"INSERT INTO phpyun_resume_expect
-           (uid, name, hy, job_classid, city_classid, salary,
+           (uid, name, hy, job_classid, city_classid, salary, minsalary, maxsalary,
             `type`, report, jobstatus,
             status, r_status, state, lastupdate)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1, 0, ?)"#,
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1, 0, ?)"#,
     )
     .bind(uid)
     .bind(input.name)
@@ -102,6 +108,8 @@ pub async fn create(
     .bind(input.job_classid)
     .bind(input.city_classid)
     .bind(input.salary)
+    .bind(input.minsalary)
+    .bind(input.maxsalary)
     .bind(input.r#type)
     .bind(input.report)
     .bind(input.jobstatus)
@@ -125,6 +133,8 @@ pub async fn update(
             job_classid  = ?,
             city_classid = ?,
             salary       = ?,
+            minsalary    = ?,
+            maxsalary    = ?,
             `type`       = ?,
             report       = ?,
             jobstatus    = ?,
@@ -137,6 +147,8 @@ pub async fn update(
     .bind(input.job_classid)
     .bind(input.city_classid)
     .bind(input.salary)
+    .bind(input.minsalary)
+    .bind(input.maxsalary)
     .bind(input.r#type)
     .bind(input.report)
     .bind(input.jobstatus)

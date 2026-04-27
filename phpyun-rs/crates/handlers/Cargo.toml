@@ -28,3 +28,4 @@ axum-test.workspace = true
 tokio = { workspace = true }
 anyhow.workspace = true
 thiserror.workspace = true
+regex.workspace = true

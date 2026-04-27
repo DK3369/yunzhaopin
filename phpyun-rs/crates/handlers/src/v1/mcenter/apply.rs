@@ -1,28 +1,28 @@
 //! Job seeker submitting resumes + my applications (usertype=1).
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::post,
 };
 use phpyun_core::json;
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::apply_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/apply", post(apply_to_job))
-        .route("/my-applications", get(list_mine))
-        .route("/my-applications/{id}", post(withdraw))
+        .route("/my-applications", post(list_mine))
+        .route("/my-applications/withdraw", post(withdraw))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct ApplyForm {
+    #[validate(range(min = 1, max = 99_999_999))]
     pub job_id: u64,
 }
 
@@ -119,12 +119,13 @@ pub struct MyAppliesQuery {
     /// 1=unviewed / 0=viewed / 3=interviewed / 4=not suitable / 7=hired.
     /// Omitted = all.
     #[serde(default)]
+    #[validate(range(min = 0, max = 99))]
     pub state: Option<i32>,
 }
 
 /// Job seeker views their own application list
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/my-applications",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -135,7 +136,7 @@ pub async fn list_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<MyAppliesQuery>,
+    ValidatedJson(q): ValidatedJson<MyAppliesQuery>,
 ) -> AppResult<ApiJson<Paged<MyApplySummary>>> {
     let r = apply_service::list_mine(&state, &user, q.state, page).await?;
     Ok(ApiJson(Paged::new(
@@ -149,18 +150,18 @@ pub async fn list_mine(
 /// Withdraw an application
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/my-applications/{id}",
+    path = "/v1/mcenter/my-applications/withdraw",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn withdraw(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<json::Value>> {
-    apply_service::withdraw(&state, &user, id, &ip).await?;
+    apply_service::withdraw(&state, &user, b.id, &ip).await?;
     Ok(ApiJson(json::json!({ "ok": true })))
 }

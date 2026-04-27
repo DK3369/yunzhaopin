@@ -1,16 +1,19 @@
 //! Company certification (member side).
 
-use axum::{extract::State, routing::get, Router};
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson,
+use axum::{
+    extract::State,
+    Router,
+    routing::{get, post},
 };
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::company_cert_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/company/cert", get(get_mine).post(submit))
+    Router::new().route("/company/cert", post(submit))
+        .route("/company/cert/list", post(get_mine))
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -63,13 +66,12 @@ pub struct CertView {
 
 /// My certification status
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/company/cert",
+    post,
+    path = "/v1/mcenter/company/cert/list",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]
-pub async fn get_mine(
+)]pub async fn get_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
 ) -> AppResult<ApiJson<Option<CertView>>> {

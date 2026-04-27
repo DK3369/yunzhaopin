@@ -6,15 +6,15 @@
 
 use axum::{
     extract::State,
-    routing::get,
     Router,
+    routing::post,
 };
 use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use serde::Serialize;
 use utoipa::ToSchema;
 
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/entrusts", get(list_for_headhunter))
+    Router::new().route("/entrusts", post(list_for_headhunter))
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -37,7 +37,7 @@ pub struct EntrustedSeekerItem {
 
 /// List jobseekers who have entrusted me (call as headhunter, usertype=4)
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/entrusts",
     tag = "mcenter",
     security(("bearer" = [])),

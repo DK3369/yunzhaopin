@@ -7,24 +7,22 @@
 
 use axum::{
     extract::{Path, State},
-    routing::post,
     Router,
+    routing::post,
 };
-use phpyun_core::{
-    clock, ApiJson, ApiOk, AppError, AppResult, AppState, AuthenticatedUser, InfraError,
-    ValidatedJson,
-};
+use phpyun_core::{clock, ApiJson, ApiOk, AppError, AppResult, AppState, AuthenticatedUser, InfraError, ValidatedJson};
 use phpyun_models::country::repo as country_repo;
 use phpyun_services::country_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{CreatedId, IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/countries", post(create))
-        .route("/countries/{id}", post(patch))
-        .route("/countries/{id}/delete", post(delete))
+        .route("/countries/patch", post(patch))
+        .route("/countries/delete", post(delete))
         .route("/countries/reload", post(reload))
 }
 
@@ -37,6 +35,7 @@ pub struct CreateForm {
     #[validate(length(equal = 3))]
     pub code3: String,
     /// ISO 3166-1 numeric (156/840/...).
+    #[validate(range(min = 0, max = 65_535))]
     pub numeric_code: u16,
     #[validate(length(min = 1, max = 120))]
     pub name_en: String,
@@ -55,12 +54,8 @@ pub struct CreateForm {
     #[validate(length(min = 1, max = 8))]
     pub flag: String,
     #[serde(default)]
+    #[validate(range(min = 0, max = 9_999))]
     pub sort: i32,
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CreatedId {
-    pub id: u64,
 }
 
 #[utoipa::path(
@@ -104,6 +99,9 @@ pub async fn create(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct PatchForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
+
     #[serde(default)]
     #[validate(length(min = 1, max = 120))]
     pub name_en: Option<String>,
@@ -123,15 +121,14 @@ pub struct PatchForm {
     #[validate(length(min = 1, max = 8))]
     pub flag: Option<String>,
     #[serde(default)]
+    #[validate(range(min = 0, max = 9_999))]
     pub sort: Option<i32>,
 }
 
-#[utoipa::path(
-    post,
-    path = "/v1/admin/countries/{id}",
+#[utoipa::path(post,
+    path = "/v1/admin/countries",
     tag = "admin",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
     request_body = PatchForm,
     responses(
         (status = 200, description = "ok"),
@@ -139,12 +136,10 @@ pub struct PatchForm {
         (status = 404, description = "Not found"),
     )
 )]
-pub async fn patch(
-    State(state): State<AppState>,
+pub async fn patch(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<PatchForm>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<PatchForm>) -> AppResult<ApiOk> {
+    let id = f.id;
     user.require_admin()?;
     let continent = f.continent.as_deref().map(str::to_uppercase);
     let currency = f.currency.as_deref().map(str::to_uppercase);
@@ -174,23 +169,21 @@ pub async fn patch(
 }
 
 /// Soft-delete (`status = 2`).
-#[utoipa::path(
-    post,
-    path = "/v1/admin/countries/{id}/delete",
+#[utoipa::path(post,
+    path = "/v1/admin/countries/delete",
     tag = "admin",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses(
         (status = 200, description = "Deleted"),
         (status = 403, description = "Admin required"),
         (status = 404, description = "Not found"),
     )
 )]
-pub async fn delete(
-    State(state): State<AppState>,
+pub async fn delete(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiOk> {
+    let id = b.id;
     user.require_admin()?;
     let affected = country_repo::soft_delete(state.db.pool(), id, clock::now_ts())
         .await
@@ -220,3 +213,4 @@ pub async fn reload(
     country_service::invalidate().await;
     Ok(ApiOk("reloaded"))
 }
+

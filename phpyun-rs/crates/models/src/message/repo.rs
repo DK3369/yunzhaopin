@@ -135,3 +135,49 @@ pub async fn delete(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Er
         .await?;
     Ok(res.rows_affected())
 }
+
+/// Bulk delete by id list, scoped to a single recipient. Used by the message
+/// centre's batch-delete endpoint.
+pub async fn delete_by_ids(
+    pool: &MySqlPool,
+    ids: &[u64],
+    uid: u64,
+) -> Result<u64, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("DELETE FROM phpyun_sysmsg WHERE fa_uid = ");
+    qb.push_bind(uid);
+    qb.push(" AND id IN (");
+    let mut sep = qb.separated(", ");
+    for id in ids {
+        sep.push_bind(*id);
+    }
+    qb.push(")");
+    let res = qb.build().execute(pool).await?;
+    Ok(res.rows_affected())
+}
+
+/// Internal one-liner insert without the `MessageCreate` envelope. Used by
+/// fan-out paths (collect / atn / etc.) that already have a pre-rendered
+/// content string and just need to drop a row.
+pub async fn insert_simple(
+    pool: &MySqlPool,
+    uid: u64,
+    usertype: i32,
+    content: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "INSERT INTO phpyun_sysmsg (fa_uid, usertype, content, remind_status, ctime) \
+         VALUES (?, ?, ?, 1, ?)",
+    )
+    .bind(uid)
+    .bind(usertype)
+    .bind(content)
+    .bind(now)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}

@@ -1,13 +1,11 @@
 //! Ratings I have given to others.
 
 use axum::{
-    extract::{Path, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::post,
 };
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson,
-};
+use phpyun_core::{dto::KindTargetUidBody, ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::rating_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -16,11 +14,13 @@ use validator::Validate;
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/ratings", post(rate))
-        .route("/ratings/{kind}/{target_uid}", get(get_mine).post(unrate))
+        .route("/ratings/get-mine", post(get_mine))
+        .route("/ratings/unrate", post(unrate))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct RateForm {
+    #[validate(range(min = 1, max = 99_999_999))]
     pub target_uid: u64,
     /// 1=company 2=resume 3=job
     #[validate(range(min = 1, max = 3))]
@@ -81,36 +81,36 @@ pub async fn rate(
 
 /// Get my rating for a target
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/ratings/{kind}/{target_uid}",
+    post,
+    path = "/v1/mcenter/ratings/get-mine",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("kind" = i32, Path), ("target_uid" = u64, Path)),
+    request_body = KindTargetUidBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn get_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path((kind, target_uid)): Path<(i32, u64)>,
+    ValidatedJson(b): ValidatedJson<KindTargetUidBody>,
 ) -> AppResult<ApiJson<Option<MyRating>>> {
-    let r = rating_service::get_mine(&state, &user, target_uid, kind).await?;
+    let r = rating_service::get_mine(&state, &user, b.target_uid, b.kind).await?;
     Ok(ApiJson(r.map(MyRating::from)))
 }
 
 /// Withdraw rating
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/ratings/{kind}/{target_uid}",
+    path = "/v1/mcenter/ratings/unrate",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("kind" = i32, Path), ("target_uid" = u64, Path)),
+    request_body = KindTargetUidBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn unrate(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path((kind, target_uid)): Path<(i32, u64)>,
+    ValidatedJson(b): ValidatedJson<KindTargetUidBody>,
 ) -> AppResult<ApiOk> {
-    rating_service::unrate(&state, &user, target_uid, kind).await?;
+    rating_service::unrate(&state, &user, b.target_uid, b.kind).await?;
     Ok(ApiOk("removed"))
 }

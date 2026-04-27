@@ -2,19 +2,21 @@
 
 use axum::{
     extract::{Path, State},
-    routing::{get, post},
     Router,
+    routing::{get, post},
 };
 use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::site_setting_service::{self, UpsertInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/site-settings", get(list).post(upsert))
-        .route("/site-settings/{key}", post(remove))
+        .route("/site-settings", post(upsert))
+        .route("/site-settings/list", post(list))
+        .route("/site-settings/delete", post(remove))
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -51,13 +53,12 @@ impl From<phpyun_models::site_setting::entity::SiteSetting> for SettingItem {
 
 /// All settings (including non-public)
 #[utoipa::path(
-    get,
-    path = "/v1/admin/site-settings",
+    post,
+    path = "/v1/admin/site-settings/list",
     tag = "admin",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]
-pub async fn list(
+)]pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
 ) -> AppResult<ApiJson<Vec<SettingItem>>> {
@@ -109,20 +110,25 @@ pub async fn upsert(
 }
 
 /// Delete setting
-#[utoipa::path(
-    post,
-    path = "/v1/admin/site-settings/{key}",
+#[utoipa::path(post,
+    path = "/v1/admin/site-settings",
     tag = "admin",
     security(("bearer" = [])),
-    params(("key" = String, Path)),
+    request_body = RemoveBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn remove(
-    State(state): State<AppState>,
+pub async fn remove(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(key): Path<String>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(b): ValidatedJson<RemoveBody>) -> AppResult<ApiOk> {
+    let key = b.key;
+    phpyun_core::validators::ensure_path_key(&key)?;
     user.require_admin()?;
     site_setting_service::admin_delete(&state, &user, &key).await?;
     Ok(ApiOk("deleted"))
+}
+
+#[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
+pub struct RemoveBody {
+    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    pub key: String,
 }

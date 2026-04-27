@@ -1,15 +1,16 @@
 //! Public points-mall endpoints (no login required): classes, reward list, reward detail.
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::get,
+    extract::{Path, State},
     Router,
+    routing::post,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedQuery};
+use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::redeem_service::{self, RewardFilter};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{IdBody};
 
 fn fmt_dt(ts: i64) -> String {
     if ts <= 0 {
@@ -28,13 +29,14 @@ fn pic_n(state: &AppState, raw: &str) -> String {
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/redeem/classes", get(list_classes))
-        .route("/redeem/rewards", get(list_rewards))
-        .route("/redeem/rewards/{id}", get(get_reward))
+        .route("/redeem/classes", post(list_classes))
+        .route("/redeem/rewards", post(list_rewards))
+        .route("/redeem/rewards/detail", post(get_reward))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ClassQuery {
+    #[validate(range(min = 1, max = 99_999_999))]
     pub parent_id: Option<u64>,
 }
 
@@ -64,15 +66,15 @@ impl From<phpyun_models::redeem::entity::RedeemClass> for ClassItem {
 
 /// Redeem mall classes
 #[utoipa::path(
-    get,
-    path = "/v1/wap/redeem/classes",
+    post,
+    path = "/v1/wap/redeem/rewards/detail",
     tag = "wap",
     params(ClassQuery),
     responses((status = 200, description = "ok"))
 )]
 pub async fn list_classes(
     State(state): State<AppState>,
-    ValidatedQuery(q): ValidatedQuery<ClassQuery>,
+    ValidatedJson(q): ValidatedJson<ClassQuery>,
 ) -> AppResult<ApiJson<Vec<ClassItem>>> {
     let list = redeem_service::list_classes(&state, q.parent_id).await?;
     Ok(ApiJson(list.iter().cloned().map(ClassItem::from).collect()))
@@ -80,7 +82,9 @@ pub async fn list_classes(
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct RewardListQuery {
+    #[validate(range(min = 1, max = 99_999_999))]
     pub nid: Option<u64>,
+    #[validate(range(min = 1, max = 99_999_999))]
     pub tnid: Option<u64>,
 }
 
@@ -169,7 +173,7 @@ impl From<phpyun_models::redeem::entity::Reward> for RewardItem {
 
 /// Reward list (active only)
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/redeem/rewards",
     tag = "wap",
     params(RewardListQuery),
@@ -178,7 +182,7 @@ impl From<phpyun_models::redeem::entity::Reward> for RewardItem {
 pub async fn list_rewards(
     State(state): State<AppState>,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<RewardListQuery>,
+    ValidatedJson(q): ValidatedJson<RewardListQuery>,
 ) -> AppResult<ApiJson<Paged<RewardItem>>> {
     let f = RewardFilter { only_active: true, nid: q.nid, tnid: q.tnid };
     let r = redeem_service::list_rewards(&state, &f, page).await?;
@@ -272,17 +276,16 @@ impl From<phpyun_models::redeem::entity::Reward> for RewardDetail {
 }
 
 /// Reward detail
-#[utoipa::path(
-    get,
-    path = "/v1/wap/redeem/rewards/{id}",
+#[utoipa::path(post,
+    path = "/v1/wap/redeem/rewards",
     tag = "wap",
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn get_reward(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
-) -> AppResult<ApiJson<RewardDetail>> {
+pub async fn get_reward(State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<RewardDetail>> {
+    let id = b.id;
     let r = redeem_service::get_reward(&state, id).await?;
     Ok(ApiJson(RewardDetail::from_with_ctx(r, &state)))
 }
+

@@ -1,29 +1,21 @@
 //! Report queue (admin).
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::{Path, State},
     Router,
+    routing::post,
 };
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{dto::StatusFilterBody, ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::admin_service;
 use serde::{Deserialize, Serialize};
-use utoipa::{IntoParams, ToSchema};
+use utoipa::ToSchema;
 use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/reports", get(list))
-        .route("/reports/{id}/status", post(set_status))
+        .route("/reports", post(list))
+        .route("/reports/status", post(set_status))
         .route("/reports/batch/status", post(batch_set_status))
-}
-
-#[derive(Debug, Deserialize, Validate, IntoParams)]
-pub struct ReportListQuery {
-    /// 0=pending / 1=approved / 2=rejected; omit = all
-    pub status: Option<i32>,
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -76,18 +68,18 @@ impl From<phpyun_models::report::entity::Report> for AdminReportItem {
 
 /// Report queue
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/admin/reports",
     tag = "admin",
     security(("bearer" = [])),
-    params(ReportListQuery),
+    request_body = StatusFilterBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<ReportListQuery>,
+    ValidatedJson(q): ValidatedJson<StatusFilterBody>,
 ) -> AppResult<ApiJson<Paged<AdminReportItem>>> {
     user.require_admin()?;
     let r = admin_service::list_reports(&state, q.status, page).await?;
@@ -101,27 +93,25 @@ pub async fn list(
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct SetReportStatusForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
     /// 1=approved / 2=rejected
     #[validate(range(min = 1, max = 2))]
     pub status: i32,
 }
 
 /// Process a report
-#[utoipa::path(
-    post,
-    path = "/v1/admin/reports/{id}/status",
+#[utoipa::path(post,
+    path = "/v1/admin/reports/status",
     tag = "admin",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
     request_body = SetReportStatusForm,
     responses((status = 200, description = "ok"))
 )]
-pub async fn set_status(
-    State(state): State<AppState>,
+pub async fn set_status(State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
-    ValidatedJson(f): ValidatedJson<SetReportStatusForm>,
-) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<SetReportStatusForm>) -> AppResult<ApiOk> {
+    let id = f.id;
     user.require_admin()?;
     admin_service::set_report_status(&state, &user, id, f.status).await?;
     Ok(ApiOk("ok"))

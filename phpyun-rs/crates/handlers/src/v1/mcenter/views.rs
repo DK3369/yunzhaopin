@@ -7,20 +7,18 @@
 
 use axum::{
     extract::State,
-    routing::get,
     Router,
+    routing::post,
 };
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedQuery,
-};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::view_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/my-views", get(list_my_views))
-        .route("/profile-views", get(list_profile_views))
+        .route("/my-views", post(list_my_views))
+        .route("/profile-views", post(list_profile_views))
 }
 
 #[derive(Debug, Deserialize, validator::Validate, IntoParams)]
@@ -76,7 +74,7 @@ impl From<phpyun_models::view::entity::View> for ViewItem {
 
 /// Jobs / companies / resumes I have viewed
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/my-views",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -87,7 +85,7 @@ pub async fn list_my_views(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<KindQuery>,
+    ValidatedJson(q): ValidatedJson<KindQuery>,
 ) -> AppResult<ApiJson<Paged<ViewItem>>> {
     let r = view_service::list_by_viewer(&state, &user, q.kind, page).await?;
     Ok(ApiJson(Paged::new(
@@ -103,7 +101,7 @@ pub async fn list_my_views(
 /// - `kind=2`: company sees "who has visited my company profile page" (usertype=2)
 /// - `kind=3`: jobseeker sees "who has viewed my resume" (usertype=1)
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/profile-views",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -114,7 +112,7 @@ pub async fn list_profile_views(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<KindQuery>,
+    ValidatedJson(q): ValidatedJson<KindQuery>,
 ) -> AppResult<ApiJson<Paged<ViewItem>>> {
     let r = view_service::list_on_target(&state, &user, q.kind, page).await?;
     Ok(ApiJson(Paged::new(

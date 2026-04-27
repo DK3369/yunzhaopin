@@ -14,6 +14,7 @@ pub mod cache;
 pub mod clock;
 pub mod config;
 pub mod db;
+pub mod dto;
 pub mod error;
 pub mod events;
 pub mod extractors;

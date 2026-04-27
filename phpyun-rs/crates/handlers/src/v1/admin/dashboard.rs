@@ -1,11 +1,11 @@
 //! Admin dashboard aggregate.
 
 use axum::{
-    extract::{Query, State},
-    routing::get,
+    extract::{State},
     Router,
+    routing::post,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedQuery};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::admin_dashboard_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -13,8 +13,8 @@ use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/dashboard/overview", get(overview))
-        .route("/dashboard/recent-signups", get(recent_signups))
+        .route("/dashboard/overview", post(overview))
+        .route("/dashboard/recent-signups", post(recent_signups))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -33,7 +33,7 @@ pub struct OverviewView {
 
 /// Review queue + activity snapshot
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/admin/dashboard/overview",
     tag = "admin",
     security(("bearer" = [])),
@@ -62,6 +62,7 @@ pub async fn overview(
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct RecentQuery {
     #[serde(default = "default_limit")]
+    #[validate(range(min = 1, max = 200))]
     pub limit: u64,
 }
 fn default_limit() -> u64 { 10 }
@@ -100,7 +101,7 @@ pub struct RecentUser {
 
 /// Recent signups
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/admin/dashboard/recent-signups",
     tag = "admin",
     security(("bearer" = [])),
@@ -110,7 +111,7 @@ pub struct RecentUser {
 pub async fn recent_signups(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedQuery(q): ValidatedQuery<RecentQuery>,
+    ValidatedJson(q): ValidatedJson<RecentQuery>,
 ) -> AppResult<ApiJson<Vec<RecentUser>>> {
     user.require_admin()?;
     let list = admin_dashboard_service::recent_signups(&state, &user, q.limit).await?;

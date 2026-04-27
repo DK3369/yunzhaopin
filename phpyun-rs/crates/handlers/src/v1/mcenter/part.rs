@@ -6,28 +6,30 @@
 //! `member/com/model/part.class.php` / `partok.class.php`.
 
 use axum::{
-    extract::{Path, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::{get, post},
 };
 use phpyun_core::json;
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
-};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::part_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{IdsBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         // Job seeker view
-        .route("/my-part-applications", get(my_applies).post(delete_applies))
-        .route("/my-part-collects", get(my_collects).post(delete_collects))
+        .route("/my-part-applications", post(delete_applies))
+        .route("/my-part-applications/list", post(my_applies))
+        .route("/my-part-collects", post(delete_collects))
+        .route("/my-part-collects/list", post(my_collects))
         // Company view
-        .route("/com-parts", get(com_parts).post(com_delete_parts))
-        .route("/com-part-applications", get(com_applies))
-        .route("/com-part-applications/{id}/status", post(com_update_apply_status))
+        .route("/com-parts", post(com_delete_parts))
+        .route("/com-parts/list", post(com_parts))
+        .route("/com-part-applications", post(com_applies))
+        .route("/com-part-applications/status", post(com_update_apply_status))
 }
 
 // ==================== DTO ====================
@@ -109,13 +111,9 @@ impl From<phpyun_models::part::entity::PartCollect> for MyPartCollectItem {
 pub type ComPartSummary = crate::v1::wap::part::PartSummary;
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
-pub struct IdsBody {
-    #[validate(length(min = 1, max = 200))]
-    pub ids: Vec<u64>,
-}
-
-#[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct ApplyStatusBody {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
     /// 1 unviewed / 2 viewed / 3 contacted
     #[validate(range(min = 1, max = 3))]
     pub status: i32,
@@ -124,13 +122,12 @@ pub struct ApplyStatusBody {
 // ==================== Job Seeker ====================
 
 #[utoipa::path(
-    get,
-    path = "/v1/mcenter/my-part-applications",
+    post,
+    path = "/v1/mcenter/my-part-applications/list",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]
-pub async fn my_applies(
+)]pub async fn my_applies(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
@@ -162,7 +159,7 @@ pub async fn delete_applies(
 }
 
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/my-part-collects",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -202,7 +199,7 @@ pub async fn delete_collects(
 // ==================== Company ====================
 
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/com-parts",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -219,7 +216,7 @@ pub async fn com_parts(
     Ok(ApiJson(Paged::new(
         r.list
             .into_iter()
-            .map(|j| ComPartSummary::from_with_dict(j, &state, &dicts, now))
+            .map(|j| crate::v1::wap::part::part_summary_from_dict(j, &state, &dicts, now))
             .collect(),
         r.total,
         page.page,
@@ -245,7 +242,7 @@ pub async fn com_delete_parts(
 }
 
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/com-part-applications",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -267,19 +264,17 @@ pub async fn com_applies(
 
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/com-part-applications/{id}/status",
+    path = "/v1/mcenter/com-part-applications/status",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
     request_body = ApplyStatusBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn com_update_apply_status(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
     ValidatedJson(b): ValidatedJson<ApplyStatusBody>,
 ) -> AppResult<ApiJson<json::Value>> {
-    let n = part_service::update_com_apply_status(&state, &user, id, b.status).await?;
+    let n = part_service::update_com_apply_status(&state, &user, b.id, b.status).await?;
     Ok(ApiJson(json::json!({ "updated": n })))
 }

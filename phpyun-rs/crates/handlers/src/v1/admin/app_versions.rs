@@ -1,26 +1,27 @@
 //! App version management (admin).
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::{Path, State},
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery
-};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::app_version_service::{self, VersionInput};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{CreatedId, IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/app-versions", get(list).post(create))
-        .route("/app-versions/{id}", post(remove))
+        .route("/app-versions", post(create))
+        .route("/app-versions/list", post(list))
+        .route("/app-versions/delete", post(remove))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
+    #[validate(length(max = 100))]
     pub platform: Option<String>,
 }
 
@@ -72,6 +73,7 @@ pub struct CreateForm {
     pub platform: String,
     #[validate(length(min = 1, max = 32))]
     pub version: String,
+    #[validate(range(min = 0, max = 99_999_999))]
     pub version_code: u32,
     #[serde(default)]
     pub is_force: bool,
@@ -82,20 +84,15 @@ pub struct CreateForm {
     #[serde(default)]
     pub changelog: String,
     #[serde(default)]
+    #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub released_at: i64,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CreatedId {
-    pub id: u64,
-}
-
-#[utoipa::path(get, path = "/v1/admin/app-versions", tag = "admin", security(("bearer" = [])), params(ListQuery), responses((status = 200, description = "ok")))]
-pub async fn list(
+#[utoipa::path(post, path = "/v1/admin/app-versions/list", tag = "admin", security(("bearer" = [])), params(ListQuery), responses((status = 200, description = "ok")))]pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<ListQuery>,
+    ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Paged<VersionItem>>> {
     user.require_admin()?;
     let r = app_version_service::admin_list(&state, &user, q.platform.as_deref(), page).await?;
@@ -131,13 +128,13 @@ pub async fn create(
     Ok(ApiJson(CreatedId { id }))
 }
 
-#[utoipa::path(delete, path = "/v1/admin/app-versions/{id}", tag = "admin", security(("bearer" = [])), params(("id" = u64, Path)), responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/admin/app-versions/delete", tag = "admin", security(("bearer" = [])), request_body = IdBody, responses((status = 200, description = "ok")))]
 pub async fn remove(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiOk> {
     user.require_admin()?;
-    app_version_service::admin_delete(&state, &user, id).await?;
+    app_version_service::admin_delete(&state, &user, b.id).await?;
     Ok(ApiOk("deleted"))
 }

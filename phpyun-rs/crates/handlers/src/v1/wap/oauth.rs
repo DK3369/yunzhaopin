@@ -4,13 +4,11 @@
 //! - POST /v1/wap/oauth/{provider}/bind   -- logged-in user binds third-party account
 
 use axum::{
-    extract::{Path, State},
-    routing::post,
+    extract::State,
     Router,
+    routing::{get, post},
 };
-use phpyun_core::{
-    ApiJson, AppError, AppResult, AppState, AuthenticatedUser, ClientIp, ProviderKind, ValidatedJson,
-};
+use phpyun_core::{ApiJson, AppError, AppResult, AppState, AuthenticatedUser, ClientIp, ProviderKind, ValidatedJson};
 use phpyun_services::oauth_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -18,31 +16,34 @@ use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/oauth/{provider}/login", post(oauth_login))
-        .route("/oauth/{provider}/bind", post(oauth_bind))
+        .route("/oauth/login", post(oauth_login))
+        .route("/oauth/bind", post(oauth_bind))
         // Code-flow providers (no id_token, third-party returns `code`).
         // WeChat Official Account snsapi_base
         .route(
             "/oauth/wechat/authorize-url",
-            axum::routing::get(wechat_authorize_url),
+            post(wechat_authorize_url),
         )
         .route("/oauth/wechat/code-login", post(wechat_code_login))
         // QQ Connect
         .route(
             "/oauth/qq/authorize-url",
-            axum::routing::get(qq_authorize_url),
+            post(qq_authorize_url),
         )
         .route("/oauth/qq/code-login", post(qq_code_login))
         // Weibo
         .route(
             "/oauth/weibo/authorize-url",
-            axum::routing::get(weibo_authorize_url),
+            post(weibo_authorize_url),
         )
         .route("/oauth/weibo/code-login", post(weibo_code_login))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct OAuthLoginForm {
+    /// Provider name: google / facebook / apple.
+    #[validate(length(min = 1, max = 32))]
+    pub provider: String,
     /// id_token (JWT) returned from the provider SDK
     #[validate(length(min = 40, max = 8192))]
     pub id_token: String,
@@ -61,9 +62,8 @@ pub struct OAuthLoginData {
 /// Third-party login: exchange id_token for access+refresh tokens
 #[utoipa::path(
     post,
-    path = "/v1/wap/oauth/{provider}/login",
+    path = "/v1/wap/oauth/login",
     tag = "auth",
-    params(("provider" = String, Path, description = "google / facebook / apple")),
     request_body = OAuthLoginForm,
     responses(
         (status = 200, description = "Login successful", body = OAuthLoginData),
@@ -75,11 +75,11 @@ pub async fn oauth_login(
     State(state): State<AppState>,
     ClientIp(ip): ClientIp,
     headers: axum::http::HeaderMap,
-    Path(provider): Path<String>,
     ValidatedJson(f): ValidatedJson<OAuthLoginForm>,
 ) -> AppResult<ApiJson<OAuthLoginData>> {
-    let kind = ProviderKind::parse(&provider)
-        .ok_or_else(|| AppError::param_invalid(format!("provider: {provider}")))?;
+    phpyun_core::validators::ensure_path_token(&f.provider)?;
+    let kind = ProviderKind::parse(&f.provider)
+        .ok_or_else(|| AppError::param_invalid(format!("provider: {}", f.provider)))?;
 
     let ua = headers
         .get(axum::http::header::USER_AGENT)
@@ -106,10 +106,9 @@ pub struct OAuthBindData {
 /// Logged-in user binds a third-party account to the current uid
 #[utoipa::path(
     post,
-    path = "/v1/wap/oauth/{provider}/bind",
+    path = "/v1/wap/oauth/bind",
     tag = "auth",
     security(("bearer" = [])),
-    params(("provider" = String, Path)),
     request_body = OAuthLoginForm,
     responses(
         (status = 200, description = "Bind successful", body = OAuthBindData),
@@ -121,22 +120,24 @@ pub async fn oauth_bind(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    Path(provider): Path<String>,
     ValidatedJson(f): ValidatedJson<OAuthLoginForm>,
 ) -> AppResult<ApiJson<OAuthBindData>> {
-    let kind = ProviderKind::parse(&provider)
-        .ok_or_else(|| AppError::param_invalid(format!("provider: {provider}")))?;
+    phpyun_core::validators::ensure_path_token(&f.provider)?;
+    let kind = ProviderKind::parse(&f.provider)
+        .ok_or_else(|| AppError::param_invalid(format!("provider: {}", f.provider)))?;
     oauth_service::bind_oauth(&state, user.uid, kind, &f.id_token, &ip).await?;
     Ok(ApiJson(OAuthBindData { ok: true }))
 }
 
 // ==================== WeChat snsapi_base ====================
 
-#[derive(Debug, Deserialize, utoipa::IntoParams)]
+#[derive(Debug, Deserialize, Validate, utoipa::IntoParams)]
 pub struct WechatAuthorizeQuery {
     /// Required: full redirect URL after authorization (must be whitelisted in the Official Account backend)
+    #[validate(length(min = 1, max = 1024))]
     pub redirect_uri: String,
     /// Recommended: CSRF random string, returned as-is in the callback for client-side verification
+    #[validate(length(max = 256))]
     pub state: Option<String>,
 }
 
@@ -152,7 +153,7 @@ const WECHAT_STATE_TTL_SECS: u64 = 600; // 10 minutes
 
 /// Generate the WeChat snsapi_base authorization redirect URL
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/oauth/wechat/authorize-url",
     tag = "auth",
     params(WechatAuthorizeQuery),
@@ -163,7 +164,7 @@ const WECHAT_STATE_TTL_SECS: u64 = 600; // 10 minutes
 )]
 pub async fn wechat_authorize_url(
     State(state): State<AppState>,
-    axum::extract::Query(q): axum::extract::Query<WechatAuthorizeQuery>,
+    ValidatedJson(q): ValidatedJson<WechatAuthorizeQuery>,
 ) -> AppResult<ApiJson<WechatAuthorizeData>> {
     let appid = state
         .config
@@ -270,7 +271,7 @@ pub struct QqAuthorizeData {
 /// Generate the QQ Connect authorization redirect URL.
 /// Counterpart of PHP `wap/qqconnect::qqlogin_action` step 1.
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/oauth/qq/authorize-url",
     tag = "auth",
     responses(
@@ -374,7 +375,7 @@ pub struct WeiboAuthorizeData {
 /// Generate the Weibo authorization redirect URL.
 /// Counterpart of PHP `wap/sinaconnect::index_action` step 1.
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/oauth/weibo/authorize-url",
     tag = "auth",
     responses(

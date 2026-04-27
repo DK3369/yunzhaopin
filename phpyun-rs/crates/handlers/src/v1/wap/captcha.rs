@@ -1,13 +1,17 @@
 //! GET /v1/wap/captcha — issue an image CAPTCHA (PNG base64 data URI).
 
-use axum::{extract::State, routing::get, Router};
+use axum::{
+    extract::State,
+    Router,
+    routing::post,
+};
 use phpyun_core::{ApiJson, AppResult, AppState};
 use phpyun_services::captcha_service;
 use serde::Serialize;
 use utoipa::ToSchema;
 
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/captcha", get(issue))
+    Router::new().route("/captcha", post(issue))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -21,7 +25,7 @@ pub struct CaptchaData {
 
 /// Issue an image CAPTCHA
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/wap/captcha",
     tag = "auth",
     responses(

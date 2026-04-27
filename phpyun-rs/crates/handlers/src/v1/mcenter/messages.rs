@@ -1,26 +1,25 @@
 //! Message center.
 
 use axum::{
-    extract::{Path, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::post,
 };
 use phpyun_core::json;
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedQuery,
-};
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::{broadcast_service, chat_service, message_service, warning_service};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/messages", get(list))
-        .route("/messages/{id}/read", post(mark_read))
+        .route("/messages", post(list))
+        .route("/messages/read", post(mark_read))
         .route("/messages/read-all", post(mark_all_read))
-        .route("/messages/{id}", post(remove))
-        .route("/messages/unread-summary", get(unread_summary))
+        .route("/messages/delete", post(remove))
+        .route("/messages/unread-summary", post(unread_summary))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -103,7 +102,7 @@ impl From<phpyun_models::message::entity::Message> for MessageItem {
 
 /// Message list
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/messages",
     tag = "mcenter",
     security(("bearer" = [])),
@@ -114,7 +113,7 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<MessageListQuery>,
+    ValidatedJson(q): ValidatedJson<MessageListQuery>,
 ) -> AppResult<ApiJson<Paged<MessageItem>>> {
     let r = message_service::list(
         &state,
@@ -135,18 +134,18 @@ pub async fn list(
 /// Mark as read
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/messages/{id}/read",
+    path = "/v1/mcenter/messages/read",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn mark_read(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<json::Value>> {
-    message_service::mark_read(&state, &user, id).await?;
+    message_service::mark_read(&state, &user, b.id).await?;
     Ok(ApiJson(json::json!({ "ok": true })))
 }
 
@@ -169,18 +168,18 @@ pub async fn mark_all_read(
 /// Delete message
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/messages/{id}",
+    path = "/v1/mcenter/messages/delete",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn remove(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<json::Value>> {
-    message_service::delete(&state, &user, id).await?;
+    message_service::delete(&state, &user, b.id).await?;
     Ok(ApiJson(json::json!({ "ok": true })))
 }
 
@@ -203,7 +202,7 @@ pub struct UnreadSummary {
 /// Aggregate unread counts across every notification channel — counterpart of
 /// PHP `wap/ajax::msgNum_action`. Avoids 4 frontend round-trips on every page.
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/messages/unread-summary",
     tag = "mcenter",
     security(("bearer" = [])),

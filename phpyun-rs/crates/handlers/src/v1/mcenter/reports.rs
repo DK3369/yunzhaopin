@@ -1,17 +1,21 @@
 //! Violation reports.
 
-use axum::{extract::State, routing::post, Router};
-use phpyun_core::{
-    ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
+use axum::{
+    extract::State,
+    Router,
+    routing::{get, post},
 };
+use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::report_service::{self, ReportInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{CreatedId};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/reports", post(submit).get(list_mine))
+        .route("/reports", post(submit))
+        .route("/reports/list", post(list_mine))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -19,6 +23,7 @@ pub struct ReportForm {
     /// 1=job / 2=company / 3=resume / 4=article / 5=user
     #[validate(range(min = 1, max = 5))]
     pub target_kind: i32,
+    #[validate(range(min = 1, max = 99_999_999))]
     pub target_id: u64,
     #[validate(length(min = 1, max = 32))]
     pub reason_code: String,
@@ -26,15 +31,10 @@ pub struct ReportForm {
     pub detail: Option<String>,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CreatedId {
-    pub id: u64,
-}
-
 /// Submit a report
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/reports",
+    path = "/v1/mcenter/reports/list",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = ReportForm,
@@ -116,13 +116,12 @@ impl From<phpyun_models::report::entity::Report> for ReportItem {
 
 /// Reports I have submitted
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/reports",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]
-pub async fn list_mine(
+)]pub async fn list_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,

@@ -9,14 +9,14 @@
 //! That is why we use `axum::response::Response` directly to return the raw body.
 
 use axum::{
-    extract::{Path, Query, State},
+    extract::{Path, State},
     http::{header, StatusCode},
     response::Response,
-    routing::get,
     Router,
+    routing::{get, post},
 };
 use phpyun_core::i18n::{t, Lang};
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, InfraError, ValidatedQuery};
+use phpyun_core::{ApiJson, AppError, AppResult, AppState, InfraError, ValidatedJson};
 use phpyun_services::wechat_api_service;
 use phpyun_services::wechat_service::{
     self, default_reply, parse_incoming, verify_signature, SUCCESS_ACK,
@@ -28,21 +28,33 @@ use validator::Validate;
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/wechat/callback", get(verify).post(receive))
-        .route("/wechat/qr/{kind}/{id}", get(qr_for_resource))
+        .route("/wechat/qr", post(qr_for_resource))
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Validate)]
 pub struct VerifyQuery {
+    /// WeChat signature — 40-char SHA1 hex.
+    #[validate(length(min = 1, max = 64))]
     pub signature: String,
+    /// Unix timestamp (seconds) — short numeric string.
+    #[validate(length(min = 1, max = 32))]
     pub timestamp: String,
+    /// Nonce — short alphanumeric.
+    #[validate(length(min = 1, max = 64))]
     pub nonce: String,
+    /// Echo string for the verification handshake.
+    #[validate(length(max = 256))]
     pub echostr: Option<String>,
 }
 
 /// WeChat integration verification: if the signature matches, echo `echostr` back verbatim.
+///
+/// **Why `ValidatedQuery` here**: same reason as `receive` — the WeChat
+/// callback protocol mandates `signature/timestamp/nonce/echostr` in the
+/// query string. Exception to the project-wide "params in body" rule.
 pub async fn verify(
     State(state): State<AppState>,
-    ValidatedQuery(q): ValidatedQuery<VerifyQuery>,
+    phpyun_core::ValidatedQuery(q): phpyun_core::ValidatedQuery<VerifyQuery>,
 ) -> Response {
     let Some(token) = state.config.wechat_token.as_deref() else {
         return plain(StatusCode::SERVICE_UNAVAILABLE, "wechat_not_configured");
@@ -54,9 +66,15 @@ pub async fn verify(
 }
 
 /// WeChat event/message entry point: signature + XML parsing + reply (or `success`).
+///
+/// **Why `ValidatedQuery` here, not `ValidatedJson`**: WeChat Official
+/// Account servers POST the message XML as the request body and put the
+/// signature/timestamp/nonce in the query string — we don't get to change
+/// that. This handler is an exception to the project-wide "params in body"
+/// rule; the [`super`] middleware allowlist covers it.
 pub async fn receive(
     State(state): State<AppState>,
-    ValidatedQuery(q): ValidatedQuery<VerifyQuery>,
+    phpyun_core::ValidatedQuery(q): phpyun_core::ValidatedQuery<VerifyQuery>,
     body: String,
 ) -> Response {
     let Some(token) = state.config.wechat_token.as_deref() else {
@@ -97,13 +115,19 @@ pub struct QrView {
     pub expire_seconds: u64,
 }
 
-#[derive(Debug, Deserialize, utoipa::Validate, IntoParams)]
+#[derive(Debug, Deserialize, Validate, utoipa::IntoParams)]
 pub struct QrOpts {
+    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    pub kind: String,
+    #[validate(range(min = 1, max = 999_999_999))]
+    pub id: u64,
     /// Optional `scene_str` prefix (defaults to `weixin`).
     #[serde(default)]
+    #[validate(length(max = 500))]
     pub tag: Option<String>,
     /// QR code lifetime in seconds (default 7 days; range 60..=2592000)
     #[serde(default = "default_expire")]
+    #[validate(range(min = 0, max = 99_999_999))]
     pub expire: u64,
 }
 fn default_expire() -> u64 {
@@ -113,9 +137,8 @@ fn default_expire() -> u64 {
 /// Generate a parameterised QR code for a given business resource (mirrors the PHPYun `pubWxQrcode` branch).
 /// `kind` is one of: job / resume / company / article / announcement / jobtel /
 ///         parttel / comtel / part / register / gongzhao
-#[utoipa::path(
-    get,
-    path = "/v1/wap/wechat/qr/{kind}/{id}",
+#[utoipa::path(post,
+    path = "/v1/wap/wechat/qr",
     tag = "wap",
     params(
         ("kind" = String, Path),
@@ -128,11 +151,11 @@ fn default_expire() -> u64 {
         (status = 502, description = "WeChat upstream error"),
     )
 )]
-pub async fn qr_for_resource(
-    State(state): State<AppState>,
-    Path((kind, id)): Path<(String, u64)>,
-    ValidatedQuery(opts): ValidatedQuery<QrOpts>,
-) -> AppResult<ApiJson<QrView>> {
+pub async fn qr_for_resource(State(state): State<AppState>,
+    ValidatedJson(opts): ValidatedJson<QrOpts>) -> AppResult<ApiJson<QrView>> {
+    let kind = opts.kind;
+    let id = opts.id;
+    phpyun_core::validators::ensure_path_token(&kind)?;
     let tag = opts.tag.as_deref().unwrap_or("weixin");
     let scene = wechat_api_service::scene_str_for(&kind, id, tag)
         .ok_or_else(|| AppError::new(InfraError::InvalidParam(format!("kind={kind}"))))?;

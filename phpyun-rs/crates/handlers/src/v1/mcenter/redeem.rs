@@ -1,25 +1,28 @@
 //! User redeem orders: submit redemption / my list / cancel (pending only).
 
 use axum::{
-    extract::{Path, Query, State},
-    routing::{get, post},
+    extract::State,
     Router,
+    routing::post,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson, ValidatedQuery};
+use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::redeem_service::{self, RedeemForm};
 use serde::{Deserialize, Serialize};
-use utoipa::{IntoParams, ToSchema};
+use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::dto::{IdBody, StatusFilterBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/redeem/rewards/{id}/redeem", post(redeem))
-        .route("/redeem/orders", get(list_mine))
-        .route("/redeem/orders/{id}", post(cancel_mine))
+        .route("/redeem/rewards/redeem", post(redeem))
+        .route("/redeem/orders", post(list_mine))
+        .route("/redeem/orders/cancel", post(cancel_mine))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct RedeemSubmit {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: u64,
     #[validate(length(min = 1, max = 64))]
     pub linkman: String,
     #[validate(length(min = 6, max = 32))]
@@ -39,32 +42,25 @@ pub struct RedeemCreated {
 /// Submit a redeem order
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/redeem/rewards/{id}/redeem",
+    path = "/v1/mcenter/redeem/rewards/redeem",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
     request_body = RedeemSubmit,
     responses((status = 200, description = "ok", body = RedeemCreated))
 )]
 pub async fn redeem(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(reward_id): Path<u64>,
     ValidatedJson(f): ValidatedJson<RedeemSubmit>,
 ) -> AppResult<ApiJson<RedeemCreated>> {
     let id = redeem_service::redeem(
         &state,
         &user,
-        reward_id,
+        f.id,
         &RedeemForm { linkman: &f.linkman, linktel: &f.linktel, address: &f.address, num: f.num },
     )
     .await?;
     Ok(ApiJson(RedeemCreated { order_id: id }))
-}
-
-#[derive(Debug, Deserialize, Validate, IntoParams)]
-pub struct ListMineQuery {
-    pub status: Option<i32>,
 }
 
 fn fmt_dt(ts: i64) -> String {
@@ -130,18 +126,18 @@ impl From<phpyun_models::redeem::entity::RedeemOrder> for OrderItem {
 
 /// My redeem orders
 #[utoipa::path(
-    get,
+    post,
     path = "/v1/mcenter/redeem/orders",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(ListMineQuery),
+    request_body = StatusFilterBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn list_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedQuery(q): ValidatedQuery<ListMineQuery>,
+    ValidatedJson(q): ValidatedJson<StatusFilterBody>,
 ) -> AppResult<ApiJson<Paged<OrderItem>>> {
     let r = redeem_service::list_my_orders(&state, &user, q.status, page).await?;
     Ok(ApiJson(Paged::new(
@@ -155,17 +151,17 @@ pub async fn list_mine(
 /// Cancel my pending order
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/redeem/orders/{id}",
+    path = "/v1/mcenter/redeem/orders/cancel",
     tag = "mcenter",
     security(("bearer" = [])),
-    params(("id" = u64, Path)),
+    request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
 pub async fn cancel_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    Path(id): Path<u64>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiOk> {
-    redeem_service::cancel_my_order(&state, &user, id).await?;
+    redeem_service::cancel_my_order(&state, &user, b.id).await?;
     Ok(ApiOk("cancelled"))
 }
