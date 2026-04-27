@@ -250,7 +250,7 @@ fn job_messages_routes_registered() {
 fn qq_oauth_routes_registered() {
     assert_endpoint("POST", "/v1/wap/oauth/qq/authorize-url");
     assert_endpoint("POST", "/v1/wap/oauth/qq/code-login");
-    assert_schema("QqAuthorizeData");
+    assert_schema("OAuthAuthorizeData");
     assert_schema("CodeLoginForm");
 }
 
@@ -258,7 +258,7 @@ fn qq_oauth_routes_registered() {
 fn weibo_oauth_routes_registered() {
     assert_endpoint("POST", "/v1/wap/oauth/weibo/authorize-url");
     assert_endpoint("POST", "/v1/wap/oauth/weibo/code-login");
-    assert_schema("WeiboAuthorizeData");
+    assert_schema("OAuthAuthorizeData");
 }
 
 // ==================== Round 4: email forgetpw + manual appeal ====================
@@ -883,14 +883,14 @@ fn sub_sites_routes_registered() {
 fn article_hits_route_registered() {
     // PHP wap/article::GetHits_action → POST /v1/wap/articles/{id}/hits
     assert_endpoint("POST", "/v1/wap/articles/hits");
-    assert_schema("ArticleHitsResp");
+    assert_schema("HitsResp");
 }
 
 #[test]
 fn job_hits_route_registered() {
     // PHP wap/job::GetHits_action → POST /v1/wap/jobs/{id}/hits
     assert_endpoint("POST", "/v1/wap/jobs/hits");
-    assert_schema("JobHitsResp");
+    assert_schema("HitsResp");
 }
 
 #[test]

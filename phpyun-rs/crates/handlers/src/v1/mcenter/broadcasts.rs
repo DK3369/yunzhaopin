@@ -7,10 +7,10 @@ use axum::{
 };
 use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::broadcast_service;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use utoipa::ToSchema;
-use validator::Validate;
-use phpyun_core::dto::{IdBody};
+use phpyun_core::dto::{IdBody, UnreadCount};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -19,12 +19,6 @@ pub fn routes() -> Router<AppState> {
         .route("/broadcasts/read", post(mark_read))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct BcItem {
@@ -53,11 +47,6 @@ impl From<phpyun_models::broadcast::entity::Broadcast> for BcItem {
     }
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct UnreadCount {
-    pub unread: u64,
-}
-
 /// Broadcasts visible to me
 #[utoipa::path(
     post,
@@ -72,12 +61,7 @@ pub async fn list(
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<BcItem>>> {
     let r = broadcast_service::list_for_me(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(BcItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Unread broadcast count

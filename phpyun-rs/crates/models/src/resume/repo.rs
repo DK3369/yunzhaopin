@@ -189,3 +189,33 @@ pub async fn update_status(pool: &MySqlPool, uid: u64, status: i32) -> Result<()
         .await?;
     Ok(())
 }
+
+/// Cheap getter for the avatar/photo column only — used by features that
+/// render a user card (asker/answerer/viewer) and don't need the full Resume
+/// entity.
+pub async fn photo_for_uid(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<Option<String>, sqlx::Error> {
+    let row: Option<(Option<String>,)> = sqlx::query_as(
+        "SELECT photo FROM phpyun_resume WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.and_then(|(p,)| p))
+}
+
+/// Resolve a jobseeker's default `phpyun_resume_expect.id` (`def_job`).
+/// Returns `0` when the resume is hidden / unreviewed, used by PHP's legacy
+/// `wap/resume/index::showuid_action` short-URL redirect.
+pub async fn default_eid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let row: Option<(u64,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(def_job, 0) AS UNSIGNED) FROM phpyun_resume \
+         WHERE uid = ? AND COALESCE(r_status, 0) = 1 LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(n,)| n).unwrap_or(0))
+}

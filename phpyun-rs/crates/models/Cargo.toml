@@ -9,6 +9,4 @@ serde.workspace = true
 serde_json.workspace = true
 utoipa.workspace = true
 chrono.workspace = true
-anyhow.workspace = true
-tracing.workspace = true
 phpyun_core.workspace = true

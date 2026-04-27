@@ -11,9 +11,9 @@
 use axum::{
     extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
-use phpyun_core::{ApiJson, ApiMsg, ApiMsgData, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
+use phpyun_core::{dto::ExistsResp, ApiJson, ApiMsg, ApiMsgData, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::collect_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -144,11 +144,6 @@ pub struct ListQuery {
         .collect();
 
     Ok(ApiJson(Paged::new(items, r.total, page.page, page.page_size)))
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct ExistsResp {
-    pub exists: bool,
 }
 
 /// Whether the current user has already favorited a given target (front-end button state)

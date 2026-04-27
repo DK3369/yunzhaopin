@@ -10,13 +10,14 @@
 use axum::{
     extract::{State},
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, ApiMsg, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::entrust_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -25,12 +26,6 @@ pub fn routes() -> Router<AppState> {
         .route("/entrust/delete", post(unbind))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct EntrustItem {

@@ -33,19 +33,19 @@ class version_model extends model{
     // phpyun版本比较
     function phpyunVersionCompare($newV){
         
-        include (APP_PATH . 'version.php');
-        // 更新文件运行版本
-        $sqlv = $this->phpyunVersion($newV);
-        // version.php里的版本
-        $vv = $this->phpyunVersion($version);
-        // version.php里的版本大于更新文件运行版本，说明有更新文件没运行
-        $res = $this->versionCompare($vv, $sqlv);
-        if ($res == 1){
-            // 有升级文件没运行
-            return 1;
-        }else{
-            return 0;
-        }
+        // include (APP_PATH . 'version.php');
+        // // 更新文件运行版本
+        // $sqlv = $this->phpyunVersion($newV);
+        // // version.php里的版本
+        // $vv = $this->phpyunVersion($version);
+        // // version.php里的版本大于更新文件运行版本，说明有更新文件没运行
+        // $res = $this->versionCompare($vv, $sqlv);
+        // if ($res == 1){
+        //     // 有升级文件没运行
+        //     return 1;
+        // }else{
+        //     return 0;
+        // }
     }
     
     // 版本号比较

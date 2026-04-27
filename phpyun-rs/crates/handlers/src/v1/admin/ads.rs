@@ -1,9 +1,9 @@
 //! Ad slot management (admin).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::ad_service::{self, AdInput, AdPatch};
@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 use phpyun_core::dto::{CreatedId};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -25,12 +26,6 @@ pub struct ListQuery {
     pub slot: Option<String>,
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 /// Ad management item — all 14 columns of phpyun_ad + formatted timestamps + derived is_active hint for the frontend button.
 #[derive(Debug, Serialize, ToSchema)]
@@ -133,12 +128,7 @@ pub struct AdPatchForm {
 ) -> AppResult<ApiJson<Paged<AdItem>>> {
     user.require_admin()?;
     let r = ad_service::admin_list(&state, &user, q.slot.as_deref(), page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(AdItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 #[utoipa::path(post, path = "/v1/admin/ads", tag = "admin", security(("bearer" = [])), request_body = AdForm, responses((status = 200, description = "ok", body = CreatedId)))]

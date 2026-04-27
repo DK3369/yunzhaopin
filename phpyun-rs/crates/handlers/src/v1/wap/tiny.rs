@@ -10,16 +10,17 @@
 //! - DELETE `/v1/wap/tiny-resumes/{id}`       delete (requires password)
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{json, ApiJson, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::tiny_service::{self, ManageOp, TinySearch, UpsertInput};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{IdBody, IdPasswordBody};
+use phpyun_core::dto::{IdBody, IdPasswordBody, UpsertCreated};
+use phpyun_core::utils::mask_tel as mask_mobile;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -106,12 +107,7 @@ impl From<phpyun_models::tiny::entity::TinyResume> for TinyListItem {
         did: q.did,
     };
     let r = tiny_service::list_public(&state, &search, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(TinyListItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 // ==================== show ====================
@@ -133,16 +129,6 @@ pub struct TinyDetail {
     pub time: i64,
     pub lastupdate: i64,
     pub hits: i64,
-}
-
-fn mask_mobile(s: &str) -> String {
-    let chars: Vec<char> = s.chars().collect();
-    if chars.len() < 7 {
-        return s.to_string();
-    }
-    let prefix: String = chars.iter().take(3).collect();
-    let suffix: String = chars.iter().rev().take(4).collect::<String>().chars().rev().collect();
-    format!("{prefix}****{suffix}")
 }
 
 #[utoipa::path(post,
@@ -222,12 +208,6 @@ pub struct UpsertBody {
 }
 fn default_status() -> i32 {
     1
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct UpsertCreated {
-    pub id: u64,
-    pub created: bool,
 }
 
 async fn upsert_common(

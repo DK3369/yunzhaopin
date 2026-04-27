@@ -10,7 +10,7 @@
 use axum::{
     extract::{State},
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{validators, ApiJson, AppResult, AppState, ClientIp, ValidatedJson};
 use phpyun_models::user::repo as user_repo;
@@ -152,7 +152,11 @@ pub async fn register(
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct CheckQuery {
     /// Field category to check: `username` / `mobile` / `email`
+    #[validate(length(min = 1, max = 16))]
     pub field: String,
+    /// Value to check (an email / mobile / username). Hard-capped at 128 chars
+    /// to avoid hashing or LIKE-scanning a 1MB blob.
+    #[validate(length(min = 1, max = 128))]
     pub value: String,
 }
 

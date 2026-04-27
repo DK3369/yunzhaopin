@@ -1,7 +1,7 @@
 //! Navigation menu public read.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };
@@ -9,26 +9,12 @@ use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};
 use phpyun_services::nav_menu_service;
 use serde::Serialize;
 use utoipa::ToSchema;
-use phpyun_core::dto::{};
+use phpyun_core::utils::{fmt_dt, pic_n_str as icon_n};
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/nav", post(list))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
-
-fn icon_n(state: &AppState, raw: &str) -> String {
-    state
-        .storage
-        .normalize_legacy_url(raw, state.config.web_base_url.as_deref())
-}
 
 /// Navigation item — all 9 columns of phpyun_navigation + CDN URL + formatted timestamp.
 #[derive(Debug, Serialize, ToSchema)]

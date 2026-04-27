@@ -55,6 +55,20 @@ pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Job>, sqlx::
         .await
 }
 
+/// Like [`find_by_id`] but only returns the job when it is publicly listed
+/// (`state = 1 AND status = 0 AND r_status = 1`). Used by share-text /
+/// short-URL flows that should refuse to render unpublished or pulled jobs.
+pub async fn find_public_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Job>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {FIELDS} FROM phpyun_company_job \
+         WHERE id = ? AND state = 1 AND status = 0 AND r_status = 1 LIMIT 1"
+    );
+    sqlx::query_as::<_, Job>(&sql)
+        .bind(id)
+        .fetch_optional(pool)
+        .await
+}
+
 /// Batch fetch by ids (single round-trip). Caller deduplicates ids if needed;
 /// missing ids simply don't appear in the result. Empty input → empty result,
 /// no DB call. Used by favorites / saved-search / view list enrichment.

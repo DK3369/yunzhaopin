@@ -1,7 +1,7 @@
 //! Job-seeker resume templates: list + purchase + select (matching PHPYun `member/user/resumetpl`).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };
@@ -10,16 +10,13 @@ use phpyun_services::resume_tpl_service;
 use serde::Serialize;
 use utoipa::ToSchema;
 use phpyun_core::dto::{IdBody};
+use phpyun_core::utils::pic_n;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/resume-tpls", post(list))
         .route("/resume-tpls/buy", post(buy))
         .route("/resume-tpls/apply", post(apply))
-}
-
-fn pic_n(state: &AppState, raw: Option<&str>) -> String {
-    state.storage.normalize_legacy_url(raw.unwrap_or(""), state.config.web_base_url.as_deref())
 }
 
 #[derive(Debug, Serialize, ToSchema)]

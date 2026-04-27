@@ -1,9 +1,9 @@
 //! HR toolbox public read.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::hr_doc_service;
@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 use phpyun_core::dto::{IdBody};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -25,14 +26,6 @@ pub struct HrQuery {
     pub cid: Option<u64>,
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 /// HR document list item -- all 9 columns of phpyun_hr_doc + body excerpt + formatted timestamps.
 #[derive(Debug, Serialize, ToSchema)]
@@ -112,12 +105,7 @@ pub async fn list(
     ValidatedJson(q): ValidatedJson<HrQuery>,
 ) -> AppResult<ApiJson<Paged<HrSummary>>> {
     let r = hr_doc_service::list(&state, q.cid, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(HrSummary::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// HR toolbox detail

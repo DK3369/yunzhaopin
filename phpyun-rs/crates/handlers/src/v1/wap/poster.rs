@@ -7,7 +7,7 @@
 //! it via Canvas -- saves bandwidth and is architecturally more modern.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };
@@ -16,7 +16,6 @@ use phpyun_services::poster_service::{self, PosterSpec, PosterTemplateView};
 use serde::Deserialize;
 use utoipa::IntoParams;
 use validator::Validate;
-use phpyun_core::dto::{};
 
 pub fn routes() -> Router<AppState> {
     Router::new()

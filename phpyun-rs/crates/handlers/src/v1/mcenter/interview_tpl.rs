@@ -3,7 +3,7 @@
 use axum::{
     extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::interview_template_service::{self, TplInput, TplPatch};
@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
 use phpyun_core::dto::{CreatedId};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -19,14 +20,6 @@ pub fn routes() -> Router<AppState> {
         .route("/interview-templates/update", post(update))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 /// Interview template item — all 11 columns of `phpyun_interview_template` + formatted time.
 #[derive(Debug, Serialize, ToSchema)]

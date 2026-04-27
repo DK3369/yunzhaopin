@@ -1,13 +1,13 @@
 //! Admin VIP order panel.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };
 use phpyun_core::{dto::StatusFilterBody, ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::admin_service;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
 
@@ -17,16 +17,6 @@ pub fn routes() -> Router<AppState> {
         .route("/orders/status", post(set_status))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
-
-fn order_status_name(s: i32) -> &'static str {
-    match s { 0 => "pending", 1 => "paid", 2 => "refunded", 3 => "cancelled", _ => "unknown" }
-}
 
 // Reuse mcenter's `vip::OrderItem` — same shape and `From<PayOrder>` impl.
 pub type OrderItem = crate::v1::mcenter::vip::OrderItem;
@@ -57,12 +47,7 @@ pub async fn list(
 ) -> AppResult<ApiJson<Paged<OrderItem>>> {
     user.require_admin()?;
     let r = admin_service::list_orders(&state, q.status, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(OrderItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Refund / cancel order

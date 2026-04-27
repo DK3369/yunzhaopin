@@ -37,6 +37,7 @@ pub mod sms;
 pub mod state;
 pub mod storage;
 pub mod telemetry;
+pub mod utils;
 pub mod validators;
 pub mod verify;
 

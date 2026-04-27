@@ -13,9 +13,8 @@ use axum::{
 use phpyun_core::json;
 use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::once_service;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use utoipa::ToSchema;
-use validator::Validate;
 use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
@@ -69,12 +68,7 @@ pub async fn list_pending(
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<OrderItem>>> {
     let r = once_service::list_my_pending_orders(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(OrderItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Cancel a pending one-off-posting order (sets `order_state = 3`).

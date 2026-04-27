@@ -3,13 +3,14 @@
 use axum::{
     extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{dto::KindTargetUidBody, ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::remark_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -19,12 +20,6 @@ pub fn routes() -> Router<AppState> {
         .route("/remarks/delete", post(remove))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 fn remark_kind_name(k: i32) -> &'static str {
     match k { 1 => "resume", 2 => "company", 3 => "apply", _ => "unknown" }
@@ -88,12 +83,7 @@ pub struct UpsertForm {
     ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Paged<RemarkView>>> {
     let r = remark_service::list(&state, &user, q.kind, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(RemarkView::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Create / update a remark

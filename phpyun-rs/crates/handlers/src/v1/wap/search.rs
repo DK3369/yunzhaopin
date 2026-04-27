@@ -6,7 +6,7 @@
 use axum::{
     extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};
 use phpyun_services::search_service;

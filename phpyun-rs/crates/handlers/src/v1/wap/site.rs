@@ -2,9 +2,9 @@
 //! multi-site domain switcher endpoints.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::error::InfraError;
 use phpyun_core::{ApiJson, AppError, AppResult, AppState, ValidatedJson};
@@ -12,7 +12,6 @@ use phpyun_services::site_page_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -104,6 +103,7 @@ impl From<phpyun_models::domain::entity::DomainSite> for SubSiteView {
 pub struct SubSitesQuery {
     /// Filter by `fz_type`: 1 city-based, 2 industry-based. Omit for all rows.
     #[serde(default)]
+    #[validate(range(min = 1, max = 9))]
     pub fz_type: Option<i32>,
 }
 

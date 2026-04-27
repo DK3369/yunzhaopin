@@ -6,14 +6,14 @@
 //! - `POST /v1/admin/regions/reload`  manual cache reload
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };
 use phpyun_core::{clock, ApiJson, ApiOk, AppError, AppResult, AppState, AuthenticatedUser, InfraError, ValidatedJson};
 use phpyun_models::region::repo as region_repo;
 use phpyun_services::region_service;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
 use phpyun_core::dto::{CreatedId, IdBody};

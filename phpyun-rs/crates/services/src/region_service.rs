@@ -265,7 +265,7 @@ async fn load_translations(
     pool: &sqlx::MySqlPool,
 ) -> AppResult<HashMap<u64, HashMap<Lang, String>>> {
     let rows: Result<Vec<(i64, String, String)>, _> =
-        sqlx::query_as("SELECT item_id, lang, text FROM phpyun_dict_i18n WHERE kind = 'region'")
+        sqlx::query_as("SELECT item_id, lang, text FROM phpyun_dict_i18n WHERE kind = 'region'") // TODO(arch): inline sqlx pending repo lift
             .fetch_all(pool)
             .await;
     let rows = match rows {

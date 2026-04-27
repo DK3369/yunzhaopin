@@ -10,6 +10,7 @@ use phpyun_services::audit_log_service::{self, Filter};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/activity", post(list))
@@ -25,12 +26,6 @@ pub struct ActivityQuery {
     pub until: Option<i64>,
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 /// Personal activity log item — all 9 columns of phpyun_audit_log + formatted timestamp (full uid/ip/ua audit info).
 #[derive(Debug, Serialize, ToSchema)]
@@ -86,10 +81,5 @@ pub async fn list(
         until: q.until,
     };
     let r = audit_log_service::list_mine(&state, &user, &f, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(ActivityItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }

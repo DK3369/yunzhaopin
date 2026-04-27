@@ -10,6 +10,7 @@ use axum::{
     Router,
     routing::post,
 };
+use phpyun_core::dto::AuthTokenData;
 use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::user_service::{self, UserProfile};
 use serde::{Deserialize, Serialize};
@@ -52,45 +53,33 @@ pub async fn logout(
 
 // ==================== POST /v1/wap/refresh ====================
 
-#[derive(Debug, Deserialize, Validate, ToSchema)]
-pub struct RefreshForm {
-    #[validate(length(min = 20, message = "validation.refresh_token.invalid"))]
-    pub refresh_token: String,
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct RefreshData {
-    pub uid: u64,
-    pub usertype: u8,
-    pub access_token: String,
-    pub access_exp: i64,
-    pub refresh_token: String,
-    pub refresh_exp: i64,
-}
-
-/// Exchange refresh_token for new access+refresh (old refresh is revoked immediately)
+/// Sliding-session refresh: pass the **current valid** access_token via the
+/// standard `Authorization: Bearer ...` header, get back a new access_token
+/// with extended expiry. The old token's jti is added to the blacklist
+/// immediately so it cannot be reused.
+///
+/// Trade-off vs. classic refresh-token flow: a leaked access_token can be
+/// rotated indefinitely until manual revocation, but the client never has
+/// to manage a second long-lived secret.
 #[utoipa::path(
     post,
     path = "/v1/wap/refresh",
     tag = "auth",
-    request_body = RefreshForm,
+    security(("bearer" = [])),
     responses(
-        (status = 200, description = "Token refreshed", body = RefreshData),
-        (status = 401, description = "refresh_token expired / revoked"),
+        (status = 200, description = "Token refreshed", body = AuthTokenData),
+        (status = 401, description = "access_token expired / revoked"),
     )
 )]
 pub async fn refresh(
     State(state): State<AppState>,
-    ValidatedJson(form): ValidatedJson<RefreshForm>,
-) -> AppResult<ApiJson<RefreshData>> {
-    let r = user_service::refresh(&state, &form.refresh_token).await?;
-    Ok(ApiJson(RefreshData {
+    user: AuthenticatedUser,
+) -> AppResult<ApiJson<AuthTokenData>> {
+    let r = user_service::refresh_access(&state, &user).await?;
+    Ok(ApiJson(AuthTokenData {
         uid: r.uid,
         usertype: r.usertype,
         access_token: r.access,
-        access_exp: r.access_exp,
-        refresh_token: r.refresh,
-        refresh_exp: r.refresh_exp,
     }))
 }
 

@@ -3,7 +3,7 @@
 use axum::{
     extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::json;
 use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
@@ -11,7 +11,7 @@ use phpyun_services::job_mgmt_service::{self, CreateJobInput, UpdateJobInput};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{IdBody};
+use phpyun_core::dto::{BatchResult, CreatedId, IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -74,11 +74,6 @@ pub struct CreateJobForm {
     pub edate: i64,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CreateJobData {
-    pub id: u64,
-}
-
 /// Publish job
 #[utoipa::path(
     post,
@@ -86,14 +81,14 @@ pub struct CreateJobData {
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = CreateJobForm,
-    responses((status = 200, description = "Published (pending review)", body = CreateJobData))
+    responses((status = 200, description = "Published (pending review)", body = CreatedId))
 )]
 pub async fn create(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<CreateJobForm>,
-) -> AppResult<ApiJson<CreateJobData>> {
+) -> AppResult<ApiJson<CreatedId>> {
     // Company name comes from the company table; leave None here for now (employer side syncs `com_name` on update).
     let id = job_mgmt_service::create(
         &state,
@@ -121,7 +116,7 @@ pub async fn create(
         &ip,
     )
     .await?;
-    Ok(ApiJson(CreateJobData { id }))
+    Ok(ApiJson(CreatedId { id }))
 }
 
 // ==================== Update ====================
@@ -371,16 +366,8 @@ pub struct BatchIdsForm {
     pub ids: Vec<u64>,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct BatchResult {
-    pub requested: usize,
-    pub affected: u64,
-}
-
-impl From<phpyun_services::job_mgmt_service::BatchReport> for BatchResult {
-    fn from(r: phpyun_services::job_mgmt_service::BatchReport) -> Self {
-        Self { requested: r.requested, affected: r.affected }
-    }
+fn batch_result(r: phpyun_services::job_mgmt_service::BatchReport) -> BatchResult {
+    BatchResult { requested: r.requested, affected: r.affected }
 }
 
 /// Batch refresh
@@ -399,7 +386,7 @@ pub async fn batch_refresh(
     ValidatedJson(f): ValidatedJson<BatchIdsForm>,
 ) -> AppResult<ApiJson<BatchResult>> {
     let r = job_mgmt_service::batch_refresh(&state, &user, &f.ids, &ip).await?;
-    Ok(ApiJson(BatchResult::from(r)))
+    Ok(ApiJson(batch_result(r)))
 }
 
 /// Batch close
@@ -418,7 +405,7 @@ pub async fn batch_close(
     ValidatedJson(f): ValidatedJson<BatchIdsForm>,
 ) -> AppResult<ApiJson<BatchResult>> {
     let r = job_mgmt_service::batch_close(&state, &user, &f.ids, &ip).await?;
-    Ok(ApiJson(BatchResult::from(r)))
+    Ok(ApiJson(batch_result(r)))
 }
 
 /// Batch delete
@@ -437,5 +424,5 @@ pub async fn batch_delete(
     ValidatedJson(f): ValidatedJson<BatchIdsForm>,
 ) -> AppResult<ApiJson<BatchResult>> {
     let r = job_mgmt_service::batch_delete(&state, &user, &f.ids, &ip).await?;
-    Ok(ApiJson(BatchResult::from(r)))
+    Ok(ApiJson(batch_result(r)))
 }

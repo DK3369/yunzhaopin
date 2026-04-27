@@ -1,7 +1,7 @@
 //! App version check (public).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };
@@ -9,7 +9,6 @@ use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};
 use phpyun_services::app_version_service;
 use serde::Serialize;
 use utoipa::ToSchema;
-use phpyun_core::dto::{};
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/app-version", post(latest))

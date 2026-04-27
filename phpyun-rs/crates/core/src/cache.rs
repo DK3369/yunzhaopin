@@ -192,6 +192,20 @@ where
             .map_err(AppError::from_arc)
     }
 
+    /// Lookup `key` without triggering a loader. Returns `None` on miss.
+    /// Useful when the cache is being used as a dedup / cool-down set rather
+    /// than a get-or-load read-through cache.
+    pub async fn get(&self, key: &K) -> Option<Arc<V>> {
+        self.inner.get(key).await
+    }
+
+    /// Insert `value` under `key`. Existing entries are overwritten.
+    /// Bypasses singleflight — only call when the caller already has the value
+    /// in hand.
+    pub async fn insert(&self, key: K, value: V) {
+        self.inner.insert(key, Arc::new(value)).await;
+    }
+
     /// Drop a single entry. Subsequent `get_or_load` will re-run the loader.
     pub async fn invalidate(&self, key: &K) {
         self.inner.invalidate(key).await;

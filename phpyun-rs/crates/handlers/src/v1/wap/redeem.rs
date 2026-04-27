@@ -1,7 +1,7 @@
 //! Public points-mall endpoints (no login required): classes, reward list, reward detail.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };
@@ -11,21 +11,8 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 use phpyun_core::dto::{IdBody};
+use phpyun_core::utils::{fmt_dt, pic_n_str as pic_n};
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
-
-fn pic_n(state: &AppState, raw: &str) -> String {
-    state
-        .storage
-        .normalize_legacy_url(raw, state.config.web_base_url.as_deref())
-}
 
 pub fn routes() -> Router<AppState> {
     Router::new()

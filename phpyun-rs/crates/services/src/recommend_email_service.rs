@@ -129,7 +129,7 @@ async fn preview_subject(
     rec_id: u64,
 ) -> (String, String) {
     if rec_type == REC_TYPE_JOB {
-        let row: Option<(String, String)> = sqlx::query_as(
+        let row: Option<(String, String)> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
             "SELECT COALESCE(name, ''), COALESCE(com_name, '') FROM phpyun_company_job WHERE id = ? LIMIT 1",
         )
         .bind(rec_id)
@@ -144,7 +144,7 @@ async fn preview_subject(
             _ => ("职位推荐".to_string(), String::new()),
         }
     } else {
-        let row: Option<(u64,)> = sqlx::query_as(
+        let row: Option<(u64,)> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
             "SELECT CAST(uid AS UNSIGNED) FROM phpyun_resume_expect WHERE eid = ? LIMIT 1",
         )
         .bind(rec_id)
@@ -261,9 +261,9 @@ fn today_begin_ts(now: i64) -> i64 {
         .timestamp_opt(now, 0)
         .single()
         .map(|d| d.date_naive());
-    match dt {
-        Some(d) => chrono::Local
-            .from_local_datetime(&d.and_hms_opt(0, 0, 0).unwrap())
+    match dt.and_then(|d| d.and_hms_opt(0, 0, 0)) {
+        Some(midnight) => chrono::Local
+            .from_local_datetime(&midnight)
             .single()
             .map(|x| x.timestamp())
             .unwrap_or(now - 86_400),

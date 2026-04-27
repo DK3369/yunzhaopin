@@ -1,9 +1,9 @@
 //! Admin integral mall: reward CRUD / classes / order approval.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::redeem_service::{self, NewRewardForm};
@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 use phpyun_core::dto::{CreatedId, IdBody, StatusFilterBody};
+use phpyun_core::utils::fmt_dt;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -130,12 +131,6 @@ pub struct RewardListQuery {
     pub tnid: Option<u64>,
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct RewardItem {
@@ -201,12 +196,7 @@ pub async fn list_rewards(
     user.require_admin()?;
     let f = redeem_service::RewardFilter { only_active: q.only_active, nid: q.nid, tnid: q.tnid };
     let r = redeem_service::list_rewards(&state, &f, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(RewardItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -344,13 +334,6 @@ pub async fn set_reward_flags(State(state): State<AppState>,
 
 // ---------- orders ----------
 
-fn order_status_name(s: i32) -> &'static str {
-    match s {
-        0 => "pending", 1 => "approved", 2 => "shipped",
-        3 => "completed", 4 => "rejected", _ => "unknown",
-    }
-}
-
 // Reuse mcenter's `OrderItem` — same shape and same `From<RedeemOrder>` impl.
 pub type OrderItem = crate::v1::mcenter::redeem::OrderItem;
 
@@ -371,12 +354,7 @@ pub async fn list_orders(
 ) -> AppResult<ApiJson<Paged<OrderItem>>> {
     user.require_admin()?;
     let r = redeem_service::list_orders_admin(&state, q.status, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(OrderItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Approve order (no refund, awaiting shipment)

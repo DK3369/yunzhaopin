@@ -1,7 +1,7 @@
 //! User management (admin only).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };
@@ -10,6 +10,7 @@ use phpyun_services::admin_service::{self, UserFilter};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -27,12 +28,6 @@ pub struct UserListQuery {
     pub status: Option<i32>,
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 fn usertype_name(t: i32) -> &'static str {
     match t { 1 => "jobseeker", 2 => "company", 3 => "admin", _ => "unknown" }
@@ -102,12 +97,7 @@ pub async fn list(
         status: q.status,
     };
     let r = admin_service::list_users(&state, &filter, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(AdminUserItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]

@@ -21,6 +21,30 @@
 //!    fails the build. Run it locally before committing.
 //!
 //! Pre-existing violations are tagged `// TODO(arch):` and migrated opportunistically.
+//!
+//! ## Inter-service dependency graph
+//!
+//! Services consume repos and AppState; cross-service calls are kept minimal
+//! to keep modules independently testable. As of this audit (103 modules):
+//!
+//! ```text
+//! user_service           ──> user_session_service     (login/session bookkeeping)
+//! atn_service            ──> user_service             (resolve target user)
+//! mcenter_service        ──> user_service             (member-center user lookups)
+//! contact_cert_service   ──> sms_service              (verification SMS)
+//! search_service         ──> hot_search_service       (record hot keywords)
+//! ```
+//!
+//! Everything else is a **leaf**: services orchestrate `phpyun_models::*::repo`
+//! plus `phpyun_core` (cache / kv / events / http / jwt / scheduler) and do
+//! not call sibling services. When you find yourself reaching for another
+//! service inside a service, prefer:
+//!
+//! 1. moving the shared logic down into a repo (if it is data access), or
+//! 2. composing both services in the handler (if it is request orchestration).
+//!
+//! New cross-service edges should be added to the table above so the graph
+//! stays grep-able.
 
 pub mod ad_service;
 pub mod admin_dashboard_service;

@@ -3,7 +3,7 @@
 use axum::{
     extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::report_service::{self, ReportInput};
@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
 use phpyun_core::dto::{CreatedId};
+use phpyun_core::utils::{fmt_dt, review_status_name as report_status_name};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -61,23 +62,11 @@ pub async fn submit(
     Ok(ApiJson(CreatedId { id }))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 fn report_kind_name(k: i32) -> &'static str {
     match k {
         1 => "job", 2 => "company", 3 => "resume", 4 => "article", 5 => "user",
         _ => "unknown",
-    }
-}
-
-fn report_status_name(s: i32) -> &'static str {
-    match s {
-        0 => "pending", 1 => "approved", 2 => "rejected", _ => "unknown",
     }
 }
 
@@ -127,10 +116,5 @@ impl From<phpyun_models::report::entity::Report> for ReportItem {
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<ReportItem>>> {
     let r = report_service::list_mine(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(ReportItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }

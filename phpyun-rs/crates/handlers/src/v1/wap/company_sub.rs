@@ -7,25 +7,11 @@ use axum::{
 };
 use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::company_sub_service;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use utoipa::ToSchema;
-use validator::Validate;
 use phpyun_core::dto::{UidBody, UidIdBody};
+use phpyun_core::utils::{fmt_dt, pic_n_str as pic_n};
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
-
-fn pic_n(state: &AppState, raw: &str) -> String {
-    state
-        .storage
-        .normalize_legacy_url(raw, state.config.web_base_url.as_deref())
-}
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -245,12 +231,7 @@ pub async fn list_news(
     ValidatedJson(b): ValidatedJson<UidBody>,
 ) -> AppResult<ApiJson<Paged<NewsSummary>>> {
     let r = company_sub_service::list_news(&state, b.uid, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(NewsSummary::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Company news detail

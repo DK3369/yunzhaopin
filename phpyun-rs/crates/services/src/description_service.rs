@@ -4,6 +4,7 @@
 //! here admins can freely create categories and pages, and the frontend references them by id.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
+use phpyun_core::cache::SimpleCache;
 use phpyun_core::error::InfraError;
 use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::description::{
@@ -14,18 +15,12 @@ use phpyun_models::description::{
 // ---------- classes ----------
 
 /// 60s TTL cache: single-page categories rarely change yet are requested on every site visit.
-/// moka's `try_get_with` provides built-in singleflight, so the cache-stampede scenario is safe.
-static CLASSES_CACHE: std::sync::OnceLock<
-    moka::future::Cache<(), std::sync::Arc<Vec<DescClass>>>,
-> = std::sync::OnceLock::new();
+/// `SimpleCache` provides built-in singleflight, so the cache-stampede scenario is safe.
+static CLASSES_CACHE: std::sync::OnceLock<SimpleCache<(), Vec<DescClass>>> =
+    std::sync::OnceLock::new();
 
-fn classes_cache() -> &'static moka::future::Cache<(), std::sync::Arc<Vec<DescClass>>> {
-    CLASSES_CACHE.get_or_init(|| {
-        moka::future::Cache::builder()
-            .max_capacity(1)
-            .time_to_live(std::time::Duration::from_secs(60))
-            .build()
-    })
+fn classes_cache() -> &'static SimpleCache<(), Vec<DescClass>> {
+    CLASSES_CACHE.get_or_init(|| SimpleCache::new(1, std::time::Duration::from_secs(60)))
 }
 
 /// Invalidate after writes (call after admin create/update/delete)
@@ -39,12 +34,10 @@ pub async fn list_classes(state: &AppState) -> AppResult<std::sync::Arc<Vec<Desc
     let cache = classes_cache();
     let db = state.db.reader().clone();
     cache
-        .try_get_with((), async move {
-            let list = desc_repo::list_classes(&db).await?;
-            Ok::<_, AppError>(std::sync::Arc::new(list))
+        .get_or_load((), move || async move {
+            Ok(desc_repo::list_classes(&db).await?)
         })
         .await
-        .map_err(AppError::from_arc)
 }
 
 pub async fn create_class(

@@ -1,13 +1,13 @@
 //! Navigation management (admin).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::nav_menu_service::{self, NavInput, NavPatch};
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 use phpyun_core::dto::{CreatedId};
@@ -21,19 +21,10 @@ pub fn routes() -> Router<AppState> {
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
+    #[validate(length(min = 1, max = 16))]
     pub position: Option<String>,
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
-
-fn icon_n(state: &AppState, raw: &str) -> String {
-    state.storage.normalize_legacy_url(raw, state.config.web_base_url.as_deref())
-}
 
 // Reuse wap's `NavItem` (identical shape and `From<NavMenu>`); admin needs no
 // extra fields here, just a different list filter on the service layer.

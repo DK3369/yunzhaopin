@@ -66,6 +66,26 @@ pub async fn exists(
     Ok(row.is_some())
 }
 
+/// Like [`exists`] but pinned to a `type` value (1 = normal, 2 = headhunter).
+/// PHP's job-detail page checks `type = 1` specifically so the "favorited"
+/// flag doesn't light up for an LT-side row.
+pub async fn exists_with_type(
+    pool: &MySqlPool,
+    uid: u64,
+    job_id: u64,
+    r#type: i32,
+) -> Result<bool, sqlx::Error> {
+    let row: Option<(i64,)> = sqlx::query_as(
+        "SELECT 1 FROM phpyun_fav_job WHERE uid = ? AND job_id = ? AND `type` = ? LIMIT 1",
+    )
+    .bind(uid)
+    .bind(job_id)
+    .bind(r#type)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.is_some())
+}
+
 pub async fn list_by_user(
     pool: &MySqlPool,
     uid: u64,

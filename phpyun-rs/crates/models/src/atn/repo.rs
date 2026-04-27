@@ -58,6 +58,24 @@ pub async fn exists(
     Ok(row.is_some())
 }
 
+/// Same as [`exists`] but without filtering by `sc_usertype` — used by the
+/// public company-detail page to render the "已关注" button (we don't know
+/// the user-type at that point, follow is unique by (uid, sc_uid) anyway).
+pub async fn exists_pair(
+    pool: &MySqlPool,
+    uid: u64,
+    sc_uid: u64,
+) -> Result<bool, sqlx::Error> {
+    let row: Option<(i64,)> = sqlx::query_as(
+        "SELECT 1 FROM phpyun_atn WHERE uid = ? AND sc_uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .bind(sc_uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.is_some())
+}
+
 pub struct InsertAtn {
     pub uid: u64,
     pub sc_uid: u64,
@@ -171,6 +189,22 @@ pub async fn count_by_followee(
     .fetch_one(pool)
     .await?;
     Ok(n.max(0) as u64)
+}
+
+/// Return the set of `sc_uid` values a given user follows (any usertype).
+/// Used by feed pages that need to mark "followed?" against many target uids
+/// at once — one query is cheaper than N point-checks.
+pub async fn list_followee_uids(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<Vec<u64>, sqlx::Error> {
+    let rows: Vec<(i64,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(sc_uid,0) AS SIGNED) FROM phpyun_atn WHERE uid = ?",
+    )
+    .bind(uid)
+    .fetch_all(pool)
+    .await?;
+    Ok(rows.into_iter().map(|(v,)| v.max(0) as u64).collect())
 }
 
 /// Best-effort bump of `phpyun_company.ant_num` (note the historical typo —

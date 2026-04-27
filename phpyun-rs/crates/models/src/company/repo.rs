@@ -183,6 +183,64 @@ pub async fn incr_hits(pool: &MySqlPool, uid: u64) -> Result<(), sqlx::Error> {
     Ok(())
 }
 
+/// Increment both `hits` and `expoure` by 1. Used by the public detail page —
+/// PHP's `$companyM->upInfo($cuid, '', ['hits' => ['+', 1], 'expoure' => ['+', 1]])`.
+pub async fn incr_hits_and_expoure(pool: &MySqlPool, uid: u64) -> Result<(), sqlx::Error> {
+    sqlx::query(
+        "UPDATE phpyun_company SET hits = hits + 1, expoure = expoure + 1 WHERE uid = ?",
+    )
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(())
+}
+
+/// Count "open" jobs for a company — i.e. jobs that are visible to the public
+/// listing. Equivalent to PHP's
+/// `jobM->getJobNum(['uid'=>cuid,'state'=>1,'status'=>0,'r_status'=>1])`.
+/// `edate=0` means "no expiry set" (treated as active).
+pub async fn count_open_jobs(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let row: (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_company_job \
+         WHERE uid = ? AND state = 1 AND status = 0 AND r_status = 1 \
+           AND (edate = 0 OR edate > UNIX_TIMESTAMP())",
+    )
+    .bind(uid as i64)
+    .fetch_one(pool)
+    .await?;
+    Ok(row.0.max(0) as u64)
+}
+
+/// One row from the `phpyun_company_show` showcase table — used on the
+/// company detail page to render the "公司风采" carousel.
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct CompanyShowRow {
+    pub id: u64,
+    pub title: Option<String>,
+    pub picurl: Option<String>,
+    pub body: Option<String>,
+    pub sort: i32,
+    pub ctime: i64,
+}
+
+/// Fetch active showcase items for a company, ordered by `sort` then `id`.
+pub async fn list_show_items(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<Vec<CompanyShowRow>, sqlx::Error> {
+    sqlx::query_as::<_, CompanyShowRow>(
+        "SELECT id, title, picurl, body, \
+                CAST(COALESCE(sort, 0) AS SIGNED) AS sort, \
+                CAST(COALESCE(ctime, 0) AS SIGNED) AS ctime \
+         FROM phpyun_company_show \
+         WHERE uid = ? AND status = 0 \
+         ORDER BY sort ASC, id ASC",
+    )
+    .bind(uid as i64)
+    .fetch_all(pool)
+    .await
+}
+
 // ==================== Hot / featured companies (homepage banner) ====================
 
 #[derive(Debug, Clone, sqlx::FromRow, serde::Serialize, serde::Deserialize)]
@@ -204,6 +262,52 @@ pub struct CompanyBrief {
     pub uid: u64,
     pub name: String,
     pub logo: Option<String>,
+}
+
+/// Company card row used by listing pages that need to render a uniform
+/// "company chip" (logo + dict-localised industry / scale / location) next to
+/// each item — e.g. zph participants, special-topic participants. The name is
+/// kept as `Option<String>` to mirror the legacy schema where some rows have
+/// no `name` set.
+#[derive(Debug, sqlx::FromRow, Clone)]
+pub struct CompanyCard {
+    pub uid: u64,
+    pub name: Option<String>,
+    pub logo: Option<String>,
+    pub hy: i32,
+    pub pr: i32,
+    pub mun: i32,
+    pub provinceid: i32,
+    pub cityid: i32,
+}
+
+pub async fn list_cards_by_uids(
+    pool: &MySqlPool,
+    uids: &[u64],
+) -> Result<Vec<CompanyCard>, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let placeholders = std::iter::repeat("?")
+        .take(uids.len())
+        .collect::<Vec<_>>()
+        .join(",");
+    let sql = format!(
+        "SELECT \
+            CAST(uid AS UNSIGNED) AS uid, \
+            name, logo, \
+            CAST(COALESCE(hy,0) AS SIGNED) AS hy, \
+            CAST(COALESCE(pr,0) AS SIGNED) AS pr, \
+            CAST(COALESCE(mun,0) AS SIGNED) AS mun, \
+            CAST(COALESCE(provinceid,0) AS SIGNED) AS provinceid, \
+            CAST(COALESCE(cityid,0) AS SIGNED) AS cityid \
+         FROM phpyun_company WHERE uid IN ({placeholders})"
+    );
+    let mut q = sqlx::query_as::<_, CompanyCard>(&sql);
+    for u in uids {
+        q = q.bind(*u as i64);
+    }
+    q.fetch_all(pool).await
 }
 
 /// Quick autocomplete for company name search — counterpart of PHP

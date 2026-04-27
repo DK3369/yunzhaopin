@@ -6,7 +6,7 @@
 //! hit the in-process cache (`country_service`), so they're sub-microsecond.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };

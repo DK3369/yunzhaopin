@@ -9,13 +9,14 @@
 use axum::{
     extract::{State},
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};
 use phpyun_services::map_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::utils::{fmt_dt, pic_n};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -23,21 +24,6 @@ pub fn routes() -> Router<AppState> {
         .route("/map/companies", post(companies_near))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
-
-fn pic_n(state: &AppState, raw: Option<&str>) -> String {
-    state.storage.normalize_legacy_url(
-        raw.unwrap_or(""),
-        state.config.web_base_url.as_deref(),
-    )
-}
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct GeoQuery {

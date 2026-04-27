@@ -5,9 +5,9 @@ use axum::{
     Router,
     routing::post,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, ClientIp, ValidatedJson};
+use phpyun_core::{dto::OkResp, ApiJson, AppResult, AppState, ClientIp, ValidatedJson};
 use phpyun_services::claim_service::{self, ClaimInput};
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
 
@@ -27,24 +27,19 @@ pub struct ClaimForm {
     pub password: String,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct ClaimResult {
-    pub ok: bool,
-}
-
 /// Claim a company
 #[utoipa::path(
     post,
     path = "/v1/wap/claim",
     tag = "wap",
     request_body = ClaimForm,
-    responses((status = 200, description = "ok", body = ClaimResult))
+    responses((status = 200, description = "ok", body = OkResp))
 )]
 pub async fn claim(
     State(state): State<AppState>,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<ClaimForm>,
-) -> AppResult<ApiJson<ClaimResult>> {
+) -> AppResult<ApiJson<OkResp>> {
     claim_service::claim(
         &state,
         ClaimInput {
@@ -56,5 +51,5 @@ pub async fn claim(
         },
     )
     .await?;
-    Ok(ApiJson(ClaimResult { ok: true }))
+    Ok(ApiJson(OkResp { ok: true }))
 }

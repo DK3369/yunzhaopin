@@ -8,7 +8,7 @@
 //! frontend should call `/v1/mcenter/account/logout` for that path.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };

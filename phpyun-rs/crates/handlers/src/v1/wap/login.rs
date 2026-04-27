@@ -14,11 +14,12 @@ use axum::{
     routing::post,
     Router,
 };
+use phpyun_core::dto::AuthTokenData;
 use phpyun_core::validators;
 use phpyun_core::verify::{self, VerifyKind};
 use phpyun_core::{ApiJson, AppError, AppResult, AppState, ClientIp, ValidatedJson};
 use phpyun_services::user_service::{self, LoginContext};
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
 
@@ -48,20 +49,6 @@ pub struct LoginForm {
     pub captcha_cid: Option<String>,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct LoginData {
-    pub uid: u64,
-    pub usertype: u8,
-    /// Short-lived access token (default 15 min)
-    pub access_token: String,
-    /// Unix seconds
-    pub access_exp: i64,
-    /// Long-lived refresh token
-    pub refresh_token: String,
-    /// Unix seconds
-    pub refresh_exp: i64,
-}
-
 /// Username/password login
 #[utoipa::path(
     post,
@@ -69,7 +56,7 @@ pub struct LoginData {
     tag = "auth",
     request_body = LoginForm,
     responses(
-        (status = 200, description = "Login successful", body = LoginData),
+        (status = 200, description = "Login successful", body = AuthTokenData),
         (status = 400, description = "Invalid captcha / invalid parameter"),
         (status = 401, description = "Invalid credentials"),
         (status = 429, description = "Too many login attempts"),
@@ -80,7 +67,7 @@ pub async fn mlogin(
     ClientIp(ip): ClientIp,
     headers: HeaderMap,
     ValidatedJson(form): ValidatedJson<LoginForm>,
-) -> AppResult<ApiJson<LoginData>> {
+) -> AppResult<ApiJson<AuthTokenData>> {
     // Opt-in verification: only verify when cid + authcode are supplied together (aligned with PHP mlogin behavior).
     if let (Some(cid), Some(code)) = (form.captcha_cid.as_deref(), form.authcode.as_deref()) {
         if !cid.is_empty() && !code.is_empty() {
@@ -99,13 +86,10 @@ pub async fn mlogin(
         LoginContext { ip: &ip, ua: &ua },
     )
     .await?;
-    Ok(ApiJson(LoginData {
+    Ok(ApiJson(AuthTokenData {
         uid: r.uid,
         usertype: r.usertype,
         access_token: r.access,
-        access_exp: r.access_exp,
-        refresh_token: r.refresh,
-        refresh_exp: r.refresh_exp,
     }))
 }
 
@@ -130,7 +114,7 @@ pub struct LoginSmsForm {
     tag = "auth",
     request_body = LoginSmsForm,
     responses(
-        (status = 200, description = "Login successful", body = LoginData),
+        (status = 200, description = "Login successful", body = AuthTokenData),
         (status = 401, description = "Invalid code / account not found"),
         (status = 429, description = "Too many login attempts"),
     )
@@ -140,7 +124,7 @@ pub async fn login_sms(
     ClientIp(ip): ClientIp,
     headers: HeaderMap,
     ValidatedJson(form): ValidatedJson<LoginSmsForm>,
-) -> AppResult<ApiJson<LoginData>> {
+) -> AppResult<ApiJson<AuthTokenData>> {
     let ua = ua_from(&headers);
     let r = user_service::login_with_sms_code(
         &state,
@@ -149,13 +133,10 @@ pub async fn login_sms(
         LoginContext { ip: &ip, ua: &ua },
     )
     .await?;
-    Ok(ApiJson(LoginData {
+    Ok(ApiJson(AuthTokenData {
         uid: r.uid,
         usertype: r.usertype,
         access_token: r.access,
-        access_exp: r.access_exp,
-        refresh_token: r.refresh,
-        refresh_exp: r.refresh_exp,
     }))
 }
 

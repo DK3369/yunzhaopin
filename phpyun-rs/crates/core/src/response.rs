@@ -190,6 +190,23 @@ impl<T: Serialize> Paged<T> {
             page_size,
         }
     }
+
+    /// Build a paged response from a service-returned `(list, total)` pair by
+    /// converting each item via `T::from`. Replaces the 4-line
+    /// `Paged::new(r.list.into_iter().map(T::from).collect(), r.total,
+    /// page.page, page.page_size)` boilerplate that was copy-pasted into 50+
+    /// list handlers.
+    pub fn from_listing<U>(list: Vec<U>, total: u64, page: crate::Pagination) -> Self
+    where
+        T: From<U>,
+    {
+        Self {
+            list: list.into_iter().map(T::from).collect(),
+            total,
+            page: page.page,
+            page_size: page.page_size,
+        }
+    }
 }
 
 // Legacy alias kept for backward compatibility.

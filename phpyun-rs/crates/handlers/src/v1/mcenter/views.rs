@@ -14,6 +14,7 @@ use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagina
 use phpyun_services::view_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -28,14 +29,6 @@ pub struct KindQuery {
     pub kind: i32,
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 fn view_kind_name(k: i32) -> &'static str {
     match k {
@@ -88,12 +81,7 @@ pub async fn list_my_views(
     ValidatedJson(q): ValidatedJson<KindQuery>,
 ) -> AppResult<ApiJson<Paged<ViewItem>>> {
     let r = view_service::list_by_viewer(&state, &user, q.kind, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(ViewItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Who has viewed me
@@ -115,10 +103,5 @@ pub async fn list_profile_views(
     ValidatedJson(q): ValidatedJson<KindQuery>,
 ) -> AppResult<ApiJson<Paged<ViewItem>>> {
     let r = view_service::list_on_target(&state, &user, q.kind, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(ViewItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }

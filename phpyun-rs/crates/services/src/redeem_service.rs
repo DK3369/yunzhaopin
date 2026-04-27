@@ -11,6 +11,7 @@
 //! the compensation pattern from integral_service.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
+use phpyun_core::cache::SimpleCache;
 use phpyun_core::error::InfraError;
 use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::integral::repo as integral_repo;
@@ -23,18 +24,11 @@ use phpyun_models::redeem::{
 
 /// 60s TTL cache: points-mall categories rarely change, and every mall page hits this.
 /// Cache key is `Option<u64>` (None = all / Some(pid) = subcategory).
-static CLASSES_CACHE: std::sync::OnceLock<
-    moka::future::Cache<Option<u64>, std::sync::Arc<Vec<RedeemClass>>>,
-> = std::sync::OnceLock::new();
+static CLASSES_CACHE: std::sync::OnceLock<SimpleCache<Option<u64>, Vec<RedeemClass>>> =
+    std::sync::OnceLock::new();
 
-fn classes_cache(
-) -> &'static moka::future::Cache<Option<u64>, std::sync::Arc<Vec<RedeemClass>>> {
-    CLASSES_CACHE.get_or_init(|| {
-        moka::future::Cache::builder()
-            .max_capacity(64)
-            .time_to_live(std::time::Duration::from_secs(60))
-            .build()
-    })
+fn classes_cache() -> &'static SimpleCache<Option<u64>, Vec<RedeemClass>> {
+    CLASSES_CACHE.get_or_init(|| SimpleCache::new(64, std::time::Duration::from_secs(60)))
 }
 
 /// Invalidate-on-write (called after admin creates/deletes a category) -- expire the entire
@@ -52,12 +46,10 @@ pub async fn list_classes(
     let cache = classes_cache();
     let db = state.db.reader().clone();
     cache
-        .try_get_with(parent_id, async move {
-            let list = redeem_repo::list_classes(&db, parent_id).await?;
-            Ok::<_, AppError>(std::sync::Arc::new(list))
+        .get_or_load(parent_id, move || async move {
+            Ok(redeem_repo::list_classes(&db, parent_id).await?)
         })
         .await
-        .map_err(AppError::from_arc)
 }
 
 pub async fn create_class(

@@ -20,5 +20,4 @@ phpyun_core.workspace = true
 phpyun_auth.workspace = true
 phpyun_models.workspace = true
 arc-swap.workspace = true
-moka.workspace = true
 chrono.workspace = true

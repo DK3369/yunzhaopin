@@ -3,13 +3,13 @@
 use axum::{
     extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::json;
 use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_models::resume::edu::EduInput;
 use phpyun_services::resume_children_service::edu_svc;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
 use phpyun_core::dto::{CreatedId};

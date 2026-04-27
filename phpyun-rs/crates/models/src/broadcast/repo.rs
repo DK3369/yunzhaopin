@@ -13,7 +13,7 @@ pub async fn create(
     now: i64,
 ) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
-        r#"INSERT INTO phpyun_sysmsg
+        r#"INSERT INTO phpyun_broadcast
            (title, body, target_usertype, status, issuer_uid, created_at)
            VALUES (?, ?, ?, 1, ?, ?)"#,
     )
@@ -28,7 +28,7 @@ pub async fn create(
 }
 
 pub async fn delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("DELETE FROM phpyun_sysmsg WHERE id = ?")
+    let res = sqlx::query("DELETE FROM phpyun_broadcast WHERE id = ?")
         .bind(id)
         .execute(pool)
         .await?;
@@ -41,7 +41,7 @@ pub async fn admin_list(
     limit: u64,
 ) -> Result<Vec<Broadcast>, sqlx::Error> {
     let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_sysmsg
+        "SELECT {FIELDS} FROM phpyun_broadcast
          ORDER BY id DESC LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, Broadcast>(&sql)
@@ -53,7 +53,7 @@ pub async fn admin_list(
 
 pub async fn admin_count(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_sysmsg")
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_broadcast")
             .fetch_one(pool)
             .await?;
     Ok(n.max(0) as u64)
@@ -67,7 +67,7 @@ pub async fn list_for_user(
     limit: u64,
 ) -> Result<Vec<Broadcast>, sqlx::Error> {
     let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_sysmsg
+        "SELECT {FIELDS} FROM phpyun_broadcast
          WHERE status = 1 AND (target_usertype = 0 OR target_usertype = ?)
          ORDER BY id DESC LIMIT ? OFFSET ?"
     );
@@ -81,7 +81,7 @@ pub async fn list_for_user(
 
 pub async fn count_for_user(pool: &MySqlPool, usertype: i32) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_sysmsg
+        "SELECT COUNT(*) FROM phpyun_broadcast
          WHERE status = 1 AND (target_usertype = 0 OR target_usertype = ?)",
     )
     .bind(usertype)
@@ -93,7 +93,7 @@ pub async fn count_for_user(pool: &MySqlPool, usertype: i32) -> Result<u64, sqlx
 /// Count of unread broadcasts (active - already read).
 pub async fn count_unread(pool: &MySqlPool, uid: u64, usertype: i32) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as(
-        r#"SELECT COUNT(*) FROM phpyun_sysmsg b
+        r#"SELECT COUNT(*) FROM phpyun_broadcast b
            WHERE b.status = 1
              AND (b.target_usertype = 0 OR b.target_usertype = ?)
              AND NOT EXISTS (

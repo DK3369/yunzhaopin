@@ -11,9 +11,8 @@ use axum::{
     routing::post,
 };
 use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use utoipa::ToSchema;
-use validator::Validate;
 use phpyun_core::dto::{IdBody, UidBody};
 
 pub fn routes() -> Router<AppState> {

@@ -19,7 +19,8 @@ use phpyun_services::job_msg_service::{self, CreateInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{IdBody, MidBody};
+use phpyun_core::dto::{CreatedId, IdBody, MidBody};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -28,14 +29,6 @@ pub fn routes() -> Router<AppState> {
         .route("/jobs/messages/hide", post(hide))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 /// Public-facing message item (no internal flags exposed).
 #[derive(Debug, Serialize, ToSchema)]
@@ -85,12 +78,7 @@ pub async fn list(
     ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<Paged<JobMsgView>>> {
     let r = job_msg_service::list_public(&state, b.id, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(JobMsgView::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -109,10 +97,6 @@ pub struct CreateMessageForm {
     pub authcode: String,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CreateMessageData {
-    pub id: u64,
-}
 
 /// Jobseeker leaves a public message — requires login + image captcha.
 /// Mirrors PHP `wap/ajax::pl_action` (auth check, blacklist check, captcha).
@@ -123,7 +107,7 @@ pub struct CreateMessageData {
     security(("bearer" = [])),
     request_body = CreateMessageForm,
     responses(
-        (status = 200, description = "Created", body = CreateMessageData),
+        (status = 200, description = "Created", body = CreatedId),
         (status = 400, description = "Validation / captcha / blocked / job not found"),
         (status = 401, description = "Unauthorized"),
         (status = 403, description = "Only jobseekers may post messages"),
@@ -133,7 +117,7 @@ pub async fn create(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<CreateMessageForm>,
-) -> AppResult<ApiJson<CreateMessageData>> {
+) -> AppResult<ApiJson<CreatedId>> {
     // Captcha — same scheme as register / sms send.
     let code = f.authcode.to_uppercase();
     if !verify::verify(&state.redis, VerifyKind::ImageCaptcha, &f.captcha_cid, &code).await? {
@@ -149,7 +133,7 @@ pub async fn create(
         },
     )
     .await?;
-    Ok(ApiJson(CreateMessageData { id: mid }))
+    Ok(ApiJson(CreatedId { id: mid }))
 }
 
 /// Author / employer hides one of their messages.

@@ -7,10 +7,9 @@ use axum::{
 };
 use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::warning_service;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use utoipa::ToSchema;
-use validator::Validate;
-use phpyun_core::dto::{IdBody};
+use phpyun_core::dto::{IdBody, UnreadCount};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -42,11 +41,6 @@ impl From<phpyun_models::warning::entity::Warning> for MyWarning {
     }
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct UnreadCount {
-    pub unread: u64,
-}
-
 /// Warnings I have received
 #[utoipa::path(
     post,
@@ -61,12 +55,7 @@ pub async fn list(
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<MyWarning>>> {
     let r = warning_service::list_mine(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(MyWarning::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Unread warning count

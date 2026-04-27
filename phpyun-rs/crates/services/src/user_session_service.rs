@@ -14,6 +14,7 @@
 //!      in-flight access token AND any pending refresh attempt are refused.
 
 use phpyun_core::error::InfraError;
+use phpyun_core::utils::fmt_ts;
 use phpyun_core::{clock, jwt_blacklist, AppError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::user_session::{entity::UserSession, repo as session_repo};
 use std::sync::Arc;
@@ -155,25 +156,22 @@ pub async fn rotate_on_refresh(
     Ok(())
 }
 
-/// Update last_seen — debounced via an in-memory moka set (5-min cool-down
+/// Update last_seen — debounced via an in-memory dedup set (5-min cool-down
 /// per access jti) so authed requests don't bombard the DB.
 /// Per-instance dedup is fine; multi-instance global rate stays bounded.
 /// Best-effort: errors swallowed.
-static TOUCH_DEDUP: std::sync::OnceLock<moka::future::Cache<String, ()>> =
+static TOUCH_DEDUP: std::sync::OnceLock<phpyun_core::cache::SimpleCache<String, ()>> =
     std::sync::OnceLock::new();
 
-fn touch_dedup() -> &'static moka::future::Cache<String, ()> {
+fn touch_dedup() -> &'static phpyun_core::cache::SimpleCache<String, ()> {
     TOUCH_DEDUP.get_or_init(|| {
-        moka::future::Cache::builder()
-            .max_capacity(50_000)
-            .time_to_live(std::time::Duration::from_secs(300))
-            .build()
+        phpyun_core::cache::SimpleCache::new(50_000, std::time::Duration::from_secs(300))
     })
 }
 
 pub async fn touch(state: &AppState, access_jti: &str) {
     let cache = touch_dedup();
-    if cache.get(access_jti).await.is_some() {
+    if cache.get(&access_jti.to_string()).await.is_some() {
         return;
     }
     cache.insert(access_jti.to_string(), ()).await;
@@ -201,14 +199,7 @@ pub struct SessionItem {
     pub is_current: bool,
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M:%S").to_string())
-        .unwrap_or_default()
-}
+const DT_FMT: &str = "%Y-%m-%d %H:%M:%S";
 
 impl SessionItem {
     fn from_row(s: UserSession, current_access_jti: &str) -> Self {
@@ -219,13 +210,13 @@ impl SessionItem {
             device_raw: s.device_raw,
             ip: s.ip,
             ip_loc: s.ip_loc,
-            login_at_n: fmt_dt(s.login_at),
+            login_at_n: fmt_ts(s.login_at, DT_FMT),
             login_at: s.login_at,
-            last_seen_at_n: fmt_dt(s.last_seen_at),
+            last_seen_at_n: fmt_ts(s.last_seen_at, DT_FMT),
             last_seen_at: s.last_seen_at,
-            access_exp_n: fmt_dt(s.access_exp),
+            access_exp_n: fmt_ts(s.access_exp, DT_FMT),
             access_exp: s.access_exp,
-            refresh_exp_n: fmt_dt(s.refresh_exp),
+            refresh_exp_n: fmt_ts(s.refresh_exp, DT_FMT),
             refresh_exp: s.refresh_exp,
             is_current,
         }

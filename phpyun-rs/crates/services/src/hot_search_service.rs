@@ -6,23 +6,18 @@
 //! are inherently a recency signal; one minute of staleness is fine and saves a
 //! `phpyun_hot_search ORDER BY hits DESC` scan for every home-page hit.
 
-use phpyun_core::{background, clock, AppError, AppResult, AppState};
+use phpyun_core::cache::SimpleCache;
+use phpyun_core::{background, clock, AppResult, AppState};
 use phpyun_models::hot_search::{entity::HotSearch, repo as hot_search_repo};
 use std::sync::Arc;
 
 const TTL_SECS: u64 = 60;
 
-static CACHE: std::sync::OnceLock<
-    moka::future::Cache<(String, u64), Arc<Vec<HotSearch>>>,
-> = std::sync::OnceLock::new();
+static CACHE: std::sync::OnceLock<SimpleCache<(String, u64), Vec<HotSearch>>> =
+    std::sync::OnceLock::new();
 
-fn cache() -> &'static moka::future::Cache<(String, u64), Arc<Vec<HotSearch>>> {
-    CACHE.get_or_init(|| {
-        moka::future::Cache::builder()
-            .max_capacity(128)
-            .time_to_live(std::time::Duration::from_secs(TTL_SECS))
-            .build()
-    })
+fn cache() -> &'static SimpleCache<(String, u64), Vec<HotSearch>> {
+    CACHE.get_or_init(|| SimpleCache::new(128, std::time::Duration::from_secs(TTL_SECS)))
 }
 
 pub async fn invalidate_all() {
@@ -50,10 +45,8 @@ pub async fn top(
     let scope_owned = key.0.clone();
     let db = state.db.reader().clone();
     cache()
-        .try_get_with(key, async move {
-            let list = hot_search_repo::top(&db, &scope_owned, limit).await?;
-            Ok::<_, AppError>(Arc::new(list))
+        .get_or_load(key, move || async move {
+            Ok(hot_search_repo::top(&db, &scope_owned, limit).await?)
         })
         .await
-        .map_err(AppError::from_arc)
 }

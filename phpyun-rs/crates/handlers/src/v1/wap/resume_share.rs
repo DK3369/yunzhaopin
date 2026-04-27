@@ -16,7 +16,7 @@
 use axum::{
     extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::i18n::{current_lang, t};
 use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};

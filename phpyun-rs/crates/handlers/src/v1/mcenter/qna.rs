@@ -10,7 +10,7 @@ use phpyun_services::qna_service::{self, CreateQuestionInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{AidBody, CreatedId, IdBody};
+use phpyun_core::dto::{CreatedId, IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -239,12 +239,7 @@ pub async fn my_questions(
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<MyQuestion>>> {
     let r = qna_service::list_my_questions(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(MyQuestion::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -283,12 +278,7 @@ pub async fn my_answers(
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<MyAnswer>>> {
     let r = qna_service::list_my_answers(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(MyAnswer::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Questions I follow
@@ -305,12 +295,7 @@ pub async fn attended(
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<MyQuestion>>> {
     let r = qna_service::list_attended(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(MyQuestion::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Comment on an answer (aligned with PHP `wap/ask::forcomment_action`)

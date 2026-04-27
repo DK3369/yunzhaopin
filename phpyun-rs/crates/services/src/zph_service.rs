@@ -113,7 +113,7 @@ pub async fn com_status_for_fair(
 
     // Mirror PHP filter: state=1 (active), status=0 (open), r_status<>2 (not rejected company-wide)
     let now = clock::now_ts();
-    let rows: Vec<OwnJobBrief> = sqlx::query_as(
+    let rows: Vec<OwnJobBrief> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
         "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(name, '') AS name \
          FROM phpyun_company_job \
          WHERE uid = ? AND state = 1 AND status = 0 AND r_status != 2 \

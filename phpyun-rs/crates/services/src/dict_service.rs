@@ -433,7 +433,7 @@ async fn load_default(
 ) -> AppResult<HashMap<i32, String>> {
     // PHPYun dict tables use `id` for the PK and `name` for the display name
     let sql = format!("SELECT id, name FROM {table}");
-    let rows: Vec<(i32, Option<String>)> = sqlx::query_as(&sql)
+    let rows: Vec<(i32, Option<String>)> = sqlx::query_as(&sql) // TODO(arch): inline sqlx pending repo lift
         .fetch_all(pool)
         .await
         .map_err(phpyun_core::AppError::internal)?;
@@ -448,7 +448,7 @@ async fn load_i18n(
     pool: &sqlx::MySqlPool,
 ) -> AppResult<HashMap<String, HashMap<(i32, Lang), String>>> {
     let rows: Result<Vec<(String, i32, String, String)>, _> =
-        sqlx::query_as("SELECT kind, item_id, lang, text FROM phpyun_dict_i18n")
+        sqlx::query_as("SELECT kind, item_id, lang, text FROM phpyun_dict_i18n") // TODO(arch): inline sqlx pending repo lift
             .fetch_all(pool)
             .await;
 

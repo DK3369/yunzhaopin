@@ -1,9 +1,9 @@
 //! Public single-page CMS (mirrors PHPYun `description`): class list / list / detail.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::description_service;
@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 use phpyun_core::dto::{IdBody};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -21,14 +22,6 @@ pub fn routes() -> Router<AppState> {
         .route("/legal", post(get_legal_page))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 /// Class item -- all 4 columns of phpyun_desc_class.
 #[derive(Debug, Serialize, ToSchema)]
@@ -124,12 +117,7 @@ pub async fn list(
     ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Paged<DescItem>>> {
     let r = description_service::list(&state, q.class_id, true, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(DescItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Single-page detail -- all 10 columns (including full content) + formatted timestamps.

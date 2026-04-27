@@ -1,9 +1,9 @@
 //! Joint recruitment (aligned with PHPYun `wap/gongzhao`).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::gongzhao_service;
@@ -11,30 +11,9 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 use phpyun_core::dto::{IdBody};
+use phpyun_core::utils::{fmt_date, fmt_dt, pic_n_str as pic_n};
 
-fn fmt_date(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d").to_string())
-        .unwrap_or_default()
-}
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
-
-fn pic_n(state: &AppState, raw: &str) -> String {
-    state
-        .storage
-        .normalize_legacy_url(raw, state.config.web_base_url.as_deref())
-}
 
 pub fn routes() -> Router<AppState> {
     Router::new()

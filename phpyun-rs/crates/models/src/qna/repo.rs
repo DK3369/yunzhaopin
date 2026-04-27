@@ -286,6 +286,23 @@ pub async fn count_answers_by_user(pool: &MySqlPool, uid: u64) -> Result<u64, sq
     Ok(n.max(0) as u64)
 }
 
+/// Cheap getter for an answer's `(qid, status)` pair. Used by the comment
+/// endpoint, which only needs to validate that the parent answer exists and
+/// is published before persisting a child review.
+pub async fn answer_qid_status(
+    pool: &MySqlPool,
+    answer_id: u64,
+) -> Result<Option<(u64, i32)>, sqlx::Error> {
+    let row: Option<(i64, i32)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(qid,0) AS SIGNED), CAST(COALESCE(status,1) AS SIGNED) \
+         FROM phpyun_answer WHERE id = ?",
+    )
+    .bind(answer_id)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(q, s)| (q.max(0) as u64, s)))
+}
+
 /// PHPYun `phpyun_answer` has no is_accepted column -- this function has
 /// no PHP equivalent. The Rust side keeps the API but only updates the
 /// answer's status field (1 = accepted); other answers are unaffected.

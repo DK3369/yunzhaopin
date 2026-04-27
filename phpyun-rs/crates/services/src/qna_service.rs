@@ -247,14 +247,7 @@ pub async fn add_review(
         return Err(AppError::param_invalid("comment_too_long"));
     }
     let db = state.db.pool();
-    let row: Option<(i64, i32)> = sqlx::query_as(
-        "SELECT CAST(COALESCE(qid,0) AS SIGNED), CAST(COALESCE(status,1) AS SIGNED) \
-         FROM phpyun_answer WHERE id = ?",
-    )
-    .bind(aid as i64)
-    .fetch_optional(db)
-    .await?;
-    let Some((qid, status)) = row else {
+    let Some((qid, status)) = qna_repo::answer_qid_status(db, aid).await? else {
         return Err(AppError::new(InfraError::InvalidParam(
             "answer_not_found".into(),
         )));
@@ -270,7 +263,7 @@ pub async fn add_review(
         db,
         qna_repo::ReviewCreate {
             aid,
-            qid: qid.max(0) as u64,
+            qid,
             uid: user.uid,
             usertype,
             content: trimmed,
@@ -300,30 +293,23 @@ pub async fn delete_review(
 // ==================== Categories (phpyun_q_class) ====================
 
 /// In-process cache with 60s TTL: Q&A categories rarely change yet are requested by every home and list page.
-/// moka's `try_get_with` provides built-in singleflight, so the cache-stampede scenario is safe.
-static QCLASSES_CACHE: std::sync::OnceLock<
-    moka::future::Cache<(), std::sync::Arc<Vec<QClass>>>,
-> = std::sync::OnceLock::new();
+/// `SimpleCache` provides built-in singleflight, so the cache-stampede scenario is safe.
+static QCLASSES_CACHE: std::sync::OnceLock<phpyun_core::cache::SimpleCache<(), Vec<QClass>>> =
+    std::sync::OnceLock::new();
 
-fn qclasses_cache() -> &'static moka::future::Cache<(), std::sync::Arc<Vec<QClass>>> {
-    QCLASSES_CACHE.get_or_init(|| {
-        moka::future::Cache::builder()
-            .max_capacity(1)
-            .time_to_live(std::time::Duration::from_secs(60))
-            .build()
-    })
+fn qclasses_cache() -> &'static phpyun_core::cache::SimpleCache<(), Vec<QClass>> {
+    QCLASSES_CACHE
+        .get_or_init(|| phpyun_core::cache::SimpleCache::new(1, std::time::Duration::from_secs(60)))
 }
 
 pub async fn list_categories(state: &AppState) -> AppResult<std::sync::Arc<Vec<QClass>>> {
     let cache = qclasses_cache();
     let db = state.db.reader().clone();
     cache
-        .try_get_with((), async move {
-            let list = qna_repo::list_qclasses(&db).await?;
-            Ok::<_, AppError>(std::sync::Arc::new(list))
+        .get_or_load((), move || async move {
+            Ok(qna_repo::list_qclasses(&db).await?)
         })
         .await
-        .map_err(AppError::from_arc)
 }
 
 // ==================== Weekly hot questions ====================

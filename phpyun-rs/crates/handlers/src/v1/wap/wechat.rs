@@ -9,7 +9,7 @@
 //! That is why we use `axum::response::Response` directly to return the raw body.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     http::{header, StatusCode},
     response::Response,
     Router,
@@ -186,10 +186,13 @@ fn xml_response(body: String) -> Response {
 }
 
 fn fallback(status: StatusCode) -> Response {
+    // `Response::builder` only fails on invalid header construction; we set
+    // none here, so the unwrap path is unreachable. Still, fall back to a
+    // default response if the impossible occurs to keep the request path panic-free.
     Response::builder()
         .status(status)
         .body(String::new().into())
-        .unwrap()
+        .unwrap_or_else(|_| Response::default())
 }
 
 // Silence the unused-import warning for wechat_service

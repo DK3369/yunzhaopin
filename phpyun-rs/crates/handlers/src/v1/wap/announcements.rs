@@ -1,7 +1,7 @@
 //! Site announcements (aligned with PHPYun `wap/announcement`).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };
@@ -11,6 +11,7 @@ use phpyun_services::announcement_service;
 use serde::Serialize;
 use utoipa::ToSchema;
 use phpyun_core::dto::{IdBody};
+use phpyun_core::utils::{fmt_date, fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -18,23 +19,7 @@ pub fn routes() -> Router<AppState> {
         .route("/announcements/detail", post(detail))
 }
 
-fn fmt_date(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d").to_string())
-        .unwrap_or_default()
-}
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 /// Announcement list item — aligned with all fields of phpyun_announcement.
 #[derive(Debug, Serialize, ToSchema)]
@@ -130,12 +115,7 @@ pub async fn list(
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<AnnouncementSummary>>> {
     let r = announcement_service::list(&state, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(AnnouncementSummary::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Announcement detail (`upViewNum` semantics: async +1)

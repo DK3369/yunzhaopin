@@ -1,7 +1,7 @@
 //! Points mall (public): item list / detail.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };
@@ -47,12 +47,7 @@ pub async fn list_items(
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<IntegralItemView>>> {
     let r = integral_service::list_items(&state, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(IntegralItemView::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Points-mall item detail

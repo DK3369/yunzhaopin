@@ -13,19 +13,12 @@ use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagina
 use phpyun_services::fan_service;
 use serde::Serialize;
 use utoipa::ToSchema;
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/fans", post(list_mine))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct FanItem {
@@ -68,10 +61,5 @@ pub async fn list_mine(
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<FanItem>>> {
     let r = fan_service::list_fans(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(FanItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }

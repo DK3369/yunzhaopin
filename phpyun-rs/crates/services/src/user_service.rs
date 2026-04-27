@@ -332,6 +332,66 @@ pub async fn refresh(state: &AppState, refresh_token: &str) -> AppResult<LoginRe
     })
 }
 
+// ==================== Access-token rolling refresh ====================
+//
+// Sliding-session model: the client passes its current valid access_token via
+// the Authorization header (validated by `AuthenticatedUser`), the server
+// issues a fresh access_token with extended exp, and the old jti is added to
+// the blacklist. Trade-off vs. the previous separate-refresh-token model: a
+// leaked access_token can be rotated indefinitely until the session is
+// kicked manually, but the client gets a single-token UX and never has to
+// store a second long-lived secret.
+
+pub async fn refresh_access(
+    state: &AppState,
+    user: &phpyun_core::AuthenticatedUser,
+) -> AppResult<LoginResult> {
+    // Defence-in-depth: the extractor already rejected revoked tokens, but
+    // re-check after the bearer was issued (in case it was kicked between
+    // request reception and this point).
+    if jwt_blacklist::is_revoked(&state.redis, &user.jti).await {
+        return Err(AppError::session_expired());
+    }
+    if jwt_blacklist::is_token_stale(&state.redis, user.uid, user.iat).await {
+        return Err(AppError::session_expired());
+    }
+
+    let JwtIssued {
+        access,
+        refresh,
+        access_exp,
+        refresh_exp,
+        jti_access,
+        jti_refresh,
+    } = issue_pair(&state.config, user.uid, user.usertype, user.did)?;
+
+    // Rotate the session row to the new jti pair so concurrent uses of the
+    // old access_token are rejected.
+    user_session_service::rotate_on_refresh(
+        state,
+        &user.jti,
+        &jti_access,
+        &jti_refresh,
+        access_exp,
+        refresh_exp,
+    )
+    .await?;
+
+    // Revoke the old access jti immediately (replay protection).
+    let _ = jwt_blacklist::revoke(&state.redis, &user.jti, user.exp).await;
+
+    auth_event("access_refreshed", None);
+
+    Ok(LoginResult {
+        access,
+        refresh,
+        uid: user.uid,
+        usertype: user.usertype,
+        access_exp,
+        refresh_exp,
+    })
+}
+
 // ==================== /me with L1+L2 caching ====================
 
 /// Public-facing user summary exposed to the frontend (sensitive fields stripped).
@@ -440,7 +500,7 @@ async fn seed_role_rows(state: &AppState, uid: u64, usertype: u8) {
     let pool = state.db.pool();
     match usertype {
         1 => {
-            let _ = sqlx::query(
+            let _ = sqlx::query( // TODO(arch): inline sqlx pending repo lift
                 "INSERT IGNORE INTO phpyun_member_statis \
                     (uid, integral, fav_jobnum, resume_num, sq_jobnum, message_num, down_num) \
                  VALUES (?, '', 0, 0, 0, 0, 0)",
@@ -448,19 +508,19 @@ async fn seed_role_rows(state: &AppState, uid: u64, usertype: u8) {
             .bind(uid)
             .execute(pool)
             .await;
-            let _ = sqlx::query("INSERT IGNORE INTO phpyun_resume (uid) VALUES (?)")
+            let _ = sqlx::query("INSERT IGNORE INTO phpyun_resume (uid) VALUES (?)") // TODO(arch): inline sqlx pending repo lift
                 .bind(uid)
                 .execute(pool)
                 .await;
         }
         2 | 3 => {
-            let _ = sqlx::query(
+            let _ = sqlx::query( // TODO(arch): inline sqlx pending repo lift
                 "INSERT IGNORE INTO phpyun_company_statis (uid) VALUES (?)",
             )
             .bind(uid)
             .execute(pool)
             .await;
-            let _ = sqlx::query("INSERT IGNORE INTO phpyun_company (uid) VALUES (?)")
+            let _ = sqlx::query("INSERT IGNORE INTO phpyun_company (uid) VALUES (?)") // TODO(arch): inline sqlx pending repo lift
                 .bind(uid)
                 .execute(pool)
                 .await;

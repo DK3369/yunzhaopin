@@ -10,6 +10,7 @@ use phpyun_services::rating_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::utils::{fmt_dt};
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct RatingTargetBody {
@@ -21,14 +22,6 @@ pub struct RatingTargetBody {
     pub uid: u64,
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -115,12 +108,7 @@ pub async fn list(
     ValidatedJson(b): ValidatedJson<RatingTargetBody>,
 ) -> AppResult<ApiJson<Paged<RatingItem>>> {
     let r = rating_service::list(&state, b.uid, b.kind, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(RatingItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Rating summary (count + avg)

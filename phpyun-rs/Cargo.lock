@@ -2253,14 +2253,10 @@ dependencies = [
  "anyhow",
  "argon2",
  "chrono",
- "jsonwebtoken",
  "md-5",
  "phpyun-core",
  "rayon",
- "serde",
  "tokio",
- "tracing",
- "uuid",
 ]
 
 [[package]]
@@ -2312,7 +2308,6 @@ dependencies = [
  "axum-test",
  "bytes",
  "chrono",
- "phpyun-auth",
  "phpyun-core",
  "phpyun-models",
  "phpyun-services",
@@ -2322,8 +2317,6 @@ dependencies = [
  "sqlx",
  "thiserror 2.0.18",
  "tokio",
- "tower",
- "tower-http",
  "tracing",
  "utoipa",
  "utoipa-swagger-ui",
@@ -2335,13 +2328,11 @@ dependencies = [
 name = "phpyun-models"
 version = "0.1.0"
 dependencies = [
- "anyhow",
  "chrono",
  "phpyun-core",
  "serde",
  "serde_json",
  "sqlx",
- "tracing",
  "utoipa",
 ]
 
@@ -2353,7 +2344,6 @@ dependencies = [
  "base64 0.22.1",
  "captcha",
  "chrono",
- "moka",
  "phpyun-auth",
  "phpyun-core",
  "phpyun-models",

@@ -2,16 +2,17 @@
 //! + `member/com/talent_pool` CRUD.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{json, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::talent_pool_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{IdsBody};
+use phpyun_core::dto::{CreatedId, IdsBody};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -20,12 +21,6 @@ pub fn routes() -> Router<AppState> {
         .route("/talent-pool/remark", post(update_remark))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct TalentPoolView {
@@ -64,11 +59,6 @@ pub struct AddForm {
     pub remark: Option<String>,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct AddedId {
-    pub id: u64,
-}
-
 #[utoipa::path(
     post,
     path = "/v1/mcenter/talent-pool/list",
@@ -82,7 +72,7 @@ pub async fn add(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<AddForm>,
-) -> AppResult<ApiJson<AddedId>> {
+) -> AppResult<ApiJson<CreatedId>> {
     let id = talent_pool_service::add(
         &state,
         &user,
@@ -92,7 +82,7 @@ pub async fn add(
         &ip,
     )
     .await?;
-    Ok(ApiJson(AddedId { id }))
+    Ok(ApiJson(CreatedId { id }))
 }
 
 #[utoipa::path(
@@ -107,12 +97,7 @@ pub async fn add(
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<TalentPoolView>>> {
     let r = talent_pool_service::list_mine(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(TalentPoolView::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 #[utoipa::path(

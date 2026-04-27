@@ -1,16 +1,15 @@
 //! Public site settings (keys with is_public=1).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::error::InfraError;
 use phpyun_core::{ApiJson, AppError, AppResult, AppState, ValidatedJson};
 use phpyun_services::site_setting_service;
 use serde::Serialize;
 use utoipa::ToSchema;
-use phpyun_core::dto::{};
 
 pub fn routes() -> Router<AppState> {
     Router::new()

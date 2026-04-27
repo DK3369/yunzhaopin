@@ -45,7 +45,7 @@ async fn bump_fav_jobnum(state: &AppState, uid: u64, did: u32, delta: i32) {
     // `fav_jobnum` is `int(10) NOT NULL`; clamp to >= 0 on the way down so
     // we don't underflow if a stale row had 0 already.
     let q = if delta >= 0 {
-        sqlx::query(
+        sqlx::query( // TODO(arch): inline sqlx pending repo lift
             r#"INSERT INTO phpyun_member_statis (uid, integral, fav_jobnum, resume_num, sq_jobnum, message_num, down_num)
                VALUES (?, '', ?, 0, 0, 0, 0)
                ON DUPLICATE KEY UPDATE fav_jobnum = fav_jobnum + ?"#,
@@ -55,7 +55,7 @@ async fn bump_fav_jobnum(state: &AppState, uid: u64, did: u32, delta: i32) {
         .bind(delta)
     } else {
         let dec = (-delta) as i32;
-        sqlx::query(
+        sqlx::query( // TODO(arch): inline sqlx pending repo lift
             "UPDATE phpyun_member_statis
                 SET fav_jobnum = GREATEST(fav_jobnum - ?, 0)
               WHERE uid = ?",
@@ -77,7 +77,7 @@ async fn add_member_log(
     type_: i32,
 ) {
     // phpyun_member_log columns: uid, opera, type, usertype, content, ip, ctime, did
-    let _ = sqlx::query(
+    let _ = sqlx::query( // TODO(arch): inline sqlx pending repo lift
         r#"INSERT INTO phpyun_member_log
               (uid, opera, type, usertype, content, ip, ctime, did)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?)"#,

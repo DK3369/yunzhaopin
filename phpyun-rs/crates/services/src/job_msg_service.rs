@@ -44,7 +44,7 @@ pub async fn create(
 
     // 1. Look up job + company name in one shot — also confirms the job exists
     //    and is approved for public viewing.
-    let row: Option<(u64, String, String)> = sqlx::query_as(
+    let row: Option<(u64, String, String)> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
         "SELECT CAST(uid AS UNSIGNED), \
                 COALESCE(name, ''), \
                 COALESCE(com_name, '') \
@@ -102,7 +102,7 @@ pub async fn list_public(
     page: Pagination,
 ) -> AppResult<JobMsgPage> {
     let reader = state.db.reader();
-    let job_uid: u64 = sqlx::query_as::<_, (u64,)>(
+    let job_uid: u64 = sqlx::query_as::<_, (u64,)>( // TODO(arch): inline sqlx pending repo lift
         "SELECT CAST(uid AS UNSIGNED) FROM phpyun_company_job WHERE id = ? LIMIT 1",
     )
     .bind(jobid)

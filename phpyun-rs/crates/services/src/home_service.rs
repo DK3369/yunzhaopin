@@ -11,7 +11,8 @@
 //! The whole payload is wrapped in a 60-second TTL cache keyed by `did` to keep the
 //! home page cheap under load — fresh content still appears within a minute.
 
-use phpyun_core::{AppError, AppResult, AppState};
+use phpyun_core::cache::SimpleCache;
+use phpyun_core::{AppResult, AppState};
 use phpyun_models::announcement::{entity::Announcement, repo as ann_repo};
 use phpyun_models::article::{entity::Article, repo as article_repo, repo::ArticleFilter};
 use phpyun_models::company::{entity::Company, repo as company_repo, repo::CompanyFilter};
@@ -30,22 +31,17 @@ pub struct HomePayload {
 
 const HOME_TTL_SECS: u64 = 60;
 
-static HOME_CACHE: std::sync::OnceLock<moka::future::Cache<u32, Arc<HomePayload>>> =
-    std::sync::OnceLock::new();
+static HOME_CACHE: std::sync::OnceLock<SimpleCache<u32, HomePayload>> = std::sync::OnceLock::new();
 
-fn home_cache() -> &'static moka::future::Cache<u32, Arc<HomePayload>> {
-    HOME_CACHE.get_or_init(|| {
-        moka::future::Cache::builder()
-            .max_capacity(32)
-            .time_to_live(std::time::Duration::from_secs(HOME_TTL_SECS))
-            .build()
-    })
+fn home_cache() -> &'static SimpleCache<u32, HomePayload> {
+    HOME_CACHE.get_or_init(|| SimpleCache::new(32, std::time::Duration::from_secs(HOME_TTL_SECS)))
 }
 
 /// Manual invalidation hook — call after a writer publishes an announcement / article
 /// or wants to force-refresh the home page early.
 pub async fn invalidate(did: u32) {
-    home_cache().invalidate(&if did == 0 { 1 } else { did }).await;
+    let key = if did == 0 { 1 } else { did };
+    home_cache().invalidate(&key).await;
 }
 
 pub async fn invalidate_all() {
@@ -57,7 +53,7 @@ pub async fn home(state: &AppState, did: u32) -> AppResult<Arc<HomePayload>> {
     let cache = home_cache();
     let st = state.clone();
     cache
-        .try_get_with(did, async move {
+        .get_or_load(did, move || async move {
             let db = st.db.reader();
             let now = phpyun_core::clock::now_ts();
             let job_filter = JobFilter { did, ..Default::default() };
@@ -72,14 +68,13 @@ pub async fn home(state: &AppState, did: u32) -> AppResult<Arc<HomePayload>> {
                 hot_search_repo::top(db, "job", 10),
             );
 
-            Ok::<_, AppError>(Arc::new(HomePayload {
+            Ok(HomePayload {
                 announcements: ann_r.unwrap_or_default(),
                 hot_jobs: jobs_r.unwrap_or_default(),
                 rec_companies: coms_r.unwrap_or_default(),
                 new_articles: art_r.unwrap_or_default(),
                 hot_keywords: hot_r.unwrap_or_default(),
-            }))
+            })
         })
         .await
-        .map_err(AppError::from_arc)
 }

@@ -190,7 +190,7 @@ async fn fetch_company_brief(
     state: &AppState,
     com_uid: u64,
 ) -> AppResult<(String, String)> {
-    let row: Option<(Option<String>, Option<String>)> = sqlx::query_as(
+    let row: Option<(Option<String>, Option<String>)> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
         "SELECT name, logo FROM phpyun_company WHERE uid = ? LIMIT 1",
     )
     .bind(com_uid)

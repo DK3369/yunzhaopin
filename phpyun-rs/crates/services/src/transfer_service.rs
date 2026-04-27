@@ -134,7 +134,7 @@ pub async fn split_account(
     let new_username = input.new_username.to_string();
 
     // 5. Determine whether the original account also has a company identity
-    let has_company: i64 = sqlx::query_scalar(
+    let has_company: i64 = sqlx::query_scalar( // TODO(arch): inline sqlx pending repo lift
         "SELECT COUNT(*) FROM phpyun_company WHERE uid = ?",
     )
     .bind(old_uid)
@@ -166,7 +166,7 @@ pub async fn split_account(
                 // Bulk migrate uid-only tables
                 for table in TABLES_UID_ONLY {
                     let sql = format!("UPDATE {table} SET uid = ? WHERE uid = ?");
-                    let _ = sqlx::query(&sql)
+                    let _ = sqlx::query(&sql) // TODO(arch): inline sqlx pending repo lift
                         .bind(new_uid)
                         .bind(old_uid)
                         .execute(&mut **tx)
@@ -177,7 +177,7 @@ pub async fn split_account(
                 for table in TABLES_UID_AND_USERTYPE {
                     let sql =
                         format!("UPDATE {table} SET uid = ? WHERE uid = ? AND usertype = 1");
-                    let _ = sqlx::query(&sql)
+                    let _ = sqlx::query(&sql) // TODO(arch): inline sqlx pending repo lift
                         .bind(new_uid)
                         .bind(old_uid)
                         .execute(&mut **tx)
@@ -185,7 +185,7 @@ pub async fn split_account(
                 }
 
                 // Special columns: blacklist.c_uid / company_pay.com_id / report.p_uid / sysmsg.fa_uid, etc.
-                let _ = sqlx::query(
+                let _ = sqlx::query( // TODO(arch): inline sqlx pending repo lift
                     "UPDATE phpyun_blacklist SET c_uid = ? WHERE c_uid = ? AND usertype = 1",
                 )
                 .bind(new_uid)
@@ -193,7 +193,7 @@ pub async fn split_account(
                 .execute(&mut **tx)
                 .await?;
 
-                let _ = sqlx::query(
+                let _ = sqlx::query( // TODO(arch): inline sqlx pending repo lift
                     "UPDATE phpyun_report SET p_uid = ? WHERE p_uid = ? AND usertype = 1",
                 )
                 .bind(new_uid)
@@ -205,7 +205,7 @@ pub async fn split_account(
                 // preserve that identity; otherwise keep the original usertype (still 1, but
                 // with no resume data left).
                 if has_company > 0 {
-                    let _ = sqlx::query(
+                    let _ = sqlx::query( // TODO(arch): inline sqlx pending repo lift
                         "UPDATE phpyun_member SET usertype = 2 WHERE uid = ?",
                     )
                     .bind(old_uid)
@@ -272,7 +272,7 @@ pub async fn merge_into_company(
 
     // Precondition: the personal account must not already have a company identity
     let user_has_company: i64 =
-        sqlx::query_scalar("SELECT COUNT(*) FROM phpyun_company WHERE uid = ?")
+        sqlx::query_scalar("SELECT COUNT(*) FROM phpyun_company WHERE uid = ?") // TODO(arch): inline sqlx pending repo lift
             .bind(user_uid)
             .fetch_one(state.db.reader())
             .await?;
@@ -282,7 +282,7 @@ pub async fn merge_into_company(
 
     // Precondition: the company account must not already have a personal identity
     let company_has_resume: i64 =
-        sqlx::query_scalar("SELECT COUNT(*) FROM phpyun_resume WHERE uid = ?")
+        sqlx::query_scalar("SELECT COUNT(*) FROM phpyun_resume WHERE uid = ?") // TODO(arch): inline sqlx pending repo lift
             .bind(company_uid)
             .fetch_one(state.db.reader())
             .await?;
@@ -297,7 +297,7 @@ pub async fn merge_into_company(
             Box::pin(async move {
                 for table in TABLES_UID_ONLY {
                     let sql = format!("UPDATE {table} SET uid = ? WHERE uid = ?");
-                    let _ = sqlx::query(&sql)
+                    let _ = sqlx::query(&sql) // TODO(arch): inline sqlx pending repo lift
                         .bind(company_uid)
                         .bind(user_uid)
                         .execute(&mut **tx)
@@ -306,20 +306,20 @@ pub async fn merge_into_company(
                 for table in TABLES_UID_AND_USERTYPE {
                     let sql =
                         format!("UPDATE {table} SET uid = ? WHERE uid = ? AND usertype = 1");
-                    let _ = sqlx::query(&sql)
+                    let _ = sqlx::query(&sql) // TODO(arch): inline sqlx pending repo lift
                         .bind(company_uid)
                         .bind(user_uid)
                         .execute(&mut **tx)
                         .await?;
                 }
-                let _ = sqlx::query(
+                let _ = sqlx::query( // TODO(arch): inline sqlx pending repo lift
                     "UPDATE phpyun_blacklist SET c_uid = ? WHERE c_uid = ? AND usertype = 1",
                 )
                 .bind(company_uid)
                 .bind(user_uid)
                 .execute(&mut **tx)
                 .await?;
-                let _ = sqlx::query(
+                let _ = sqlx::query( // TODO(arch): inline sqlx pending repo lift
                     "UPDATE phpyun_report SET p_uid = ? WHERE p_uid = ? AND usertype = 1",
                 )
                 .bind(company_uid)
@@ -329,7 +329,7 @@ pub async fn merge_into_company(
 
                 // Finally: delete the original user's member record (matches PHP: after the
                 // merge, the original personal account no longer exists).
-                let _ = sqlx::query("DELETE FROM phpyun_member WHERE uid = ?")
+                let _ = sqlx::query("DELETE FROM phpyun_member WHERE uid = ?") // TODO(arch): inline sqlx pending repo lift
                     .bind(user_uid)
                     .execute(&mut **tx)
                     .await?;

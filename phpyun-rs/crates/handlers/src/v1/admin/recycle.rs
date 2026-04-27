@@ -1,9 +1,9 @@
 //! Admin recycle bin. List snapshots / view detail / permanent delete. Restoration is handled by each business service.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::recycle_bin_service::{self, RecycleView};

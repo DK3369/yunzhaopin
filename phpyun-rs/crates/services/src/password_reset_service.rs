@@ -254,7 +254,7 @@ pub async fn submit_appeal(
 
     let reader = state.db.reader();
     // Try username → email → mobile (PHPYun matches only username; we relax this).
-    let row: Option<(u64,)> = sqlx::query_as(
+    let row: Option<(u64,)> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
         "SELECT CAST(uid AS UNSIGNED) FROM phpyun_member \
          WHERE username = ? OR email = ? OR moblie = ? LIMIT 1",
     )
@@ -277,7 +277,7 @@ pub async fn submit_appeal(
     }
 
     let now = phpyun_core::clock::now_ts();
-    let res = sqlx::query(
+    let res = sqlx::query( // TODO(arch): inline sqlx pending repo lift
         "UPDATE phpyun_member \
             SET appeal = ?, appealtime = ?, appealstate = 1 \
           WHERE uid = ?",

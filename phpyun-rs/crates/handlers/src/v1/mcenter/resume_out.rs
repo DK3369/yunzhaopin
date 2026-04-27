@@ -8,14 +8,15 @@
 use axum::{
     extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{json, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::resume_out_service::{self, Limits, OutInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{IdsBody};
+use phpyun_core::dto::{CreatedId, IdsBody};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -24,12 +25,6 @@ pub fn routes() -> Router<AppState> {
         .route("/resume-outbox/delete", post(delete_many))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct OutView {
@@ -72,12 +67,7 @@ impl From<phpyun_models::resume_out::entity::ResumeOut> for OutView {
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<OutView>>> {
     let r = resume_out_service::list_mine(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(OutView::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -102,11 +92,6 @@ pub struct SendForm {
     pub interval_secs: i64,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct SendCreated {
-    pub id: u64,
-}
-
 #[utoipa::path(
     post,
     path = "/v1/mcenter/resume-outbox",
@@ -114,7 +99,7 @@ pub struct SendCreated {
     security(("bearer" = [])),
     request_body = SendForm,
     responses(
-        (status = 200, description = "ok", body = SendCreated),
+        (status = 200, description = "ok", body = CreatedId),
         (status = 400, description = "daily_max=0 disabled / invalid email"),
         (status = 429, description = "Daily quota exhausted / interval too short"),
     )
@@ -124,7 +109,7 @@ pub async fn send(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<SendForm>,
-) -> AppResult<ApiJson<SendCreated>> {
+) -> AppResult<ApiJson<CreatedId>> {
     let input = OutInput {
         resume_id: f.resume_id,
         email: &f.email,
@@ -137,7 +122,7 @@ pub async fn send(
         interval_secs: f.interval_secs,
     };
     let r = resume_out_service::send(&state, &user, &input, &limits, &ip).await?;
-    Ok(ApiJson(SendCreated { id: r.id }))
+    Ok(ApiJson(CreatedId { id: r.id }))
 }
 
 #[utoipa::path(

@@ -73,7 +73,7 @@ async fn lookup_usernames(
         "SELECT CAST(uid AS UNSIGNED) AS uid, COALESCE(username, '') AS username \
            FROM phpyun_member WHERE uid IN ({placeholders})"
     );
-    let mut q = sqlx::query_as::<_, (u64, String)>(&sql);
+    let mut q = sqlx::query_as::<_, (u64, String)>(&sql); // TODO(arch): inline sqlx pending repo lift
     for id in uids {
         q = q.bind(*id);
     }

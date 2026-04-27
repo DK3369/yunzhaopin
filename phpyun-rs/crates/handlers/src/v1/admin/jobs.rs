@@ -1,13 +1,13 @@
 //! Job review (admin).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
+use phpyun_core::{dto::BatchResult, ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::admin_service;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
@@ -92,12 +92,6 @@ pub struct BatchStateForm {
     pub ids: Vec<u64>,
     #[validate(range(min = 1, max = 2))]
     pub state: i32,
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct BatchResult {
-    pub requested: usize,
-    pub affected: u64,
 }
 
 /// Batch review jobs

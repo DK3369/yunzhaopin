@@ -30,6 +30,10 @@ pub struct AuthenticatedUser {
     pub usertype: u8,
     pub did: u32,
     pub jti: String,
+    /// Token issued-at timestamp (seconds). Used by `pw_epoch` staleness
+    /// re-checks at the service layer (defence-in-depth on top of the
+    /// extractor's own check).
+    pub iat: i64,
     /// Access-token expiration timestamp (seconds); used to compute the precise
     /// TTL on revocation.
     pub exp: i64,
@@ -122,6 +126,7 @@ impl FromRequestParts<AppState> for AuthenticatedUser {
             usertype: claims.usertype,
             did: claims.did,
             jti: claims.jti,
+            iat: claims.iat,
             exp: claims.exp,
         })
     }
@@ -252,8 +257,6 @@ pub struct PaginationRaw {
     pub page: u32,
     #[serde(default = "default_page_size")]
     pub page_size: u32,
-    #[serde(default)]
-    pub sort: Option<String>,
 }
 
 fn default_page() -> u32 { 1 }

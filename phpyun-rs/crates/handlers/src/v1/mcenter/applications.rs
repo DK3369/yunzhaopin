@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 use phpyun_core::dto::{IdBody};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -32,14 +33,6 @@ pub struct ApplicationsQuery {
     pub invited_only: Option<bool>,
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 /// Application record item — full 11 columns of phpyun_userid_job + formatted timestamps + derived unread/invited booleans.
 #[derive(Debug, Serialize, ToSchema)]
@@ -112,12 +105,7 @@ pub async fn list_received(
         invited_only: q.invited_only,
     };
     let r = apply_service::list_for_company(&state, &user, filter, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(ApplicantSummary::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Mark as read (idempotent)

@@ -1,7 +1,7 @@
 //! Recommendations (matching PHPYun `finder.model.php`).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };

@@ -12,17 +12,12 @@ use axum::{
 use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use serde::Serialize;
 use utoipa::ToSchema;
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/entrusts", post(list_for_headhunter))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct EntrustedSeekerItem {
@@ -52,35 +47,9 @@ pub async fn list_for_headhunter(
     // user and just return their inbound bindings. Callers who aren't lt
     // members will simply see an empty list.
     let db = state.db.reader();
-    let (total, rows): (Result<u64, sqlx::Error>, Result<Vec<phpyun_models::entrust::entity::Entrust>, sqlx::Error>) = tokio::join!(
-        async {
-            let (n,): (i64,) = sqlx::query_as(
-                "SELECT COUNT(*) FROM phpyun_entrust WHERE lt_uid = ?",
-            )
-            .bind(user.uid)
-            .fetch_one(db)
-            .await?;
-            Ok(n.max(0) as u64)
-        },
-        async {
-            sqlx::query_as::<_, phpyun_models::entrust::entity::Entrust>(
-                "SELECT
-                    CAST(id AS UNSIGNED) AS id,
-                    CAST(uid AS UNSIGNED) AS uid,
-                    CAST(COALESCE(lt_uid, 0) AS UNSIGNED) AS lt_uid,
-                    COALESCE(datetime, 0) AS datetime,
-                    COALESCE(remind_status, 0) AS remind_status
-                 FROM phpyun_entrust
-                 WHERE lt_uid = ?
-                 ORDER BY datetime DESC, id DESC
-                 LIMIT ? OFFSET ?",
-            )
-            .bind(user.uid)
-            .bind(page.limit)
-            .bind(page.offset)
-            .fetch_all(db)
-            .await
-        }
+    let (total, rows) = tokio::join!(
+        phpyun_models::entrust::repo::count_by_lt_uid(db, user.uid),
+        phpyun_models::entrust::repo::list_by_lt_uid(db, user.uid, page.offset, page.limit),
     );
 
     let items: Vec<EntrustedSeekerItem> = rows

@@ -1,15 +1,16 @@
 //! Feedback queue (admin).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };
-use phpyun_core::{dto::StatusFilterBody, ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
+use phpyun_core::{dto::{BatchResult, StatusFilterBody}, ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::admin_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -18,12 +19,6 @@ pub fn routes() -> Router<AppState> {
         .route("/feedback/batch/status", post(batch_set_status))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 fn fb_status_name(s: i32) -> &'static str {
     match s { 0 => "pending", 1 => "processing", 2 => "resolved", 3 => "closed", _ => "unknown" }
@@ -77,12 +72,7 @@ pub async fn list(
 ) -> AppResult<ApiJson<Paged<AdminFeedbackItem>>> {
     user.require_admin()?;
     let r = admin_service::list_feedback(&state, q.status, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(AdminFeedbackItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -117,12 +107,6 @@ pub struct BatchStatusForm {
     pub ids: Vec<u64>,
     #[validate(range(min = 1, max = 1))]
     pub status: i32,
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct BatchResult {
-    pub requested: usize,
-    pub affected: u64,
 }
 
 /// Batch mark as resolved

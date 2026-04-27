@@ -1,15 +1,16 @@
 //! Report queue (admin).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };
-use phpyun_core::{dto::StatusFilterBody, ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
+use phpyun_core::{dto::{BatchResult, StatusFilterBody}, ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::admin_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::utils::{fmt_dt, review_status_name as report_status_name};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -18,19 +19,9 @@ pub fn routes() -> Router<AppState> {
         .route("/reports/batch/status", post(batch_set_status))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 fn report_kind_name(k: i32) -> &'static str {
     match k { 1 => "job", 2 => "company", 3 => "resume", 4 => "article", 5 => "user", _ => "unknown" }
-}
-
-fn report_status_name(s: i32) -> &'static str {
-    match s { 0 => "pending", 1 => "approved", 2 => "rejected", _ => "unknown" }
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -83,12 +74,7 @@ pub async fn list(
 ) -> AppResult<ApiJson<Paged<AdminReportItem>>> {
     user.require_admin()?;
     let r = admin_service::list_reports(&state, q.status, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(AdminReportItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -123,12 +109,6 @@ pub struct BatchStatusForm {
     pub ids: Vec<u64>,
     #[validate(range(min = 1, max = 2))]
     pub status: i32,
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct BatchResult {
-    pub requested: usize,
-    pub affected: u64,
 }
 
 /// Batch process reports

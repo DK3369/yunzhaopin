@@ -12,6 +12,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
 use phpyun_core::dto::{CreatedId, IdBody};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -23,14 +24,6 @@ pub fn routes() -> Router<AppState> {
         .route("/company/interviews/cancel", post(cancel))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 fn interview_status_name(s: i32) -> &'static str {
     match s {
@@ -102,12 +95,7 @@ pub async fn list_mine(
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<InterviewItem>>> {
     let r = interview_service::list_mine(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(InterviewItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Accept interview
@@ -212,12 +200,7 @@ pub async fn list_by_company(
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<InterviewItem>>> {
     let r = interview_service::list_by_company(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(InterviewItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Employer cancels an interview

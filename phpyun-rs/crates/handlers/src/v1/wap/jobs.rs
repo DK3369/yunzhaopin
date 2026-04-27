@@ -3,7 +3,7 @@
 use axum::{
     extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{json, ApiJson, AppResult, AppState, ClientIp, MaybeUser, Paged, Pagination, ValidatedJson};
 use validator::Validate;
@@ -12,7 +12,8 @@ use phpyun_services::job_service::{self, JobSearch};
 use phpyun_services::view_service::{self, KIND_JOB};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
-use phpyun_core::dto::{IdBody, UidBody};
+use phpyun_core::dto::{HitsResp, IdBody, UidBody};
+use phpyun_core::utils::{fmt_ts};
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct SimilarBody {
@@ -36,14 +37,6 @@ pub struct TelClickBodyFull {
 }
 
 /// UNIX timestamp -> local time string. `ts<=0` returns an empty string (aligned with PHPYun `date('Y-m-d H:i', $ts)`).
-fn fmt_ts(ts: i64, pattern: &str) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format(pattern).to_string())
-        .unwrap_or_default()
-}
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -304,7 +297,7 @@ pub async fn job_detail(
     let msg_list: Vec<json::Value> = {
         let rows: Vec<(
             i64, i64, Option<String>, Option<String>, Option<String>, i64, i64,
-        )> = sqlx::query_as(
+        )> = sqlx::query_as( // TODO(arch): job_msg::repo::list_public_for_job filters by `type` — add a no-type-filter variant for job-detail page
             "SELECT id, CAST(COALESCE(uid,0) AS SIGNED), username, content, reply, \
                     CAST(COALESCE(datetime,0) AS SIGNED), CAST(COALESCE(reply_time,0) AS SIGNED) \
              FROM phpyun_msg \
@@ -332,42 +325,33 @@ pub async fn job_detail(
             .collect()
     };
 
-    // --- Current user context (4 parallel counter queries) ---
+    // --- Current user context (4 parallel checks) ---
+    // TODO(arch): `phpyun_report` (p_uid/c_uid/eid) and `phpyun_yqmb`
+    // (uid/did/status) on the legacy DB don't match the columns the current
+    // `report::repo` and `invite::repo` model. Until those repos are aligned
+    // with the live schema, keep the raw queries here.
     let (fav_job, userid_job, report_job, invite_job) = if let Some(u) = user.as_ref() {
         let db = state.db.reader();
-        let uid = u.uid as i64;
-        let jid = id as i64;
         let com_id = d.job.uid as i64;
-        let fav_fut = sqlx::query_as::<_, (i64,)>(
-            "SELECT COUNT(*) FROM phpyun_fav_job WHERE uid = ? AND job_id = ? AND type = 1",
-        )
-        .bind(uid)
-        .bind(jid)
-        .fetch_one(db);
-        let apply_fut = sqlx::query_as::<_, (i64,)>(
-            "SELECT COUNT(*) FROM phpyun_userid_job \
-             WHERE uid = ? AND job_id = ? AND isdel = 9",
-        )
-        .bind(uid)
-        .bind(jid)
-        .fetch_one(db);
-        let report_fut = sqlx::query_as::<_, (i64,)>(
+        let fav_fut = phpyun_models::collect::repo::exists_with_type(db, u.uid, id, 1);
+        let apply_fut = phpyun_models::apply::repo::find_by_uid_job(db, u.uid, id);
+        let report_fut = sqlx::query_as::<_, (i64,)>( // TODO(arch): align report::repo with legacy phpyun_report (p_uid/c_uid/eid) schema
             "SELECT COUNT(*) FROM phpyun_report WHERE p_uid = ? AND eid = ? AND c_uid = ?",
         )
-        .bind(uid)
-        .bind(jid)
+        .bind(u.uid as i64)
+        .bind(id as i64)
         .bind(com_id)
         .fetch_one(db);
-        let invite_fut = sqlx::query_as::<_, (i64,)>(
+        let invite_fut = sqlx::query_as::<_, (i64,)>( // TODO(arch): align invite::repo with legacy phpyun_yqmb (uid/did/status) schema
             "SELECT COUNT(*) FROM phpyun_yqmb WHERE uid = ? AND did = ? AND status != 0",
         )
         .bind(com_id)
-        .bind(uid)
+        .bind(u.uid as i64)
         .fetch_one(db);
         let (f, a, r, i) = tokio::join!(fav_fut, apply_fut, report_fut, invite_fut);
         (
-            f.map(|(n,)| n as i32).unwrap_or(0),
-            a.map(|(n,)| n as i32).unwrap_or(0),
+            i32::from(f.unwrap_or(false)),
+            i32::from(a.unwrap_or(None).is_some()),
             r.map(|(n,)| n as i32).unwrap_or(0),
             i.map(|(n,)| n as i32).unwrap_or(0),
         )
@@ -607,27 +591,18 @@ pub async fn share_text(
     ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<JobShareText>> {
     let id = b.id;
-    let row: Option<(u64, String, String, i32, i32, i32, i32)> = sqlx::query_as(
-        "SELECT \
-            CAST(id AS UNSIGNED), \
-            COALESCE(name, ''), \
-            COALESCE(com_name, ''), \
-            CAST(COALESCE(minsalary, 0) AS SIGNED), \
-            CAST(COALESCE(maxsalary, 0) AS SIGNED), \
-            CAST(COALESCE(provinceid, 0) AS SIGNED), \
-            CAST(COALESCE(edu, 0) AS SIGNED) \
-         FROM phpyun_company_job \
-         WHERE id = ? AND state = 1 AND status = 0 AND r_status = 1 \
-         LIMIT 1",
-    )
-    .bind(id)
-    .fetch_optional(state.db.reader())
-    .await?;
-
-    let (jid, job_name, com_name, minsalary, maxsalary, prov_id, edu_id) = row
+    let job = phpyun_models::job::repo::find_public_by_id(state.db.reader(), id)
+        .await?
         .ok_or_else(|| {
             phpyun_core::AppError::new(phpyun_core::InfraError::InvalidParam("job_not_found".into()))
         })?;
+
+    let jid = job.id;
+    let job_name = job.name.clone();
+    let com_name = job.com_name.clone().unwrap_or_default();
+    let minsalary = job.minsalary;
+    let maxsalary = job.maxsalary;
+    let prov_id = job.provinceid;
 
     let dicts = phpyun_services::dict_service::get(&state).await?;
     // Salary: derive from the explicit numeric range. PHPYun's legacy `salary`
@@ -640,9 +615,6 @@ pub async fn share_text(
         String::new()
     };
     let city = dicts.city(prov_id).to_string();
-    // Edu id → raw number; client renders the localized label. Keeps this
-    // endpoint dictionary-agnostic.
-    let _ = edu_id;
 
     let mut parts = Vec::with_capacity(2);
     if !salary.is_empty() {
@@ -684,11 +656,6 @@ pub async fn share_text(
 
 // ==================== Job hits counter ====================
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct JobHitsResp {
-    pub hits: u64,
-}
-
 /// Bump and return the new job-hit count. Counterpart of PHP
 /// `wap/job::GetHits_action` (which echoes a `document.write(N)` snippet;
 /// we return clean JSON). The hit goes to `phpyun_company_job.jobhits`.
@@ -697,14 +664,14 @@ pub struct JobHitsResp {
     path = "/v1/wap/jobs/hits",
     tag = "wap",
     request_body = IdBody,
-    responses((status = 200, description = "ok", body = JobHitsResp))
+    responses((status = 200, description = "ok", body = HitsResp))
 )]
 pub async fn bump_jobhits(
     State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<JobHitsResp>> {
+) -> AppResult<ApiJson<HitsResp>> {
     let hits = phpyun_models::job::repo::bump_and_get_jobhits(state.db.pool(), b.id).await?;
-    Ok(ApiJson(JobHitsResp { hits }))
+    Ok(ApiJson(HitsResp { hits }))
 }
 
 // ==================== Job contact reveal (getJobLink) ====================

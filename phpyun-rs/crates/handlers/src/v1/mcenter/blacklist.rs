@@ -3,14 +3,15 @@
 use axum::{
     extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::blacklist_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{UidBody};
+use phpyun_core::dto::{ClearResult, UidBody};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -19,12 +20,6 @@ pub fn routes() -> Router<AppState> {
         .route("/blacklist/remove", post(remove))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct BlackItem {
@@ -71,12 +66,7 @@ pub struct AddForm {
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<BlackItem>>> {
     let r = blacklist_service::list(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(BlackItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Block
@@ -113,11 +103,6 @@ pub async fn remove(
 ) -> AppResult<ApiOk> {
     blacklist_service::remove(&state, &user, b.uid).await?;
     Ok(ApiOk("removed"))
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct ClearResult {
-    pub removed: u64,
 }
 
 /// Clear my entire blacklist

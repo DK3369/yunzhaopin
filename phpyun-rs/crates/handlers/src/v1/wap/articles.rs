@@ -1,7 +1,7 @@
 //! Public article / news browsing. Aligned with PHPYun `wap/article`.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };
@@ -11,7 +11,8 @@ use phpyun_models::article::repo::ArticleFilter;
 use phpyun_services::article_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
-use phpyun_core::dto::{IdBody};
+use phpyun_core::dto::{HitsResp, IdBody};
+use phpyun_core::utils::{fmt_date, pic_n_str as pic_n};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -37,20 +38,6 @@ fn default_did() -> u32 {
 }
 
 /// `unix → Y-m-d` (used by PHP list rendering)
-fn fmt_date(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d").to_string())
-        .unwrap_or_default()
-}
-
-fn pic_n(state: &AppState, raw: &str) -> String {
-    state
-        .storage
-        .normalize_legacy_url(raw, state.config.web_base_url.as_deref())
-}
 
 /// Article list item — aligned with all fields output by PHP `article.model::getList`.
 #[derive(Debug, Serialize, ToSchema)]
@@ -275,11 +262,6 @@ pub async fn article_detail(State(state): State<AppState>,
     Ok(ApiJson(ArticleDetail::from_with_ctx(a, &state)))
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct ArticleHitsResp {
-    pub hits: u64,
-}
-
 /// Bump and return the new hit count. Counterpart of PHP
 /// `wap/article::GetHits_action` (PHP echoes a `document.write(...)` snippet;
 /// Rust returns clean JSON).
@@ -287,12 +269,12 @@ pub struct ArticleHitsResp {
     path = "/v1/wap/articles/hits",
     tag = "wap",
     request_body = IdBody,
-    responses((status = 200, description = "ok", body = ArticleHitsResp))
+    responses((status = 200, description = "ok", body = HitsResp))
 )]
 pub async fn bump_hits(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<ArticleHitsResp>> {
+    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<HitsResp>> {
     let id = b.id;
     let hits = phpyun_models::article::repo::bump_and_get_hits(state.db.pool(), id).await?;
-    Ok(ApiJson(ArticleHitsResp { hits }))
+    Ok(ApiJson(HitsResp { hits }))
 }
 

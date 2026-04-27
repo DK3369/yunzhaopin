@@ -2,9 +2,9 @@
 //! `wap/part::collect_action` / `wap/part::apply_action`).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, MaybeUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::hot_search_service;
@@ -12,7 +12,8 @@ use phpyun_services::part_service::{self, PartSearch};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{IdBody};
+use phpyun_core::dto::{CreatedId, IdBody};
+use phpyun_core::utils::{fmt_date, fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -120,23 +121,7 @@ pub fn part_summary_from_dict(
     }
 }
 
-fn fmt_date(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d").to_string())
-        .unwrap_or_default()
-}
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 /// Public part-time list
 #[utoipa::path(
@@ -297,24 +282,14 @@ pub async fn part_detail(State(state): State<AppState>,
     let db = state.db.reader();
     let company =
         phpyun_models::company::repo::find_by_uid(db, j.uid).await.ok().flatten();
-    let login_date = {
-        let row: Option<(i64,)> = sqlx::query_as(
-            "SELECT CAST(COALESCE(login_date, 0) AS SIGNED) FROM phpyun_member WHERE uid = ? LIMIT 1",
-        )
-        .bind(j.uid as i64)
-        .fetch_optional(db)
+    let login_date = phpyun_models::user::repo::login_date(db, j.uid)
         .await
-        .unwrap_or(None);
-        row.map(|(t,)| t).unwrap_or(0)
-    };
+        .unwrap_or(0);
 
     // Hits +1 (fire-and-forget)
     let pool = state.db.pool().clone();
     phpyun_core::background::spawn_best_effort("part.hits", async move {
-        let _ = sqlx::query("UPDATE phpyun_partjob SET hits = hits + 1 WHERE id = ?")
-            .bind(id as i64)
-            .execute(&pool)
-            .await;
+        let _ = phpyun_models::part::repo::incr_hits(&pool, id).await;
     });
 
     let (com_logo, com_shortname, com_hy, com_mun, com_rating, com_rating_name,
@@ -402,11 +377,6 @@ pub struct CollectForm {
     pub com_id: Option<u64>,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CollectCreated {
-    pub id: u64,
-}
-
 /// Favorite a part-time job (job seeker)
 #[utoipa::path(post,
     path = "/v1/wap/parts/collect",
@@ -414,7 +384,7 @@ pub struct CollectCreated {
     security(("bearer" = [])),
     request_body = CollectForm,
     responses(
-        (status = 200, description = "ok", body = CollectCreated),
+        (status = 200, description = "ok", body = CreatedId),
         (status = 403, description = "Role mismatch"),
         (status = 409, description = "Already favorited"),
     )
@@ -422,20 +392,18 @@ pub struct CollectCreated {
 pub async fn collect(State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    ValidatedJson(f): ValidatedJson<CollectForm>) -> AppResult<ApiJson<CollectCreated>> {
+    ValidatedJson(f): ValidatedJson<CollectForm>) -> AppResult<ApiJson<CreatedId>> {
     let id = f.id;
     let com = f.com_id.unwrap_or(0);
     let id = part_service::collect(&state, &user, id, com, &ip).await?;
-    Ok(ApiJson(CollectCreated { id }))
+    Ok(ApiJson(CreatedId { id }))
 }
 
 // ==================== apply ====================
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct ApplyCreated {
-    pub id: u64,
-    pub job_id: u64,
-}
+/// Single source of truth for "apply succeeded" response — reuses the mcenter
+/// envelope so wap/parts/apply and mcenter/applications return the same shape.
+pub type ApplyCreated = crate::v1::mcenter::apply::ApplyCreated;
 
 /// Apply for a part-time job (job seeker)
 #[utoipa::path(post,

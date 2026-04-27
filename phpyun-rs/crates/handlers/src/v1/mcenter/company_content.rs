@@ -16,6 +16,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 use phpyun_core::dto::{IdsBody};
+use phpyun_core::utils::{fmt_dt, review_status_name as content_status_name};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -117,12 +118,7 @@ pub async fn addr_list(
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<AddressView>>> {
     let r = company_address_service::list_mine(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(AddressView::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 pub async fn addr_create(
@@ -191,23 +187,6 @@ pub async fn addr_delete(
 
 // ==================== News / products ====================
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
-
-fn content_status_name(s: i32) -> &'static str {
-    match s {
-        0 => "pending",
-        1 => "approved",
-        2 => "rejected",
-        _ => "unknown",
-    }
-}
 
 /// Company news/product item — full 10 columns of phpyun_company_news / phpyun_company_product + formatted timestamps + status name.
 #[derive(Debug, Serialize, ToSchema)]
@@ -291,12 +270,7 @@ pub async fn content_list(
         page,
     )
     .await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(ContentView::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 pub async fn content_get(
@@ -442,12 +416,7 @@ pub async fn gallery_list(
 ) -> AppResult<ApiJson<Paged<GalleryView>>> {
     let kind = parse_gallery_kind(&b.kind)?;
     let r = gallery_service::list_mine(&state, &user, kind, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(GalleryView::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]

@@ -5,7 +5,7 @@ $_CACHE['apps'] = array (
     'appid' => '1',
     'type' => 'DISCUZX',
     'name' => 'Discuz! Board',
-    'url' => 'http://x.ghzpb.com',
+    'url' => 'http://x.ov6.com',
     'ip' => '',
     'viewprourl' => '',
     'apifilename' => 'uc.php',
@@ -22,8 +22,8 @@ $_CACHE['apps'] = array (
   array (
     'appid' => '3',
     'type' => 'OTHER',
-    'name' => '广海招聘宝',
-    'url' => 'http://www.ghzpb.com',
+    'name' => '招聘宝',
+    'url' => 'http://www.ov6.com',
     'ip' => '',
     'viewprourl' => '',
     'apifilename' => 'uc/uc.php',
@@ -36,5 +36,5 @@ $_CACHE['apps'] = array (
     ),
     'recvnote' => '1',
   ),
-  'UC_API' => 'http://x.ghzpb.com/uc_server',
+  'UC_API' => 'http://x.ov6.com/uc_server',
 );

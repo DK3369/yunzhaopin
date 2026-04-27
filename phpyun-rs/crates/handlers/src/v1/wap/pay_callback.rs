@@ -16,9 +16,9 @@ use axum::{
     Router,
 };
 use phpyun_core::error::InfraError;
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, ValidatedJson};
+use phpyun_core::{dto::OkResp, ApiJson, AppError, AppResult, AppState, ValidatedJson};
 use phpyun_services::vip_service;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
 
@@ -34,11 +34,6 @@ pub struct CallbackForm {
     pub pay_tx_id: String,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct CallbackResult {
-    pub ok: bool,
-}
-
 /// Gateway callback: authenticate via the shared secret in the `X-Pay-Token` header -> mark-paid
 #[utoipa::path(
     post,
@@ -46,7 +41,7 @@ pub struct CallbackResult {
     tag = "wap",
     request_body = CallbackForm,
     responses(
-        (status = 200, description = "ok", body = CallbackResult),
+        (status = 200, description = "ok", body = OkResp),
         (status = 401, description = "bad token"),
         (status = 503, description = "server not configured")
     )
@@ -55,7 +50,7 @@ pub async fn callback(
     State(state): State<AppState>,
     headers: HeaderMap,
     ValidatedJson(f): ValidatedJson<CallbackForm>,
-) -> AppResult<ApiJson<CallbackResult>> {
+) -> AppResult<ApiJson<OkResp>> {
     // 1. The server must have a token configured; if not, return 503 (avoid running the endpoint unprotected)
     let expected = state
         .config
@@ -85,7 +80,7 @@ pub async fn callback(
 
     // 3. Mark as paid
     vip_service::mark_paid(&state, &f.order_no, &f.pay_tx_id).await?;
-    Ok(ApiJson(CallbackResult { ok: true }))
+    Ok(ApiJson(OkResp { ok: true }))
 }
 
 fn constant_time_eq(a: &[u8], b: &[u8]) -> bool {

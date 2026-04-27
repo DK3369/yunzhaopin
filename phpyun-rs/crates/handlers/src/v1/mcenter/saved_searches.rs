@@ -1,9 +1,9 @@
 //! Saved-search subscription management.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::json;
 use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
@@ -12,6 +12,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
 use phpyun_core::dto::{CreatedId, IdBody};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -37,12 +38,6 @@ pub struct SavedItem {
     pub updated_at_n: String,
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 impl From<phpyun_models::saved_search::entity::SavedSearch> for SavedItem {
     fn from(s: phpyun_models::saved_search::entity::SavedSearch) -> Self {
@@ -110,12 +105,7 @@ pub struct NotifyForm {
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<SavedItem>>> {
     let r = saved_search_service::list(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(SavedItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Create a saved search

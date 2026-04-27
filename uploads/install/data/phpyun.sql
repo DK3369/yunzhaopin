@@ -521,6 +521,7 @@ CREATE TABLE `phpyun_city_class` (
   `keyid` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
   `letter` varchar(1) NOT NULL,
+  `code` int(3) NOT NULL COMMENT '手机号国家编码',
   `display` int(1) NOT NULL,
   `sitetype` int(2) NOT NULL,
   `sort` int(11) NOT NULL DEFAULT '0',

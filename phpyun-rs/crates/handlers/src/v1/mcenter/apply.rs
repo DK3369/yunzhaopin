@@ -12,6 +12,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 use phpyun_core::dto::{IdBody};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -60,14 +61,6 @@ pub async fn apply_to_job(
     }))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 /// My application item — full 11 columns of phpyun_userid_job + formatted timestamps + derived employer_viewed/invited booleans.
 #[derive(Debug, Serialize, ToSchema)]
@@ -139,12 +132,7 @@ pub async fn list_mine(
     ValidatedJson(q): ValidatedJson<MyAppliesQuery>,
 ) -> AppResult<ApiJson<Paged<MyApplySummary>>> {
     let r = apply_service::list_mine(&state, &user, q.state, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(MyApplySummary::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Withdraw an application

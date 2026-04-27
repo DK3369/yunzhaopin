@@ -3,9 +3,9 @@
 //! Aligned with PHPYun `member/com/comtpl` + `member/com/banner`.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{json, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::{company_banner_service, company_tpl_service};
@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
 use phpyun_core::dto::{IdBody, IdsBody};
+use phpyun_core::utils::{fmt_dt, pic_n};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -27,10 +28,6 @@ pub fn routes() -> Router<AppState> {
 }
 
 // ==================== Template ====================
-
-fn pic_n(state: &AppState, raw: Option<&str>) -> String {
-    state.storage.normalize_legacy_url(raw.unwrap_or(""), state.config.web_base_url.as_deref())
-}
 
 fn kind_name(k: i32) -> &'static str {
     match k { 1 => "integral", 2 => "balance", _ => "unknown" }
@@ -138,12 +135,6 @@ pub async fn tpl_apply(State(state): State<AppState>,
 
 // ==================== Banner ====================
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct BannerView {

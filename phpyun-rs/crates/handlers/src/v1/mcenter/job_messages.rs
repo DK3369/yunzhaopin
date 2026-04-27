@@ -5,7 +5,7 @@
 //! with the user-facing `/v1/wap/jobs/{id}/messages` write endpoint.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };
@@ -16,6 +16,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 use phpyun_core::dto::{IdBody};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -24,14 +25,6 @@ pub fn routes() -> Router<AppState> {
         .route("/job-messages/hide", post(hide))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct EmployerMsgItem {
@@ -96,12 +89,7 @@ pub async fn list(
     ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Paged<EmployerMsgItem>>> {
     let r = job_msg_service::list_for_employer(&state, &user, q.only_unanswered, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(EmployerMsgItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]

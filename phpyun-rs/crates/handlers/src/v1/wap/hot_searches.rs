@@ -10,6 +10,7 @@ use phpyun_services::hot_search_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/hot-searches", post(list))
@@ -32,12 +33,6 @@ fn default_limit() -> u64 {
     10
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 /// Hot search keyword item — all 5 columns of phpyun_hot_search + formatted timestamp.
 #[derive(Debug, Serialize, ToSchema)]

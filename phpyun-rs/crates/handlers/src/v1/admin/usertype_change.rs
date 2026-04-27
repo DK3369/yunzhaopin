@@ -1,7 +1,7 @@
 //! Admin: user-type switch request approvals (matching the PHPYun admin approval flow).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };

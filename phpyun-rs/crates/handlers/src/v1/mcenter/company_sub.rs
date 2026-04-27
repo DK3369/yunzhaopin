@@ -8,9 +8,9 @@
 //! module.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::company_sub_service::{self, NewsInput, NewsUpdateInput, ProductInput, ProductUpdateInput};
@@ -96,12 +96,7 @@ pub struct ProductPatch {
 ) -> AppResult<ApiJson<Paged<OwnProduct>>> {
     user.require_employer()?;
     let r = company_sub_service::list_own_products(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(OwnProduct::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Create product
@@ -212,12 +207,7 @@ pub async fn list_news(
 ) -> AppResult<ApiJson<Paged<OwnNews>>> {
     user.require_employer()?;
     let r = company_sub_service::list_own_news(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(OwnNews::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Create news

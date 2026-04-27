@@ -1,16 +1,17 @@
 //! Assessment submission + my history.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };
-use phpyun_core::{dto::IdBody, ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
+use phpyun_core::{dto::{CreatedId, IdBody}, ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::eval_service;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use utoipa::ToSchema;
 use validator::Validate;
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -67,12 +68,6 @@ pub async fn submit(State(state): State<AppState>,
     Ok(ApiJson(SubmitResult { log_id, score }))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 /// Assessment history item — all 6 columns of phpyun_eval_log + formatted timestamp.
 #[derive(Debug, Serialize, ToSchema)]
@@ -114,12 +109,7 @@ pub async fn list_logs(
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<LogItem>>> {
     let r = eval_service::list_my_logs(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(LogItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 // ==================== Leave a message on a paper ====================
@@ -134,11 +124,6 @@ pub struct PaperMessageForm {
     pub message: String,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct PaperMessageCreated {
-    pub id: u64,
-}
-
 /// Leave a public message on an assessment paper. Counterpart of PHP
 /// `evaluate/exampaper::message_action`. The list view lives at
 /// `GET /v1/wap/eval-papers/{id}/messages`.
@@ -147,11 +132,11 @@ pub struct PaperMessageCreated {
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = PaperMessageForm,
-    responses((status = 200, description = "ok", body = PaperMessageCreated))
+    responses((status = 200, description = "ok", body = CreatedId))
 )]
 pub async fn post_message(State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<PaperMessageForm>) -> AppResult<ApiJson<PaperMessageCreated>> {
+    ValidatedJson(f): ValidatedJson<PaperMessageForm>) -> AppResult<ApiJson<CreatedId>> {
     let id = f.id;
     let id_u32 = id as u32;
     let now = phpyun_core::clock::now_ts();
@@ -164,7 +149,7 @@ pub async fn post_message(State(state): State<AppState>,
         now,
     )
     .await?;
-    Ok(ApiJson(PaperMessageCreated { id: new_id }))
+    Ok(ApiJson(CreatedId { id: new_id }))
 }
 
 // ==================== Single eval log detail ====================

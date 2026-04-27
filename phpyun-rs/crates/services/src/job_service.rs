@@ -103,23 +103,12 @@ pub async fn get_detail(state: &AppState, id: u64) -> AppResult<JobDetailData> {
     let company = phpyun_models::company::repo::find_by_uid(db, job.uid).await?;
 
     // HR's last login time (read from phpyun_member)
-    let login_date = {
-        let row: Option<(i64,)> = sqlx::query_as(
-            "SELECT CAST(COALESCE(login_date, 0) AS SIGNED) FROM phpyun_member WHERE uid = ? LIMIT 1",
-        )
-        .bind(job.uid as i64)
-        .fetch_optional(db)
-        .await?;
-        row.map(|(t,)| t).unwrap_or(0)
-    };
+    let login_date = phpyun_models::user::repo::login_date(db, job.uid).await?;
 
     // Increment view counter (background task)
     let pool = state.db.pool().clone();
     phpyun_core::background::spawn_best_effort("job.hits", async move {
-        let _ = sqlx::query("UPDATE phpyun_company_job SET jobhits = jobhits + 1 WHERE id = ?")
-            .bind(id as i64)
-            .execute(&pool)
-            .await;
+        let _ = phpyun_models::job::repo::incr_jobhits(&pool, id).await;
     });
 
     let (com_logo, com_provinceid, com_cityid, com_mun, com_hy, com_rating, comqcode,

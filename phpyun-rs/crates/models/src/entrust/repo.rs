@@ -59,6 +59,40 @@ pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error
     Ok(n.max(0) as u64)
 }
 
+/// Headhunter side: paginated list of jobseekers who have entrusted this
+/// `lt_uid`, newest first.
+pub async fn list_by_lt_uid(
+    pool: &MySqlPool,
+    lt_uid: u64,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<Entrust>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {FIELDS} FROM phpyun_entrust
+          WHERE lt_uid = ?
+          ORDER BY datetime DESC, id DESC
+          LIMIT ? OFFSET ?"
+    );
+    sqlx::query_as::<_, Entrust>(&sql)
+        .bind(lt_uid)
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await
+}
+
+pub async fn count_by_lt_uid(
+    pool: &MySqlPool,
+    lt_uid: u64,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_entrust WHERE lt_uid = ?")
+            .bind(lt_uid)
+            .fetch_one(pool)
+            .await?;
+    Ok(n.max(0) as u64)
+}
+
 pub async fn insert(
     pool: &MySqlPool,
     uid: u64,

@@ -3,7 +3,7 @@
 use axum::{
     extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::i18n::{current_lang, t};
 use phpyun_core::{clock, ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
@@ -15,6 +15,7 @@ use phpyun_services::{resume_children_service, resume_service};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use phpyun_core::dto::{EidBody, UidBody};
+use phpyun_core::utils::{fmt_date, fmt_dt, pic_n as pic_n_local, mask_name_resume as mask_name};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -107,56 +108,12 @@ pub struct ResumeSummary {
     pub did: u64,
 }
 
-fn mask_name(name: &str, nametype: i32) -> String {
-    if nametype == 1 {
-        name.to_string()
-    } else {
-        // Masking: keep the first character, replace the rest with *
-        let mut out = String::new();
-        for (i, ch) in name.chars().enumerate() {
-            if i == 0 {
-                out.push(ch);
-            } else {
-                out.push('*');
-            }
-        }
-        if out.is_empty() {
-            "*".to_string()
-        } else {
-            out
-        }
-    }
-}
-
 fn age_from_birthday(b: &str) -> Option<u16> {
     let year: u16 = b.get(..4)?.parse().ok()?;
     Some(clock::now_year().saturating_sub(year))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
-fn fmt_date(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d").to_string())
-        .unwrap_or_default()
-}
-
-fn pic_n_local(state: &AppState, raw: Option<&str>) -> String {
-    state.storage.normalize_legacy_url(
-        raw.unwrap_or(""),
-        state.config.web_base_url.as_deref(),
-    )
-}
 
 impl ResumeSummary {
     pub fn from_with_dict(
@@ -612,16 +569,11 @@ pub async fn default_expect_by_uid(
     State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<UidBody>,
 ) -> AppResult<ApiJson<DefaultExpectResp>> {
-    let row: Option<(u64,)> = sqlx::query_as(
-        "SELECT CAST(COALESCE(def_job, 0) AS UNSIGNED) FROM phpyun_resume \
-           WHERE uid = ? AND COALESCE(r_status, 0) = 1 LIMIT 1",
-    )
-    .bind(b.uid)
-    .fetch_optional(state.db.reader())
-    .await?;
+    let default_eid =
+        phpyun_models::resume::repo::default_eid(state.db.reader(), b.uid).await?;
     Ok(ApiJson(DefaultExpectResp {
         uid: b.uid,
-        default_eid: row.map(|(n,)| n).unwrap_or(0),
+        default_eid,
     }))
 }
 

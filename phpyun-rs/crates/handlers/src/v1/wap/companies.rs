@@ -3,7 +3,7 @@
 use axum::{
     extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, AppResult, AppState, MaybeUser, Paged, Pagination, ValidatedJson};
 use validator::Validate;
@@ -242,27 +242,13 @@ pub async fn company_detail(
         view_service::record_async(&state, u.uid, KIND_COMPANY, uid);
     }
     // Number of currently open positions (PHP equivalent: `jobM->getJobNum(['uid'=>uid,'state'=>1,'status'=>0,'r_status'=>1])`)
-    let zp_num: u64 = {
-        let row: (i64,) = sqlx::query_as(
-            "SELECT COUNT(*) FROM phpyun_company_job \
-             WHERE uid = ? AND state = 1 AND status = 0 AND r_status = 1 \
-               AND (edate = 0 OR edate > UNIX_TIMESTAMP())",
-        )
-        .bind(uid as i64)
-        .fetch_one(state.db.reader())
+    let zp_num = phpyun_models::company::repo::count_open_jobs(state.db.reader(), uid)
         .await
-        .unwrap_or((0,));
-        row.0.max(0) as u64
-    };
-    // Bump hit counter (+1, fire-and-forget)
+        .unwrap_or(0);
+    // Bump hit + expoure counters (fire-and-forget — page renders even if write fails).
     let pool = state.db.pool().clone();
     phpyun_core::background::spawn_best_effort("company.hits", async move {
-        let _ = sqlx::query(
-            "UPDATE phpyun_company SET hits = hits + 1, expoure = expoure + 1 WHERE uid = ?",
-        )
-        .bind(uid as i64)
-        .execute(&pool)
-        .await;
+        let _ = phpyun_models::company::repo::incr_hits_and_expoure(&pool, uid).await;
     });
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let hy_n = dicts.industry(c.hy).to_string();
@@ -272,53 +258,33 @@ pub async fn company_detail(
     let city_two = dicts.city(c.cityid).to_string();
 
     // Company showcase items (phpyun_company_show, status=0 means active)
-    let show_items: Vec<CompanyShowItem> = {
-        let rows: Vec<(i64, Option<String>, Option<String>, Option<String>, i64, i64)> =
-            sqlx::query_as(
-                "SELECT id, title, picurl, body, \
-                        CAST(COALESCE(sort, 0) AS SIGNED), \
-                        CAST(COALESCE(ctime, 0) AS SIGNED) \
-                 FROM phpyun_company_show \
-                 WHERE uid = ? AND status = 0 \
-                 ORDER BY sort ASC, id ASC",
-            )
-            .bind(uid as i64)
-            .fetch_all(state.db.reader())
-            .await
-            .unwrap_or_default();
-        rows.into_iter()
-            .map(|(id, t, p, b, s, ct)| CompanyShowItem {
-                id: id as u64,
-                title: t.unwrap_or_default(),
-                picurl: p.unwrap_or_default(),
-                body: b.unwrap_or_default(),
-                sort: s as i32,
-                ctime: ct,
-            })
-            .collect()
-    };
+    let show_items: Vec<CompanyShowItem> = phpyun_models::company::repo::list_show_items(
+        state.db.reader(),
+        uid,
+    )
+    .await
+    .unwrap_or_default()
+    .into_iter()
+    .map(|r| CompanyShowItem {
+        id: r.id,
+        title: r.title.unwrap_or_default(),
+        picurl: r.picurl.unwrap_or_default(),
+        body: r.body.unwrap_or_default(),
+        sort: r.sort,
+        ctime: r.ctime,
+    })
+    .collect();
 
     // From the logged-in jobseeker's perspective: follow flag + number of applications
     let (isatn, userid_job) = if let Some(u) = user.as_ref() {
         let db = state.db.reader();
-        let uid_i = u.uid as i64;
-        let com_uid = uid as i64;
-        let atn_fut = sqlx::query_as::<_, (i64,)>(
-            "SELECT COUNT(*) FROM phpyun_atn WHERE uid = ? AND sc_uid = ?",
-        )
-        .bind(uid_i)
-        .bind(com_uid)
-        .fetch_one(db);
-        let apply_fut = sqlx::query_as::<_, (i64,)>(
-            "SELECT COUNT(*) FROM phpyun_userid_job WHERE uid = ? AND com_id = ? AND isdel = 9",
-        )
-        .bind(uid_i)
-        .bind(com_uid)
-        .fetch_one(db);
+        let atn_fut = phpyun_models::atn::repo::exists_pair(db, u.uid, uid);
+        let apply_fut =
+            phpyun_models::apply::repo::count_by_uid_to_company(db, u.uid, uid);
         let (a, b) = tokio::join!(atn_fut, apply_fut);
         (
-            a.map(|(n,)| if n > 0 { 1 } else { 0 }).unwrap_or(0),
-            b.map(|(n,)| n as i32).unwrap_or(0),
+            a.map(|x| if x { 1 } else { 0 }).unwrap_or(0),
+            b.map(|n| n as i32).unwrap_or(0),
         )
     } else {
         (0, 0)

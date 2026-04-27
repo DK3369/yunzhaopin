@@ -10,6 +10,7 @@ use phpyun_services::admin_dashboard_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -67,12 +68,6 @@ pub struct RecentQuery {
 }
 fn default_limit() -> u64 { 10 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 fn usertype_name(t: i32) -> &'static str {
     match t { 1 => "jobseeker", 2 => "company", 3 => "admin", _ => "unknown" }

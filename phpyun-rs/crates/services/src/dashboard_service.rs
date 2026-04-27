@@ -152,7 +152,7 @@ pub async fn year_report(
     user.require_employer()?;
     let db = state.db.reader();
 
-    let log_row: Option<(i32, i32, i32, i32, i32, i32, i32, i64)> = sqlx::query_as(
+    let log_row: Option<(i32, i32, i32, i32, i32, i32, i32, i64)> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
         "SELECT \
             CAST(COALESCE(login, 0) AS SIGNED), \
             CAST(COALESCE(job, 0) AS SIGNED), \
@@ -171,7 +171,7 @@ pub async fn year_report(
     let (login, job, lookjob, sqjob, lookresume, yq, nightwork, lastwork) =
         log_row.unwrap_or((0, 0, 0, 0, 0, 0, 0, 0));
 
-    let info_row: Option<(Option<String>, Option<String>, Option<String>)> = sqlx::query_as(
+    let info_row: Option<(Option<String>, Option<String>, Option<String>)> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
         "SELECT name, shortname, linkman FROM phpyun_company WHERE uid = ? LIMIT 1",
     )
     .bind(user.uid)

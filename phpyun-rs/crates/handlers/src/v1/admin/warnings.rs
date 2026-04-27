@@ -3,7 +3,7 @@
 use axum::{
     extract::{State},
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::warning_service::{self, WarnInput};
@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 use phpyun_core::dto::{CreatedId};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/warnings", post(issue))
@@ -23,12 +24,6 @@ pub struct ListQuery {
     pub kind: Option<i32>,
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 fn warn_kind_name(k: i32) -> &'static str {
     match k { 1 => "user", 2 => "company", 3 => "job", 4 => "resume", _ => "unknown" }
@@ -97,12 +92,7 @@ pub struct WarnForm {
 ) -> AppResult<ApiJson<Paged<WarningItem>>> {
     user.require_admin()?;
     let r = warning_service::admin_list(&state, q.kind, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(WarningItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Admin: issue a warning

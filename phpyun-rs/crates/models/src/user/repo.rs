@@ -135,6 +135,18 @@ pub async fn exists_email(pool: &MySqlPool, email: &str) -> Result<bool, sqlx::E
     Ok(row.is_some())
 }
 
+/// Last-login unix timestamp for a member, `0` if never logged in / not found.
+/// Used by detail pages to show "HR active N hours ago" hints.
+pub async fn login_date(pool: &MySqlPool, uid: u64) -> Result<i64, sqlx::Error> {
+    let row: Option<(i64,)> = sqlx::query_as(
+        "SELECT CAST(COALESCE(login_date, 0) AS SIGNED) FROM phpyun_member WHERE uid = ? LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(t,)| t).unwrap_or(0))
+}
+
 // ==================== Writes ====================
 
 /// Creates a new member and returns the uid. Fields are aligned with PHPYun's `userRegSave`.

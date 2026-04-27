@@ -1,7 +1,7 @@
 //! Job-fair reservation (login required).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };
@@ -10,7 +10,7 @@ use phpyun_services::zph_service::{self, ReserveInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{IdBody};
+use phpyun_core::dto::{CreatedId, IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -35,22 +35,17 @@ pub struct ReserveForm {
     pub moblie: String,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct ReservedId {
-    pub id: u64,
-}
-
 /// Reserve a job-fair slot
 #[utoipa::path(post,
     path = "/v1/mcenter/zph/reserve",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = ReserveForm,
-    responses((status = 200, description = "ok", body = ReservedId))
+    responses((status = 200, description = "ok", body = CreatedId))
 )]
 pub async fn reserve(State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<ReserveForm>) -> AppResult<ApiJson<ReservedId>> {
+    ValidatedJson(f): ValidatedJson<ReserveForm>) -> AppResult<ApiJson<CreatedId>> {
     let id = f.id;
     user.require_jobseeker()?;
     let rid = zph_service::reserve(
@@ -64,7 +59,7 @@ pub async fn reserve(State(state): State<AppState>,
         },
     )
     .await?;
-    Ok(ApiJson(ReservedId { id: rid }))
+    Ok(ApiJson(CreatedId { id: rid }))
 }
 
 #[derive(Debug, Serialize, ToSchema)]

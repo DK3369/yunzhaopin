@@ -1,7 +1,7 @@
 //! Ad slot public read (matching PHPYun `ad.model.php`).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };

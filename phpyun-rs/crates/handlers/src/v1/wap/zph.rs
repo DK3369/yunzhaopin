@@ -1,38 +1,16 @@
 //! Public browsing of job fairs (mirrors PHPYun `wap/zph`).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::zph_service;
 use serde::Serialize;
 use utoipa::ToSchema;
 
-fn fmt_date(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d").to_string())
-        .unwrap_or_default()
-}
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
-
-fn pic_n(state: &AppState, raw: &str) -> String {
-    state
-        .storage
-        .normalize_legacy_url(raw, state.config.web_base_url.as_deref())
-}
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -403,50 +381,24 @@ pub async fn list_companies(State(state): State<AppState>,
 
     // Fetch all related phpyun_company rows in one query, keyed by uid
     let uids: Vec<u64> = r.list.iter().map(|c| c.uid).collect();
-    let mut com_map: std::collections::HashMap<
-        u64,
-        (
-            Option<String>,
-            Option<String>,
-            i32,
-            i32,
-            i32,
-            i32,
-            i32,
-        ),
-    > = std::collections::HashMap::new();
-    if !uids.is_empty() {
-        let placeholders = std::iter::repeat("?")
-            .take(uids.len())
-            .collect::<Vec<_>>()
-            .join(",");
-        let sql = format!(
-            "SELECT CAST(uid AS UNSIGNED), name, logo, \
-                CAST(COALESCE(hy,0) AS SIGNED), \
-                CAST(COALESCE(pr,0) AS SIGNED), \
-                CAST(COALESCE(mun,0) AS SIGNED), \
-                CAST(COALESCE(provinceid,0) AS SIGNED), \
-                CAST(COALESCE(cityid,0) AS SIGNED) \
-             FROM phpyun_company WHERE uid IN ({placeholders})"
-        );
-        let mut q = sqlx::query_as::<_, (u64, Option<String>, Option<String>, i32, i32, i32, i32, i32)>(&sql);
-        for u in &uids {
-            q = q.bind(*u as i64);
-        }
-        let rows = q.fetch_all(state.db.reader()).await.unwrap_or_default();
-        for (uid, name, logo, hy, pr, mun, prov, city) in rows {
-            com_map.insert(uid, (name, logo, hy, pr, mun, prov, city));
-        }
-    }
+    let cards = phpyun_models::company::repo::list_cards_by_uids(state.db.reader(), &uids)
+        .await
+        .unwrap_or_default();
+    let com_map: std::collections::HashMap<u64, _> =
+        cards.into_iter().map(|c| (c.uid, c)).collect();
 
     let items: Vec<ZphCompanyItem> = r
         .list
         .into_iter()
         .map(|c| {
-            let info = com_map.get(&c.uid).cloned();
-            let (com_name, com_logo, hy, pr, mun, prov, city) = info.unwrap_or_else(|| {
-                (None, None, 0, 0, 0, 0, 0)
-            });
+            let card = com_map.get(&c.uid);
+            let com_name = card.and_then(|x| x.name.clone());
+            let com_logo = card.and_then(|x| x.logo.clone());
+            let hy = card.map(|x| x.hy).unwrap_or(0);
+            let pr = card.map(|x| x.pr).unwrap_or(0);
+            let mun = card.map(|x| x.mun).unwrap_or(0);
+            let prov = card.map(|x| x.provinceid).unwrap_or(0);
+            let city = card.map(|x| x.cityid).unwrap_or(0);
             let logo_full =
                 pic_n(&state, com_logo.as_deref().unwrap_or(""));
             ZphCompanyItem {
@@ -492,6 +444,7 @@ pub async fn list_companies(State(state): State<AppState>,
 
 use super::jobs::JobSummary;
 use phpyun_core::dto::{IdBody};
+use phpyun_core::utils::{fmt_date, fmt_dt, pic_n_str as pic_n};
 
 /// Jobs participating in a recruitment fair. Counterpart of PHP
 /// `app/zph/index::getJobList_action` — loads the job ids signed up for the

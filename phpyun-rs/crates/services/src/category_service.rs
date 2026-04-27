@@ -6,6 +6,7 @@
 //! Admin writes invalidate the entire cache — categories don't churn fast enough for
 //! finer-grained invalidation to matter.
 
+use phpyun_core::cache::SimpleCache;
 use phpyun_core::error::InfraError;
 use phpyun_core::{audit, clock, AppError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::category::{entity::Category, repo as cat_repo};
@@ -13,31 +14,18 @@ use std::sync::Arc;
 
 const TTL_SECS: u64 = 300;
 
-static LIST_CACHE: std::sync::OnceLock<
-    moka::future::Cache<String, Arc<Vec<Category>>>,
-> = std::sync::OnceLock::new();
+static LIST_CACHE: std::sync::OnceLock<SimpleCache<String, Vec<Category>>> =
+    std::sync::OnceLock::new();
 
-static CHILDREN_CACHE: std::sync::OnceLock<
-    moka::future::Cache<(String, u64), Arc<Vec<Category>>>,
-> = std::sync::OnceLock::new();
+static CHILDREN_CACHE: std::sync::OnceLock<SimpleCache<(String, u64), Vec<Category>>> =
+    std::sync::OnceLock::new();
 
-fn list_cache() -> &'static moka::future::Cache<String, Arc<Vec<Category>>> {
-    LIST_CACHE.get_or_init(|| {
-        moka::future::Cache::builder()
-            .max_capacity(64)
-            .time_to_live(std::time::Duration::from_secs(TTL_SECS))
-            .build()
-    })
+fn list_cache() -> &'static SimpleCache<String, Vec<Category>> {
+    LIST_CACHE.get_or_init(|| SimpleCache::new(64, std::time::Duration::from_secs(TTL_SECS)))
 }
 
-fn children_cache() -> &'static moka::future::Cache<(String, u64), Arc<Vec<Category>>>
-{
-    CHILDREN_CACHE.get_or_init(|| {
-        moka::future::Cache::builder()
-            .max_capacity(256)
-            .time_to_live(std::time::Duration::from_secs(TTL_SECS))
-            .build()
-    })
+fn children_cache() -> &'static SimpleCache<(String, u64), Vec<Category>> {
+    CHILDREN_CACHE.get_or_init(|| SimpleCache::new(256, std::time::Duration::from_secs(TTL_SECS)))
 }
 
 fn invalidate_all() {
@@ -50,12 +38,10 @@ pub async fn list(state: &AppState, kind: &str) -> AppResult<Arc<Vec<Category>>>
     let db = state.db.reader().clone();
     let kind_clone = key.clone();
     list_cache()
-        .try_get_with(key, async move {
-            let list = cat_repo::list_all(&db, &kind_clone).await?;
-            Ok::<_, AppError>(Arc::new(list))
+        .get_or_load(key, move || async move {
+            Ok(cat_repo::list_all(&db, &kind_clone).await?)
         })
         .await
-        .map_err(AppError::from_arc)
 }
 
 pub async fn list_children(
@@ -67,12 +53,10 @@ pub async fn list_children(
     let kind_clone = key.0.clone();
     let db = state.db.reader().clone();
     children_cache()
-        .try_get_with(key, async move {
-            let list = cat_repo::list_children(&db, &kind_clone, parent_id).await?;
-            Ok::<_, AppError>(Arc::new(list))
+        .get_or_load(key, move || async move {
+            Ok(cat_repo::list_children(&db, &kind_clone, parent_id).await?)
         })
         .await
-        .map_err(AppError::from_arc)
 }
 
 // ---------- admin ----------

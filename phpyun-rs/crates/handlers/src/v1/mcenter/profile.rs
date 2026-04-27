@@ -4,7 +4,7 @@
 use axum::{
     extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::json;
 use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
@@ -15,8 +15,11 @@ use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/profile", post(update_profile))
-        .route("/profile/list", post(get_profile))
+        // The read is the common case for /profile — keep the bare path for
+        // it. Update goes to a dedicated sub-path so a misformed PATCH
+        // doesn't return "missing field email" 400 to a fetch attempt.
+        .route("/profile", post(get_profile))
+        .route("/profile/update", post(update_profile))
 }
 
 // ==================== GET ====================
@@ -34,7 +37,7 @@ pub struct ProfileData {
 /// Current user summary
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/profile/list",
+    path = "/v1/mcenter/profile",
     tag = "mcenter",
     security(("bearer" = [])),
     responses(
@@ -67,7 +70,7 @@ pub struct UpdateProfileForm {
 /// Update email
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/profile",
+    path = "/v1/mcenter/profile/update",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = UpdateProfileForm,

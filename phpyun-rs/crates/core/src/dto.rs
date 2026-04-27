@@ -106,6 +106,21 @@ pub struct KindTargetUidBody {
     pub target_uid: u64,
 }
 
+// ==================== Auth ====================
+
+/// Login / refresh / oauth-login response. Returns only the fields the client
+/// needs — `uid`, `usertype`, and the bearer token. The token's `exp` is
+/// already encoded in the JWT payload (base64-decodable), so exposing it
+/// separately just bloats the response. The refresh-token concept is
+/// internal: the server still tracks a paired refresh jti in the session
+/// table for "kick device" semantics, but the client never sees it.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct AuthTokenData {
+    pub uid: u64,
+    pub usertype: u8,
+    pub access_token: String,
+}
+
 // ==================== Common responses ====================
 
 /// `{ id }` — used as the create-result envelope across CRUD endpoints.
@@ -118,6 +133,73 @@ pub struct CreatedId {
 #[derive(Debug, Serialize, ToSchema)]
 pub struct Toggled {
     pub on: bool,
+}
+
+/// `{ id, created }` — upsert-result envelope (create-or-update endpoints).
+/// `created=true` when a new row was inserted, `false` when an existing row
+/// was updated.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct UpsertCreated {
+    pub id: u64,
+    pub created: bool,
+}
+
+/// `{ requested, affected }` — bulk-action result envelope. Used by every
+/// admin / employer batch-update / batch-delete endpoint to report how many
+/// items were *requested* (input length) vs. how many were *affected*
+/// (rows the DB actually touched, after auth-scoping and stale filters).
+#[derive(Debug, Serialize, ToSchema)]
+pub struct BatchResult {
+    pub requested: usize,
+    pub affected: u64,
+}
+
+/// `{ unread }` — unread badge response. Used by every notification channel
+/// (broadcasts / chat / warnings / messages) to drive the bell icon counter.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct UnreadCount {
+    pub unread: u64,
+}
+
+/// `{ exists }` — boolean probe response. Used by frontend to render a
+/// "follow / favorite / already-applied" button state without leaking the
+/// underlying record id.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ExistsResp {
+    pub exists: bool,
+}
+
+/// `{ removed }` — clear-history result envelope. Used by endpoints that wipe
+/// a user's owned list (search history / blacklist / notification feed) and
+/// report how many rows were dropped.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ClearResult {
+    pub removed: u64,
+}
+
+/// `{ ok }` — generic boolean-success response. Used by claim / oauth-bind /
+/// payment-callback endpoints that just want to signal completion. Prefer
+/// `ApiOk` for the full message-envelope; this struct is for cases where the
+/// frontend explicitly reads `data.ok`.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct OkResp {
+    pub ok: bool,
+}
+
+/// `{ hits }` — view-count response. Used by job-detail / article-detail
+/// "increment + return new value" endpoints.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct HitsResp {
+    pub hits: u64,
+}
+
+/// `{ authorize_url, state }` — third-party OAuth start-flow response.
+/// Used identically by every provider (wechat / qq / weibo) to ship the user
+/// off to the provider's consent page.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct OAuthAuthorizeData {
+    pub authorize_url: String,
+    pub state: String,
 }
 
 // ==================== Bulk-id bodies ====================

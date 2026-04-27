@@ -1,9 +1,9 @@
 //! App version management (admin).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::app_version_service::{self, VersionInput};
@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 use phpyun_core::dto::{CreatedId, IdBody};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -25,12 +26,6 @@ pub struct ListQuery {
     pub platform: Option<String>,
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct VersionItem {
@@ -96,12 +91,7 @@ pub struct CreateForm {
 ) -> AppResult<ApiJson<Paged<VersionItem>>> {
     user.require_admin()?;
     let r = app_version_service::admin_list(&state, &user, q.platform.as_deref(), page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(VersionItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 #[utoipa::path(post, path = "/v1/admin/app-versions", tag = "admin", security(("bearer" = [])), request_body = CreateForm, responses((status = 200, description = "ok", body = CreatedId)))]

@@ -1,9 +1,9 @@
 //! VIP packages / orders / status.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::json;
 use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
@@ -11,7 +11,7 @@ use phpyun_services::vip_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{};
+use phpyun_core::utils::{fmt_dt, pay_order_status_name as order_status_name};
 
 pub fn routes() -> Router<AppState> {
     let r = Router::new()
@@ -29,14 +29,6 @@ pub fn routes() -> Router<AppState> {
     r
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 /// VIP package item — all 10 columns of phpyun_vip_package + derived price_yuan (yuan unit).
 #[derive(Debug, Serialize, ToSchema)]
@@ -183,16 +175,6 @@ pub struct OrderItem {
     pub paid_at_n: String,
 }
 
-fn order_status_name(s: i32) -> &'static str {
-    match s {
-        0 => "pending",
-        1 => "paid",
-        2 => "refunded",
-        3 => "cancelled",
-        _ => "unknown",
-    }
-}
-
 impl From<phpyun_models::vip::entity::PayOrder> for OrderItem {
     fn from(o: phpyun_models::vip::entity::PayOrder) -> Self {
         Self {
@@ -227,12 +209,7 @@ impl From<phpyun_models::vip::entity::PayOrder> for OrderItem {
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<OrderItem>>> {
     let r = vip_service::list_orders(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(OrderItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Cancel an unpaid order (orders with status=0). Cannot cancel paid / cancelled orders.

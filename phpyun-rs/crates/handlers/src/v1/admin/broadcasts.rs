@@ -1,9 +1,9 @@
 //! System broadcasts (admin).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::broadcast_service;
@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
 use phpyun_core::dto::{CreatedId, IdBody};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -19,12 +20,6 @@ pub fn routes() -> Router<AppState> {
         .route("/broadcasts/delete", post(remove))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 fn target_usertype_name(t: i32) -> &'static str {
     match t { 0 => "all", 1 => "jobseeker", 2 => "company", _ => "unknown" }
@@ -78,12 +73,7 @@ pub struct CreateForm {
 ) -> AppResult<ApiJson<Paged<BroadcastItem>>> {
     user.require_admin()?;
     let r = broadcast_service::admin_list(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(BroadcastItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 #[utoipa::path(post, path = "/v1/admin/broadcasts", tag = "admin", security(("bearer" = [])), request_body = CreateForm, responses((status = 200, description = "ok", body = CreatedId)))]

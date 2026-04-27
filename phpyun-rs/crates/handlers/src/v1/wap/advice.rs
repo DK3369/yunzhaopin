@@ -7,7 +7,7 @@ use axum::{
 };
 use phpyun_core::{ApiJson, AppResult, AppState, ClientIp, MaybeUser, ValidatedJson};
 use phpyun_services::feedback_service::{self, FeedbackInput};
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
 use phpyun_core::dto::{CreatedId};

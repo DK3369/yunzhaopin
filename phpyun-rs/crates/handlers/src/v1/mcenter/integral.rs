@@ -1,7 +1,7 @@
 //! Points: balance / exchange / history (authenticated).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
     routing::post,
 };
@@ -10,7 +10,6 @@ use phpyun_services::integral_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -104,12 +103,7 @@ pub async fn history(
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<ExchangeItemView>>> {
     let r = integral_service::list_history(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(ExchangeItemView::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -233,12 +227,7 @@ pub async fn list_transfers(
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<TransferItem>>> {
     let r = integral_service::list_transfers(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(TransferItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 #[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]

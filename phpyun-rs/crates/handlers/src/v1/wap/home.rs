@@ -3,13 +3,14 @@
 use axum::{
     extract::{State},
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};
 use phpyun_services::home_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
+use phpyun_core::utils::{fmt_date};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -66,14 +67,6 @@ pub struct HomeData {
     pub hot_keywords: Vec<HotKeyword>,
 }
 
-fn fmt_date(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d").to_string())
-        .unwrap_or_default()
-}
 
 /// Home page
 #[utoipa::path(post, path = "/v1/wap/home", tag = "wap", params(HomeQuery), responses((status = 200, description = "ok", body = HomeData)))]
@@ -150,12 +143,15 @@ pub struct AggregateQuery {
     pub slot: Option<String>,
     /// Nav position (corresponds to phpyun_navigation.`type`); defaults to 1 (top) when omitted
     #[serde(default = "default_nav_position")]
+    #[validate(length(min = 1, max = 16))]
     pub nav: String,
     /// Take top N hot keywords; default 10
     #[serde(default = "default_hot_limit")]
+    #[validate(range(min = 1, max = 100))]
     pub hot_limit: u64,
     /// Hot search scope (string form of PHP `phpyun_hot_key.type`); default "0" (site-wide)
     #[serde(default = "default_hot_scope")]
+    #[validate(length(min = 1, max = 16))]
     pub hot_scope: String,
 }
 fn default_nav_position() -> String {

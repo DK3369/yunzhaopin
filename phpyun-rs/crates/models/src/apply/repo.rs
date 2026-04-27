@@ -101,6 +101,24 @@ pub async fn count_by_uid(
     Ok(n.max(0) as u64)
 }
 
+/// Count active (`isdel = 9`) applications by a jobseeker to a specific
+/// company. Used by the company-detail page to show "you've applied N times".
+pub async fn count_by_uid_to_company(
+    pool: &MySqlPool,
+    uid: u64,
+    com_id: u64,
+) -> Result<u64, sqlx::Error> {
+    let row: (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_userid_job \
+         WHERE uid = ? AND com_id = ? AND isdel = 9",
+    )
+    .bind(uid)
+    .bind(com_id)
+    .fetch_one(pool)
+    .await?;
+    Ok(row.0.max(0) as u64)
+}
+
 /// Company side: transition application to any is_browse enum value
 /// (1=unread / 0=viewed / 3=interviewed / 4=unsuitable / 7=hired).
 /// Constrained by com_id so only the job owner may change it.

@@ -8,7 +8,7 @@
 use axum::{
     extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::json;
 use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
@@ -17,6 +17,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
 use phpyun_core::dto::{IdsBody};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -34,14 +35,6 @@ pub fn routes() -> Router<AppState> {
 
 // ==================== DTO ====================
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 fn part_apply_status_name(s: i32) -> &'static str {
     match s {
@@ -133,12 +126,7 @@ pub struct ApplyStatusBody {
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<MyPartApplyItem>>> {
     let r = part_service::list_my_applies(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(MyPartApplyItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 #[utoipa::path(
@@ -171,12 +159,7 @@ pub async fn my_collects(
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<MyPartCollectItem>>> {
     let r = part_service::list_my_collects(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(MyPartCollectItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 #[utoipa::path(
@@ -254,12 +237,7 @@ pub async fn com_applies(
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<MyPartApplyItem>>> {
     let r = part_service::list_com_applies(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(MyPartApplyItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 #[utoipa::path(

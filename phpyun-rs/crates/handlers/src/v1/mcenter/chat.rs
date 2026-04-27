@@ -11,7 +11,8 @@ use phpyun_services::chat_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{PeerBody};
+use phpyun_core::dto::{CreatedId, PeerBody, UnreadCount};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -44,11 +45,6 @@ pub struct SendForm {
     pub body: String,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-pub struct SentMessage {
-    pub id: u64,
-}
-
 /// Send a private message
 #[utoipa::path(
     post,
@@ -56,25 +52,17 @@ pub struct SentMessage {
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = SendForm,
-    responses((status = 200, description = "ok", body = SentMessage))
+    responses((status = 200, description = "ok", body = CreatedId))
 )]
 pub async fn send(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<SendForm>,
-) -> AppResult<ApiJson<SentMessage>> {
+) -> AppResult<ApiJson<CreatedId>> {
     let id = chat_service::send(&state, &user, f.peer_uid, &f.body).await?;
-    Ok(ApiJson(SentMessage { id }))
+    Ok(ApiJson(CreatedId { id }))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 /// Private message item — full 7 columns of phpyun_chat + formatted timestamps + dual-track derived is_read.
 #[derive(Debug, Serialize, ToSchema)]
@@ -157,11 +145,6 @@ pub async fn mark_read(
 ) -> AppResult<ApiJson<json::Value>> {
     let n = chat_service::mark_read_with(&state, &user, b.peer).await?;
     Ok(ApiJson(json::json!({ "ok": true, "updated": n })))
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct UnreadCount {
-    pub unread: u64,
 }
 
 /// Total count of my unread private messages (for the frontend message badge)

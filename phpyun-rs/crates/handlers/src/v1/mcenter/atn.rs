@@ -9,7 +9,7 @@ use axum::{
     Router,
     routing::post,
 };
-use phpyun_core::{dto::KindTargetUidBody, ApiJson, ApiMsgData, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
+use phpyun_core::{dto::{ExistsResp, KindTargetUidBody}, ApiJson, ApiMsgData, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::atn_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -109,12 +109,7 @@ pub async fn list_following(
     ValidatedJson(q): ValidatedJson<ListQuery>,
 ) -> AppResult<ApiJson<Paged<FollowItem>>> {
     let r = atn_service::list_following(&state, &user, q.kind, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(FollowItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Followers of the current user (employers see who follows their company,
@@ -132,17 +127,7 @@ pub async fn list_followers(
     page: Pagination,
 ) -> AppResult<ApiJson<Paged<FollowItem>>> {
     let r = atn_service::list_followers(&state, &user, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(FollowItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct ExistsResp {
-    pub exists: bool,
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Cheap probe used by frontend to render the follow-button state.

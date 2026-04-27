@@ -1,9 +1,9 @@
 //! Public Q&A browsing (aligned with the index/list/content parts of PHPYun `wap/ask`).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, AppResult, AppState, MaybeUser, Paged, Pagination, ValidatedJson};
 use validator::Validate;
@@ -12,24 +12,11 @@ use phpyun_services::qna_service::{self, QuestionListFilter};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use phpyun_core::dto::{IdBody};
+use phpyun_core::utils::{fmt_dt, pic_n};
 
 /// `unix -> Y-m-d H:i` (equivalent to PHP `date('Y-m-d H:i', $ts)`); returns empty string when ts<=0.
-fn fmt_ts(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 /// Convert the relative avatar path in the PHPYun database to a full URL (PHP `checkpic($pic)`).
-fn pic_n(state: &AppState, pic: Option<&str>) -> String {
-    let raw = pic.unwrap_or("");
-    let site = state.config.web_base_url.as_deref();
-    state.storage.normalize_legacy_url(raw, site)
-}
-
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/questions", post(list_questions))
@@ -119,9 +106,9 @@ impl QuestionSummary {
             nickname: q.nickname,
             pic: q.pic,
             pic_n: pic_full,
-            created_at_n: fmt_ts(q.created_at),
+            created_at_n: fmt_dt(q.created_at),
             created_at: q.created_at,
-            lastupdate_n: fmt_ts(q.lastupdate),
+            lastupdate_n: fmt_dt(q.lastupdate),
             lastupdate: q.lastupdate,
         }
     }
@@ -147,9 +134,9 @@ impl From<phpyun_models::qna::entity::Question> for QuestionSummary {
             nickname: q.nickname,
             pic: q.pic.clone(),
             pic_n: q.pic.unwrap_or_default(),
-            created_at_n: fmt_ts(q.created_at),
+            created_at_n: fmt_dt(q.created_at),
             created_at: q.created_at,
-            lastupdate_n: fmt_ts(q.lastupdate),
+            lastupdate_n: fmt_dt(q.lastupdate),
             lastupdate: q.lastupdate,
         }
     }
@@ -264,7 +251,7 @@ impl AnswerItem {
             support_count: a.support_count,
             is_accepted: a.is_accepted,
             status: a.status,
-            created_at_n: fmt_ts(a.created_at),
+            created_at_n: fmt_dt(a.created_at),
             created_at: a.created_at,
             nickname: a.nickname,
             pic: a.pic,
@@ -289,7 +276,7 @@ impl From<phpyun_models::qna::entity::Answer> for AnswerItem {
             support_count: a.support_count,
             is_accepted: a.is_accepted,
             status: a.status,
-            created_at_n: fmt_ts(a.created_at),
+            created_at_n: fmt_dt(a.created_at),
             created_at: a.created_at,
             nickname: a.nickname,
             pic: a.pic.clone(),
@@ -365,14 +352,11 @@ pub async fn question_detail(State(state): State<AppState>,
         std::collections::HashSet::new();
     if let Some(uid) = viewer_uid {
         // PHP `atnM->getatnList(uid=> $this->uid, field => sc_uid)` -- list of followed users
-        let rows: Vec<(i64,)> = sqlx::query_as(
-            "SELECT CAST(COALESCE(sc_uid,0) AS SIGNED) FROM phpyun_atn WHERE uid = ?",
-        )
-        .bind(uid as i64)
-        .fetch_all(state.db.reader())
-        .await
-        .unwrap_or_default();
-        atn_uids = rows.into_iter().map(|(v,)| v.max(0) as u64).collect();
+        atn_uids = phpyun_models::atn::repo::list_followee_uids(state.db.reader(), uid)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .collect();
     }
     let useratn: i32 = match viewer_uid {
         Some(uid) if uid == q_uid => 2,
@@ -385,7 +369,7 @@ pub async fn question_detail(State(state): State<AppState>,
         if uid == q_uid {
             2
         } else {
-            let row: Option<(String,)> = sqlx::query_as(
+            let row: Option<(String,)> = sqlx::query_as( // TODO(arch): qna::repo models phpyun_attention as a (uid, qid) join table; legacy DB still uses (uid, type, ids CSV)
                 "SELECT COALESCE(ids,'') FROM phpyun_attention \
                  WHERE uid = ? AND type = 1 LIMIT 1",
             )
@@ -410,19 +394,13 @@ pub async fn question_detail(State(state): State<AppState>,
 
     // === Asker card (phpyun_member.username + usertype) ===
     let asker = {
-        let row: Option<(Option<String>, i32)> = sqlx::query_as(
-            "SELECT username, CAST(COALESCE(usertype,0) AS SIGNED) \
-             FROM phpyun_member WHERE uid = ? LIMIT 1",
-        )
-        .bind(q_uid as i64)
-        .fetch_optional(state.db.reader())
-        .await
-        .unwrap_or(None);
-        let (username, usertype) = row.unwrap_or((None, 0));
+        let m = phpyun_models::user::repo::find_by_uid(state.db.reader(), q_uid)
+            .await
+            .unwrap_or(None);
         AskerInfo {
             uid: q_uid,
-            username: username.unwrap_or_default(),
-            usertype,
+            username: m.as_ref().map(|m| m.username.clone()).unwrap_or_default(),
+            usertype: m.map(|m| m.usertype).unwrap_or(0),
             useratn,
         }
     };
@@ -430,14 +408,9 @@ pub async fn question_detail(State(state): State<AppState>,
     // === Viewer card (PHP `myinfo.pic`) ===
     let viewer = {
         let pic = if let Some(uid) = viewer_uid {
-            let row: Option<(Option<String>,)> = sqlx::query_as(
-                "SELECT photo FROM phpyun_resume WHERE uid = ? LIMIT 1",
-            )
-            .bind(uid as i64)
-            .fetch_optional(state.db.reader())
-            .await
-            .unwrap_or(None);
-            row.and_then(|(p,)| p)
+            phpyun_models::resume::repo::photo_for_uid(state.db.reader(), uid)
+                .await
+                .unwrap_or(None)
         } else {
             None
         };
@@ -465,9 +438,9 @@ pub async fn question_detail(State(state): State<AppState>,
         is_recom: q.is_recom,
         is_recom_n: q.is_recom == 1,
         created_at: q.created_at,
-        created_at_n: fmt_ts(q.created_at),
+        created_at_n: fmt_dt(q.created_at),
         lastupdate: q.lastupdate,
-        lastupdate_n: fmt_ts(q.lastupdate),
+        lastupdate_n: fmt_dt(q.lastupdate),
         nickname: q.nickname,
         pic: q.pic,
         pic_n: pic_full,
@@ -498,14 +471,11 @@ pub async fn list_answers(State(state): State<AppState>,
     let viewer_uid = user.as_ref().map(|u| u.uid);
     let mut atn_uids = std::collections::HashSet::<u64>::new();
     if let Some(uid) = viewer_uid {
-        let rows: Vec<(i64,)> = sqlx::query_as(
-            "SELECT CAST(COALESCE(sc_uid,0) AS SIGNED) FROM phpyun_atn WHERE uid = ?",
-        )
-        .bind(uid as i64)
-        .fetch_all(state.db.reader())
-        .await
-        .unwrap_or_default();
-        atn_uids = rows.into_iter().map(|(v,)| v.max(0) as u64).collect();
+        atn_uids = phpyun_models::atn::repo::list_followee_uids(state.db.reader(), uid)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .collect();
     }
     Ok(ApiJson(Paged::new(
         r.list
@@ -618,12 +588,7 @@ pub async fn list_comments(State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<ListCommentsBody>) -> AppResult<ApiJson<Paged<CommentItem>>> {
     let aid = b.aid;
     let r = qna_service::list_reviews(&state, aid, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(CommentItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 // ==================== Top answerers leaderboard ====================

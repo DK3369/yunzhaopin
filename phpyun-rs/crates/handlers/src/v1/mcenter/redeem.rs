@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
 use phpyun_core::dto::{IdBody, StatusFilterBody};
+use phpyun_core::utils::{fmt_dt, redeem_order_status_name as order_status_name};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -63,25 +64,6 @@ pub async fn redeem(
     Ok(ApiJson(RedeemCreated { order_id: id }))
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 {
-        return String::new();
-    }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
-
-fn order_status_name(s: i32) -> &'static str {
-    match s {
-        0 => "pending",
-        1 => "approved",
-        2 => "shipped",
-        3 => "completed",
-        4 => "rejected",
-        _ => "unknown",
-    }
-}
 
 /// Redeem order item — full 11 columns of phpyun_redeem_order + formatted timestamp + status name + derived total_integral.
 #[derive(Debug, Serialize, ToSchema)]
@@ -140,12 +122,7 @@ pub async fn list_mine(
     ValidatedJson(q): ValidatedJson<StatusFilterBody>,
 ) -> AppResult<ApiJson<Paged<OrderItem>>> {
     let r = redeem_service::list_my_orders(&state, &user, q.status, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(OrderItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 /// Cancel my pending order

@@ -4,9 +4,9 @@
 //! so they are sub-microsecond and don't touch the DB.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::i18n::{current_lang, Lang};
 use phpyun_core::{ApiJson, AppError, AppResult, AppState, InfraError, ValidatedJson};
@@ -63,6 +63,7 @@ fn to_view(node: &region_service::RegionNode, lang: Lang, has_children: bool) ->
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ListQuery {
     /// ISO 3166-1 alpha-2 (CN/US/JP/...). When supplied the result is restricted to that country.
+    #[validate(length(min = 2, max = 8))]
     pub country: Option<String>,
     /// 0=country, 1=state/province, 2=city, 3=district. Combine with `country` to scope.
     #[validate(range(min = 0, max = 99))]
@@ -157,8 +158,10 @@ pub async fn by_code(State(state): State<AppState>,
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct CityDomainQuery {
     /// Longitude (Baidu BD-09 coordinates, matches PHP `wap/index::getCityDomain` `x` param)
+    #[validate(range(min = -180.0, max = 180.0))]
     pub x: Option<f64>,
     /// Latitude (BD-09)
+    #[validate(range(min = -90.0, max = 90.0))]
     pub y: Option<f64>,
 }
 

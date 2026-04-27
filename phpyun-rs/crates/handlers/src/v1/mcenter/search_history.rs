@@ -1,16 +1,17 @@
 //! Personal search history (matching PHPYun `search::history`).
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::search_history_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{IdBody};
+use phpyun_core::dto::{ClearResult, IdBody};
+use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -35,12 +36,6 @@ pub struct ClearQuery {
     pub scope: Option<String>,
 }
 
-fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
-    chrono::DateTime::from_timestamp(ts, 0)
-        .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
-        .unwrap_or_default()
-}
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct HistoryItem {
@@ -63,11 +58,6 @@ impl From<phpyun_models::search_history::entity::SearchHistory> for HistoryItem 
             created_at: h.created_at,
         }
     }
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct ClearResult {
-    pub removed: u64,
 }
 
 /// My search history

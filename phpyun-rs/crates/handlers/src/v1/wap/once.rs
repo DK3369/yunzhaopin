@@ -1,16 +1,17 @@
 //! One-off shop recruitment (`once`) front-end. Aligned with PHPYun `once/index::{index,show,add,ajax}_action`.
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     Router,
-    routing::{get, post},
+    routing::post,
 };
 use phpyun_core::{json, ApiJson, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::once_service::{self, ManageOp, OnceSearch, UpsertInput};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{IdBody, IdPasswordBody};
+use phpyun_core::dto::{IdBody, IdPasswordBody, UpsertCreated};
+use phpyun_core::utils::{mask_tel, mask_name_short as mask_name};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -94,12 +95,7 @@ impl From<phpyun_models::once_job::entity::OnceJob> for OnceListItem {
         did: q.did,
     };
     let r = once_service::list_public(&state, &search, page).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(OnceListItem::from).collect(),
-        r.total,
-        page.page,
-        page.page_size,
-    )))
+    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -123,24 +119,6 @@ pub struct OnceDetail {
     pub ctime: i64,
     pub edate: i64,
     pub hits: i64,
-}
-
-fn mask_tel(s: &str) -> String {
-    let chars: Vec<char> = s.chars().collect();
-    if chars.len() < 7 {
-        return s.to_string();
-    }
-    let prefix: String = chars.iter().take(3).collect();
-    let suffix: String = chars.iter().rev().take(4).collect::<String>().chars().rev().collect();
-    format!("{prefix}****{suffix}")
-}
-
-fn mask_name(s: &str) -> String {
-    let chars: Vec<char> = s.chars().collect();
-    match chars.len() {
-        0 | 1 => s.to_string(),
-        _ => format!("{}**", chars[0]),
-    }
 }
 
 #[utoipa::path(post, path = "/v1/wap/once-jobs", tag = "wap", request_body = IdBody,
@@ -234,12 +212,6 @@ fn default_status() -> i32 {
 }
 fn default_valid_days() -> i64 {
     30
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct UpsertCreated {
-    pub id: u64,
-    pub created: bool,
 }
 
 async fn upsert_common(
