@@ -68,7 +68,6 @@ pub mod site_page;
 pub mod site_setting;
 pub mod special;
 pub mod stats;
-pub mod sysmsg;
 pub mod talent_pool;
 pub mod tiny;
 pub mod user;

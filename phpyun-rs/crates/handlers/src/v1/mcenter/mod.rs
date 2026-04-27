@@ -58,7 +58,6 @@ pub mod saved_searches;
 pub mod search_history;
 pub mod sessions;
 pub mod sign;
-pub mod sysmsg;
 pub mod talent_pool;
 pub mod transfer;
 pub mod username;
@@ -132,7 +131,6 @@ pub fn router() -> Router<AppState> {
         .merge(transfer::routes())
         .merge(resume_out::routes())
         .merge(company_skin::routes())
-        .merge(sysmsg::routes())
         .merge(account_logout::routes())
         .merge(atn::routes())
         .merge(once_orders::routes())
