@@ -39,7 +39,7 @@ pub struct CompanyListQuery {
     pub did: u32,
 }
 fn default_did() -> u32 {
-    1
+    0
 }
 
 /// Company list item — definition lives in `phpyun_models::company::view`,

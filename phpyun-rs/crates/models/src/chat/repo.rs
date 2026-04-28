@@ -34,7 +34,7 @@ pub async fn list_with_peer(
 ) -> Result<Vec<Chat>, sqlx::Error> {
     let conv_key = conv_key_for(self_uid, peer_uid);
     let row_limit = limit.clamp(1, 200);
-    if let Some(before) = before_id {
+    let q = if let Some(before) = before_id {
         sqlx::query_as::<_, Chat>(
             r#"SELECT id, sender_uid, receiver_uid, conv_key, body, is_read, created_at
                FROM phpyun_rs_chat
@@ -57,10 +57,15 @@ pub async fn list_with_peer(
         .bind(row_limit)
         .fetch_all(pool)
         .await
-    }
+    };
+    phpyun_core::db::ok_default_if_object_missing(q)
 }
 
 /// Latest message of each of my conversations (aggregated by conv_key).
+///
+/// `phpyun_rs_chat` is a Rust-port-only table. When the host PHP install
+/// hasn't been provisioned with it, we return an empty list so the mcenter
+/// page degrades gracefully instead of 5xx'ing.
 pub async fn list_conversations(
     pool: &MySqlPool,
     self_uid: u64,
@@ -68,22 +73,24 @@ pub async fn list_conversations(
 ) -> Result<Vec<Chat>, sqlx::Error> {
     let row_limit = limit.clamp(1, 100);
     // For each conv_key, fetch the row with the largest id.
-    sqlx::query_as::<_, Chat>(
-        r#"SELECT c.id, c.sender_uid, c.receiver_uid, c.conv_key, c.body, c.is_read, c.created_at
-           FROM phpyun_rs_chat c
-           INNER JOIN (
-             SELECT conv_key, MAX(id) AS max_id
-             FROM phpyun_rs_chat
-             WHERE sender_uid = ? OR receiver_uid = ?
-             GROUP BY conv_key
-           ) t ON c.id = t.max_id
-           ORDER BY c.id DESC LIMIT ?"#,
+    phpyun_core::db::ok_default_if_object_missing(
+        sqlx::query_as::<_, Chat>(
+            r#"SELECT c.id, c.sender_uid, c.receiver_uid, c.conv_key, c.body, c.is_read, c.created_at
+               FROM phpyun_rs_chat c
+               INNER JOIN (
+                 SELECT conv_key, MAX(id) AS max_id
+                 FROM phpyun_rs_chat
+                 WHERE sender_uid = ? OR receiver_uid = ?
+                 GROUP BY conv_key
+               ) t ON c.id = t.max_id
+               ORDER BY c.id DESC LIMIT ?"#,
+        )
+        .bind(self_uid)
+        .bind(self_uid)
+        .bind(row_limit)
+        .fetch_all(pool)
+        .await,
     )
-    .bind(self_uid)
-    .bind(self_uid)
-    .bind(row_limit)
-    .fetch_all(pool)
-    .await
 }
 
 pub async fn mark_read_from_peer(
@@ -104,11 +111,15 @@ pub async fn mark_read_from_peer(
 }
 
 pub async fn count_unread(pool: &MySqlPool, self_uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
+    let res: Result<(i64,), _> = sqlx::query_as(
         "SELECT COUNT(*) FROM phpyun_rs_chat WHERE receiver_uid = ? AND is_read = 0",
     )
     .bind(self_uid)
     .fetch_one(pool)
-    .await?;
-    Ok(n.max(0) as u64)
+    .await;
+    match res {
+        Ok((n,)) => Ok(n.max(0) as u64),
+        Err(e) if phpyun_core::db::is_missing_table(&e) => Ok(0),
+        Err(e) => Err(e),
+    }
 }

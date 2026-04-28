@@ -12,33 +12,49 @@ const FIELDS: &str = "id, code, code3, numeric_code, name_en, name_zh, continent
 // ==================== Reads ====================
 
 /// Every active row in `(sort ASC, id ASC)` order. Loaded by the cache.
+///
+/// `phpyun_country` is a Rust-port-only curated lookup; the host PHP install
+/// may not have it. Treat the missing table as "no curated list available"
+/// (empty vec) so `/v1/wap/countries` returns `[]` instead of 5xx.
 pub async fn list_active(pool: &MySqlPool) -> Result<Vec<Country>, sqlx::Error> {
     let sql = format!(
         "SELECT {FIELDS} FROM phpyun_country \
          WHERE status != 2 \
          ORDER BY sort ASC, id ASC"
     );
-    sqlx::query_as::<_, Country>(&sql).fetch_all(pool).await
+    phpyun_core::db::ok_default_if_object_missing(
+        sqlx::query_as::<_, Country>(&sql).fetch_all(pool).await,
+    )
 }
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Country>, sqlx::Error> {
     let sql = format!(
         "SELECT {FIELDS} FROM phpyun_country WHERE id = ? AND status != 2 LIMIT 1"
     );
-    sqlx::query_as::<_, Country>(&sql)
+    let r = sqlx::query_as::<_, Country>(&sql)
         .bind(id)
         .fetch_optional(pool)
-        .await
+        .await;
+    match r {
+        Ok(v) => Ok(v),
+        Err(e) if phpyun_core::db::is_missing_table(&e) => Ok(None),
+        Err(e) => Err(e),
+    }
 }
 
 pub async fn find_by_code(pool: &MySqlPool, code: &str) -> Result<Option<Country>, sqlx::Error> {
     let sql = format!(
         "SELECT {FIELDS} FROM phpyun_country WHERE code = ? AND status != 2 LIMIT 1"
     );
-    sqlx::query_as::<_, Country>(&sql)
+    let r = sqlx::query_as::<_, Country>(&sql)
         .bind(code)
         .fetch_optional(pool)
-        .await
+        .await;
+    match r {
+        Ok(v) => Ok(v),
+        Err(e) if phpyun_core::db::is_missing_table(&e) => Ok(None),
+        Err(e) => Err(e),
+    }
 }
 
 // ==================== Writes (admin only) ====================

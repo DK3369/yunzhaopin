@@ -65,7 +65,7 @@ pub struct RegisterForm {
     #[validate(range(min = 1, max = 3))]
     pub regway: u8,
 
-    /// Multi-site did (default 1)
+    /// Multi-site did (default 0 = main site)
     #[serde(default = "default_did")]
     #[validate(range(max = 999))]
     pub did: u32,
@@ -83,7 +83,7 @@ fn default_regway() -> u8 {
     2
 }
 fn default_did() -> u32 {
-    1
+    0
 }
 
 #[derive(Debug, Serialize, ToSchema)]

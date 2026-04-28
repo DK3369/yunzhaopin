@@ -19,26 +19,35 @@ pub async fn list(
 ) -> Result<Vec<AuditLog>, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
     qb.push(FIELDS);
-    qb.push(" FROM yun_rs_audit_log WHERE 1=1");
+    qb.push(" FROM phpyun_rs_audit_log WHERE 1=1");
     push_filters(&mut qb, f);
     qb.push(" ORDER BY id DESC LIMIT ");
     qb.push_bind(limit);
     qb.push(" OFFSET ");
     qb.push_bind(offset);
-    qb.build_query_as::<AuditLog>().fetch_all(pool).await
+    // The PHPyun-port `phpyun_rs_audit_log` table is optional — when the host
+    // PHP install hasn't been provisioned with it, return an empty page rather
+    // than 500.
+    phpyun_core::db::ok_default_if_object_missing(
+        qb.build_query_as::<AuditLog>().fetch_all(pool).await,
+    )
 }
 
 pub async fn count(pool: &MySqlPool, f: &AuditFilter<'_>) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("SELECT COUNT(*) FROM yun_rs_audit_log WHERE 1=1");
+        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_rs_audit_log WHERE 1=1");
     push_filters(&mut qb, f);
-    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
-    Ok(n.max(0) as u64)
+    let res: Result<(i64,), _> = qb.build_query_as().fetch_one(pool).await;
+    match res {
+        Ok((n,)) => Ok(n.max(0) as u64),
+        Err(e) if phpyun_core::db::is_missing_table(&e) => Ok(0),
+        Err(e) => Err(e),
+    }
 }
 
 /// Scheduled rotation: delete audit entries with `created_at < cutoff`.
 pub async fn rotate(pool: &MySqlPool, cutoff: i64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query("DELETE FROM yun_rs_audit_log WHERE created_at < ?")
+    let res = sqlx::query("DELETE FROM phpyun_rs_audit_log WHERE created_at < ?")
         .bind(cutoff)
         .execute(pool)
         .await?;

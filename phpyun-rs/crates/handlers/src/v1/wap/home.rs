@@ -24,7 +24,7 @@ pub struct HomeQuery {
     #[validate(range(max = 999))]
     pub did: u32,
 }
-fn default_did() -> u32 { 1 }
+fn default_did() -> u32 { 0 }
 
 /// Announcement entry -- fields aligned with the phpyun_announcement table.
 #[derive(Debug, Serialize, ToSchema)]

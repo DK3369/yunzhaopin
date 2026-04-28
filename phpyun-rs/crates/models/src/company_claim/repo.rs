@@ -1,36 +1,29 @@
+//! Company-claim repository — **degraded stub**.
+//!
+//! The Rust feature is "user files a claim to bind themselves as the owner
+//! of a company". PHP `phpyun_company_fact` is a company-photos table
+//! (`id, uid, picurl, ctime`) — totally unrelated. PHPYun has no claim
+//! workflow.
+//!
+//! Stubbed to avoid 500s. If the product needs persistence, author a
+//! proper migration adding a `phpyun_rs_company_claim` table.
+
 use super::entity::CompanyClaim;
 use sqlx::MySqlPool;
 
 pub async fn record(
-    pool: &MySqlPool,
-    uid: u64,
-    claimer_uid: u64,
-    client_ip: &str,
-    now: i64,
+    _pool: &MySqlPool,
+    _uid: u64,
+    _claimer_uid: u64,
+    _client_ip: &str,
+    _now: i64,
 ) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query(
-        r#"INSERT INTO phpyun_company_fact
-           (uid, claimer_uid, client_ip, created_at)
-           VALUES (?, ?, ?, ?)"#,
-    )
-    .bind(uid)
-    .bind(claimer_uid)
-    .bind(client_ip)
-    .bind(now)
-    .execute(pool)
-    .await?;
-    Ok(res.last_insert_id())
+    Ok(0)
 }
 
 pub async fn find_by_uid(
-    pool: &MySqlPool,
-    uid: u64,
+    _pool: &MySqlPool,
+    _uid: u64,
 ) -> Result<Option<CompanyClaim>, sqlx::Error> {
-    sqlx::query_as::<_, CompanyClaim>(
-        r#"SELECT id, uid, claimer_uid, client_ip, created_at
-           FROM phpyun_company_fact WHERE uid = ?"#,
-    )
-    .bind(uid)
-    .fetch_optional(pool)
-    .await
+    Ok(None)
 }

@@ -44,20 +44,12 @@ pub async fn create(
 
     // 1. Look up job + company name in one shot — also confirms the job exists
     //    and is approved for public viewing.
-    let row: Option<(u64, String, String)> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
-        "SELECT CAST(uid AS UNSIGNED), \
-                COALESCE(name, ''), \
-                COALESCE(com_name, '') \
-         FROM phpyun_company_job \
-         WHERE id = ? AND state = 1 AND status = 0 AND r_status = 1 \
-         LIMIT 1",
-    )
-    .bind(input.jobid)
-    .fetch_optional(reader)
-    .await?;
-
-    let (job_uid, job_name, com_name) =
-        row.ok_or_else(|| AppError::new(InfraError::InvalidParam("job_not_found".into())))?;
+    let job = phpyun_models::job::repo::find_public_by_id(reader, input.jobid)
+        .await?
+        .ok_or_else(|| AppError::new(InfraError::InvalidParam("job_not_found".into())))?;
+    let job_uid = job.uid;
+    let job_name = job.name.clone();
+    let com_name = job.com_name.clone().unwrap_or_default();
 
     if job_uid == user.uid {
         return Err(AppError::param_invalid("self_message_forbidden"));
@@ -102,14 +94,10 @@ pub async fn list_public(
     page: Pagination,
 ) -> AppResult<JobMsgPage> {
     let reader = state.db.reader();
-    let job_uid: u64 = sqlx::query_as::<_, (u64,)>( // TODO(arch): inline sqlx pending repo lift
-        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_company_job WHERE id = ? LIMIT 1",
-    )
-    .bind(jobid)
-    .fetch_optional(reader)
-    .await?
-    .map(|(u,)| u)
-    .unwrap_or(0);
+    let job_uid: u64 = phpyun_models::job::repo::find_by_id(reader, jobid)
+        .await?
+        .map(|j| j.uid)
+        .unwrap_or(0);
 
     if job_uid == 0 {
         return Ok(JobMsgPage { list: vec![], total: 0 });

@@ -254,16 +254,9 @@ pub async fn submit_appeal(
 
     let reader = state.db.reader();
     // Try username → email → mobile (PHPYun matches only username; we relax this).
-    let row: Option<(u64,)> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
-        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_member \
-         WHERE username = ? OR email = ? OR moblie = ? LIMIT 1",
-    )
-    .bind(acc)
-    .bind(acc)
-    .bind(acc)
-    .fetch_optional(reader)
-    .await?;
-    let (uid,) = row.ok_or_else(|| AppError::param_invalid("account_not_found"))?;
+    let uid = phpyun_models::user::repo::uid_by_account(reader, acc)
+        .await?
+        .ok_or_else(|| AppError::param_invalid("account_not_found"))?;
 
     // PHP packs three contact fields into one column with a `-` separator.
     let shensu = format!(
@@ -277,18 +270,9 @@ pub async fn submit_appeal(
     }
 
     let now = phpyun_core::clock::now_ts();
-    let res = sqlx::query( // TODO(arch): inline sqlx pending repo lift
-        "UPDATE phpyun_member \
-            SET appeal = ?, appealtime = ?, appealstate = 1 \
-          WHERE uid = ?",
-    )
-    .bind(&shensu)
-    .bind(now)
-    .bind(uid)
-    .execute(state.db.pool())
-    .await?;
-
-    if res.rows_affected() == 0 {
+    let n =
+        phpyun_models::user::repo::submit_appeal(state.db.pool(), uid, &shensu, now).await?;
+    if n == 0 {
         return Err(InfraError::InvalidParam("appeal_persist_failed".into()).into());
     }
 

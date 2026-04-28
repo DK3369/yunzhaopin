@@ -123,84 +123,55 @@ pub async fn resume_sex_distribution(state: &AppState) -> AppResult<Arc<Vec<Dist
     cache
         .get_or_load("resume_sex", move || async move {
             let (s, e) = last_year_range(phpyun_core::clock::now_ts());
-            let rows: Vec<(i32, i64)> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
-                "SELECT sex, COUNT(*) AS num FROM phpyun_resume \
-                 WHERE sex IN (1,2) AND lastupdate >= ? AND lastupdate <= ? \
-                 GROUP BY sex ORDER BY num DESC LIMIT 2",
-            )
-            .bind(s)
-            .bind(e)
-            .fetch_all(&db)
-            .await?;
-            let total: i64 = rows.iter().map(|r| r.1).sum();
-            Ok(rows
-                .into_iter()
-                .map(|(k, n)| DistItem {
-                    key: k as i64,
-                    num: n,
-                    rate: rate(n, total),
-                })
-                .collect())
+            let rows = phpyun_models::stats::repo::sex_distribution(&db, s, e).await?;
+            Ok(buckets_to_dist(rows))
         })
         .await
 }
 
 /// Education distribution (`phpyun_resume.edu`)
 pub async fn resume_edu_distribution(state: &AppState) -> AppResult<Arc<Vec<DistItem>>> {
-    let cache = dist_cache();
-    let db = state.db.reader().clone();
-    cache
-        .get_or_load("resume_edu", move || async move {
-            let (s, e) = last_year_range(phpyun_core::clock::now_ts());
-            let rows: Vec<(i32, i64)> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
-                "SELECT edu, COUNT(*) AS num FROM phpyun_resume \
-                 WHERE edu > 0 AND lastupdate >= ? AND lastupdate <= ? \
-                 GROUP BY edu ORDER BY num DESC",
-            )
-            .bind(s)
-            .bind(e)
-            .fetch_all(&db)
-            .await?;
-            let total: i64 = rows.iter().map(|r| r.1).sum();
-            Ok(rows
-                .into_iter()
-                .map(|(k, n)| DistItem {
-                    key: k as i64,
-                    num: n,
-                    rate: rate(n, total),
-                })
-                .collect())
-        })
-        .await
+    distribution(state, dist_cache(), "resume_edu", "phpyun_resume", "edu", 0).await
 }
 
 /// Work-experience distribution (`phpyun_resume.exp`)
 pub async fn resume_exp_distribution(state: &AppState) -> AppResult<Arc<Vec<DistItem>>> {
-    let cache = dist_cache();
+    distribution(state, dist_cache(), "resume_exp", "phpyun_resume", "exp", 0).await
+}
+
+/// Shared helper: pull a bucket distribution off `stats::repo` and convert to
+/// `Vec<DistItem>`. `limit = 0` means "no limit" (passes a large value).
+async fn distribution(
+    state: &AppState,
+    cache: &'static phpyun_core::cache::SimpleCache<&'static str, Vec<DistItem>>,
+    cache_key: &'static str,
+    table: &'static str,
+    col: &'static str,
+    limit: u64,
+) -> AppResult<Arc<Vec<DistItem>>> {
     let db = state.db.reader().clone();
+    let limit = if limit == 0 { 1000 } else { limit };
     cache
-        .get_or_load("resume_exp", move || async move {
+        .get_or_load(cache_key, move || async move {
             let (s, e) = last_year_range(phpyun_core::clock::now_ts());
-            let rows: Vec<(i32, i64)> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
-                "SELECT exp, COUNT(*) AS num FROM phpyun_resume \
-                 WHERE exp > 0 AND lastupdate >= ? AND lastupdate <= ? \
-                 GROUP BY exp ORDER BY num DESC",
+            let rows = phpyun_models::stats::repo::bucket_distribution(
+                &db, table, col, s, e, limit,
             )
-            .bind(s)
-            .bind(e)
-            .fetch_all(&db)
             .await?;
-            let total: i64 = rows.iter().map(|r| r.1).sum();
-            Ok(rows
-                .into_iter()
-                .map(|(k, n)| DistItem {
-                    key: k as i64,
-                    num: n,
-                    rate: rate(n, total),
-                })
-                .collect())
+            Ok(buckets_to_dist(rows))
         })
         .await
+}
+
+fn buckets_to_dist(rows: Vec<(i32, i64)>) -> Vec<DistItem> {
+    let total: i64 = rows.iter().map(|r| r.1).sum();
+    rows.into_iter()
+        .map(|(k, n)| DistItem {
+            key: k as i64,
+            num: n,
+            rate: rate(n, total),
+        })
+        .collect()
 }
 
 /// Age distribution, with 4 hard-coded buckets: 16-24 / 25-30 / 31-40 / 41-65
@@ -213,18 +184,11 @@ pub async fn resume_age_distribution(state: &AppState) -> AppResult<Arc<Vec<Dist
             // PHP stores `birthday` as a `YYYY-MM-DD` string; fetch rows and bucket in
             // the application layer.
             let (s, e) = last_year_range(phpyun_core::clock::now_ts());
-            let rows: Vec<(String,)> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
-                "SELECT birthday FROM phpyun_resume \
-                 WHERE birthday IS NOT NULL AND birthday <> '' AND lastupdate >= ? AND lastupdate <= ?",
-            )
-            .bind(s)
-            .bind(e)
-            .fetch_all(&db)
-            .await?;
+            let bdays = phpyun_models::stats::repo::resume_birthdays_in_range(&db, s, e).await?;
 
             let now = phpyun_core::clock::now_ts();
             let mut buckets = [0i64; 4];
-            for (bd,) in rows {
+            for bd in bdays {
                 if let Some(age) = compute_age_years(&bd, now) {
                     if (16..=24).contains(&age) {
                         buckets[0] += 1;
@@ -275,62 +239,14 @@ fn compute_age_years(birthday: &str, now_ts: i64) -> Option<i32> {
 
 /// Company-size distribution (`phpyun_company.mun`)
 pub async fn company_scale_distribution(state: &AppState) -> AppResult<Arc<Vec<DistItem>>> {
-    let cache = dist_cache();
-    let db = state.db.reader().clone();
-    cache
-        .get_or_load("company_scale", move || async move {
-            let (s, e) = last_year_range(phpyun_core::clock::now_ts());
-            let rows: Vec<(i32, i64)> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
-                "SELECT mun, COUNT(*) AS num FROM phpyun_company \
-                 WHERE mun > 0 AND lastupdate >= ? AND lastupdate <= ? \
-                 GROUP BY mun ORDER BY num DESC",
-            )
-            .bind(s)
-            .bind(e)
-            .fetch_all(&db)
-            .await?;
-            let total: i64 = rows.iter().map(|r| r.1).sum();
-            Ok(rows
-                .into_iter()
-                .map(|(k, n)| DistItem {
-                    key: k as i64,
-                    num: n,
-                    rate: rate(n, total),
-                })
-                .collect())
-        })
-        .await
+    distribution(state, dist_cache(), "company_scale", "phpyun_company", "mun", 0).await
 }
 
 /// Company-nature distribution (`phpyun_company.pr`)
 pub async fn company_property_distribution(
     state: &AppState,
 ) -> AppResult<Arc<Vec<DistItem>>> {
-    let cache = dist_cache();
-    let db = state.db.reader().clone();
-    cache
-        .get_or_load("company_property", move || async move {
-            let (s, e) = last_year_range(phpyun_core::clock::now_ts());
-            let rows: Vec<(i32, i64)> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
-                "SELECT pr, COUNT(*) AS num FROM phpyun_company \
-                 WHERE pr > 0 AND lastupdate >= ? AND lastupdate <= ? \
-                 GROUP BY pr ORDER BY num DESC",
-            )
-            .bind(s)
-            .bind(e)
-            .fetch_all(&db)
-            .await?;
-            let total: i64 = rows.iter().map(|r| r.1).sum();
-            Ok(rows
-                .into_iter()
-                .map(|(k, n)| DistItem {
-                    key: k as i64,
-                    num: n,
-                    rate: rate(n, total),
-                })
-                .collect())
-        })
-        .await
+    distribution(state, dist_cache(), "company_property", "phpyun_company", "pr", 0).await
 }
 
 /// Company region distribution (`phpyun_company.provinceid | cityid | three_cityid`)
@@ -341,38 +257,7 @@ pub async fn company_city_distribution(
     state: &AppState,
     level: i32,
 ) -> AppResult<Arc<Vec<DistItem>>> {
-    let cache = dist_city_cache();
-    let db = state.db.reader().clone();
-    let lvl = if (1..=3).contains(&level) { level } else { 2 };
-    cache
-        .get_or_load(("company_city", lvl), move || async move {
-            let (s, e) = last_year_range(phpyun_core::clock::now_ts());
-            let col = match lvl {
-                1 => "provinceid",
-                3 => "three_cityid",
-                _ => "cityid",
-            };
-            let sql = format!(
-                "SELECT {col}, COUNT(*) AS num FROM phpyun_company \
-                 WHERE {col} > 0 AND lastupdate >= ? AND lastupdate <= ? \
-                 GROUP BY {col} ORDER BY num DESC LIMIT 50"
-            );
-            let rows: Vec<(i32, i64)> = sqlx::query_as(&sql) // TODO(arch): inline sqlx pending repo lift
-                .bind(s)
-                .bind(e)
-                .fetch_all(&db)
-                .await?;
-            let total: i64 = rows.iter().map(|r| r.1).sum();
-            Ok(rows
-                .into_iter()
-                .map(|(k, n)| DistItem {
-                    key: k as i64,
-                    num: n,
-                    rate: rate(n, total),
-                })
-                .collect())
-        })
-        .await
+    city_distribution(state, "company_city", "phpyun_company", level).await
 }
 
 /// Jobseeker region distribution (from `phpyun_resume_expect`) — uses the same `level`
@@ -381,36 +266,31 @@ pub async fn resume_city_distribution(
     state: &AppState,
     level: i32,
 ) -> AppResult<Arc<Vec<DistItem>>> {
+    city_distribution(state, "resume_city", "phpyun_resume_expect", level).await
+}
+
+async fn city_distribution(
+    state: &AppState,
+    cache_key: &'static str,
+    table: &'static str,
+    level: i32,
+) -> AppResult<Arc<Vec<DistItem>>> {
     let cache = dist_city_cache();
     let db = state.db.reader().clone();
     let lvl = if (1..=3).contains(&level) { level } else { 2 };
     cache
-        .get_or_load(("resume_city", lvl), move || async move {
-            let (s, e) = last_year_range(phpyun_core::clock::now_ts());
-            let col = match lvl {
+        .get_or_load((cache_key, lvl), move || async move {
+            let col: &'static str = match lvl {
                 1 => "provinceid",
                 3 => "three_cityid",
                 _ => "cityid",
             };
-            let sql = format!(
-                "SELECT {col}, COUNT(*) AS num FROM phpyun_resume_expect \
-                 WHERE {col} > 0 AND lastupdate >= ? AND lastupdate <= ? \
-                 GROUP BY {col} ORDER BY num DESC LIMIT 50"
-            );
-            let rows: Vec<(i32, i64)> = sqlx::query_as(&sql) // TODO(arch): inline sqlx pending repo lift
-                .bind(s)
-                .bind(e)
-                .fetch_all(&db)
-                .await?;
-            let total: i64 = rows.iter().map(|r| r.1).sum();
-            Ok(rows
-                .into_iter()
-                .map(|(k, n)| DistItem {
-                    key: k as i64,
-                    num: n,
-                    rate: rate(n, total),
-                })
-                .collect())
+            let (s, e) = last_year_range(phpyun_core::clock::now_ts());
+            let rows = phpyun_models::stats::repo::bucket_distribution(
+                &db, table, col, s, e, 50,
+            )
+            .await?;
+            Ok(buckets_to_dist(rows))
         })
         .await
 }
@@ -428,13 +308,15 @@ pub async fn user_register_trend(state: &AppState) -> AppResult<Arc<Vec<TimePoin
         .await
 }
 
-/// Company job-posting trend (last 12 months) using `phpyun_company_job.addtime`.
+/// Company job-posting trend (last 12 months). PHP `phpyun_company_job` has
+/// no dedicated "created at" column; the closest is `sdate` (post-go-live
+/// date) which is what PHPYun's PHP front-end also uses for this chart.
 pub async fn company_job_publish_trend(state: &AppState) -> AppResult<Arc<Vec<TimePoint>>> {
     let cache = ts_cache();
     let db = state.db.reader().clone();
     cache
         .get_or_load("company_job_publish", move || async move {
-            month_bucket_trend(&db, "phpyun_company_job", "addtime", None).await
+            month_bucket_trend(&db, "phpyun_company_job", "sdate", None).await
         })
         .await
 }
@@ -462,20 +344,10 @@ async fn month_bucket_trend(
     let now = phpyun_core::clock::now_ts();
     let start = now - 365 * DAY;
 
-    let mut sql = format!(
-        "SELECT DATE_FORMAT(FROM_UNIXTIME({ts_col}), '%Y-%m') AS ym, COUNT(*) AS num \
-         FROM {table} WHERE {ts_col} >= ?"
-    );
-    if let Some(w) = where_extra {
-        sql.push_str(" AND ");
-        sql.push_str(w);
-    }
-    sql.push_str(" GROUP BY ym ORDER BY ym");
-
-    let rows: Vec<(String, i64)> = sqlx::query_as(&sql) // TODO(arch): inline sqlx pending repo lift
-        .bind(start)
-        .fetch_all(db)
-        .await?;
+    let rows = phpyun_models::stats::repo::month_bucket_trend(
+        db, table, ts_col, start, where_extra,
+    )
+    .await?;
 
     // Pad the past 12 months with zeros, keyed by YYYY-MM
     let buckets = recent_12_months(now);

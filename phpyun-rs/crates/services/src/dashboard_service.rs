@@ -152,41 +152,24 @@ pub async fn year_report(
     user.require_employer()?;
     let db = state.db.reader();
 
-    let log_row: Option<(i32, i32, i32, i32, i32, i32, i32, i64)> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
-        "SELECT \
-            CAST(COALESCE(login, 0) AS SIGNED), \
-            CAST(COALESCE(job, 0) AS SIGNED), \
-            CAST(COALESCE(lookjob, 0) AS SIGNED), \
-            CAST(COALESCE(sqjob, 0) AS SIGNED), \
-            CAST(COALESCE(lookresume, 0) AS SIGNED), \
-            CAST(COALESCE(yq, 0) AS SIGNED), \
-            CAST(COALESCE(nightwork, 0) AS SIGNED), \
-            CAST(COALESCE(lastwork, 0) AS SIGNED) \
-         FROM phpyun_hr_log WHERE uid = ? LIMIT 1",
-    )
-    .bind(user.uid)
-    .fetch_optional(db)
-    .await?;
-
-    let (login, job, lookjob, sqjob, lookresume, yq, nightwork, lastwork) =
-        log_row.unwrap_or((0, 0, 0, 0, 0, 0, 0, 0));
-
-    let info_row: Option<(Option<String>, Option<String>, Option<String>)> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
-        "SELECT name, shortname, linkman FROM phpyun_company WHERE uid = ? LIMIT 1",
-    )
-    .bind(user.uid)
-    .fetch_optional(db)
-    .await?;
-    let (company_name, linkman) = match info_row {
-        Some((name, short, link)) => {
-            let display = short
-                .filter(|s| !s.is_empty())
-                .or(name)
-                .unwrap_or_default();
-            (display, link.unwrap_or_default())
-        }
-        None => (String::new(), String::new()),
+    let log = phpyun_models::stats::repo::hr_log_year_report(db, user.uid).await?;
+    let (login, job, lookjob, sqjob, lookresume, yq, nightwork, lastwork) = match log {
+        Some(r) => (r.login, r.job, r.lookjob, r.sqjob, r.lookresume, r.yq, r.nightwork, r.lastwork),
+        None => (0, 0, 0, 0, 0, 0, 0, 0),
     };
+
+    let (company_name, linkman) =
+        match phpyun_models::company::repo::find_by_uid(db, user.uid).await? {
+            Some(c) => {
+                let display = c
+                    .shortname
+                    .filter(|s| !s.is_empty())
+                    .or(c.name)
+                    .unwrap_or_default();
+                (display, c.linkman.unwrap_or_default())
+            }
+            None => (String::new(), String::new()),
+        };
 
     Ok(YearReport {
         login_days: login.max(0) as u32,

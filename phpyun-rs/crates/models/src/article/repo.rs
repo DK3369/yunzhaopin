@@ -78,9 +78,8 @@ pub async fn list_public(
     limit: u64,
 ) -> Result<Vec<Article>, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new(format!("SELECT {FIELDS}, NULL AS content {FROM_LIST}"));
-    qb.push(" WHERE n.did = ");
-    qb.push_bind(f.did);
+        QueryBuilder::new(format!("SELECT {FIELDS}, NULL AS content {FROM_LIST} WHERE 1=1"));
+    push_did_scope(&mut qb, f.did);
     push_filters(&mut qb, f);
     qb.push(" ORDER BY n.sort DESC, n.datetime DESC LIMIT ");
     qb.push_bind(limit);
@@ -91,11 +90,23 @@ pub async fn list_public(
 
 pub async fn count_public(pool: &MySqlPool, f: &ArticleFilter<'_>) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_news_base n WHERE n.did = ");
-    qb.push_bind(f.did);
+        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_news_base n WHERE 1=1");
+    push_did_scope(&mut qb, f.did);
     push_filters(&mut qb, f);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(n.max(0) as u64)
+}
+
+/// PHP convention (`app/controller/wap/article.class.php:29-32`):
+/// - main site (did=0): no scope filter — articles from any did show up.
+/// - subsite (did>0): match either this subsite's did OR did=-1
+///   (which PHP treats as "publish to all sites").
+fn push_did_scope<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, did: u32) {
+    if did > 0 {
+        qb.push(" AND (n.did = ");
+        qb.push_bind(did);
+        qb.push(" OR n.did = -1)");
+    }
 }
 
 fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ArticleFilter<'a>) {

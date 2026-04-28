@@ -87,7 +87,7 @@ impl From<phpyun_models::company_tpl::entity::CompanyTpl> for TplView {
 
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/company-tpls/list",
+    path = "/v1/mcenter/company-tpls",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))

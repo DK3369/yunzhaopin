@@ -99,6 +99,17 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &CompanyFilter<'a
     }
 }
 
+/// Cheap existence check — `SELECT 1`. Used by transfer/merge preconditions
+/// where the full entity is unnecessary.
+pub async fn exists_by_uid(pool: &MySqlPool, uid: u64) -> Result<bool, sqlx::Error> {
+    let row: Option<(i64,)> =
+        sqlx::query_as("SELECT 1 FROM phpyun_company WHERE uid = ? LIMIT 1")
+            .bind(uid)
+            .fetch_optional(pool)
+            .await?;
+    Ok(row.is_some())
+}
+
 pub async fn find_by_uid(pool: &MySqlPool, uid: u64) -> Result<Option<Company>, sqlx::Error> {
     let sql = format!("SELECT {FIELDS} FROM phpyun_company WHERE uid = ? LIMIT 1");
     sqlx::query_as::<_, Company>(&sql)
@@ -120,6 +131,17 @@ where
     .bind(did)
     .execute(exec)
     .await?;
+    Ok(())
+}
+
+/// Bare INSERT IGNORE — only sets `uid`. Counterpart of
+/// [`crate::resume::repo::ensure_uid_only`] for the company side; called by
+/// `seed_role_rows` when an employer's usertype is set after registration.
+pub async fn ensure_uid_only(pool: &sqlx::MySqlPool, uid: u64) -> Result<(), sqlx::Error> {
+    sqlx::query("INSERT IGNORE INTO phpyun_company (uid) VALUES (?)")
+        .bind(uid)
+        .execute(pool)
+        .await?;
     Ok(())
 }
 

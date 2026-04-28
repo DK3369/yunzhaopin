@@ -1,7 +1,23 @@
+//! `phpyun_keyword_log` repository — per-user keyword search history.
+//!
+//! PHP schema (truth): `id, uid, usertype, keyword, ctime`. There is no
+//! `scope` (string) column — PHP keys by `usertype` (1=jobseeker /
+//! 2=employer) instead. We expose Rust's string `scope` field by mapping
+//! the integer usertype to a label ("user" / "company") on read; on write
+//! the Rust scope string is ignored.
+
 use super::entity::SearchHistory;
 use sqlx::MySqlPool;
 
-const FIELDS: &str = "id, uid, scope, keyword, created_at";
+const SELECT_FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
+                             CAST(COALESCE(uid, 0) AS UNSIGNED) AS uid, \
+                             CASE COALESCE(usertype, 0) \
+                                 WHEN 1 THEN 'user' \
+                                 WHEN 2 THEN 'company' \
+                                 ELSE '' \
+                             END AS scope, \
+                             COALESCE(keyword, '') AS keyword, \
+                             COALESCE(ctime, 0) AS created_at";
 
 pub async fn insert(
     pool: &MySqlPool,
@@ -10,12 +26,18 @@ pub async fn insert(
     keyword: &str,
     now: i64,
 ) -> Result<u64, sqlx::Error> {
+    // Map Rust scope string to PHP `usertype` int.
+    let usertype: i32 = match scope {
+        "user" | "jobseeker" | "1" => 1,
+        "company" | "employer" | "2" => 2,
+        _ => 0,
+    };
     let res = sqlx::query(
-        r#"INSERT INTO phpyun_keyword_log (uid, scope, keyword, created_at)
+        r#"INSERT INTO phpyun_keyword_log (uid, usertype, keyword, ctime)
            VALUES (?, ?, ?, ?)"#,
     )
     .bind(uid)
-    .bind(scope)
+    .bind(usertype)
     .bind(keyword)
     .bind(now)
     .execute(pool)
@@ -29,21 +51,26 @@ pub async fn list(
     scope: Option<&str>,
     limit: u64,
 ) -> Result<Vec<SearchHistory>, sqlx::Error> {
-    let sql = match scope {
+    let usertype = scope.and_then(|s| match s {
+        "user" | "jobseeker" | "1" => Some(1i32),
+        "company" | "employer" | "2" => Some(2i32),
+        _ => None,
+    });
+    let sql = match usertype {
         Some(_) => format!(
-            "SELECT {FIELDS} FROM phpyun_keyword_log
-             WHERE uid = ? AND scope = ?
-             ORDER BY created_at DESC LIMIT ?"
+            "SELECT {SELECT_FIELDS} FROM phpyun_keyword_log \
+             WHERE uid = ? AND usertype = ? \
+             ORDER BY ctime DESC, id DESC LIMIT ?"
         ),
         None => format!(
-            "SELECT {FIELDS} FROM phpyun_keyword_log
-             WHERE uid = ?
-             ORDER BY created_at DESC LIMIT ?"
+            "SELECT {SELECT_FIELDS} FROM phpyun_keyword_log \
+             WHERE uid = ? \
+             ORDER BY ctime DESC, id DESC LIMIT ?"
         ),
     };
     let q = sqlx::query_as::<_, SearchHistory>(&sql);
-    match scope {
-        Some(s) => q.bind(uid).bind(s).bind(limit).fetch_all(pool).await,
+    match usertype {
+        Some(u) => q.bind(uid).bind(u).bind(limit).fetch_all(pool).await,
         None => q.bind(uid).bind(limit).fetch_all(pool).await,
     }
 }
@@ -68,11 +95,16 @@ pub async fn clear(
     uid: u64,
     scope: Option<&str>,
 ) -> Result<u64, sqlx::Error> {
-    let res = match scope {
-        Some(s) => {
-            sqlx::query("DELETE FROM phpyun_keyword_log WHERE uid = ? AND scope = ?")
+    let usertype = scope.and_then(|s| match s {
+        "user" | "jobseeker" | "1" => Some(1i32),
+        "company" | "employer" | "2" => Some(2i32),
+        _ => None,
+    });
+    let res = match usertype {
+        Some(u) => {
+            sqlx::query("DELETE FROM phpyun_keyword_log WHERE uid = ? AND usertype = ?")
                 .bind(uid)
-                .bind(s)
+                .bind(u)
                 .execute(pool)
                 .await?
         }
@@ -93,21 +125,26 @@ pub async fn trim(
     scope: &str,
     keep: u64,
 ) -> Result<u64, sqlx::Error> {
+    let usertype: i32 = match scope {
+        "user" | "jobseeker" | "1" => 1,
+        "company" | "employer" | "2" => 2,
+        _ => 0,
+    };
     // MySQL does not support DELETE with LIMIT+OFFSET directly; use a subquery instead.
     let res = sqlx::query(
         r#"DELETE FROM phpyun_keyword_log
-           WHERE uid = ? AND scope = ? AND id NOT IN (
+           WHERE uid = ? AND usertype = ? AND id NOT IN (
                SELECT * FROM (
                    SELECT id FROM phpyun_keyword_log
-                   WHERE uid = ? AND scope = ?
-                   ORDER BY created_at DESC LIMIT ?
+                   WHERE uid = ? AND usertype = ?
+                   ORDER BY ctime DESC LIMIT ?
                ) AS keep_ids
            )"#,
     )
     .bind(uid)
-    .bind(scope)
+    .bind(usertype)
     .bind(uid)
-    .bind(scope)
+    .bind(usertype)
     .bind(keep)
     .execute(pool)
     .await?;

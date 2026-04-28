@@ -61,7 +61,13 @@ pub struct JobSummary {
 
     // Requirements
     pub exp: i32,
+    /// Experience-tier name (PHP `comclass` dict, e.g. "5-10 年") —
+    /// filled by `job_summary_from_dict*`; empty for `From<Job>`.
+    pub exp_n: String,
     pub edu: i32,
+    /// Education-level name (PHP `comclass` dict, e.g. "本科") —
+    /// filled by `job_summary_from_dict*`; empty for `From<Job>`.
+    pub edu_n: String,
 
     // Promotion status (computed from rec_time / urgent_time vs. now)
     pub rec: i32,
@@ -121,7 +127,9 @@ impl From<Job> for JobSummary {
             max_salary: j.maxsalary,
 
             exp: j.exp,
+            exp_n: String::new(),
             edu: j.edu,
+            edu_n: String::new(),
 
             rec: j.rec,
             urgent: j.urgent,

@@ -51,7 +51,7 @@ pub struct PartListQuery {
     pub did: u32,
 }
 fn default_did() -> u32 {
-    1
+    0
 }
 
 /// Part-time list item — defined in `phpyun_models::part::view`. The

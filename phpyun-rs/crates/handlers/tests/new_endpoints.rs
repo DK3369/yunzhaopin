@@ -838,11 +838,11 @@ fn map_config_route_registered() {
 
 #[test]
 fn eval_paper_messages_routes_registered() {
-    // PHP evaluate.model.php::getMessageList → GET /v1/wap/eval-papers/{id}/messages
-    assert_endpoint("POST", "/v1/wap/eval-papers/messages");
+    // PHP evaluate.model.php::getMessageList → POST /v1/wap/eval-papers/messages/list
+    assert_endpoint("POST", "/v1/wap/eval-papers/messages/list");
     assert_schema("PaperMessageItem");
-    // PHP evaluate/exampaper::message_action → POST /v1/mcenter/eval-papers/{id}/messages
-    assert_endpoint("POST", "/v1/mcenter/eval-papers/messages");
+    // PHP evaluate/exampaper::message_action → POST /v1/mcenter/eval-papers/messages/post
+    assert_endpoint("POST", "/v1/mcenter/eval-papers/messages/post");
     assert_schema("PaperMessageForm");
 }
 

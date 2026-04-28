@@ -5,7 +5,7 @@
 //!  Business handler
 //!     │  audit::emit(state, AuditEvent { ... })
 //!     ▼
-//!  audit facade  ──┬──► DB (synchronous write to yun_rs_audit_log)   ← query index
+//!  audit facade  ──┬──► DB (synchronous write to phpyun_rs_audit_log)   ← query index
 //!                  │
 //!                  └──► EventBus topic="audit.log"                    ← real-time consumers
 //!                        (asynchronous spawn_best_effort; failures don't block business)
@@ -127,8 +127,8 @@ pub async fn emit(state: &AppState, event: AuditEvent) -> AppResult<()> {
 
 async fn insert_db(pool: &MySqlPool, e: &AuditEvent, created_at: i64) -> AppResult<()> {
     let meta_s = e.meta.as_ref().map(json::to_string).transpose()?;
-    sqlx::query(
-        r"INSERT INTO yun_rs_audit_log
+    let res = sqlx::query(
+        r"INSERT INTO phpyun_rs_audit_log
           (actor_uid, actor_ip, actor_ua, action, target, success, meta, created_at)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
     )
@@ -141,8 +141,17 @@ async fn insert_db(pool: &MySqlPool, e: &AuditEvent, created_at: i64) -> AppResu
     .bind(meta_s)
     .bind(created_at)
     .execute(pool)
-    .await?;
-    Ok(())
+    .await;
+    match res {
+        Ok(_) => Ok(()),
+        Err(err) if crate::db::is_missing_table(&err) => {
+            // Audit table not provisioned — log once and continue. The bus
+            // publish path will still run, so audit consumers keep working.
+            tracing::warn!(action = e.action, "phpyun_rs_audit_log missing — skipping DB write");
+            Ok(())
+        }
+        Err(err) => Err(err.into()),
+    }
 }
 
 /// Bus-only variant that doesn't write the DB — used for events that don't need

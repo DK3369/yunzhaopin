@@ -103,7 +103,10 @@ pub async fn create(
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1, 0, ?)"#,
     )
     .bind(uid)
-    .bind(input.name)
+    // PHP `phpyun_resume_expect.name` is NOT NULL DEFAULT ''. Bind empty
+    // string when caller didn't supply a name so the INSERT doesn't 1048
+    // ("Column 'name' cannot be null").
+    .bind(input.name.unwrap_or(""))
     .bind(input.hy)
     .bind(input.job_classid)
     .bind(input.city_classid)

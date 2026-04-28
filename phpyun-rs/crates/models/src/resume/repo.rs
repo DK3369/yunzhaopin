@@ -4,9 +4,12 @@ use sqlx::{MySqlPool, QueryBuilder};
 // PHPYun `phpyun_resume` real column name `edu` -> Rust `education`; other column names match.
 // Covers all fields used by the PHPYun WAP resume detail page.
 const FIELDS: &str = "\
-    uid, name, nametype, sex, birthday, marriage, edu AS education, \
-    telphone, telhome, email, photo, phototype, status, r_status, \
-    def_job, lastupdate, \
+    uid, name, COALESCE(nametype, 0) AS nametype, COALESCE(sex, 0) AS sex, \
+    birthday, COALESCE(marriage, 0) AS marriage, \
+    COALESCE(edu, 0) AS education, \
+    telphone, telhome, email, photo, COALESCE(phototype, 0) AS phototype, \
+    COALESCE(status, 0) AS status, COALESCE(r_status, 0) AS r_status, \
+    COALESCE(def_job, 0) AS def_job, COALESCE(lastupdate, 0) AS lastupdate, \
     height, weight, nationality, living, domicile, homepage, address, \
     description, idcard, idcard_pic, \
     COALESCE(idcard_status, 0) AS idcard_status, \
@@ -17,6 +20,17 @@ const FIELDS: &str = "\
     COALESCE(resumetime, 0) AS resumetime, \
     COALESCE(login_date, 0) AS login_date, \
     COALESCE(did, 0) AS did";
+
+/// Cheap existence check — `SELECT 1`. Counterpart of
+/// [`crate::company::repo::exists_by_uid`].
+pub async fn exists_by_uid(pool: &MySqlPool, uid: u64) -> Result<bool, sqlx::Error> {
+    let row: Option<(i64,)> =
+        sqlx::query_as("SELECT 1 FROM phpyun_resume WHERE uid = ? LIMIT 1")
+            .bind(uid)
+            .fetch_optional(pool)
+            .await?;
+    Ok(row.is_some())
+}
 
 pub async fn find_by_uid(pool: &MySqlPool, uid: u64) -> Result<Option<Resume>, sqlx::Error> {
     let sql = format!("SELECT {FIELDS} FROM phpyun_resume WHERE uid = ? LIMIT 1");
@@ -117,6 +131,18 @@ where
     .bind(now)
     .execute(exec)
     .await?;
+    Ok(())
+}
+
+/// Bare INSERT IGNORE — only sets `uid`; every other column relies on the
+/// MySQL default. Used by `seed_role_rows` when a member's usertype is set
+/// post-registration and we just need a row to exist for FK / counter writes
+/// to succeed; the full-defaults version above is overkill in that path.
+pub async fn ensure_uid_only(pool: &sqlx::MySqlPool, uid: u64) -> Result<(), sqlx::Error> {
+    sqlx::query("INSERT IGNORE INTO phpyun_resume (uid) VALUES (?)")
+        .bind(uid)
+        .execute(pool)
+        .await?;
     Ok(())
 }
 

@@ -365,9 +365,11 @@ pub async fn refresh_access(
         jti_refresh,
     } = issue_pair(&state.config, user.uid, user.usertype, user.did)?;
 
-    // Rotate the session row to the new jti pair so concurrent uses of the
-    // old access_token are rejected.
-    user_session_service::rotate_on_refresh(
+    // Match the session row by the OLD access jti (the client passed an
+    // access_token, not a refresh_token). If the row is gone or revoked,
+    // `rotate_on_access_refresh` returns `session_expired` and we refuse
+    // to mint a new token — server-side session is the source of truth.
+    user_session_service::rotate_on_access_refresh(
         state,
         &user.jti,
         &jti_access,
@@ -500,30 +502,12 @@ async fn seed_role_rows(state: &AppState, uid: u64, usertype: u8) {
     let pool = state.db.pool();
     match usertype {
         1 => {
-            let _ = sqlx::query( // TODO(arch): inline sqlx pending repo lift
-                "INSERT IGNORE INTO phpyun_member_statis \
-                    (uid, integral, fav_jobnum, resume_num, sq_jobnum, message_num, down_num) \
-                 VALUES (?, '', 0, 0, 0, 0, 0)",
-            )
-            .bind(uid)
-            .execute(pool)
-            .await;
-            let _ = sqlx::query("INSERT IGNORE INTO phpyun_resume (uid) VALUES (?)") // TODO(arch): inline sqlx pending repo lift
-                .bind(uid)
-                .execute(pool)
-                .await;
+            let _ = phpyun_models::member_statis::repo::ensure_row(pool, uid).await;
+            let _ = phpyun_models::resume::repo::ensure_uid_only(pool, uid).await;
         }
         2 | 3 => {
-            let _ = sqlx::query( // TODO(arch): inline sqlx pending repo lift
-                "INSERT IGNORE INTO phpyun_company_statis (uid) VALUES (?)",
-            )
-            .bind(uid)
-            .execute(pool)
-            .await;
-            let _ = sqlx::query("INSERT IGNORE INTO phpyun_company (uid) VALUES (?)") // TODO(arch): inline sqlx pending repo lift
-                .bind(uid)
-                .execute(pool)
-                .await;
+            let _ = phpyun_models::company_statis::repo::ensure_row(pool, uid).await;
+            let _ = phpyun_models::company::repo::ensure_uid_only(pool, uid).await;
         }
         _ => {}
     }

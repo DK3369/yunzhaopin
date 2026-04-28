@@ -172,10 +172,14 @@ impl Config {
             cache_user_ttl_secs: env_parse("CACHE_USER_TTL_SECS", 60u64),
 
             jwt_secret: env::var("JWT_SECRET")?,
-            // 30d access by default; refresh slightly longer so refresh
-            // remains useful when access has just expired.
+            // Single-token sliding-session model: access_token is the only
+            // credential the client stores. The app calls /refresh on launch
+            // (and before expiry) to rotate to a fresh access_token, so 30 days
+            // is the hard ceiling, not a typical lifetime.
             jwt_access_ttl_secs: env_parse("JWT_ACCESS_TTL_SECS", 30 * 24 * 3600i64),
-            jwt_refresh_ttl_secs: env_parse("JWT_REFRESH_TTL_SECS", 60 * 24 * 3600i64),
+            // refresh TTL is unused in this design; jwt.rs clamps it to ≥
+            // access_ttl. Kept for env-var compatibility only.
+            jwt_refresh_ttl_secs: env_parse("JWT_REFRESH_TTL_SECS", 30 * 24 * 3600i64),
 
             web_base_url: env::var("WEB_BASE_URL").ok().filter(|s| !s.is_empty()),
 
@@ -238,6 +242,11 @@ impl Config {
         if self.jwt_secret.len() < 32 {
             anyhow::bail!("JWT_SECRET too short (need ≥ 32 chars; got {})", self.jwt_secret.len());
         }
+        if is_weak_secret(&self.jwt_secret) {
+            anyhow::bail!(
+                "JWT_SECRET is a known-weak default; generate one with `openssl rand -hex 32` and place it in .env"
+            );
+        }
         if !self.database_url.starts_with("mysql://") {
             anyhow::bail!("DATABASE_URL must start with mysql://");
         }
@@ -270,5 +279,51 @@ impl Config {
             }
         }
         Ok(self)
+    }
+}
+
+/// Reject obvious placeholders / repeated patterns. The check is deliberately
+/// strict so a copy-pasted example secret never reaches production.
+fn is_weak_secret(s: &str) -> bool {
+    let lower = s.to_ascii_lowercase();
+    const BANNED_SUBSTRINGS: &[&str] = &[
+        "change_me", "changeme", "example", "placeholder", "your_secret", "todo",
+    ];
+    if BANNED_SUBSTRINGS.iter().any(|p| lower.contains(p)) {
+        return true;
+    }
+    // All-same character (e.g. "aaaaaa...")
+    let bytes = s.as_bytes();
+    if bytes.windows(2).all(|w| w[0] == w[1]) {
+        return true;
+    }
+    // Repeated hex sequence "0123456789abcdef" (the well-known dev default).
+    let pat = b"0123456789abcdef";
+    if bytes.len() >= pat.len()
+        && bytes.chunks(pat.len()).all(|c| c == &pat[..c.len()])
+    {
+        return true;
+    }
+    false
+}
+
+#[cfg(test)]
+mod tests {
+    use super::is_weak_secret;
+
+    #[test]
+    fn weak_secrets_rejected() {
+        assert!(is_weak_secret("0123456789abcdef0123456789abcdef0123456789abcdef"));
+        assert!(is_weak_secret("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
+        assert!(is_weak_secret("CHANGE_ME_TO_RANDOM_32_BYTES_PLEASE_DO_IT"));
+        assert!(is_weak_secret("placeholder_secret_value_with_lots_of_chars"));
+    }
+
+    #[test]
+    fn strong_secrets_pass() {
+        // openssl rand -hex 32 sample
+        assert!(!is_weak_secret(
+            "9f8a2b1c4e7d5f8a3b6c9e2d4f7a8b1c5e9d3f6a2b8c4e7d5f1a8b3c6e9d2f4a"
+        ));
     }
 }

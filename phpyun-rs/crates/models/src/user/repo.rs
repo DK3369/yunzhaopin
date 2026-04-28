@@ -57,6 +57,43 @@ pub async fn find_for_login(pool: &MySqlPool, account: &str) -> Result<Option<Me
         .await
 }
 
+/// Cheap projection for flows that only need the uid keyed by any account
+/// identifier (username / mobile / email). Used by the password-appeal flow.
+pub async fn uid_by_account(pool: &MySqlPool, account: &str) -> Result<Option<u64>, sqlx::Error> {
+    let row: Option<(u64,)> = sqlx::query_as(
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_member \
+         WHERE username = ? OR email = ? OR moblie = ? LIMIT 1",
+    )
+    .bind(account)
+    .bind(account)
+    .bind(account)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(u,)| u))
+}
+
+/// Persist a password-appeal submission. Sets `appeal`, `appealtime`, and
+/// flips `appealstate = 1` (pending review). Returns rows-affected so the
+/// caller can detect "uid not found" without a second SELECT.
+pub async fn submit_appeal(
+    pool: &MySqlPool,
+    uid: u64,
+    appeal_text: &str,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "UPDATE phpyun_member \
+            SET appeal = ?, appealtime = ?, appealstate = 1 \
+          WHERE uid = ?",
+    )
+    .bind(appeal_text)
+    .bind(now)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
 pub async fn find_by_uid(pool: &MySqlPool, uid: u64) -> Result<Option<Member>, sqlx::Error> {
     let sql = format!("SELECT {FIELDS} FROM phpyun_member WHERE uid = ? LIMIT 1");
     sqlx::query_as::<_, Member>(&sql)
@@ -310,6 +347,38 @@ pub async fn set_usertype_if_unset(
         .bind(usertype as i32)
         .bind(uid)
         .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+/// Force-set `usertype` regardless of current value. Used by the account-
+/// split flow when an old account is being collapsed into the company role.
+/// Generic over `Executor` so it can run inside a transaction.
+pub async fn set_usertype<'e, E>(
+    exec: E,
+    uid: u64,
+    usertype: i32,
+) -> Result<u64, sqlx::Error>
+where
+    E: sqlx::Executor<'e, Database = sqlx::MySql>,
+{
+    let res = sqlx::query("UPDATE phpyun_member SET usertype = ? WHERE uid = ?")
+        .bind(usertype)
+        .bind(uid)
+        .execute(exec)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+/// Hard-delete a member row. Used by the account-merge flow once all of the
+/// uid's data has been moved over. Generic so it can run inside a tx.
+pub async fn delete_member<'e, E>(exec: E, uid: u64) -> Result<u64, sqlx::Error>
+where
+    E: sqlx::Executor<'e, Database = sqlx::MySql>,
+{
+    let res = sqlx::query("DELETE FROM phpyun_member WHERE uid = ?")
+        .bind(uid)
+        .execute(exec)
         .await?;
     Ok(res.rows_affected())
 }

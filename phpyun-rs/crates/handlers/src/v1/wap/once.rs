@@ -44,7 +44,7 @@ pub struct ListQuery {
     pub did: u32,
 }
 fn default_did() -> u32 {
-    1
+    0
 }
 
 #[derive(Debug, Serialize, ToSchema)]

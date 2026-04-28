@@ -15,7 +15,7 @@
 //! `get_balance`/`add_balance`/`try_deduct` are routed to
 //! `phpyun_member.integral`.
 
-use super::entity::{IntegralExchange, IntegralItem, UserIntegral};
+use super::entity::{IntegralExchange, IntegralItem};
 use sqlx::MySqlPool;
 
 pub async fn list_items(
@@ -70,56 +70,8 @@ pub async fn count_exchanges_by_user(_pool: &MySqlPool, _uid: u64) -> Result<u64
 
 // ---------- User points ----------
 // PHPYun stores user points in `phpyun_member_statis.integral` (varchar(10)).
-// `phpyun_member` itself does NOT have an `integral` column — earlier code
-// queried the wrong table and 1054'd at runtime.
+// The actual SQL lives in `crate::member_statis::repo` (single repo per
+// table); these are kept as re-exports so the legacy call sites
+// `integral_repo::get_balance / try_deduct / add_balance` keep working.
 
-pub async fn get_balance(pool: &MySqlPool, uid: u64) -> Result<UserIntegral, sqlx::Error> {
-    let row: Option<(i64,)> =
-        sqlx::query_as("SELECT CAST(COALESCE(integral, 0) AS SIGNED) FROM phpyun_member_statis WHERE uid = ?")
-            .bind(uid)
-            .fetch_optional(pool)
-            .await?;
-    Ok(UserIntegral {
-        uid,
-        balance: row.map(|(b,)| b.max(0) as i32).unwrap_or(0),
-        updated_at: 0,
-    })
-}
-
-pub async fn try_deduct(
-    pool: &MySqlPool,
-    uid: u64,
-    delta: u32,
-    _now: i64,
-) -> Result<u64, sqlx::Error> {
-    // integral is varchar(10) in PHPYun; CAST forces numeric comparison.
-    let res = sqlx::query(
-        "UPDATE phpyun_member_statis \
-         SET integral = CAST(integral AS SIGNED) - ? \
-         WHERE uid = ? AND CAST(integral AS SIGNED) >= ?",
-    )
-    .bind(delta)
-    .bind(uid)
-    .bind(delta)
-    .execute(pool)
-    .await?;
-    Ok(res.rows_affected())
-}
-
-pub async fn add_balance(
-    pool: &MySqlPool,
-    uid: u64,
-    delta: i32,
-    _now: i64,
-) -> Result<(), sqlx::Error> {
-    sqlx::query(
-        "UPDATE phpyun_member_statis \
-         SET integral = GREATEST(CAST(integral AS SIGNED) + ?, 0) \
-         WHERE uid = ?",
-    )
-    .bind(delta)
-    .bind(uid)
-    .execute(pool)
-    .await?;
-    Ok(())
-}
+pub use crate::member_statis::repo::{add_balance, get_balance, try_deduct};

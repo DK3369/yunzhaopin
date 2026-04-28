@@ -53,6 +53,10 @@ pub fn routes() -> Router<AppState> {
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct JobListQuery {
+    /// When provided, `/v1/wap/jobs` returns the **detail** of a single job
+    /// instead of the paginated list — same endpoint, two response shapes.
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub id: Option<u64>,
     /// Free-text search; capped at 100 chars to keep LIKE plans sane and
     /// guard against memory-exhaustion via 10MB-keyword requests.
     #[validate(length(max = 100))]
@@ -155,7 +159,9 @@ pub fn job_summary_from_dict_fav(
         max_salary: j.maxsalary,
 
         exp: j.exp,
+        exp_n: dicts.comclass(j.exp).to_string(),
         edu: j.edu,
+        edu_n: dicts.comclass(j.edu).to_string(),
 
         rec: j.rec,
         urgent: j.urgent,
@@ -173,7 +179,12 @@ pub fn job_summary_from_dict_fav(
     }
 }
 
-/// Public job list (paginated + searchable). Response `data` field looks like `{list, total, page, page_size}`.
+/// Public job endpoint with two modes:
+/// - **Detail mode**: when the body carries `id`, returns the same rich
+///   shape as `/v1/wap/jobs/detail` (`{job, company, dict, user_context,
+///   msg_list, formatted}`).
+/// - **List mode**: when `id` is absent, returns the paginated browse list
+///   (`{list, total, page, page_size}`).
 #[utoipa::path(
     post,
     path = "/v1/wap/jobs",
@@ -188,7 +199,15 @@ pub async fn list_jobs(
     MaybeUser(user): MaybeUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<JobListQuery>,
-) -> AppResult<ApiJson<Paged<JobSummary>>> {
+) -> AppResult<ApiJson<json::Value>> {
+    // Detail mode: body carried an id → defer to the same logic as
+    // `/v1/wap/jobs/detail` so callers get the full job document.
+    if let Some(id) = q.id {
+        return Ok(ApiJson(
+            build_job_detail_value(&state, user.as_ref(), id).await?,
+        ));
+    }
+
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "job", kw.trim().to_string());
         if let Some(u) = user.as_ref() {
@@ -219,7 +238,7 @@ pub async fn list_jobs(
     let job_ids: Vec<u64> = r.list.iter().map(|j| j.id).collect();
     let fav_set =
         phpyun_services::collect_service::favorited_set(&state, user.as_ref().map(|u| u.uid), &job_ids).await;
-    Ok(ApiJson(Paged::new(
+    let paged: Paged<JobSummary> = Paged::new(
         r.list
             .into_iter()
             .map(|j| {
@@ -230,7 +249,8 @@ pub async fn list_jobs(
         r.total,
         page.page,
         page.page_size,
-    )))
+    );
+    Ok(ApiJson(json::to_value(&paged).map_err(phpyun_core::AppError::internal)?))
 }
 
 /// Public job detail -- returned as a nested map **grouped by business concern**.
@@ -258,16 +278,26 @@ pub async fn job_detail(
     MaybeUser(user): MaybeUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiJson<json::Value>> {
-    let id = b.id;
-    let d = job_service::get_detail(&state, id).await?;
+    Ok(ApiJson(build_job_detail_value(&state, user.as_ref(), b.id).await?))
+}
+
+/// Detail-page body builder, callable from both `/v1/wap/jobs/detail` and
+/// `/v1/wap/jobs` (when caller supplies an `id`). Extracted from `job_detail`
+/// so the dispatch in `list_jobs` can reuse the same response shape.
+pub async fn build_job_detail_value(
+    state: &AppState,
+    user: Option<&phpyun_core::AuthenticatedUser>,
+    id: u64,
+) -> AppResult<json::Value> {
+    let d = job_service::get_detail(state, id).await?;
     // Logged-in user: record visit footprint + bump view count (fire-and-forget)
-    if let Some(u) = user.as_ref() {
-        view_service::record_async(&state, u.uid, KIND_JOB, id);
+    if let Some(u) = user {
+        view_service::record_async(state, u.uid, KIND_JOB, id);
     }
     let now = phpyun_core::clock::now_ts();
 
     // --- Dictionary translations ---
-    let dicts = phpyun_services::dict_service::get(&state).await?;
+    let dicts = phpyun_services::dict_service::get(state).await?;
     let job_one = dicts.job(d.job.job1).to_string();
     let job_two = dicts.job(d.job.job1_son).to_string();
     let job_three = dicts.job(d.job.job_post).to_string();
@@ -360,7 +390,7 @@ pub async fn job_detail(
     };
 
     // --- Assemble the response grouped by business concern ---
-    Ok(ApiJson(json::json!({
+    Ok(json::json!({
         // Job main table (Job entity serialized directly; field names = original DB column names)
         "job": d.job,
 
@@ -416,7 +446,7 @@ pub async fn job_detail(
             "lastupdate_n": fmt_ts(d.job.lastupdate, "%Y-%m-%d %H:%M"),
             "salary": (d.job.minsalary + d.job.maxsalary) / 2,
         },
-    })))
+    }))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]

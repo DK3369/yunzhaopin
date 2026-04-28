@@ -70,7 +70,7 @@ impl From<phpyun_models::vip::entity::VipPackage> for PackageItem {
 /// List of purchasable packages (filtered by current user's usertype)
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/vip/packages/list",
+    path = "/v1/mcenter/vip/packages",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))

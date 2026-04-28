@@ -36,7 +36,7 @@ fn default_scope() -> String {
     "all".to_string()
 }
 fn default_did() -> u32 {
-    1
+    0
 }
 
 #[derive(Debug, Serialize, ToSchema)]

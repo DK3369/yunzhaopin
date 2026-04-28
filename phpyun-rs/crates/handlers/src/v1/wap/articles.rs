@@ -34,7 +34,7 @@ pub struct ArticleListQuery {
     pub did: u32,
 }
 fn default_did() -> u32 {
-    1
+    0
 }
 
 /// `unix → Y-m-d` (used by PHP list rendering)

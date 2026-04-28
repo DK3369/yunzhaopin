@@ -75,6 +75,44 @@ pub async fn rotate_on_refresh(
     Ok(res.rows_affected())
 }
 
+/// Sliding-session rotate: client passed its current access_token; look the
+/// row up by the OLD access jti and swap in the new pair. The session table
+/// is the source of truth — if the row doesn't exist or has been revoked
+/// (kicked from another device, manual logout, etc.), `rows_affected = 0`
+/// and the caller refuses to mint a new token.
+///
+/// This guards against the case where the JWT signature is still valid (and
+/// the jti hasn't been blacklisted yet) but the server-side session record
+/// has been removed.
+pub async fn rotate_on_access_refresh(
+    pool: &MySqlPool,
+    old_access_jti: &str,
+    new_access_jti: &str,
+    new_refresh_jti: &str,
+    new_access_exp: i64,
+    new_refresh_exp: i64,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        r#"UPDATE phpyun_user_session
+              SET jti_access = ?,
+                  jti_refresh = ?,
+                  access_exp = ?,
+                  refresh_exp = ?,
+                  last_seen_at = ?
+            WHERE jti_access = ? AND revoked_at = 0"#,
+    )
+    .bind(new_access_jti)
+    .bind(new_refresh_jti)
+    .bind(new_access_exp)
+    .bind(new_refresh_exp)
+    .bind(now)
+    .bind(old_access_jti)
+    .execute(pool)
+    .await?;
+    Ok(res.rows_affected())
+}
+
 pub async fn touch_last_seen(
     pool: &MySqlPool,
     access_jti: &str,
@@ -101,7 +139,7 @@ pub async fn list_active_by_uid(
               CAST(id AS UNSIGNED) AS id,
               CAST(uid AS UNSIGNED) AS uid,
               usertype, jti_access, jti_refresh, device, device_raw, ip, ip_loc,
-              login_at, last_seen_at, access_exp, refresh_exp, revoked_at
+              CAST(login_at AS SIGNED) AS login_at, CAST(last_seen_at AS SIGNED) AS last_seen_at, CAST(access_exp AS SIGNED) AS access_exp, CAST(refresh_exp AS SIGNED) AS refresh_exp, CAST(revoked_at AS SIGNED) AS revoked_at
            FROM phpyun_user_session
            WHERE uid = ? AND revoked_at = 0 AND refresh_exp > ?
            ORDER BY last_seen_at DESC, id DESC"#,
@@ -122,7 +160,7 @@ pub async fn find_by_id_and_uid(
               CAST(id AS UNSIGNED) AS id,
               CAST(uid AS UNSIGNED) AS uid,
               usertype, jti_access, jti_refresh, device, device_raw, ip, ip_loc,
-              login_at, last_seen_at, access_exp, refresh_exp, revoked_at
+              CAST(login_at AS SIGNED) AS login_at, CAST(last_seen_at AS SIGNED) AS last_seen_at, CAST(access_exp AS SIGNED) AS access_exp, CAST(refresh_exp AS SIGNED) AS refresh_exp, CAST(revoked_at AS SIGNED) AS revoked_at
            FROM phpyun_user_session
            WHERE id = ? AND uid = ? LIMIT 1"#,
     )
@@ -142,7 +180,7 @@ pub async fn revoke_by_id(
     now: i64,
 ) -> Result<Option<(String, i64, String, i64)>, sqlx::Error> {
     let row: Option<(String, i64, String, i64)> = sqlx::query_as(
-        "SELECT jti_access, access_exp, jti_refresh, refresh_exp
+        "SELECT jti_access, CAST(access_exp AS SIGNED) AS access_exp, jti_refresh, CAST(refresh_exp AS SIGNED) AS refresh_exp
            FROM phpyun_user_session
           WHERE id = ? AND uid = ? AND revoked_at = 0 LIMIT 1",
     )
@@ -175,7 +213,7 @@ pub async fn revoke_others(
     now: i64,
 ) -> Result<Vec<(String, i64, String, i64)>, sqlx::Error> {
     let rows: Vec<(String, i64, String, i64)> = sqlx::query_as(
-        "SELECT jti_access, access_exp, jti_refresh, refresh_exp
+        "SELECT jti_access, CAST(access_exp AS SIGNED) AS access_exp, jti_refresh, CAST(refresh_exp AS SIGNED) AS refresh_exp
            FROM phpyun_user_session
           WHERE uid = ? AND jti_access <> ? AND revoked_at = 0",
     )

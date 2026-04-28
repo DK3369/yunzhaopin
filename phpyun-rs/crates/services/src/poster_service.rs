@@ -190,13 +190,8 @@ async fn fetch_company_brief(
     state: &AppState,
     com_uid: u64,
 ) -> AppResult<(String, String)> {
-    let row: Option<(Option<String>, Option<String>)> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
-        "SELECT name, logo FROM phpyun_company WHERE uid = ? LIMIT 1",
-    )
-    .bind(com_uid)
-    .fetch_optional(state.db.reader())
-    .await?;
-    let (name, logo) = row
+    let c = phpyun_models::company::repo::find_by_uid(state.db.reader(), com_uid)
+        .await?
         .ok_or_else(|| AppError::new(InfraError::InvalidParam("company_not_found".into())))?;
-    Ok((name.unwrap_or_default(), logo.unwrap_or_default()))
+    Ok((c.name.unwrap_or_default(), c.logo.unwrap_or_default()))
 }

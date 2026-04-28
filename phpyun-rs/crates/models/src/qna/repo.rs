@@ -320,40 +320,63 @@ pub async fn mark_answer_accepted(
 
 // ---------- Attentions (follow) ----------
 //
-// PHPYun `phpyun_attention` columns: id, uid, qid, add_time
-// (different versions may use question_id/add_time; we conservatively
-// stick with the most common "uid/qid/add_time").
+// PHP `phpyun_attention` schema: `id, ids (text CSV), type, uid` —
+// per-user-per-type rows where `ids` is a comma-separated list of attended
+// question ids. There is no `qid` column. Toggle is implemented by
+// rewriting the CSV in place: parse, add/remove, re-pack.
+// `type=1` = questions (kept consistent with `list_attended_questions`).
 
 pub async fn toggle_attention(
     pool: &MySqlPool,
     uid: u64,
     question_id: u64,
-    now: i64,
+    _now: i64,
 ) -> Result<bool, sqlx::Error> {
-    let existed = sqlx::query_scalar::<_, i64>(
-        "SELECT 1 FROM phpyun_attention WHERE uid = ? AND qid = ?",
+    let row: Option<(Option<String>,)> = sqlx::query_as(
+        "SELECT ids FROM phpyun_attention WHERE uid = ? AND type = 1 LIMIT 1",
     )
     .bind(uid)
-    .bind(question_id)
     .fetch_optional(pool)
-    .await?
-    .is_some();
-    if existed {
-        sqlx::query("DELETE FROM phpyun_attention WHERE uid = ? AND qid = ?")
-            .bind(uid)
-            .bind(question_id)
-            .execute(pool)
-            .await?;
-        Ok(false)
+    .await?;
+    let mut ids: Vec<u64> = row
+        .as_ref()
+        .and_then(|(s,)| s.as_deref())
+        .map(|s| {
+            s.split(',')
+                .filter_map(|p| p.trim().parse::<u64>().ok())
+                .filter(|id| *id > 0)
+                .collect()
+        })
+        .unwrap_or_default();
+    let was_present = ids.contains(&question_id);
+    if was_present {
+        ids.retain(|x| *x != question_id);
     } else {
-        sqlx::query("INSERT IGNORE INTO phpyun_attention (uid, qid, add_time) VALUES (?, ?, ?)")
-            .bind(uid)
-            .bind(question_id)
-            .bind(now)
-            .execute(pool)
-            .await?;
-        Ok(true)
+        ids.push(question_id);
     }
+    let csv = ids
+        .iter()
+        .map(|n| n.to_string())
+        .collect::<Vec<_>>()
+        .join(",");
+    if row.is_some() {
+        sqlx::query(
+            "UPDATE phpyun_attention SET ids = ? WHERE uid = ? AND type = 1",
+        )
+        .bind(&csv)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    } else if !ids.is_empty() {
+        sqlx::query(
+            "INSERT INTO phpyun_attention (uid, type, ids) VALUES (?, 1, ?)",
+        )
+        .bind(uid)
+        .bind(&csv)
+        .execute(pool)
+        .await?;
+    }
+    Ok(!was_present)
 }
 
 pub async fn list_attended_questions(
@@ -362,27 +385,74 @@ pub async fn list_attended_questions(
     offset: u64,
     limit: u64,
 ) -> Result<Vec<Question>, sqlx::Error> {
+    // PHP `phpyun_attention` shape: `id, ids (text CSV), type, uid` — there
+    // is no `qid` column; "attended question ids" are stored CSV-packed in
+    // the `ids` text field, distinguished by `type`. We fetch the CSV row
+    // for this user, parse the ids client-side, then look up the question
+    // rows in one shot. Empty result if no row / empty CSV.
+    let row: Option<(Option<String>,)> = sqlx::query_as(
+        "SELECT ids FROM phpyun_attention WHERE uid = ? AND type = 1 LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    let csv = match row.and_then(|(ids,)| ids) {
+        Some(s) if !s.trim().is_empty() => s,
+        _ => return Ok(Vec::new()),
+    };
+    let mut question_ids: Vec<u64> = csv
+        .split(',')
+        .filter_map(|s| s.trim().parse::<u64>().ok())
+        .filter(|id| *id > 0)
+        .collect();
+    if question_ids.is_empty() {
+        return Ok(Vec::new());
+    }
+    // Apply offset/limit on the parsed list (PHP does the same — no DB-side
+    // pagination available because `ids` is a single CSV).
+    let off = offset as usize;
+    let lim = limit as usize;
+    if off >= question_ids.len() {
+        return Ok(Vec::new());
+    }
+    let take_to = (off + lim).min(question_ids.len());
+    question_ids = question_ids[off..take_to].to_vec();
+
+    let placeholders = std::iter::repeat("?")
+        .take(question_ids.len())
+        .collect::<Vec<_>>()
+        .join(",");
     let sql = format!(
-        "SELECT {Q_FIELDS} \
-         FROM phpyun_question q \
-         INNER JOIN phpyun_attention a ON a.qid = q.id AND a.uid = ? \
-         WHERE q.state = 1 \
-         ORDER BY a.add_time DESC \
-         LIMIT ? OFFSET ?"
+        "SELECT {Q_FIELDS} FROM phpyun_question \
+         WHERE state = 1 AND id IN ({placeholders}) \
+         ORDER BY FIELD(id, {placeholders}) DESC"
     );
-    sqlx::query_as::<_, Question>(&sql)
-        .bind(uid)
-        .bind(limit)
-        .bind(offset)
-        .fetch_all(pool)
-        .await
+    let mut q = sqlx::query_as::<_, Question>(&sql);
+    for id in &question_ids {
+        q = q.bind(*id);
+    }
+    for id in &question_ids {
+        q = q.bind(*id);
+    }
+    q.fetch_all(pool).await
 }
 
 pub async fn count_attended_questions(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_attention WHERE uid = ?")
-        .bind(uid)
-        .fetch_one(pool)
-        .await?;
+    // Count = number of comma-separated ids in `phpyun_attention.ids` for
+    // type=1. Empty / missing row → 0.
+    let row: Option<(Option<String>,)> = sqlx::query_as(
+        "SELECT ids FROM phpyun_attention WHERE uid = ? AND type = 1 LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    let n = match row.and_then(|(ids,)| ids) {
+        Some(s) if !s.trim().is_empty() => s
+            .split(',')
+            .filter(|p| p.trim().parse::<u64>().is_ok())
+            .count() as i64,
+        _ => 0,
+    };
     Ok(n.max(0) as u64)
 }
 

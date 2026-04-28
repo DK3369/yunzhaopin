@@ -87,19 +87,12 @@ pub async fn admin_approve(
         .db
         .with_tx(|tx| {
             Box::pin(async move {
-                let _ = sqlx::query( // TODO(arch): inline sqlx pending repo lift
-                    "UPDATE phpyun_change SET status = 2 WHERE id = ? AND status = 1",
+                let _ = chg_repo::set_status_admin(&mut **tx, id, 2).await?;
+                let _ = phpyun_models::user::repo::set_usertype(
+                    &mut **tx,
+                    row.uid,
+                    row.applyusertype,
                 )
-                .bind(id)
-                .execute(&mut **tx)
-                .await?;
-
-                let _ = sqlx::query( // TODO(arch): inline sqlx pending repo lift
-                    "UPDATE phpyun_member SET usertype = ? WHERE uid = ?",
-                )
-                .bind(row.applyusertype)
-                .bind(row.uid)
-                .execute(&mut **tx)
                 .await?;
                 Ok(())
             })

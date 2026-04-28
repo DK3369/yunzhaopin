@@ -40,7 +40,7 @@ pub struct ResumeListQuery {
     pub did: u32,
 }
 fn default_did() -> u32 {
-    1
+    0
 }
 
 /// Resume list item — aligned with all fields of the PHP resume search page. Masking rules are decided by the service layer (nametype).

@@ -134,12 +134,8 @@ pub async fn split_account(
     let new_username = input.new_username.to_string();
 
     // 5. Determine whether the original account also has a company identity
-    let has_company: i64 = sqlx::query_scalar( // TODO(arch): inline sqlx pending repo lift
-        "SELECT COUNT(*) FROM phpyun_company WHERE uid = ?",
-    )
-    .bind(old_uid)
-    .fetch_one(state.db.reader())
-    .await?;
+    let has_company =
+        phpyun_models::company::repo::exists_by_uid(state.db.reader(), old_uid).await?;
 
     // 6. Inside a single transaction: create the new member + bulk UID migration
     let new_uid = state
@@ -163,54 +159,45 @@ pub async fn split_account(
                 )
                 .await?;
 
+                use phpyun_models::bulk_migration::repo as bulk;
+
                 // Bulk migrate uid-only tables
                 for table in TABLES_UID_ONLY {
-                    let sql = format!("UPDATE {table} SET uid = ? WHERE uid = ?");
-                    let _ = sqlx::query(&sql) // TODO(arch): inline sqlx pending repo lift
-                        .bind(new_uid)
-                        .bind(old_uid)
-                        .execute(&mut **tx)
-                        .await?;
+                    let _ = bulk::reassign_uid(&mut **tx, table, new_uid, old_uid).await?;
                 }
 
                 // Tables filtered by uid + usertype=1
                 for table in TABLES_UID_AND_USERTYPE {
-                    let sql =
-                        format!("UPDATE {table} SET uid = ? WHERE uid = ? AND usertype = 1");
-                    let _ = sqlx::query(&sql) // TODO(arch): inline sqlx pending repo lift
-                        .bind(new_uid)
-                        .bind(old_uid)
-                        .execute(&mut **tx)
-                        .await?;
+                    let _ =
+                        bulk::reassign_uid_with_usertype(&mut **tx, table, new_uid, old_uid, 1)
+                            .await?;
                 }
 
-                // Special columns: blacklist.c_uid / company_pay.com_id / report.p_uid / sysmsg.fa_uid, etc.
-                let _ = sqlx::query( // TODO(arch): inline sqlx pending repo lift
-                    "UPDATE phpyun_blacklist SET c_uid = ? WHERE c_uid = ? AND usertype = 1",
+                // Special owner columns: blacklist.c_uid / report.p_uid
+                let _ = bulk::reassign_named_uid_with_usertype(
+                    &mut **tx,
+                    "phpyun_blacklist",
+                    "c_uid",
+                    new_uid,
+                    old_uid,
+                    1,
                 )
-                .bind(new_uid)
-                .bind(old_uid)
-                .execute(&mut **tx)
                 .await?;
-
-                let _ = sqlx::query( // TODO(arch): inline sqlx pending repo lift
-                    "UPDATE phpyun_report SET p_uid = ? WHERE p_uid = ? AND usertype = 1",
+                let _ = bulk::reassign_named_uid_with_usertype(
+                    &mut **tx,
+                    "phpyun_report",
+                    "p_uid",
+                    new_uid,
+                    old_uid,
+                    1,
                 )
-                .bind(new_uid)
-                .bind(old_uid)
-                .execute(&mut **tx)
                 .await?;
 
                 // If the original account has a company identity: set member.usertype to 2 to
                 // preserve that identity; otherwise keep the original usertype (still 1, but
                 // with no resume data left).
-                if has_company > 0 {
-                    let _ = sqlx::query( // TODO(arch): inline sqlx pending repo lift
-                        "UPDATE phpyun_member SET usertype = 2 WHERE uid = ?",
-                    )
-                    .bind(old_uid)
-                    .execute(&mut **tx)
-                    .await?;
+                if has_company {
+                    let _ = user_repo::set_usertype(&mut **tx, old_uid, 2).await?;
                 }
 
                 Ok(new_uid)
@@ -231,7 +218,7 @@ pub async fn split_account(
         .target(format!("new_uid:{new_uid}"))
         .meta(&serde_json::json!({
             "new_username": input.new_username,
-            "kept_company_identity": has_company > 0,
+            "kept_company_identity": has_company,
         })),
     )
     .await;
@@ -271,22 +258,12 @@ pub async fn merge_into_company(
     }
 
     // Precondition: the personal account must not already have a company identity
-    let user_has_company: i64 =
-        sqlx::query_scalar("SELECT COUNT(*) FROM phpyun_company WHERE uid = ?") // TODO(arch): inline sqlx pending repo lift
-            .bind(user_uid)
-            .fetch_one(state.db.reader())
-            .await?;
-    if user_has_company > 0 {
+    if phpyun_models::company::repo::exists_by_uid(state.db.reader(), user_uid).await? {
         return Err(InfraError::InvalidParam("user_has_company_identity".into()).into());
     }
 
     // Precondition: the company account must not already have a personal identity
-    let company_has_resume: i64 =
-        sqlx::query_scalar("SELECT COUNT(*) FROM phpyun_resume WHERE uid = ?") // TODO(arch): inline sqlx pending repo lift
-            .bind(company_uid)
-            .fetch_one(state.db.reader())
-            .await?;
-    if company_has_resume > 0 {
+    if phpyun_models::resume::repo::exists_by_uid(state.db.reader(), company_uid).await? {
         return Err(InfraError::InvalidParam("company_has_resume_identity".into()).into());
     }
 
@@ -295,44 +272,38 @@ pub async fn merge_into_company(
         .db
         .with_tx(|tx| {
             Box::pin(async move {
+                use phpyun_models::bulk_migration::repo as bulk;
                 for table in TABLES_UID_ONLY {
-                    let sql = format!("UPDATE {table} SET uid = ? WHERE uid = ?");
-                    let _ = sqlx::query(&sql) // TODO(arch): inline sqlx pending repo lift
-                        .bind(company_uid)
-                        .bind(user_uid)
-                        .execute(&mut **tx)
-                        .await?;
+                    let _ = bulk::reassign_uid(&mut **tx, table, company_uid, user_uid).await?;
                 }
                 for table in TABLES_UID_AND_USERTYPE {
-                    let sql =
-                        format!("UPDATE {table} SET uid = ? WHERE uid = ? AND usertype = 1");
-                    let _ = sqlx::query(&sql) // TODO(arch): inline sqlx pending repo lift
-                        .bind(company_uid)
-                        .bind(user_uid)
-                        .execute(&mut **tx)
-                        .await?;
+                    let _ = bulk::reassign_uid_with_usertype(
+                        &mut **tx, table, company_uid, user_uid, 1,
+                    )
+                    .await?;
                 }
-                let _ = sqlx::query( // TODO(arch): inline sqlx pending repo lift
-                    "UPDATE phpyun_blacklist SET c_uid = ? WHERE c_uid = ? AND usertype = 1",
+                let _ = bulk::reassign_named_uid_with_usertype(
+                    &mut **tx,
+                    "phpyun_blacklist",
+                    "c_uid",
+                    company_uid,
+                    user_uid,
+                    1,
                 )
-                .bind(company_uid)
-                .bind(user_uid)
-                .execute(&mut **tx)
                 .await?;
-                let _ = sqlx::query( // TODO(arch): inline sqlx pending repo lift
-                    "UPDATE phpyun_report SET p_uid = ? WHERE p_uid = ? AND usertype = 1",
+                let _ = bulk::reassign_named_uid_with_usertype(
+                    &mut **tx,
+                    "phpyun_report",
+                    "p_uid",
+                    company_uid,
+                    user_uid,
+                    1,
                 )
-                .bind(company_uid)
-                .bind(user_uid)
-                .execute(&mut **tx)
                 .await?;
 
                 // Finally: delete the original user's member record (matches PHP: after the
                 // merge, the original personal account no longer exists).
-                let _ = sqlx::query("DELETE FROM phpyun_member WHERE uid = ?") // TODO(arch): inline sqlx pending repo lift
-                    .bind(user_uid)
-                    .execute(&mut **tx)
-                    .await?;
+                let _ = user_repo::delete_member(&mut **tx, user_uid).await?;
 
                 Ok(())
             })

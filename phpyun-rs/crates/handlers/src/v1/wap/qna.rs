@@ -578,7 +578,7 @@ impl From<phpyun_models::qna::entity::AnswerReview> for CommentItem {
 
 /// List comments under an answer (aligned with PHP `wap/ask::getcomment_action`)
 #[utoipa::path(post,
-    path = "/v1/wap/answers/comments",
+    path = "/v1/wap/answers/comments/list",
     tag = "wap",
     request_body = ListCommentsBody,
     responses((status = 200, description = "ok"))

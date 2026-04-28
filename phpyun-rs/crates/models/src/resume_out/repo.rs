@@ -1,7 +1,17 @@
+//! `phpyun_resumeout` repository — outbound resume sends.
+//!
+//! Schema (PHP truth): `id, uid, comname, jobname, recipient, email, resume, datetime`.
+//! Rust entity uses `resumename` (← `recipient`) and `addtime` (← `datetime`).
+//! There is no `status` column in PHP, so deletes are real DELETEs (the
+//! previous soft-delete-via-`status=2` was a Rust invention that 500'd on
+//! every run).
+
 use super::entity::ResumeOut;
 use sqlx::{MySqlPool, QueryBuilder};
 
-const FIELDS: &str = "id, uid, resume, email, comname, jobname, resumename, addtime";
+// SELECT aliases map PHP columns onto Rust entity field names.
+const SELECT_FIELDS: &str = "id, uid, resume, email, comname, jobname, \
+                             recipient AS resumename, datetime AS addtime";
 
 pub async fn create(
     pool: &MySqlPool,
@@ -14,7 +24,7 @@ pub async fn create(
     now: i64,
 ) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
-        "INSERT INTO phpyun_resumeout (uid, resume, email, comname, jobname, resumename, addtime)
+        "INSERT INTO phpyun_resumeout (uid, resume, email, comname, jobname, recipient, datetime)
          VALUES (?, ?, ?, ?, ?, ?, ?)",
     )
     .bind(uid)
@@ -29,8 +39,6 @@ pub async fn create(
     Ok(res.last_insert_id())
 }
 
-// Soft-delete convention: status=2 means deleted. All queries always include `AND status != 2`.
-
 pub async fn list_by_uid(
     pool: &MySqlPool,
     uid: u64,
@@ -38,8 +46,8 @@ pub async fn list_by_uid(
     limit: u64,
 ) -> Result<Vec<ResumeOut>, sqlx::Error> {
     let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_resumeout \
-         WHERE uid = ? AND status != 2 \
+        "SELECT {SELECT_FIELDS} FROM phpyun_resumeout \
+         WHERE uid = ? \
          ORDER BY id DESC LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, ResumeOut>(&sql)
@@ -52,7 +60,7 @@ pub async fn list_by_uid(
 
 pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_resumeout WHERE uid = ? AND status != 2",
+        "SELECT COUNT(*) FROM phpyun_resumeout WHERE uid = ?",
     )
     .bind(uid)
     .fetch_one(pool)
@@ -60,7 +68,7 @@ pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error
     Ok(n.max(0) as u64)
 }
 
-/// Soft delete: batch UPDATE status=2.
+/// Hard delete (PHP table has no `status` column for soft-delete).
 pub async fn delete_by_ids(
     pool: &MySqlPool,
     ids: &[u64],
@@ -70,9 +78,9 @@ pub async fn delete_by_ids(
         return Ok(0);
     }
     let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("UPDATE phpyun_resumeout SET status = 2 WHERE uid = ");
+        QueryBuilder::new("DELETE FROM phpyun_resumeout WHERE uid = ");
     qb.push_bind(uid);
-    qb.push(" AND status != 2 AND id IN (");
+    qb.push(" AND id IN (");
     let mut sep = qb.separated(", ");
     for id in ids {
         sep.push_bind(*id);
@@ -82,7 +90,7 @@ pub async fn delete_by_ids(
     Ok(res.rows_affected())
 }
 
-// ==================== Rate-limit helpers (aligned with the PHP `recommend` table) ====================
+// ==================== Rate-limit helpers (PHP `phpyun_recommend` table) ====================
 
 /// Number of outbound sends so far today (corresponds to the PHP `recommend` table with rec_type=3)
 pub async fn count_today_for_uid(

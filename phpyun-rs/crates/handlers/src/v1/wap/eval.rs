@@ -202,7 +202,7 @@ impl From<phpyun_models::eval::repo::PaperMessage> for PaperMessageItem {
 /// `evaluate.model.php::getMessageList`. Read-only — write side lives at
 /// `POST /v1/mcenter/eval-papers/{id}/messages`.
 #[utoipa::path(post,
-    path = "/v1/wap/eval-papers/messages",
+    path = "/v1/wap/eval-papers/messages/list",
     tag = "wap",
     request_body = IdBody,
     responses((status = 200, description = "ok"))

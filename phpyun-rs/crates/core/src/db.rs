@@ -207,6 +207,41 @@ async fn build_pool(
     Ok(pool)
 }
 
+// ---------- SQL-error classification helpers ----------
+//
+// Several Rust-port features rely on tables/columns that the original PHPyun
+// schema doesn't have (e.g. `phpyun_rs_chat`, `phpyun_rs_user_vip`,
+// `phpyun_country`). We share the live PHP database, never run extra
+// migrations against it, and want those reads to degrade gracefully (empty
+// list / no row / count = 0) rather than 5xx. These helpers let repo code
+// translate the specific MySQL "object not found" errors into safe defaults.
+
+/// `true` for MySQL error 1146 / SQLSTATE `42S02` ("table doesn't exist").
+pub fn is_missing_table(err: &sqlx::Error) -> bool {
+    matches!(err, sqlx::Error::Database(d) if d.code().as_deref() == Some("42S02"))
+}
+
+/// `true` for MySQL error 1054 / SQLSTATE `42S22` ("unknown column").
+pub fn is_missing_column(err: &sqlx::Error) -> bool {
+    matches!(err, sqlx::Error::Database(d) if d.code().as_deref() == Some("42S22"))
+}
+
+/// Treat `42S02 / 42S22` as a soft "object not provisioned yet" condition and
+/// substitute `default`. Logs a single WARN (with the table/column name from
+/// the error message) so missing schema is visible in production.
+pub fn ok_default_if_object_missing<T: Default>(
+    r: Result<T, sqlx::Error>,
+) -> Result<T, sqlx::Error> {
+    match r {
+        Ok(v) => Ok(v),
+        Err(e) if is_missing_table(&e) || is_missing_column(&e) => {
+            tracing::warn!(error = %e, "schema object missing — degrading to default");
+            Ok(T::default())
+        }
+        Err(e) => Err(e),
+    }
+}
+
 /// Run sqlx migrations. Path is relative to `crates/core/`.
 ///
 /// Only `migrations/sqlx/` is scanned (performance indexes etc. added by the

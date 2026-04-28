@@ -264,10 +264,7 @@ async fn load_full(state: &AppState) -> AppResult<RegionTree> {
 async fn load_translations(
     pool: &sqlx::MySqlPool,
 ) -> AppResult<HashMap<u64, HashMap<Lang, String>>> {
-    let rows: Result<Vec<(i64, String, String)>, _> =
-        sqlx::query_as("SELECT item_id, lang, text FROM phpyun_dict_i18n WHERE kind = 'region'") // TODO(arch): inline sqlx pending repo lift
-            .fetch_all(pool)
-            .await;
+    let rows = phpyun_models::dict_i18n::repo::list_by_kind(pool, "region").await;
     let rows = match rows {
         Ok(r) => r,
         Err(e) => {

@@ -111,20 +111,13 @@ pub async fn find_package_pricing(
     }))
 }
 
-/// Read company integral balance from `phpyun_company_statis.integral`
-/// (PHPYun stores it as VARCHAR, hence the CAST).
+/// Read company integral balance from `phpyun_company_statis.integral`.
+/// Re-exported from the canonical `company_statis::repo`.
 pub async fn read_company_integral(
     pool: &MySqlPool,
     uid: u64,
 ) -> Result<i64, sqlx::Error> {
-    let row: Option<(i64,)> = sqlx::query_as(
-        "SELECT CAST(COALESCE(integral, '0') AS SIGNED) FROM phpyun_company_statis \
-         WHERE uid = ? LIMIT 1",
-    )
-    .bind(uid)
-    .fetch_optional(pool)
-    .await?;
-    Ok(row.map(|(n,)| n).unwrap_or(0))
+    crate::company_statis::repo::read_integral(pool, uid).await
 }
 
 /// Read the company's rating-tier discount (`service_discount`) — applied to
@@ -182,12 +175,19 @@ pub async fn find_package_by_code(
 // migrate this to read from `phpyun_company`.
 
 pub async fn find_user_vip(pool: &MySqlPool, uid: u64) -> Result<Option<UserVip>, sqlx::Error> {
-    sqlx::query_as::<_, UserVip>(
+    // `phpyun_rs_user_vip` is Rust-port-only — when not provisioned, return
+    // Ok(None) so the handler reports "no active VIP" instead of 5xx.
+    let r = sqlx::query_as::<_, UserVip>(
         "SELECT uid, package_code, started_at, expires_at, updated_at FROM phpyun_rs_user_vip WHERE uid = ? LIMIT 1",
     )
     .bind(uid)
     .fetch_optional(pool)
-    .await
+    .await;
+    match r {
+        Ok(v) => Ok(v),
+        Err(e) if phpyun_core::db::is_missing_table(&e) => Ok(None),
+        Err(e) => Err(e),
+    }
 }
 
 pub async fn upsert_user_vip(

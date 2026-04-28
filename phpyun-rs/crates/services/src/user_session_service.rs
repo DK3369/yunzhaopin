@@ -156,6 +156,34 @@ pub async fn rotate_on_refresh(
     Ok(())
 }
 
+/// Sliding-session rotate keyed on the OLD access jti. Errors with
+/// `session_expired` when the session row is missing or revoked — refusing
+/// to mint a new token is the entire point of this check.
+pub async fn rotate_on_access_refresh(
+    state: &AppState,
+    old_access_jti: &str,
+    new_access_jti: &str,
+    new_refresh_jti: &str,
+    new_access_exp: i64,
+    new_refresh_exp: i64,
+) -> AppResult<()> {
+    let now = clock::now_ts();
+    let n = session_repo::rotate_on_access_refresh(
+        state.db.pool(),
+        old_access_jti,
+        new_access_jti,
+        new_refresh_jti,
+        new_access_exp,
+        new_refresh_exp,
+        now,
+    )
+    .await?;
+    if n == 0 {
+        return Err(AppError::session_expired());
+    }
+    Ok(())
+}
+
 /// Update last_seen — debounced via an in-memory dedup set (5-min cool-down
 /// per access jti) so authed requests don't bombard the DB.
 /// Per-instance dedup is fine; multi-instance global rate stays bounded.

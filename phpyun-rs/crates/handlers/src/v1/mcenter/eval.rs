@@ -128,7 +128,7 @@ pub struct PaperMessageForm {
 /// `evaluate/exampaper::message_action`. The list view lives at
 /// `GET /v1/wap/eval-papers/{id}/messages`.
 #[utoipa::path(post,
-    path = "/v1/mcenter/eval-papers/messages",
+    path = "/v1/mcenter/eval-papers/messages/post",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = PaperMessageForm,

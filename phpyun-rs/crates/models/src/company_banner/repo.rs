@@ -1,19 +1,27 @@
+//! `phpyun_banner` repository — company home page banner images.
+//!
+//! PHP schema (truth): `id, uid, pic, status, statusbody, did`.
+//! Rust entity has `link, sort, addtime` which PHP doesn't store; those are
+//! exposed as empty/0 defaults.
+
 use super::entity::CompanyBanner;
 use sqlx::{MySqlPool, QueryBuilder};
 
-const FIELDS: &str = "id, uid, pic, link, sort, addtime";
-
-// Soft-delete convention: status=2 means deleted; the table already has a
-// status column (default 1).
+const SELECT_FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
+                             CAST(COALESCE(uid, 0) AS UNSIGNED) AS uid, \
+                             COALESCE(pic, '') AS pic, \
+                             '' AS link, \
+                             0 AS sort, \
+                             0 AS addtime";
 
 pub async fn list_by_uid(
     pool: &MySqlPool,
     uid: u64,
 ) -> Result<Vec<CompanyBanner>, sqlx::Error> {
     let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_banner \
+        "SELECT {SELECT_FIELDS} FROM phpyun_banner \
          WHERE uid = ? AND status != 2 \
-         ORDER BY sort DESC, id DESC"
+         ORDER BY id DESC"
     );
     sqlx::query_as::<_, CompanyBanner>(&sql)
         .bind(uid)
@@ -35,18 +43,17 @@ pub async fn create(
     pool: &MySqlPool,
     uid: u64,
     pic: &str,
-    link: Option<&str>,
-    sort: i32,
-    now: i64,
+    _link: Option<&str>,
+    _sort: i32,
+    _now: i64,
 ) -> Result<u64, sqlx::Error> {
+    // PHP table has only (uid, pic, status, statusbody, did). status defaults to 1.
+    // link / sort / addtime have no PHP column and are silently dropped.
     let res = sqlx::query(
-        "INSERT INTO phpyun_banner (uid, pic, link, sort, addtime) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO phpyun_banner (uid, pic) VALUES (?, ?)",
     )
     .bind(uid)
     .bind(pic)
-    .bind(link.unwrap_or(""))
-    .bind(sort)
-    .bind(now)
     .execute(pool)
     .await?;
     Ok(res.last_insert_id())
@@ -57,36 +64,16 @@ pub async fn update(
     id: u64,
     uid: u64,
     pic: Option<&str>,
-    link: Option<&str>,
-    sort: Option<i32>,
+    _link: Option<&str>,
+    _sort: Option<i32>,
 ) -> Result<u64, sqlx::Error> {
-    let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("UPDATE phpyun_banner SET ");
-    let mut any = false;
-    if let Some(p) = pic {
-        qb.push("pic = ");
-        qb.push_bind(p);
-        any = true;
-    }
-    if let Some(l) = link {
-        if any {
-            qb.push(", ");
-        }
-        qb.push("link = ");
-        qb.push_bind(l);
-        any = true;
-    }
-    if let Some(s) = sort {
-        if any {
-            qb.push(", ");
-        }
-        qb.push("sort = ");
-        qb.push_bind(s);
-        any = true;
-    }
-    if !any {
+    // Only `pic` is updatable on the PHP table; link / sort don't exist.
+    let Some(p) = pic else {
         return Ok(0);
-    }
+    };
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("UPDATE phpyun_banner SET pic = ");
+    qb.push_bind(p);
     qb.push(" WHERE id = ");
     qb.push_bind(id);
     qb.push(" AND uid = ");

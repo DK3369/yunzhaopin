@@ -129,34 +129,31 @@ async fn preview_subject(
     rec_id: u64,
 ) -> (String, String) {
     if rec_type == REC_TYPE_JOB {
-        let row: Option<(String, String)> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
-            "SELECT COALESCE(name, ''), COALESCE(com_name, '') FROM phpyun_company_job WHERE id = ? LIMIT 1",
-        )
-        .bind(rec_id)
-        .fetch_optional(state.db.reader())
-        .await
-        .unwrap_or(None);
-        match row {
-            Some((name, com)) if !name.is_empty() => (
-                format!("【职位推荐】{name} - {com}"),
-                format!("{com} 正在招聘 {name}"),
-            ),
+        let job = phpyun_models::job::repo::find_by_id(state.db.reader(), rec_id)
+            .await
+            .ok()
+            .flatten();
+        match job {
+            Some(j) if !j.name.is_empty() => {
+                let com = j.com_name.unwrap_or_default();
+                (
+                    format!("【职位推荐】{} - {com}", j.name),
+                    format!("{com} 正在招聘 {}", j.name),
+                )
+            }
             _ => ("职位推荐".to_string(), String::new()),
         }
     } else {
-        let row: Option<(u64,)> = sqlx::query_as( // TODO(arch): inline sqlx pending repo lift
-            "SELECT CAST(uid AS UNSIGNED) FROM phpyun_resume_expect WHERE eid = ? LIMIT 1",
-        )
-        .bind(rec_id)
-        .fetch_optional(state.db.reader())
-        .await
-        .unwrap_or(None);
-        match row {
-            Some((uid,)) => (
-                format!("【简历推荐】(uid={uid})"),
-                format!("有一份简历 (uid={uid}) 推荐给您"),
+        let expect = phpyun_models::resume::expect::find_by_id(state.db.reader(), rec_id)
+            .await
+            .ok()
+            .flatten();
+        match expect {
+            Some(e) => (
+                format!("【简历推荐】(uid={})", e.uid),
+                format!("有一份简历 (uid={}) 推荐给您", e.uid),
             ),
-            _ => ("简历推荐".to_string(), String::new()),
+            None => ("简历推荐".to_string(), String::new()),
         }
     }
 }

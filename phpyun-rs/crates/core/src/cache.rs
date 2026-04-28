@@ -185,8 +185,21 @@ where
     {
         self.inner
             .try_get_with(key, async move {
-                let v = loader().await?;
-                Ok::<_, AppError>(Arc::new(v))
+                match loader().await {
+                    Ok(v) => Ok::<_, AppError>(Arc::new(v)),
+                    Err(e) => {
+                        // moka shares one Arc<AppError> across all waiters and
+                        // `from_arc` later degrades to just (code, tag),
+                        // losing the underlying sqlx / redis source. Log the
+                        // full chain HERE so the root cause is in the trace.
+                        tracing::error!(
+                            error = %e,
+                            "cache loader failed (root cause; downstream waiters \
+                             see only code+tag via from_arc)"
+                        );
+                        Err(e)
+                    }
+                }
             })
             .await
             .map_err(AppError::from_arc)

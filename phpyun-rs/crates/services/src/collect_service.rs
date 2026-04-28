@@ -40,30 +40,7 @@ const MEMBER_LOG_TYPE_ADD: i32 = 1;  // PHP type=1 = add
 const MEMBER_LOG_TYPE_DEL: i32 = 3;  // PHP type=3 = delete
 
 async fn bump_fav_jobnum(state: &AppState, uid: u64, did: u32, delta: i32) {
-    // UPSERT pattern: PHP `update_once` silently no-ops when the row doesn't
-    // exist. We make it idempotent: insert with the delta, or update by it.
-    // `fav_jobnum` is `int(10) NOT NULL`; clamp to >= 0 on the way down so
-    // we don't underflow if a stale row had 0 already.
-    let q = if delta >= 0 {
-        sqlx::query( // TODO(arch): inline sqlx pending repo lift
-            r#"INSERT INTO phpyun_member_statis (uid, integral, fav_jobnum, resume_num, sq_jobnum, message_num, down_num)
-               VALUES (?, '', ?, 0, 0, 0, 0)
-               ON DUPLICATE KEY UPDATE fav_jobnum = fav_jobnum + ?"#,
-        )
-        .bind(uid)
-        .bind(delta)
-        .bind(delta)
-    } else {
-        let dec = (-delta) as i32;
-        sqlx::query( // TODO(arch): inline sqlx pending repo lift
-            "UPDATE phpyun_member_statis
-                SET fav_jobnum = GREATEST(fav_jobnum - ?, 0)
-              WHERE uid = ?",
-        )
-        .bind(dec)
-        .bind(uid)
-    };
-    let _ = q.execute(state.db.pool()).await;
+    let _ = phpyun_models::member_statis::repo::bump_fav_jobnum(state.db.pool(), uid, delta).await;
     let _ = did; // reserved for future per-site stats (PHP keys `did`+`uid`)
 }
 
@@ -76,21 +53,17 @@ async fn add_member_log(
     content: &str,
     type_: i32,
 ) {
-    // phpyun_member_log columns: uid, opera, type, usertype, content, ip, ctime, did
-    let _ = sqlx::query( // TODO(arch): inline sqlx pending repo lift
-        r#"INSERT INTO phpyun_member_log
-              (uid, opera, type, usertype, content, ip, ctime, did)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?)"#,
+    let _ = phpyun_models::member_log::repo::insert(
+        state.db.pool(),
+        uid,
+        MEMBER_LOG_OPERA_FAV,
+        type_,
+        usertype as i32,
+        content,
+        ip,
+        clock::now_ts(),
+        did,
     )
-    .bind(uid)
-    .bind(MEMBER_LOG_OPERA_FAV)
-    .bind(type_)
-    .bind(usertype as i32)
-    .bind(content)
-    .bind(ip)
-    .bind(clock::now_ts())
-    .bind(did)
-    .execute(state.db.pool())
     .await;
 }
 

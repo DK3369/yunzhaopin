@@ -1,8 +1,29 @@
+//! `phpyun_report` repository — PHPYun's actual report queue.
+//!
+//! Schema (PHP truth): `id, p_uid, c_uid, eid, usertype, c_usertype,
+//! inputtime, username, r_name, status, r_reason, type, r_type, did,
+//! result, rtime, admin, datafh`.
+//!
+//! Mapping (Rust entity → PHP column):
+//! - `reporter_uid` → `c_uid`     (the complainer; PHP convention)
+//! - `target_kind`  → `r_type`    (1=job / 2=company / 3=resume / ...)
+//! - `target_id`    → `eid`
+//! - `reason_code`  → `r_reason`
+//! - `detail`       → `result`    (varchar 255 free-text)
+//! - `status`       → `status`
+//! - `created_at`   → `inputtime`
+
 use super::entity::Report;
 use sqlx::MySqlPool;
 
-const FIELDS: &str =
-    "id, reporter_uid, target_kind, target_id, reason_code, detail, status, created_at";
+const SELECT_FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
+                             CAST(COALESCE(c_uid, 0) AS UNSIGNED) AS reporter_uid, \
+                             COALESCE(r_type, 0) AS target_kind, \
+                             CAST(COALESCE(eid, 0) AS UNSIGNED) AS target_id, \
+                             COALESCE(r_reason, '') AS reason_code, \
+                             result AS detail, \
+                             COALESCE(status, 0) AS status, \
+                             COALESCE(inputtime, 0) AS created_at";
 
 pub struct ReportCreate<'a> {
     pub reporter_uid: u64,
@@ -15,7 +36,7 @@ pub struct ReportCreate<'a> {
 pub async fn create(pool: &MySqlPool, c: ReportCreate<'_>, now: i64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         r#"INSERT INTO phpyun_report
-           (reporter_uid, target_kind, target_id, reason_code, detail, status, created_at)
+           (c_uid, r_type, eid, r_reason, result, status, inputtime)
            VALUES (?, ?, ?, ?, ?, 0, ?)"#,
     )
     .bind(c.reporter_uid)
@@ -36,8 +57,8 @@ pub async fn list_by_reporter(
     limit: u64,
 ) -> Result<Vec<Report>, sqlx::Error> {
     let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_report
-         WHERE reporter_uid = ? ORDER BY created_at DESC LIMIT ? OFFSET ?"
+        "SELECT {SELECT_FIELDS} FROM phpyun_report \
+         WHERE c_uid = ? ORDER BY inputtime DESC, id DESC LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, Report>(&sql)
         .bind(reporter_uid)
@@ -52,7 +73,7 @@ pub async fn count_by_reporter(
     reporter_uid: u64,
 ) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_report WHERE reporter_uid = ?",
+        "SELECT COUNT(*) FROM phpyun_report WHERE c_uid = ?",
     )
     .bind(reporter_uid)
     .fetch_one(pool)
@@ -69,12 +90,12 @@ pub async fn list_by_status(
 ) -> Result<Vec<Report>, sqlx::Error> {
     let sql = match status {
         Some(_) => format!(
-            "SELECT {FIELDS} FROM phpyun_report
-             WHERE status = ? ORDER BY created_at DESC LIMIT ? OFFSET ?"
+            "SELECT {SELECT_FIELDS} FROM phpyun_report \
+             WHERE status = ? ORDER BY inputtime DESC, id DESC LIMIT ? OFFSET ?"
         ),
         None => format!(
-            "SELECT {FIELDS} FROM phpyun_report
-             ORDER BY created_at DESC LIMIT ? OFFSET ?"
+            "SELECT {SELECT_FIELDS} FROM phpyun_report \
+             ORDER BY inputtime DESC, id DESC LIMIT ? OFFSET ?"
         ),
     };
     let q = sqlx::query_as::<_, Report>(&sql);
@@ -105,7 +126,6 @@ pub async fn count_by_status(
     Ok(n.max(0) as u64)
 }
 
-/// Admin: update status.
 pub async fn set_status(
     pool: &MySqlPool,
     id: u64,

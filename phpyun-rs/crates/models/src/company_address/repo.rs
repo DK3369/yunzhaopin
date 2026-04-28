@@ -1,8 +1,11 @@
+//! `phpyun_company_job_link` repository — company contact addresses.
+//!
+//! PHP schema has no `status` column — the previous soft-delete logic
+//! (`AND status != 2`) hit a missing column and returned 500 on every read.
+//! Switched to real DELETE since PHP behaviour is also a real DELETE.
+
 use super::entity::CompanyAddress;
 use sqlx::{MySqlPool, QueryBuilder};
-
-// Soft-delete convention: status=2 means deleted. All queries include
-// `AND status != 2`.
 
 const FIELDS: &str = "id, uid, link_man, link_moblie, link_phone, email, link_address,
     provinceid, cityid, three_cityid, x, y";
@@ -15,7 +18,7 @@ pub async fn list_by_uid(
 ) -> Result<Vec<CompanyAddress>, sqlx::Error> {
     let sql = format!(
         "SELECT {FIELDS} FROM phpyun_company_job_link \
-         WHERE uid = ? AND status != 2 \
+         WHERE uid = ? \
          ORDER BY id DESC LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, CompanyAddress>(&sql)
@@ -28,7 +31,7 @@ pub async fn list_by_uid(
 
 pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_company_job_link WHERE uid = ? AND status != 2",
+        "SELECT COUNT(*) FROM phpyun_company_job_link WHERE uid = ?",
     )
     .bind(uid)
     .fetch_one(pool)
@@ -43,7 +46,7 @@ pub async fn find_by_id(
 ) -> Result<Option<CompanyAddress>, sqlx::Error> {
     let sql = format!(
         "SELECT {FIELDS} FROM phpyun_company_job_link \
-         WHERE id = ? AND uid = ? AND status != 2 LIMIT 1"
+         WHERE id = ? AND uid = ? LIMIT 1"
     );
     sqlx::query_as::<_, CompanyAddress>(&sql)
         .bind(id)
@@ -73,8 +76,8 @@ pub async fn create(
     let res = sqlx::query(
         "INSERT INTO phpyun_company_job_link
            (uid, link_man, link_moblie, link_phone, email, link_address,
-            provinceid, cityid, three_cityid, x, y, status)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)",
+            provinceid, cityid, three_cityid, x, y)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     )
     .bind(uid)
     .bind(f.link_man)
@@ -102,7 +105,7 @@ pub async fn update(
         "UPDATE phpyun_company_job_link SET
            link_man = ?, link_moblie = ?, link_phone = ?, email = ?, link_address = ?,
            provinceid = ?, cityid = ?, three_cityid = ?, x = ?, y = ?
-         WHERE id = ? AND uid = ? AND status != 2",
+         WHERE id = ? AND uid = ?",
     )
     .bind(f.link_man)
     .bind(f.link_moblie)
@@ -121,7 +124,6 @@ pub async fn update(
     Ok(res.rows_affected())
 }
 
-/// Soft delete: bulk UPDATE status=2.
 pub async fn delete_by_ids(
     pool: &MySqlPool,
     ids: &[u64],
@@ -131,9 +133,9 @@ pub async fn delete_by_ids(
         return Ok(0);
     }
     let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("UPDATE phpyun_company_job_link SET status = 2 WHERE uid = ");
+        QueryBuilder::new("DELETE FROM phpyun_company_job_link WHERE uid = ");
     qb.push_bind(uid);
-    qb.push(" AND status != 2 AND id IN (");
+    qb.push(" AND id IN (");
     let mut sep = qb.separated(", ");
     for id in ids {
         sep.push_bind(*id);
