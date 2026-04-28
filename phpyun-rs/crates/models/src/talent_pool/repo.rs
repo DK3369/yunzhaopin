@@ -5,7 +5,14 @@
 use super::entity::TalentPoolItem;
 use sqlx::{MySqlPool, QueryBuilder};
 
-const FIELDS: &str = "id, eid, cuid, uid, remark, ctime";
+// All numeric columns on `phpyun_talent_pool` are NULL-allowed; entity uses
+// plain `u64 / i64`. COALESCE at the projection.
+const FIELDS: &str = "id, \
+    COALESCE(eid, 0) AS eid, \
+    COALESCE(cuid, 0) AS cuid, \
+    COALESCE(uid, 0) AS uid, \
+    remark, \
+    COALESCE(ctime, 0) AS ctime";
 
 // Soft-delete convention: `status = 2` means deleted. All queries include `AND status != 2`.
 

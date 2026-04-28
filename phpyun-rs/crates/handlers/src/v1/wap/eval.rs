@@ -119,7 +119,7 @@ fn strip_scores(v: &json::Value) -> json::Value {
 }
 
 /// Assessment list
-#[utoipa::path(post, path = "/v1/wap/eval-papers/messages/list", tag = "wap", responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/wap/eval-papers", tag = "wap", responses((status = 200, description = "ok")))]
 pub async fn list_papers(
     State(state): State<AppState>,
     page: Pagination,
@@ -138,7 +138,7 @@ pub async fn list_papers(
 
 /// Assessment detail (with questions; options exclude score — backend scores after submission)
 #[utoipa::path(post,
-    path = "/v1/wap/eval-papers",
+    path = "/v1/wap/eval-papers/detail",
     tag = "wap",
     request_body = IdBody,
     responses((status = 200, description = "ok", body = PaperDetail))

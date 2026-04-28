@@ -103,7 +103,7 @@ pub async fn create_class(
 
 /// Delete class (including children)
 #[utoipa::path(post,
-    path = "/v1/admin/redeem-classes",
+    path = "/v1/admin/redeem-classes/delete",
     tag = "admin",
     security(("bearer" = [])),
     request_body = IdBody,
@@ -181,7 +181,7 @@ impl From<phpyun_models::redeem::entity::Reward> for RewardItem {
 /// Reward list
 #[utoipa::path(
     post,
-    path = "/v1/admin/rewards",
+    path = "/v1/admin/rewards/list",
     tag = "admin",
     security(("bearer" = [])),
     params(RewardListQuery),
@@ -260,7 +260,7 @@ pub async fn create_reward(
 
 /// Delete reward
 #[utoipa::path(post,
-    path = "/v1/admin/rewards",
+    path = "/v1/admin/rewards/delete",
     tag = "admin",
     security(("bearer" = [])),
     request_body = IdBody,

@@ -1,6 +1,17 @@
 use super::entity::JobTelLog;
 use sqlx::MySqlPool;
 
+// `phpyun_job_tellog` declares jobid/comid/uid/source/ctime as nullable int
+// and ip as nullable varchar(20); `JobTelLog` deserializes them as plain
+// `u64 / i32 / String`. COALESCE so a NULL row never reaches sqlx.
+const FIELDS: &str = "id, \
+    COALESCE(jobid, 0) AS jobid, \
+    COALESCE(comid, 0) AS comid, \
+    COALESCE(uid, 0) AS uid, \
+    COALESCE(source, 0) AS source, \
+    COALESCE(ip, '') AS ip, \
+    COALESCE(ctime, 0) AS ctime";
+
 pub async fn insert(
     pool: &MySqlPool,
     jobid: u64,
@@ -39,10 +50,10 @@ pub async fn list_by_com(
     offset: u64,
     limit: u64,
 ) -> Result<Vec<JobTelLog>, sqlx::Error> {
-    sqlx::query_as::<_, JobTelLog>(
-        "SELECT id, jobid, comid, uid, source, ip, ctime \
-         FROM phpyun_job_tellog WHERE comid = ? ORDER BY ctime DESC LIMIT ? OFFSET ?",
-    )
+    sqlx::query_as::<_, JobTelLog>(&format!(
+        "SELECT {FIELDS} \
+         FROM phpyun_job_tellog WHERE comid = ? ORDER BY ctime DESC LIMIT ? OFFSET ?"
+    ))
     .bind(comid)
     .bind(limit as i64)
     .bind(offset as i64)

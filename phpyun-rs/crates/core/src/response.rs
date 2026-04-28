@@ -173,6 +173,12 @@ fn resolve_msg_key(key: &'static str, lang: crate::i18n::Lang) -> String {
 }
 
 /// Paged response body.
+///
+/// Not `#[derive(ToSchema)]`-able because many call sites instantiate this
+/// over raw `phpyun_models::*` entities that don't implement `ToSchema`. For
+/// OpenAPI documentation of paged endpoints, leave `body` off the
+/// `responses(...)` macro — the response shape (`{list, total, page,
+/// page_size}`) is implicit from the project's response contract.
 #[derive(Debug, Serialize)]
 pub struct Paged<T: Serialize> {
     pub list: Vec<T>,

@@ -68,8 +68,19 @@ pub struct CreateJobForm {
     pub content: Option<String>,
     #[validate(length(max = 500))]
     pub wel: Option<String>,
+    /// Start date — accepts unix-ts or `"YYYY-MM"` / `"YYYY-MM-DD"` strings.
+    #[serde(
+        default,
+        alias = "sdate_n",
+        deserialize_with = "phpyun_core::date_parse::de_loose_ts"
+    )]
     #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub sdate: i64,
+    #[serde(
+        default,
+        alias = "edate_n",
+        deserialize_with = "phpyun_core::date_parse::de_loose_ts"
+    )]
     #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub edate: i64,
 }
@@ -77,7 +88,7 @@ pub struct CreateJobForm {
 /// Publish job
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/jobs/list",
+    path = "/v1/mcenter/jobs",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = CreateJobForm,
@@ -157,8 +168,20 @@ pub struct UpdateJobForm {
     pub content: Option<String>,
     #[validate(length(max = 500))]
     pub wel: Option<String>,
+    /// Start date — accepts unix-ts or `"YYYY-MM"` / `"YYYY-MM-DD"`. `None`
+    /// when omitted by the client (partial update leaves DB column untouched).
+    #[serde(
+        default,
+        alias = "sdate_n",
+        deserialize_with = "phpyun_core::date_parse::de_loose_ts_opt"
+    )]
     #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub sdate: Option<i64>,
+    #[serde(
+        default,
+        alias = "edate_n",
+        deserialize_with = "phpyun_core::date_parse::de_loose_ts_opt"
+    )]
     #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub edate: Option<i64>,
 }
@@ -312,7 +335,7 @@ pub type MyJobSummary = crate::v1::wap::jobs::JobSummary;
 /// Employer views their own list of published jobs
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/jobs",
+    path = "/v1/mcenter/jobs/list",
     tag = "mcenter",
     security(("bearer" = [])),
     params(MyJobsQuery),

@@ -80,7 +80,7 @@ impl From<phpyun_models::once_job::entity::OnceJob> for OnceListItem {
     }
 }
 
-#[utoipa::path(post, path = "/v1/wap/once-jobs/update", tag = "wap", params(ListQuery), responses((status = 200, description = "ok")))]pub async fn list(
+#[utoipa::path(post, path = "/v1/wap/once-jobs/list", tag = "wap", params(ListQuery), responses((status = 200, description = "ok")))]pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ListQuery>,
@@ -121,7 +121,7 @@ pub struct OnceDetail {
     pub hits: i64,
 }
 
-#[utoipa::path(post, path = "/v1/wap/once-jobs", tag = "wap", request_body = IdBody,
+#[utoipa::path(post, path = "/v1/wap/once-jobs/show", tag = "wap", request_body = IdBody,
     responses((status = 200, description = "ok", body = OnceDetail)))]
 pub async fn show(State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<OnceDetail>> {
@@ -267,7 +267,7 @@ pub async fn create(
 /// (every field length / range checked before any DB code runs). Soft-delete
 /// has been split out to its dedicated route — see
 /// `POST /v1/wap/once-jobs/{id}/delete`.
-#[utoipa::path(post, path = "/v1/wap/once-jobs", tag = "wap", request_body = UpsertBody, responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/wap/once-jobs/update", tag = "wap", request_body = UpsertBody, responses((status = 200, description = "ok")))]
 pub async fn update(State(state): State<AppState>,
     ClientIp(ip): ClientIp,
     ValidatedJson(b): ValidatedJson<UpsertBody>) -> AppResult<ApiJson<json::Value>> {

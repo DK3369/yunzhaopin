@@ -11,6 +11,9 @@ pub struct Country {
     pub id: u64,
     pub code: String,
     pub code3: String,
+    /// Decoded as i32 then narrowed — the source row may be a `phpyun_region`
+    /// projection where this field doesn't exist and we synthesize `0`.
+    #[sqlx(try_from = "i32")]
     pub numeric_code: u16,
     pub name_en: String,
     pub name_zh: String,

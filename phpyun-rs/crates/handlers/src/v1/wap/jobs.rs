@@ -356,23 +356,24 @@ pub async fn build_job_detail_value(
     };
 
     // --- Current user context (4 parallel checks) ---
-    // TODO(arch): `phpyun_report` (p_uid/c_uid/eid) and `phpyun_yqmb`
-    // (uid/did/status) on the legacy DB don't match the columns the current
-    // `report::repo` and `invite::repo` model. Until those repos are aligned
-    // with the live schema, keep the raw queries here.
+    // The "invite_job" check below queries `phpyun_yqmb` directly: that
+    // table tracks **interview invitations** (面邀), exposed elsewhere via
+    // `interview::repo`, but the predicate we want here ("has THIS company
+    // already invited THIS user for an interview on this job?") doesn't fit
+    // the `interview::repo` API. Same for `phpyun_report` — kept as raw SQL.
     let (fav_job, userid_job, report_job, invite_job) = if let Some(u) = user.as_ref() {
         let db = state.db.reader();
         let com_id = d.job.uid as i64;
         let fav_fut = phpyun_models::collect::repo::exists_with_type(db, u.uid, id, 1);
         let apply_fut = phpyun_models::apply::repo::find_by_uid_job(db, u.uid, id);
-        let report_fut = sqlx::query_as::<_, (i64,)>( // TODO(arch): align report::repo with legacy phpyun_report (p_uid/c_uid/eid) schema
+        let report_fut = sqlx::query_as::<_, (i64,)>( // raw query — see note above
             "SELECT COUNT(*) FROM phpyun_report WHERE p_uid = ? AND eid = ? AND c_uid = ?",
         )
         .bind(u.uid as i64)
         .bind(id as i64)
         .bind(com_id)
         .fetch_one(db);
-        let invite_fut = sqlx::query_as::<_, (i64,)>( // TODO(arch): align invite::repo with legacy phpyun_yqmb (uid/did/status) schema
+        let invite_fut = sqlx::query_as::<_, (i64,)>( // raw query — see note above
             "SELECT COUNT(*) FROM phpyun_yqmb WHERE uid = ? AND did = ? AND status != 0",
         )
         .bind(com_id)

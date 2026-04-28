@@ -180,7 +180,7 @@ impl From<phpyun_models::company_banner::entity::CompanyBanner> for BannerView {
 
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/company-banners",
+    path = "/v1/mcenter/company-banners/list",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
@@ -250,7 +250,7 @@ pub struct BannerUpdateForm {
 }
 
 #[utoipa::path(post,
-    path = "/v1/mcenter/company-banners",
+    path = "/v1/mcenter/company-banners/update",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = BannerUpdateForm,
@@ -276,7 +276,7 @@ pub async fn banner_update(State(state): State<AppState>,
 
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/company-banners",
+    path = "/v1/mcenter/company-banners/delete",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = IdsBody,

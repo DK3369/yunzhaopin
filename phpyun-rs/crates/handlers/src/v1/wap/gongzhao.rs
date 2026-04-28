@@ -167,7 +167,7 @@ impl GzDetail {
 /// Joint recruitment list
 #[utoipa::path(
     post,
-    path = "/v1/wap/gongzhao/detail",
+    path = "/v1/wap/gongzhao",
     tag = "wap",
     params(ListQuery),
     responses((status = 200, description = "ok"))
@@ -191,7 +191,7 @@ pub async fn list(
 
 /// Joint recruitment detail
 #[utoipa::path(post,
-    path = "/v1/wap/gongzhao",
+    path = "/v1/wap/gongzhao/detail",
     tag = "wap",
     request_body = IdBody,
     responses((status = 200, description = "ok", body = GzDetail))

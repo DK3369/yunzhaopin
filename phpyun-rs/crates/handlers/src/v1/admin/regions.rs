@@ -105,7 +105,7 @@ pub struct PatchForm {
 }
 
 #[utoipa::path(post,
-    path = "/v1/admin/regions",
+    path = "/v1/admin/regions/patch",
     tag = "admin",
     security(("bearer" = [])),
     request_body = PatchForm,

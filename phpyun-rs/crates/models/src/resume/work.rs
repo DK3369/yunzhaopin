@@ -23,7 +23,11 @@ pub struct Work {
     pub content: Option<String>,
 }
 
-const FIELDS: &str = "id, uid, eid, name, sdate, edate, department, title, content";
+// PHP `phpyun_resume_work.sdate / edate` are nullable int; entity i64.
+const FIELDS: &str = "id, uid, eid, name, \
+    COALESCE(sdate, 0) AS sdate, \
+    COALESCE(edate, 0) AS edate, \
+    department, title, content";
 
 pub async fn list_by_uid(pool: &MySqlPool, uid: u64) -> Result<Vec<Work>, sqlx::Error> {
     let sql = format!(

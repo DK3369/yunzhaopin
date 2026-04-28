@@ -8,8 +8,13 @@
 use super::entity::Apply;
 use sqlx::{MySqlPool, QueryBuilder};
 
+// PHP `phpyun_userid_job.invited / invite_time` are nullable int; entity
+// uses plain i32/i64. COALESCE so a NULL row can't trip sqlx.
 const FIELDS: &str =
-    "id, uid, job_id, com_id, eid, datetime, is_browse, invited, invite_time, isdel, quxiao";
+    "id, uid, job_id, com_id, eid, datetime, is_browse, \
+     COALESCE(invited, 0) AS invited, \
+     COALESCE(invite_time, 0) AS invite_time, \
+     isdel, quxiao";
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Apply>, sqlx::Error> {
     let sql = format!(

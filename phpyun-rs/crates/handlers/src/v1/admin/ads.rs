@@ -156,7 +156,7 @@ pub async fn create(
 }
 
 /// Update or soft-delete an ad (sending `"status":2` deletes; underlying UPDATE sets status=2)
-#[utoipa::path(post, path = "/v1/admin/ads", tag = "admin", security(("bearer" = [])), request_body = AdPatchForm, responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/admin/ads/update", tag = "admin", security(("bearer" = [])), request_body = AdPatchForm, responses((status = 200, description = "ok")))]
 pub async fn update(State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<AdPatchForm>) -> AppResult<ApiOk> {

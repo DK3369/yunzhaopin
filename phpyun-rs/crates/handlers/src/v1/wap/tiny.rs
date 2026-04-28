@@ -88,7 +88,7 @@ impl From<phpyun_models::tiny::entity::TinyResume> for TinyListItem {
 
 #[utoipa::path(
     post,
-    path = "/v1/wap/tiny-resumes/update",
+    path = "/v1/wap/tiny-resumes/list",
     tag = "wap",
     params(ListQuery),
     responses((status = 200, description = "ok"))
@@ -132,7 +132,7 @@ pub struct TinyDetail {
 }
 
 #[utoipa::path(post,
-    path = "/v1/wap/tiny-resumes",
+    path = "/v1/wap/tiny-resumes/show",
     tag = "wap",
     request_body = IdBody,
     responses(
@@ -264,7 +264,7 @@ pub async fn create(
 /// `POST /v1/wap/tiny-resumes/{id}/delete` so this body is fully strict
 /// `UpsertBody` (every field validated before any DB code runs).
 #[utoipa::path(post,
-    path = "/v1/wap/tiny-resumes",
+    path = "/v1/wap/tiny-resumes/update",
     tag = "wap",
     request_body = UpsertBody,
     responses((status = 200, description = "updated"))

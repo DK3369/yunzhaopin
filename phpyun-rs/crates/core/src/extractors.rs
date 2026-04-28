@@ -121,6 +121,15 @@ impl FromRequestParts<AppState> for AuthenticatedUser {
             return Err(AppError::session_expired());
         }
 
+        // 6. Session-row presence: the JWT may pass signature + blacklist +
+        //    pw_epoch yet correspond to a row that's been removed or marked
+        //    revoked_at!=0 in `phpyun_user_session`. Refuse those — the DB
+        //    row is the canonical "this session is alive" signal. Cached
+        //    in-process for 60 s to keep request cost negligible.
+        if !crate::session_presence::is_active(state.db.reader(), &claims.jti).await {
+            return Err(AppError::session_expired());
+        }
+
         Ok(AuthenticatedUser {
             uid: claims.sub,
             usertype: claims.usertype,

@@ -7,8 +7,17 @@
 use super::entity::CompanyAddress;
 use sqlx::{MySqlPool, QueryBuilder};
 
-const FIELDS: &str = "id, uid, link_man, link_moblie, link_phone, email, link_address,
-    provinceid, cityid, three_cityid, x, y";
+// Most columns on `phpyun_company_job_link` are NULL-allowed; CompanyAddress
+// uses plain types for them. Coerce NULL → defaults at SELECT time.
+const FIELDS: &str = "id, \
+    COALESCE(uid, 0) AS uid, \
+    COALESCE(link_man, '') AS link_man, \
+    COALESCE(link_moblie, '') AS link_moblie, \
+    link_phone, email, link_address, \
+    COALESCE(provinceid, 0) AS provinceid, \
+    COALESCE(cityid, 0) AS cityid, \
+    COALESCE(three_cityid, 0) AS three_cityid, \
+    x, y";
 
 pub async fn list_by_uid(
     pool: &MySqlPool,

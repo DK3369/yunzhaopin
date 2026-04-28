@@ -32,14 +32,31 @@ pub struct EduForm {
     pub id: u64,
     #[validate(length(min = 1, max = 100))]
     pub name: String,
+    /// Start date — accepts unix-ts or `"YYYY-MM"` / `"YYYY-MM-DD"` strings
+    /// (PHPYun date-picker formats; `_n` alias matches the frontend field).
+    #[serde(
+        default,
+        alias = "sdate_n",
+        deserialize_with = "phpyun_core::date_parse::de_loose_ts"
+    )]
     #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub sdate: i64,
+    #[serde(
+        default,
+        alias = "edate_n",
+        deserialize_with = "phpyun_core::date_parse::de_loose_ts"
+    )]
     #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub edate: i64,
     #[validate(length(max = 50))]
     pub specialty: Option<String>,
-    #[validate(range(min = 0, max = 999))]
-    pub title: i32,
+    /// Education-level dict id (PHPYun column `education` — 学历).
+    /// PHPYun's frontend posts and reads this as `education` / `education_n`;
+    /// the older Rust port called this `title`, accepted as alias for back-compat.
+    /// Loose deserializer accepts both `17` (int) and `"17"` (string).
+    #[serde(default, alias = "title", deserialize_with = "phpyun_core::date_parse::de_loose_i32")]
+    #[validate(range(min = 0, max = 9_999))]
+    pub education: i32,
     /// Soft delete: pass `2` to delete the entry (equivalent to the original DELETE).
     /// Other values or None go through the update path.
     #[serde(default)]
@@ -90,7 +107,7 @@ pub async fn create(
             sdate: f.sdate,
             edate: f.edate,
             specialty: f.specialty.as_deref(),
-            title: f.title,
+            education: f.education,
         },
         &ip,
     )
@@ -126,7 +143,7 @@ pub async fn update(
             sdate: f.sdate,
             edate: f.edate,
             specialty: f.specialty.as_deref(),
-            title: f.title,
+            education: f.education,
         },
         &ip,
     )

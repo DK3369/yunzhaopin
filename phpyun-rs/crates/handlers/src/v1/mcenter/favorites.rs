@@ -47,7 +47,7 @@ pub struct ToggleResp {
 /// ("添加收藏成功" / "已取消收藏" / etc.).
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/favorites/list",
+    path = "/v1/mcenter/favorites",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = AddFavoriteForm,
@@ -106,7 +106,7 @@ pub struct ListQuery {
 /// `is_favorited` is always `true` here.
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/favorites",
+    path = "/v1/mcenter/favorites/list",
     tag = "mcenter",
     security(("bearer" = [])),
     params(ListQuery),

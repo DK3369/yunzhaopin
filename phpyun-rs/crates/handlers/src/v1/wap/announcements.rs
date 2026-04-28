@@ -106,7 +106,7 @@ impl From<phpyun_models::announcement::entity::Announcement> for AnnouncementDet
 /// Announcement list
 #[utoipa::path(
     post,
-    path = "/v1/wap/announcements/detail",
+    path = "/v1/wap/announcements",
     tag = "wap",
     responses((status = 200, description = "ok"))
 )]
@@ -120,7 +120,7 @@ pub async fn list(
 
 /// Announcement detail (`upViewNum` semantics: async +1)
 #[utoipa::path(post,
-    path = "/v1/wap/announcements",
+    path = "/v1/wap/announcements/detail",
     tag = "wap",
     request_body = IdBody,
     responses((status = 200, description = "ok", body = AnnouncementDetail), (status = 404))

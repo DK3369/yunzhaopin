@@ -21,7 +21,7 @@
 use super::entity::CompanyCert;
 use sqlx::MySqlPool;
 
-const SELECT_FIELDS: &str = "CAST(uid AS UNSIGNED) AS uid, \
+const SELECT_FIELDS: &str = "CAST(COALESCE(uid, 0) AS UNSIGNED) AS uid, \
                              COALESCE(social_credit, '') AS license_photo, \
                              COALESCE(owner_cert, '') AS id_photo, \
                              COALESCE(status, 0) AS status, \

@@ -98,7 +98,7 @@ impl From<phpyun_models::hr_doc::entity::HrDoc> for HrDetail {
 }
 
 /// HR toolbox list
-#[utoipa::path(post, path = "/v1/wap/hr-docs/detail", tag = "wap", params(HrQuery), responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/wap/hr-docs", tag = "wap", params(HrQuery), responses((status = 200, description = "ok")))]
 pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
@@ -110,7 +110,7 @@ pub async fn list(
 
 /// HR toolbox detail
 #[utoipa::path(post,
-    path = "/v1/wap/hr-docs",
+    path = "/v1/wap/hr-docs/detail",
     tag = "wap",
     request_body = IdBody,
     responses((status = 200, description = "ok", body = HrDetail))

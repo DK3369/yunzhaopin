@@ -35,7 +35,7 @@ impl From<phpyun_models::site_setting::entity::SiteSetting> for SettingView {
 }
 
 /// List public settings
-#[utoipa::path(post, path = "/v1/wap/site/settings/get", tag = "wap", responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/wap/site/settings", tag = "wap", responses((status = 200, description = "ok", body = [SettingView])))]
 pub async fn list(State(state): State<AppState>) -> AppResult<ApiJson<Vec<SettingView>>> {
     let list = site_setting_service::list_public(&state).await?;
     Ok(ApiJson(list.into_iter().map(SettingView::from).collect()))
@@ -43,7 +43,7 @@ pub async fn list(State(state): State<AppState>) -> AppResult<ApiJson<Vec<Settin
 
 /// Single public setting
 #[utoipa::path(post,
-    path = "/v1/wap/site/settings",
+    path = "/v1/wap/site/settings/get",
     tag = "wap",
     request_body = GetOneBody,
     responses((status = 200, description = "ok", body = SettingView), (status = 404))

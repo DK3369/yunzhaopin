@@ -61,7 +61,7 @@ pub struct AddForm {
 
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/talent-pool/list",
+    path = "/v1/mcenter/talent-pool",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = AddForm,
@@ -87,7 +87,7 @@ pub async fn add(
 
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/talent-pool",
+    path = "/v1/mcenter/talent-pool/list",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
@@ -102,7 +102,7 @@ pub async fn add(
 
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/talent-pool",
+    path = "/v1/mcenter/talent-pool/delete",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = IdsBody,

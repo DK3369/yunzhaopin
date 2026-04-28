@@ -1,26 +1,57 @@
-//! `phpyun_country` data access — curated major-country lookup.
+//! Country data access — sourced from `phpyun_city_class` (the canonical
+//! PHPYun region tree; countries are the `keyid = 0` rows, ids 4001..=4250).
+//! ISO alpha-2 code + continent are pulled from `phpyun_region` via the
+//! offset relationship `phpyun_region.id = phpyun_city_class.id - 4000`
+//! (verified to match exactly across all 250 countries).
 //!
-//! Reads go through `country_service`'s in-process cache; the functions here
-//! back the cache loader and admin CRUD endpoints.
+//! Field mapping:
+//!   - `id`            ← cc.id (the PHPYun city_class id; matches what every
+//!                       other PHPYun endpoint expects)
+//!   - `code` (ISO α2) ← r.country_code  (LEFT JOIN; '' if region missing)
+//!   - `name_en`       ← cc.e_name
+//!   - `name_zh`       ← cc.name
+//!   - `continent`     ← r.continent
+//!   - `phone_code`    ← cc.code (stored as INT, cast to CHAR)
+//!   - `sort`          ← cc.sort
+//!   - `status`        ← cc.display (1 = visible)
+//!
+//! Source rows lack `code3`, `numeric_code`, `currency`, `flag`, `created_at`,
+//! `updated_at` — synthesised as empty / 0.
+//!
+//! Reads go through `country_service`'s in-process cache.
 
 use super::entity::Country;
 use sqlx::MySqlPool;
 
-const FIELDS: &str = "id, code, code3, numeric_code, name_en, name_zh, continent, \
-    phone_code, currency, flag, sort, status, created_at, updated_at";
+const PROJECTION: &str = "\
+    CAST(cc.id AS UNSIGNED) AS id, \
+    COALESCE(r.country_code, '') AS code, \
+    '' AS code3, \
+    0 AS numeric_code, \
+    cc.e_name AS name_en, \
+    cc.name AS name_zh, \
+    COALESCE(r.continent, '') AS continent, \
+    CAST(cc.code AS CHAR) AS phone_code, \
+    '' AS currency, \
+    '' AS flag, \
+    cc.sort, \
+    CAST(cc.display AS SIGNED) AS status, \
+    CAST(0 AS SIGNED) AS created_at, \
+    CAST(0 AS SIGNED) AS updated_at";
+
+const FROM_JOIN: &str = "\
+    FROM phpyun_city_class cc \
+    LEFT JOIN phpyun_region r ON r.id = cc.id - 4000";
 
 // ==================== Reads ====================
 
-/// Every active row in `(sort ASC, id ASC)` order. Loaded by the cache.
-///
-/// `phpyun_country` is a Rust-port-only curated lookup; the host PHP install
-/// may not have it. Treat the missing table as "no curated list available"
-/// (empty vec) so `/v1/wap/countries` returns `[]` instead of 5xx.
+/// All visible countries (city_class.keyid = 0 AND display = 1) in
+/// `(sort ASC, id ASC)` order. Loaded by the cache.
 pub async fn list_active(pool: &MySqlPool) -> Result<Vec<Country>, sqlx::Error> {
     let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_country \
-         WHERE status != 2 \
-         ORDER BY sort ASC, id ASC"
+        "SELECT {PROJECTION} {FROM_JOIN} \
+         WHERE cc.keyid = 0 AND cc.display = 1 \
+         ORDER BY cc.sort ASC, cc.id ASC"
     );
     phpyun_core::db::ok_default_if_object_missing(
         sqlx::query_as::<_, Country>(&sql).fetch_all(pool).await,
@@ -29,7 +60,8 @@ pub async fn list_active(pool: &MySqlPool) -> Result<Vec<Country>, sqlx::Error> 
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Country>, sqlx::Error> {
     let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_country WHERE id = ? AND status != 2 LIMIT 1"
+        "SELECT {PROJECTION} {FROM_JOIN} \
+         WHERE cc.id = ? AND cc.keyid = 0 AND cc.display = 1 LIMIT 1"
     );
     let r = sqlx::query_as::<_, Country>(&sql)
         .bind(id)
@@ -43,8 +75,11 @@ pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Country>, sq
 }
 
 pub async fn find_by_code(pool: &MySqlPool, code: &str) -> Result<Option<Country>, sqlx::Error> {
+    // ISO α2 lookup goes through the LEFT-joined region row; if region is
+    // missing we can't resolve by code, return None.
     let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_country WHERE code = ? AND status != 2 LIMIT 1"
+        "SELECT {PROJECTION} {FROM_JOIN} \
+         WHERE r.country_code = ? AND cc.keyid = 0 AND cc.display = 1 LIMIT 1"
     );
     let r = sqlx::query_as::<_, Country>(&sql)
         .bind(code)

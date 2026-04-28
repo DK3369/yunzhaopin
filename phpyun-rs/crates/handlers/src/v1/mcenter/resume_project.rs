@@ -31,8 +31,20 @@ pub struct ProjectForm {
     pub id: u64,
     #[validate(length(min = 1, max = 100))]
     pub name: String,
+    /// Start date — accepts unix-ts or `"YYYY-MM"` / `"YYYY-MM-DD"` strings
+    /// (PHPYun date-picker formats; `_n` alias matches the frontend field).
+    #[serde(
+        default,
+        alias = "sdate_n",
+        deserialize_with = "phpyun_core::date_parse::de_loose_ts"
+    )]
     #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub sdate: i64,
+    #[serde(
+        default,
+        alias = "edate_n",
+        deserialize_with = "phpyun_core::date_parse::de_loose_ts"
+    )]
     #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub edate: i64,
     #[validate(length(max = 50))]

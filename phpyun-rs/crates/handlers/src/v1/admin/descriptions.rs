@@ -95,7 +95,7 @@ pub struct ClassPatchForm {
 
 /// Update or soft-delete a class (passing `"status":2` in the body means delete)
 #[utoipa::path(post,
-    path = "/v1/admin/desc-classes",
+    path = "/v1/admin/desc-classes/update",
     tag = "admin",
     security(("bearer" = [])),
     request_body = ClassPatchForm,
@@ -164,7 +164,7 @@ impl From<phpyun_models::description::entity::Description> for DescItem {
 
 #[utoipa::path(
     post,
-    path = "/v1/admin/descriptions",
+    path = "/v1/admin/descriptions/list",
     tag = "admin",
     security(("bearer" = [])),
     params(ListQuery),
@@ -240,7 +240,7 @@ pub async fn upsert(
 }
 
 #[utoipa::path(post,
-    path = "/v1/admin/descriptions",
+    path = "/v1/admin/descriptions/delete",
     tag = "admin",
     security(("bearer" = [])),
     request_body = IdBody,

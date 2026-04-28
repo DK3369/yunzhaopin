@@ -15,7 +15,7 @@
 use phpyun_auth::{argon2_hash_async, verify_password_async};
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::json;
-use phpyun_core::jwt::{issue_pair, verify_refresh, JwtIssued};
+use phpyun_core::jwt::{issue_pair, JwtIssued};
 use phpyun_core::{
     background, jwt_blacklist,
     metrics::{auth_event, cache_hit, cache_miss},
@@ -271,65 +271,6 @@ pub async fn logout(state: &AppState, access_jti: &str, access_exp: i64) -> AppR
     let _ = user_session_service::revoke_current(state, access_jti).await;
     auth_event("logout", None);
     Ok(())
-}
-
-// ==================== Refresh token ====================
-
-pub async fn refresh(state: &AppState, refresh_token: &str) -> AppResult<LoginResult> {
-    let claims = verify_refresh(&state.config.jwt_secret, refresh_token)?;
-
-    // Reject refresh tokens that have been revoked
-    if jwt_blacklist::is_revoked(&state.redis, &claims.jti).await {
-        return Err(AppError::session_expired());
-    }
-
-    // After password change / password recovery / account split, any refresh token
-    // issued before pw_epoch is automatically invalidated.
-    if jwt_blacklist::is_token_stale(&state.redis, claims.sub, claims.iat).await {
-        return Err(AppError::session_expired());
-    }
-
-    // Immediately revoke the old refresh token (replay protection)
-    let _ = jwt_blacklist::revoke(&state.redis, &claims.jti, claims.exp).await;
-
-    let JwtIssued {
-        access,
-        refresh,
-        access_exp,
-        refresh_exp,
-        jti_access,
-        jti_refresh,
-    } = issue_pair(
-        &state.config,
-        claims.sub,
-        claims.usertype,
-        claims.did,
-    )?;
-
-    // Rotate the existing session row to the new jti pair. If the chain has
-    // been broken (row revoked / kicked from another device) this returns an
-    // error and we refuse to mint the new tokens — security-critical: a
-    // valid refresh token alone shouldn't bypass kick-this-device.
-    user_session_service::rotate_on_refresh(
-        state,
-        &claims.jti,
-        &jti_access,
-        &jti_refresh,
-        access_exp,
-        refresh_exp,
-    )
-    .await?;
-
-    auth_event("token_refreshed", None);
-
-    Ok(LoginResult {
-        access,
-        refresh,
-        uid: claims.sub,
-        usertype: claims.usertype,
-        access_exp,
-        refresh_exp,
-    })
 }
 
 // ==================== Access-token rolling refresh ====================

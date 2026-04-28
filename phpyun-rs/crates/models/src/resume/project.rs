@@ -23,8 +23,12 @@ pub struct Project {
     pub content: Option<String>,
 }
 
-// role <-> title; the PHP `sys` column is not returned for now.
-const FIELDS: &str = "id, uid, eid, name, sdate, edate, title AS role, content";
+// role <-> title; the PHP `sys` column is not returned for now. PHP
+// `sdate / edate` are nullable int; entity uses i64 → COALESCE.
+const FIELDS: &str = "id, uid, eid, name, \
+    COALESCE(sdate, 0) AS sdate, \
+    COALESCE(edate, 0) AS edate, \
+    title AS role, content";
 
 pub async fn list_by_uid(pool: &MySqlPool, uid: u64) -> Result<Vec<Project>, sqlx::Error> {
     let sql = format!(
@@ -50,7 +54,10 @@ pub async fn create(
     uid: u64,
     input: &ProjectInput<'_>,
 ) -> Result<u64, sqlx::Error> {
-    // role is written to the PHP `title` column.
+    // role is written to the PHP `title` column. PHP `phpyun_resume_project.title`
+    // and `.content` are NOT NULL (`varchar(50)`/`text` with no useful default
+    // for `text`); coerce missing values to empty strings so binding doesn't
+    // produce NULL.
     let res = sqlx::query(
         "INSERT INTO phpyun_resume_project \
          (uid, eid, name, sdate, edate, title, content) \
@@ -61,8 +68,8 @@ pub async fn create(
     .bind(input.name)
     .bind(input.sdate)
     .bind(input.edate)
-    .bind(input.role)
-    .bind(input.content)
+    .bind(input.role.unwrap_or(""))
+    .bind(input.content.unwrap_or(""))
     .execute(pool)
     .await?;
     Ok(res.last_insert_id())
@@ -82,8 +89,8 @@ pub async fn update(
     .bind(input.name)
     .bind(input.sdate)
     .bind(input.edate)
-    .bind(input.role)
-    .bind(input.content)
+    .bind(input.role.unwrap_or(""))
+    .bind(input.content.unwrap_or(""))
     .bind(id)
     .bind(uid)
     .execute(pool)

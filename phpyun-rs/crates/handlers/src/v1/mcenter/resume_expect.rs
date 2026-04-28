@@ -38,18 +38,19 @@ pub struct ExpectForm {
 
     /// Job-category id. Optional in JSON; if missing or 0, the server tries
     /// to resolve `job_classname` against the dictionary (fallback for
-    /// front-ends that send the human-readable name).
-    #[serde(default, deserialize_with = "de_loose_i64")]
+    /// front-ends that send the human-readable name). Accepts the underscore
+    /// form (`job_classid`) and the legacy compact form (`jobclassid`).
+    #[serde(default, alias = "jobclassid", deserialize_with = "de_loose_i64")]
     #[validate(range(min = 0i64, max = 9_999_999i64))]
     pub job_classid: i64,
-    #[serde(default)]
+    #[serde(default, alias = "jobclassname")]
     #[validate(length(max = 200))]
     pub job_classname: Option<String>,
 
-    #[serde(default, deserialize_with = "de_loose_i64")]
+    #[serde(default, alias = "cityclassid", deserialize_with = "de_loose_i64")]
     #[validate(range(min = 0i64, max = 9_999_999i64))]
     pub city_classid: i64,
-    #[serde(default)]
+    #[serde(default, alias = "cityclassname")]
     #[validate(length(max = 200))]
     pub city_classname: Option<String>,
 
@@ -62,17 +63,21 @@ pub struct ExpectForm {
     #[validate(range(min = 0, max = 1_000_000))]
     pub maxsalary: Option<i32>,
 
-    /// Work nature: 57=full-time / 58=part-time / etc.
+    /// Work nature: dict id from `phpyun_userclass` (keyid=56, e.g. 57=全职).
     #[serde(rename = "type", default, deserialize_with = "de_loose_i32")]
+    #[validate(range(min = 0, max = 99_999))]
     pub r#type: i32,
+    /// Availability: dict id from `phpyun_userclass` (keyid=44).
     #[serde(default, deserialize_with = "de_loose_i32")]
-    #[validate(range(min = 0, max = 99))]
+    #[validate(range(min = 0, max = 99_999))]
     pub report: i32,
+    /// Job-seeking status: dict id from `phpyun_userclass` (keyid=113).
     #[serde(default, deserialize_with = "de_loose_i32")]
-    #[validate(range(min = 0, max = 99))]
+    #[validate(range(min = 0, max = 99_999))]
     pub jobstatus: i32,
+    /// Industry: dict id (large id space, share the dict-id cap).
     #[serde(default, deserialize_with = "de_loose_i32")]
-    #[validate(range(min = 0, max = 99))]
+    #[validate(range(min = 0, max = 99_999))]
     pub hy: i32,
 
     /// Soft delete: pass `2` to delete. Other values or None will trigger an update.

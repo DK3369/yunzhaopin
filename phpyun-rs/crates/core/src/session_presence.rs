@@ -42,7 +42,7 @@ fn cache() -> &'static SimpleCache<String, ()> {
 /// are still in place upstream.
 pub async fn is_active(db: &MySqlPool, jti_access: &str) -> bool {
     let key = jti_access.to_string();
-    if cache().contains(&key) {
+    if cache().get(&key).await.is_some() {
         return true;
     }
     let result: Result<Option<(i64,)>, sqlx::Error> = sqlx::query_as(
@@ -68,10 +68,16 @@ pub async fn is_active(db: &MySqlPool, jti_access: &str) -> bool {
     }
 }
 
+/// Eagerly cache `jti_access` as active. Call from login / register / refresh
+/// paths so the first authed request on the new token skips the DB lookup.
+pub async fn mark_active(jti_access: &str) {
+    cache().insert(jti_access.to_string(), ()).await;
+}
+
 /// Drop the cached "active" entry for this jti. Call from revoke paths so
 /// other requests on this instance see the change immediately.
-pub fn invalidate(jti_access: &str) {
-    cache().invalidate(&jti_access.to_string());
+pub async fn invalidate(jti_access: &str) {
+    cache().invalidate(&jti_access.to_string()).await;
 }
 
 /// Drop all cached entries. Used by tests / admin tools.

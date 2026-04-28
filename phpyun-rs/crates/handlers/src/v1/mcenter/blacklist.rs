@@ -108,7 +108,7 @@ pub async fn remove(
 /// Clear my entire blacklist
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/blacklist",
+    path = "/v1/mcenter/blacklist/delete",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok", body = ClearResult))

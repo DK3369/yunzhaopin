@@ -24,7 +24,7 @@ use super::entity::SavedSearch;
 use sqlx::MySqlPool;
 
 const SELECT_FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
-                             CAST(uid AS UNSIGNED) AS uid, \
+                             CAST(COALESCE(uid, 0) AS UNSIGNED) AS uid, \
                              COALESCE(email, '') AS name, \
                              'job' AS kind, \
                              JSON_OBJECT( \

@@ -6,10 +6,12 @@ use sqlx::MySqlPool;
 // No `sort` column -- order by `id DESC` by default.
 // `price` is varchar so requires CAST; `id` is INT so requires
 // CAST UNSIGNED to satisfy sqlx u64 decoding.
+// `phpyun_company_tpl.name` and `.url` are nullable varchar; entity uses
+// plain String. COALESCE empty so a NULL row can't trip sqlx.
 const FIELDS: &str = "\
     CAST(id AS UNSIGNED) AS id, \
-    name, \
-    url, \
+    COALESCE(name, '') AS name, \
+    COALESCE(url, '') AS url, \
     pic, \
     CAST(COALESCE(`type`, 0) AS SIGNED) AS `type`, \
     CAST(COALESCE(NULLIF(price, ''), '0') AS SIGNED) AS price, \

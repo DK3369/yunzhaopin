@@ -24,13 +24,54 @@ pub struct PartFilter<'a> {
     pub did: u32,
 }
 
-const FIELDS: &str = "id, uid, name, com_name, `type`, provinceid, cityid, three_cityid, \
-    address, number, sex, salary, salary_type, billing_cycle, worktime, sdate, edate, \
-    content, linkman, linktel, state, status, r_status, rec_time, lastupdate, addtime, \
+// Every nullable int column on `phpyun_partjob` is COALESCE'd to a default
+// here because `PartJob` deserializes them as plain `i32 / i64` (not Option).
+// PHP's schema marks most numerics NULL even when the application always
+// writes a value, so SELECTing the raw column risks a sqlx panic on the
+// rare row that did slip in as NULL. See feedback memory
+// `feedback_model_types_match_php_schema.md`.
+const FIELDS: &str = "id, COALESCE(uid, 0) AS uid, name, com_name, \
+    COALESCE(`type`, 0) AS `type`, \
+    COALESCE(provinceid, 0) AS provinceid, \
+    COALESCE(cityid, 0) AS cityid, \
+    COALESCE(three_cityid, 0) AS three_cityid, \
+    address, \
+    COALESCE(number, 0) AS number, \
+    COALESCE(sex, 0) AS sex, \
+    COALESCE(salary, 0) AS salary, \
+    COALESCE(salary_type, 0) AS salary_type, \
+    COALESCE(billing_cycle, 0) AS billing_cycle, \
+    worktime, \
+    COALESCE(sdate, 0) AS sdate, \
+    COALESCE(edate, 0) AS edate, \
+    content, linkman, linktel, \
+    COALESCE(state, 0) AS state, \
+    status, \
+    COALESCE(r_status, 0) AS r_status, \
+    COALESCE(rec_time, 0) AS rec_time, \
+    COALESCE(lastupdate, 0) AS lastupdate, \
+    COALESCE(addtime, 0) AS addtime, \
     COALESCE(did, 0) AS did, x, y, COALESCE(hits, 0) AS hits, \
     COALESCE(deadline, 0) AS deadline, \
     COALESCE(upstatus_time, 0) AS upstatus_time, \
     COALESCE(upstatus_count, 0) AS upstatus_count";
+
+// `phpyun_part_apply` / `phpyun_part_collect` mark every numeric column
+// nullable; the Rust entities deserialize them as plain `u64 / i64`. Same
+// pattern as PartJob — COALESCE in every SELECT projection so a NULL row
+// can't trip sqlx.
+const APPLY_FIELDS: &str = "id, \
+    COALESCE(uid, 0) AS uid, \
+    COALESCE(jobid, 0) AS jobid, \
+    COALESCE(comid, 0) AS comid, \
+    COALESCE(ctime, 0) AS ctime, \
+    COALESCE(status, 0) AS status";
+
+const COLLECT_FIELDS: &str = "id, \
+    COALESCE(uid, 0) AS uid, \
+    COALESCE(jobid, 0) AS jobid, \
+    COALESCE(comid, 0) AS comid, \
+    COALESCE(ctime, 0) AS ctime";
 
 // ==================== partjob queries ====================
 
@@ -228,8 +269,7 @@ pub async fn find_apply(
     jobid: u64,
 ) -> Result<Option<PartApply>, sqlx::Error> {
     sqlx::query_as::<_, PartApply>(
-        "SELECT id, uid, jobid, comid, ctime, COALESCE(status, 0) AS status \
-         FROM phpyun_part_apply WHERE uid = ? AND jobid = ? LIMIT 1",
+        &format!("SELECT {APPLY_FIELDS} FROM phpyun_part_apply WHERE uid = ? AND jobid = ? LIMIT 1"),
     )
     .bind(uid)
     .bind(jobid)
@@ -263,8 +303,7 @@ pub async fn list_applies_by_uid(
     limit: u64,
 ) -> Result<Vec<PartApply>, sqlx::Error> {
     sqlx::query_as::<_, PartApply>(
-        "SELECT id, uid, jobid, comid, ctime, COALESCE(status, 0) AS status \
-         FROM phpyun_part_apply WHERE uid = ? ORDER BY ctime DESC LIMIT ? OFFSET ?",
+        &format!("SELECT {APPLY_FIELDS} FROM phpyun_part_apply WHERE uid = ? ORDER BY ctime DESC LIMIT ? OFFSET ?"),
     )
     .bind(uid)
     .bind(limit as i64)
@@ -289,8 +328,7 @@ pub async fn list_applies_by_com(
     limit: u64,
 ) -> Result<Vec<PartApply>, sqlx::Error> {
     sqlx::query_as::<_, PartApply>(
-        "SELECT id, uid, jobid, comid, ctime, COALESCE(status, 0) AS status \
-         FROM phpyun_part_apply WHERE comid = ? ORDER BY ctime DESC LIMIT ? OFFSET ?",
+        &format!("SELECT {APPLY_FIELDS} FROM phpyun_part_apply WHERE comid = ? ORDER BY ctime DESC LIMIT ? OFFSET ?"),
     )
     .bind(com_uid)
     .bind(limit as i64)
@@ -360,10 +398,10 @@ pub async fn find_collect(
     uid: u64,
     jobid: u64,
 ) -> Result<Option<PartCollect>, sqlx::Error> {
-    sqlx::query_as::<_, PartCollect>(
-        "SELECT id, uid, jobid, comid, ctime FROM phpyun_part_collect \
-         WHERE uid = ? AND jobid = ? LIMIT 1",
-    )
+    sqlx::query_as::<_, PartCollect>(&format!(
+        "SELECT {COLLECT_FIELDS} FROM phpyun_part_collect \
+         WHERE uid = ? AND jobid = ? LIMIT 1"
+    ))
     .bind(uid)
     .bind(jobid)
     .fetch_optional(pool)
@@ -395,10 +433,10 @@ pub async fn list_collects_by_uid(
     offset: u64,
     limit: u64,
 ) -> Result<Vec<PartCollect>, sqlx::Error> {
-    sqlx::query_as::<_, PartCollect>(
-        "SELECT id, uid, jobid, comid, ctime FROM phpyun_part_collect \
-         WHERE uid = ? ORDER BY ctime DESC LIMIT ? OFFSET ?",
-    )
+    sqlx::query_as::<_, PartCollect>(&format!(
+        "SELECT {COLLECT_FIELDS} FROM phpyun_part_collect \
+         WHERE uid = ? ORDER BY ctime DESC LIMIT ? OFFSET ?"
+    ))
     .bind(uid)
     .bind(limit as i64)
     .bind(offset as i64)

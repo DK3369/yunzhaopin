@@ -103,7 +103,7 @@ pub async fn create(
 }
 
 /// Update or soft-delete a navigation entry (sending `"status":2` deletes it)
-#[utoipa::path(post, path = "/v1/admin/nav", tag = "admin", security(("bearer" = [])), request_body = NavPatchForm, responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/admin/nav/update", tag = "admin", security(("bearer" = [])), request_body = NavPatchForm, responses((status = 200, description = "ok")))]
 pub async fn update(State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<NavPatchForm>) -> AppResult<ApiOk> {

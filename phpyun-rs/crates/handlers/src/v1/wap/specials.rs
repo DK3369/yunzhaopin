@@ -169,7 +169,7 @@ pub struct SpecialCompanyItem {
 pub type SpecialJob = super::jobs::JobSummary;
 
 /// Special list
-#[utoipa::path(post, path = "/v1/wap/specials/detail", tag = "wap", responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/wap/specials", tag = "wap", responses((status = 200, description = "ok")))]
 pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
@@ -188,7 +188,7 @@ pub async fn list(
 
 /// Special detail
 #[utoipa::path(post,
-    path = "/v1/wap/specials",
+    path = "/v1/wap/specials/detail",
     tag = "wap",
     request_body = IdBody,
     responses((status = 200, description = "ok", body = SpecialDetail))

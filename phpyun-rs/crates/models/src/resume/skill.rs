@@ -45,8 +45,12 @@ pub async fn create(
     uid: u64,
     input: &SkillInput<'_>,
 ) -> Result<u64, sqlx::Error> {
+    // PHP `phpyun_resume_skill.ing` is `int(5) NOT NULL` with no default — we
+    // have to write a value or MySQL rejects the insert. Default to 0 ("not
+    // currently in use"); the Rust API doesn't expose this field yet.
     let res = sqlx::query(
-        "INSERT INTO phpyun_resume_skill (uid, eid, name, skill, longtime) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO phpyun_resume_skill (uid, eid, name, skill, ing, longtime) \
+         VALUES (?, ?, ?, ?, 0, ?)",
     )
     .bind(uid)
     .bind(uid)

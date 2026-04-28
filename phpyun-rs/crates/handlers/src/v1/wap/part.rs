@@ -126,7 +126,7 @@ pub fn part_summary_from_dict(
 /// Public part-time list
 #[utoipa::path(
     post,
-    path = "/v1/wap/parts/detail",
+    path = "/v1/wap/parts",
     tag = "wap",
     params(PartListQuery),
     responses((status = 200, description = "ok"))
@@ -263,7 +263,7 @@ fn compute_edate_state(edate: i64, now: i64) -> i32 {
 
 /// Part-time detail
 #[utoipa::path(post,
-    path = "/v1/wap/parts",
+    path = "/v1/wap/parts/detail",
     tag = "wap",
     request_body = IdBody,
     responses(

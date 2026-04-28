@@ -45,7 +45,8 @@ pub async fn list_for_company(
     limit: u64,
 ) -> Result<Vec<ResumeDownload>, sqlx::Error> {
     sqlx::query_as::<_, ResumeDownload>(
-        r#"SELECT id, comid AS com_id, uid, eid, downtime AS datetime
+        r#"SELECT id, COALESCE(comid, 0) AS com_id, COALESCE(uid, 0) AS uid,
+                  COALESCE(eid, 0) AS eid, downtime AS datetime
            FROM phpyun_down_resume
            WHERE comid = ?
            ORDER BY downtime DESC
@@ -76,7 +77,8 @@ pub async fn list_for_user(
     limit: u64,
 ) -> Result<Vec<ResumeDownload>, sqlx::Error> {
     sqlx::query_as::<_, ResumeDownload>(
-        r#"SELECT id, comid AS com_id, uid, eid, downtime AS datetime
+        r#"SELECT id, COALESCE(comid, 0) AS com_id, COALESCE(uid, 0) AS uid,
+                  COALESCE(eid, 0) AS eid, downtime AS datetime
            FROM phpyun_down_resume
            WHERE uid = ?
            ORDER BY downtime DESC

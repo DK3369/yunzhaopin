@@ -1,8 +1,16 @@
 use super::entity::InterviewTemplate;
 use sqlx::MySqlPool;
 
-const FIELDS: &str =
-    "id, uid, name, content, address, linkman, linktel, intertime, status, created_at, updated_at";
+// `phpyun_yqmb` real columns: id, uid, name, linkman, linktel, address,
+// intertime, content, addtime, did, status, statusbody. The Rust entity
+// expects `created_at` / `updated_at` — there's no `updated_at` on the PHP
+// table, so we project `addtime` for both. Nullable ints get COALESCE.
+const FIELDS: &str = "id, \
+    COALESCE(uid, 0) AS uid, \
+    name, content, address, linkman, linktel, intertime, \
+    COALESCE(status, 0) AS status, \
+    COALESCE(addtime, 0) AS created_at, \
+    COALESCE(addtime, 0) AS updated_at";
 
 pub async fn list_by_uid(
     pool: &MySqlPool,
@@ -56,10 +64,14 @@ pub async fn create(
     c: TplCreate<'_>,
     now: i64,
 ) -> Result<u64, sqlx::Error> {
+    // `phpyun_yqmb` has no `created_at` / `updated_at` columns — only
+    // `addtime` (and `did` / `statusbody`). Map both timestamps onto
+    // `addtime`; the Rust caller's `updated_at` semantics is lost on the
+    // PHP table but that's a property of the legacy schema we share with.
     let res = sqlx::query(
         r#"INSERT INTO phpyun_yqmb
-           (uid, name, content, address, linkman, linktel, intertime, status, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?)"#,
+           (uid, name, content, address, linkman, linktel, intertime, status, addtime)
+           VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?)"#,
     )
     .bind(c.uid)
     .bind(c.name)
@@ -68,7 +80,6 @@ pub async fn create(
     .bind(c.linkman)
     .bind(c.linktel)
     .bind(c.intertime)
-    .bind(now)
     .bind(now)
     .execute(pool)
     .await?;
@@ -92,16 +103,19 @@ pub async fn update(
     u: TplUpdate<'_>,
     now: i64,
 ) -> Result<u64, sqlx::Error> {
+    // No `updated_at` column on `phpyun_yqmb` — the Rust API exposes one
+    // but the underlying table only has `addtime`, which we don't bump on
+    // updates (matches PHP behaviour: addtime is creation time only).
+    let _ = now; // kept on the signature for source compatibility
     let res = sqlx::query(
         r#"UPDATE phpyun_yqmb SET
-              name       = COALESCE(?, name),
-              content    = COALESCE(?, content),
-              address    = COALESCE(?, address),
-              linkman    = COALESCE(?, linkman),
-              linktel    = COALESCE(?, linktel),
-              intertime  = COALESCE(?, intertime),
-              status     = COALESCE(?, status),
-              updated_at = ?
+              name      = COALESCE(?, name),
+              content   = COALESCE(?, content),
+              address   = COALESCE(?, address),
+              linkman   = COALESCE(?, linkman),
+              linktel   = COALESCE(?, linktel),
+              intertime = COALESCE(?, intertime),
+              status    = COALESCE(?, status)
            WHERE id = ? AND uid = ?"#,
     )
     .bind(u.name)
@@ -111,7 +125,6 @@ pub async fn update(
     .bind(u.linktel)
     .bind(u.intertime)
     .bind(u.status)
-    .bind(now)
     .bind(id)
     .bind(uid)
     .execute(pool)

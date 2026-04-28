@@ -54,8 +54,21 @@ pub async fn list_jobs_near(
     limit: u64,
 ) -> Result<Vec<JobNear>, sqlx::Error> {
     let (xmin, xmax, ymin, ymax) = bbox(x, y, radius_km);
+    // `phpyun_company_job` declares provinceid/cityid/minsalary/maxsalary as
+    // nullable int and x/y as nullable varchar(50) (PHP stores coordinates
+    // as strings). The bounding-box predicate on `x BETWEEN ? AND ?` already
+    // filters out rows with NULL/empty coords, but COALESCE the projected
+    // columns so `JobNear` can use plain `i32 / f64` without sqlx panicking
+    // on a NULL slipping past the WHERE on a future schema/index change.
     let sql = r#"
-        SELECT id, uid, name, com_name, provinceid, cityid, minsalary, maxsalary, lastupdate, x, y,
+        SELECT id, uid, name, com_name,
+               COALESCE(provinceid, 0) AS provinceid,
+               COALESCE(cityid, 0) AS cityid,
+               COALESCE(minsalary, 0) AS minsalary,
+               COALESCE(maxsalary, 0) AS maxsalary,
+               COALESCE(lastupdate, 0) AS lastupdate,
+               CAST(COALESCE(NULLIF(x, ''), '0') AS DECIMAL(10,6)) AS x,
+               CAST(COALESCE(NULLIF(y, ''), '0') AS DECIMAL(10,6)) AS y,
                6371 * 2 * ASIN(
                  SQRT(
                    POW(SIN(RADIANS((y - ?) / 2)), 2)
@@ -93,8 +106,13 @@ pub async fn list_companies_near(
     limit: u64,
 ) -> Result<Vec<CompanyNear>, sqlx::Error> {
     let (xmin, xmax, ymin, ymax) = bbox(x, y, radius_km);
+    // Same NULL-coordinate guard as `list_jobs_near` — see notes there.
     let sql = r#"
-        SELECT uid, name, cityid, logo, x, y,
+        SELECT uid, name,
+               COALESCE(cityid, 0) AS cityid,
+               logo,
+               CAST(COALESCE(NULLIF(x, ''), '0') AS DECIMAL(10,6)) AS x,
+               CAST(COALESCE(NULLIF(y, ''), '0') AS DECIMAL(10,6)) AS y,
                6371 * 2 * ASIN(
                  SQRT(
                    POW(SIN(RADIANS((y - ?) / 2)), 2)

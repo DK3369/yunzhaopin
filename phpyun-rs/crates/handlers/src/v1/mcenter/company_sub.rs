@@ -122,7 +122,7 @@ pub async fn create_product(
 }
 
 /// Update or soft-delete a product (body with `"status":2` triggers deletion)
-#[utoipa::path(post, path = "/v1/mcenter/company/products", tag = "mcenter", security(("bearer" = [])), request_body = ProductPatch, responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/mcenter/company/products/update", tag = "mcenter", security(("bearer" = [])), request_body = ProductPatch, responses((status = 200, description = "ok")))]
 pub async fn update_product(State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<ProductPatch>) -> AppResult<ApiOk> {
@@ -199,7 +199,7 @@ pub struct NewsPatch {
 }
 
 /// My news list
-#[utoipa::path(post, path = "/v1/mcenter/company/news", tag = "mcenter", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/mcenter/company/news/list", tag = "mcenter", security(("bearer" = [])), responses((status = 200, description = "ok")))]
 pub async fn list_news(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -232,7 +232,7 @@ pub async fn create_news(
 }
 
 /// Update or soft-delete a news entry (body with `"status":2` triggers deletion)
-#[utoipa::path(post, path = "/v1/mcenter/company/news", tag = "mcenter", security(("bearer" = [])), request_body = NewsPatch, responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/mcenter/company/news/update", tag = "mcenter", security(("bearer" = [])), request_body = NewsPatch, responses((status = 200, description = "ok")))]
 pub async fn update_news(State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<NewsPatch>) -> AppResult<ApiOk> {

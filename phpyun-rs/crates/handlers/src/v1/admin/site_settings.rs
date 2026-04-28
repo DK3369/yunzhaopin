@@ -105,7 +105,7 @@ pub async fn upsert(
 
 /// Delete setting
 #[utoipa::path(post,
-    path = "/v1/admin/site-settings",
+    path = "/v1/admin/site-settings/delete",
     tag = "admin",
     security(("bearer" = [])),
     request_body = RemoveBody,

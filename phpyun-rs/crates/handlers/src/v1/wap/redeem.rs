@@ -54,7 +54,7 @@ impl From<phpyun_models::redeem::entity::RedeemClass> for ClassItem {
 /// Redeem mall classes
 #[utoipa::path(
     post,
-    path = "/v1/wap/redeem/rewards/detail",
+    path = "/v1/wap/redeem/classes",
     tag = "wap",
     params(ClassQuery),
     responses((status = 200, description = "ok"))
@@ -264,7 +264,7 @@ impl From<phpyun_models::redeem::entity::Reward> for RewardDetail {
 
 /// Reward detail
 #[utoipa::path(post,
-    path = "/v1/wap/redeem/rewards",
+    path = "/v1/wap/redeem/rewards/detail",
     tag = "wap",
     request_body = IdBody,
     responses((status = 200, description = "ok"))

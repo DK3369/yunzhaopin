@@ -297,7 +297,7 @@ fn parse_order(s: &str) -> QuestionOrder {
 }
 
 /// Question list
-#[utoipa::path(post, path = "/v1/wap/answers/comments/list", tag = "wap", params(QListQuery), responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/wap/questions", tag = "wap", params(QListQuery), responses((status = 200, description = "ok")))]
 pub async fn list_questions(
     State(state): State<AppState>,
     page: Pagination,
@@ -323,7 +323,7 @@ pub async fn list_questions(
 
 /// Question detail (hits +1 asynchronously)
 #[utoipa::path(post,
-    path = "/v1/wap/questions",
+    path = "/v1/wap/questions/detail",
     tag = "wap",
     request_body = IdBody,
     responses((status = 200, description = "ok", body = QuestionDetail), (status = 404))

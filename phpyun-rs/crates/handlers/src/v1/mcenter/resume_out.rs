@@ -127,7 +127,7 @@ pub async fn send(
 
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/resume-outbox",
+    path = "/v1/mcenter/resume-outbox/delete",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = IdsBody,

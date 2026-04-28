@@ -130,7 +130,7 @@ pub struct JoinedResult {
 /// Main company: generate invite code
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/company/invite-codes/list",
+    path = "/v1/mcenter/company/invite-codes",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = CodeForm,
@@ -155,7 +155,7 @@ pub async fn create_code(
 }
 
 /// Main company: list invite codes
-#[utoipa::path(post, path = "/v1/mcenter/company/invite-codes", tag = "mcenter", security(("bearer" = [])), responses((status = 200, description = "ok")))]pub async fn list_codes(
+#[utoipa::path(post, path = "/v1/mcenter/company/invite-codes/list", tag = "mcenter", security(("bearer" = [])), responses((status = 200, description = "ok")))]pub async fn list_codes(
     State(state): State<AppState>,
     user: AuthenticatedUser,
 ) -> AppResult<ApiJson<Vec<CodeView>>> {

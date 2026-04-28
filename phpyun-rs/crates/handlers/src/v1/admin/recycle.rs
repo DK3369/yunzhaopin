@@ -47,7 +47,7 @@ pub async fn list(
 
 /// Single record detail
 #[utoipa::path(post,
-    path = "/v1/admin/recycle-bin",
+    path = "/v1/admin/recycle-bin/detail",
     tag = "admin",
     security(("bearer" = [])),
     request_body = IdBody,
@@ -63,7 +63,7 @@ pub async fn detail(State(state): State<AppState>,
 
 /// Permanently delete
 #[utoipa::path(post,
-    path = "/v1/admin/recycle-bin",
+    path = "/v1/admin/recycle-bin/purge",
     tag = "admin",
     security(("bearer" = [])),
     request_body = IdBody,

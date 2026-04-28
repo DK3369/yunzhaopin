@@ -20,16 +20,18 @@ pub struct Edu {
     pub edate: i64,
     /// Specialty / major
     pub specialty: Option<String>,
-    /// Degree (dictionary id) -- PHPYun column is `education`,
-    /// mapped via `SELECT education AS title`.
-    pub title: i32,
+    /// Education-level dictionary id (PHP column `education` — 学历: 大专/本科/硕士/...).
+    /// PHPYun's other column `title` (varchar 50, degree title string) is left
+    /// untouched — current frontends only post `education`.
+    pub education: i32,
 }
 
 // Actual PHPYun columns:
 // id/uid/eid/name/sdate/edate/specialty/title(varchar)/content/education(int)
-// Rust `Edu.title` actually stores the degree-dictionary id, so it maps
-// to the PHP `education` column.
-const FIELDS: &str = "id, uid, eid, name, sdate, edate, specialty, education AS title";
+// We project `education` straight through; the column-name mismatch that
+// previously aliased it to `title` was a bug — the PHPYun frontend posts
+// and reads the field as `education` / `education_n`.
+const FIELDS: &str = "id, uid, eid, name, sdate, edate, specialty, education";
 
 pub async fn list_by_uid(pool: &MySqlPool, uid: u64) -> Result<Vec<Edu>, sqlx::Error> {
     let sql = format!(
@@ -52,7 +54,8 @@ pub struct EduInput<'a> {
     pub sdate: i64,
     pub edate: i64,
     pub specialty: Option<&'a str>,
-    pub title: i32,
+    /// Education-level dict id (maps to DB column `education`).
+    pub education: i32,
 }
 
 pub async fn create(
@@ -60,20 +63,24 @@ pub async fn create(
     uid: u64,
     input: &EduInput<'_>,
 ) -> Result<u64, sqlx::Error> {
+    // `specialty` is `varchar(50) NOT NULL DEFAULT ''` and `content` is `text
+    // NOT NULL` (TEXT can't have a default in MySQL strict mode), so both must
+    // receive a non-NULL value or the insert fails with `Field 'content'
+    // doesn't have a default value`. We pass empty string for content; the
+    // PHPYun column `title` (varchar 50) is also `NOT NULL DEFAULT ''` and
+    // current API doesn't carry it, so it'll take the default.
     let res = sqlx::query(
-        // The title field stores the degree-dictionary id; this maps
-        // to PHPYun's actual `education` column.
         r#"INSERT INTO phpyun_resume_edu
-           (uid, eid, name, sdate, edate, specialty, education)
-           VALUES (?, ?, ?, ?, ?, ?, ?)"#,
+           (uid, eid, name, sdate, edate, specialty, education, content)
+           VALUES (?, ?, ?, ?, ?, ?, ?, '')"#,
     )
     .bind(uid)
     .bind(uid) // eid = uid
     .bind(input.name)
     .bind(input.sdate)
     .bind(input.edate)
-    .bind(input.specialty)
-    .bind(input.title)
+    .bind(input.specialty.unwrap_or(""))
+    .bind(input.education)
     .execute(pool)
     .await?;
     Ok(res.last_insert_id())
@@ -97,8 +104,8 @@ pub async fn update(
     .bind(input.name)
     .bind(input.sdate)
     .bind(input.edate)
-    .bind(input.specialty)
-    .bind(input.title)
+    .bind(input.specialty.unwrap_or(""))
+    .bind(input.education)
     .bind(id)
     .bind(uid)
     .execute(pool)

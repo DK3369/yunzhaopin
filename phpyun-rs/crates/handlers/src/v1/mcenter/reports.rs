@@ -35,7 +35,7 @@ pub struct ReportForm {
 /// Submit a report
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/reports/list",
+    path = "/v1/mcenter/reports",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = ReportForm,
@@ -106,7 +106,7 @@ impl From<phpyun_models::report::entity::Report> for ReportItem {
 /// Reports I have submitted
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/reports",
+    path = "/v1/mcenter/reports/list",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))

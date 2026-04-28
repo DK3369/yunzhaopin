@@ -15,7 +15,7 @@
 
 use phpyun_core::error::InfraError;
 use phpyun_core::utils::fmt_ts;
-use phpyun_core::{clock, jwt_blacklist, AppError, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{clock, jwt_blacklist, session_presence, AppError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::user_session::{entity::UserSession, repo as session_repo};
 use std::sync::Arc;
 
@@ -125,6 +125,9 @@ pub async fn record_login(state: &AppState, r: LoginRecord<'_>) -> AppResult<u64
         },
     )
     .await?;
+    // Prime the presence cache so the very next request on this token
+    // doesn't pay a DB round-trip to confirm the row we just wrote.
+    session_presence::mark_active(r.jti_access).await;
     Ok(id)
 }
 
@@ -153,6 +156,9 @@ pub async fn rotate_on_refresh(
     if n == 0 {
         return Err(AppError::session_expired());
     }
+    // Eagerly cache the new access jti as active so the very next request
+    // with the new token doesn't need a DB round-trip to confirm presence.
+    session_presence::mark_active(new_access_jti).await;
     Ok(())
 }
 
@@ -181,6 +187,10 @@ pub async fn rotate_on_access_refresh(
     if n == 0 {
         return Err(AppError::session_expired());
     }
+    // Drop the old jti's cached "active" entry (it now points at a row that
+    // no longer matches `jti_access = old`); prime the cache for the new jti.
+    session_presence::invalidate(old_access_jti).await;
+    session_presence::mark_active(new_access_jti).await;
     Ok(())
 }
 
@@ -287,6 +297,7 @@ pub async fn revoke_session(
     {
         let _ = jwt_blacklist::revoke(&state.redis, &acc_jti, acc_exp).await;
         let _ = jwt_blacklist::revoke(&state.redis, &ref_jti, ref_exp).await;
+        session_presence::invalidate(&acc_jti).await;
     }
     Ok(())
 }
@@ -304,6 +315,7 @@ pub async fn revoke_other_sessions(
     for (acc_jti, acc_exp, ref_jti, ref_exp) in revoked {
         let _ = jwt_blacklist::revoke(&state.redis, &acc_jti, acc_exp).await;
         let _ = jwt_blacklist::revoke(&state.redis, &ref_jti, ref_exp).await;
+        session_presence::invalidate(&acc_jti).await;
     }
     Ok(n)
 }
@@ -313,6 +325,7 @@ pub async fn revoke_other_sessions(
 pub async fn revoke_current(state: &AppState, access_jti: &str) -> AppResult<()> {
     let now = clock::now_ts();
     let _ = session_repo::revoke_by_access_jti(state.db.pool(), access_jti, now).await?;
+    session_presence::invalidate(access_jti).await;
     Ok(())
 }
 

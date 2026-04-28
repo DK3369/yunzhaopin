@@ -68,6 +68,11 @@ async fn async_main(config: Config, worker_threads: usize) -> anyhow::Result<()>
     // Global region tree (countries / states / cities). Same caching pattern as dict_service.
     phpyun_services::region_service::init_and_spawn_refresher(&state).await;
 
+    // Mint a stable long-lived admin token for `/docs` & curl in non-prod so
+    // engineers can hit auth-gated endpoints without going through login.
+    // No-op in prod.
+    phpyun_core::dev_token::init(&state.config, state.db.pool(), &state.redis).await;
+
     // Background task: export DB pool metrics every minute (includes writer + reader)
     {
         let state_bg = state.clone();

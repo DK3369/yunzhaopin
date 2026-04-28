@@ -20,7 +20,11 @@ pub struct Cert {
     pub content: Option<String>,
 }
 
-const FIELDS: &str = "id, uid, eid, name, sdate, edate, title, content";
+// PHP `phpyun_resume_cert.sdate / edate` are nullable int; entity uses i64.
+const FIELDS: &str = "id, uid, eid, name, \
+    COALESCE(sdate, 0) AS sdate, \
+    COALESCE(edate, 0) AS edate, \
+    title, content";
 
 pub async fn list_by_uid(pool: &MySqlPool, uid: u64) -> Result<Vec<Cert>, sqlx::Error> {
     let sql = format!(

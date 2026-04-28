@@ -15,7 +15,7 @@ pub fn routes() -> Router<AppState> {
 }
 
 #[derive(Debug, Serialize, ToSchema)]
-pub struct OverviewView {
+pub struct SiteOverviewView {
     pub total_jobs: u64,
     pub total_companies: u64,
     pub total_resumes: u64,
@@ -28,13 +28,13 @@ pub struct OverviewView {
     post,
     path = "/v1/wap/stats/overview",
     tag = "wap",
-    responses((status = 200, description = "ok", body = OverviewView))
+    responses((status = 200, description = "ok", body = SiteOverviewView))
 )]
 pub async fn overview(
     State(state): State<AppState>,
-) -> AppResult<ApiJson<OverviewView>> {
+) -> AppResult<ApiJson<SiteOverviewView>> {
     let o = stats_service::overview(&state).await?;
-    Ok(ApiJson(OverviewView {
+    Ok(ApiJson(SiteOverviewView {
         total_jobs: o.total_jobs,
         total_companies: o.total_companies,
         total_resumes: o.total_resumes,

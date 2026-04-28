@@ -6,8 +6,10 @@
 use super::entity::Entrust;
 use sqlx::MySqlPool;
 
+// PHP `phpyun_entrust.uid` is nullable int — was reading `CAST(uid AS
+// UNSIGNED)` which yields NULL → sqlx panics. Wrap in COALESCE.
 const FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
-                      CAST(uid AS UNSIGNED) AS uid, \
+                      CAST(COALESCE(uid, 0) AS UNSIGNED) AS uid, \
                       CAST(COALESCE(lt_uid, 0) AS UNSIGNED) AS lt_uid, \
                       COALESCE(datetime, 0) AS datetime, \
                       COALESCE(remind_status, 0) AS remind_status";

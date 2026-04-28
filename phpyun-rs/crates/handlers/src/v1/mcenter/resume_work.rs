@@ -33,8 +33,22 @@ pub struct WorkForm {
     pub id: u64,
     #[validate(length(min = 1, max = 100))]
     pub name: String,
+    /// Start date. Accepts unix timestamp (i64), or PHPYun-shaped strings
+    /// `"YYYY-MM"` / `"YYYY-MM-DD"` / `"YYYY-MM-DD HH:MM:SS"` (the date-picker
+    /// formats every PHPYun frontend ships). The `_n` alias lets the frontend
+    /// keep its existing field name `sdate_n`.
+    #[serde(
+        default,
+        alias = "sdate_n",
+        deserialize_with = "phpyun_core::date_parse::de_loose_ts"
+    )]
     #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub sdate: i64,
+    #[serde(
+        default,
+        alias = "edate_n",
+        deserialize_with = "phpyun_core::date_parse::de_loose_ts"
+    )]
     #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub edate: i64,
     #[validate(length(max = 50))]

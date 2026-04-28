@@ -97,7 +97,7 @@ pub async fn clear(
 
 /// Delete a single entry
 #[utoipa::path(post,
-    path = "/v1/mcenter/search-history",
+    path = "/v1/mcenter/search-history/delete",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = IdBody,

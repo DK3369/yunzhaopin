@@ -48,7 +48,7 @@ impl From<phpyun_models::description::entity::DescClass> for ClassItem {
 /// Class list
 #[utoipa::path(
     post,
-    path = "/v1/wap/descriptions/get",
+    path = "/v1/wap/descriptions/classes",
     tag = "wap",
     responses((status = 200, description = "ok"))
 )]
@@ -158,7 +158,7 @@ impl From<phpyun_models::description::entity::Description> for DescDetail {
 
 /// Single-page detail
 #[utoipa::path(post,
-    path = "/v1/wap/descriptions",
+    path = "/v1/wap/descriptions/get",
     tag = "wap",
     request_body = IdBody,
     responses((status = 200, description = "ok"))

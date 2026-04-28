@@ -101,7 +101,14 @@ pub fn verify(secret: &str, token: &str) -> AppResult<Claims> {
         &Validation::default(),
     )
     .map(|d| d.claims)
-    .map_err(|_| AppError::session_expired())
+    .map_err(|e| match e.kind() {
+        // Differentiate "the clock killed the token" (session_expired — UX
+        // tells the user to refresh) from "the token doesn't validate at all"
+        // (unauth — wrong secret / forged / malformed; tells the user the
+        // server doesn't recognise this credential at all).
+        jsonwebtoken::errors::ErrorKind::ExpiredSignature => AppError::session_expired(),
+        _ => AppError::unauth(),
+    })
 }
 
 /// Accept only tokens with `typ="access"`.

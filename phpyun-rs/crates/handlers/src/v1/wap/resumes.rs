@@ -298,12 +298,16 @@ pub fn resume_expect_item_from_dict(
 }
 
 /// Build `ResumeEduItem` with the education dict translation.
+/// `education_n` resolves the education-level dict id (PHPYun
+/// `phpyun_userclass.keyid=3`); the cache currently doesn't hold that table,
+/// so resolution falls back to the empty string until a `userclass` dict
+/// loader is added — same behaviour as before, only the field name changed.
 pub fn resume_edu_item_from_dict(
     e: phpyun_models::resume::edu::Edu,
     dicts: &phpyun_services::dict_service::LocalizedDicts,
 ) -> ResumeEduItem {
     ResumeEduItem {
-        title_n: dicts.comclass(e.title).to_string(),
+        education_n: dicts.comclass(e.education).to_string(),
         id: e.id,
         uid: e.uid,
         eid: e.eid,
@@ -313,7 +317,7 @@ pub fn resume_edu_item_from_dict(
         edate_n: fmt_date(e.edate),
         edate: e.edate,
         specialty: e.specialty,
-        title: e.title,
+        education: e.education,
     }
 }
 

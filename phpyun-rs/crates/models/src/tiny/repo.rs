@@ -5,8 +5,14 @@
 use super::entity::TinyResume;
 use sqlx::{MySqlPool, QueryBuilder};
 
-const FIELDS: &str = "id, username, sex, exp, job, mobile, password, provinceid, cityid, three_cityid,
-    production, status, login_ip, time, lastupdate, did, hits";
+// `phpyun_resume_tiny` declares lastupdate / did / hits as nullable int;
+// `TinyResume` reads them as plain `i64 / u32 / i64`. COALESCE so a NULL row
+// can't surprise sqlx.
+const FIELDS: &str = "id, username, sex, exp, job, mobile, password, provinceid, cityid, three_cityid, \
+    production, status, login_ip, time, \
+    COALESCE(lastupdate, 0) AS lastupdate, \
+    COALESCE(did, 0) AS did, \
+    COALESCE(hits, 0) AS hits";
 
 #[derive(Debug, Default, Clone)]
 pub struct TinyFilter<'a> {

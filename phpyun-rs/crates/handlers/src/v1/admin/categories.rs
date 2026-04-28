@@ -115,7 +115,7 @@ pub async fn create(
     Ok(ApiJson(CreatedId { id }))
 }
 
-#[utoipa::path(post, path = "/v1/admin/categories", tag = "admin", security(("bearer" = [])), request_body = CatPatchForm, responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/admin/categories/update", tag = "admin", security(("bearer" = [])), request_body = CatPatchForm, responses((status = 200, description = "ok")))]
 pub async fn update(State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<CatPatchForm>) -> AppResult<ApiOk> {

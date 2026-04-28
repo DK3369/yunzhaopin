@@ -1,9 +1,44 @@
 use super::entity::OnceJob;
 use sqlx::{MySqlPool, QueryBuilder};
 
-const FIELDS: &str = "id, companyname, linkman, linktel, provinceid, cityid, three_cityid,
-    number, `type`, salary, exp, edu, `require`, pic, yyzz, password, login_ip,
-    status, ctime, edate, did, hits";
+// SELECT projection mapping the real `phpyun_once_job` columns onto the
+// Rust `OnceJob` entity shape. The PHP table predates the Rust port and uses
+// a different column set:
+//
+//   PHP   : id, title, mans, require, companyname, phone, hits, linkman,
+//           provinceid, cityid, three_cityid, address, ctime, status,
+//           password, qq, email, edate, login_ip, did, sxtime, sxnumber,
+//           pic, salary (varchar), pay, yyzz
+//   Rust  : id, companyname, linkman, linktel, provinceid, cityid,
+//           three_cityid, number, type, salary (i32), exp, edu, require,
+//           pic, yyzz, password, login_ip, status, ctime, edate, did, hits
+//
+// Field-by-field translation:
+//   - linktel  ← phone               (PHP has no `linktel`)
+//   - number   ← 0                   (PHP `mans` is free-text: not safely an int)
+//   - type     ← 0                   (no equivalent column)
+//   - salary   ← CAST(salary AS SIGNED) on the varchar column
+//   - exp / edu ← 0                  (no equivalent columns)
+//
+// The 0-projected fields lose data fidelity but keep public read endpoints
+// from 5xx'ing on column-not-found. Writers for once-jobs aren't currently
+// exercised against this table from the Rust port.
+const FIELDS: &str = "\
+    CAST(id AS UNSIGNED) AS id, \
+    companyname, \
+    linkman, \
+    COALESCE(phone, '') AS linktel, \
+    provinceid, cityid, three_cityid, \
+    CAST(0 AS SIGNED) AS number, \
+    CAST(0 AS SIGNED) AS `type`, \
+    CAST(COALESCE(NULLIF(salary, ''), '0') AS SIGNED) AS salary, \
+    CAST(0 AS SIGNED) AS exp, \
+    CAST(0 AS SIGNED) AS edu, \
+    `require`, pic, yyzz, password, login_ip, \
+    status, ctime, \
+    COALESCE(edate, 0) AS edate, \
+    COALESCE(did, 0) AS did, \
+    COALESCE(hits, 0) AS hits";
 
 #[derive(Debug, Default, Clone)]
 pub struct Filter<'a> {

@@ -56,7 +56,11 @@ pub async fn send(
     )
     .await?;
 
-    // Notify the email consumer asynchronously (PHPYun calls SMTP synchronously; we offload to the event bus so the main path waits for nothing).
+    // Notify the email consumer asynchronously. PHPyun calls SMTP
+    // synchronously; we offload to the event bus so the main path waits for
+    // nothing. `phpyun_recommend` doesn't persist subject/content (PHP
+    // renders them from a template at send time), so the SMTP consumer
+    // receives them as part of the event payload here.
     let _ = state
         .events
         .publish_json(
@@ -65,6 +69,8 @@ pub async fn send(
                 "invite_id": id,
                 "email": input.email,
                 "inviter_uid": user.uid,
+                "subject": subject,
+                "content": input.content,
             }),
         )
         .await;

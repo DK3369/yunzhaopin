@@ -304,7 +304,7 @@ impl From<phpyun_models::zph::entity::Zph> for ZphDetail {
 }
 
 /// Job-fair list
-#[utoipa::path(post, path = "/v1/wap/zph/detail", tag = "wap", responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/wap/zph", tag = "wap", responses((status = 200, description = "ok")))]
 pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
@@ -324,7 +324,7 @@ pub async fn list(
 
 /// Job-fair detail
 #[utoipa::path(post,
-    path = "/v1/wap/zph",
+    path = "/v1/wap/zph/detail",
     tag = "wap",
     request_body = IdBody,
     responses((status = 200, description = "ok", body = ZphDetail), (status = 404))

@@ -217,7 +217,7 @@ impl ArticleDetail {
 /// Public article list
 #[utoipa::path(
     post,
-    path = "/v1/wap/articles/detail",
+    path = "/v1/wap/articles",
     tag = "wap",
     params(ArticleListQuery),
     responses((status = 200, description = "ok"))
@@ -247,7 +247,7 @@ pub async fn list_articles(
 
 /// Public article detail (hits +1 in async background)
 #[utoipa::path(post,
-    path = "/v1/wap/articles",
+    path = "/v1/wap/articles/detail",
     tag = "wap",
     request_body = IdBody,
     responses(

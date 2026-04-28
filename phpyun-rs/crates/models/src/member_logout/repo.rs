@@ -1,7 +1,13 @@
 use super::entity::MemberLogout;
 use sqlx::MySqlPool;
 
-const FIELDS: &str = "id, uid, username, tel, status, ctime";
+// `phpyun_member_logout` marks uid/status/ctime nullable; `MemberLogout`
+// uses plain `u64 / i32 / i64`. COALESCE NULLs to defaults.
+const FIELDS: &str = "id, \
+    COALESCE(uid, 0) AS uid, \
+    username, tel, \
+    COALESCE(status, 0) AS status, \
+    COALESCE(ctime, 0) AS ctime";
 
 pub async fn find_by_uid(
     pool: &MySqlPool,

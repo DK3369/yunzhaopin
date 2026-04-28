@@ -90,7 +90,7 @@ impl From<phpyun_models::feedback::entity::Feedback> for FeedbackItem {
 /// Feedback I have submitted (login required)
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/feedback",
+    path = "/v1/mcenter/feedback/list",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))

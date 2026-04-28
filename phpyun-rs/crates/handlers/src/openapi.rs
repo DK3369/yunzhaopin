@@ -821,7 +821,7 @@ impl Modify for UniqueOperationId {
             v1::mcenter::interview_tpl::TplItem,
             v1::mcenter::interview_tpl::TplForm,
             v1::mcenter::interview_tpl::TplPatchForm,
-            v1::wap::stats::OverviewView,
+            v1::wap::stats::SiteOverviewView,
             v1::wap::resume_share::SharedResume,
             v1::wap::map::NearJob,
             v1::wap::map::NearCompany,
@@ -1032,8 +1032,36 @@ pub struct V1Doc;
 pub struct V2Doc;
 
 /// Swagger UI single URL with a top-left dropdown to switch between versions.
+///
+/// In non-prod a long-lived admin "dev token" is embedded in the spec's
+/// `info.description` (rendered as Markdown by Swagger UI). The user copies
+/// it once, clicks **Authorize**, pastes — and `persist_authorization(true)`
+/// keeps it in browser localStorage across reloads.
 pub fn swagger_ui() -> SwaggerUi {
+    let mut v1 = V1Doc::openapi();
+    let mut v2 = V2Doc::openapi();
+    if let Some(t) = phpyun_core::dev_token::tokens() {
+        let banner = format!(
+            "\n\n---\n\n## 🔑 开发环境快捷登录\n\n\
+            uid=1,30 年 TTL。点右上角 **Authorize**,在 `bearerAuth` 框里粘贴对应角色的 token\
+            (**不要带 `Bearer ` 前缀**,Swagger 会自动加)。浏览器会记住,下次打开不用重新粘贴。\n\n\
+            **admin**(默认 / `/v1/admin/*`):\n```\n{admin}\n```\n\n\
+            **jobseeker**(`/v1/mcenter/resume/*` 等求职者专属):\n```\n{js}\n```\n\n\
+            **employer**(`/v1/mcenter/applications` 等企业专属):\n```\n{er}\n```\n\n\
+            JSON 接口取 token:[`GET /dev/token`](/dev/token)(仅测试环境返回)。\n\n---\n",
+            admin = t.admin, js = t.jobseeker, er = t.employer,
+        );
+        let inject = |info: &mut utoipa::openapi::Info| {
+            info.description = Some(format!(
+                "{}{banner}",
+                info.description.clone().unwrap_or_default()
+            ));
+        };
+        inject(&mut v1.info);
+        inject(&mut v2.info);
+    }
     SwaggerUi::new("/docs")
-        .url("/api-docs/v1/openapi.json", V1Doc::openapi())
-        .url("/api-docs/v2/openapi.json", V2Doc::openapi())
+        .url("/api-docs/v1/openapi.json", v1)
+        .url("/api-docs/v2/openapi.json", v2)
+        .config(utoipa_swagger_ui::Config::default().persist_authorization(true))
 }

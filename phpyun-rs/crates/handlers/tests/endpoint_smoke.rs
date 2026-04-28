@@ -26,12 +26,29 @@ use utoipa::OpenApi;
 
 const TEST_ADMIN_UID: u64 = 1; // Conventional super-admin uid in PHPYun installs.
 
-/// Issue a minimal access token using the same `phpyun_core::jwt::issue_pair`
-/// helper that the production login flow uses. We use the jobseeker role
-/// (`usertype=1`) for most probes and admin (`usertype=3`) for `/admin/*`.
-fn issue_token(cfg: &Config, usertype: u8) -> String {
+/// Issue a minimal access token + register the corresponding session row so
+/// the `AuthenticatedUser` extractor's session-presence check passes. The
+/// extractor enforces that every JWT corresponds to a live row in
+/// `phpyun_user_session`; we stamp one in here using the same code path the
+/// real login flow uses.
+async fn issue_token_with_session(state: &AppState, cfg: &Config, usertype: u8) -> String {
     let issued = phpyun_core::jwt::issue_pair(cfg, TEST_ADMIN_UID, usertype, 0)
         .expect("issue_pair");
+    phpyun_services::user_session_service::record_login(
+        state,
+        phpyun_services::user_session_service::LoginRecord {
+            uid: TEST_ADMIN_UID,
+            usertype,
+            jti_access: &issued.jti_access,
+            jti_refresh: &issued.jti_refresh,
+            access_exp: issued.access_exp,
+            refresh_exp: issued.refresh_exp,
+            ip: "127.0.0.1",
+            ua: "smoke-test",
+        },
+    )
+    .await
+    .expect("record_login for test session");
     issued.access
 }
 
@@ -55,10 +72,10 @@ async fn smoke_every_v1_post_endpoint() {
     let state = AppState::build(config.clone(), shutdown.clone())
         .await
         .expect("AppState::build (DB / Redis reachable?)");
-    let router = build_router_with_state(&config, state.clone()).with_state(state);
+    let router = build_router_with_state(&config, state.clone()).with_state(state.clone());
 
-    let admin_token = issue_token(&config, 3);
-    let user_token = issue_token(&config, 1);
+    let admin_token = issue_token_with_session(&state, &config, 3).await;
+    let user_token = issue_token_with_session(&state, &config, 1).await;
 
     // Enumerate POST paths from the OpenAPI spec.
     let api = V1Doc::openapi();

@@ -20,7 +20,11 @@ pub struct Training {
     pub content: Option<String>,
 }
 
-const FIELDS: &str = "id, uid, eid, name, sdate, edate, title, content";
+// PHP `phpyun_resume_training.sdate / edate` are nullable int; entity i64.
+const FIELDS: &str = "id, uid, eid, name, \
+    COALESCE(sdate, 0) AS sdate, \
+    COALESCE(edate, 0) AS edate, \
+    title, content";
 
 pub async fn list_by_uid(pool: &MySqlPool, uid: u64) -> Result<Vec<Training>, sqlx::Error> {
     let sql = format!(

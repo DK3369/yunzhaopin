@@ -199,7 +199,7 @@ impl From<phpyun_models::vip::entity::PayOrder> for OrderItem {
 /// My orders list
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/vip/orders",
+    path = "/v1/mcenter/vip/orders/list",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
@@ -214,7 +214,7 @@ impl From<phpyun_models::vip::entity::PayOrder> for OrderItem {
 
 /// Cancel an unpaid order (orders with status=0). Cannot cancel paid / cancelled orders.
 #[utoipa::path(post,
-    path = "/v1/mcenter/vip/orders",
+    path = "/v1/mcenter/vip/orders/cancel",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = CancelOrderBody,

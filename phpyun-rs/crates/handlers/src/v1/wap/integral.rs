@@ -41,7 +41,7 @@ impl From<phpyun_models::integral::entity::IntegralItem> for IntegralItemView {
 }
 
 /// List points-mall items
-#[utoipa::path(post, path = "/v1/wap/integral/items/detail", tag = "wap", responses((status = 200, description = "ok")))]
+#[utoipa::path(post, path = "/v1/wap/integral/items", tag = "wap", responses((status = 200, description = "ok")))]
 pub async fn list_items(
     State(state): State<AppState>,
     page: Pagination,
@@ -52,7 +52,7 @@ pub async fn list_items(
 
 /// Points-mall item detail
 #[utoipa::path(post,
-    path = "/v1/wap/integral/items",
+    path = "/v1/wap/integral/items/detail",
     tag = "wap",
     request_body = IdBody,
     responses((status = 200, description = "ok", body = IntegralItemView))

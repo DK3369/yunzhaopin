@@ -54,9 +54,10 @@ pub struct ResumeEduItem {
     pub edate: i64,
     pub edate_n: String,
     pub specialty: Option<String>,
-    /// Education dictionary id (PHP `education`)
-    pub title: i32,
-    pub title_n: String,
+    /// Education-level dict id (PHPYun column `education`).
+    pub education: i32,
+    /// Localized education-level name (e.g. "本科" / "硕士").
+    pub education_n: String,
 }
 
 // ==================== Work-experience item ====================
@@ -255,8 +256,8 @@ impl From<Edu> for ResumeEduItem {
             edate_n: fmt_date(e.edate),
             edate: e.edate,
             specialty: e.specialty,
-            title: e.title,
-            title_n: String::new(),
+            education: e.education,
+            education_n: String::new(),
         }
     }
 }

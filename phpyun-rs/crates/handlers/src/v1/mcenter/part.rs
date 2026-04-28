@@ -148,7 +148,7 @@ pub async fn delete_applies(
 
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/my-part-collects",
+    path = "/v1/mcenter/my-part-collects/list",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
@@ -183,7 +183,7 @@ pub async fn delete_collects(
 
 #[utoipa::path(
     post,
-    path = "/v1/mcenter/com-parts",
+    path = "/v1/mcenter/com-parts/list",
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))

@@ -154,7 +154,7 @@ pub async fn set_notify(State(state): State<AppState>,
 
 /// Delete a saved search
 #[utoipa::path(post,
-    path = "/v1/mcenter/saved-searches",
+    path = "/v1/mcenter/saved-searches/delete",
     tag = "mcenter",
     security(("bearer" = [])),
     request_body = IdBody,
