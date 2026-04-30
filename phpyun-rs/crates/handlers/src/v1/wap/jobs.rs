@@ -69,6 +69,12 @@ pub struct JobListQuery {
     pub three_city_id: Option<i32>,
     #[validate(range(min = 0, max = 9_999_999))]
     pub job1: Option<i32>,
+    /// Mid-level job category (PHP `job1_son`).
+    #[validate(range(min = 0, max = 9_999_999))]
+    pub job1_son: Option<i32>,
+    /// Leaf-level job category (PHP `job_post`).
+    #[validate(range(min = 0, max = 9_999_999))]
+    pub job_post: Option<i32>,
     #[validate(range(min = 0, max = 1_000_000))]
     pub min_salary: Option<i32>,
     #[validate(range(min = 0, max = 1_000_000))]
@@ -80,6 +86,28 @@ pub struct JobListQuery {
     /// 1 = full-time / 2 = part-time / 3 = internship / 4 = temporary
     #[validate(range(min = 0, max = 4))]
     pub job_type: Option<i32>,
+    /// Industry dict id (PHP `hy`).
+    #[validate(range(min = 0, max = 99_999))]
+    pub hy: Option<i32>,
+    /// Gender dict id (PHP `sex`).
+    #[validate(range(min = 0, max = 99))]
+    pub sex: Option<i32>,
+    /// Salary cycle dict id — 月薪/年薪/时薪 (PHP `report`).
+    #[validate(range(min = 0, max = 99))]
+    pub report: Option<i32>,
+    /// Welfare dict id (PHP `welfare`). Resolved to the dict name before
+    /// running `welfare LIKE '%<name>%'` against the CSV-encoded column.
+    #[validate(range(min = 0, max = 99_999))]
+    pub welfare: Option<i32>,
+    /// Refresh-time bucket in days (1, 3, 7, 30, 90 are PHPYun's UI options).
+    #[validate(range(min = 0, max = 365))]
+    pub uptime: Option<i32>,
+    /// `urgent=true` keeps only postings whose `urgent_time` hasn't expired.
+    #[serde(default)]
+    pub urgent: bool,
+    /// `rec=true` keeps only sticky/promoted postings (`rec_time >= now`).
+    #[serde(default)]
+    pub rec: bool,
     #[serde(default = "default_did")]
     #[validate(range(max = 9_999_999))]
     pub did: u32,
@@ -225,11 +253,20 @@ pub async fn list_jobs(
         city_id: q.city_id,
         three_city_id: q.three_city_id,
         job1: q.job1,
+        job1_son: q.job1_son,
+        job_post: q.job_post,
         min_salary: q.min_salary,
         max_salary: q.max_salary,
         exp: q.exp,
         edu: q.edu,
         job_type: q.job_type,
+        hy: q.hy,
+        sex: q.sex,
+        report: q.report,
+        welfare: q.welfare,
+        uptime: q.uptime,
+        urgent: q.urgent,
+        rec: q.rec,
         did: q.did,
     };
     let r = job_service::list_public(&state, &search, page).await?;

@@ -80,7 +80,7 @@ pub async fn global_search(
     };
     let coms_fut = async {
         if want_com {
-            company_repo::list_public(db, &com_f, 0, DEFAULT_LIMIT).await
+            company_repo::list_public(db, &com_f, 0, DEFAULT_LIMIT, now).await
         } else {
             Ok(vec![])
         }

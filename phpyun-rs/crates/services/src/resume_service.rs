@@ -96,6 +96,12 @@ pub async fn update_mine(
     )
     .await?;
 
+    tracing::info!(
+        op = "resume.update_main", uid = user.uid, ip = client_ip,
+        name = ?input.name, sex = ?input.sex, education = ?input.education,
+        "wizard write"
+    );
+
     let _ = audit::emit(
         state,
         AuditEvent::new("resume.update", Actor::uid(user.uid).with_ip(client_ip))

@@ -57,6 +57,7 @@ pub struct WorkInput<'a> {
 pub async fn create(
     pool: &MySqlPool,
     uid: u64,
+    eid: u64,
     input: &WorkInput<'_>,
 ) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
@@ -65,8 +66,7 @@ pub async fn create(
            VALUES (?, ?, ?, ?, ?, ?, ?, ?)"#,
     )
     .bind(uid)
-    .bind(uid) // eid = uid
-
+    .bind(eid) // eid = phpyun_resume_expect.id (the default resume copy)
     .bind(input.name)
     .bind(input.sdate)
     .bind(input.edate)

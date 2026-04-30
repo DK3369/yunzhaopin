@@ -65,17 +65,22 @@ pub async fn register(state: &AppState, input: RegisterInput<'_>) -> AppResult<R
         return Err(AppError::captcha());
     }
 
-    // 2. SMS code
-    if !verify::verify(
-        &state.redis,
-        VerifyKind::SmsRegister,
-        input.mobile,
-        input.sms_code,
-    )
-    .await?
-    {
-        auth_event("register_fail", Some("bad_sms_code"));
-        return Err(InfraError::InvalidParam("sms_code".into()).into());
+    // 2. SMS code — only required when mobile is supplied. PHPYun's
+    //    `register.model.php::regMoblie` gates on `isset($post['moblie'])`;
+    //    `regway=1` username-registration sends an empty mobile and skips
+    //    the SMS step entirely.
+    if !input.mobile.is_empty() {
+        if !verify::verify(
+            &state.redis,
+            VerifyKind::SmsRegister,
+            input.mobile,
+            input.sms_code,
+        )
+        .await?
+        {
+            auth_event("register_fail", Some("bad_sms_code"));
+            return Err(InfraError::InvalidParam("sms_code".into()).into());
+        }
     }
 
     // 3. Uniqueness check (writer guarantees real-time consistency)
@@ -83,7 +88,7 @@ pub async fn register(state: &AppState, input: RegisterInput<'_>) -> AppResult<R
     if user_repo::exists_username(writer, input.username).await? {
         return Err(InfraError::InvalidParam("username_taken".into()).into());
     }
-    if user_repo::exists_mobile(writer, input.mobile).await? {
+    if !input.mobile.is_empty() && user_repo::exists_mobile(writer, input.mobile).await? {
         return Err(InfraError::InvalidParam("mobile_taken".into()).into());
     }
     if let Some(email) = input.email {
@@ -131,7 +136,7 @@ pub async fn register(state: &AppState, input: RegisterInput<'_>) -> AppResult<R
                 )
                 .await?;
                 match usertype {
-                    1 => resume_repo::ensure_row(&mut **tx, uid, did, now).await?,
+                    1 => resume_repo::ensure_row_in_tx(&mut **tx, uid, did, now).await?,
                     2 => company_repo::ensure_row(&mut **tx, uid, did).await?,
                     _ => {} // usertype=3 campus; auxiliary table is not linked yet
                 }

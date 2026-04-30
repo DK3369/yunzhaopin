@@ -116,13 +116,45 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFilter<'a>
     }
 }
 
-/// If the resume row does not exist, insert a row with default values. Called inside the registration transaction; also called as a fallback by `get_mine`.
-pub async fn ensure_row<'e, E>(exec: E, uid: u64, did: u32, now: i64) -> Result<(), sqlx::Error>
+/// SELECT-then-INSERT guard for `phpyun_resume`. PHPYun's schema only
+/// has `KEY uid` (non-unique) on this table — `INSERT IGNORE` would
+/// happily duplicate on every wizard step. Used by `get_mine` /
+/// `update_mine` paths where we want at-most-one row per uid.
+///
+/// Race window between SELECT and INSERT exists; same race as PHPYun's
+/// PHP code, mitigated by the fact the only races come from concurrent
+/// wizard saves which all carry the same uid (worst case: an extra row).
+pub async fn ensure_row(pool: &sqlx::MySqlPool, uid: u64, did: u32, now: i64) -> Result<(), sqlx::Error> {
+    let exists: Option<(i64,)> = sqlx::query_as("SELECT 1 FROM phpyun_resume WHERE uid = ? LIMIT 1")
+        .bind(uid)
+        .fetch_optional(pool)
+        .await?;
+    if exists.is_some() {
+        return Ok(());
+    }
+    sqlx::query(
+        r#"INSERT INTO phpyun_resume (uid, did, status, r_status, nametype, sex,
+           marriage, edu, phototype, def_job, lastupdate)
+           VALUES (?, ?, 2, 1, 1, 0, 0, 0, 0, 0, ?)"#,
+    )
+    .bind(uid)
+    .bind(did)
+    .bind(now)
+    .execute(pool)
+    .await?;
+    Ok(())
+}
+
+/// Insert the row inside a registration transaction. The caller already
+/// guarantees this is a freshly-created uid (member INSERT just succeeded
+/// in the same tx), so a SELECT first would be redundant. Kept generic on
+/// `Executor` so the registration service can pass `&mut **tx` directly.
+pub async fn ensure_row_in_tx<'e, E>(exec: E, uid: u64, did: u32, now: i64) -> Result<(), sqlx::Error>
 where
     E: sqlx::Executor<'e, Database = sqlx::MySql>,
 {
     sqlx::query(
-        r#"INSERT IGNORE INTO phpyun_resume (uid, did, status, r_status, nametype, sex,
+        r#"INSERT INTO phpyun_resume (uid, did, status, r_status, nametype, sex,
            marriage, edu, phototype, def_job, lastupdate)
            VALUES (?, ?, 2, 1, 1, 0, 0, 0, 0, 0, ?)"#,
     )
@@ -134,12 +166,18 @@ where
     Ok(())
 }
 
-/// Bare INSERT IGNORE — only sets `uid`; every other column relies on the
+/// Bare ensure_row — only sets `uid`; every other column relies on the
 /// MySQL default. Used by `seed_role_rows` when a member's usertype is set
-/// post-registration and we just need a row to exist for FK / counter writes
-/// to succeed; the full-defaults version above is overkill in that path.
+/// post-registration. SELECT-then-INSERT discipline.
 pub async fn ensure_uid_only(pool: &sqlx::MySqlPool, uid: u64) -> Result<(), sqlx::Error> {
-    sqlx::query("INSERT IGNORE INTO phpyun_resume (uid) VALUES (?)")
+    let exists: Option<(i64,)> = sqlx::query_as("SELECT 1 FROM phpyun_resume WHERE uid = ? LIMIT 1")
+        .bind(uid)
+        .fetch_optional(pool)
+        .await?;
+    if exists.is_some() {
+        return Ok(());
+    }
+    sqlx::query("INSERT INTO phpyun_resume (uid) VALUES (?)")
         .bind(uid)
         .execute(pool)
         .await?;

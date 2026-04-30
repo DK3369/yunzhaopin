@@ -33,6 +33,9 @@ pub struct PartSearch {
     pub billing_cycle: Option<i32>,
     pub min_salary: Option<i32>,
     pub max_salary: Option<i32>,
+    /// `rec=true` keeps only sticky/promoted listings (mirrors PHP partlist
+    /// `rec_time > now`).
+    pub rec: bool,
     pub did: u32,
 }
 
@@ -57,6 +60,7 @@ pub async fn list_public(
         billing_cycle: search.billing_cycle,
         min_salary: search.min_salary,
         max_salary: search.max_salary,
+        rec: search.rec,
         did: if search.did == 0 { 1 } else { search.did },
     };
     let (total, list) = tokio::join!(

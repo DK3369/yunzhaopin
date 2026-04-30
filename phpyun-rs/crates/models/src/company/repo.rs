@@ -39,12 +39,30 @@ const FIELDS: &str = "\
 
 // ==================== Public search ====================
 
+/// Public-company list filter. Field set tracks PHPYun's `comlist` Smarty
+/// plugin (`smarty_internal_compile_comlist.php`). Welfare / linkman /
+/// linktel / linkmail / logo / uptime are deliberately omitted — they
+/// either require a secondary SELECT (`welfare` does FIND_IN_SET into a
+/// uid set first) or are rarely used in practice; add them on demand.
 #[derive(Debug, Default, Clone)]
 pub struct CompanyFilter<'a> {
-    pub keyword: Option<&'a str>, // matched against name via LIKE
+    /// Matched against `name` AND `shortname` via LIKE (PHP `comlist`).
+    pub keyword: Option<&'a str>,
     pub province_id: Option<i32>,
     pub city_id: Option<i32>,
-    pub hy: Option<i32>, // industry
+    pub three_city_id: Option<i32>,
+    /// Industry dict id (`hy`).
+    pub hy: Option<i32>,
+    /// Company-type dict id — 国企/外资/民营/… (`pr`).
+    pub pr: Option<i32>,
+    /// Staff-count dict id — 50人以下/50-200/… (`mun`).
+    pub mun: Option<i32>,
+    /// `cert=true` keeps only companies whose business license has been
+    /// verified (`yyzz_status = 1`).
+    pub cert: bool,
+    /// `rec=true` keeps only sticky/promoted companies. PHP composite:
+    /// `rec=1 AND hotstart <= now AND hottime > now`.
+    pub rec: bool,
     pub did: u32,
 }
 
@@ -53,12 +71,13 @@ pub async fn list_public(
     f: &CompanyFilter<'_>,
     offset: u64,
     limit: u64,
+    now: i64,
 ) -> Result<Vec<Company>, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
     qb.push(FIELDS);
     qb.push(" FROM phpyun_company WHERE r_status = 1 AND did = ");
     qb.push_bind(f.did);
-    push_filters(&mut qb, f);
+    push_filters(&mut qb, f, now);
     qb.push(" ORDER BY rec DESC, hits DESC LIMIT ");
     qb.push_bind(limit);
     qb.push(" OFFSET ");
@@ -69,20 +88,25 @@ pub async fn list_public(
 pub async fn count_public(
     pool: &MySqlPool,
     f: &CompanyFilter<'_>,
+    now: i64,
 ) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> =
         QueryBuilder::new("SELECT COUNT(*) FROM phpyun_company WHERE r_status = 1 AND did = ");
     qb.push_bind(f.did);
-    push_filters(&mut qb, f);
+    push_filters(&mut qb, f, now);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(n.max(0) as u64)
 }
 
-fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &CompanyFilter<'a>) {
+fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &CompanyFilter<'a>, now: i64) {
     if let Some(kw) = f.keyword {
         if !kw.is_empty() {
-            qb.push(" AND name LIKE ");
+            // PHP `comlist`: `(name LIKE OR shortname LIKE)`.
+            qb.push(" AND (name LIKE ");
             qb.push_bind(format!("%{kw}%"));
+            qb.push(" OR shortname LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+            qb.push(")");
         }
     }
     if let Some(v) = f.province_id {
@@ -93,9 +117,31 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &CompanyFilter<'a
         qb.push(" AND cityid = ");
         qb.push_bind(v);
     }
+    if let Some(v) = f.three_city_id {
+        qb.push(" AND three_cityid = ");
+        qb.push_bind(v);
+    }
     if let Some(v) = f.hy {
         qb.push(" AND hy = ");
         qb.push_bind(v);
+    }
+    if let Some(v) = f.pr {
+        qb.push(" AND pr = ");
+        qb.push_bind(v);
+    }
+    if let Some(v) = f.mun {
+        qb.push(" AND mun = ");
+        qb.push_bind(v);
+    }
+    if f.cert {
+        qb.push(" AND yyzz_status = 1");
+    }
+    if f.rec {
+        // PHP composite: hotstart <= now < hottime, AND rec=1.
+        qb.push(" AND rec = 1 AND hotstart <= ");
+        qb.push_bind(now);
+        qb.push(" AND hottime > ");
+        qb.push_bind(now);
     }
 }
 

@@ -61,6 +61,7 @@ pub struct EduInput<'a> {
 pub async fn create(
     pool: &MySqlPool,
     uid: u64,
+    eid: u64,
     input: &EduInput<'_>,
 ) -> Result<u64, sqlx::Error> {
     // `specialty` is `varchar(50) NOT NULL DEFAULT ''` and `content` is `text
@@ -75,7 +76,7 @@ pub async fn create(
            VALUES (?, ?, ?, ?, ?, ?, ?, '')"#,
     )
     .bind(uid)
-    .bind(uid) // eid = uid
+    .bind(eid) // eid = phpyun_resume_expect.id
     .bind(input.name)
     .bind(input.sdate)
     .bind(input.edate)

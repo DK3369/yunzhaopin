@@ -5,7 +5,12 @@
 use super::entity::Job;
 use sqlx::{MySqlPool, QueryBuilder};
 
-/// Public job filter. Empty fields = no filter applied.
+/// Public job filter. Empty fields = no filter applied. Field set mirrors
+/// PHPYun's `wap/job` finder + the `joblist` Smarty plugin that drives the
+/// public list (`smarty_internal_compile_joblist.php`):
+///     hy, job1, job1_son, job_post, provinceid, cityid, three_cityid,
+///     minsalary, maxsalary, edu, exp, sex, type, report, uptime,
+///     welfare, urgent, rec.
 #[derive(Debug, Default, Clone)]
 pub struct JobFilter<'a> {
     pub keyword: Option<&'a str>,
@@ -13,6 +18,8 @@ pub struct JobFilter<'a> {
     pub city_id: Option<i32>,
     pub three_city_id: Option<i32>,
     pub job1: Option<i32>,
+    pub job1_son: Option<i32>,
+    pub job_post: Option<i32>,
     pub min_salary: Option<i32>,
     pub max_salary: Option<i32>,
     pub exp: Option<i32>,
@@ -20,6 +27,25 @@ pub struct JobFilter<'a> {
     /// 1 = full-time / 2 = part-time / 3 = internship / 4 = temporary
     /// (aligns with PHPYun `phpyun_company_job.type`).
     pub job_type: Option<i32>,
+    /// Industry dict id (`phpyun_company_job.hy`).
+    pub hy: Option<i32>,
+    /// Gender dict id (`phpyun_company_job.sex`).
+    pub sex: Option<i32>,
+    /// Salary cycle dict id — 月/年/时 (`phpyun_company_job.report`).
+    pub report: Option<i32>,
+    /// Welfare dict NAME, already resolved by the service layer from a
+    /// welfare id. PHPYun does `welfare LIKE '%<name>%'` because the column
+    /// stores a CSV of welfare names rather than ids.
+    pub welfare: Option<&'a str>,
+    /// Refresh-time bucket in days: 1 = today, 3 = last 3 days, 7 / 30 / 90
+    /// (PHPYun's `uptime` cache buckets). Special-cased: `1` means "since
+    /// start-of-today", others mean `lastupdate > now - days*86400`.
+    pub uptime: Option<i32>,
+    /// `urgent=true` → only urgent listings whose urgent_time hasn't expired
+    /// (mirrors PHP `urgent_time > time()`).
+    pub urgent: bool,
+    /// `rec=true` → only sticky/promoted listings (`rec_time >= now`).
+    pub rec: bool,
     pub did: u32,
 }
 
@@ -106,7 +132,7 @@ pub async fn list_public(
     qb.push_bind(now);
     qb.push(") AND did = ");
     qb.push_bind(f.did);
-    push_filters(&mut qb, f);
+    push_filters(&mut qb, f, now);
     qb.push(" ORDER BY rec DESC, rec_time DESC, lastupdate DESC LIMIT ");
     qb.push_bind(limit);
     qb.push(" OFFSET ");
@@ -126,12 +152,12 @@ pub async fn count_public(
     qb.push_bind(now);
     qb.push(") AND did = ");
     qb.push_bind(f.did);
-    push_filters(&mut qb, f);
+    push_filters(&mut qb, f, now);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(n.max(0) as u64)
 }
 
-fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &JobFilter<'a>) {
+fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &JobFilter<'a>, now: i64) {
     if let Some(kw) = f.keyword {
         if !kw.is_empty() {
             qb.push(" AND name LIKE ");
@@ -155,6 +181,14 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &JobFilter<'a>) {
         qb.push(" AND job1 = ");
         qb.push_bind(v);
     }
+    if let Some(v) = f.job1_son {
+        qb.push(" AND job1_son = ");
+        qb.push_bind(v);
+    }
+    if let Some(v) = f.job_post {
+        qb.push(" AND job_post = ");
+        qb.push_bind(v);
+    }
     if let Some(v) = f.min_salary {
         qb.push(" AND minsalary >= ");
         qb.push_bind(v);
@@ -174,6 +208,47 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &JobFilter<'a>) {
     if let Some(v) = f.job_type {
         qb.push(" AND `type` = ");
         qb.push_bind(v);
+    }
+    if let Some(v) = f.hy {
+        qb.push(" AND hy = ");
+        qb.push_bind(v);
+    }
+    if let Some(v) = f.sex {
+        qb.push(" AND sex = ");
+        qb.push_bind(v);
+    }
+    if let Some(v) = f.report {
+        qb.push(" AND report = ");
+        qb.push_bind(v);
+    }
+    if let Some(name) = f.welfare {
+        if !name.is_empty() {
+            // PHP: `welfare LIKE '%<dict-name>%'` — column stores a CSV of
+            // welfare names, not ids. The service layer is responsible for
+            // resolving the welfare id to its dict name before calling.
+            qb.push(" AND welfare LIKE ");
+            qb.push_bind(format!("%{name}%"));
+        }
+    }
+    if f.urgent {
+        qb.push(" AND urgent_time > ");
+        qb.push_bind(now);
+    }
+    if f.rec {
+        qb.push(" AND rec_time >= ");
+        qb.push_bind(now);
+    }
+    if let Some(days) = f.uptime {
+        // 1 = today (since start-of-day in caller's timezone — we use UTC
+        // here, matching the rest of the codebase). Other values: `now -
+        // days*86400`. Aligns with PHP `smarty_internal_compile_joblist`.
+        let threshold = if days == 1 {
+            now - now.rem_euclid(86_400)
+        } else {
+            now - (days as i64) * 86_400
+        };
+        qb.push(" AND lastupdate > ");
+        qb.push_bind(threshold);
     }
 }
 

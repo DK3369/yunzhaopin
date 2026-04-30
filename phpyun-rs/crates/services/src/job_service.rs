@@ -8,7 +8,8 @@ use phpyun_models::job::{entity::Job, repo as job_repo, repo::JobFilter};
 
 use crate::domain_errors::JobError;
 
-/// Public search parameters.
+/// Public search parameters. Field set mirrors PHPYun's WAP `wap/job` finder
+/// + the `joblist` Smarty plugin (`smarty_internal_compile_joblist.php`).
 #[derive(Debug, Default, Clone)]
 pub struct JobSearch {
     pub keyword: Option<String>,
@@ -16,11 +17,27 @@ pub struct JobSearch {
     pub city_id: Option<i32>,
     pub three_city_id: Option<i32>,
     pub job1: Option<i32>,
+    pub job1_son: Option<i32>,
+    pub job_post: Option<i32>,
     pub min_salary: Option<i32>,
     pub max_salary: Option<i32>,
     pub exp: Option<i32>,
     pub edu: Option<i32>,
     pub job_type: Option<i32>,
+    /// Industry dict id (`hy`).
+    pub hy: Option<i32>,
+    /// Gender dict id (`sex`).
+    pub sex: Option<i32>,
+    /// Salary cycle dict id (`report` — 月薪/年薪/时薪).
+    pub report: Option<i32>,
+    /// Welfare DICT ID — service layer resolves to the name before sending
+    /// to the repo (PHP stores welfare as a CSV of names, so the WHERE is a
+    /// `LIKE '%<name>%'`).
+    pub welfare: Option<i32>,
+    /// Refresh-time bucket in days (1, 3, 7, 30, 90).
+    pub uptime: Option<i32>,
+    pub urgent: bool,
+    pub rec: bool,
     pub did: u32,
 }
 
@@ -35,17 +52,43 @@ pub async fn list_public(
     page: Pagination,
 ) -> AppResult<JobPage> {
     let now = clock::now_ts();
+
+    // Resolve the welfare id to its dict NAME (PHP: `$comclass_name[$id]`),
+    // so the repo can do `welfare LIKE '%<name>%'`. Empty / unresolved ids
+    // become None (== filter not applied).
+    let welfare_name: Option<String> = match search.welfare {
+        Some(id) if id > 0 => {
+            let dicts = crate::dict_service::get(state).await?;
+            let name = dicts.comclass(id);
+            if name.is_empty() {
+                None
+            } else {
+                Some(name.to_string())
+            }
+        }
+        _ => None,
+    };
+
     let f = JobFilter {
         keyword: search.keyword.as_deref(),
         province_id: search.province_id,
         city_id: search.city_id,
         three_city_id: search.three_city_id,
         job1: search.job1,
+        job1_son: search.job1_son,
+        job_post: search.job_post,
         min_salary: search.min_salary,
         max_salary: search.max_salary,
         exp: search.exp,
         edu: search.edu,
         job_type: search.job_type,
+        hy: search.hy,
+        sex: search.sex,
+        report: search.report,
+        welfare: welfare_name.as_deref(),
+        uptime: search.uptime,
+        urgent: search.urgent,
+        rec: search.rec,
         did: search.did,
     };
 

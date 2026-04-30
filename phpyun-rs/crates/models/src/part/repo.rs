@@ -21,6 +21,9 @@ pub struct PartFilter<'a> {
     pub max_salary: Option<i32>,
     pub salary_type: Option<i32>,
     pub billing_cycle: Option<i32>,
+    /// `rec=true` keeps only sticky/promoted listings (mirrors PHP partlist
+    /// `rec_time > now`).
+    pub rec: bool,
     pub did: u32,
 }
 
@@ -101,7 +104,7 @@ pub async fn list_public(
     qb.push(")");
     qb.push(" AND did = ");
     qb.push_bind(f.did);
-    push_filters(&mut qb, f);
+    push_filters(&mut qb, f, now);
     qb.push(" ORDER BY rec_time DESC, lastupdate DESC LIMIT ");
     qb.push_bind(limit);
     qb.push(" OFFSET ");
@@ -122,12 +125,12 @@ pub async fn count_public(
     qb.push(")");
     qb.push(" AND did = ");
     qb.push_bind(f.did);
-    push_filters(&mut qb, f);
+    push_filters(&mut qb, f, now);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
     Ok(n.max(0) as u64)
 }
 
-fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PartFilter<'a>) {
+fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PartFilter<'a>, now: i64) {
     if let Some(kw) = f.keyword {
         if !kw.is_empty() {
             qb.push(" AND name LIKE ");
@@ -165,6 +168,11 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PartFilter<'a>) 
     if let Some(v) = f.max_salary {
         qb.push(" AND salary <= ");
         qb.push_bind(v);
+    }
+    if f.rec {
+        // PHP partlist: `rec_time > time()` (strictly future-dated promo).
+        qb.push(" AND rec_time > ");
+        qb.push_bind(now);
     }
 }
 

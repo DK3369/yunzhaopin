@@ -34,8 +34,12 @@ pub struct RegisterForm {
     #[validate(custom(function = "validators::strong_password"))]
     pub password: String,
 
-    /// Mobile number (PHPYun legacy field name `moblie`; DB column is also named this way)
-    #[validate(custom(function = "validators::cn_mobile"))]
+    /// Mobile number (PHPYun legacy field name `moblie`; DB column same).
+    /// Required only on the mobile-registration path (`regway=2`); the
+    /// service layer enforces presence + format when that path is selected.
+    /// Aligns with PHP `register.model.php::regMoblie` which gates on
+    /// `isset($post['moblie'])` rather than presence.
+    #[serde(default)]
     pub moblie: String,
 
     #[validate(email)]
@@ -50,28 +54,40 @@ pub struct RegisterForm {
     #[validate(length(min = 4, max = 8))]
     pub checkcode: String,
 
-    /// SMS code (PHP calls this `moblie_code`)
-    #[validate(custom(function = "validators::captcha"))]
+    /// SMS code (PHP calls this `moblie_code`). Empty when registering by
+    /// username; the service layer rejects empty when `regway=2`.
+    #[serde(default)]
     pub moblie_code: String,
 
-    /// 1 = jobseeker (default), 2 = company, 3 = campus
-    #[serde(default = "default_usertype")]
+    /// 1 = jobseeker (default), 2 = company, 3 = campus.
+    /// Loose deserializer accepts both `1` (int) and `"1"` (string) — PHPYun
+    /// frontends serialise every numeric form field as a string.
+    #[serde(
+        default = "default_usertype",
+        deserialize_with = "phpyun_core::date_parse::de_loose_u8"
+    )]
     #[validate(range(min = 1, max = 3))]
     pub usertype: u8,
 
     /// Registration method (PHP `regway`): 1=username / 2=mobile / 3=email.
     /// The current Rust implementation enforces uniqueness across all fields; this field is kept only for audit records.
-    #[serde(default = "default_regway")]
+    #[serde(
+        default = "default_regway",
+        deserialize_with = "phpyun_core::date_parse::de_loose_u8"
+    )]
     #[validate(range(min = 1, max = 3))]
     pub regway: u8,
 
     /// Multi-site did (default 0 = main site)
-    #[serde(default = "default_did")]
+    #[serde(
+        default = "default_did",
+        deserialize_with = "phpyun_core::date_parse::de_loose_u32"
+    )]
     #[validate(range(max = 999))]
     pub did: u32,
 
     /// Referrer uid (aligned with the `uid` parameter on PHPYun invite links); 0 = no referrer
-    #[serde(default)]
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_u64")]
     #[validate(range(min = 0, max = 99_999_999))]
     pub referrer_uid: u64,
 }

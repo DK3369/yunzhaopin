@@ -52,6 +52,7 @@ pub struct ProjectInput<'a> {
 pub async fn create(
     pool: &MySqlPool,
     uid: u64,
+    eid: u64,
     input: &ProjectInput<'_>,
 ) -> Result<u64, sqlx::Error> {
     // role is written to the PHP `title` column. PHP `phpyun_resume_project.title`
@@ -64,7 +65,7 @@ pub async fn create(
          VALUES (?, ?, ?, ?, ?, ?, ?)",
     )
     .bind(uid)
-    .bind(uid)
+    .bind(eid) // eid = phpyun_resume_expect.id
     .bind(input.name)
     .bind(input.sdate)
     .bind(input.edate)

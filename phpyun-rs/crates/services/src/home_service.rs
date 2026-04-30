@@ -63,7 +63,7 @@ pub async fn home(state: &AppState, did: u32) -> AppResult<Arc<HomePayload>> {
             let (ann_r, jobs_r, coms_r, art_r, hot_r) = tokio::join!(
                 ann_repo::list_published(db, 0, 5),
                 job_repo::list_public(db, &job_filter, 0, 8, now),
-                company_repo::list_public(db, &com_filter, 0, 8),
+                company_repo::list_public(db, &com_filter, 0, 8, now),
                 article_repo::list_public(db, &art_filter, 0, 5),
                 hot_search_repo::top(db, "job", 10),
             );

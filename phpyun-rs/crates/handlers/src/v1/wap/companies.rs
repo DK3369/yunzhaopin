@@ -25,15 +25,32 @@ pub fn routes() -> Router<AppState> {
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct CompanyListQuery {
+    /// Matched against `name` AND `shortname` via LIKE (mirrors PHP `comlist`).
     #[validate(length(max = 100))]
     pub keyword: Option<String>,
     #[validate(range(min = 0, max = 99_999))]
     pub province_id: Option<i32>,
     #[validate(range(min = 0, max = 99_999))]
     pub city_id: Option<i32>,
-    /// Industry id
+    #[validate(range(min = 0, max = 99_999))]
+    pub three_city_id: Option<i32>,
+    /// Industry dict id (PHP `hy`).
     #[validate(range(min = 0, max = 9_999_999))]
     pub hy: Option<i32>,
+    /// Company-type dict id — 国企/外资/民营/… (PHP `pr`).
+    #[validate(range(min = 0, max = 99))]
+    pub pr: Option<i32>,
+    /// Staff-count dict id — 50人以下/50-200/… (PHP `mun`).
+    #[validate(range(min = 0, max = 99))]
+    pub mun: Option<i32>,
+    /// `cert=true` keeps only companies with a verified business license
+    /// (`yyzz_status = 1`).
+    #[serde(default)]
+    pub cert: bool,
+    /// `rec=true` keeps only sticky/promoted companies (PHP composite:
+    /// `rec=1 AND hotstart <= now AND hottime > now`).
+    #[serde(default)]
+    pub rec: bool,
     #[serde(default = "default_did")]
     #[validate(range(max = 9_999_999))]
     pub did: u32,
@@ -98,7 +115,12 @@ pub async fn list_companies(
         keyword: q.keyword.as_deref(),
         province_id: q.province_id,
         city_id: q.city_id,
+        three_city_id: q.three_city_id,
         hy: q.hy,
+        pr: q.pr,
+        mun: q.mun,
+        cert: q.cert,
+        rec: q.rec,
         did: q.did,
     };
     let r = company_service::list_public(&state, &filter, page).await?;

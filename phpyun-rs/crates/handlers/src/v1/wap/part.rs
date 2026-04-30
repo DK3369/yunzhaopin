@@ -46,6 +46,10 @@ pub struct PartListQuery {
     pub min_salary: Option<i32>,
     #[validate(range(min = 0, max = 1_000_000))]
     pub max_salary: Option<i32>,
+    /// `rec=true` keeps only sticky/promoted listings (mirrors PHP partlist
+    /// `rec_time > now`).
+    #[serde(default)]
+    pub rec: bool,
     #[serde(default = "default_did")]
     #[validate(range(max = 999))]
     pub did: u32,
@@ -158,6 +162,7 @@ pub async fn list_parts(
         billing_cycle: q.billing_cycle,
         min_salary: q.min_salary,
         max_salary: q.max_salary,
+        rec: q.rec,
         did: q.did,
     };
     let r = part_service::list_public(&state, &search, page).await?;

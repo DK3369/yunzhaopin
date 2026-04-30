@@ -164,6 +164,44 @@ pub fn de_loose_i64<'de, D: Deserializer<'de>>(d: D) -> Result<i64, D::Error> {
     coerce_value_to_i64(v)
 }
 
+/// `u8` field — PHPYun sends `usertype` / `regway` / etc. as strings.
+/// Negative values clamp to 0; > 255 clamps to 255 (caller should range-validate).
+pub fn de_loose_u8<'de, D: Deserializer<'de>>(d: D) -> Result<u8, D::Error> {
+    let v = Value::deserialize(d)?;
+    let n = coerce_value_to_i64(v)?;
+    Ok(n.clamp(0, u8::MAX as i64) as u8)
+}
+
+/// `u32` field — same loose semantics as `de_loose_i32`.
+pub fn de_loose_u32<'de, D: Deserializer<'de>>(d: D) -> Result<u32, D::Error> {
+    let v = Value::deserialize(d)?;
+    let n = coerce_value_to_i64(v)?;
+    Ok(n.clamp(0, u32::MAX as i64) as u32)
+}
+
+/// `u64` field — same loose semantics as `de_loose_i64`.
+pub fn de_loose_u64<'de, D: Deserializer<'de>>(d: D) -> Result<u64, D::Error> {
+    let v = Value::deserialize(d)?;
+    let n = coerce_value_to_i64(v)?;
+    Ok(n.max(0) as u64)
+}
+
+/// `Option<i32>` — `null` / missing / empty-string become `None`; otherwise
+/// same coercion as [`de_loose_i32`].
+pub fn de_loose_i32_opt<'de, D: Deserializer<'de>>(d: D) -> Result<Option<i32>, D::Error> {
+    let v = Value::deserialize(d)?;
+    if v.is_null() {
+        return Ok(None);
+    }
+    if let Value::String(s) = &v {
+        if s.trim().is_empty() {
+            return Ok(None);
+        }
+    }
+    let n = coerce_value_to_i64(v)?;
+    Ok(Some(n.clamp(i32::MIN as i64, i32::MAX as i64) as i32))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

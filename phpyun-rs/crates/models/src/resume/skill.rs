@@ -43,6 +43,7 @@ pub struct SkillInput<'a> {
 pub async fn create(
     pool: &MySqlPool,
     uid: u64,
+    eid: u64,
     input: &SkillInput<'_>,
 ) -> Result<u64, sqlx::Error> {
     // PHP `phpyun_resume_skill.ing` is `int(5) NOT NULL` with no default — we
@@ -53,7 +54,7 @@ pub async fn create(
          VALUES (?, ?, ?, ?, 0, ?)",
     )
     .bind(uid)
-    .bind(uid)
+    .bind(eid) // eid = phpyun_resume_expect.id
     .bind(input.name)
     .bind(input.level)
     .bind(input.years)

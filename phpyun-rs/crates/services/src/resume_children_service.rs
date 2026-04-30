@@ -8,9 +8,72 @@
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser};
-use phpyun_models::resume::{cert, edu, expect, language, other, project, skill, training, work};
+use phpyun_models::resume::{
+    cert, edu, expect, language, other, project,
+    repo as resume_repo, skill, training, user_resume, work,
+};
 
 use crate::domain_errors::ResumeError;
+
+/// Which kind of child-row write happened — drives the side-effect mix.
+#[derive(Debug, Clone, Copy)]
+enum ChildOp {
+    Create,
+    Update,
+    Delete,
+}
+
+/// Apply the side-effects PHP runs around every resume-child write. Mirror
+/// of `expect.class.php::saveall_action` (insert/update path) +
+/// `resume.model.php::getFbReturn` (delete path):
+///
+/// | step                                  | Create | Update | Delete |
+/// |---------------------------------------|--------|--------|--------|
+/// | `phpyun_resume.lastupdate = now`      |   ✔    |   ✔    |   ✘ (PHP `getFbReturn` skips) |
+/// | `phpyun_user_resume.<section>`        |  +1    |   0    |  -1    |
+/// | recompute `whour/avghour` (work only) |   ✔    |   ✔    |   ✘    |
+///
+/// All three are best-effort — a counter or whour misfire shouldn't roll
+/// back the child write that already succeeded. PHP behaves the same way
+/// (no transaction wraps these around the child INSERT).
+async fn after_child(
+    state: &AppState,
+    uid: u64,
+    eid: u64,
+    section: user_resume::Section,
+    op: ChildOp,
+) {
+    let now = clock::now_ts();
+    let pool = state.db.pool();
+    if matches!(op, ChildOp::Create | ChildOp::Update) {
+        let _ = resume_repo::touch_lastupdate(pool, uid, now).await;
+    }
+    let delta = match op {
+        ChildOp::Create => 1,
+        ChildOp::Delete => -1,
+        ChildOp::Update => 0,
+    };
+    if delta != 0 {
+        let _ = user_resume::bump(pool, uid, eid, section, delta).await;
+    }
+    if matches!(section, user_resume::Section::Work)
+        && matches!(op, ChildOp::Create | ChildOp::Update)
+    {
+        let _ = expect::recompute_whour(pool, eid, uid, now).await;
+    }
+}
+
+/// Resolve the eid to attach a child row (work / edu / project / skill / ...)
+/// to. PHPYun fans every child off `phpyun_resume_expect.id`, so this looks
+/// up the user's default expect (or most-recent fallback). If the user has no
+/// expect yet — i.e. wizard skipped step 2 — return `ResumeError::NotFound`
+/// so the caller surfaces a clear "请先创建求职意向" instead of writing an
+/// orphan row that no read endpoint would ever surface.
+async fn resolve_default_eid(state: &AppState, uid: u64) -> AppResult<u64> {
+    expect::find_default_id_by_uid(state.db.reader(), uid)
+        .await?
+        .ok_or_else(|| ResumeError::NotFound.into())
+}
 
 // ==================== Job intentions ====================
 
@@ -25,6 +88,14 @@ pub mod expect_svc {
         Ok(expect::list_by_uid(state.db.reader(), user.uid).await?)
     }
 
+    /// **Idempotent on default expect.** PHPYun lets a user own multiple
+    /// `phpyun_resume_expect` rows (different job intents = different
+    /// "resume copies"), but the H5 wizard only ever wants the "primary"
+    /// one. Without idempotence, every wizard re-entry created a fresh
+    /// expect → multiple "简历" piling up. We collapse that:
+    ///   - if the user has no expect yet → INSERT a fresh default
+    ///   - if the user has at least one expect → UPDATE the default in place
+    /// Returns the id of the row that was written.
     pub async fn create(
         state: &AppState,
         user: &AuthenticatedUser,
@@ -32,7 +103,34 @@ pub mod expect_svc {
         client_ip: &str,
     ) -> AppResult<u64> {
         user.require_jobseeker()?;
-        let id = expect::create(state.db.pool(), user.uid, &input, clock::now_ts()).await?;
+        let pool = state.db.pool();
+        let now = clock::now_ts();
+
+        if let Some(existing_id) = expect::find_default_id_by_uid(pool, user.uid).await? {
+            let _ = expect::update(pool, existing_id, user.uid, &input, now).await?;
+            tracing::info!(
+                op = "expect.upsert", uid = user.uid, eid = existing_id,
+                ip = client_ip, name = ?input.name,
+                "wizard write"
+            );
+            let _ = audit::emit(
+                state,
+                AuditEvent::new(
+                    "resume.expect_upsert",
+                    Actor::uid(user.uid).with_ip(client_ip),
+                )
+                .target(format!("expect:{existing_id}")),
+            )
+            .await;
+            return Ok(existing_id);
+        }
+
+        let id = expect::create(pool, user.uid, &input, now).await?;
+        tracing::info!(
+            op = "expect.create", uid = user.uid, eid = id,
+            ip = client_ip, name = ?input.name,
+            "wizard write"
+        );
         let _ = audit::emit(
             state,
             AuditEvent::new(
@@ -111,7 +209,14 @@ pub mod edu_svc {
         client_ip: &str,
     ) -> AppResult<u64> {
         user.require_jobseeker()?;
-        let id = edu::create(state.db.pool(), user.uid, &input).await?;
+        let eid = super::resolve_default_eid(state, user.uid).await?;
+        let id = edu::create(state.db.pool(), user.uid, eid, &input).await?;
+        tracing::info!(
+            op = "edu.create", uid = user.uid, eid, id,
+            ip = client_ip, name = input.name, education = input.education,
+            "wizard write"
+        );
+        super::after_child(state, user.uid, eid, user_resume::Section::Edu, ChildOp::Create).await;
         let _ = audit::emit(
             state,
             AuditEvent::new("resume.edu_add", Actor::uid(user.uid).with_ip(client_ip))
@@ -129,10 +234,17 @@ pub mod edu_svc {
         client_ip: &str,
     ) -> AppResult<()> {
         user.require_jobseeker()?;
-        let affected = edu::update(state.db.pool(), id, user.uid, &input).await?;
+        let pool = state.db.pool();
+        // Look up the row's eid first so we can target the correct expect on
+        // the side-effects below; doubles as the existence + ownership check.
+        let eid = user_resume::fetch_eid(pool, user_resume::Section::Edu, id, user.uid)
+            .await?
+            .ok_or(ResumeError::NotFound)?;
+        let affected = edu::update(pool, id, user.uid, &input).await?;
         if affected == 0 {
             return Err(ResumeError::NotFound.into());
         }
+        super::after_child(state, user.uid, eid, user_resume::Section::Edu, ChildOp::Update).await;
         let _ = audit::emit(
             state,
             AuditEvent::new(
@@ -152,10 +264,15 @@ pub mod edu_svc {
         client_ip: &str,
     ) -> AppResult<()> {
         user.require_jobseeker()?;
-        let affected = edu::delete(state.db.pool(), id, user.uid).await?;
+        let pool = state.db.pool();
+        let eid = user_resume::fetch_eid(pool, user_resume::Section::Edu, id, user.uid)
+            .await?
+            .ok_or(ResumeError::NotFound)?;
+        let affected = edu::delete(pool, id, user.uid).await?;
         if affected == 0 {
             return Err(ResumeError::NotFound.into());
         }
+        super::after_child(state, user.uid, eid, user_resume::Section::Edu, ChildOp::Delete).await;
         let _ = audit::emit(
             state,
             AuditEvent::new(
@@ -186,7 +303,14 @@ pub mod work_svc {
         client_ip: &str,
     ) -> AppResult<u64> {
         user.require_jobseeker()?;
-        let id = work::create(state.db.pool(), user.uid, &input).await?;
+        let eid = super::resolve_default_eid(state, user.uid).await?;
+        let id = work::create(state.db.pool(), user.uid, eid, &input).await?;
+        tracing::info!(
+            op = "work.create", uid = user.uid, eid, id,
+            ip = client_ip, name = input.name, title = input.title,
+            "wizard write"
+        );
+        super::after_child(state, user.uid, eid, user_resume::Section::Work, ChildOp::Create).await;
         let _ = audit::emit(
             state,
             AuditEvent::new("resume.work_add", Actor::uid(user.uid).with_ip(client_ip))
@@ -204,10 +328,15 @@ pub mod work_svc {
         client_ip: &str,
     ) -> AppResult<()> {
         user.require_jobseeker()?;
-        let affected = work::update(state.db.pool(), id, user.uid, &input).await?;
+        let pool = state.db.pool();
+        let eid = user_resume::fetch_eid(pool, user_resume::Section::Work, id, user.uid)
+            .await?
+            .ok_or(ResumeError::NotFound)?;
+        let affected = work::update(pool, id, user.uid, &input).await?;
         if affected == 0 {
             return Err(ResumeError::NotFound.into());
         }
+        super::after_child(state, user.uid, eid, user_resume::Section::Work, ChildOp::Update).await;
         let _ = audit::emit(
             state,
             AuditEvent::new(
@@ -227,10 +356,15 @@ pub mod work_svc {
         client_ip: &str,
     ) -> AppResult<()> {
         user.require_jobseeker()?;
-        let affected = work::delete(state.db.pool(), id, user.uid).await?;
+        let pool = state.db.pool();
+        let eid = user_resume::fetch_eid(pool, user_resume::Section::Work, id, user.uid)
+            .await?
+            .ok_or(ResumeError::NotFound)?;
+        let affected = work::delete(pool, id, user.uid).await?;
         if affected == 0 {
             return Err(ResumeError::NotFound.into());
         }
+        super::after_child(state, user.uid, eid, user_resume::Section::Work, ChildOp::Delete).await;
         let _ = audit::emit(
             state,
             AuditEvent::new(
@@ -264,7 +398,9 @@ pub mod project_svc {
         client_ip: &str,
     ) -> AppResult<u64> {
         user.require_jobseeker()?;
-        let id = project::create(state.db.pool(), user.uid, &input).await?;
+        let eid = super::resolve_default_eid(state, user.uid).await?;
+        let id = project::create(state.db.pool(), user.uid, eid, &input).await?;
+        super::after_child(state, user.uid, eid, user_resume::Section::Project, ChildOp::Create).await;
         let _ = audit::emit(
             state,
             AuditEvent::new(
@@ -285,10 +421,15 @@ pub mod project_svc {
         client_ip: &str,
     ) -> AppResult<()> {
         user.require_jobseeker()?;
-        let affected = project::update(state.db.pool(), id, user.uid, &input).await?;
+        let pool = state.db.pool();
+        let eid = user_resume::fetch_eid(pool, user_resume::Section::Project, id, user.uid)
+            .await?
+            .ok_or(ResumeError::NotFound)?;
+        let affected = project::update(pool, id, user.uid, &input).await?;
         if affected == 0 {
             return Err(ResumeError::NotFound.into());
         }
+        super::after_child(state, user.uid, eid, user_resume::Section::Project, ChildOp::Update).await;
         let _ = audit::emit(
             state,
             AuditEvent::new(
@@ -308,10 +449,15 @@ pub mod project_svc {
         client_ip: &str,
     ) -> AppResult<()> {
         user.require_jobseeker()?;
-        let affected = project::delete(state.db.pool(), id, user.uid).await?;
+        let pool = state.db.pool();
+        let eid = user_resume::fetch_eid(pool, user_resume::Section::Project, id, user.uid)
+            .await?
+            .ok_or(ResumeError::NotFound)?;
+        let affected = project::delete(pool, id, user.uid).await?;
         if affected == 0 {
             return Err(ResumeError::NotFound.into());
         }
+        super::after_child(state, user.uid, eid, user_resume::Section::Project, ChildOp::Delete).await;
         let _ = audit::emit(
             state,
             AuditEvent::new(
@@ -345,7 +491,9 @@ pub mod skill_svc {
         client_ip: &str,
     ) -> AppResult<u64> {
         user.require_jobseeker()?;
-        let id = skill::create(state.db.pool(), user.uid, &input).await?;
+        let eid = super::resolve_default_eid(state, user.uid).await?;
+        let id = skill::create(state.db.pool(), user.uid, eid, &input).await?;
+        super::after_child(state, user.uid, eid, user_resume::Section::Skill, ChildOp::Create).await;
         let _ = audit::emit(
             state,
             AuditEvent::new(
@@ -366,10 +514,15 @@ pub mod skill_svc {
         _client_ip: &str,
     ) -> AppResult<()> {
         user.require_jobseeker()?;
-        let affected = skill::update(state.db.pool(), id, user.uid, &input).await?;
+        let pool = state.db.pool();
+        let eid = user_resume::fetch_eid(pool, user_resume::Section::Skill, id, user.uid)
+            .await?
+            .ok_or(ResumeError::NotFound)?;
+        let affected = skill::update(pool, id, user.uid, &input).await?;
         if affected == 0 {
             return Err(ResumeError::NotFound.into());
         }
+        super::after_child(state, user.uid, eid, user_resume::Section::Skill, ChildOp::Update).await;
         Ok(())
     }
 
@@ -380,10 +533,15 @@ pub mod skill_svc {
         _client_ip: &str,
     ) -> AppResult<()> {
         user.require_jobseeker()?;
-        let affected = skill::delete(state.db.pool(), id, user.uid).await?;
+        let pool = state.db.pool();
+        let eid = user_resume::fetch_eid(pool, user_resume::Section::Skill, id, user.uid)
+            .await?
+            .ok_or(ResumeError::NotFound)?;
+        let affected = skill::delete(pool, id, user.uid).await?;
         if affected == 0 {
             return Err(ResumeError::NotFound.into());
         }
+        super::after_child(state, user.uid, eid, user_resume::Section::Skill, ChildOp::Delete).await;
         Ok(())
     }
 }

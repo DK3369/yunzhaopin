@@ -185,7 +185,12 @@ async fn build_pool(
     min: u32,
     cfg: &Config,
 ) -> anyhow::Result<MySqlPool> {
+    // Explicit utf8mb4 — defends against legacy DATABASE_URL that pin
+    // `?charset=utf8` and ensures emoji / supplementary-plane characters
+    // round-trip cleanly to the (now utf8mb4) PHP-shared columns.
     let mut opts = MySqlConnectOptions::from_str(url)?
+        .charset("utf8mb4")
+        .collation("utf8mb4_unicode_ci")
         .log_slow_statements(tracing::log::LevelFilter::Warn, SLOW_QUERY_THRESHOLD)
         .statement_cache_capacity(STATEMENT_CACHE_CAPACITY);
 

@@ -61,6 +61,30 @@ pub async fn list_by_uid(pool: &MySqlPool, uid: u64) -> Result<Vec<Expect>, sqlx
     sqlx::query_as::<_, Expect>(&sql).bind(uid).fetch_all(pool).await
 }
 
+/// Resolve the user's "current" expect id — prefer the row marked
+/// `defaults = 1`, fall back to the most-recently-updated row, or `None`
+/// if the user has no expect yet.
+///
+/// This is the **authoritative `eid`** for child tables (work / edu /
+/// project / skill / cert / training / other / show); PHPYun's resume
+/// model fans every child off the expect that owns it. The previous
+/// Rust port hard-coded `eid = uid`, which caused children to detach
+/// from any expect and re-runs of the wizard to leak orphan rows.
+pub async fn find_default_id_by_uid(
+    pool: &MySqlPool,
+    uid: u64,
+) -> Result<Option<u64>, sqlx::Error> {
+    let row: Option<(i64,)> = sqlx::query_as(
+        "SELECT id FROM phpyun_resume_expect \
+         WHERE uid = ? \
+         ORDER BY defaults DESC, lastupdate DESC, id DESC LIMIT 1",
+    )
+    .bind(uid)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|(id,)| id.max(0) as u64))
+}
+
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Expect>, sqlx::Error> {
     let sql = format!("SELECT {FIELDS} FROM phpyun_resume_expect WHERE id = ? LIMIT 1");
     sqlx::query_as::<_, Expect>(&sql)
@@ -95,12 +119,17 @@ pub async fn create(
     input: &ExpectInput<'_>,
     now: i64,
 ) -> Result<u64, sqlx::Error> {
+    // `defaults = 1` so PHPYun PHP `getExpectByUid` (which filters by
+    // `defaults = 1` first) treats this freshly-created row as the user's
+    // primary resume. The service layer guarantees `create` only runs when
+    // the user has zero expects, so the "one default per uid" invariant
+    // holds — no risk of dual-default rows from this path.
     let res = sqlx::query(
         r#"INSERT INTO phpyun_resume_expect
            (uid, name, hy, job_classid, city_classid, salary, minsalary, maxsalary,
             `type`, report, jobstatus,
-            status, r_status, state, lastupdate)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1, 0, ?)"#,
+            status, r_status, state, defaults, lastupdate)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1, 0, 1, ?)"#,
     )
     .bind(uid)
     // PHP `phpyun_resume_expect.name` is NOT NULL DEFAULT ''. Bind empty
@@ -205,4 +234,52 @@ pub async fn bump_and_get_hits(
 ) -> Result<u64, sqlx::Error> {
     incr_hits(pool, id, delta).await?;
     get_hits(pool, id).await
+}
+
+/// Recompute `whour` (total months across all work rows) and `avghour`
+/// (mean per row, ceiled) for this expect, mirroring the work-hour
+/// computation block in PHP `expect.class.php::saveall_action`. Each row
+/// contributes `ceil((edate or now - sdate) / (30*86400))` months;
+/// `avghour = ceil(whour / N)`. No work rows → both fields go to 0.
+///
+/// Best-effort: callers swallow the error since the FE only uses these as
+/// derived "总工作时长 X 个月" decoration.
+pub async fn recompute_whour(
+    pool: &MySqlPool,
+    eid: u64,
+    uid: u64,
+    now: i64,
+) -> Result<(), sqlx::Error> {
+    let rows: Vec<(i64, i64)> = sqlx::query_as(
+        "SELECT COALESCE(sdate, 0) AS sdate, COALESCE(edate, 0) AS edate \
+         FROM phpyun_resume_work WHERE eid = ? AND uid = ?",
+    )
+    .bind(eid)
+    .bind(uid)
+    .fetch_all(pool)
+    .await?;
+
+    let (whour, count) = rows.iter().fold((0i64, 0i64), |(sum, n), (sdate, edate)| {
+        if *sdate <= 0 {
+            return (sum, n);
+        }
+        let end = if *edate > 0 { *edate } else { now };
+        let months = ((end - sdate).max(0) + 30 * 86_400 - 1) / (30 * 86_400);
+        (sum + months, n + 1)
+    });
+    let avghour = if count > 0 {
+        (whour + count - 1) / count // ceil
+    } else {
+        0
+    };
+    sqlx::query(
+        "UPDATE phpyun_resume_expect SET whour = ?, avghour = ? WHERE id = ? AND uid = ?",
+    )
+    .bind(whour as i32)
+    .bind(avghour as i32)
+    .bind(eid)
+    .bind(uid)
+    .execute(pool)
+    .await?;
+    Ok(())
 }

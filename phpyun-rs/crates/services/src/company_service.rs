@@ -1,7 +1,7 @@
 //! Company service (usertype=2).
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{AppResult, AppState, AuthenticatedUser, Pagination};
+use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::company::{entity::Company, repo as company_repo};
 use phpyun_models::company::repo::CompanyFilter;
 
@@ -18,9 +18,10 @@ pub async fn list_public(
     filter: &CompanyFilter<'_>,
     page: Pagination,
 ) -> AppResult<CompanyPage> {
+    let now = clock::now_ts();
     let (total, list) = tokio::join!(
-        company_repo::count_public(state.db.reader(), filter),
-        company_repo::list_public(state.db.reader(), filter, page.offset, page.limit),
+        company_repo::count_public(state.db.reader(), filter, now),
+        company_repo::list_public(state.db.reader(), filter, page.offset, page.limit, now),
     );
     Ok(CompanyPage {
         total: total?,
