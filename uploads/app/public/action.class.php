@@ -288,7 +288,7 @@ class model{
 		    
 		    if(!@class_exists($memcache)){return;}
 		    
-		    $memcache->connect($memcachehost,$memcacheport) or die ("Memcache连接失败或您的服务器不支持Memcache,请在后台关闭！");
+		    $memcache->connect($memcachehost,$memcacheport) or die(yun_auto_t("Memcache连接失败或您的服务器不支持Memcache,请在后台关闭！"));
 		    
 		    $val  =  $memcache->get($name);
 		    

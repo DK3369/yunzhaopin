@@ -53,7 +53,7 @@ class company_controller extends common
         $searchurl  =   @implode('&', $searchurl);
         
         $this -> yunset('searchurl', $searchurl);
-        $this->yunset('searchUrlObj',json_encode($searchUrlObj));
+        $this->yunset('searchUrlObj',yun_json_encode($searchUrlObj));
 
         $cityChoosed = '';
         if ($_GET['threecityid']){
@@ -385,7 +385,7 @@ class company_controller extends common
 	    
 	    $list	=  count($rows['list']) ? $rows['list'] : array();
 	    
-	    echo json_encode($list);die;
+	    echo yun_json_encode($list);die;
 	}
 	//微信扫码查看联系方式
 	function telQrcode_action(){

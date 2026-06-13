@@ -36,7 +36,7 @@ class logout_controller extends user
         $logoutM    =  $this->MODEL('logout');
         $return     =  $logoutM->apply(array('uid'=>$this->uid), $p);
 
-        echo json_encode($return);
+        echo yun_json_encode($return);
         die();
     }
     function logoutmsg_action()
@@ -51,7 +51,7 @@ class logout_controller extends user
         $logoutM    =  $this->MODEL('logout');
         $return     =  $logoutM->applymsg(array('uid'=>$this->uid), $p);
 
-        echo json_encode($return);
+        echo yun_json_encode($return);
         die();
 
     }

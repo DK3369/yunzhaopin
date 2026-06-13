@@ -118,7 +118,7 @@ class info_controller extends company{
 		 
 		$return   =   $companyM -> setCompany(array('uid' => $this -> uid), array('mData' => $mData, 'comData' => $setData, 'utype' => 'user'));  
 
-		echo json_encode($return);die;
+		echo yun_json_encode($return);die;
 	}
 	
 	/**
@@ -160,13 +160,13 @@ class info_controller extends company{
 		}
 		$return   =   $companyM -> setCompanySideInfo(array('uid' => $this -> uid), array('comData' => $setData, 'utype' => 'user'));
 
-		echo json_encode($return);die;
+		echo yun_json_encode($return);die;
 	}
 	function delcomqcode_action(){
 	    if ($_POST){
             $comM      =   $this->MODEL('company');
             $return = $comM->upInfo($this->uid,array(),array('comqcode'=>''));
-            echo json_encode($return);die;
+            echo yun_json_encode($return);die;
         }
     }
 	/**
@@ -182,7 +182,7 @@ class info_controller extends company{
 	        
 	        $return    =   $comM -> getCheckUsed($this->uid, array('typeStr' => $typeStr, 'checkStr' => $checkStr));
 	        
-	        echo json_encode($return);die;
+	        echo yun_json_encode($return);die;
 	    }
 	}
 }

@@ -44,7 +44,7 @@ class ajax_controller extends common{
 		);
 
 		$res		=	$jobM -> addYqmsInfo(array_merge($fidArr, $_POST));
-		echo json_encode($res);
+		echo yun_json_encode($res);
 		die;
 	}
 	/**
@@ -66,7 +66,7 @@ class ajax_controller extends common{
 		if(!empty($downRes['msgList'])){
 		    $downRes['msgList']  =  $downRes['msgList']['wxapp'];
 		}
-		echo json_encode($downRes);die;
+		echo yun_json_encode($downRes);die;
 
 	}
 
@@ -83,7 +83,7 @@ class ajax_controller extends common{
 		$ResumeM	=	$this->MODEL('resume');
 	    $return		=	$ResumeM -> addTalent($data);
 
-		echo json_encode($return);die;
+		echo yun_json_encode($return);die;
 	}
     // 邀请面试
     function indexajaxresume_action()
@@ -100,7 +100,7 @@ class ajax_controller extends common{
             $return             =   $M->invite_resume($_POST);
             if ($return['status']) {
                 $return['msgList']  =   $return['msgList']['wxapp'];
-                echo json_encode($return);
+                echo yun_json_encode($return);
                 die();
             }
         }
@@ -115,7 +115,7 @@ class ajax_controller extends common{
 	    if (!isset($_SESSION['qiandao'])){
 	        $_SESSION['qiandao'] = 1;
 	    }else{
-	        echo json_encode($arr);
+	        echo yun_json_encode($arr);
 	        die;
 	    }
 		if($_POST['rand']){
@@ -183,7 +183,7 @@ class ajax_controller extends common{
 				$arr['signdays']	=	$member['signdays']+1;
 				
 			}
-			echo json_encode($arr);die;
+			echo yun_json_encode($arr);die;
 		}
 	}
 	//邮箱认证,发送邮件，TODO:会员中心
@@ -197,7 +197,7 @@ class ajax_controller extends common{
 
        if (md5(strtolower($code)) != $_SESSION['authcode'] || empty($_SESSION['authcode'])) {
 
-            echo json_encode(array('error' => 2, 'msg' => '图片验证码不正确'));
+            echo yun_json_encode(array('error' => 2, 'msg' => '图片验证码不正确'));
             die();
         }
 
@@ -212,7 +212,7 @@ class ajax_controller extends common{
 
         $errCode    =   $ComapnyM->sendCertEmail(array( 'uid' => $this->uid, 'type' => '1'), $data);
 
-        echo json_encode(array('error' => $errCode ? 0 : 2, 'msg' => $errCode ? '' : '发送失败'));
+        echo yun_json_encode(array('error' => $errCode ? 0 : 2, 'msg' => $errCode ? '' : '发送失败'));
         die();
     }
 	
@@ -248,7 +248,7 @@ class ajax_controller extends common{
             $logDetail  =   '手机认证，发送短信验证码；认证手机号码：'.$moblie;
             $logM->addMemberLog($user['uid'], $user['usertype'], $logContent, 12, 1, $logDetail);
 			
-	        echo json_encode($result);exit();
+	        echo yun_json_encode($result);exit();
 	    }
 	}
 	//注册会员，发送短信验证码，TODO:wap前台
@@ -279,14 +279,14 @@ class ajax_controller extends common{
 	            
 	            $result 	= 	$noticeM->sendCode($moblie, 'regcode', $port);
 	            
-	            echo json_encode($result);exit();
+	            echo yun_json_encode($result);exit();
 	        }else{
-	            echo json_encode($return);exit();
+	            echo yun_json_encode($return);exit();
 	        }
 	    }else{
 	        $result 	= 	$noticeM->sendCode($moblie, 'regcode', $port);
 	        
-	        echo json_encode($result);exit();
+	        echo yun_json_encode($result);exit();
 	    }
 	}
 	//快速申请职位入口
@@ -294,7 +294,7 @@ class ajax_controller extends common{
 		$userinfoM	=	$this->MODEL("userinfo");
 		$_POST 		= 	$this->post_trim($_POST);
         $tdRes = $userinfoM->fastToudi($_POST, 2);
-        echo json_encode($tdRes);die;
+        echo yun_json_encode($tdRes);die;
 	}
 
 	function pl_action(){
@@ -339,7 +339,7 @@ class ajax_controller extends common{
 		);
 		$atnM	=	$this->MODEL('atn');
 		$return	=	$atnM->addAtnLt($data);
-		echo json_encode($return);die;
+		echo yun_json_encode($return);die;
 	}
     //关注企业
 	function atncompany_action(){
@@ -354,7 +354,7 @@ class ajax_controller extends common{
 		 
 		$atnM	=	$this->MODEL('atn');
 		$return	=	$atnM->addAtnLt($data);
-		echo json_encode($return);die;
+		echo yun_json_encode($return);die;
 	}
  
 	//职位类别
@@ -453,7 +453,7 @@ class ajax_controller extends common{
 		    $this->cookie->setcookie('zphjobid', $_POST['jobid'], time()+86400);
 		}
 		
-	    echo json_encode($arr);die;
+	    echo yun_json_encode($arr);die;
 	}
  
 	
@@ -466,7 +466,7 @@ class ajax_controller extends common{
 			if(!empty($reurn['content'])){
 				$comGsInfo	=	$reurn['content'];
 
-				echo json_encode($comGsInfo);
+				echo yun_json_encode($comGsInfo);
 			}
 		}
 	}
@@ -493,7 +493,7 @@ class ajax_controller extends common{
 			if($err['errcode'] == '9'){
                 $this -> cookie -> unset_cookie();     
             }
-            echo json_encode($arr);die;
+            echo yun_json_encode($arr);die;
 		}
 	}
 	
@@ -503,7 +503,7 @@ class ajax_controller extends common{
     {
 		$M    =  $this->MODEL('msgNum');
 		$arr  =  $M->getmsgNum($this->uid, $this->usertype);
-		echo json_encode($arr);
+		echo yun_json_encode($arr);
     }
     // AJAX URL参数生成
     function ajax_url_action(){
@@ -563,7 +563,7 @@ class ajax_controller extends common{
         $com_id =   $this->uid;
         $result =   $comM -> comVipDayActionCheck($type, $com_id);
         
-        echo json_encode($result);
+        echo yun_json_encode($result);
         die();
     }
     // 切换账号
@@ -631,7 +631,7 @@ class ajax_controller extends common{
         $str 		= 	yunDecrypt($token, $tokenSalt);
         $arr 		= 	explode('|', $str);
         if(count($arr) != 3 || $arr[1] == ''){
-            echo '二维码验证失败';
+            echo yun_auto_t('二维码验证失败');
         }
         //根据uid查询password，对比password
         $uid = $arr[1];
@@ -641,7 +641,7 @@ class ajax_controller extends common{
         $password 	= 	isset($row['password']) ? $row['password'] : '';
         $password 	= 	substr($password, 0, 8);
         if($password != $arr[2]){
-            echo '二维码验证失败';
+            echo yun_auto_t('二维码验证失败');
         }
         ob_clean();
         
@@ -713,7 +713,7 @@ class ajax_controller extends common{
 	        }
 	    }
 		
-	    echo json_encode($data);die;
+	    echo yun_json_encode($data);die;
 	}
     // 申请身份切换
 	function applytype_action(){
@@ -721,7 +721,7 @@ class ajax_controller extends common{
 		$memberM		=	$this -> MODEL('userinfo');
 		
 		$res			=	$memberM->checkChangeApply($this->uid,$_POST['applyusertype'],$_POST['applybody']);
-		echo json_encode(array('msg'=>$res['msg'],'url'=>$res['url'],'errcode'=>$res['errcode']));die;
+		echo yun_json_encode(array('msg'=>$res['msg'],'url'=>$res['url'],'errcode'=>$res['errcode']));die;
 	}
 
 	// 获取职位海报
@@ -783,7 +783,7 @@ class ajax_controller extends common{
         $whbM   =   $this->MODEL('whb');
         $list   =   $whbM->getWhbList(array('type' => 3, 'isopen' => 1, 'orderby' => 'sort,desc'), array('field' => 'id'));
 
-        echo json_encode(['list' => $list]);die;
+        echo yun_json_encode(['list' => $list]);die;
     }
 
     // 获取邀请注册海报
@@ -850,7 +850,7 @@ class ajax_controller extends common{
     function cityData_action(){
 		$tjM = $this->MODEL('tongji');
 		$data = $tjM->cityDataShow();
-		echo json_encode(array('data' => $data));
+		echo yun_json_encode(array('data' => $data));
 	}
 
     /*
@@ -859,7 +859,7 @@ class ajax_controller extends common{
     function ageData_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->ageDataShow();
-        echo json_encode(array('data' => $data));
+        echo yun_json_encode(array('data' => $data));
     }
 
     /*
@@ -868,7 +868,7 @@ class ajax_controller extends common{
     function expData_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->expDataShow();
-        echo json_encode(array('data' => $data));
+        echo yun_json_encode(array('data' => $data));
     }
 
     /*
@@ -877,7 +877,7 @@ class ajax_controller extends common{
     function sexData_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->sexDataShow();
-        echo json_encode(array('data' => $data));
+        echo yun_json_encode(array('data' => $data));
     }
 
     /*
@@ -886,7 +886,7 @@ class ajax_controller extends common{
     function eduData_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->eduDataShow();
-        echo json_encode(array('data' => $data));
+        echo yun_json_encode(array('data' => $data));
     }
 
     /*
@@ -895,7 +895,7 @@ class ajax_controller extends common{
     function userHyChart_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->userHyChart();
-        echo json_encode(array('data' => $data));
+        echo yun_json_encode(array('data' => $data));
     }
 
     /*
@@ -904,7 +904,7 @@ class ajax_controller extends common{
     function userRegChart_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->userRegChart();
-        echo json_encode(array('data' => $data));
+        echo yun_json_encode(array('data' => $data));
     }
 
     /*
@@ -913,7 +913,7 @@ class ajax_controller extends common{
     function comcityData_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->comcityDataShow();
-        echo json_encode(array('data' => $data));
+        echo yun_json_encode(array('data' => $data));
     }
 
     /*
@@ -922,7 +922,7 @@ class ajax_controller extends common{
     function comgmData_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->comgmDataShow();
-        echo json_encode(array('data' => $data));
+        echo yun_json_encode(array('data' => $data));
     }
     /*
      * 公司性质分布
@@ -930,7 +930,7 @@ class ajax_controller extends common{
     function comxzData_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->comxzDataShow();
-        echo json_encode(array('data' => $data));
+        echo yun_json_encode(array('data' => $data));
     }
 
     /*
@@ -939,7 +939,7 @@ class ajax_controller extends common{
     function comLogChart_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->comLogChart();
-        echo json_encode(array('data' => $data));
+        echo yun_json_encode(array('data' => $data));
     }
 
     /*
@@ -948,7 +948,7 @@ class ajax_controller extends common{
     function comJobChart_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->comJobChart();
-        echo json_encode(array('data' => $data));
+        echo yun_json_encode(array('data' => $data));
     }
     // 生成HR年度报告海报
     function lastYearReport_action(){

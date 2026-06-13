@@ -91,7 +91,7 @@ class pay_controller extends company
 		$jfdkM   =	$this -> MODEL('jfdk');
 		$return  =	$jfdkM -> dkBuy($data);
 
-		echo json_encode($return);
+		echo yun_json_encode($return);
 	}
 }
 ?>

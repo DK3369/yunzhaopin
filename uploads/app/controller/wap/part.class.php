@@ -32,7 +32,7 @@ class part_controller extends common
         }
         $searchurl  =   @implode('&', $searchurl);
         $this->yunset('searchurl', $searchurl);
-        $this->yunset('searchUrlObj',json_encode($searchUrlObj));
+        $this->yunset('searchUrlObj',yun_json_encode($searchUrlObj));
 
         $this->yunset('backurl', Url('wap'));
         $this->seo('part_index');
@@ -103,7 +103,7 @@ class part_controller extends common
             'comid'     =>  (int)$_POST['comid']
         );
         $return =   $partM->addPartCollect($data);
-        echo json_encode($return);
+        echo yun_json_encode($return);
         die();
     }
 
@@ -122,7 +122,7 @@ class part_controller extends common
             'port'      =>  '2'
         );
         $return =   $partM->addPartSq($data);
-        echo json_encode($return);
+        echo yun_json_encode($return);
         die();
     }
 

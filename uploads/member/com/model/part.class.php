@@ -76,13 +76,13 @@ class part_controller extends company
 
             if ($return['status'] == 1) { // 兼职刷新成功
 
-                echo json_encode(array(
+                echo yun_json_encode(array(
                     'error' => 1,
                     'msg'   => $return['msg']
                 ));
             } else if ($return['status'] == 2) {
 
-                echo json_encode(array(
+                echo yun_json_encode(array(
                     'error'     =>  2,
                     'pro'       =>  $return['pro'],
                     'online'    =>  $return['online'],
@@ -92,7 +92,7 @@ class part_controller extends company
                 ));
             } else { // 职位刷新失败
 
-                echo json_encode(array(
+                echo yun_json_encode(array(
                     'error' => 3,
                     'msg'   => $return['msg'],
                     'url'   => $return['url']
@@ -100,7 +100,7 @@ class part_controller extends company
             }
         } else {
 
-            echo json_encode(array(
+            echo yun_json_encode(array(
                 'error' => 3,
                 'msg' => '参数错误，请重试！'
             ));

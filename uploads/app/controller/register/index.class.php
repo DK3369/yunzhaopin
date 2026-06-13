@@ -83,7 +83,7 @@ class index_controller extends common
 
         $registerM  =   $this->MODEL('register');
         $return     =   $registerM->checkRegFirst(array('c_name' => $_POST['c_name']));
-        echo json_encode($return);
+        echo yun_json_encode($return);
     }
 
     function ok_action()
@@ -142,7 +142,7 @@ class index_controller extends common
         $registerM  =   $this->MODEL("register");
         $return     =   $registerM->ajaxReg($data);
 
-        echo json_encode($return);
+        echo yun_json_encode($return);
     }
 
 	
@@ -153,7 +153,7 @@ class index_controller extends common
 		$registerM	=	$this->MODEL("register");
 		$return 	= 	$registerM->regMoblie($data);
 		if($return['errcode']==9){
-			echo json_encode($return['data']);
+			echo yun_json_encode($return['data']);
 		}else{
 			echo $return['errcode'];
 		}
@@ -170,7 +170,7 @@ class index_controller extends common
 
         if ($return['errcode'] == 9) {
 
-            echo json_encode($return['data']);
+            echo yun_json_encode($return['data']);
         } else {
 
             echo $return['errcode'];
@@ -275,7 +275,7 @@ class index_controller extends common
 			$arr['status']	=	8;
 		}
 
-		echo json_encode($arr);die;
+		echo yun_json_encode($arr);die;
 	}
 
 
@@ -356,7 +356,7 @@ class index_controller extends common
             $arr['status']	=	8;
         }
 
-        echo json_encode($arr);die;
+        echo yun_json_encode($arr);die;
     }
 
 }

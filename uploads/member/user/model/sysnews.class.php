@@ -38,7 +38,7 @@ class sysnews_controller extends user{
         if ($_POST['id']){
             $sysMsgM = $this->MODEL('sysmsg');
             $info = $sysMsgM->getSysmsgInfo(array('id'=>$_POST['id']));
-            echo json_encode(array('content'=>$info['content_all'],'time'=>$info['ctime_n']));die;
+            echo yun_json_encode(array('content'=>$info['content_all'],'time'=>$info['ctime_n']));die;
         }
     }
 	//删除系统消息

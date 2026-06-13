@@ -44,7 +44,7 @@ class site_controller extends common{
         }
         $return['city'] = $site;
         $return['hy'] = $hy_site;
-        echo json_encode($return);
+        echo yun_json_encode($return);
     }
 
     function domain_action(){

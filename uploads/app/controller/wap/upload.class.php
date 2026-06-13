@@ -48,12 +48,12 @@ class upload_controller extends common{
 	//生成二维码（扫码上传入口）
 	public function qrcode_action(){
 		if(!$this->uid){
-			exit('请先登录登录');
+			exit(yun_auto_t('请先登录登录'));
 		}
 		//传入上传类型 type , save_action中根据类型选择不同的保存路径
 		$type 	= isset($_GET['type']) ? $_GET['type'] : '';
 		if($type == ''){
-			exit('扫码上传图片可选类型type：1企业营业执照上传，2个人身份证上传，3个人头像，4企业logo');
+			exit(yun_auto_t('扫码上传图片可选类型type：1企业营业执照上传，2个人身份证上传，3个人头像，4企业logo'));
 		}
 		$token 	= $this->generateToken($type, $this->uid);
 		$token 	= urlencode($token);
@@ -71,7 +71,7 @@ class upload_controller extends common{
 		$token 	= isset($_GET['t']) ? $_GET['t'] : '';
 		$arr 	= $this->checkToken($token);
 		if($arr == false || !isset($arr['type']) || !isset($arr['uid']) ){
-			exit('抱歉，功能维护中');
+			exit(yun_auto_t('抱歉，功能维护中'));
 		}
 		$this->yunset('token', $token);
 		$this->yunset('type', $arr['type']);
@@ -115,24 +115,24 @@ class upload_controller extends common{
 	public function uploadimg_save_action(){
 	    $token = isset($_POST['token']) ? $_POST['token'] : '';
 		if($token == ''){
-			echo json_encode(array('status' => -1, 'msg' => '二维码传图出错，请联系网站管理员'));
+			echo yun_json_encode(array('status' => -1, 'msg' => '二维码传图出错，请联系网站管理员'));
 			exit;
 		}
 		$arr = $this->checkToken($token);
 		if($arr == false || !isset($arr['type']) || !isset($arr['uid']) ){
-			echo json_encode(array('status' => -1, 'msg' => '操作超时，请刷新pc端网页二维码重试' . $token));
+			echo yun_json_encode(array('status' => -1, 'msg' => '操作超时，请刷新pc端网页二维码重试' . $token));
 			exit;
 		}
 
 		$path = $this->uploadimg_save_path($arr['type'], $arr['uid']);
 		
-		echo json_encode($path);exit;
+		echo yun_json_encode($path);exit;
 
 		if($path != ''){
-			echo json_encode(array('status' => 1, 'path' => $path));
+			echo yun_json_encode(array('status' => 1, 'path' => $path));
 			exit;
 		}else{
-			echo json_encode(array('status' => -1, 'msg' => '上传失败，请重试'));
+			echo yun_json_encode(array('status' => -1, 'msg' => '上传失败，请重试'));
 			exit;
 		}
 	}
@@ -234,7 +234,7 @@ class upload_controller extends common{
                 
                 $return['msg']      =  $result['msg'];
                 
-                echo json_encode(array('msg' => $result['msg']));exit;
+                echo yun_json_encode(array('msg' => $result['msg']));exit;
                 
             }elseif (!empty($result['picurl'])){
                 
@@ -242,7 +242,7 @@ class upload_controller extends common{
             }
             
 		}else{
-			echo json_encode(array('status' => -1, 'msg' => '请上传图片'));exit;
+			echo yun_json_encode(array('status' => -1, 'msg' => '请上传图片'));exit;
 		}
 	}
 	/**
@@ -314,7 +314,7 @@ class upload_controller extends common{
 		$return['msg'] 		= $msg;
 		$return['picurl'] 	= $picurl;
 
-		echo json_encode($return);die;
+		echo yun_json_encode($return);die;
 	}
 }
 ?>

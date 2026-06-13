@@ -57,20 +57,20 @@ class tiny_controller extends common{
 			
 		);
 		$return		=	$tinyM->setResumeTinyPassword($data);
-		echo json_encode($return);die;
+		echo yun_json_encode($return);die;
 	}
     //短信验证
     function sendmsg_action(){
         $noticeM	=	$this->MODEL('notice');
         $result		=	$noticeM->jycheck($_POST['authcode'],'普工简历');
         if(!empty($result)){
-            echo json_encode(array('msg'=>$result['msg'],'error'=>$result['error']));
+            echo yun_json_encode(array('msg'=>$result['msg'],'error'=>$result['error']));
             return;
         }
         $moblie = $_POST['moblie'];
 
         $result = $noticeM->sendCode($moblie, 'code', 2, array(), 6, 120, 'msg');
-        echo json_encode($result);
+        echo yun_json_encode($result);
         exit();
     }
 	function add_action(){
@@ -131,7 +131,7 @@ class tiny_controller extends common{
 			if($return['errcode']==9){
 				$return['url']	=	Url('wap',array('c'=>'tiny'));
 			}
-			echo json_encode($return);die;
+			echo yun_json_encode($return);die;
 		} 
 		$this->yunset($this->MODEL('cache')->GetCache(array('user')));
 		

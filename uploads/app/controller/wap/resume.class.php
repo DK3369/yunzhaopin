@@ -80,7 +80,7 @@ class resume_controller extends common{
 		
 		$searchurl	=	@implode('&', $searchurl);
 		$this -> yunset('searchurl', $searchurl);
-		$this->yunset('searchUrlObj',json_encode($searchUrlObj));
+		$this->yunset('searchUrlObj',yun_json_encode($searchUrlObj));
 
 		$cityChoosed = '';
         if ($_GET['three_cityid']){
@@ -530,7 +530,7 @@ class resume_controller extends common{
 	    
 	    $data['list']  =  !empty($resumerows['list']) ? $resumerows['list'] : array();
 
-	    echo json_encode($data);die;
+	    echo yun_json_encode($data);die;
 	}
 }
 ?>

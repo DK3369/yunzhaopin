@@ -103,7 +103,7 @@ class show_controller extends company{
 		
 		$arr				=	array('jsonrpc'=>'2.0', 'id'=>$return['id'] );
 		
-		echo json_encode($arr);die;
+		echo yun_json_encode($arr);die;
 		
 	}
 }

@@ -54,7 +54,7 @@ class index_controller extends common{
 		$moblie		=	$_POST['moblie'];
 		
 		$result	=	$noticeM->sendCode($moblie, 'code', 1,array(), 6, 90, 'msg');
-		echo json_encode($result);exit();
+		echo yun_json_encode($result);exit();
 	}
 }
 ?>

@@ -173,7 +173,7 @@ class redeem_controller extends common{
 		);
 		$redeemM	=	$this->MODEL("redeem");
 		$return		=	$redeemM->AddChange($data);
-		echo json_encode($return);die;		
+		echo yun_json_encode($return);die;		
 	}
 }
 ?>

@@ -191,10 +191,10 @@ class expect_controller extends user
                 $return = $resumeM->addInfo($addArr);
             }
             if ($return['errcode'] == 9) {
-                echo json_encode(array('code' => 200, 'msg' => '保存成功', 'eid' => isset($return['id']) && $return['id'] ? $return['id'] : 0));
+                echo yun_json_encode(array('code' => 200, 'msg' => '保存成功', 'eid' => isset($return['id']) && $return['id'] ? $return['id'] : 0));
                 die();
             } else {
-                echo json_encode(array('code' => 400, 'msg' => '保存失败' . $return['msg'], 'eid' => 0));
+                echo yun_json_encode(array('code' => 400, 'msg' => '保存失败' . $return['msg'], 'eid' => 0));
                 die();
             }
         }
@@ -404,7 +404,7 @@ class expect_controller extends user
 
                     $resumeM->upExpectHeight(array('eid' => $eid));
                     $expect =   $resumeM->getExpect(array('id' => $eid, 'uid' => $this->uid), array('needCache' => 1));
-                    echo json_encode($expect);
+                    echo yun_json_encode($expect);
                     die();
                 } else {
 

@@ -194,7 +194,7 @@ class hr_controller extends company
             //批量阅读
             $JobM   =   $this->MODEL('job');
             $arr    =   $JobM->ReadSqJob($_POST['ids'], array('uid' => $this->uid, 'usertype' => $this->usertype));
-            echo json_encode($arr);die;
+            echo yun_json_encode($arr);die;
         } else if ($_POST['delid'] || $_GET['delid']) {
 
             //删除
@@ -429,7 +429,7 @@ class hr_controller extends company
     //简历是否申请过公司职位
     function everApplied_action(){
         if (!$_GET['eid']){
-            echo json_encode(array('code' => 400, 'msg' => '非法访问'));
+            echo yun_json_encode(array('code' => 400, 'msg' => '非法访问'));
             exit();
         }
         // 企业登录时，获取企业的职位列表
@@ -437,10 +437,10 @@ class hr_controller extends company
             $JobM = $this->MODEL('job');
             $sqJob = $JobM->getSqJobInfo(array('eid' => intval($_GET['eid']), 'com_id' => $this->uid));
             if ($sqJob) {
-                echo json_encode(array('code' => 200, 'msg' => '用户申请过该企业职位'));
+                echo yun_json_encode(array('code' => 200, 'msg' => '用户申请过该企业职位'));
                 exit();
             } else {
-                echo json_encode(array('code' => 400, 'msg' => '用户未申请过该企业职位', 'data' => $sqJob));
+                echo yun_json_encode(array('code' => 400, 'msg' => '用户未申请过该企业职位', 'data' => $sqJob));
                 exit();
             }
         }
@@ -459,7 +459,7 @@ class hr_controller extends company
 
         $remarks = $remarkM->getRemarkInfo($where, array('field' => 'remark,status'));
 
-        echo json_encode($remarks);
+        echo yun_json_encode($remarks);
 
     }
 

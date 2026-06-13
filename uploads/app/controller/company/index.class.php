@@ -638,7 +638,7 @@ class index_controller extends common{
                         </div>";
 			$data['joblist']=$joblist;
 
-	        echo json_encode($data);
+	        echo yun_json_encode($data);
 	    }
 	}
 	//微信扫码查看联系方式

@@ -116,7 +116,7 @@ class show_controller extends user{
 	            'jsonrpc'=>'2.0',
 	            'id'=>$id
 	        );
-	        echo json_encode($arr);die;
+	        echo yun_json_encode($arr);die;
 	    }
 	}
 }

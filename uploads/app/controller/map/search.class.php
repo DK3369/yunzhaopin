@@ -148,7 +148,7 @@ class search_controller extends map_controller
         
         
         
-        echo json_encode(array(
+        echo yun_json_encode(array(
             'date'  =>  $List,
             'list'  =>  $jsonList,
             'count' =>  $allNum,

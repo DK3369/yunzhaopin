@@ -257,7 +257,7 @@ class common{
 			exit();
 			
 		}else{
-			echo "模版不能为空！";die;
+			echo yun_auto_t("模版不能为空！");die;
 		}
 	}
 	//前台模板
@@ -270,7 +270,7 @@ class common{
 			}
 			exit();
 		}else{
-			echo "模版不能为空！";die;
+			echo yun_auto_t("模版不能为空！");die;
 		}
 	}
 	//UC资料修改
@@ -1053,7 +1053,7 @@ class common{
             $layer_msg['st']    =   $st;
             $layer_msg['url']   =   $url;
             $layer_msg['error'] =   $error;
-            $msg = json_encode($layer_msg);
+            $msg = yun_json_encode($layer_msg);
 
             //解决ie9 $.get $.post 回调函数的返回值为undefine
             header("Content-Type: text/html; charset=UTF-8");

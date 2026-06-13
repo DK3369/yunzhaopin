@@ -49,7 +49,7 @@ class invite_controller extends company{
 		if($_POST['id']){
 			$JobM				=   $this -> MODEL('job');
 	        $row				=   $JobM -> getYqmsInfo(array('id'=>intval($_POST['id']),'fid'=>$this->uid,'isdel'=>9),array('yqh'=>1));
-			echo json_encode($row);die;
+			echo yun_json_encode($row);die;
 		}
 	}
 	//删除面试邀请

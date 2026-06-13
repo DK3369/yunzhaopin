@@ -68,7 +68,7 @@ class job_controller extends common
         }
         $searchurl  =   @implode('&', $searchurl);
         $this->yunset('searchurl', $searchurl);
-        $this->yunset('searchUrlObj',json_encode($searchUrlObj));
+        $this->yunset('searchUrlObj',yun_json_encode($searchUrlObj));
 
         $cityChoosed = '';
 
@@ -297,7 +297,7 @@ class job_controller extends common
             }
         }
         $data['reason'] = $reason;
-        echo json_encode($data);
+        echo yun_json_encode($data);
     }
 
     //兼容以前版本链接
@@ -331,7 +331,7 @@ class job_controller extends common
         if ($res['errorcode'] != 9) {
             $res['url'] = empty($res['url']) ? $_SERVER['HTTP_REFERER'] : $res['url'];
         }
-        echo json_encode($res);
+        echo yun_json_encode($res);
         die();
     }
 
@@ -348,14 +348,14 @@ class job_controller extends common
         if ($this->usertype != '1') {
             $data['url']    =   $_SERVER['HTTP_REFERER'];
             $data['msg']    =   '只有个人会员才可举报！';
-            echo json_encode($data);
+            echo yun_json_encode($data);
             die();
         }
         if (md5(strtolower($_POST['authcode'])) != $_SESSION['authcode'] || empty($_SESSION['authcode'])) {
             unset($_SESSION['authcode']);
             $data['url'] = $_SERVER['HTTP_REFERER'];
             $data['msg'] = '验证码错误！';
-            echo json_encode($data);
+            echo yun_json_encode($data);
             die();
         }
         $job    =   $jobM->getInfo(array('id' => intval($_POST['id'])), array('field' => '`uid`,`com_name`'));
@@ -365,7 +365,7 @@ class job_controller extends common
         if (is_array($row)) {
             $data['url']    =   $_SERVER['HTTP_REFERER'];
             $data['msg']    =   '您已举报过该用户！';
-            echo json_encode($data);
+            echo yun_json_encode($data);
             die();
         }
         
@@ -386,12 +386,12 @@ class job_controller extends common
         if ($nid) {
             $data['url']    =   $_SERVER['HTTP_REFERER'];
             $data['msg']    =   '举报成功！';
-            echo json_encode($data);
+            echo yun_json_encode($data);
             die();
         } else {
             $data['url']    =   $_SERVER['HTTP_REFERER'];
             $data['msg']    =   '举报失败！';
-            echo json_encode($data);
+            echo yun_json_encode($data);
             die();
         }
     }
@@ -499,7 +499,7 @@ class job_controller extends common
         $res    =   $msgM->addMsg($_POST);
 
         $res['url']     =   empty($res['url']) ? $_SERVER['HTTP_REFERER'] : $res['url'];
-        echo json_encode($res);
+        echo yun_json_encode($res);
         die();
     }
 
@@ -823,7 +823,7 @@ class job_controller extends common
             addkeywords(3, $keyword);
         }
 
-        echo json_encode($data);
+        echo yun_json_encode($data);
         die;
     }
 
@@ -851,7 +851,7 @@ class job_controller extends common
 
         $link['linkData']['linkCode']   =   $link['linkCode'];
         $link['linkData']['linkMsg']    =   $link['linkMsg'];
-        echo json_encode($link['linkData']);
+        echo yun_json_encode($link['linkData']);
         die;
     }
 
@@ -862,7 +862,7 @@ class job_controller extends common
 
         $return =   $jobM->cancelFavJob(array('job_id' => $_POST['id'], 'uid' => $this->uid, 'usertype' => $this->usertype));
 
-        echo json_encode($return);die;
+        echo yun_json_encode($return);die;
 
     }
     // 查询职位复制文本内容
@@ -874,7 +874,7 @@ class job_controller extends common
         $wxpubtemp_html = $wxpubtempM->getOneJob($jobid,'wap');
         $data['wxpubtemp_html'] = $wxpubtemp_html;
         
-        echo json_encode($data);die;
+        echo yun_json_encode($data);die;
     }
 
     function getHbList_action()
@@ -887,7 +887,7 @@ class job_controller extends common
             $hbList             =   $WhbM->getWhbList(array('type' => 1, 'isopen' => '1'));
             $return['hbList']   =   $hbList;
             $return['errcode']  =   1;
-            echo json_encode($return);
+            echo yun_json_encode($return);
         } else {
 
             $return['errcode']  =   2;
@@ -905,7 +905,7 @@ class job_controller extends common
         $JobM       =   $this->MODEL('job');
         $dataArr    =   array('id' => $id, 'uid' => $this->uid, 'usertype' => $this->usertype);
         $telRes     =   $JobM->getJobLink($dataArr);
-        echo json_encode($telRes);
+        echo yun_json_encode($telRes);
         die();
     }
 }

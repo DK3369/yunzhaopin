@@ -154,7 +154,7 @@ class zph_controller extends common{
             $return['msg']      =   '参数错误请重试';
         }
 
-        echo json_encode($return);exit();
+        echo yun_json_encode($return);exit();
 	}
 	function getJobList_action(){
 		$id     =   intval($_POST['zid']);
@@ -201,7 +201,7 @@ class zph_controller extends common{
             $return['msg']      =   '参数错误请重试';
         }
 
-        echo json_encode($return);exit();
+        echo yun_json_encode($return);exit();
 	}
 }
 ?>

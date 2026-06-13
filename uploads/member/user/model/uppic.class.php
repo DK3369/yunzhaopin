@@ -43,7 +43,7 @@ class uppic_controller extends user{
 			
 			$res['s_thumb']  =  '请选择上传图片';
 		}
-		echo json_encode($res);die;
+		echo yun_json_encode($res);die;
 	}
 	
 	function savethumb_action(){

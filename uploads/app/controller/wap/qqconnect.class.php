@@ -49,7 +49,7 @@ class qqconnect_controller extends common
 
             if (!function_exists('curl_init')) {
 
-                echo "请开启CURL函数，否则将无法进行下一步操作！";
+                echo yun_auto_t("请开启CURL函数，否则将无法进行下一步操作！");
                 die;
             }
             $response = CurlGet($token_url);
@@ -252,7 +252,7 @@ class qqconnect_controller extends common
             } else {
                 $result['msg']      =   'QQ登录信息已失效，请重新登录！';
             }
-            echo json_encode($result);
+            echo yun_json_encode($result);
         } else {
             $this->yunset('backurl', Url('wap'));
             $this->yunset("headertitle", "QQ登录绑定");
@@ -288,7 +288,7 @@ class qqconnect_controller extends common
             $result     =   $noticeM->sendCode($moblie, 'login', 2, $user, 6, 90, 'msg');
         }
 
-        echo json_encode($result);
+        echo yun_json_encode($result);
         exit();
     }
 }

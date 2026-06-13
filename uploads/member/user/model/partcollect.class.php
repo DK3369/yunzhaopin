@@ -51,7 +51,7 @@ class partcollect_controller extends user{
             $id 	=   intval($_POST['ids']);
 
             $return    =   $partM -> delPartCollect($id,array('uid'=>$this->uid,'usertype'=>$this->usertype));
-            echo json_encode($return);
+            echo yun_json_encode($return);
             die;
         }
 	}

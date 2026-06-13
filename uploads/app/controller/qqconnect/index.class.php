@@ -82,7 +82,7 @@ class index_controller extends common
 
             if (!function_exists('curl_init')) {
 
-                echo "请开启CURL函数，否则将无法进行下一步操作！";
+                echo yun_auto_t("请开启CURL函数，否则将无法进行下一步操作！");
                 die();
             }
 

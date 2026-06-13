@@ -129,7 +129,7 @@ class index_controller extends user{
 			$data['resumelist']	=	$html;
 			$data['num']		=	count($rlist);
 			$data['uid']		=	$this->uid;
-			echo json_encode($data);
+			echo yun_json_encode($data);
 		}
 	}
 	function jobajax_action(){
@@ -186,7 +186,7 @@ class index_controller extends user{
 	        }
 	    }
 	    $data['list']=$list;
-	    echo json_encode($data);die;
+	    echo yun_json_encode($data);die;
 	}
 }
 ?>

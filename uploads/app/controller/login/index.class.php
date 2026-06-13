@@ -52,7 +52,7 @@ class index_controller extends common{
 
 		$return					=			$Member->userLogin($lData);
         if ($lData['is_yuliu']) {
-            echo json_encode($return);
+            echo yun_json_encode($return);
         } else {
             if($return['uclogin']){
                 $error	=	2;
@@ -95,7 +95,7 @@ class index_controller extends common{
 
             $result	=	$noticeM->sendCode($moblie, 'login', 1, $user, 6, 90, 'msg');
         }
-		echo json_encode($result);exit();
+		echo yun_json_encode($result);exit();
 	}
 	function rest_action(){
 		$this->cookie->unset_cookie();
@@ -144,11 +144,11 @@ class index_controller extends common{
 					header("Location:".$this->config['sy_weburl'].'/member');
 				}else{
 					$this->cookie->unset_cookie();
-					echo "激活失败";
+					echo yun_auto_t("激活失败");
 				}
 			}else{
 				$this->cookie->unset_cookie();
-				echo "激活失败";
+				echo yun_auto_t("激活失败");
 			}
 		}else{
 			header("Location:".Url('index'));
@@ -449,6 +449,6 @@ class index_controller extends common{
             $arr['msg']		=	$return['msg'];
             $arr['status']	=	8;
         }
-        echo json_encode($arr);die;
+        echo yun_json_encode($arr);die;
 	}
 }

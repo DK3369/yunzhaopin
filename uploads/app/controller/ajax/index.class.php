@@ -15,7 +15,7 @@ class index_controller extends common{
 		);
 
 		$res				=	$JobM -> applyJob($data);
-		echo json_encode($res);die;
+		echo yun_json_encode($res);die;
 		//echo $res['errorcode'];die;
 	}
 
@@ -27,7 +27,7 @@ class index_controller extends common{
 
         $return =   $jobM->cancelFavJob(array('job_id' => $_POST['id'], 'uid' => $this->uid, 'usertype' => $this->usertype));
 
-        echo json_encode($return);die;
+        echo yun_json_encode($return);die;
 	}
 
 	//会员中心收藏，TODO:仅前台
@@ -41,7 +41,7 @@ class index_controller extends common{
         );
         $jobM   =   $this->MODEL("job");
         $return =   $jobM->collectJob($data);
-        echo json_encode($return);
+        echo yun_json_encode($return);
         die;
     }
 
@@ -59,7 +59,7 @@ class index_controller extends common{
 
             if ($return['status']) {
                 $return['msgList']  =   $return['msgList']['pc'];
-                echo json_encode($return);
+                echo yun_json_encode($return);
                 die();
             }
         }
@@ -79,7 +79,7 @@ class index_controller extends common{
         );
 
         $res = $jobM->addYqmsInfo(array_merge($fidArr, $_POST));
-        echo json_encode($res);die();
+        echo yun_json_encode($res);die();
     }
 	
 	//邀请面试发送邮件手机短信
@@ -124,7 +124,7 @@ class index_controller extends common{
 	    $arr['msg'] 		= 	$arr['msg'];
 	    $arr['msgList']     = 	$arr['msgList']['pc'];
 	    $arr['usertype']	=	$this->usertype;
-		echo json_encode($arr);die;
+		echo yun_json_encode($arr);die;
 	}
 	/**
 	 * 下载简历（查看联系方式）
@@ -259,7 +259,7 @@ class index_controller extends common{
 			'map_control_xb'		=>	$this->config['map_control_xb'],
 			'map_control_scale'		=>	$this->config['map_control_scale'],
 		);
-    	echo json_encode($arr);
+    	echo yun_json_encode($arr);
     }
     
     function mapconfigdiffdomains_action(){
@@ -273,7 +273,7 @@ class index_controller extends common{
 		'map_control_xb'		=>	$this->config['map_control_xb'],
 		'map_control_scale'		=>	$this->config['map_control_scale'],
 	  );
-    	echo 'diffdomains('.json_encode($arr).')';
+    	echo 'diffdomains('.yun_json_encode($arr).')';
     }
 
 	//下载简历，TODO:前台
@@ -539,7 +539,7 @@ class index_controller extends common{
 		
 		$result	 	= 	$noticeM -> sendCode($moblie, 'regcode', $port);
 		
-		echo json_encode($result);exit();
+		echo yun_json_encode($result);exit();
 	}
 	
 	//加入人才库，TODO:前台、WAP
@@ -554,7 +554,7 @@ class index_controller extends common{
 		);
 		$ResumeM	=	$this->MODEL('resume');
 	    $return		=	$ResumeM -> addTalent($data);
-		echo json_encode($return);die;
+		echo yun_json_encode($return);die;
 	}
 	function atn_action(){
 
@@ -568,7 +568,7 @@ class index_controller extends common{
 		$atnM	=	$this->MODEL('atn');
 		$return	=	$atnM->addAtnLt($data);
 
-		echo json_encode($return);die;
+		echo yun_json_encode($return);die;
 	}
  
 	/* 关注企业，TODO:前台列表 */
@@ -585,7 +585,7 @@ class index_controller extends common{
 		 
 		$atnM	=	$this->MODEL('atn');
 		$return	=	$atnM->addAtnLt($data);
-		echo json_encode($return);die;
+		echo yun_json_encode($return);die;
 	}
 
     /**
@@ -882,7 +882,7 @@ class index_controller extends common{
 		$zphM	=	$this->MODEL('zph');
 		$arr	=	$zphM->ajaxZph($data);
 		
-	    echo json_encode($arr);die;
+	    echo yun_json_encode($arr);die;
 	}
 	
 	//报名招聘会条件判断
@@ -949,7 +949,7 @@ class index_controller extends common{
 	        }
 	    }
 		
-	    echo json_encode($data);die;
+	    echo yun_json_encode($data);die;
 	}
 	//快速申请职位入口
 	function temporaryresume_action(){
@@ -1236,13 +1236,13 @@ class index_controller extends common{
 
 					$data['msg'] = "每天最多推荐{$this->config['sy_recommend_day_num']}次职位/简历！";
 					$data['status'] = 1;
-					echo json_encode($data);
+					echo yun_json_encode($data);
 					exit;
 				}
 			}else{
 				$data['msg'] = "推荐功能已关闭！";
 				$data['status'] = 1;
-				echo json_encode($data);
+				echo yun_json_encode($data);
 				exit;
 			}
 
@@ -1282,10 +1282,10 @@ class index_controller extends common{
 					}
 					$data['msg'] 	= 	"推荐职位/简历间隔不得少于{$recs}，请{$needTime}后操作！";
 					$data['status']	= 	2;
- 					echo json_encode($data);exit;
+ 					echo yun_json_encode($data);exit;
 				}
 			}
-			echo json_encode( array('status' => 0));exit;
+			echo yun_json_encode( array('status' => 0));exit;
 		}
 	}
 
@@ -1344,7 +1344,7 @@ class index_controller extends common{
 			if(!empty($reurn['content'])){
 				$comGsInfo	= 	$reurn['content'];
 
-				echo json_encode($comGsInfo);
+				echo yun_json_encode($comGsInfo);
 			}
 		}
 	}
@@ -1366,7 +1366,7 @@ class index_controller extends common{
                 session_start();
                 if (!isset($_SESSION['auid'])){
 
-                    echo json_encode(array('code' => 1, 'msg' => '操作异常，请重试！' ));
+                    echo yun_json_encode(array('code' => 1, 'msg' => '操作异常，请重试！' ));
                 }else{
 
                     $data['uid']        =   $_POST['uid'];
@@ -1392,7 +1392,7 @@ class index_controller extends common{
 	            'data'  =>  array()
 	        );
 	    }
-	    echo json_encode($return);
+	    echo yun_json_encode($return);
 	}
 
 	 
@@ -1404,7 +1404,7 @@ class index_controller extends common{
 	    
 	    $MsgNumM  =  $this->MODEL('msgNum');
 	    $msg      =  $MsgNumM->getmsgNum($this->uid,$this->usertype);
-	    echo json_encode($msg);
+	    echo yun_json_encode($msg);
 	}
 
     // 企业每日最大操作次数检查
@@ -1418,7 +1418,7 @@ class index_controller extends common{
         $com_id =   $this->uid;
         $result =   $comM -> comVipDayActionCheck($type, $com_id);
        
-        echo json_encode($result);
+        echo yun_json_encode($result);
         die();
     }
 	
@@ -1462,13 +1462,13 @@ class index_controller extends common{
 	            $data['service_price']    =   $packinfo['service_price'] * $pro;
 	            $data['price']            =   $data['yh_price'] > $statis['integral'] ? $packinfo['service_price'] * $discount['service_discount'] * 0.01 : $packinfo['service_price'] * $discount['service_discount'] * 0.01 * $pro;
 	            $data['style']            =   $data['yh_price'] > $statis['integral'] ? 3 : 2;
-	            echo json_encode($data);
+	            echo yun_json_encode($data);
 	        }else{
 	            
 	            $data['service_price']     =   $packinfo['service_price'] * $pro;
 	            $data['price']             =   $data['service_price'] > $statis['integral'] ? $packinfo['service_price'] : $packinfo['service_price'] * $pro;
 	            $data['style']             =   $data['service_price'] > $statis['integral'] ? 3 : 2;
-	            echo json_encode($data);
+	            echo yun_json_encode($data);
 	        }
 	    }else {
 	        $data['style']     =   1;
@@ -1477,12 +1477,12 @@ class index_controller extends common{
 	            $data['yh_price']          =   $packinfo['service_price'] * $discount['service_discount'] * 0.01;
 	            $data['service_price']     =   $packinfo['service_price'];
 	            $data['price']             =   $data['yh_price'];
-	            echo json_encode($data);
+	            echo yun_json_encode($data);
 	        }else{
 	            
 	            $data['service_price']     =   $packinfo['service_price'];
 	            $data['price']             =   $data['service_price'];
-	            echo json_encode($data);
+	            echo yun_json_encode($data);
 	        }
 	    }
 	}
@@ -1518,13 +1518,13 @@ class index_controller extends common{
 	            $data['service_price']     =   $packinfo['service_price'] * $pro;
 	            $data['price']             =   $data['yh_price'] > $statis['integral'] ? $packinfo['yh_price'] : $packinfo['yh_price'] * $pro;
 	            $data['style']             =   $data['yh_price'] > $statis['integral'] ? 3 : 2;
-	            echo json_encode($data);
+	            echo yun_json_encode($data);
 	        }else{
 	            
 	            $data['service_price']     =   $packinfo['service_price'] * $pro;
 	            $data['price']             =   $data['service_price'] > $statis['integral'] ? $packinfo['service_price'] : $packinfo['service_price'] * $pro;
 	            $data['style']             =   $data['service_price'] > $statis['integral'] ? 3 : 2;
-	            echo json_encode($data);
+	            echo yun_json_encode($data);
 	        }
 	    }else{
 	        
@@ -1534,12 +1534,12 @@ class index_controller extends common{
 	            $data['yh_price']          =   $packinfo['yh_price'];
 	            $data['service_price']     =   $packinfo['service_price'];
 	            $data['price']             =   $packinfo['yh_price'];
-	            echo json_encode($data);
+	            echo yun_json_encode($data);
 	        }else{
 	            
 	            $data['service_price']     =   $packinfo['service_price'];
 	            $data['price']             =   $packinfo['service_price'];
-	            echo json_encode($data);
+	            echo yun_json_encode($data);
 	        }
 	    }
 	}
@@ -1552,7 +1552,7 @@ class index_controller extends common{
 	    $_POST				=	$this -> post_trim($_POST);
 	    
 	    if (empty($_POST)) {
-	        echo json_encode(array('error' => 1, 'msg' => '参数错误，请重试！'));die();
+	        echo yun_json_encode(array('error' => 1, 'msg' => '参数错误，请重试！'));die();
 	    }
 	    $data				=	$_POST;
 	    $data['uid']		=   $this -> uid;
@@ -1562,7 +1562,7 @@ class index_controller extends common{
 	    
 	    $compayM            =   $this->MODEL('compay');
 	    $return				=	$compayM->orderBuy($data);
-	    echo json_encode($return);
+	    echo yun_json_encode($return);
 	}
 	/**
 	 * @desc   购买弹出框：积分购买
@@ -1574,7 +1574,7 @@ class index_controller extends common{
 	    
 	    if(empty($_POST)){
 	        
-	        echo json_encode(array('error'=>1,'msg'=>'参数错误，请重试！'));die;
+	        echo yun_json_encode(array('error'=>1,'msg'=>'参数错误，请重试！'));die;
 	    }
 	    
 	    $data				=	$_POST;
@@ -1584,7 +1584,7 @@ class index_controller extends common{
 	    
 	    $jfdkM				=	$this	->	MODEL('jfdk');
 	    $return				=	$jfdkM	->	dkBuy($data);
-	    echo json_encode($return);
+	    echo yun_json_encode($return);
     }
 	//视频面试详情-职位详情
 	function getJobInfo_action(){
@@ -1732,7 +1732,7 @@ class index_controller extends common{
         $whbM   =   $this->MODEL('whb');
         $list   =   $whbM->getWhbList(array('type' => 3, 'isopen' => 1, 'orderby' => 'sort,desc'), array('field' => 'id'));
 
-        echo json_encode(['list' => $list]);die;
+        echo yun_json_encode(['list' => $list]);die;
     }
 
     // 获取邀请注册海报
@@ -1801,7 +1801,7 @@ class index_controller extends common{
                  }
             }
         }
-        echo json_encode($result);die;
+        echo yun_json_encode($result);die;
     }
     //微信发布工具搜索企业
     function getComBySearch_action(){
@@ -1828,7 +1828,7 @@ class index_controller extends common{
                 }
             }
         }
-        echo json_encode($result);die;
+        echo yun_json_encode($result);die;
 	}
     /**
      * 检测用户名重复性
@@ -1839,7 +1839,7 @@ class index_controller extends common{
 
         $result     =   $userinfoM -> addMemberCheck(array('username'=>trim($_POST['username'])));
 
-        echo json_encode($result);die;
+        echo yun_json_encode($result);die;
     }
     // 生成HR年度报告海报
     function lastYearReport_action(){

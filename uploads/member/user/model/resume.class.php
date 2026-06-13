@@ -100,7 +100,7 @@ class resume_controller extends user{
                         'integrity'  =>  $expect['integrity']
                     );
                     
-                    echo json_encode($data);die();
+                    echo yun_json_encode($data);die();
                 } else {
                     echo 0;die();
                 }
@@ -129,17 +129,17 @@ class resume_controller extends user{
 			if($return['order']['order_id'] && $return['order']['id']){
         
 				//订单生成成功
-                echo json_encode(array('error' => 0, 'orderid' => $return['order']['order_id'], 'id' => $return['order']['id']));
+                echo yun_json_encode(array('error' => 0, 'orderid' => $return['order']['order_id'], 'id' => $return['order']['id']));
 
 			}else{
 				//生成失败 返回具体原因
         
-				echo json_encode(array('error'=>1,'msg'=>$return['error']));
+				echo yun_json_encode(array('error'=>1,'msg'=>$return['error']));
         
 			}
 		}else{
       
-			echo json_encode(array('error'=>1,'msg'=>'参数错误，请重试！'));
+			echo yun_json_encode(array('error'=>1,'msg'=>'参数错误，请重试！'));
       
 		}
     

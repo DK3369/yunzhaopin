@@ -368,7 +368,7 @@ class jobadd_controller extends company
             'job_num'  =>  (int)$statis['job_num']
         );
 
-        echo json_encode($return);
+        echo yun_json_encode($return);
         
         die();
         

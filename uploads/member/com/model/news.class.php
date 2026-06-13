@@ -102,7 +102,7 @@ class news_controller extends company
 		
 		$row		=	$companyM->getCompanyNewsInfo(array('uid'=>$this->uid,'id'=>$_POST['id']),array('field'=>'`statusbody`'));
 		
-		echo json_encode($row);die;
+		echo yun_json_encode($row);die;
 	}
 }
 ?>

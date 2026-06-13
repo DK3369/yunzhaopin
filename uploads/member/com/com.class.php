@@ -314,7 +314,7 @@ class company extends common
                         $rating_type = 2;
                     }else{
                         $return['errcode'] = 2;
-                        echo json_encode($return);die();
+                        echo yun_json_encode($return);die();
                     }
                 }
 
@@ -363,11 +363,11 @@ class company extends common
                 $logDetail  =   $_POST['status'] == 0 ? '修改职位(ID:'.pylode(',', $id).')发布状态：下架->上架' : '修改职位(ID:'.pylode(',', $id).')发布状态：上架->下架';
                 $logM->addMemberLog($this->uid, $this->usertype, $logContent, 1, 2, $logDetail);
 
-                echo json_encode(array('errcode'=>1));
+                echo yun_json_encode(array('errcode'=>1));
                 die();
             } else {
 
-                echo json_encode(array('errcode'=>8,'msg'=>'设置失败！'));
+                echo yun_json_encode(array('errcode'=>8,'msg'=>'设置失败！'));
                 die();
             }
         }
@@ -574,7 +574,7 @@ class company extends common
                         $rating_type = 2;
                     }else{
                         $return['errcode'] = 2;
-                        echo json_encode($return);die();
+                        echo yun_json_encode($return);die();
                     }
                 }
 
@@ -622,11 +622,11 @@ class company extends common
                 $logDetail  =   $_POST['status'] == 0 ? '修改兼职发布状态：下架->上架' : '修改兼职发布状态：上架->下架';
                 $logM->addMemberLog($this->uid, $this->usertype, $logContent, 9, 2, $logDetail);
 
-                echo json_encode(array('errcode'=>1));
+                echo yun_json_encode(array('errcode'=>1));
                 die();
             } else {
 
-                echo json_encode(array('errcode'=>8,'msg'=>'设置失败！'));
+                echo yun_json_encode(array('errcode'=>8,'msg'=>'设置失败！'));
                 die();
             }
         }

@@ -79,7 +79,7 @@ class zhaopin_controller extends company{
         foreach ($list as $key => &$val) {
             $val['num'] = intval($val['num']);
         }
-        echo json_encode($list);
+        echo yun_json_encode($list);
         exit();
     }
 
@@ -207,7 +207,7 @@ class zhaopin_controller extends company{
             }
         }
 
-        echo json_encode(array('name' => $name, 'data' => $newList ? $newList : $list));
+        echo yun_json_encode(array('name' => $name, 'data' => $newList ? $newList : $list));
         exit();
     }
 
@@ -342,7 +342,7 @@ class zhaopin_controller extends company{
                 }
             }
         }
-        echo json_encode($list);
+        echo yun_json_encode($list);
         exit();
     }
 
@@ -390,7 +390,7 @@ class zhaopin_controller extends company{
         $invite_num = $jobM->getYqmsNum(array_merge($inviteWhere, array('datetime' => $where)));
         $data['yqms'] = array('num' => $invite_num);
 
-        echo json_encode($data);
+        echo yun_json_encode($data);
         exit();
     }
 
@@ -458,7 +458,7 @@ class zhaopin_controller extends company{
         $invite_list = $this->obj->select_all('userid_msg', array_merge($inviteWhere, array('datetime' => $where)), "FROM_UNIXTIME(datetime,'{$fu}') as dates,count(*) as num");
         $data['yqms'] = $this->formatChartData($dates, $invite_list);
 
-        echo json_encode($data);
+        echo yun_json_encode($data);
         exit();
     }
 
@@ -500,7 +500,7 @@ class zhaopin_controller extends company{
         $invite_list = $this->obj->select_all('userid_msg', array_merge($inviteWhere, array('datetime' => $where)), "uid");
         $data['yqms'] = $this->getRcfxData($invite_list ? array_column($invite_list, 'uid') : array());
 
-        echo json_encode($data);
+        echo yun_json_encode($data);
         exit();
     }
 
@@ -638,7 +638,7 @@ class zhaopin_controller extends company{
         $invite_list = $this->obj->select_all('userid_msg', array_merge($inviteWhere, array('datetime' => $where)), "FROM_UNIXTIME(datetime,'{$fu}') as dates,count(*) as num");
         $data['yqms'] = $this->formatChartData($dates, $invite_list);
 
-        echo json_encode($data);
+        echo yun_json_encode($data);
         exit();
     }
 
@@ -685,7 +685,7 @@ class zhaopin_controller extends company{
     private function checkOpen()
     {
         if (isset($this->config['com_zpdata']) && $this->config['com_zpdata'] != 1) {
-            exit('招聘数据未开放');
+            exit(yun_auto_t('招聘数据未开放'));
         }
     }
 }

@@ -50,13 +50,13 @@ class once_controller extends common{
         $noticeM	=	$this->MODEL('notice');
         $result		=	$noticeM->jycheck($_POST['authcode'],'店铺招聘');
         if(!empty($result)){
-            echo json_encode(array('msg'=>$result['msg'],'error'=>$result['error']));
+            echo yun_json_encode(array('msg'=>$result['msg'],'error'=>$result['error']));
             return;
         }
         $moblie = $_POST['moblie'];
 
         $result = $noticeM->sendCode($moblie, 'code', 2, array(), 6, 120, 'msg');
-        echo json_encode($result);
+        echo yun_json_encode($result);
         exit();
     }
 	function add_action(){ 
@@ -71,7 +71,7 @@ class once_controller extends common{
         $this->yunset($CacheList);
 
         $oncepricegearCache	=	$CacheM->GetCache('oncepricegear');
-        $this->yunset('oncepricegearJson', json_encode($oncepricegearCache, JSON_UNESCAPED_UNICODE));
+        $this->yunset('oncepricegearJson', yun_json_encode($oncepricegearCache, JSON_UNESCAPED_UNICODE));
 
 		$onceM	=	$this->MODEL('once');
 		if((int)$_GET['id']){
@@ -139,7 +139,7 @@ class once_controller extends common{
 			
 			$return  	= 	$onceM  ->  addOnceInfo($data);
 			
-			echo json_encode($return);die;
+			echo yun_json_encode($return);die;
 		}
 		
 		$this->get_moblie();
@@ -295,7 +295,7 @@ class once_controller extends common{
 		);
 		$return		=	$onceM -> setOncePassword($data);
 		
-		echo json_encode($return);die;
+		echo yun_json_encode($return);die;
 	}
 }
 ?>

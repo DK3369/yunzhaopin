@@ -159,7 +159,7 @@ class map_controller extends common
         $data['total']  =   $jobNum;
         $data['list']   =   count($list) > 0 ? $list : array();
         $data['error']  =   0;
-        echo json_encode($data);
+        echo yun_json_encode($data);
         die();
     }
 
@@ -273,7 +273,7 @@ class map_controller extends common
         $data['pagecount']  =   $pageCount ? $pageCount : 0;
         $data['error']      =   0;
         
-        echo json_encode($data);
+        echo yun_json_encode($data);
         die();
     }
 

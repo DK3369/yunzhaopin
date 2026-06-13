@@ -39,24 +39,24 @@ class index_controller extends common{
 			if($uid != $cert['uid']){
 				$res['msg']		=	"参数错误，请重试！";
 			    $res['error']	=	'8';
-			    echo json_encode($res);die;
+			    echo yun_json_encode($res);die;
 			
 			}elseif (!$codeTime) {
 			    
 			    $res['msg']		=	"短信验证码验证超时，请重新验证！";
 			    $res['error']	=	'8';
-			    echo json_encode($res);die;
+			    echo yun_json_encode($res);die;
 			    
 			}else if(($code!=$cert['check2'])||(!$cert)){
 				
 				$res['msg']		=	"验证码错误";
 				$res['error']	=	'8';
-				echo json_encode($res);die;
+				echo yun_json_encode($res);die;
 				
 			}else if($pwmsg!=''){
 				$res['msg']		=	$pwmsg;
 				$res['error']	=	'8';
-				echo json_encode($res);die;
+				echo yun_json_encode($res);die;
 			}else{
 
 				$info 		= 	$userinfoM->getInfo(array('uid'=>$uid),array("field"=>"`uid`,`username`,`email`,`moblie`,`name_repeat`"));
@@ -75,7 +75,7 @@ class index_controller extends common{
 					
 					$res['msg']		=	'密码修改成功！';
 					$res['error']	=	0;
-					echo json_encode($res);die;
+					echo yun_json_encode($res);die;
 				}else{
 					$res['msg']		=	'没有该用户';
 				}
@@ -83,7 +83,7 @@ class index_controller extends common{
         }else{
             $res['msg']				=	'对不起,没有该用户';
         }
-        echo json_encode($res);die;
+        echo yun_json_encode($res);die;
     }
 
     function sendCode_action()
@@ -92,7 +92,7 @@ class index_controller extends common{
         $noticeM    =   $this->MODEL('notice');
         $result     =   $noticeM->jycheck($_POST['code'], '找回密码');
         if (!empty($result)) {
-            echo json_encode(array('msg' => $result['msg'], 'error' => $result['error']));
+            echo yun_json_encode(array('msg' => $result['msg'], 'error' => $result['error']));
             return;
         }
         if ($sendtype == 'mobile') {
@@ -106,7 +106,7 @@ class index_controller extends common{
         }
 
         $result     =   $noticeM->sendCode($sended, 'getpass', 1, array(), 6, 120, $type);
-        echo json_encode($result);
+        echo yun_json_encode($result);
         exit();
     }
 	
@@ -135,18 +135,18 @@ class index_controller extends common{
 		    
 		    $res['msg']		=	"短信验证码验证超时，请重新验证！";
 		    $res['error']	=	'8';
-		    echo json_encode($res);die;
+		    echo yun_json_encode($res);die;
 		    
 		}else  if(($_POST['code']!=$cert['check2'])||(!$cert)){
 		    $res['msg']		=	"验证码错误";
 		    $res['error']	=	'8';
-		    echo json_encode($res);die;
+		    echo yun_json_encode($res);die;
 		}
 		$res['msg']			=	"验证码正确！";
 		$res['error']		=	0;
 		$res['uid']			=	$info['uid'];
 		$res['username']	=	$info['username'];
-		echo json_encode($res);die;
+		echo yun_json_encode($res);die;
 	}
 	
 	function checklink_action(){
@@ -157,7 +157,7 @@ class index_controller extends common{
 		if(CheckRegUser($username)==false && CheckRegEmail($username)==false){
 	        $data['msg']	=	"用户名包含特殊字符！";
 	        $data['error']	=	'8';
-	        echo json_encode($data);die;
+	        echo yun_json_encode($data);die;
 	    }
 
 		$member 	= 	$userinfoM->getInfo(array('username'=>$_POST['username']), array('field' => '`uid`, `username`, `pid`'));
@@ -165,7 +165,7 @@ class index_controller extends common{
 	    if(empty($member)){
 			$data['msg']	=	"用户名不存在！";
 			$data['error']	=	'8';
-	        echo json_encode($data);die;
+	        echo yun_json_encode($data);die;
 		}
 
 	    $shensu		=	$_POST['linkman'].'-'.$_POST['linkphone'].'-'.$_POST['linkemail'];
@@ -174,7 +174,7 @@ class index_controller extends common{
 		
 	    if($nid){
 	        $data['error']	=	'0';
-	        echo json_encode($data);die;
+	        echo yun_json_encode($data);die;
 	    }
 	}
 	

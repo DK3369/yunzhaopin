@@ -40,7 +40,7 @@ class advice_controller extends common{
 		$adviceM	=	$this->MODEL('advice');
 		$return		=	$adviceM->addInfo($data);
 		
-		echo json_encode($return);die;
+		echo yun_json_encode($return);die;
 	}
     /**
      * 意见反馈-发送动态码
@@ -54,7 +54,7 @@ class advice_controller extends common{
 		$moblie		=	$_POST['moblie'];
 		
 		$result	=	$noticeM->sendCode($moblie, 'code', 1,array(), 6, 90, 'msg');
-		echo json_encode($result);exit();
+		echo yun_json_encode($result);exit();
 	}
 }
 ?>

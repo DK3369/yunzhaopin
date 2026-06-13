@@ -21,7 +21,7 @@ class ajax_controller extends common
 
         $return     =   $resumeM->topResumeCheck($data);
 
-        echo json_encode($return);
+        echo yun_json_encode($return);
 
         die;
     }
@@ -121,7 +121,7 @@ class ajax_controller extends common
             $logDetail  =   '手机认证，发送短信验证码；认证手机号码：'.$moblie;
             $logM->addMemberLog($user['uid'], $user['usertype'], $logContent, 12, 1, $logDetail);
 
-            echo json_encode($result);
+            echo yun_json_encode($result);
             exit();
         }
     }
@@ -183,7 +183,7 @@ class ajax_controller extends common
         $arr['bid']         =   $spaces[$com['bid']];
         $arr['cid']         =   $spaces[$com['cid']];
 
-        echo json_encode($arr);
+        echo yun_json_encode($arr);
     }
 
     
@@ -249,7 +249,7 @@ class ajax_controller extends common
             $_SESSION['qiandao'] = 1;
         }else{
             $arr['type'] = -2;
-            echo json_encode($arr);
+            echo yun_json_encode($arr);
             die;
         }
 
@@ -304,7 +304,7 @@ class ajax_controller extends common
             $arr['signday']     =   $signday;
             $arr['signdays']    =   $member['signdays'] + 1;
 
-            echo json_encode($arr);
+            echo yun_json_encode($arr);
             die;
         }
     }
@@ -318,7 +318,7 @@ class ajax_controller extends common
 
             $sysM   =   $this->MODEL('sysmsg');
             $result =   $sysM->upInfo(array('id' => array('in', pylode(',', $_POST['ids']))), array('remind_status' => '1'));
-            echo json_encode($result);
+            echo yun_json_encode($result);
             die;
         }
     }

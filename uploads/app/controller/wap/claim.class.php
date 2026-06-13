@@ -72,7 +72,7 @@ class claim_controller extends common
 				'msg'		=>	$result	? '认领成功！' : '认领失败！',
 			);
 			
-			echo json_encode($return);die;
+			echo yun_json_encode($return);die;
         }
     }
 }

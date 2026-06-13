@@ -47,7 +47,7 @@ class ask_controller extends common{
 				$rows[$key]['title']=urlencode(str_replace($keyword,"<b>".$keyword."</b>",$val['title']));
 			}
 		}
-		$rows = json_encode($rows);
+		$rows = yun_json_encode($rows);
 		echo urldecode($rows);die;
 	}
 }

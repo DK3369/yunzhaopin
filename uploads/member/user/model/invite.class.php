@@ -77,7 +77,7 @@ class invite_controller extends user{
           
             $row    =   $JobM -> getYqmsInfo(array('id' => intval($_POST['id']),'isdel'=>9,'uid'=>$this->uid), array('yqh' => 1, 'uid' => $this->uid, 'usertype' => $this->usertype));
             
-            echo json_encode($row);
+            echo yun_json_encode($row);
             die();
         }
     }

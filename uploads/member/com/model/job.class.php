@@ -148,13 +148,13 @@ class job_controller extends company
 
             if ($return['status'] == 1) {// 职位刷新成功
                 
-                echo json_encode(array(
+                echo yun_json_encode(array(
                     'error' => 1,
                     'msg'   => $return['msg']
                 ));
             } else if ($return['status'] == 2) { 
                 
-                echo json_encode(array(
+                echo yun_json_encode(array(
                     'error'     =>  2,
                     'pro'       =>  $return['pro'],
                     'online'    =>  $return['online'],
@@ -164,14 +164,14 @@ class job_controller extends company
                 ));
             } else {// 职位刷新失败
                 
-                echo json_encode(array(
+                echo yun_json_encode(array(
                     'error' => 3,
                     'msg'   => $return['msg'],
                     'url'   => $return['url']
                 ));
             }
         } else {
-            echo json_encode(array(
+            echo yun_json_encode(array(
                 'error' => 3,
                 'msg' => '参数错误，请重试！'
             ));
@@ -211,7 +211,7 @@ class job_controller extends company
             }
         }
 
-        echo json_encode($return);
+        echo yun_json_encode($return);
         die();
     }
 
@@ -227,7 +227,7 @@ class job_controller extends company
 
             $return = $jobM->setJobPromote($_POST['jobid'], $_POST);
 
-            echo json_encode($return);
+            echo yun_json_encode($return);
             die();
         }
     }
@@ -244,7 +244,7 @@ class job_controller extends company
 
             $return = $jobM->closeJobPromote($_POST['jobid'], $_POST);
 
-            echo json_encode($return);
+            echo yun_json_encode($return);
             die();
         }
     }
@@ -270,11 +270,11 @@ class job_controller extends company
             );
             $return =   $jobM->reserveUpJob($data, array('uid' => $this->uid));
 
-            echo json_encode($return);
+            echo yun_json_encode($return);
             die;
         } else {
 
-            echo json_encode(array('error' => 0, 'msg' => '参数错误'));
+            echo yun_json_encode(array('error' => 0, 'msg' => '参数错误'));
             die;
         }
     }
@@ -299,7 +299,7 @@ class job_controller extends company
                     'msg'   =>  '',
                     'data'  => array('refreshStatus' => 0)
                 );
-                echo json_encode($return);
+                echo yun_json_encode($return);
                 die();
             }
             $return =   array(
@@ -307,7 +307,7 @@ class job_controller extends company
                 'msg'   =>  '',
                 'data'  => array('refreshStatus' => 1,'s_time'=>$reserve['s_time'],'e_time'=>$reserve['e_time'],'interval'=>$reserve['interval'])
             );
-            echo json_encode($return);
+            echo yun_json_encode($return);
             die();
         }
     }

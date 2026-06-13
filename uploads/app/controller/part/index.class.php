@@ -115,7 +115,7 @@ class index_controller extends part_controller
             'port'      =>  '1'
         );
         $return =   $partM->addPartSq($data);
-        echo json_encode($return);
+        echo yun_json_encode($return);
         die;
     }
 
@@ -133,7 +133,7 @@ class index_controller extends part_controller
 
         );
         $return =   $partM->addPartCollect($data);
-        echo json_encode($return);
+        echo yun_json_encode($return);
         die;
     }
 

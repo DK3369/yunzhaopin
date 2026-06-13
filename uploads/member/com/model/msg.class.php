@@ -101,7 +101,7 @@ class msg_controller extends company{
 	    
 	    $msg   =  $MsgM->getInfo(array('id'=>$_POST['id'],'job_uid'=>$this -> uid),array('field'=>'`content`'));
 	    
-	    echo json_encode($msg);
+	    echo yun_json_encode($msg);
 	}
 }
 ?>

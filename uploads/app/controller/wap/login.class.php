@@ -101,7 +101,7 @@ class login_controller extends common{
         $return     =   $UserinfoM->userLogin($lData);
 
         if ($_POST['is_yuliu']) {
-            echo json_encode($return);
+            echo yun_json_encode($return);
         } else {
             if ($return['errcode'] == 2) {
                 $this->layer_msg('', 9, 0, Url('wap', array('c' => 'register', 'a' => 'ident')), 2);
@@ -142,7 +142,7 @@ class login_controller extends common{
             $result = $noticeM->sendCode($moblie, 'login', 2, $user, 6, 90, 'msg');
         }
 
-        echo json_encode($result);
+        echo yun_json_encode($result);
         exit();
     }
 
@@ -195,11 +195,11 @@ class login_controller extends common{
 					
 				}else{
 					$this->cookie->unset_cookie();
-					echo "激活失败";
+					echo yun_auto_t("激活失败");
 				}
 			}else{
 				$this->cookie->unset_cookie();
-				echo "激活失败";
+				echo yun_auto_t("激活失败");
 			}
 		}else{
 			header("Location:".Url('wap'));
@@ -395,7 +395,7 @@ class login_controller extends common{
 			}
 		}
 		
-		echo json_encode($res);
+		echo yun_json_encode($res);
 	}
 }
 ?>

@@ -66,21 +66,21 @@ class special_controller extends common{
 	    
 	    $res = $this->MODEL('special')->glComList($_POST['sid'], $_POST['hy'], $_POST['page'], $_POST['numb']);
 	    
-	    echo json_encode($res);
+	    echo yun_json_encode($res);
 	}
 	// gl模板查询职位列表
 	function getJobList_action(){
 	    
 	    $res = $this->MODEL('special')->glJobList($_POST);
 	    
-	    echo json_encode($res);
+	    echo yun_json_encode($res);
 	}
 	
     function hotjobclass_action(){
         $categoryM	=	$this -> MODEL('category');
         $List = $categoryM->getHotJobClass(array('rec'=>1),'*');
 
-        echo json_encode($List);
+        echo yun_json_encode($List);
     }
 }
 ?>

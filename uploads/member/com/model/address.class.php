@@ -148,11 +148,11 @@ class address_controller extends company
             );
 
 
-            echo json_encode(array('errcode' => $errcode, 'msg' => $msg, 'defLink' => $defLink, 'addressList' => $addressList, 'link_id' => $link_id));
+            echo yun_json_encode(array('errcode' => $errcode, 'msg' => $msg, 'defLink' => $defLink, 'addressList' => $addressList, 'link_id' => $link_id));
             exit();
         }else{
 
-            echo json_encode(array('errcode' => $errcode, 'msg' => $msg));
+            echo yun_json_encode(array('errcode' => $errcode, 'msg' => $msg));
             exit();
         }
     }
@@ -166,7 +166,7 @@ class address_controller extends company
 
         $res        =   $addressM->delAddress(array('uid' => $this->uid, 'id' => $_POST['id']));
 
-        echo json_encode($res);
+        echo yun_json_encode($res);
 
         die();
     }

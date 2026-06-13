@@ -57,18 +57,18 @@ class resumeshare_controller extends resume_controller{
 			$_POST['id']	=	intval($_POST['id']);
 			//参数判断
 			if(empty($_POST['femail']) || empty($_POST['authcode'])){
-				echo '请完整填写信息！';die;
+				echo yun_auto_t('请完整填写信息！');die;
 			}
 			session_start();
 			if(md5(strtolower($_POST['authcode'])) != $_SESSION['authcode'] || empty($_SESSION['authcode'])){
-				echo '验证码不正确！';die;
+				echo yun_auto_t('验证码不正确！');die;
 			}
 			unset($_SESSION['authcode']);
 			if($this->config['sy_email_set'] != 1){
-				echo '网站邮件服务器不可用!';die;
+				echo yun_auto_t('网站邮件服务器不可用!');die;
 			}
 			if(CheckRegEmail(trim($_POST['femail'])) == false){
-				echo '邮箱格式错误！';die;
+				echo yun_auto_t('邮箱格式错误！');die;
 			}
 
 			$recomM						=	$this -> MODEL('recommend');
@@ -76,11 +76,11 @@ class resumeshare_controller extends resume_controller{
 			if(isset($this->config['sy_recommend_day_num'])	&& $this->config['sy_recommend_day_num'] > 0){
 				$num					=	$recomM -> getRecommendNum(array('uid'=>$this->uid));
 				if($num >= $this->config['sy_recommend_day_num']){
-					echo "每天最多推荐{$this->config['sy_recommend_day_num']}次职位/简历！";
+					echo yun_auto_t("每天最多推荐{$this->config['sy_recommend_day_num']}次职位/简历！");
 					exit;
 				}
 			}else{
-				echo "推荐职位/简历功能已关闭！";exit;
+				echo yun_auto_t("推荐职位/简历功能已关闭！");exit;
 			}
 
 			//判断上一次推荐的时间间隔
@@ -114,7 +114,7 @@ class resumeshare_controller extends resume_controller{
 					}else{
 						$recs			=	$recs.'秒';
 					}
-					echo "推荐职位、简历间隔不得少于{$recs}，请{$needTime}后再推荐";
+					echo yun_auto_t("推荐职位、简历间隔不得少于{$recs}，请{$needTime}后再推荐");
 					exit;
 				}
 			}
@@ -152,7 +152,7 @@ class resumeshare_controller extends resume_controller{
 			if($sendid['status'] != -1){
 				echo 1;
 			}else{
-				echo '邮件发送错误 原因：'. $sendid['msg'];die;
+				echo yun_auto_t('邮件发送错误 原因：') . $sendid['msg'];die;
 			}
 
 			//保存推荐记录到数据表recommend表

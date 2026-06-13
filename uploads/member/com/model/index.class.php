@@ -349,7 +349,7 @@ class index_controller extends company{
 	        }
 	    }
 	    $data['list']=$list;
-	    echo json_encode($data);die;
+	    echo yun_json_encode($data);die;
 	}
 	function logout_action(){
 

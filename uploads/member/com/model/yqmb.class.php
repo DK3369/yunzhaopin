@@ -92,7 +92,7 @@ class yqmb_controller extends company
 
         $res    =   $yqmbM->delYqmb($_POST['id'],array('uid'=>$this->uid));
 
-        echo json_encode($res);
+        echo yun_json_encode($res);
         
         die();
     }

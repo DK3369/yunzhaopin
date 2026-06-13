@@ -248,7 +248,7 @@ class wxconnect_controller extends common
 
                 $result['msg']      =   '微信登录信息已失效，请重新登录！';
             }
-            echo json_encode($result);
+            echo yun_json_encode($result);
         } else {
 
             $this->yunset('headertitle', '微信登录绑定');
@@ -285,7 +285,7 @@ class wxconnect_controller extends common
             $result     =   $noticeM->sendCode($moblie, 'login', 2, $user, 6, 90, 'msg');
         }
 
-        echo json_encode($result);
+        echo yun_json_encode($result);
         exit();
     }
 

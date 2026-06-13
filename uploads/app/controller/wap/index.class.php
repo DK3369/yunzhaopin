@@ -224,7 +224,7 @@ class index_controller extends common
         }else{
             $hotcom = array();
         }
-        echo json_encode($hotcom);
+        echo yun_json_encode($hotcom);
     }
     function getCityDomain_action(){
 
@@ -232,7 +232,7 @@ class index_controller extends common
         
         $return = $siteM->getCityDomain(array('x'=>$_POST['x'],'y'=>$_POST['y'],'did'=>$this->config["did"]));
         
-        echo json_encode($return);exit();
+        echo yun_json_encode($return);exit();
     }
 }
 

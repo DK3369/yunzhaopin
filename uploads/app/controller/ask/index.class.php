@@ -105,7 +105,7 @@ class index_controller extends ask_controller{
 	 *************************************************************/
 	function JSON($array) {
 	    $this->arrayRecursive($array, 'urlencode', true);
-	    $json = json_encode($array);
+	    $json = yun_json_encode($array);
 	    return urldecode($json);
 	}
 	function qrepost_action()
@@ -248,7 +248,7 @@ class index_controller extends ask_controller{
 			
 			$rows[$v]=urlencode($info['ask_name'][$v]);
 		}
-		$rows	=	json_encode($rows);
+		$rows	=	yun_json_encode($rows);
 		
 		echo urldecode($rows);die;
 	}

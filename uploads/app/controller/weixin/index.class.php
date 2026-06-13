@@ -546,7 +546,7 @@ class index_controller extends common
 
         if (($i + 1) >= $num) {
 
-            echo "完成";
+            echo yun_auto_t("完成");
         } else {
 
             $getnum = $i + 1;

@@ -12,7 +12,7 @@ class forgetpw_controller extends common{
 	    $noticeM 	= $this->MODEL('notice');
         $result		=	$noticeM->jycheck($_POST['authcode'],'找回密码');
         if(!empty($result)){
-            echo json_encode(array('msg'=>$result['msg'],'error'=>$result['error']));
+            echo yun_json_encode(array('msg'=>$result['msg'],'error'=>$result['error']));
             return;
         }
 	    if ($sendtype=='moblie') {
@@ -23,7 +23,7 @@ class forgetpw_controller extends common{
 	        $type	= 'email';
 	    }
 		$result 	= $noticeM->sendCode($sended, 'getpass', 2, array(), 6 , 120, $type);
-	    echo json_encode($result);exit();
+	    echo yun_json_encode($result);exit();
 	}
 	function checksendcode_action(){
 		$moblie		=	$_POST['moblie'];
@@ -47,18 +47,18 @@ class forgetpw_controller extends common{
 		    
 		    $res['msg']		=	"短信验证码验证超时，请重新验证！";
 		    $res['error']	=	'8';
-		    echo json_encode($res);die;
+		    echo yun_json_encode($res);die;
 		    
 		}else  if(($_POST['code']!=$cert['check2'])||(!$cert)){
 		    $res['msg']		=	"验证码错误";
 		    $res['type']	=	'8';
-		    echo json_encode($res);die;
+		    echo yun_json_encode($res);die;
 		}
 		$res['msg']		=	"验证码正确！";
 		$res['error']	=	0;
 		$res['uid']		=	$info['uid'];
 		$res['username']=	$info['username'];
-		echo json_encode($res);die;
+		echo yun_json_encode($res);die;
 	}
 	function checklink_action(){
 	    $_POST			=	$this->post_trim($_POST);
@@ -70,12 +70,12 @@ class forgetpw_controller extends common{
 	    if($member['username']==""){
 			$res['msg']		=	"用户名不存在！";
 	        $res['error']	=	'8';
-	        echo json_encode($res);die;
+	        echo yun_json_encode($res);die;
 		}
 		if(CheckRegUser($username)==false && CheckRegEmail($username)==false){
 	        $res['msg']		=	"用户名包含特殊字符！";
 	        $res['error']	=	'8';
-	        echo json_encode($res);die;
+	        echo yun_json_encode($res);die;
 	    }
 		
 	    $shensu	=	$_POST['linkman'].'-'.$_POST['linkphone'].'-'.$_POST['linkemail'];
@@ -84,7 +84,7 @@ class forgetpw_controller extends common{
 		
 	    if ($nid){
 	        $res['error']	=	0;
-	        echo json_encode($res);die;
+	        echo yun_json_encode($res);die;
 	    }
 	}
 	function editpw_action(){
@@ -118,22 +118,22 @@ class forgetpw_controller extends common{
 			if($uid != $cert['uid']){
 				$res['msg']		=	"参数错误，请重试！";
 			    $res['error']	=	'8';
-			    echo json_encode($res);die;
+			    echo yun_json_encode($res);die;
 			
 			}elseif (!$codeTime) {
 			    
 			    $res['msg']		=	"短信验证码验证超时，请重新验证！";
 			    $res['error']	=	'8';
-			    echo json_encode($res);die;
+			    echo yun_json_encode($res);die;
 			    
 			}else  if(($code!=$cert['check2'])||(!$cert)){
 				$res['msg']		=	"验证码错误";
 				$res['error']	=	'8';
-				echo json_encode($res);die;
+				echo yun_json_encode($res);die;
 			}else  if($pwmsg!=''){
 				$res['msg']		=	$pwmsg;
 				$res['error']	=	'8';
-				echo json_encode($res);die;
+				echo yun_json_encode($res);die;
 			}else{
 				$info 		= 	$userinfoM->getInfo(array('uid'=>$uid),array("field"=>"`uid`,`username`,`email`,`moblie`,`name_repeat`"));
 				
@@ -149,7 +149,7 @@ class forgetpw_controller extends common{
 					
 					$res['msg']		=	'密码修改成功！';
 					$res['error']	=	0;
-					echo json_encode($res);die;
+					echo yun_json_encode($res);die;
 				}else{
 					$res['msg']		=	'没有该用户';
 				}
@@ -157,7 +157,7 @@ class forgetpw_controller extends common{
         }else{
             $res['msg']				=	'对不起,没有该用户';
         }
-        echo json_encode($res);die;
+        echo yun_json_encode($res);die;
     }
 }
 ?>

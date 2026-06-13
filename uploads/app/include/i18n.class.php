@@ -173,6 +173,49 @@ class Yun_I18n
         return $leading . $text . $trailing;
     }
 
+    function autoArray($value, $key = '')
+    {
+        if (is_array($value)) {
+            $translated = array();
+            foreach ($value as $itemKey => $itemValue) {
+                $translated[$itemKey] = $this->autoArray($itemValue, $itemKey);
+            }
+            return $translated;
+        }
+
+        if (is_string($value) && $this->shouldTranslateValue($key, $value)) {
+            return $this->autoT($value);
+        }
+
+        return $value;
+    }
+
+    function shouldTranslateValue($key, $value)
+    {
+        if ($value === '' || !preg_match('/[\x{4e00}-\x{9fff}]/u', $value)) {
+            return false;
+        }
+
+        if ($key === '' || is_int($key)) {
+            return true;
+        }
+
+        $key = strtolower($key);
+        return in_array($key, array(
+            'msg',
+            'message',
+            'errmsg',
+            'error_msg',
+            'error_message',
+            'tip',
+            'tips',
+            'notice',
+            'alert',
+            'contentmsg',
+            'statusmsg'
+        ));
+    }
+
     function normalizeLang($lang)
     {
         $lang = strtolower(trim($lang));
@@ -258,4 +301,24 @@ function yun_auto_t($text)
         return $i18n->autoT($text);
     }
     return $text;
+}
+
+function yun_auto_array($value)
+{
+    global $i18n;
+    if (is_object($i18n) && method_exists($i18n, 'autoArray')) {
+        return $i18n->autoArray($value);
+    }
+    return $value;
+}
+
+function yun_json_encode($value, $options = 0)
+{
+    if (function_exists('yun_auto_array')) {
+        $value = yun_auto_array($value);
+    }
+    if (defined('JSON_UNESCAPED_UNICODE')) {
+        $options = $options | JSON_UNESCAPED_UNICODE;
+    }
+    return json_encode($value, $options);
 }

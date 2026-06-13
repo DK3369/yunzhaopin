@@ -103,7 +103,7 @@ class index_controller extends common{
 		);
 		$return		=	$onceM -> setOncePassword($data);
 		
-		echo json_encode($return);die;
+		echo yun_json_encode($return);die;
 	}
 	//店铺详情
 	function show_action(){
@@ -173,7 +173,7 @@ class index_controller extends common{
 		
 		$return	=	$onceM->payOnce($data);
 		
-		echo json_encode($return);
+		echo yun_json_encode($return);
 	}
 		
 	//取消招聘订单付款
@@ -219,13 +219,13 @@ class index_controller extends common{
         $noticeM	=	$this->MODEL('notice');
         $result		=	$noticeM->jycheck($_POST['code'],'店铺招聘');
         if(!empty($result)){
-            echo json_encode(array('msg'=>$result['msg'],'error'=>$result['error']));
+            echo yun_json_encode(array('msg'=>$result['msg'],'error'=>$result['error']));
             return;
         }
         $moblie = $_POST['moblie'];
 
         $result = $noticeM->sendCode($moblie, 'code', 1, array(), 6, 120, 'msg');
-        echo json_encode($result);
+        echo yun_json_encode($result);
         exit();
     }
     //保存店铺招聘信息

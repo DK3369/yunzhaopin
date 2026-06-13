@@ -32,7 +32,7 @@ class search_controller extends common{
 				}
 				$data['hisid']=$type;
 				$data['list']=$list;
-				echo json_encode($data);die;
+				echo yun_json_encode($data);die;
 			}
 		}
 	}
@@ -54,7 +54,7 @@ class search_controller extends common{
 	    
 	    $salaryArr  =   $this->salaryArr(false,1);
 	    
-	    echo json_encode(array('comData' => $CacheArr['comdata'], 'comClassName' => $CacheArr['comclass_name'], 'comSex' => $CacheArr['com_sex'], 'upTime' => $CacheArr['uptime'], 'salaryArr' => $salaryArr));
+	    echo yun_json_encode(array('comData' => $CacheArr['comdata'], 'comClassName' => $CacheArr['comclass_name'], 'comSex' => $CacheArr['com_sex'], 'upTime' => $CacheArr['uptime'], 'salaryArr' => $salaryArr));
 	    die;
 	}
 }

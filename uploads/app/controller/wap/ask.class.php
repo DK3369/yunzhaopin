@@ -196,7 +196,7 @@ class ask_controller extends common{
 		);
 		$return	=	$M -> addAnswerInfo($data);
 		
-		echo json_encode($return);die;
+		echo yun_json_encode($return);die;
 		
 	}		
 	function topic_action(){
@@ -609,7 +609,7 @@ class ask_controller extends common{
 		);
 		$return	=	$M -> addAskInfo($data);
 		
-		echo json_encode($return);die; 
+		echo yun_json_encode($return);die; 
 	}
 	function qclass_action(){
 		$CacheM	=	$this -> MODEL('cache');
@@ -623,7 +623,7 @@ class ask_controller extends common{
 			$rows[$v]=urlencode($info['ask_name'][$v]);
 		}
 		$rows = $this->JSON($rows);
-		//$rows = json_encode($rows);
+		//$rows = yun_json_encode($rows);
 		echo urldecode($rows);die;
 	}
 
@@ -741,7 +741,7 @@ class ask_controller extends common{
 	
 	function JSON($array) {
 	    $this->arrayRecursive($array, 'urlencode', true);
-	    $json = json_encode($array);
+	    $json = yun_json_encode($array);
 	    return urldecode($json);
 	}
 	function forcomment_action(){

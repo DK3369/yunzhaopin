@@ -260,7 +260,7 @@ class comapply_controller extends job_controller
 
             $telRes['linkData']['linkCode'] =   $telRes['linkCode'];
             $telRes['linkData']['linkMsg']  =   $telRes['linkMsg'];
-            echo json_encode($telRes['linkData']);
+            echo yun_json_encode($telRes['linkData']);
             die();
         }
     }
@@ -318,7 +318,7 @@ class comapply_controller extends job_controller
         $JobM       =   $this->MODEL('job');
         $dataArr    =   array('id' => $id, 'uid' => $this->uid, 'usertype' => $this->usertype);
         $telRes     =   $JobM->getJobLink($dataArr);
-        echo json_encode($telRes);
+        echo yun_json_encode($telRes);
         die();
     }
 }
