@@ -13,7 +13,7 @@
 							<img src="{yun:}$wap_style{/yun}/images/tab_icon_home_n.png" alt="" style="width: 100%;">
 							{yun:}/if{/yun}
 						</div>
-						<div class="wap_footer_name">首页</div>
+						<div class="wap_footer_name">{yun:}t key="common.home"{/yun}</div>
 					</a>
 					{yun:}if $usertype==1 || !$usertype{/yun}
 					<a class="wap_footernav" href="{yun:}url m=wap c=job{/yun}">
@@ -24,7 +24,7 @@
 							<img src="{yun:}$wap_style{/yun}/images/tab_icon_position_n.png" alt="" style="width: 100%;">
 							{yun:}/if{/yun}
 						</div>
-						<div class="wap_footer_name">职位</div>
+						<div class="wap_footer_name">{yun:}t key="common.job"{/yun}</div>
 					</a>
 					{yun:}else{/yun}
 					<a class="wap_footernav" href="{yun:}url m=wap c=resume{/yun}">
@@ -35,7 +35,7 @@
 							<img src="{yun:}$wap_style{/yun}/images/tab_icon_jl.png" alt="" style="width: 100%;">
 							{yun:}/if{/yun}
 						</div>
-						<div class="wap_footer_name">简历</div>
+						<div class="wap_footer_name">{yun:}t key="common.resume"{/yun}</div>
 					</a>
 					{yun:}/if{/yun}
 
@@ -44,7 +44,7 @@
 							<img src="{yun:}$wap_style{/yun}/images/home_icon_release_default.png" alt=""
 								style="width: 100%;">
 						</div>	
-						<div class="wap_footer_name">{yun:}if $usertype=='1'{/yun}发布简历{yun:}elseif $usertype=='2'{/yun}发布职位{yun:}else{/yun}发布{yun:}/if{/yun}</div>
+						<div class="wap_footer_name">{yun:}if $usertype=='1'{/yun}{yun:}t key="common.publish_resume"{/yun}{yun:}elseif $usertype=='2'{/yun}{yun:}t key="common.publish_job"{/yun}{yun:}else{/yun}{yun:}t key="common.publish"{/yun}{yun:}/if{/yun}</div>
 					</div>
 
 					<a class="wap_footernav" href="{yun:}if !$username{/yun}{yun:}url m=wap c=login{/yun}{yun:}else{/yun}{yun:}url m=wap{/yun}member/index.php?c=sysnews{yun:}/if{/yun}">
@@ -57,7 +57,7 @@
 							<img src="{yun:}$wap_style{/yun}/images/tab_icon_news_n.png" alt="" style="width: 100%;">
 							{yun:}/if{/yun}
 						</div>
-						<div class="wap_footer_name">消息</div>
+						<div class="wap_footer_name">{yun:}t key="common.message"{/yun}</div>
 					</a>
 					<a class="wap_footernav" href="{yun:}if !$username{/yun}{yun:}url m=wap c=login{/yun}{yun:}else{/yun}{yun:}url m=wap{/yun}member/{yun:}/if{/yun}">
 						<div class="wap_footericon">
@@ -67,7 +67,7 @@
 							<img src="{yun:}$wap_style{/yun}/images/tab_icon_me_n.png" alt="" style="width: 100%;">
 							{yun:}/if{/yun}
 						</div>
-						<div class="wap_footer_name">我的</div>
+						<div class="wap_footer_name">{yun:}t key="common.mine"{/yun}</div>
 					</a>
 				</div>
 			</div>

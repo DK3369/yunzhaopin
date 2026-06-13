@@ -12,9 +12,9 @@
         <div class="resume_hint_eye_n">
             <img src="{yun:}$wap_style{/yun}/images/conceal_1.png" alt="" width="100%" height="100%">
         </div>
-        <i class="resume_hint_word_color"> 简历已隐藏，</i>
-       <i class="resume_hint_word_black"> 企业无法主动发现你</i>
-        <a href="javascript:void(0);" onclick="privacy();" class="hide_tip_qx">取消隐藏</a>
+        <i class="resume_hint_word_color">{yun:}t key="home.resume_hidden"{/yun}</i>
+       <i class="resume_hint_word_black">{yun:}t key="home.resume_hidden_desc"{/yun}</i>
+        <a href="javascript:void(0);" onclick="privacy();" class="hide_tip_qx">{yun:}t key="home.cancel_hidden"{/yun}</a>
         <i class="hide_tip_gb"></i>
     </div>
     {yun:}/if{/yun}
@@ -44,7 +44,7 @@
                     <a href="{yun:}url m=wap c=site{/yun}" class="index_newedition_search_city">{yun:}if $config.cityname{/yun}{yun:}$config.cityname{/yun}{yun:}else{/yun}{yun:}$config.sy_indexcity{/yun}{yun:}/if{/yun}</a>
                     {yun:}/if{/yun}
 
-                    <span class="index_newedition_search_p searchnew" style="{yun:}if $config.sy_web_site=='1'{/yun}width:75%{yun:}else{/yun}width:95%{yun:}/if{/yun}">搜职位/公司</span>
+                    <span class="index_newedition_search_p searchnew" style="{yun:}if $config.sy_web_site=='1'{/yun}width:75%{yun:}else{/yun}width:95%{yun:}/if{/yun}">{yun:}t key="home.search_placeholder"{/yun}</span>
                     <span class="index_newedition_searchbth"> </span>
                 </div>
             </div>
@@ -120,9 +120,9 @@
             <div class="optimize_tip">
                 <i class="optimize_tipicon"></i>
                 <i class="optimize_tipgbicon" onclick="resume_yhhide();"></i>
-                <div class="optimize_name">您的简历有{yun:}$resume_yhnum{/yun}个可优化项</div>
-                <div class="optimize_p">处理后可大幅提升求职成功率</div>
-                <a class="optimize_tip_bth" href="{yun:}url m=wap{/yun}member/index.php?c=resume&eid={yun:}$expect.id{/yun}">去处理</a>
+                <div class="optimize_name">{yun:}t key="home.resume_optimize" num=$resume_yhnum{/yun}</div>
+                <div class="optimize_p">{yun:}t key="home.resume_optimize_desc"{/yun}</div>
+                <a class="optimize_tip_bth" href="{yun:}url m=wap{/yun}member/index.php?c=resume&eid={yun:}$expect.id{/yun}">{yun:}t key="home.go_handle"{/yun}</a>
             </div>
         </div>
         {yun:}/if{/yun}
@@ -134,15 +134,15 @@
 		   <div class="indexlogin_list">
 			     <a href="{yun:}url m=wap c=login{/yun}"  class="indexlogin_listc indexlogin_listcr">
 			   <i class="indexlogin_icon"></i>
-			   <div class="indexlogin_name">发布简历	  </div>
-			   <div class="indexlogin_p">找喜欢的工作	  </div>
+			   <div class="indexlogin_name">{yun:}t key="common.publish_resume"{/yun}</div>
+			   <div class="indexlogin_p">{yun:}t key="home.find_favorite_job"{/yun}</div>
 		  </a>
 		  </div>
 		     <div class="indexlogin_list">
 				    <a href="{yun:}url m=wap c=login{/yun}" class="indexlogin_listc indexlogin_listcl">
 				   <i class="indexlogin_icon indexlogin_icon2"></i>
-		  <div class="indexlogin_name">发布职位	  </div>
-		  <div class="indexlogin_p">招优秀人才	  </div>  </a> </div>
+		  <div class="indexlogin_name">{yun:}t key="common.publish_job"{/yun}</div>
+		  <div class="indexlogin_p">{yun:}t key="home.hire_good_talent"{/yun}</div>  </a> </div>
 		 
 		   </div>
 		   </div>
@@ -154,8 +154,8 @@
 			<!--职位关键字-->
 			{yun:}if $hotclass{/yun}			
 	        <div class="new_mq"> 
-			     <i class="new_mq_name">热门职位</i>
-				<a class="new_mq_more" href="{yun:}url m=wap c=job{/yun}">更多 ></a> 
+			     <i class="new_mq_name">{yun:}t key="home.hot_jobs"{/yun}</i>
+				<a class="new_mq_more" href="{yun:}url m=wap c=job{/yun}">{yun:}t key="common.more_arrow"{/yun}</a> 
 	           <div class="index_jobtagbox">
                 {yun:}foreach from=$hotclass item=item{/yun}                
     			<div class="index_jobtaglist"><a href="{yun:}url m=wap c=job job1=$item.job1 job1son=$item.job1_son jobpost=$item.job_post{/yun}"><span class="index_jobtag_n">{yun:}$item.name{/yun}</span></a></div>
@@ -166,8 +166,8 @@
 			<!--职位关键字 end-->
 		     <!-- 名企招聘 new-->
 			<div class="new_mq ">
-			     <i class="new_mq_name">名企招聘</i>
-			     <a class="new_mq_more" href="{yun:}url m=wap c=company rec=1{/yun}">更多 ></a>
+			     <i class="new_mq_name">{yun:}t key="home.famous_companies"{/yun}</i>
+			     <a class="new_mq_more" href="{yun:}url m=wap c=company rec=1{/yun}">{yun:}t key="common.more_arrow"{/yun}</a>
 			  	<div class="new_mq_new_show">
 			 		<div class="swiper-container navbox_jgw" id="mqswiper" style="height:3.64rem">
 			 		    <div class="swiper-wrapper">
@@ -187,7 +187,7 @@
 											{yun:}$hotjoblist.username|mb_substr:0:12:'utf-8'{/yun}
 										</div> 
 									<div class="mqnew_comjob">
-										{yun:}$hotjoblist.num{/yun}个岗位
+										{yun:}$hotjoblist.num{/yun}{yun:}t key="home.job_openings"{/yun}
 									</div></div></div>
 			 		            </a>
 			 		           {yun:}/hotjob{/yun}
@@ -204,7 +204,7 @@
         <!-- tab栏切换部分 -->
         <div id="yunvue" class="tab none">
             <van-tabs color="#2778F8" @click="chooseTab">
-                <van-tab title="最新">
+                <van-tab title="{yun:}t key='common.latest'{/yun}">
 					{yun:}joblist provinceid='auto.provinceid' cityid='auto.cityid' key=njk item=zdjob istop=1{/yun}
                     <a href="{yun:}url m=wap c=job a=comapply id=$zdjob.id{/yun}" title="{yun:}$zdjob.name{/yun}">
 
@@ -433,7 +433,7 @@
                             <div class="no_data_img">
                                 <img src="{yun:}$wap_style{/yun}/images/home_emptygraph.png" alt=""style="width: 100%;">
                             </div>
-                            <i class="no_data_word">当前没有职位数据哦~</i>
+                            <i class="no_data_word">{yun:}t key="home.no_job_data"{/yun}</i>
                         </div>
                     </div>
                 </van-tab>

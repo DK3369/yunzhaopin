@@ -8,6 +8,7 @@ ini_set('error_log', '/tmp/phpyun_debug.log');
 define('APP_PATH',dirname(__FILE__).'/');
 define('CONFIG_PATH',APP_PATH.'config/');
 define('DATA_PATH',APP_PATH.'data/');
+define('LANG_PATH',DATA_PATH.'lang/');
 define('LIB_PATH',APP_PATH.'app/include/');
 define('TPL_PATH',APP_PATH.'app/template/');
 define('MODEL_PATH',APP_PATH.'model/');
@@ -67,6 +68,7 @@ $phpyun->cache_dir      = DATA_PATH.'/cache/';
 $phpyun->left_delimiter = '{yun:}';
 $phpyun->right_delimiter= '{/yun}';
 $phpyun->get_install();
+$phpyun->loadFilter('output', 'i18n');
 
 if(is_file(LIB_PATH.'webscan360/360safe/360webscan.php')){
     require_once(LIB_PATH.'webscan360/360safe/360webscan.php');
@@ -75,6 +77,19 @@ if(is_file(LIB_PATH.'webscan360/360safe/360webscan.php')){
 $db = new mysql($db_config['dbhost'], $db_config['dbuser'], $db_config['dbpass'], $db_config['dbname'], ALL_PS, $db_config['charset'],$db_config['def']);
 
 include_once(LIB_PATH.'public.function.php');
+include_once(LIB_PATH.'i18n.class.php');
 include_once(LIB_PATH.'public.domain.php');
 include(LIB_PATH.'public.url.php');
+
+$syDefaultLang = isset($config['sy_lang_default']) ? $config['sy_lang_default'] : 'zh_cn';
+$i18n = new Yun_I18n(LANG_PATH, $syDefaultLang);
+$syCurrentLang = $i18n->detectLang();
+$i18n->setLang($syCurrentLang);
+
+$config['sy_lang'] = $i18n->getLang();
+$config['sy_langs'] = $i18n->getAvailable();
+
+if (isset($_GET['lang']) && $i18n->getLang() != (isset($_COOKIE['lang']) ? $_COOKIE['lang'] : '')) {
+    setcookie('lang', $i18n->getLang(), time() + 31536000, '/');
+}
 ?>

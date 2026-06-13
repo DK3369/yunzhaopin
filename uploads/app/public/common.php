@@ -22,7 +22,7 @@ class common{
 
 	//实例化
 	function common($tpl,$db,$def='',$model='index',$m='') {
-		global $config;
+		global $config, $i18n;
 		$this->config = $config;
 		$this->tpl=$tpl;
 		$this->db=$db;
@@ -121,6 +121,13 @@ class common{
 		if (!isset($this->config['sy_oss']) || (isset($this->config['sy_oss']) && $this->config['sy_oss'] == 2)){
 		    
 		    $this->config['sy_ossurl'] = $this->config['sy_weburl'];
+		}
+		
+		if (is_object($i18n)) {
+			$this->yunset('lang_code', $i18n->getLang());
+			$this->yunset('lang_meta', $i18n->getMeta());
+			$this->yunset('lang_list', $i18n->getAvailable());
+			$this->yunset('lang', $i18n->all());
 		}
 		
 		$this->yunset("config",$this->config);
@@ -1009,6 +1016,9 @@ class common{
         if ($st == 9 && $type == '1') {
             $this->MODEL('log')->addAdminLog($msg);
         }
+        if (function_exists('yun_auto_t')) {
+            $msg = yun_auto_t($msg);
+        }
         $msg    =   preg_replace('/\([^\)]+?\)/x', "", str_replace(array("（", "）"), array("(", ")"), $msg));
         echo '<input id="layer_url" type="hidden" value="' . $url . '"><input id="layer_msg" type="hidden" value="' . $msg . '"><input id="layer_time" type="hidden" value="' . $tm . '"><input id="layer_st" type="hidden" value="' . $st . '">';
         exit();
@@ -1033,6 +1043,9 @@ class common{
             if ($st == 9) {
 
                 $this->MODEL('log')->addAdminLog($msg);
+            }
+            if (function_exists('yun_auto_t')) {
+                $msg = yun_auto_t($msg);
             }
             $msg                =   preg_replace('/\([^\)]+?\)/x', "", str_replace(array("（", "）"), array("(", ")"), $msg));
             $layer_msg['msg']   =   $msg;
@@ -1122,6 +1135,9 @@ class common{
         if ($url == '') {
             $url = $this->config['sy_weburl'];
         }
+        if (function_exists('yun_auto_t')) {
+            $msg = yun_auto_t($msg);
+        }
         $this->yunset(array('msg' => $msg, 'url' => $url));
         if (isMobileUser()) {
 
@@ -1151,6 +1167,9 @@ class common{
             $msg = '操作已成功！';
         }
 
+        if (function_exists('yun_auto_t')) {
+            $msg = yun_auto_t($msg);
+        }
         $this->yunset(array('msg' => $msg, 'url' => $url, 'tm' => $tm));
         $this->yuntpl(array('wap/msg'));
 
