@@ -193,7 +193,7 @@ class ajax_controller extends common
     function getjoblist_action()
     {
 
-        include(PLUS_PATH . "job.cache.php");
+        include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
         if (is_array($_POST[id])) {
 
             $jobid  =   $_POST[id][0];

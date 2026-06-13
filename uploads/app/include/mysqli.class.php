@@ -214,7 +214,7 @@ class mysql {
 	function cacheget(){
 	    include PLUS_PATH."/city.cache.php";
 	    include PLUS_PATH."/com.cache.php";
-	    include PLUS_PATH."/job.cache.php";
+	    include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
 	    include PLUS_PATH."/user.cache.php";
 	    include PLUS_PATH."/industry.cache.php";
 
@@ -247,7 +247,7 @@ class mysql {
 		}else{
 			include PLUS_PATH."/city.cache.php";
 			include PLUS_PATH."/com.cache.php";
-			include PLUS_PATH."/job.cache.php";
+			include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
 			include PLUS_PATH."/industry.cache.php";
 		}
 		$job_info[job_class_one] = $job_name[$job_info["job1"]];

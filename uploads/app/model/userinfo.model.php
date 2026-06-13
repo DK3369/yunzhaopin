@@ -1865,7 +1865,7 @@ class userinfo_model extends model
                 );
                 //简历求职意向数据
                 include PLUS_PATH."user.cache.php";
-                include PLUS_PATH."job.cache.php";
+                include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
                 $jobid = intval($params['jobid']);
                 $jobfield = '`com_name`,`name`,`uid`,`is_link`,`is_message`,`is_email`,`hy`,`job1`,`job1_son`,`job_post`,`provinceid`,`cityid`,`three_cityid`,`minsalary`,`maxsalary`';
                 $comjob	= $jobM->getInfo(array('id'=>$jobid),array('field'=>$jobfield));

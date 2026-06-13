@@ -15,7 +15,7 @@ function smarty_function_cache($paramer,&$smarty){
 		{
 			switch($value){
 				case "job" :
-				include($path."/job.cache.php");
+				include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
 				$smarty->assign("job_index",$job_index);
 				$smarty->assign("job_type",$job_type);
 				$smarty->assign("job_name",$job_name);

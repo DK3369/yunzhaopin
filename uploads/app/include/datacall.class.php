@@ -63,7 +63,7 @@ class datacall{
 		include PLUS_PATH."city.cache.php";
 		include PLUS_PATH."user.cache.php";
 		include PLUS_PATH."industry.cache.php";
-		include PLUS_PATH."job.cache.php";
+		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
 		include PLUS_PATH."config.php";
 		
 		global $views;
@@ -273,7 +273,7 @@ class datacall{
 		include PLUS_PATH."city.cache.php";
 		include PLUS_PATH."com.cache.php";
 		include PLUS_PATH."industry.cache.php";
-		include PLUS_PATH."job.cache.php";
+		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
 		include PLUS_PATH."config.php";
 		global $views;
 		$where['name']	=	array('<>','');	
@@ -379,7 +379,7 @@ class datacall{
 		include PLUS_PATH."city.cache.php";
 		include PLUS_PATH."com.cache.php";
 		include PLUS_PATH."industry.cache.php";
-		include PLUS_PATH."job.cache.php";
+		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
 		include PLUS_PATH."config.php";
 		global $views;
 

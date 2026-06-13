@@ -274,7 +274,7 @@ class tongji_model extends model
         } elseif ($Type == 'expect') {
 
             include PLUS_PATH . 'city.cache.php';
-            include PLUS_PATH . 'job.cache.php';
+            include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
             include PLUS_PATH . 'user.cache.php';
 
             $ewhere['id'] = array('in', pylode(',', $Fields));
@@ -390,7 +390,7 @@ class tongji_model extends model
 
         include PLUS_PATH . 'city.cache.php';
         include PLUS_PATH . 'industry.cache.php';
-        include PLUS_PATH . 'job.cache.php';
+        include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
         include PLUS_PATH . 'com.cache.php';
         include PLUS_PATH . 'user.cache.php';
         include CONFIG_PATH . 'db.data.php';

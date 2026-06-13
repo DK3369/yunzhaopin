@@ -167,7 +167,7 @@ class index_controller extends common{
     //获取职位信息，TODO:前台、后台、会员中心
     function ajax_job_action(){
 
-		include(PLUS_PATH."job.cache.php");
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
 
 		if(is_array($_POST[str])){
 
@@ -464,7 +464,7 @@ class index_controller extends common{
     //获取职位类别，TODO:前台
 	function getjob_subscribe_action(){
 
-		include(PLUS_PATH."job.cache.php");
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
 
 		if(is_array($job_type[$_POST['id']])){
 
@@ -1316,7 +1316,7 @@ class index_controller extends common{
 	//工作类别
 	function get_job_option_action(){
 		
-		include(PLUS_PATH."job.cache.php");
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
 		$html = '<option value="">请选择</option>';
 		if(!isset($_POST['job1_son']) || !isset($job_type[$_POST['job1_son']])
 			|| count($job_type[$_POST['job1_son']]) < 1){

@@ -158,7 +158,7 @@ class cache_model extends model{
         }
 	}
 	private function job_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-		include(PLUS_PATH.'job.cache.php');
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
         if($Options['needreturn']==true){
             return array('job_type'=>$job_type,'job_index'=>$job_index,'job_name'=>$job_name);
         }

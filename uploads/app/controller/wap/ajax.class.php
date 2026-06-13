@@ -3,7 +3,7 @@
 class ajax_controller extends common{
 	// wapadmin使用
 	function wap_job_action(){
-		include(PLUS_PATH."job.cache.php");
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
 		
 		$data	=	"<option value=''>--请选择--</option>";
 		
@@ -359,7 +359,7 @@ class ajax_controller extends common{
  
 	//职位类别
 	function getjob_action(){
-		include(PLUS_PATH."job.cache.php");
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
 		$data   =   '';
 		if(is_array($job_type[$_POST['id']])){	
 		    if($_POST['type']=="jobone_son"){				

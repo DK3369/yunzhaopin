@@ -322,3 +322,40 @@ function yun_json_encode($value, $options = 0)
     }
     return json_encode($value, $options);
 }
+
+function yun_i18n_build_path($file, $lang = '')
+{
+    global $i18n;
+    if ($lang === '' && is_object($i18n) && method_exists($i18n, 'getLang')) {
+        $lang = $i18n->getLang();
+    }
+    $lang = preg_replace('/[^a-z_]/', '', strtolower($lang));
+    if ($lang === '' || $lang === 'zh_cn' || !defined('DATA_PATH')) {
+        return '';
+    }
+    $file = ltrim($file, '/\\');
+    $path = DATA_PATH . 'i18n_build/current/' . $lang . '/' . $file;
+    return is_file($path) ? $path : '';
+}
+
+function yun_i18n_plus_path($file)
+{
+    $path = yun_i18n_build_path($file);
+    if ($path !== '') {
+        return $path;
+    }
+    return defined('PLUS_PATH') ? PLUS_PATH . ltrim($file, '/\\') : $file;
+}
+
+function yun_i18n_plus_style($file = 'job.cache.js')
+{
+    global $config;
+    $base = isset($config['sy_weburl']) ? rtrim($config['sy_weburl'], '/') : '';
+    $path = yun_i18n_build_path($file);
+    if ($path !== '') {
+        global $i18n;
+        $lang = is_object($i18n) && method_exists($i18n, 'getLang') ? $i18n->getLang() : 'zh_cn';
+        return $base . '/data/i18n_build/current/' . $lang;
+    }
+    return $base . '/data/plus';
+}

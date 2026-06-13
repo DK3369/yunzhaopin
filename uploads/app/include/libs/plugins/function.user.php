@@ -15,7 +15,7 @@ function smarty_function_user($paramer,&$smarty){
 				//处理类别字段
 
 			include PLUS_PATH."/city.cache.php";
-			include PLUS_PATH."/job.cache.php";
+			include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
 			include PLUS_PATH."/user.cache.php";
 			include PLUS_PATH."/industry.cache.php";
 							//处理类别字段
