@@ -566,7 +566,7 @@ class adminCommon extends common{
         );
         ($data) && ($result['data'] = $data);
         header('content-type:application/json; charset=utf-8');
-        echo json_encode($result);
+        echo function_exists("yun_json_encode") ? yun_json_encode($result) : json_encode($result);
         exit;
     }
     /**
@@ -587,7 +587,7 @@ class adminCommon extends common{
         );
 
         header('content-type:application/json; charset=utf-8');
-        echo json_encode($result);
+        echo function_exists("yun_json_encode") ? yun_json_encode($result) : json_encode($result);
         exit;
     }
 

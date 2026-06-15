@@ -82,6 +82,14 @@ class index_controller extends adminCommon{
             $menu = $navList['menu'];
         }
 
+        if (!empty($menu) && function_exists('yun_auto_t')) {
+            foreach ($menu as $mk => $mv) {
+                if (isset($mv['name'])) {
+                    $menu[$mk]['name'] = yun_auto_t($mv['name']);
+                }
+            }
+        }
+
         $setarr    =  array(
             'one_menu'        =>  $navList['one_menu'],
             'two_menu'        =>  $navList['two_menu'],
@@ -253,6 +261,14 @@ class index_controller extends adminCommon{
             $menu = $navList['menu'];
         }
 
+        if (!empty($menu) && function_exists('yun_auto_t')) {
+            foreach ($menu as $mk => $mv) {
+                if (isset($mv['name'])) {
+                    $menu[$mk]['name'] = yun_auto_t($mv['name']);
+                }
+            }
+        }
+
         $navigation = $navList['navigation'];
         $one_menu = $navList['one_menu'];
         $two_menu = $navList['two_menu'];
@@ -324,6 +340,20 @@ class index_controller extends adminCommon{
             }
         }
     }
+    function langpack_action()
+    {
+        global $i18n;
+
+        $data = array(
+            "lang" => is_object($i18n) && method_exists($i18n, "getLang") ? $i18n->getLang() : "zh_cn",
+            "messages" => is_object($i18n) && isset($i18n->autoMessages) && is_array($i18n->autoMessages) ? $i18n->autoMessages : array()
+        );
+
+        header("content-type:application/json; charset=utf-8");
+        echo json_encode($data, defined("JSON_UNESCAPED_UNICODE") ? JSON_UNESCAPED_UNICODE : 0);
+        exit;
+    }
+
     // wangEditor上传图片
     function uploadfile_action(){
         $dir = $_GET['dir'] ? trim($_GET['dir']) : 'wangEditor';

@@ -1,3 +1,149 @@
+// 后台运行时多语言：覆盖静态HTML、Vue组件、Element提示。
+(function () {
+    function getCookie(name) {
+        var parts = document.cookie ? document.cookie.split("; ") : [];
+        for (var i = 0; i < parts.length; i++) {
+            var item = parts[i].split("=");
+            if (item[0] === name) {
+                return decodeURIComponent(item.slice(1).join("="));
+            }
+        }
+        return "";
+    }
+
+    function hasZh(text) {
+        return typeof text === "string" && /[一-龥]/.test(text);
+    }
+
+    var lang = localStorage.getItem("lang") || getCookie("lang") || "en_us";
+    window.yunAdminI18n = window.yunAdminI18n || { lang: lang, messages: {}, keys: [] };
+
+    function buildKeys() {
+        window.yunAdminI18n.keys = Object.keys(window.yunAdminI18n.messages || {}).sort(function (a, b) {
+            return b.length - a.length;
+        });
+    }
+
+    window.yunAdminT = function (text) {
+        if (!hasZh(text) || lang === "zh_cn") {
+            return text;
+        }
+        var messages = window.yunAdminI18n.messages || {};
+        var source = String(text);
+        var leading = source.match(/^\s*/)[0];
+        var trailing = source.match(/\s*$/)[0];
+        var body = source.replace(/^\s+|\s+$/g, "");
+        if (messages[body]) {
+            return leading + messages[body] + trailing;
+        }
+        var keys = window.yunAdminI18n.keys || [];
+        for (var i = 0; i < keys.length; i++) {
+            if (keys[i] && messages[keys[i]] && body.indexOf(keys[i]) !== -1) {
+                body = body.split(keys[i]).join(messages[keys[i]]);
+            }
+        }
+        return leading + body + trailing;
+    };
+
+    window.yunAdminTransText = function (content) {
+        if (!hasZh(content) || lang === "zh_cn") {
+            return content;
+        }
+        var messages = window.yunAdminI18n.messages || {};
+        var keys = window.yunAdminI18n.keys || [];
+        var text = String(content);
+        for (var i = 0; i < keys.length; i++) {
+            if (keys[i] && messages[keys[i]] && text.indexOf(keys[i]) !== -1) {
+                text = text.split(keys[i]).join(messages[keys[i]]);
+            }
+        }
+        return text;
+    };
+
+    window.yunAdminTranslateDOM = function (root) {
+        if (lang === "zh_cn" || !root) {
+            return;
+        }
+        var attrs = ["placeholder", "title", "alt", "content", "aria-label", "value"];
+        if (root.nodeType === 1) {
+            for (var i = 0; i < attrs.length; i++) {
+                var val = root.getAttribute && root.getAttribute(attrs[i]);
+                if (hasZh(val)) {
+                    root.setAttribute(attrs[i], window.yunAdminT(val));
+                }
+            }
+        }
+        if (root.querySelectorAll) {
+            var elements = root.querySelectorAll("*");
+            for (var e = 0; e < elements.length; e++) {
+                if (/^(SCRIPT|STYLE|TEXTAREA|PRE)$/.test(elements[e].tagName)) {
+                    continue;
+                }
+                for (var a = 0; a < attrs.length; a++) {
+                    var attrVal = elements[e].getAttribute(attrs[a]);
+                    if (hasZh(attrVal)) {
+                        elements[e].setAttribute(attrs[a], window.yunAdminT(attrVal));
+                    }
+                }
+            }
+        }
+        var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+            acceptNode: function (node) {
+                var parent = node.parentNode && node.parentNode.tagName;
+                if (/^(SCRIPT|STYLE|TEXTAREA|PRE)$/.test(parent || "")) {
+                    return NodeFilter.FILTER_REJECT;
+                }
+                return hasZh(node.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+            }
+        });
+        var node;
+        while ((node = walker.nextNode())) {
+            node.nodeValue = window.yunAdminT(node.nodeValue);
+        }
+    };
+
+    function loadLangPack() {
+        if (lang === "zh_cn") {
+            return;
+        }
+        var baseUrl = localStorage.getItem("baseUrl") || "/admin/index.php";
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", baseUrl + "?m=index&c=langpack&lang=" + encodeURIComponent(lang), false);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300) {
+                try {
+                    var data = JSON.parse(xhr.responseText);
+                    window.yunAdminI18n.lang = data.lang || lang;
+                    window.yunAdminI18n.messages = data.messages || {};
+                    buildKeys();
+                } catch (e) {}
+            }
+        };
+        try {
+            xhr.send(null);
+        } catch (e) {}
+    }
+
+    loadLangPack();
+
+    if (window.Vue) {
+        Vue.mixin({
+            mounted: function () {
+                var el = this.$el;
+                setTimeout(function () { window.yunAdminTranslateDOM(el); }, 0);
+            },
+            updated: function () {
+                var el = this.$el;
+                setTimeout(function () { window.yunAdminTranslateDOM(el); }, 0);
+            }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        window.yunAdminTranslateDOM(document.body);
+    });
+})();
+
 // 请求拦截器
 axios.interceptors.request.use(function (config) {
     // 在发送请求之前做些什么
@@ -177,9 +323,9 @@ const message = new Vue({
          * @param cancelFun 取消回调
          */
         confirm(msg, confirmFun = null, confirmButtonText = '', title = '', type = '', showCancelButton = true, cancelButtonText = '', cancelFun = null) {
-            this.$confirm(msg, title ? title : '温馨提示', {
-                confirmButtonText: confirmButtonText ? confirmButtonText : '确定',
-                cancelButtonText: cancelButtonText ? cancelButtonText : '取消',
+            this.$confirm(window.yunAdminT ? window.yunAdminT(msg) : msg, title ? (window.yunAdminT ? window.yunAdminT(title) : title) : (window.yunAdminT ? window.yunAdminT('温馨提示') : '温馨提示'), {
+                confirmButtonText: confirmButtonText ? (window.yunAdminT ? window.yunAdminT(confirmButtonText) : confirmButtonText) : (window.yunAdminT ? window.yunAdminT('确定') : '确定'),
+                cancelButtonText: cancelButtonText ? (window.yunAdminT ? window.yunAdminT(cancelButtonText) : cancelButtonText) : (window.yunAdminT ? window.yunAdminT('取消') : '取消'),
                 type: type,
                 showCancelButton: showCancelButton
             }).then(() => {
@@ -196,8 +342,8 @@ const message = new Vue({
          * @param confirmButtonText 按钮文字
          */
         alert(msg, confirmFun = null, confirmButtonText = '') {
-            this.$alert(msg, {
-                confirmButtonText: confirmButtonText ? confirmButtonText : '确定',
+            this.$alert(window.yunAdminT ? window.yunAdminT(msg) : msg, {
+                confirmButtonText: confirmButtonText ? (window.yunAdminT ? window.yunAdminT(confirmButtonText) : confirmButtonText) : (window.yunAdminT ? window.yunAdminT('确定') : '确定'),
                 callback: action => {
                     typeof(confirmFun) == 'function' && confirmFun();
                 }
@@ -225,7 +371,7 @@ const message = new Vue({
 
         commonMsg(type, message, closeFun, duration, options) {
             if (!options.message) {
-                options.message = message
+                options.message = window.yunAdminT ? window.yunAdminT(message) : message
             }
             if (!options.type) {
                 options.type = type
@@ -251,11 +397,11 @@ const message = new Vue({
  */
 function delConfirm(_this, params, delFun, msg, cancelFun) {
     if (typeof msg == 'undefined' || msg == ''){
-        msg = '你确定要删除当前项吗？';
+        msg = window.yunAdminT ? window.yunAdminT('你确定要删除当前项吗？') : '你确定要删除当前项吗？';
     }
-    _this.$confirm(msg, '温馨提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+    _this.$confirm(window.yunAdminT ? window.yunAdminT(msg) : msg, window.yunAdminT ? window.yunAdminT('温馨提示') : '温馨提示', {
+        confirmButtonText: window.yunAdminT ? window.yunAdminT('确定') : '确定',
+        cancelButtonText: window.yunAdminT ? window.yunAdminT('取消') : '取消',
         type: 'warning'
     }).then(() => {
         delFun(params);

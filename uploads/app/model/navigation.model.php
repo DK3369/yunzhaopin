@@ -193,6 +193,13 @@ class navigation_model extends model{
 	public function getAdminNavList($whereData=array(),$data=array('utype'=>null)){
 	    //导航配置
 	    $menurows  =  $this -> select_all('admin_navigation',$whereData);
+	    if (!empty($menurows) && function_exists('yun_auto_t')) {
+	        foreach ($menurows as $mk => $mv) {
+	            if (isset($mv['name'])) {
+	                $menurows[$mk]['name'] = yun_auto_t($mv['name']);
+	            }
+	        }
+	    }
 	    
 	    $i = $j = $a = $b = 0;
 	    $navigation = $menu = $one_menu = $two_menu = array();

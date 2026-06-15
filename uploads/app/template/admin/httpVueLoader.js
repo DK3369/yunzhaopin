@@ -451,7 +451,7 @@
 				if ( xhr.readyState === 4 ) {
 
 					if ( xhr.status >= 200 && xhr.status < 300 )
-						resolve(xhr.responseText);
+						resolve(window.yunAdminTransText ? window.yunAdminTransText(xhr.responseText) : xhr.responseText);
 					else
 						reject(xhr.status);
 				}
