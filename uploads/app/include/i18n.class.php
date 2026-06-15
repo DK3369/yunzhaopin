@@ -201,6 +201,9 @@ class Yun_I18n
         }
 
         $key = strtolower($key);
+        if (preg_match('/(^|_)(status|state|type|opera|source|usertype|paytype|order_state|cert_type)_(n|name)$/', $key)) {
+            return true;
+        }
         return in_array($key, array(
             'msg',
             'message',
@@ -212,7 +215,12 @@ class Yun_I18n
             'notice',
             'alert',
             'contentmsg',
-            'statusmsg'
+            'statusmsg',
+            'statusname',
+            'statename',
+            'typename',
+            'operaname',
+            'sbody'
         ));
     }
 
@@ -250,10 +258,26 @@ class Yun_I18n
         if (is_file($file)) {
             $messages = include($file);
             if (is_array($messages)) {
+                $this->sortAutoMessages($messages);
                 return $messages;
             }
         }
         return array();
+    }
+
+    function sortAutoMessages(&$messages)
+    {
+        uksort($messages, array($this, 'compareAutoMessageKeys'));
+    }
+
+    function compareAutoMessageKeys($a, $b)
+    {
+        $aLen = function_exists('mb_strlen') ? mb_strlen($a, 'UTF-8') : strlen($a);
+        $bLen = function_exists('mb_strlen') ? mb_strlen($b, 'UTF-8') : strlen($b);
+        if ($aLen == $bLen) {
+            return strcmp($a, $b);
+        }
+        return $bLen - $aLen;
     }
 
     function getValue($key, $messages)
