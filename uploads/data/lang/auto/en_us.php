@@ -1,6 +1,8 @@
 <?php
 
 return array (
+  '设置语言' => 'Language',
+  '简体中文' => 'Simplified Chinese',
   '扫码上传图片可选类型type：1企业营业执照上传，2个人身份证上传，3个人头像，4企业logo' => 'QR upload image optional typetype:1Upload business license, 2Upload personal ID card, 3Personal avatar, 4Company logo',
   '扫码上传图片可选类型type：1企业营业执照上传，2个人身份证上传，3个人头像' => 'QR upload image optional typetype:1Upload business license, 2Upload personal ID card, 3Personal avatar',
   '联系方式 Contact Information' => 'Contact Information Contact Information',

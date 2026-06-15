@@ -82,6 +82,10 @@ include_once(LIB_PATH.'public.domain.php');
 include(LIB_PATH.'public.url.php');
 
 $syDefaultLang = isset($config['sy_lang_default']) ? $config['sy_lang_default'] : 'zh_cn';
+$syScriptDir = isset($_SERVER['SCRIPT_FILENAME']) ? basename(dirname($_SERVER['SCRIPT_FILENAME'])) : '';
+if ($syScriptDir == 'admin' && !isset($_GET['lang']) && empty($_COOKIE['lang'])) {
+    $syDefaultLang = 'en_us';
+}
 $i18n = new Yun_I18n(LANG_PATH, $syDefaultLang);
 $syCurrentLang = $i18n->detectLang();
 $i18n->setLang($syCurrentLang);

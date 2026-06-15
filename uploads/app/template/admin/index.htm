@@ -182,6 +182,10 @@
                                         <span>快捷菜单管理</span>
                                     </div>
                                     <div class="subjeHeadTuichus">
+                                        <div @click="openLanguageSetting">
+                                            <img src="../app/template/admin/images/index_topright7.png" alt="">
+                                            <span>设置语言</span>
+                                        </div>
                                         {yun:}if in_array('809',$power){/yun}
                                         <div @click="checkMenuTwo(5, 102, 104, '我的帐号', '/myaccount', {ly: 'pass'})">
                                             <img src="../app/template/admin/images/index_topright7.png" alt="">
@@ -294,6 +298,18 @@
                 </div>
             </el-dialog>
         </div>
+        <div class="homeelDialog">
+            <el-dialog title="设置语言" width="360px" :visible.sync="dialogLanguage" :with-header="true" :modal-append-to-body="false">
+                <el-radio-group v-model="languageForm.lang">
+                    <el-radio label="en_us">English</el-radio>
+                    <el-radio label="zh_cn">简体中文</el-radio>
+                </el-radio-group>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="dialogLanguage = false">取 消</el-button>
+                    <el-button type="primary" @click="saveLanguage">确 定</el-button>
+                </div>
+            </el-dialog>
+        </div>
     </section>
     <!-- script -->
     <script src="../app/template/admin/js/router.js?v={yun:}$config.cachecode{/yun}"></script>
@@ -383,6 +399,11 @@
                 dialogShortcutMenu: false,
                 formShortcutMenu: [],
 
+                dialogLanguage: false,
+                languageForm: {
+                    lang: "{yun:}$lang_code{/yun}"
+                },
+
                 saveLoading: false,
             }
         },
@@ -412,6 +433,19 @@
         },
         methods: {
             
+            openLanguageSetting() {
+                this.languageForm.lang = this.languageForm.lang || "en_us";
+                this.dialogLanguage = true;
+            },
+
+            saveLanguage() {
+                var lang = this.languageForm.lang || "en_us";
+                document.cookie = "lang=" + lang + "; path=/; max-age=31536000";
+                var url = new URL(window.location.href);
+                url.searchParams.set("lang", lang);
+                window.location.href = url.toString();
+            },
+
             logout() {
                 var that = this
                 axios.post('index.php?m=index&c=logout', {}).then(function(response) {
