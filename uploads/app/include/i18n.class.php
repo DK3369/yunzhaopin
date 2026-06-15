@@ -140,7 +140,7 @@ class Yun_I18n
 
     function autoT($text)
     {
-        if ($text === '' || !preg_match('/[\x{4e00}-\x{9fff}]/u', $text)) {
+        if ($text === '') {
             return $text;
         }
 
@@ -158,6 +158,9 @@ class Yun_I18n
 
         if (isset($this->autoMessages[$text])) {
             return $leading . $this->autoMessages[$text] . $trailing;
+        }
+        if (!preg_match('/[\x{4e00}-\x{9fff}]/u', $text)) {
+            return $leading . $text . $trailing;
         }
         if ($this->currentLang != $this->fallbackLang && !empty($this->autoMessages)) {
             foreach ($this->autoMessages as $source => $target) {
