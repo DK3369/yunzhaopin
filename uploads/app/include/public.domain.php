@@ -88,8 +88,8 @@ if ($config['sy_web_site'] == '1' && !isset($_POST['xcxCode'])) {
 
         if ($domainInfo) {
 
-            include(PLUS_PATH."/city.cache.php");
-            include(PLUS_PATH."/industry.cache.php");
+            include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
+            include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('industry.cache.php') : PLUS_PATH.'industry.cache.php');
 
             $parseDate['did']       =   (int)$domainInfo['did'];
             $parseDate['fz_type']   =   (int)$domainInfo['fz_type'];

@@ -52,7 +52,7 @@ class Smarty_Internal_Compile_Comjob extends Smarty_Internal_CompileBase{
 		if($paramer[\'limit\']){
 			$limit=" limit ".$paramer[\'limit\'];
 		}
-		include  PLUS_PATH."/city.cache.php";
+		include  (function_exists(\'yun_i18n_plus_path\') ? yun_i18n_plus_path(\'city.cache.php\') : PLUS_PATH.\'city.cache.php\');
 		include  PLUS_PATH."/comrating.cache.php";
 		$query = $db->query("select count(*) as num,uid,provinceid,cityid,three_cityid,lastupdate from (select * from $db_config[def]company_job where $where ORDER BY lastupdate desc) as a where  $where GROUP BY uid ORDER BY lastupdate desc $limit");
 		$uids=array();$ComList=array();

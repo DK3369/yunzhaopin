@@ -58,7 +58,7 @@ class Smarty_Internal_Compile_Article extends Smarty_Internal_CompileBase{
 			$where	.=	" and (`did`=-1 OR `did`=0 OR did=\'\')";
 		}
 
-		include PLUS_PATH."/group.cache.php";
+		include (function_exists(\'yun_i18n_plus_path\') ? yun_i18n_plus_path(\'group.cache.php\') : PLUS_PATH.\'group.cache.php\');
 		if($paramer[\'nid\']){
 			$nid_s = @explode(\',\',$paramer[nid]);
 			foreach($nid_s as $v){

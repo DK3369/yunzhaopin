@@ -17,7 +17,7 @@ class Smarty_Internal_Compile_Tiny extends Smarty_Internal_CompileBase{
 
         //自定义标签 START
         $OutputStr='global $db,$db_config,$config;$paramer='.ArrayToString($_attr,true).';'.$name.'=array();
-		include PLUS_PATH."/user.cache.php";
+		include (function_exists(\'yun_i18n_plus_path\') ? yun_i18n_plus_path(\'user.cache.php\') : PLUS_PATH.\'user.cache.php\');
 		//处理传入参数，并且构造分页参数
 		$ParamerArr = GetSmarty($paramer,$_GET,$_smarty_tpl);
 		$paramer = $ParamerArr[arr];

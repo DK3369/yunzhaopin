@@ -21,23 +21,23 @@ function smarty_function_cache($paramer,&$smarty){
 				$smarty->assign("job_name",$job_name);
 				break;
 				case "industry" :
-				include_once($path."/industry.cache.php");
+				include_once(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('industry.cache.php') : PLUS_PATH.'industry.cache.php');
 				$smarty->assign("industry_index",$industry_index);
 				$smarty->assign("industry_name",$industry_name);
 				break;
 				case "city" :
-				include_once($path."/city.cache.php");
+				include_once(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
 				$smarty->assign("city_index",$city_index);
 				$smarty->assign("city_type",$city_type);
 				$smarty->assign("city_name",$city_name);
 				break;
 				case "user" :
-				include_once($path."/user.cache.php");
+				include_once(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('user.cache.php') : PLUS_PATH.'user.cache.php');
 				$smarty->assign("userdata",$job_index);
 				$smarty->assign("userclass_name",$userclass_name);
 				break;
 				case "com" :
-				include_once($path."/com.cache.php");
+				include_once(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('com.cache.php') : PLUS_PATH.'com.cache.php');
 				$smarty->assign("comdata",$comdata);
 				$smarty->assign("comclass_name",$comclass_name);
 				break;

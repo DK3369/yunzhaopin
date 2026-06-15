@@ -1,0 +1,47 @@
+var ai=new Array();
+ai[0]=30;
+ai[1]=32;
+ai[2]=33;
+ai[3]=42;
+ai[4]=45;
+ai[5]=53;
+ 
+var at=new Array();
+at[30]=new Array(31,38,50,51,52,76);
+at[32]=new Array(35,37,49,68,36);
+at[33]=new Array(39,40,34);
+at[42]=new Array(43,44);
+at[45]=new Array(46,47,48);
+at[53]=new Array(54);
+at[74]=new Array(75,74);
+ 
+var an=new Array();
+an[30]='Sports';
+an[31]='Basketball';
+an[32]='Internet';
+an[33]='Physics';
+an[35]='WeChat';
+an[37]='Mobile Internet';
+an[38]='Badminton';
+an[39]='Astrophysics';
+an[40]='Quantum Physics';
+an[42]='Film';
+an[43]='American Film';
+an[44]='Science Fiction Film';
+an[45]='iOS Apps';
+an[46]='iPhone Apps';
+an[47]='iPad Apps';
+an[48]='iOS Game Development';
+an[49]='E-commerce';
+an[50]='FC Barcelona';
+an[51]='Weight Loss';
+an[52]='World Cup';
+an[68]='Society and Livelihood';
+an[36]='Sina Weibo';
+an[54]='Online Shopping';
+an[75]='Humanities';
+an[76]='Fitness';
+an[74]='Reading';
+an[34]='Cosmology';
+an[53]='Shopping';
+ 

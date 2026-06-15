@@ -14,7 +14,7 @@ class Smarty_Internal_Compile_Articleclass extends Smarty_Internal_CompileBase{
 		$ParamerArr = GetSmarty($paramer,$_GET,$_smarty_tpl);
 		$paramer = $ParamerArr[arr];
 		$Purl =  $ParamerArr[purl];
-		include PLUS_PATH."/group.cache.php";
+		include (function_exists(\'yun_i18n_plus_path\') ? yun_i18n_plus_path(\'group.cache.php\') : PLUS_PATH.\'group.cache.php\');
 		$groups=$db->select_all("news_group","`keyid`=0 and `rec_news`=1","`id`,`keyid`,`name`");
 		foreach($groups as $v){
 			$inids[]=$v[\'id\'];

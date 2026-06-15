@@ -10,7 +10,7 @@ class partok_controller extends company
         
         $partM          =   $this -> MODEL('part');
          
-        include PLUS_PATH . 'part.cache.php';
+        include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('part.cache.php') : PLUS_PATH.'part.cache.php');
         
         $where          =   array();
         

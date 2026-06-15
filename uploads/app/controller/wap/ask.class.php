@@ -218,7 +218,7 @@ class ask_controller extends common{
 		$pid = isset($_GET['pid']) ? (int)$_GET['pid'] : '';
 		
 		if($pid){
-			include(PLUS_PATH.'/ask.cache.php');
+			include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('ask.cache.php') : PLUS_PATH.'ask.cache.php');
 			$data['ask_class_name'] = isset($ask_name[$pid]) ? $ask_name[$pid] . '-' : '';
 		}
 		$this->data = $data;

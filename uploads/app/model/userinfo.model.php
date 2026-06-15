@@ -1864,7 +1864,7 @@ class userinfo_model extends model
                     'login_date'=> time(),
                 );
                 //简历求职意向数据
-                include PLUS_PATH."user.cache.php";
+                include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('user.cache.php') : PLUS_PATH.'user.cache.php');
                 include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
                 $jobid = intval($params['jobid']);
                 $jobfield = '`com_name`,`name`,`uid`,`is_link`,`is_message`,`is_email`,`hy`,`job1`,`job1_son`,`job_post`,`provinceid`,`cityid`,`three_cityid`,`minsalary`,`maxsalary`';
@@ -2265,7 +2265,7 @@ class userinfo_model extends model
 						'is_yuliu' => 1
 					);
 					$jobinfo = $this->select_once('company_job', array('id' => $data['jobid']),'edu,exp');
-					include PLUS_PATH."user.cache.php";
+					include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('user.cache.php') : PLUS_PATH.'user.cache.php');
                     $yuliuParams['edu'] = $jobinfo['edu'] ? $jobinfo['edu'] : $userdata['user_edu'][0];// 职位中无学历信息，取分类中第一个;
                     $yuliuParams['exp'] = $jobinfo['exp'] ? $jobinfo['exp'] : $userdata['user_word'][0];// 职位中无工作经验信息，取分类中第一个
 					if ($from == 1) {

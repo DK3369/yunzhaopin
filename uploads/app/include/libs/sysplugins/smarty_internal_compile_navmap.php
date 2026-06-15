@@ -14,7 +14,7 @@ class Smarty_Internal_Compile_Navmap extends Smarty_Internal_CompileBase{
 
         //自定义标签START
         $OutputStr='global $db,$db_config,$config;$paramer='.ArrayToString($_attr,true).';
-		include(PLUS_PATH."/navmap.cache.php");$Navlist=array();
+		include(function_exists(\'yun_i18n_plus_path\') ? yun_i18n_plus_path(\'navmap.cache.php\') : PLUS_PATH.\'navmap.cache.php\');$Navlist=array();
 		if(is_array($navmap)){
 			$ParamerArr = GetSmarty($paramer,$_GET,$_smarty_tpl);
 			$paramer = $ParamerArr[arr];

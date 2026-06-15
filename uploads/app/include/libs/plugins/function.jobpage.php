@@ -21,8 +21,8 @@ function smarty_function_jobpage($paramer,$template){
 
 	$pageurl=$views->curl(array("url"=>"id:".$_GET['id'].",tp:".$_GET['tp'].",page:{{page}}"));
 	$rows = $views->get_page("company_job",$where." order by ".$order,$pageurl,$limit);
-	include(PLUS_PATH."city.cache.php");
-	include(PLUS_PATH."com.cache.php");
+	include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
+	include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('com.cache.php') : PLUS_PATH.'com.cache.php');
 	if(is_array($rows)){
 		foreach($rows as $k=>$v){
 			$rows[$k]['province']=$city_name[$v['provinceid']];

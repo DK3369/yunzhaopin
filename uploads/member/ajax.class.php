@@ -227,7 +227,7 @@ class ajax_controller extends common
             $self   =   'three_cityid';
             $son    =   '';
         }
-        include(PLUS_PATH . "city.cache.php");
+        include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
         $data       =   '';
         if (isset($city_type) && isset($city_name) && is_array($city_type[$_POST['id']])) {
             foreach ($city_type[$_POST['id']] as $v) {

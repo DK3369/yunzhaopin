@@ -1,0 +1,34 @@
+var partd=new Array();
+partd[part_type]=new Array(5,6,7,8,9,10,11,12,13,14);
+partd[part_salary_type]=new Array(15,16,17,18,19);
+partd[part_billing_cycle]=new Array(20,21,22,23);
+partd[part_sex]=new Array(24,25,26);
+ 
+var partn=new Array();
+partn[1]='Job Type';
+partn[2]='Salary Type';
+partn[3]='Settlement Cycle';
+partn[4]='Gender Requirement';
+partn[5]='Flyer Distribution';
+partn[15]='Yuan / Day';
+partn[20]='Daily Settlement';
+partn[24]='Any';
+partn[6]='Promotion / Sales Guide';
+partn[16]='Yuan / Week';
+partn[21]='Weekly Settlement';
+partn[25]='Male';
+partn[7]='Call Center Customer Service';
+partn[17]='Yuan / Month';
+partn[22]='Monthly Settlement';
+partn[26]='Female';
+partn[8]='Event Model';
+partn[18]='Yuan / Hour';
+partn[23]='Paid on Completion';
+partn[9]='Tutor';
+partn[19]='Yuan / Time';
+partn[10]='Waiter / Waitress';
+partn[11]='Survey';
+partn[12]='Review and Data Entry';
+partn[13]='Field Promotion';
+partn[14]='Other';
+ 

@@ -124,7 +124,7 @@ class weixin_model extends model{
 						$resumeList[$value['uid']] = $value;
 					}
 				}
-				include(PLUS_PATH."/user.cache.php");
+				include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('user.cache.php') : PLUS_PATH.'user.cache.php');
 				foreach($Apply as $key=>$value)
 				{
 					$Info['title'] = "【".$resumeList[$value['uid']]['name']."】".$userclass_name[$resumeList[$value['uid']]['edu']]."/".$userclass_name[$resumeList[$value['uid']]['exp']]."工作经验\n向您发布的职位：".$value['job_name']."\n投递一份简历\n投递时间：".date('Y-m-d H:i',$value['datetime']);
@@ -186,7 +186,7 @@ class weixin_model extends model{
 						$resumeList[$value['uid']] = $value;
 					}
 				}
-				include(PLUS_PATH."/user.cache.php");
+				include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('user.cache.php') : PLUS_PATH.'user.cache.php');
 				foreach($Apply as $key=>$value)
 				{
 					$Info['title'] = "【".$resumeList[$value['uid']]['name']."】".$userclass_name[$resumeList[$value['uid']]['edu']]."/".$userclass_name[$resumeList[$value['uid']]['exp']]."工作经验\n报名兼职：".$jobname[$value['jobid']]."\n报名时间：".date('Y-m-d H:i',$value['ctime']);
@@ -433,7 +433,7 @@ class weixin_model extends model{
    	 	require_once ('hotkey.model.php');
     	$HotkeyM = new hotkey_model($this->db, $this->def);
 		$keyword = trim($keyword);
-		include(PLUS_PATH."/city.cache.php");
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
 		if($keyword){
 			$keywords = @explode(' ',$keyword);
 			if(is_array($keywords)){

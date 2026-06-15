@@ -303,7 +303,7 @@ class site_model extends model
 
                 include(PLUS_PATH."domain_cache.php");
                 
-                include(PLUS_PATH . "city.cache.php");
+                include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
                 
                 $address[0] = str_replace(array('市', '县', '区'), '',$address[0]);
                 $address[1] = str_replace(array('市', '县', '区'), '',$address[1]);

@@ -159,7 +159,7 @@ class tongji_controller extends company{
 		}
 		if($_GET['type']=="1"){
       
-			include PLUS_PATH."city.cache.php";
+			include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
       
 			foreach($city_index as $k=>$v){
         
@@ -187,7 +187,7 @@ class tongji_controller extends company{
       
 		}elseif($_GET['type']=="2"){
       
-			include PLUS_PATH."user.cache.php";
+			include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('user.cache.php') : PLUS_PATH.'user.cache.php');
       
 			foreach($userdata['user_edu'] as $k=>$v){
         
@@ -237,7 +237,7 @@ class tongji_controller extends company{
 
 		}elseif($_GET['type']=="4"){
       
-			include PLUS_PATH."user.cache.php";
+			include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('user.cache.php') : PLUS_PATH.'user.cache.php');
       
 			foreach($userdata['user_exp'] as $k=>$v){
         

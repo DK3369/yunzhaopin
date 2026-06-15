@@ -14,10 +14,10 @@ function smarty_function_user($paramer,&$smarty){
     		if(is_array($user_jy)||is_array($user)){
 				//处理类别字段
 
-			include PLUS_PATH."/city.cache.php";
+			include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
 			include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
-			include PLUS_PATH."/user.cache.php";
-			include PLUS_PATH."/industry.cache.php";
+			include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('user.cache.php') : PLUS_PATH.'user.cache.php');
+			include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('industry.cache.php') : PLUS_PATH.'industry.cache.php');
 							//处理类别字段
 
 				//$user[sex_n]=$userclass_name[$user[sex]];

@@ -87,7 +87,7 @@ class common{
 		$path['wapstyle']=TPL_PATH."wap";
 		$path['wap_style']=$this->config['sy_weburl']."/app/template/wap";
 		$path['admin_style']=$this->config['sy_weburl']."/app/template/admin";
-		$path['plusstyle']=$this->config['sy_weburl']."/data/plus";
+		$path['plusstyle']=function_exists('yun_i18n_plus_style') ? yun_i18n_plus_style('city.cache.js') : $this->config['sy_weburl']."/data/plus";
 		$path['jobplusstyle']=function_exists('yun_i18n_plus_style') ? yun_i18n_plus_style('job.cache.js') : $this->config['sy_weburl']."/data/plus";
 		
 		$_SERVER['HTTP_REFERER'] = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';

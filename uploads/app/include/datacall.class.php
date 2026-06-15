@@ -60,9 +60,9 @@ class datacall{
 	}
 	//简历处理
 	public function resume($row){
-		include PLUS_PATH."city.cache.php";
-		include PLUS_PATH."user.cache.php";
-		include PLUS_PATH."industry.cache.php";
+		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
+		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('user.cache.php') : PLUS_PATH.'user.cache.php');
+		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('industry.cache.php') : PLUS_PATH.'industry.cache.php');
 		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
 		include PLUS_PATH."config.php";
 		
@@ -270,9 +270,9 @@ class datacall{
 	}
 	//公司处理
 	public function company($row){
-		include PLUS_PATH."city.cache.php";
-		include PLUS_PATH."com.cache.php";
-		include PLUS_PATH."industry.cache.php";
+		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
+		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('com.cache.php') : PLUS_PATH.'com.cache.php');
+		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('industry.cache.php') : PLUS_PATH.'industry.cache.php');
 		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
 		include PLUS_PATH."config.php";
 		global $views;
@@ -376,9 +376,9 @@ class datacall{
 	}
 	//职位
 	public function job($row){
-		include PLUS_PATH."city.cache.php";
-		include PLUS_PATH."com.cache.php";
-		include PLUS_PATH."industry.cache.php";
+		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
+		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('com.cache.php') : PLUS_PATH.'com.cache.php');
+		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('industry.cache.php') : PLUS_PATH.'industry.cache.php');
 		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
 		include PLUS_PATH."config.php";
 		global $views;
@@ -763,7 +763,7 @@ class datacall{
 	//微简历
 	public function tiny($row){
 		include PLUS_PATH."config.php";
-		include PLUS_PATH."user.cache.php";
+		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('user.cache.php') : PLUS_PATH.'user.cache.php');
 		include(CONFIG_PATH."db.data.php");
 		unset($arr_data['sex'][3]);
 		global $views;

@@ -212,11 +212,11 @@ class mysql {
 		$this->query($sqlDatabase);
 	}
 	function cacheget(){
-	    include PLUS_PATH."/city.cache.php";
-	    include PLUS_PATH."/com.cache.php";
+	    include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
+	    include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('com.cache.php') : PLUS_PATH.'com.cache.php');
 	    include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
-	    include PLUS_PATH."/user.cache.php";
-	    include PLUS_PATH."/industry.cache.php";
+	    include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('user.cache.php') : PLUS_PATH.'user.cache.php');
+	    include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('industry.cache.php') : PLUS_PATH.'industry.cache.php');
 
 	    $array["comclass_name"] = $comclass_name;
 	    $array["comdata"] = $comdata;
@@ -245,10 +245,10 @@ class mysql {
 			$industry_name = $array["industry_name"];
 			$job_name = $array["job_name"];
 		}else{
-			include PLUS_PATH."/city.cache.php";
-			include PLUS_PATH."/com.cache.php";
+			include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
+			include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('com.cache.php') : PLUS_PATH.'com.cache.php');
 			include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
-			include PLUS_PATH."/industry.cache.php";
+			include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('industry.cache.php') : PLUS_PATH.'industry.cache.php');
 		}
 		$job_info[job_class_one] = $job_name[$job_info["job1"]];
 		$job_info[job_class_two] = $job_name[$job_info[job1_son]];
@@ -299,8 +299,8 @@ class mysql {
 			$partclass_name = $array["partclass_name"];
 			$city_name = $array["city_name"];
 		}else{
-			include PLUS_PATH."/city.cache.php";
-			include PLUS_PATH."/part.cache.php";
+			include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
+			include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('part.cache.php') : PLUS_PATH.'part.cache.php');
 		}
 		$job_info['job_salary_type'] = $partclass_name[$job_info['salary_type']];
 		$job_info['job_type'] = $partclass_name[$job_info['type']];

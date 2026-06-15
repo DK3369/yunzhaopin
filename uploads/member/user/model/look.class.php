@@ -6,7 +6,7 @@ class look_controller extends user{
     
 		$LookResumeM       =     $this->MODEL('lookresume');
 
-		include PLUS_PATH."/com.cache.php";
+		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('com.cache.php') : PLUS_PATH.'com.cache.php');
 
 		$uid                    =     $this->uid;
 

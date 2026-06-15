@@ -2,7 +2,7 @@
 function smarty_function_desc($paramer,&$smarty){
 	global $db,$db_config,$config;
 
-    include(PLUS_PATH.'/desc.cache.php');
+    include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('desc.cache.php') : PLUS_PATH.'desc.cache.php');
 
     foreach($desc_class as $k=>$v){
         foreach($desc_list as $val){

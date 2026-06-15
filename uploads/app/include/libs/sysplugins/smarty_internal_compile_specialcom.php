@@ -53,9 +53,9 @@ class Smarty_Internal_Compile_specialcom extends Smarty_Internal_CompileBase{
 		'.$name.'=$db->select_all("special_com",$where);
 		$time=time();
 		if(is_array('.$name.')&&'.$name.'){
-			include(PLUS_PATH."/com.cache.php");
-			include(PLUS_PATH."/city.cache.php");
-			include(PLUS_PATH."/industry.cache.php");
+			include(function_exists(\'yun_i18n_plus_path\') ? yun_i18n_plus_path(\'com.cache.php\') : PLUS_PATH.\'com.cache.php\');
+			include(function_exists(\'yun_i18n_plus_path\') ? yun_i18n_plus_path(\'city.cache.php\') : PLUS_PATH.\'city.cache.php\');
+			include(function_exists(\'yun_i18n_plus_path\') ? yun_i18n_plus_path(\'industry.cache.php\') : PLUS_PATH.\'industry.cache.php\');
 			$uid=$jobinfo=array();
 			foreach('.$name.' as $val){
 				$uid[]=$val[\'uid\'];

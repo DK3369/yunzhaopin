@@ -273,9 +273,9 @@ class tongji_model extends model
             }
         } elseif ($Type == 'expect') {
 
-            include PLUS_PATH . 'city.cache.php';
+            include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
             include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
-            include PLUS_PATH . 'user.cache.php';
+            include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('user.cache.php') : PLUS_PATH.'user.cache.php');
 
             $ewhere['id'] = array('in', pylode(',', $Fields));
 
@@ -388,11 +388,11 @@ class tongji_model extends model
     function DataTj($Type, $Where, $Tablename, $Field)
     {
 
-        include PLUS_PATH . 'city.cache.php';
-        include PLUS_PATH . 'industry.cache.php';
+        include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
+        include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('industry.cache.php') : PLUS_PATH.'industry.cache.php');
         include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
-        include PLUS_PATH . 'com.cache.php';
-        include PLUS_PATH . 'user.cache.php';
+        include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('com.cache.php') : PLUS_PATH.'com.cache.php');
+        include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('user.cache.php') : PLUS_PATH.'user.cache.php');
         include CONFIG_PATH . 'db.data.php';
 
         include_once('cache.model.php');
@@ -743,7 +743,7 @@ class tongji_model extends model
     //数据展示地区分布
     function cityDataShow()
     {
-        include PLUS_PATH . 'city.cache.php';
+        include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
         $start = strtotime(date('Y-01-01 00:00:00', strtotime('-1 year')));
         $end = strtotime(date('Y-12-31 23:59:59', strtotime('-1 year')));
         if (isset($this->config['sy_datashow_city_lev']) && in_array(intval($this->config['sy_datashow_city_lev']), array(1, 2, 3))) {
@@ -794,7 +794,7 @@ class tongji_model extends model
     //数据展示企业地区分布
     function comcityDataShow()
     {
-        include PLUS_PATH . 'city.cache.php';
+        include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
         $start = strtotime(date('Y-01-01 00:00:00', strtotime('-1 year')));
         $end = strtotime(date('Y-12-31 23:59:59', strtotime('-1 year')));
         if (isset($this->config['sy_datashow_city_lev']) && in_array(intval($this->config['sy_datashow_city_lev']), array(1, 2, 3))) {
@@ -844,7 +844,7 @@ class tongji_model extends model
     //数据展示企业规模分布
     function comgmDataShow()
     {
-        include PLUS_PATH . 'com.cache.php';
+        include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('com.cache.php') : PLUS_PATH.'com.cache.php');
         $start = strtotime(date('Y-01-01 00:00:00', strtotime('-1 year')));
         $end = strtotime(date('Y-12-31 23:59:59', strtotime('-1 year')));
         $where['PHPYUNBTWSTART_A'] = '';
@@ -884,7 +884,7 @@ class tongji_model extends model
     //数据展示企业性质分布
     function comxzDataShow()
     {
-        include PLUS_PATH . 'com.cache.php';
+        include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('com.cache.php') : PLUS_PATH.'com.cache.php');
         $start = strtotime(date('Y-01-01 00:00:00', strtotime('-1 year')));
         $end = strtotime(date('Y-12-31 23:59:59', strtotime('-1 year')));
         $where['PHPYUNBTWSTART_A'] = '';
@@ -989,7 +989,7 @@ class tongji_model extends model
     //数据展示经验分布
     function expDataShow()
     {
-        include PLUS_PATH . 'user.cache.php';
+        include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('user.cache.php') : PLUS_PATH.'user.cache.php');
         $start = strtotime(date('Y-01-01 00:00:00', strtotime('-1 year')));
         $end = strtotime(date('Y-12-31 23:59:59', strtotime('-1 year')));
         $where['exp'] = array('<>', 'notnull');
@@ -1062,7 +1062,7 @@ class tongji_model extends model
     //数据展示学历分布
     function eduDataShow()
     {
-        include PLUS_PATH . 'user.cache.php';
+        include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('user.cache.php') : PLUS_PATH.'user.cache.php');
         $start = strtotime(date('Y-01-01 00:00:00', strtotime('-1 year')));
         $end = strtotime(date('Y-12-31 23:59:59', strtotime('-1 year')));
         $where['edu'] = array('<>', 'notnull');

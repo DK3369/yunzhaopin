@@ -32,8 +32,8 @@ if($config['sy_web_site']=="1" && !isset($_POST['xcxCode'])){
 
 	}else{
 		include(PLUS_PATH."/domain_cache.php");
-		include(PLUS_PATH."/city.cache.php");
-		include(PLUS_PATH."/industry.cache.php");
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('industry.cache.php') : PLUS_PATH.'industry.cache.php');
 		
 		if(is_array($site_domain)){
 			foreach($site_domain as $key=>$value){

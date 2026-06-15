@@ -16,7 +16,7 @@ class ajax_controller extends common{
 	}
 	// wapadmin使用
 	function wap_city_action(){
-	    include(PLUS_PATH."city.cache.php");
+	    include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
 	    
 	    if(is_array($city_type[$_POST['id']])){
 	        $data	=	"<option value=''>--请选择--</option>";
@@ -397,7 +397,7 @@ class ajax_controller extends common{
 	 
 	//城市类别
 	function getcity_action(){
-		include(PLUS_PATH."city.cache.php");
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
 		$data   =   '';
 		if(is_array($city_type[$_POST['id']])){
 			if($_POST['type']=="cityid"){				
@@ -542,7 +542,7 @@ class ajax_controller extends common{
     }
 	//wap前台商城商品类别
 	function getredeem_action(){
-		include(PLUS_PATH."redeem.cache.php");
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('redeem.cache.php') : PLUS_PATH.'redeem.cache.php');
 		$data   =   '<li onclick="check_redeem_li(\''.$_POST['id'].'\',\'nid\');"><a href="javascript:;">全部</a></li>';
 		if(is_array($redeem_type[$_POST['id']])){
 			foreach($redeem_type[$_POST['id']] as $v){				

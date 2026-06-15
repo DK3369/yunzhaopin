@@ -144,7 +144,7 @@ class index_controller extends common{
 	//获取城市信息，TODO:前台、后台、会员中心
 	function ajax_action(){
 
-		include(PLUS_PATH."city.cache.php");
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
 
 		if(is_array($_POST['str'])){
 
@@ -446,7 +446,7 @@ class index_controller extends common{
     //获取城市列表，TODO:前台
 	function getcity_subscribe_action(){
 
-		include(PLUS_PATH."city.cache.php");
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
 
 		if(is_array($city_type[$_POST['id']])){
 
@@ -483,7 +483,7 @@ class index_controller extends common{
 	function getsalary_subscribe_action(){
 		if($_POST['type']==1){
 
-			include(PLUS_PATH."com.cache.php");
+			include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('com.cache.php') : PLUS_PATH.'com.cache.php');
 
 			if(is_array($comdata['job_salary'])){
 
@@ -496,7 +496,7 @@ class index_controller extends common{
 				$data		.=	'</ul>';
 			}
 		}else{
-			include(PLUS_PATH."user.cache.php");
+			include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('user.cache.php') : PLUS_PATH.'user.cache.php');
 
 			if(is_array($userdata['user_salary'])){
 
@@ -1190,7 +1190,7 @@ class index_controller extends common{
 	}
 	
 	function redeem_city_action(){
-		include(PLUS_PATH."city.cache.php");
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
 		if(is_array($city_type[$_POST['id']])){
 		    $data   =   '';
 			foreach($city_type[$_POST['id']] as $v){
@@ -1206,7 +1206,7 @@ class index_controller extends common{
 	
 	function ajax_once_city_action(){
 		if($_POST['ptype']=='city'){
-			include(PLUS_PATH."city.cache.php");
+			include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
 			if(is_array($city_type[$_POST['id']])){
 				$data   =   '<ul class="once_citylist">';
 				foreach($city_type[$_POST['id']] as $v){
@@ -1292,7 +1292,7 @@ class index_controller extends common{
 	//返回$_POST[cityid]的下级城市<option>代码给layui表单select使用
 	function get_city_option_action(){
 				
-		include(PLUS_PATH."city.cache.php");
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
 
 		$html = '<option value="">请选择</option>';
 		if(!isset($_POST['cityid']) || !isset($city_type[$_POST['cityid']])

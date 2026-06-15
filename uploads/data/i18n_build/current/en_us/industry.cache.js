@@ -1,0 +1,34 @@
+var hi=new Array();
+hi[0]=35;
+hi[1]=835;
+hi[2]=837;
+hi[3]=45;
+hi[4]=836;
+hi[5]=36;
+hi[6]=37;
+hi[7]=38;
+hi[8]=39;
+hi[9]=40;
+hi[10]=41;
+hi[11]=42;
+hi[12]=43;
+hi[13]=44;
+hi[14]=839;
+ 
+var hyname=new Array();
+hyname[35]='Computer / Internet';
+hyname[835]='Trade / Retail';
+hyname[837]='Machinery / Equipment / Skilled Workers';
+hyname[45]='Civil Service / Translation / Other';
+hyname[836]='Chemical / Energy';
+hyname[36]='Sales / Customer Service / Technical Support';
+hyname[37]='Accounting / Finance / Banking / Insurance';
+hyname[38]='Production / Operations / Procurement / Logistics';
+hyname[39]='Biotech / Pharmaceuticals / Medical / Nursing';
+hyname[40]='Advertising / Marketing / Media / Arts';
+hyname[41]='Construction / Real Estate';
+hyname[42]='HR / Administration / Senior Management';
+hyname[43]='Consulting / Legal / Education / Research';
+hyname[44]='Service Industry';
+hyname[839]='Communications / Electronics';
+ 

@@ -83,7 +83,7 @@ class Smarty_Internal_Compile_Partlist extends Smarty_Internal_CompileBase{
       //按照职位名称匹配
       /*if($paramer[keyword]){
         $where1[]="`name` LIKE \'%".$paramer[keyword]."%\'";
-        include PLUS_PATH."/city.cache.php";
+        include (function_exists(\'yun_i18n_plus_path\') ? yun_i18n_plus_path(\'city.cache.php\') : PLUS_PATH.\'city.cache.php\');
         foreach($city_name as $k=>$v){
           if(strpos($v,$paramer[keyword])!==false){
             $cityid[]=$k;

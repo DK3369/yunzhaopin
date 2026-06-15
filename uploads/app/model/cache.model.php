@@ -100,7 +100,7 @@ class cache_model extends model{
         return $ReturnCacheList;
 	}
 	private function user_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-		include PLUS_PATH.'user.cache.php';
+		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('user.cache.php') : PLUS_PATH.'user.cache.php');
 		include CONFIG_PATH.'db.data.php';
 		//更新时间
         if($Options['needreturn']==true){
@@ -116,7 +116,7 @@ class cache_model extends model{
         }
 	}
     private function reason_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-		include PLUS_PATH.'reason.cache.php';
+		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('reason.cache.php') : PLUS_PATH.'reason.cache.php');
         if($Options['needreturn']==true){
             return $reason;
         }
@@ -128,7 +128,7 @@ class cache_model extends model{
         }
     }
 	private function com_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-		include PLUS_PATH.'com.cache.php';
+		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('com.cache.php') : PLUS_PATH.'com.cache.php');
 		include CONFIG_PATH.'db.data.php';
         if($Options['needreturn']==true){
             unset($arr_data['sex']['1']);
@@ -136,13 +136,13 @@ class cache_model extends model{
         }
 	}
 	private function group_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-		include PLUS_PATH.'group.cache.php';
+		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('group.cache.php') : PLUS_PATH.'group.cache.php');
 		if($Options['needreturn']==true){
 			return array('group_rec'=>$group_rec,'group_recnews'=>$group_recnews,'group_index'=>$group_index,'group_type'=>$group_type,'group_name'=>$group_name);
 		}
 	}
 	private function part_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-		include PLUS_PATH.'part.cache.php';
+		include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('part.cache.php') : PLUS_PATH.'part.cache.php');
 		include CONFIG_PATH.'db.data.php';
 		$morning    =   array('0101','0201','0301','0401','0501','0601','0701');
         $noon       =   array('0102','0202','0302','0402','0502','0602','0702');
@@ -152,7 +152,7 @@ class cache_model extends model{
         }
 	}
 	private function city_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-		include(PLUS_PATH.'city.cache.php');
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
         if($Options['needreturn']==true){
             return array('city_type'=>$city_type,'city_index'=>$city_index,'city_name'=>$city_name);
         }
@@ -164,7 +164,7 @@ class cache_model extends model{
         }
 	}
 	private function industry_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-		include(PLUS_PATH.'industry.cache.php');
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('industry.cache.php') : PLUS_PATH.'industry.cache.php');
         if($Options['needreturn']==true){
             return array('industry_index'=>$industry_index,'industry_name'=>$industry_name);
         }
@@ -176,13 +176,13 @@ class cache_model extends model{
         }
 	}
 	private function redeem_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-		include(PLUS_PATH.'redeem.cache.php');
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('redeem.cache.php') : PLUS_PATH.'redeem.cache.php');
         if($Options['needreturn']==true){
             return array('redeem_index'=>$redeem_index,'redeem_type'=>$redeem_type,'redeem_name'=>$redeem_name);
         }
 	}
 	private function ask_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-		include(PLUS_PATH.'ask.cache.php');
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('ask.cache.php') : PLUS_PATH.'ask.cache.php');
         if($Options['needreturn']==true){
             return array('ask_index'=>$ask_index,'ask_type'=>$ask_type,'ask_pic'=>$ask_pic,'ask_intro'=>$ask_intro,'ask_name'=>$ask_name);
         }

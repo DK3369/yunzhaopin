@@ -50,7 +50,7 @@ class site_controller extends common{
     function domain_action(){
         $id=(int)$_POST['id'];
         include(PLUS_PATH."domain_cache.php");
-        include(PLUS_PATH."city.cache.php");
+        include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
         $host =  $this->protocol.$_SERVER['HTTP_HOST'];
         if(strpos($host,$this->config['sy_onedomain'])!==false){
             $domainUrl  = $this->config['sy_onedomain'];

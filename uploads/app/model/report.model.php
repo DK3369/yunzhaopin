@@ -34,7 +34,7 @@ class report_model extends model
         $data['field']  =   empty($data['field']) ? '*' : $data['field'];
         $List           =   $this->select_all('report', $whereData, $data['field']);
 
-        include PLUS_PATH . "/reason.cache.php";
+        include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('reason.cache.php') : PLUS_PATH.'reason.cache.php');
 
         if (!empty($List)) {
 
