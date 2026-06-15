@@ -24,8 +24,16 @@
         });
     }
 
+    function hasExactTranslation(text) {
+        if (typeof text !== "string") {
+            return false;
+        }
+        var body = text.replace(/^\s+|\s+$/g, "");
+        return !!((window.yunAdminI18n.messages || {})[body]);
+    }
+
     window.yunAdminT = function (text) {
-        if (!hasZh(text) || lang === "zh_cn") {
+        if (lang === "zh_cn") {
             return text;
         }
         var messages = window.yunAdminI18n.messages || {};
@@ -35,6 +43,9 @@
         var body = source.replace(/^\s+|\s+$/g, "");
         if (messages[body]) {
             return leading + messages[body] + trailing;
+        }
+        if (!hasZh(text)) {
+            return text;
         }
         var keys = window.yunAdminI18n.keys || [];
         for (var i = 0; i < keys.length; i++) {
@@ -46,12 +57,18 @@
     };
 
     window.yunAdminTransText = function (content) {
-        if (!hasZh(content) || lang === "zh_cn") {
+        if (lang === "zh_cn") {
             return content;
         }
         var messages = window.yunAdminI18n.messages || {};
         var keys = window.yunAdminI18n.keys || [];
         var text = String(content);
+        if (messages[text]) {
+            return messages[text];
+        }
+        if (!hasZh(content)) {
+            return content;
+        }
         for (var i = 0; i < keys.length; i++) {
             if (keys[i] && messages[keys[i]] && text.indexOf(keys[i]) !== -1) {
                 text = text.split(keys[i]).join(messages[keys[i]]);
@@ -68,7 +85,7 @@
         if (root.nodeType === 1) {
             for (var i = 0; i < attrs.length; i++) {
                 var val = root.getAttribute && root.getAttribute(attrs[i]);
-                if (hasZh(val)) {
+                if (hasZh(val) || hasExactTranslation(val)) {
                     root.setAttribute(attrs[i], window.yunAdminT(val));
                 }
             }
@@ -81,7 +98,7 @@
                 }
                 for (var a = 0; a < attrs.length; a++) {
                     var attrVal = elements[e].getAttribute(attrs[a]);
-                    if (hasZh(attrVal)) {
+                    if (hasZh(attrVal) || hasExactTranslation(attrVal)) {
                         elements[e].setAttribute(attrs[a], window.yunAdminT(attrVal));
                     }
                 }
@@ -93,7 +110,7 @@
                 if (/^(SCRIPT|STYLE|TEXTAREA|PRE)$/.test(parent || "")) {
                     return NodeFilter.FILTER_REJECT;
                 }
-                return hasZh(node.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+                return (hasZh(node.nodeValue) || hasExactTranslation(node.nodeValue)) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
             }
         });
         var node;
