@@ -83,17 +83,28 @@ include(LIB_PATH.'public.url.php');
 
 $syDefaultLang = isset($config['sy_lang_default']) ? $config['sy_lang_default'] : 'zh_cn';
 $syScriptDir = isset($_SERVER['SCRIPT_FILENAME']) ? basename(dirname($_SERVER['SCRIPT_FILENAME'])) : '';
-if ($syScriptDir == 'admin' && !isset($_GET['lang']) && empty($_COOKIE['lang'])) {
+$syIsAdmin = $syScriptDir == 'admin';
+if ($syIsAdmin) {
     $syDefaultLang = 'en_us';
 }
 $i18n = new Yun_I18n(LANG_PATH, $syDefaultLang);
-$syCurrentLang = $i18n->detectLang();
-$i18n->setLang($syCurrentLang);
+
+if ($syIsAdmin) {
+    $syCurrentLang = isset($_GET['lang']) ? $_GET['lang'] : (isset($_COOKIE['admin_lang']) ? $_COOKIE['admin_lang'] : 'en_us');
+    $i18n->setLang($syCurrentLang);
+} else {
+    $syCurrentLang = $i18n->detectLang();
+    $i18n->setLang($syCurrentLang);
+}
 
 $config['sy_lang'] = $i18n->getLang();
 $config['sy_langs'] = $i18n->getAvailable();
 
-if (isset($_GET['lang']) && $i18n->getLang() != (isset($_COOKIE['lang']) ? $_COOKIE['lang'] : '')) {
+if ($syIsAdmin) {
+    if (!isset($_COOKIE['admin_lang']) || $_COOKIE['admin_lang'] != $i18n->getLang()) {
+        setcookie('admin_lang', $i18n->getLang(), time() + 31536000, '/');
+    }
+} elseif (isset($_GET['lang']) && $i18n->getLang() != (isset($_COOKIE['lang']) ? $_COOKIE['lang'] : '')) {
     setcookie('lang', $i18n->getLang(), time() + 31536000, '/');
 }
 ?>

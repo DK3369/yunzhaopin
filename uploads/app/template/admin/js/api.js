@@ -15,7 +15,7 @@
         return typeof text === "string" && /[一-龥]/.test(text);
     }
 
-    var lang = localStorage.getItem("lang") || getCookie("lang") || "en_us";
+    var lang = localStorage.getItem("lang") || getCookie("admin_lang") || "en_us";
     window.yunAdminI18n = window.yunAdminI18n || { lang: lang, messages: {}, keys: [] };
 
     function buildKeys() {
