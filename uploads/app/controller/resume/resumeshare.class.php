@@ -76,7 +76,7 @@ class resumeshare_controller extends resume_controller{
 			if(isset($this->config['sy_recommend_day_num'])	&& $this->config['sy_recommend_day_num'] > 0){
 				$num					=	$recomM -> getRecommendNum(array('uid'=>$this->uid));
 				if($num >= $this->config['sy_recommend_day_num']){
-					echo yun_auto_t("每天最多推荐{$this->config['sy_recommend_day_num']}次职位/简历！");
+					echo lc('recommend_daily_limit', array($this->config['sy_recommend_day_num']));
 					exit;
 				}
 			}else{
@@ -93,12 +93,12 @@ class resumeshare_controller extends resume_controller{
 						$m				=	floor((($needTime % (3600*24)) % 3600) / 60);
 						$s				=	floor((($needTime % (3600*24)) % 3600 % 60));
 						if($h != 0){
-							$needTime	=	$h.'时';
+							$needTime	=	lc('time_hour', array($h));
 						}else if($m != 0){
-							$needTime	=	$m.'分';
+							$needTime	=	lc('time_minute', array($m));
 						} 
 					}else{
-						$needTime		=	$needTime.'秒';
+						$needTime		=	lc('time_second', array($needTime));
 					}
 
 					$recs 				=	$this->config['sy_recommend_interval'];
@@ -107,14 +107,14 @@ class resumeshare_controller extends resume_controller{
 						$m				=	floor((($recs % (3600*24)) % 3600) / 60);
 						$s				= 	floor((($recs % (3600*24)) % 3600 % 60));
 						if($h != 0){
-							$recs		=	$h.'时';
+							$recs		=	lc('time_hour', array($h));
 						}else if($m != 0){
-							$recs		=	$m.'分';
+							$recs		=	lc('time_minute', array($m));
 						} 
 					}else{
-						$recs			=	$recs.'秒';
+						$recs			=	lc('time_second', array($recs));
 					}
-					echo yun_auto_t("推荐职位、简历间隔不得少于{$recs}，请{$needTime}后再推荐");
+					echo lc('recommend_interval_limit', array($recs, $needTime));
 					exit;
 				}
 			}
@@ -139,7 +139,7 @@ class resumeshare_controller extends resume_controller{
 
 			//发送邮件并记录入库
 			$emailData['email']			=	$_POST['femail'];
-			$emailData['subject']		=	'您的好友'.$myemail.'向您推荐了简历！';
+			$emailData['subject']		=	lc('recommend_resume_subject', array($myemail));
 			$emailData['content'] 		=	$contents;
 			//入库字段
 			$emailData['uid']			=	'';
@@ -152,7 +152,7 @@ class resumeshare_controller extends resume_controller{
 			if($sendid['status'] != -1){
 				echo 1;
 			}else{
-				echo yun_auto_t('邮件发送错误 原因：') . $sendid['msg'];die;
+				echo lc('email_send_error', array($sendid['msg']));die;
 			}
 
 			//保存推荐记录到数据表recommend表

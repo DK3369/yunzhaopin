@@ -330,6 +330,12 @@ function yun_t($key, $params = array(), $default = '')
     return $default !== '' ? $default : $key;
 }
 
+function lc($key, $params = array(), $default = '')
+{
+    $lookupKey = strpos($key, '.') === false ? 'lc.' . $key : $key;
+    return yun_t($lookupKey, $params, $default);
+}
+
 function yun_auto_t($text)
 {
     global $i18n;
