@@ -97,6 +97,9 @@ class cache_model extends model{
                 default:break; 
             }
         }
+        if (function_exists('yun_auto_array')) {
+            $ReturnCacheList = yun_auto_array($ReturnCacheList);
+        }
         return $ReturnCacheList;
 	}
 	private function user_cache($Options=array('needreturn'=>false,'needassign'=>true)){
@@ -170,7 +173,7 @@ class cache_model extends model{
         }
 	}
 	private function introduce_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-		include(PLUS_PATH.'introduce.cache.php');
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('introduce.cache.php') : PLUS_PATH.'introduce.cache.php');
         if($Options['needreturn']==true){
             return array('introduce_index'=>$introduce_index,'introduce_content'=>$introduce_content,'introduce_name'=>$introduce_name);
         }
@@ -188,13 +191,13 @@ class cache_model extends model{
         }
 	}
 	private function integralclass_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-		include(PLUS_PATH.'integralclass.cache.php');
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('integralclass.cache.php') : PLUS_PATH.'integralclass.cache.php');
         if($Options['needreturn']==true){
             return array('integralclass_index'=>$integralclass_index,'integralclass_name'=>$integralclass_name,'integralclass_names'=>$integralclass_names,'integralclass_discount'=>$integralclass_discount);
         }
 	}
     private function domain_cache($Options=array('needreturn'=>false,'needassign'=>true,'needall'=>false)){
-		include(PLUS_PATH.'domain_cache.php');
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('domain_cache.php') : PLUS_PATH.'domain_cache.php');
         if($Options['needreturn']==true){
             //后台分配分站所需
 			if($Options['needall']==true){
@@ -211,49 +214,49 @@ class cache_model extends model{
         }
 	}
     private function menu_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-		include(PLUS_PATH.'menu.cache.php');
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('menu.cache.php') : PLUS_PATH.'menu.cache.php');
         if($Options['needreturn']==true){
             return array('menu_name'=>$menu_name);
         }
 	}
 	private function tplmoblie_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-		include(PLUS_PATH.'tplmoblie.cache.php');
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('tplmoblie.cache.php') : PLUS_PATH.'tplmoblie.cache.php');
 		if($Options['needreturn']==true){
 			return array('tplmoblie'=>$tplmoblie);
 		}
 	}
 	private function moblienav_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-		include(PLUS_PATH.'moblienav.cache.php');
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('moblienav.cache.php') : PLUS_PATH.'moblienav.cache.php');
         if($Options['needreturn']==true){
             return array('moblienav_index'=>$moblienav_index,'moblienav_pic'=>$moblienav_pic,'moblienav_url'=>$moblienav_url,'moblienav_name'=>$moblienav_name);
         }
 	}
 	private function cityename_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-	    include(PLUS_PATH.'cityename.cache.php');
+	    include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('cityename.cache.php') : PLUS_PATH.'cityename.cache.php');
 	    if($Options['needreturn']==true){
 	        return array('city_ename'=>$city_ename);
 	    }
 	}
 	private function cityfs_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-	    include(PLUS_PATH.'cityfs.cache.php');
+	    include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('cityfs.cache.php') : PLUS_PATH.'cityfs.cache.php');
 	    if($Options['needreturn']==true){
 	        return array('city_two'=>$city_two,'city_three'=>$city_three);
 	    }
 	}
 	private function jobename_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-	    include(PLUS_PATH.'jobename.cache.php');
+	    include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('jobename.cache.php') : PLUS_PATH.'jobename.cache.php');
 	    if($Options['needreturn']==true){
 	        return array('job_ename'=>$job_ename);
 	    }
 	}
 	private function jobfs_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-	    include(PLUS_PATH.'jobfs.cache.php');
+	    include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('jobfs.cache.php') : PLUS_PATH.'jobfs.cache.php');
 	    if($Options['needreturn']==true){
 	        return array('job_two'=>$job_two,'job_three'=>$job_three);
 	    }
 	}
 	private function shoptype_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-		include(PLUS_PATH.'shoptype.cache.php');
+		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('shoptype.cache.php') : PLUS_PATH.'shoptype.cache.php');
         if($Options['needreturn']==true){
             return array('shoptype_index'=>$shoptype_index,'shoptype_name'=>$shoptype_name);
         }
@@ -345,7 +348,7 @@ class cache_model extends model{
 
 	// 招聘价格档位
     private function oncepricegear_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-        include(PLUS_PATH.'oncepricegear.cache.php');
+        include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('oncepricegear.cache.php') : PLUS_PATH.'oncepricegear.cache.php');
         if($Options['needreturn']==true){
             return array('oncepricegear_index'=>$oncepricegear_index,'oncepricegear_name'=>$oncepricegear_name,'oncepricegear_names'=>$oncepricegear_names,'oncepricegear_price'=>$oncepricegear_price);
         }
@@ -353,7 +356,7 @@ class cache_model extends model{
 
     // 注册限制配置
     private function regconfig_cache($Options=array('needreturn'=>false,'needassign'=>true)){
-        include(PLUS_PATH.'reg.cache.php');
+        include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('reg.cache.php') : PLUS_PATH.'reg.cache.php');
         if($Options['needreturn']==true){
             return array('regConfig'=>$regConfig);
         }

@@ -164,7 +164,7 @@ class Yun_I18n
         }
         if ($this->currentLang != $this->fallbackLang && !empty($this->autoMessages)) {
             foreach ($this->autoMessages as $source => $target) {
-                if ($source !== "" && $target !== "" && strpos($text, $source) !== false) {
+                if ($this->canUsePartialAutoKey($source) && $target !== "" && strpos($text, $source) !== false) {
                     $text = str_replace($source, $target, $text);
                 }
             }
@@ -174,6 +174,15 @@ class Yun_I18n
         }
 
         return $leading . $text . $trailing;
+    }
+
+    function canUsePartialAutoKey($source)
+    {
+        if ($source === '') {
+            return false;
+        }
+        $len = function_exists('mb_strlen') ? mb_strlen($source, 'UTF-8') : strlen($source);
+        return $len > 1;
     }
 
     function autoArray($value, $key = '')

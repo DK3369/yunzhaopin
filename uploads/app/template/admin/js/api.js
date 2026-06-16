@@ -32,6 +32,10 @@
         return !!((window.yunAdminI18n.messages || {})[body]);
     }
 
+    function canUsePartialKey(key) {
+        return typeof key === "string" && key.length > 1;
+    }
+
     window.yunAdminT = function (text) {
         if (lang === "zh_cn") {
             return text;
@@ -49,7 +53,7 @@
         }
         var keys = window.yunAdminI18n.keys || [];
         for (var i = 0; i < keys.length; i++) {
-            if (keys[i] && messages[keys[i]] && body.indexOf(keys[i]) !== -1) {
+            if (canUsePartialKey(keys[i]) && messages[keys[i]] && body.indexOf(keys[i]) !== -1) {
                 body = body.split(keys[i]).join(messages[keys[i]]);
             }
         }
@@ -70,7 +74,7 @@
             return content;
         }
         for (var i = 0; i < keys.length; i++) {
-            if (keys[i] && messages[keys[i]] && text.indexOf(keys[i]) !== -1) {
+            if (canUsePartialKey(keys[i]) && messages[keys[i]] && text.indexOf(keys[i]) !== -1) {
                 text = text.split(keys[i]).join(messages[keys[i]]);
             }
         }
