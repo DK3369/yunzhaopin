@@ -1318,7 +1318,7 @@
         <div class="modluDrawer">
             <el-dialog title="企业取消暂停" :visible.sync="drawerqyzt" :with-header="true" append-to-body
                 :modal-append-to-body="false" :show-close="true" width="350px">
-                <div>已暂停{{ ztdays ? ztdays : 0 }}天，是否为客户延续会员有效期？</div>
+                <div>{{ lc("admin_extend_paused_member_tip", [ztdays ? ztdays : 0]) }}</div>
                 <span slot="footer" class="dialog-footer">
                     <el-button size="mini" type="primary" @click="setupcom(1)">是</el-button>
                     <el-button size="mini" @click="setupcom(0)">否</el-button>

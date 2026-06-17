@@ -75,7 +75,7 @@
                 </el-table-column>
                 <el-table-column prop="" label="服务价格">
                     <template slot-scope="props">
-                        {{props.row.service_price}}元
+                        {{ lc("admin_currency_yuan", [props.row.service_price]) }}
                     </template>
                 </el-table-column>
                 <el-table-column prop="time_start" label="开始时间" width="150">

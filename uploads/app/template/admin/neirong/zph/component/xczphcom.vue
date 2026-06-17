@@ -72,7 +72,7 @@
                     <div class="shcomname">{{info.name}}
                         <el-tag type="danger" size="mini">{{info.rating_name}}</el-tag>
                     </div>
-                    <div class="sh_zwsz_add">{{curr_comdata.zphname}} 参会展位：{{curr_comdata.space_n}}</div>
+                    <div class="sh_zwsz_add">{{ lc("admin_company_booth_value", [curr_comdata.zphname, curr_comdata.space_n]) }}</div>
                     <div class="sh_zwsz" style="top: 0;">
                         <el-button type="primary" size="mini" plain @click="setZw"><i class="el-icon-edit"></i> 设置展位
                         </el-button>
@@ -174,7 +174,7 @@
         </div>
         <!--参会企业详情 设置展位-->
         <el-drawer title="设置展位" :visible.sync="drawersetzw" :modal-append-to-body="false" append-to-body size="80%">
-            <div class="yd_qy">{{curr_zphtitle}}展位选择</div>
+            <div class="yd_qy">{{ lc("admin_booth_selection_title", [curr_zphtitle]) }}</div>
             <div class="yd_qylist" v-for="(item,index) in space_list" style="margin-left: 20px;" :key="index">
                 <el-divider content-position="center">{{item.name}}</el-divider>
                 <div class="yd_ztbox">
@@ -190,7 +190,7 @@
             <div class="yd_zt_fot">
                 <div class="yd_zt_bth">
                     <div class="yd_zt_bthleft">
-                        <div class="yd_zt_bthzwbox">展位：<span class="yd_zt_bthzw">{{sel_zwname}}</span></div>
+                        <div class="yd_zt_bthzwbox">{{ lc("admin_booth_value", [sel_zwname]) }}</div>
                     </div>
                     <div class="yd_zt_bthbot">
                         <el-button type="primary" @click="saveChangeZw">添 加</el-button>

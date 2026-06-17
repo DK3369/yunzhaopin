@@ -5,14 +5,14 @@
             </el-alert>
         </div> -->
         <div class="tableDome_tip tableDoAlert">
-            <span>题目统计： 总数：{{ anum }}道 总分：{{ fullscore }}分</span>
+            <span>{{ lc("admin_question_stats", [anum, fullscore]) }}</span>
         </div>
         <div class="drawerModInfo drawerModInfoOne">
             <div class="drawerModInpt" v-for="(item, index) in list" :key="index">
                 <div class="pinyuGuanli">
                     <div class="pinyuGuFensu">
                         <div class="pinyuName">
-                            <span>问题{{ index + 1 }}</span>
+                            <span>{{ lc("admin_question_number", [index + 1]) }}</span>
                         </div>
                         <div class="pinyuFroms">
                             <el-input type="textarea" :rows="2" placeholder="请输入问题" v-model="item.question">

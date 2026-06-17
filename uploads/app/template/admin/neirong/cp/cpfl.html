@@ -38,7 +38,7 @@
             </el-table-column>
             <el-table-column label="记录数" property="number">
                 <template slot-scope="scope">
-                    共有试卷 <span style="color:#0033FF; display:inline-block;">{{scope.row.count ? scope.row.count : 0}}</span> 篇
+                    {{ lc("admin_paper_count", [scope.row.count ? scope.row.count : 0]) }}
                 </template>
             </el-table-column>
             <el-table-column label="排序" property="sort">

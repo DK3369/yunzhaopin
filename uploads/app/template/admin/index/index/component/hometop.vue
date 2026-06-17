@@ -79,7 +79,7 @@
                         <div class="homeTopLeDay">
                             <div>
                                 <img src="../../images/adminimg1.png" alt="">
-                                <span>昨天 {{numdata.oldresumeNum}}</span>
+                                <span>{{ lc("admin_yesterday_count", [numdata.oldresumeNum]) }}</span>
                             </div>
                         </div>
                     </div>
@@ -96,7 +96,7 @@
 					    <div class="homeTopLeDay">
 					        <div>
 					            <img src="../../images/adminimg3.png" alt="">
-					            <span>昨天 {{numdata.oldjobNum}}</span>
+					            <span>{{ lc("admin_yesterday_count", [numdata.oldjobNum]) }}</span>
 					        </div>
 					    </div>
 					</div>
@@ -116,7 +116,7 @@
                         <div class="homeTopLeDay">
                             <div>
                                 <img src="../../images/adminimg2.png" alt="">
-                                <span>昨天 {{numdata.olduseridjobNum}}</span>
+                                <span>{{ lc("admin_yesterday_count", [numdata.olduseridjobNum]) }}</span>
                             </div>
                         </div>
                     </div>
@@ -133,7 +133,7 @@
                         <div class="homeTopLeDay">
                             <div>
                                 <img src="../../images/adminimg4.png" alt="">
-                                <span>昨天 {{numdata.oldtellognum}}</span>
+                                <span>{{ lc("admin_yesterday_count", [numdata.oldtellognum]) }}</span>
                             </div>
                         </div>
                     </div>
@@ -153,7 +153,7 @@
                         </div>
                         <div class="homeTopLeDay" @click="toPage(1,7,38,'简历记录','/xingwei',{params:{time:'1',activeName:'sixth'}})">
                             <div>
-                                <span>今日免费下载数： {{numdata.freedownnum}}</span>
+                                <span>{{ lc("admin_free_downloads_today", [numdata.freedownnum]) }}</span>
                             </div>
                         </div>
                     </div>

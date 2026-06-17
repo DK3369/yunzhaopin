@@ -45,7 +45,7 @@
                 </el-table-column>
                 <el-table-column prop="sxtime" label="时间间隔">
                     <template slot-scope="props">
-                        {{props.row.reserve_interval}}分钟
+                        {{ lc("admin_reserve_interval_minutes", [props.row.reserve_interval]) }}
                     </template>
                 </el-table-column>
                 <el-table-column prop="reserve_start" label="开始时间"></el-table-column>

@@ -13,7 +13,7 @@
             </div>
         </div>
 
-        <div class="admin_datatip"><i class="el-icon-document"></i> 参会企业共 {{ applyNum }}家 参会职位 {{ jobsNum }}</div>
+        <div class="admin_datatip"><i class="el-icon-document"></i> {{ lc("admin_joined_companies_jobs", [applyNum, jobsNum]) }}</div>
 
         <div class="moduleElenAlRight">
             <div class="moduleElTable" style="margin-top: 0; padding: 0; height: calc(100% - 55px); width: 100%;">

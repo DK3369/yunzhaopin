@@ -149,28 +149,28 @@
                     <div class="dd_list">
                         <span class="dd_name" v-if="detail.order_state==1">待付金额</span>
                         <span class="dd_name" v-else>付款金额</span>
-                        {{detail.order_price}}元
+                        {{ lc("admin_currency_yuan", [detail.order_price]) }}
                     </div>
                     <template v-if="detail.type =='3' || detail.order_type =='bank'">
                         <div class="dd_list">
-                            <span class="dd_name">汇款银行</span> {{detail.bankname}}
+                            {{ lc("admin_bank_name_value", [detail.bankname]) }}
                         </div>
                         <div class="dd_list">
-                            <span class="dd_name">汇入账号</span> {{detail.bankid}}
+                            {{ lc("admin_bank_account_value", [detail.bankid]) }}
                         </div>
                         <div class="dd_list">
-                            <span class="dd_name">汇款金额</span> {{detail.order_price}}
+                            {{ lc("admin_remit_amount_value", [detail.order_price]) }}
                         </div>
                     </template>
                     <template v-if="detail.type =='2'">
                         <div class="dd_list">
-                            <span class="dd_name">所得{{integral_pricename}}</span> {{detail.integral}}
+                            {{ lc("admin_income_points_value", [integral_pricename, detail.integral]) }}
                         </div>
                     </template>
 
-                    <div class="dd_list"><span class="dd_name">订单类型</span> {{detail.type_n}}</div>
-                    <div class="dd_list"><span class="dd_name">支付状态</span> {{detail.order_state_n}}</div>
-                    <div class="dd_list"><span class="dd_name">合同状态</span> {{htpics.length > 0 ? '已上传' : '未上传'}}</div>
+                    <div class="dd_list">{{ lc("admin_order_type_value", [detail.type_n]) }}</div>
+                    <div class="dd_list">{{ lc("admin_payment_status_value", [detail.order_state_n]) }}</div>
+                    <div class="dd_list">{{ lc("admin_contract_status_value", [htpics.length > 0 ? '已上传' : '未上传']) }}</div>
                     <template v-if="detail.type==3 || detail.order_type =='bank'">
                         <div class="dd_list"><span class="dd_name">上传汇款单</span>
                             <template v-if="detail.order_state ==1 || !detail.order_pic">
@@ -182,7 +182,7 @@
                         </div>
                     </template>
                     <template>
-                        <div class="dd_list" v-if="detail.crm_name"><span class="dd_name">业务员</span> {{detail.crm_name}}
+                        <div class="dd_list" v-if="detail.crm_name">{{ lc("admin_salesperson_value", [detail.crm_name]) }}
                         </div>
                     </template>
                     <div class="dd_list"><span class="dd_name">备注</span>

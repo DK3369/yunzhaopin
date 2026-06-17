@@ -26,10 +26,10 @@
                 <el-table-column prop="comd" label="服务金额/时间" width="140">
                     <template slot-scope="scope">
                         <div class="moduleProps">
-                            <div class="tcjiage ">{{ scope.row.service_price }}元</div>
+                            <div class="tcjiage ">{{ lc("admin_currency_yuan", [scope.row.service_price]) }}</div>
                             <span class="tctime">
                                  <template v-if="scope.row.service_time != ''">
-                                    {{ scope.row.service_time }}天
+                                    {{ lc("admin_day_count", [scope.row.service_time]) }}
                                  </template>
                                 <template v-else>
                                     不限
@@ -42,12 +42,12 @@
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             <template v-if="scope.row.type == 1">
-                                <div>刷新：{{ scope.row.breakjob_num }}份</div>
-                                <div>上架：{{ scope.row.job_num }}份</div>
+                                <div>{{ lc("admin_refresh_count", [lc("admin_piece_count", [scope.row.breakjob_num])]) }}</div>
+                                <div>{{ lc("admin_post_job_count", [lc("admin_piece_count", [scope.row.job_num])]) }}</div>
                             </template>
                             <template v-else-if="scope.row.type == 2">
-                                <div>刷新：{{ scope.row.breakjob_num == 0 ? '-' : '每日' + scope.row.breakjob_num + '份' }}</div>
-                                <div>上架：{{ scope.row.job_num }}份</div>
+                                <div>{{ lc("admin_refresh_count", [scope.row.breakjob_num == 0 ? '-' : lc("admin_daily_piece_count", [scope.row.breakjob_num])]) }}</div>
+                                <div>{{ lc("admin_post_job_count", [lc("admin_piece_count", [scope.row.job_num])]) }}</div>
                             </template>
                         </div>
                     </template>
@@ -56,12 +56,12 @@
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             <template v-if="scope.row.type == 1">
-                                <div>面试：{{ scope.row.interview }}次</div>
-                                <div>下载：{{ scope.row.resume }}份</div>
+                                <div>{{ lc("admin_interview_count", [lc("admin_times_count", [scope.row.interview])]) }}</div>
+                                <div>{{ lc("admin_download_count", [lc("admin_piece_count", [scope.row.resume])]) }}</div>
                             </template>
                             <template v-else-if="scope.row.type == 2">
-                                <div>面试：{{ scope.row.interview == 0 ? '-' : '每日' + scope.row.interview + '份' }}次</div>
-                                <div>下载：{{ scope.row.resume == 0 ? '-' : '每日' + scope.row.resume + '份' }}</div>
+                                <div>{{ lc("admin_interview_count", [scope.row.interview == 0 ? '-' : lc("admin_daily_piece_count", [scope.row.interview])]) }}</div>
+                                <div>{{ lc("admin_download_count", [scope.row.resume == 0 ? '-' : lc("admin_daily_piece_count", [scope.row.resume])]) }}</div>
                             </template>
                         </div>
                     </template>
@@ -69,9 +69,9 @@
                 <el-table-column prop="comd" label="推广数量" width="140">
                     <template slot-scope="scope">
                         <div class="moduleProps">
-                            <span class=" ">置顶：{{ scope.row.top_num }}天</span>
-                            <span class=" ">紧急：{{ scope.row.urgent_num }}天</span>
-                            <span class=" ">推荐：{{ scope.row.rec_num }}天</span>
+                            <span class=" ">{{ lc("admin_top_days", [lc("admin_day_count", [scope.row.top_num])]) }}</span>
+                            <span class=" ">{{ lc("admin_urgent_days", [lc("admin_day_count", [scope.row.urgent_num])]) }}</span>
+                            <span class=" ">{{ lc("admin_recommend_days", [lc("admin_day_count", [scope.row.rec_num])]) }}</span>
                         </div>
                     </template>
                 </el-table-column>
@@ -80,10 +80,10 @@
                         <div class="modulePropsbox">
                             <div class="modulePropsboxsmall">
                                 <template v-if="scope.row.type == 1">
-                                    <div>招聘会报名：{{ scope.row.zph_num }}场</div>
+                                    <div>{{ lc("admin_job_fair_signup", [lc("admin_session_count", [scope.row.zph_num])]) }}</div>
                                 </template>
                                 <template v-else-if="scope.row.type == 2">
-                                    <div>招聘会报名：{{ scope.row.zph_num == 0 ? '-' : '每日' + scope.row.zph_num + '场' }}</div>
+                                    <div>{{ lc("admin_job_fair_signup", [scope.row.zph_num == 0 ? '-' : lc("admin_daily_session_count", [scope.row.zph_num])]) }}</div>
                                 </template>
                             </div>
                             <div class="modulePropsboxsmall">

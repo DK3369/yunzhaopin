@@ -5,7 +5,7 @@
             </el-alert>
         </div> -->
         <!-- <div class="tableDome_tip tableDoAlert">
-            <span>题目统计： 总数：{{ anum }}道 总分：{{ fullscore }}分</span>
+            <span>{{ lc("admin_question_stats", [anum, fullscore]) }}</span>
         </div> -->
         <div class="drawerModInfo drawerModInfoOne">
             <div class="drawerModInpt" v-for="(item, index) in list" :key="index">

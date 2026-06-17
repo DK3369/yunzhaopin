@@ -24,7 +24,7 @@
                 <el-table-column prop="order_id" label="消费单号" width="150"></el-table-column>
                 <el-table-column prop="uname" label="金额" width="150">
                     <template slot-scope="scope">
-                        {{scope.row.order_price}}{{scope.row.type == 1 ? integral_pricename : '元'}}
+                        {{ scope.row.type == 1 ? scope.row.order_price + integral_pricename : lc("admin_currency_yuan", [scope.row.order_price]) }}
                     </template>
                 </el-table-column>
                 <el-table-column prop="pay_remark" label="备注说明">

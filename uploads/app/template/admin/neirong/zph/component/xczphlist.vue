@@ -239,7 +239,7 @@
                     <div class="" style="text-align: center;">
                         <span class="admin_web_tip">先选择企业才可选择职位，如不选择职位，所有招聘中职位默认参会</span>
                     </div>
-                    <div class="yd_qy">{{curr_data.title}}展位选择</div>
+                    <div class="yd_qy">{{ lc("admin_booth_selection_title", [curr_data.title]) }}</div>
                     <div class="yd_qylist" v-for="(item,index) in space_list" :key="index">
                         <el-divider content-position="center">{{item.name}}</el-divider>
                         <div class="yd_ztbox">
@@ -259,7 +259,7 @@
                     <div class="yd_zt_bth">
                         <div class="yd_zt_bthleft">
                             <div class="">{{sel_comname}}</div>
-                            <div class="yd_zt_bthzwbox">展位：<span class="yd_zt_bthzw">{{sel_zwname}}</span></div>
+                            <div class="yd_zt_bthzwbox">{{ lc("admin_booth_value", [sel_zwname]) }}</div>
                         </div>
                         <div class="yd_zt_bthbot">
                             <el-button type="primary" @click="saveAddCom" :disabled="submitLoading">添 加</el-button>
@@ -278,7 +278,7 @@
                     <div class="shcomname">{{info.name}}
                         <el-tag type="danger" size="mini">{{info.rating_name}}</el-tag>
                     </div>
-                    <div class="sh_zwsz_add">{{curr_comdata.zphname}} 参会展位：{{curr_comdata.space_n}}</div>
+                    <div class="sh_zwsz_add">{{ lc("admin_company_booth_value", [curr_comdata.zphname, curr_comdata.space_n]) }}</div>
                     <div class="sh_zwsz">
                         <el-button type="primary" size="mini" plain @click="setZw"><i class="el-icon-edit"></i> 设置展位
                         </el-button>
@@ -434,7 +434,7 @@
         </div>
         <!--参会企业详情 设置展位-->
         <el-drawer title="设置展位" :visible.sync="drawersetzw" :modal-append-to-body="false" append-to-body size="80%">
-            <div class="yd_qy">{{curr_data.title}}展位选择</div>
+            <div class="yd_qy">{{ lc("admin_booth_selection_title", [curr_data.title]) }}</div>
             <div class="yd_qylist" v-for="(item,index) in space_list" style="margin-left: 20px;" :key="index">
                 <el-divider content-position="center">{{item.name}}</el-divider>
                 <div class="yd_ztbox">
@@ -450,7 +450,7 @@
             <div class="yd_zt_fot">
                 <div class="yd_zt_bth">
                     <div class="yd_zt_bthleft">
-                        <div class="yd_zt_bthzwbox">展位：<span class="yd_zt_bthzw">{{sel_zwname}}</span></div>
+                        <div class="yd_zt_bthzwbox">{{ lc("admin_booth_value", [sel_zwname]) }}</div>
                     </div>
                     <div class="yd_zt_bthbot">
                         <el-button type="primary" @click="saveChangeZw">添 加</el-button>

@@ -6,14 +6,14 @@
         </div>
         <div class="homeBotomInfo">
             <div class="homeBotText">
-                <span>PHPYun程序版本： {{sysinfo.version}} [ <label id="version_msg">无须更新!</label>]</span>
-                <span>可用空间(磁盘区)：{{sysinfo.kongjian}} M</span>
-                <span>PHP 版本：{{sysinfo.phpbanben}}</span>
-                <span>服务器软件：{{sysinfo.soft}}</span>
+                <span>{{ lc("admin_phpyun_version", [sysinfo.version]) }} [ <label id="version_msg">无须更新!</label>]</span>
+                <span>{{ lc("admin_available_space", [sysinfo.kongjian]) }}</span>
+                <span>{{ lc("admin_php_version", [sysinfo.phpbanben]) }}</span>
+                <span>{{ lc("admin_server_software", [sysinfo.soft]) }}</span>
             </div>
             <div class="homeBotText">
-                <span>MySQL 版本：{{sysinfo.banben}}</span>
-                <span>用户 - 服务器：{{sysinfo.yonghu}} - {{sysinfo.server}}</span>
+                <span>{{ lc("admin_mysql_version", [sysinfo.banben]) }}</span>
+                <span>{{ lc("admin_user_server", [sysinfo.yonghu, sysinfo.server]) }}</span>
                 <span>系统名称：OV6人才招聘</span>
                 <span>开发团队：phpyun开发组</span>
             </div>

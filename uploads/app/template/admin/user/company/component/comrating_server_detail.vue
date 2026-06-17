@@ -15,31 +15,31 @@
                     <el-table-column type="selection" width="55"></el-table-column>
                     <el-table-column prop="id" label="编号" width="80"></el-table-column>
                     <el-table-column prop="service_price" label="服务价格">
-                        <template slot-scope="scope">{{scope.row.service_price}}元</template>
+                        <template slot-scope="scope">{{ lc("admin_currency_yuan", [scope.row.service_price]) }}</template>
                     </el-table-column>
                     <el-table-column prop="resume" label="下载简历">
-                        <template slot-scope="scope">{{scope.row.resume}}份</template>
+                        <template slot-scope="scope">{{ lc("admin_piece_count", [scope.row.resume]) }}</template>
                     </el-table-column>
                     <el-table-column prop="interview" label="邀请面试">
-                        <template slot-scope="scope">{{scope.row.interview}}份</template>
+                        <template slot-scope="scope">{{ lc("admin_piece_count", [scope.row.interview]) }}</template>
                     </el-table-column>
                     <el-table-column prop="job_num" label="上架职位">
-                        <template slot-scope="scope">{{scope.row.job_num}}份</template>
+                        <template slot-scope="scope">{{ lc("admin_piece_count", [scope.row.job_num]) }}</template>
                     </el-table-column>
                     <el-table-column prop="breakjob_num" label="刷新职位">
-                        <template slot-scope="scope">{{scope.row.breakjob_num}}份</template>
+                        <template slot-scope="scope">{{ lc("admin_piece_count", [scope.row.breakjob_num]) }}</template>
                     </el-table-column>
                     <el-table-column prop="top_num" label="职位置顶">
-                        <template slot-scope="scope">{{scope.row.top_num}}天</template>
+                        <template slot-scope="scope">{{ lc("admin_day_count", [scope.row.top_num]) }}</template>
                     </el-table-column>
                     <el-table-column prop="rec_num" label="职位推荐">
-                        <template slot-scope="scope">{{scope.row.rec_num}}天</template>
+                        <template slot-scope="scope">{{ lc("admin_day_count", [scope.row.rec_num]) }}</template>
                     </el-table-column>
                     <el-table-column prop="urgent_num" label="职位紧急">
-                        <template slot-scope="scope">{{scope.row.urgent_num}}天</template>
+                        <template slot-scope="scope">{{ lc("admin_day_count", [scope.row.urgent_num]) }}</template>
                     </el-table-column>
                     <el-table-column prop="zph_num" label="报名招聘会" width="100">
-                        <template slot-scope="scope">{{scope.row.zph_num}}次</template>
+                        <template slot-scope="scope">{{ lc("admin_times_count", [scope.row.zph_num]) }}</template>
                     </el-table-column>
                     <el-table-column prop="sort" label="排序" width="80"></el-table-column>
                     <el-table-column label="操作" width="140" fixed="right">

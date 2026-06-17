@@ -57,12 +57,12 @@
                         <div class="homeEchatWebInfo">
                             <h3>企业微信绑定（总数）</h3>
                             <b>{{wxbdcomNumMon}}</b>
-                            <span>占比：{{comwx_percent}}%</span>
+                            <span>{{ lc("admin_percent_value", [comwx_percent]) }}</span>
                         </div>
                         <div class="homeEchatWebInfo">
                             <h3>个人微信绑定（总数）</h3>
                             <b>{{wxbduserNumMon}}</b>
-                            <span>占比：{{userwx_percent}}%</span>
+                            <span>{{ lc("admin_percent_value", [userwx_percent]) }}</span>
                         </div>
                     </div>
                 </div>

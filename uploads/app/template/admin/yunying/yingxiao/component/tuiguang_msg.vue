@@ -16,7 +16,7 @@
                         </td>
                         <td>
                             <div class="TableTexta">
-                                <span>符合用户数：{{anniversary_m}} 位 <span v-if="anniversary.ctime">，上次发送时间：{{anniversary.ctime_n}}</span></span>
+                                <span>{{ lc("admin_matching_users_count", [anniversary_m]) }} <span v-if="anniversary.ctime">{{ lc("admin_last_sent_time", [anniversary.ctime_n]) }}</span></span>
                             </div>
                         </td>
                         <td>
@@ -33,7 +33,7 @@
                         </td>
                         <td>
                             <div class="TableTexta">
-                                <span>符合用户数：{{todaydue_m}} 位 <span v-if="todaydue.ctime">，上次发送时间：{{todaydue.ctime_n}}</span></span>
+                                <span>{{ lc("admin_matching_users_count", [todaydue_m]) }} <span v-if="todaydue.ctime">{{ lc("admin_last_sent_time", [todaydue.ctime_n]) }}</span></span>
                             </div>
                         </td>
                         <td>
@@ -50,7 +50,7 @@
                         </td>
                         <td>
                             <div class="TableTexta">
-                                <span>符合用户数：{{sevendue_m}} 位 <span v-if="sevendue.ctime">，上次发送时间：{{sevendue.ctime_n}}</span></span>
+                                <span>{{ lc("admin_matching_users_count", [sevendue_m]) }} <span v-if="sevendue.ctime">{{ lc("admin_last_sent_time", [sevendue.ctime_n]) }}</span></span>
                             </div>
                         </td>
                         <td>
@@ -67,7 +67,7 @@
                         </td>
                         <td>
                             <div class="TableTexta">
-                                <span>符合用户数：{{useradd_m}} 位 <span v-if="useradd.ctime">，上次发送时间：{{useradd.ctime_n}}</span></span>
+                                <span>{{ lc("admin_matching_users_count", [useradd_m]) }} <span v-if="useradd.ctime">{{ lc("admin_last_sent_time", [useradd.ctime_n]) }}</span></span>
                             </div>
                         </td>
                         <td>
@@ -84,7 +84,7 @@
                         </td>
                         <td>
                             <div class="TableTexta">
-                                <span>符合用户数：{{userup_m}} 位 <span v-if="userup.ctime">，上次发送时间：{{userup.ctime_n}}</span></span>
+                                <span>{{ lc("admin_matching_users_count", [userup_m]) }} <span v-if="userup.ctime">{{ lc("admin_last_sent_time", [userup.ctime_n]) }}</span></span>
                             </div>
                         </td>
                         <td>
@@ -101,7 +101,7 @@
                         </td>
                         <td>
                             <div class="TableTexta">
-                                <span>符合用户数：{{addjob_m}} 位 <span v-if="addjob.ctime">，上次发送时间：{{addjob.ctime_n}}</span></span>
+                                <span>{{ lc("admin_matching_users_count", [addjob_m]) }} <span v-if="addjob.ctime">{{ lc("admin_last_sent_time", [addjob.ctime_n]) }}</span></span>
                             </div>
                         </td>
                         <td>
@@ -118,7 +118,7 @@
                         </td>
                         <td>
                             <div class="TableTexta">
-                                <span>符合用户数：{{upjob_m}} 位 <span v-if="upjob.ctime">，上次发送时间：{{upjob.ctime_n}}</span></span>
+                                <span>{{ lc("admin_matching_users_count", [upjob_m]) }} <span v-if="upjob.ctime">{{ lc("admin_last_sent_time", [upjob.ctime_n]) }}</span></span>
                             </div>
                         </td>
                         <td>

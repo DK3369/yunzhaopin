@@ -67,7 +67,7 @@
                     <template slot-scope="props">
                         <div class="moduleProps">
                             <span class=" ">{{ props.row.type_n }}</span>
-                            <span class=" ">招聘{{ props.row.number }}人</span>
+                            <span class=" ">{{ lc("admin_hiring_count", [props.row.number]) }}</span>
                         </div>
                     </template>
                 </el-table-column>
@@ -93,7 +93,7 @@
                         <!--{yun:}$v.applynum{/yun}人<div class="admin_mb5">查看</div>-->
                         <!--</a>-->
                         <div class="moduleProps" v-if="props.row.applynum > 0">
-                            <span>{{ props.row.applynum }}人</span>
+                            <span>{{ lc("admin_applicants_count", [props.row.applynum]) }}</span>
                             <div class="jobtj">
                                 <el-link @click="applylog(props.row)">查看<i class="el-icon-view el-icon--right"></i>
                                 </el-link>
@@ -106,7 +106,7 @@
                     <template slot-scope="props">
                         <el-tooltip class="item" effect="dark" placement="top-start">
                             <div slot="content">
-                                <span style="line-height: 20px;">职位推荐剩余{{ props.row.isrec ? props.row.rec_day : 0 }}天</span>
+                                <span style="line-height: 20px;">{{ lc("admin_rec_days_left", [props.row.isrec ? props.row.rec_day : 0]) }}</span>
                             </div>
                             <div class="job_tg_bth">
                                 <el-switch v-model="props.row.isrec" @change="tgchange($event, props.row, 2)"

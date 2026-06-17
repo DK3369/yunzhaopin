@@ -3,7 +3,7 @@
     <div class="setUpload">
         <div class="uploadTable">
             <div class="admin_datatip">
-                当前{{ config.integral_pricename }}兑换比为1元={{ config.integral_proportion }}{{ config.integral_priceunit }}{{ config.integral_pricename }}，可设置最低金额是{{ 1 / config.integral_proportion }}元。
+                {{ lc("admin_integral_exchange_tip", [config.integral_pricename, config.integral_proportion, config.integral_priceunit, 1 / config.integral_proportion]) }}
             </div>
             <table class="tableVue">
                 <thead>

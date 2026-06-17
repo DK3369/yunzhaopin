@@ -119,7 +119,7 @@
                                 <el-input v-if="curr_dtl.order_state == 1 || curr_dtl.order_state == 3" placeholder="请输入金额" size="small" v-model="curr_dtl.order_price" type="number">
                                     <template slot="append">元</template>
                                 </el-input>
-                                <span v-else>{{curr_dtl.order_price}}元</span>
+                                <span v-else>{{ lc("admin_currency_yuan", [curr_dtl.order_price]) }}</span>
                             </div>
                         </div>
                         <div class="jiliTanJinli" v-if="curr_dtl.type == 3||curr_dtl.order_type=='bank'">
