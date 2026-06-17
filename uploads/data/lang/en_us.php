@@ -209,5 +209,11 @@ return array (
     'admin_payment_status_value' => 'Payment Status: {0}',
     'admin_contract_status_value' => 'Contract Status: {0}',
     'admin_package_name_value' => 'Package Name: {0}',
+    'admin_update_data_call_confirm' => 'Update data call "{0}"?',
+    'admin_delete_data_call_confirm' => 'Delete data call "{0}"?',
+    'admin_job_intention_value' => 'Job Intention: {0};',
+    'admin_intended_area_value' => 'Preferred Area: {0};',
+    'admin_education_value' => 'Education: {0};',
+    'admin_experience_value' => 'Work Experience: {0};',
   ),
 );

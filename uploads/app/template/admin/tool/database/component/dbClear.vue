@@ -77,11 +77,11 @@
                 let that = this;
                 let params = {};
                 if (that.clearTable.length == 0){
-                    message.error('请选择需要清理的数据表！');
+                    message.error(window.yunAdminT('请选择需要清理的数据表！'));
                     return false;
                 }
                 if (that.clearTime == 0){
-                    message.error('请选择需要清理时间！');
+                    message.error(window.yunAdminT('请选择需要清理时间！'));
                     return false;
                 }
 
@@ -91,14 +91,14 @@
 
                     that.clearTable.forEach(function (item) {
 
-                        console.log(item+'数据清理中');
+                        console.log(item + window.yunAdminT('数据清理中'));
 
                         params.clearTable = item;
                         that.clearData(params);
 
-                        console.log(item+'数据清除完成');
+                        console.log(item + window.yunAdminT('数据清除完成'));
                     })
-                    message.success('数据清除完成', function () {
+                    message.success(window.yunAdminT('数据清除完成'), function () {
 
                         that.clearTable = [];
                         that.clearTime = 0;

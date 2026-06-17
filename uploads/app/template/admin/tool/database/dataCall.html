@@ -275,7 +275,7 @@
         data: function() {
             return {
                 loading: false,
-                emptytext: '暂无数据',
+                emptytext: window.yunAdminT('暂无数据'),
                 dataCall: [],
 
                 tableData: [],
@@ -330,7 +330,7 @@
                 params.pageSize = that.pageSize;
                 params.page = that.currentPage;
                 that.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = window.yunAdminT('数据加载中');
                 httpPost('m=tool&c=dataCall', params, {hideloading: true}).then(function(res) {
                     let data = res.data.data;
                     that.tableData = data.list;
@@ -344,7 +344,7 @@
 						that.$refs.dataTable.bodyWrapper.scrollTop = 0;
 					}
                     if (that.tableData.length === 0) {
-                        that.emptytext = "暂无数据";
+                        that.emptytext = window.yunAdminT('暂无数据');
                     }
                 }).catch(function(error) {
                     console.log(error);
@@ -363,11 +363,11 @@
                 let that = this;
                 that.callInfo = {};
                 that.callInfo.code = '<ul>\n' +
-                    ' <!--循环开始-->\n' +
+                    ' <!-- loop start -->\n' +
                     ' <loop>\n' +
                     '  <li><a href="{url}">{name}</a></li>\n' +
                     ' </loop>\n' +
-                    ' <!--循环结束-->\n' +
+                    ' <!-- loop end -->\n' +
                     '</ul>'
                 that.typeDrawer = true;
             },
@@ -396,12 +396,12 @@
                 clipboard.on('success', (e) => {
                     e.clearSelection();
                     clipboard.destroy();
-                    message.success('复制成功');
+                    message.success(window.yunAdminT('复制成功'));
                 });
                 // 复制失败
                 clipboard.on('error', (e) => {
                     clipboard.destroy();
-                    message.error('该浏览器不支持自动复制');
+                    message.error(window.yunAdminT('该浏览器不支持自动复制'));
                 });
             },
 
@@ -507,9 +507,9 @@
                 let idArr = [],
                     nameArr = [];
                 let params = {};
-                name = '（' + scope.row.name + '）';
+                name = scope.row.name;
                 params.id = scope.row.id;
-                delConfirm(this, params, this.upDataCall, '您确定要更新' + name + '数据信息吗？');
+                delConfirm(this, params, this.upDataCall, window.lc('admin_update_data_call_confirm', [name]));
             },
             upDataCall(params) {
                 var self = this;
@@ -539,20 +539,20 @@
                         idArr.push(item.id);
                         nameArr.push(item.name);
                     });
-                    name = '（' + nameArr.join('，') + '）';
+                    name = nameArr.join(', ');
                     params.id = idArr;
                 } else {
 
-                    name = '（' + scope.row.name + '）';
+                    name = scope.row.name;
                     params.id = scope.row.id;
                 }
 
-                delConfirm(this, params, this.delete, '您确定要删除' + name + '数据信息吗？');
+                delConfirm(this, params, this.delete, window.lc('admin_delete_data_call_confirm', [name]));
             },
             delDataSel() {
                 var that = this;
                 if (!that.selectedItem.length) {
-                    message.error('请选择要删除的数据');
+                    message.error(window.yunAdminT('请选择要删除的数据'));
                     return;
                 }
                 this.delData(null, true);
@@ -584,7 +584,7 @@
                 let self = this;
                 var params = {};
                 if (self.callInfo.name == '') {
-                    message.error('请填写数据调用名称');
+                    message.error(window.yunAdminT('请填写数据调用名称'));
                     return false;
                 }
                 params = self.callInfo;

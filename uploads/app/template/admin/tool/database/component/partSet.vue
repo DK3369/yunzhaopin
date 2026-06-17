@@ -94,7 +94,7 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>>如：0-100，默认为0</span>
+                            <span>如：0-100，默认为0</span>
                         </div>
                     </td>
                 </tr>

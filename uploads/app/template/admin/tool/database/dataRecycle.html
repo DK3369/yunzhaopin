@@ -76,7 +76,7 @@
             return {
                 loading: false,
                 pagerCount: 5,
-                emptytext: '暂无数据',
+                emptytext: window.yunAdminT('暂无数据'),
                 search: {
                     username: '',
                     keyword: '',
@@ -86,7 +86,7 @@
                 },
                 pickerOptions: {
                     shortcuts: [{
-                        text: '昨天',
+                        text: window.yunAdminT('昨天'),
                         onClick(picker) {
                             const end = new Date();
                             const start = new Date();
@@ -95,35 +95,35 @@
                             picker.$emit('pick', [start, end]);
                         }
                     }, {
-                        text: '今天',
+                        text: window.yunAdminT('今天'),
                         onClick(picker) {
                             const end = new Date();
                             const start = new Date();
                             picker.$emit('pick', [start, end]);
                         }
                     }, {
-                        text: '本周',
+                        text: window.yunAdminT('本周'),
                         onClick(picker) {
                             const start = new Date(new Date().setHours(0, 0, 0) - (new Date().getDay() - 1) * 24 * 60 * 60 * 1000);
                             const end = new Date();
                             picker.$emit('pick', [start, end]);
                         }
                     }, {
-                        text: '上周',
+                        text: window.yunAdminT('上周'),
                         onClick(picker) {
                             const start = new Date(new Date().setHours(0, 0, 0) - (new Date().getDay() + 6) * 24 * 60 * 60 * 1000);
                             const end = new Date(new Date().setHours(0, 0, 0) + (0 - new Date().getDay()) *24 * 60 * 60 *1000);
                             picker.$emit('pick', [start, end]);
                         }
                     }, {
-                        text: '本月',
+                        text: window.yunAdminT('本月'),
                         onClick(picker) {
                             const end = new Date();
                             const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 1).setHours(0, 0, 0));
                             picker.$emit('pick', [start, end]);
                         }
                     }, {
-                        text: '上月',
+                        text: window.yunAdminT('上月'),
                         onClick(picker) {
                             const end = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 0).setHours(23, 59, 59, 59));
                             const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).setHours(0, 0, 0));
@@ -165,7 +165,7 @@
                 params.pageSize = that.pageSize;
                 params.page = that.currentPage;
                 that.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = window.yunAdminT('数据加载中');
                 httpPost('m=tool&c=dataRecycle', params, {hideloading: true}).then(function (res) {
                     let data = res.data.data;
                     that.tableData = data.list;
@@ -179,7 +179,7 @@
 						that.$refs.recycleTable.bodyWrapper.scrollTop = 0;
 					}
                     if (that.tableData.length === 0) {
-                        that.emptytext = "暂无数据";
+                        that.emptytext = window.yunAdminT('暂无数据');
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -234,9 +234,9 @@
                 } else {
                     params.id = scope.row.id;
                 }
-                _this.$confirm('确定要恢复回收站数据？', '温馨提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
+                _this.$confirm(window.yunAdminT('确定要恢复回收站数据？'), window.yunAdminT('温馨提示'), {
+                    confirmButtonText: window.yunAdminT('确定'),
+                    cancelButtonText: window.yunAdminT('取消'),
                     type: 'info'
                 }).then(() => {
                     httpPost('m=tool&c=dataRecycle&a=recover', params).then(function (response) {
@@ -259,16 +259,16 @@
                 let that = this;
                 if (!that.selectedItem.length) {
 
-                    message.error('请选择要恢复的数据');
+                    message.error(window.yunAdminT('请选择要恢复的数据'));
                     return;
                 }
                 this.recoverRecycle(null, true);
             },
             recoverAll() {
                 let _this = this;
-                _this.$confirm('确定要一键恢复已删除数据？', '温馨提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
+                _this.$confirm(window.yunAdminT('确定要一键恢复已删除数据？'), window.yunAdminT('温馨提示'), {
+                    confirmButtonText: window.yunAdminT('确定'),
+                    cancelButtonText: window.yunAdminT('取消'),
                     type: 'info'
                 }).then(() => {
                     httpPost('m=tool&c=dataRecycle&a=recoverAll', {ident: _this.search.ident}).then(function (response) {
@@ -299,12 +299,12 @@
                 } else {
                     params.id = scope.row.id;
                 }
-                delConfirm(this, params, this.delete, '删除后无法恢复，请谨慎操作,您确定要删除回收站数据吗？');
+                delConfirm(this, params, this.delete, window.yunAdminT('删除后无法恢复，请谨慎操作,您确定要删除回收站数据吗？'));
             },
             delRecycleSel() {
                 var that = this;
                 if (!that.selectedItem.length) {
-                    message.error('请选择要删除的数据');
+                    message.error(window.yunAdminT('请选择要删除的数据'));
                     return;
                 }
                 this.delRecycle(null, true);
@@ -327,9 +327,9 @@
 
             truncateRecycle() {
                 let _this = this;
-                _this.$confirm('确定要清空数据回收站？', '温馨提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
+                _this.$confirm(window.yunAdminT('确定要清空数据回收站？'), window.yunAdminT('温馨提示'), {
+                    confirmButtonText: window.yunAdminT('确定'),
+                    cancelButtonText: window.yunAdminT('取消'),
                     type: 'warning'
                 }).then(() => {
                     httpPost('m=tool&c=dataRecycle&a=tuncateRecycle', {recycle: 'tuncate'}).then(function (response) {

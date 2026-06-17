@@ -206,7 +206,7 @@
                 var option = {
                     color: ['#39c3d5', '#46a6ff', '#5259F4'],
                     title: {
-                        text: '用户/简历趋势对比图',
+                        text: window.yunAdminT('用户/简历趋势对比图'),
                         textStyle: {
                             color: '#333',
                             fontWeight: '500',
@@ -302,7 +302,7 @@
                 var myChart = echarts.init(document.getElementById('main2'));
                 var option = {
                     title: {
-                        text: '简历投递/刷新趋势对比图',
+                        text: window.yunAdminT('简历投递/刷新趋势对比图'),
                         textStyle: {
                             color: '#333',
                             fontWeight: '500',
@@ -414,7 +414,7 @@
                 var option = {
                     color: ['#23C9C9', '#1890FF'],
                     title: {
-                        text: '企业/职位趋势对比图',
+                        text: window.yunAdminT('企业/职位趋势对比图'),
                         textStyle: {
                             color: '#333',
                             fontWeight: '500',
@@ -504,7 +504,7 @@
                 var option = {
                     color: ['#1890FF', '#23C9C9', '#5259F4'],
                     title: {
-                        text: '简历下载统计',
+                        text: window.yunAdminT('简历下载统计'),
                         textStyle: {
                             color: '#333',
                             fontWeight: '500',
@@ -600,7 +600,7 @@
                 var myChart = echarts.init(document.getElementById('main5'));
                 var option = {
                     title: {
-                        text: '职位刷新统计',
+                        text: window.yunAdminT('职位刷新统计'),
                         textStyle: {
                             color: '#333',
                             fontWeight: '500',
@@ -691,7 +691,7 @@
                 var option = {
                     color: ['#39c3d5', '#46a6ff', '#5259F4'],
                     title: {
-                        text: '邀请面试统计',
+                        text: window.yunAdminT('邀请面试统计'),
                         textStyle: {
                             color: '#333',
                             fontWeight: '500',

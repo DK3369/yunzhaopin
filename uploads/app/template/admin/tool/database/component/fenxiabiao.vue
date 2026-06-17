@@ -303,7 +303,7 @@ module.exports = {
                 params.type = this.searchType;
                 params.startTime = this.startTime
             if (!this.startTime || !this.endTime){
-                message.error('请输入时间！');return;
+                message.error(window.yunAdminT('请输入时间！'));return;
             }
                 params.endTime = this.endTime
                 httpPost('m=tool&c=dataBoard&a=fenxiabiao', params).then(function (response) {

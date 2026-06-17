@@ -214,10 +214,10 @@
                                         <el-table-column prop="uname" label="个人姓名" width="100"></el-table-column>
                                         <el-table-column label="简历信息">
                                             <template slot-scope="scope">
-                                                <span>求职意向：{{ scope.row.jobclassname }}；</span>
-                                                <span>意向地区：{{ scope.row.cityclassname }}；</span>
-                                                <span>学历：{{ scope.row.eduname }}；</span>
-                                                <span>工作经验：{{ scope.row.expname }}；</span>
+                                                <span>{{ lc('admin_job_intention_value', [scope.row.jobclassname]) }}</span>
+                                                <span>{{ lc('admin_intended_area_value', [scope.row.cityclassname]) }}</span>
+                                                <span>{{ lc('admin_education_value', [scope.row.eduname]) }}</span>
+                                                <span>{{ lc('admin_experience_value', [scope.row.expname]) }}</span>
                                             </template>
                                         </el-table-column>
                                         <el-table-column prop="count" label="浏览量" width="80"></el-table-column>
@@ -899,7 +899,7 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            emptytext: '暂无数据',
+            emptytext: window.yunAdminT('暂无数据'),
             webUrl: localStorage.getItem("sy_weburl"),
             activeName: 'first',
             tabPosition: 'left',
@@ -1200,7 +1200,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '注册来源',
+                        name: window.yunAdminT('注册来源'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '42%'],
@@ -1574,7 +1574,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '需求行业',
+                        name: window.yunAdminT('需求行业'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '42%'],
@@ -1620,7 +1620,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '需求区域',
+                        name: window.yunAdminT('需求区域'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -1666,7 +1666,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '需求薪资',
+                        name: window.yunAdminT('需求薪资'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -1712,7 +1712,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '需求学历',
+                        name: window.yunAdminT('需求学历'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -1758,7 +1758,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '需求工作经验',
+                        name: window.yunAdminT('需求工作经验'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -1879,7 +1879,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '需求行业',
+                        name: window.yunAdminT('需求行业'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '42%'],
@@ -1925,7 +1925,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '人才区域',
+                        name: window.yunAdminT('人才区域'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -1971,7 +1971,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '薪资需求',
+                        name: window.yunAdminT('薪资需求'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2017,7 +2017,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '学历配比',
+                        name: window.yunAdminT('学历配比'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2063,7 +2063,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '工作经验',
+                        name: window.yunAdminT('工作经验'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '38%'],
@@ -2109,7 +2109,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '男女比例',
+                        name: window.yunAdminT('男女比例'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2230,7 +2230,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '订单类型',
+                        name: window.yunAdminT('订单类型'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2276,7 +2276,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '支付方式',
+                        name: window.yunAdminT('支付方式'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2508,7 +2508,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '热招行业',
+                        name: window.yunAdminT('热招行业'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '42%'],
@@ -2554,7 +2554,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '热门区域',
+                        name: window.yunAdminT('热门区域'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2600,7 +2600,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '薪资待遇',
+                        name: window.yunAdminT('薪资待遇'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2646,7 +2646,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '学历要求',
+                        name: window.yunAdminT('学历要求'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2692,7 +2692,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '工作经验',
+                        name: window.yunAdminT('工作经验'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2849,7 +2849,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '期望行业',
+                        name: window.yunAdminT('期望行业'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '42%'],
@@ -2895,7 +2895,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '意向地区',
+                        name: window.yunAdminT('意向地区'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2941,7 +2941,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '期望薪资',
+                        name: window.yunAdminT('期望薪资'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2987,7 +2987,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '教育程度',
+                        name: window.yunAdminT('教育程度'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3033,7 +3033,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '工作经验',
+                        name: window.yunAdminT('工作经验'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3079,7 +3079,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '男女比例',
+                        name: window.yunAdminT('男女比例'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3125,7 +3125,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '数据来源',
+                        name: window.yunAdminT('数据来源'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '42%'],
@@ -3282,7 +3282,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '行业统计',
+                        name: window.yunAdminT('行业统计'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3328,7 +3328,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '会员类型',
+                        name: window.yunAdminT('会员类型'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3374,7 +3374,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '信息完善',
+                        name: window.yunAdminT('信息完善'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3495,7 +3495,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '热门行业',
+                        name: window.yunAdminT('热门行业'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3541,7 +3541,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '热门地区',
+                        name: window.yunAdminT('热门地区'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3587,7 +3587,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '期望薪资',
+                        name: window.yunAdminT('期望薪资'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3633,7 +3633,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '教育程度',
+                        name: window.yunAdminT('教育程度'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3679,7 +3679,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '工作经验',
+                        name: window.yunAdminT('工作经验'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3725,7 +3725,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: '男女比例',
+                        name: window.yunAdminT('男女比例'),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],

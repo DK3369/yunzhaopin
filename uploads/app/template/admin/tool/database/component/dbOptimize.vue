@@ -41,7 +41,7 @@
         data: function () {
             return {
                 loading: false,
-                emptytext: '暂无数据',
+                emptytext: window.yunAdminT('暂无数据'),
                 tableData: []
             }
         },
@@ -51,14 +51,14 @@
         methods: {
             async getOptTable() {
                 this.loading = true;
-                this.emptytext = "数据加载中";
+                this.emptytext = window.yunAdminT('数据加载中');
                 let res = await httpPost('m=tool&c=database&a=getOptTable',{},{hideloading: true});
                 if (res.data.error == 0) {
 
                     this.tableData = res.data.data;
                     this.loading = false;
                     if (this.tableData.length === 0){
-                        this.emptytext = "暂无数据";
+                        this.emptytext = window.yunAdminT('暂无数据');
                     }
                 }
             },

@@ -209,5 +209,11 @@ return array (
     'admin_payment_status_value' => '支付状态 {0}',
     'admin_contract_status_value' => '合同状态 {0}',
     'admin_package_name_value' => '套餐名称：{0}',
+    'admin_update_data_call_confirm' => '您确定要更新{0}数据信息吗？',
+    'admin_delete_data_call_confirm' => '您确定要删除{0}数据信息吗？',
+    'admin_job_intention_value' => '求职意向：{0}；',
+    'admin_intended_area_value' => '意向地区：{0}；',
+    'admin_education_value' => '学历：{0}；',
+    'admin_experience_value' => '工作经验：{0}；',
   ),
 );

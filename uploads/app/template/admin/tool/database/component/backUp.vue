@@ -140,10 +140,10 @@
                 param.backType = that.backType
 
                 if (that.backType == 2 && that.checkedTable.length == 0){
-                    message.error('请选择需要备份的数据！');
+                    message.error(window.yunAdminT('请选择需要备份的数据！'));
                     return false;
                 }
-                delConfirm(this, param, that.backUpDb, '确定备份数据？');
+                delConfirm(this, param, that.backUpDb, window.yunAdminT('确定备份数据？'));
 
             },
             backUpDb: function (param) {

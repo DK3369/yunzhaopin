@@ -50,7 +50,7 @@
         data: function () {
             return {
                 loading: false,
-                emptytext: '暂无数据',
+                emptytext: window.yunAdminT('暂无数据'),
                 tableData: [],
 
                 // 批量选择
@@ -64,14 +64,14 @@
         methods: {
             async getBackFile() {
                 this.loading = true;
-                this.emptytext = "数据加载中";
+                this.emptytext = window.yunAdminT('数据加载中');
                 let res = await httpPost('m=tool&c=database&a=getBackFile');
                 if (res.data.error == 0) {
 
                     this.tableData = res.data.data;
                     this.loading = false;
                     if (this.tableData.length === 0){
-                        this.emptytext = "暂无数据";
+                        this.emptytext = window.yunAdminT('暂无数据');
                     }
                 }
             },
@@ -99,7 +99,7 @@
                 let params = {};
                 params.ver = scope.row.version;
                 params.mypath = scope.row.name;
-                message.confirm('确定导入数据？', function () {
+                message.confirm(window.yunAdminT('确定导入数据？'), function () {
                     window.location.href = baseUrl+'m=tool&c=database&a=backIn&mypath=' + scope.row.name +'&ver='+scope.row.version+'&pytoken=' + localStorage.getItem('pytoken');
                 })
 
@@ -133,12 +133,12 @@
                     params.sql = scope.row.name;
                 }
 
-                delConfirm(this, params, this.delete, '您确定要删除数据库备份信息？');
+                delConfirm(this, params, this.delete, window.yunAdminT('您确定要删除数据库备份信息？'));
             },
             delBackSel() {
                 var that = this;
                 if (!that.selectedItem.length) {
-                    message.error('请选择要删除的备份数据');
+                    message.error(window.yunAdminT('请选择要删除的备份数据'));
                     return;
                 }
                 this.delBack(null, true);
