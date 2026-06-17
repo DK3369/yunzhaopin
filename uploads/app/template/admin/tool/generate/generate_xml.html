@@ -149,18 +149,18 @@
                 let _this = this;
                 let params = JSON.parse(JSON.stringify(this.ruleForm));
                 if (params.limit < 1 || params.limit == '') {
-                    message.error('请输入获取数量');
+                    message.error(window.yunAdminT('请输入获取数量'));
                     return false;
                 }
                 if (!params.name.length) {
-                    message.error('请输入文件名称');
+                    message.error(window.yunAdminT('请输入文件名称'));
                     return false;
                 }
                 if (_this.submitLoading) {
                     return false;
                 }
                 _this.submitLoading = true;
-                message.success('正在生成文件……');
+                message.success(window.yunAdminT('正在生成文件……'));
                 httpPost('m=tool&c=generate_xml&a=archive', params).then(function (response) {
                     let res = response.data;
                     if (res.error == 0) {

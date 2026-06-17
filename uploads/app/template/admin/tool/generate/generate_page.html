@@ -486,8 +486,8 @@
                 delete params.time;
 
                 this.submitLoadingArchive = true;
-                message.success('正在获取新闻总数');
-                this.makearchive(params, "archive", 0, '正在获取新闻总数');
+                message.success(window.yunAdminT('正在获取新闻总数'));
+                this.makearchive(params, "archive", 0, window.yunAdminT('正在获取新闻总数'));
             },
             /**
              * @param params  JSON: action, group, stime, etime, startid, endid, limit
@@ -545,8 +545,8 @@
                     params.group = 'all'
                 }
                 _this.submitLoadingNewsclass = true;
-                message.success('正在获取新闻类别信息');
-                this.makenewsclass(params, "class", 0, '正在获取新闻类别信息');
+                message.success(window.yunAdminT('正在获取新闻类别信息'));
+                this.makenewsclass(params, "class", 0, window.yunAdminT('正在获取新闻类别信息'));
             },
             /**
              * @param params JSON action, group
@@ -581,7 +581,7 @@
                 let params = JSON.parse(JSON.stringify(this.ruleFormAll));
 
                 _this.submitLoading = true;
-                this.make_all(params, "cache", 0, '正在生成区域');
+                this.make_all(params, "cache", 0, window.yunAdminT('正在生成区域'));
             },
             make_all(params, type, value, msg) {
                 if(type != 'ok'){
@@ -594,7 +594,7 @@
                             message.success(res.msg);
                             _this.make_all(params, res.data.type, res.data.value, res.msg);
                         } else {
-                            res.msg ? message.error(res.msg) : message.error('未知异常，请联系管理员！');
+                            res.msg ? message.error(res.msg) : message.error(window.yunAdminT('未知异常，请联系管理员！'));
                         }
                     }).catch(function (error) {
                         console.log(error);

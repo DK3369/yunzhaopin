@@ -131,7 +131,7 @@ var timer = null;
 module.exports = {
     data: function () {
         return {
-            emptytext: '暂无数据',
+            emptytext: window.yunAdminT('暂无数据'),
             tableData: [],
             list_loading: false,
             choosedata: [],
@@ -156,14 +156,14 @@ module.exports = {
             let params = {};
 
             this.list_loading = true;
-            that.emptytext = "数据加载中";
+            that.emptytext = window.yunAdminT('数据加载中');
             httpPost('m=tool&c=weixinmenu&a=wxnav', params).then((result) => {
                 this.list_loading = false;
                 var res = result.data
                 if (res.error == 0) {
                     that.tableData = res.data.list;
                     if (that.tableData.length === 0) {
-                        that.emptytext = "暂无数据";
+                        that.emptytext = window.yunAdminT('暂无数据');
                     }
                 }
             }).catch(function (e) {
@@ -195,7 +195,7 @@ module.exports = {
                     idarr.push(this.choosedata[i].id);
                 }
             } else {
-                message.error('请选择要删除的数据');
+                message.error(window.yunAdminT('请选择要删除的数据'));
                 return;
             }
             var params = {
@@ -249,15 +249,15 @@ module.exports = {
             var that = this,
                 param = {};
             if (this.einfo.name == '') {
-                message.warning('菜单名称不能为空！');
+                message.warning(window.yunAdminT('菜单名称不能为空！'));
                 return;
             }
             if (this.einfo.keyid != '0' && this.einfo.type == 'click' && this.einfo.key == '') {
-                message.warning('点击事件，菜单关键字不得为空！');
+                message.warning(window.yunAdminT('点击事件，菜单关键字不得为空！'));
                 return;
             }
             if (this.einfo.keyid != '0' && this.einfo.type == 'view' && this.einfo.url == '') {
-                message.warning('链接事件，菜单链接不得为空！');
+                message.warning(window.yunAdminT('链接事件，菜单链接不得为空！'));
                 return;
             }
 
@@ -281,19 +281,19 @@ module.exports = {
                 var res = result.data;
 
                 if (res.error == 1) {
-                    message.error('请按要求填写信息！');
+                    message.error(window.yunAdminT('请按要求填写信息！'));
                     return false;
                 } else if (res.error == 2) {
-                    message.error('相同名称或关键字已存在！');
+                    message.error(window.yunAdminT('相同名称或关键字已存在！'));
                     return false;
                 } else if (res.error == 3) {
-                    message.success('操作成功！', () => {
+                    message.success(window.yunAdminT('操作成功！'), () => {
                         that.editshow = false;
                         that.getList();
                     });
                     return false;
                 } else if (res.error == 4) {
-                    message.success('操作成功！', () => {
+                    message.success(window.yunAdminT('操作成功！'), () => {
                         that.editshow = false;
                         that.getList();
                     });
@@ -336,7 +336,7 @@ module.exports = {
             } else {
                 if (type == 'name' && val == '') {
                     this[`edit${type}_id`] = '';
-                    message.error('类别名称不能为空！');
+                    message.error(window.yunAdminT('类别名称不能为空！'));
                     return;
                 }
                 var param = {id: id};
@@ -353,7 +353,7 @@ module.exports = {
 
                     that[`edit${type}_id`] = '';
                     that[`edit${type}`] = '';
-                    message.success('修改成功', function () {
+                    message.success(window.yunAdminT('修改成功'), function () {
                         that.getList()
                     });
                 }).catch(function (e) {

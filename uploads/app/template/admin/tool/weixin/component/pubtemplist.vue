@@ -66,7 +66,7 @@ module.exports = {
 	},
 	data: function () {
 		return {
-			emptytext: '暂无数据',
+			emptytext: window.yunAdminT('暂无数据'),
 			tableData: [],
 			total: 0,
 			limit: 0,
@@ -104,7 +104,7 @@ module.exports = {
 			}
 
 			this.list_loading = true;
-			that.emptytext = "数据加载中";
+			that.emptytext = window.yunAdminT('数据加载中');
 			httpPost('m=tool&c=fabutool&a=index', params).then((result) => {
 				this.list_loading = false;
 				var res = result.data;
@@ -120,7 +120,7 @@ module.exports = {
 						that.$refs.table.bodyWrapper.scrollTop = 0;
 					}
 					if (that.tableData.length === 0){
-                        that.emptytext = "暂无数据";
+                        that.emptytext = window.yunAdminT('暂无数据');
                     }
 				}
 			}).catch(function (e) {
@@ -170,7 +170,7 @@ module.exports = {
 					idarr.push(this.choosedata[i].id);
 				}
 			} else {
-				message.error('请选择要删除的数据'); return;
+				message.error(window.yunAdminT('请选择要删除的数据')); return;
 			}
 			var params = {
 				del: idarr

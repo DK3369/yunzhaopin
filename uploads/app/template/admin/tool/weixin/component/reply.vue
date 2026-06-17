@@ -226,7 +226,7 @@ module.exports = {
     data: function () {
         return {
             pic_accept: localStorage.getItem("pic_accept"),
-            emptytext: '暂无数据',
+            emptytext: window.yunAdminT('暂无数据'),
             tableData: [],
             total: 0,
             limit: 0,
@@ -274,7 +274,7 @@ module.exports = {
             }
 
             this.list_loading = true;
-            that.emptytext = "数据加载中";
+            that.emptytext = window.yunAdminT('数据加载中');
             httpPost('m=tool&c=weixinmenu&a=zdkeyword', params).then((result) => {
                 this.list_loading = false;
                 var res = result.data;
@@ -290,7 +290,7 @@ module.exports = {
 						that.$refs.table.bodyWrapper.scrollTop = 0;
 					}
                     if (that.tableData.length === 0) {
-                        that.emptytext = "暂无数据";
+                        that.emptytext = window.yunAdminT('暂无数据');
                     }
                 }
             }).catch(function (e) {
@@ -340,7 +340,7 @@ module.exports = {
                     idarr.push(this.choosedata[i].id);
                 }
             } else {
-                message.error('请选择要删除的数据');
+                message.error(window.yunAdminT('请选择要删除的数据'));
                 return;
             }
             var params = {
@@ -439,7 +439,7 @@ module.exports = {
             } else {
 
                 if (self.conarr.length >= 3) {
-                    message.warning('最多只能添加3条消息！');
+                    message.warning(window.yunAdminT('最多只能添加3条消息！'));
                     return;
                 }
                 var randnum = parseInt(Math.random() * 1000);
@@ -511,10 +511,10 @@ module.exports = {
             var con_post = [];
 
             if (row.title == '') {
-                message.warning('规则名不能为空！');
+                message.warning(window.yunAdminT('规则名不能为空！'));
                 return;
             } else if (row.keyword.trim() == '') {
-                message.warning('关键字不能为空！');
+                message.warning(window.yunAdminT('关键字不能为空！'));
                 return;
             }
 

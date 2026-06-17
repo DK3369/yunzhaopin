@@ -501,7 +501,7 @@ module.exports = {
 
             const clipboard = new ClipboardJS("#copy");
             clipboard.on('success', function(e) {
-                message.success('复制成功！');
+                message.success(window.yunAdminT('复制成功！'));
                 e.clearSelection();
             });
             clipboard.on('error', function(e) {});

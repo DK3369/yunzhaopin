@@ -122,7 +122,7 @@
                 let _this = this;
                 let params = JSON.parse(JSON.stringify(this.ruleForm));
                 if (!params.cache.length) {
-                    message.error('至少选择一项');
+                    message.error(window.yunAdminT('至少选择一项'));
                     return false;
                 }
                 if (_this.submitLoading) {

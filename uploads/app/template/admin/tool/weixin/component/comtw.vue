@@ -203,7 +203,7 @@ module.exports = {
     data: function () {
         return {
 			pagerCount: 5,
-            emptytext: '暂无数据',
+            emptytext: window.yunAdminT('暂无数据'),
             temps: [],
             temps2: [],
             adminList: [],
@@ -252,13 +252,13 @@ module.exports = {
         this.getBaseData();
         var clipboard = new ClipboardJS("#twcomcopy");
         clipboard.on('success', function (e) {
-            message.success('复制成功！');
+            message.success(window.yunAdminT('复制成功！'));
             e.clearSelection();
         });
 
         var gzh_clipboard = new ClipboardJS("#twcomgzh_copy");
         gzh_clipboard.on('success', function (e) {
-            message.success('复制成功！');
+            message.success(window.yunAdminT('复制成功！'));
             e.clearSelection();
         });
 
@@ -280,7 +280,7 @@ module.exports = {
             }
 
             this.list_loading = true;
-            that.emptytext = "数据加载中";
+            that.emptytext = window.yunAdminT('数据加载中');
             httpPost('m=tool&c=fabutool&a=comtwTask', params).then((result) => {
                 this.list_loading = false;
                 var res = result.data;
@@ -296,7 +296,7 @@ module.exports = {
 						that.$refs.table.bodyWrapper.scrollTop = 0;
 					}
                     if (that.tableData.length === 0){
-                        that.emptytext = "暂无数据";
+                        that.emptytext = window.yunAdminT('暂无数据');
                     }
                 }
             }).catch(function (e) {
@@ -368,7 +368,7 @@ module.exports = {
                     idarr.push(this.choosedata[i].id);
                 }
             } else {
-                message.error('请选择要删除的数据'); return;
+                message.error(window.yunAdminT('请选择要删除的数据')); return;
             }
             var params = {
                 del: idarr
@@ -398,7 +398,7 @@ module.exports = {
             var params = {
                 id: id
             };
-            delConfirm(_this, params, this.finishPost, '确认已推送？')
+            delConfirm(_this, params, this.finishPost, window.yunAdminT('确认已推送？'))
         },
         multiFinish: function () {
             var _this = this;
@@ -408,13 +408,13 @@ module.exports = {
                     idarr.push(this.choosedata[i].id);
                 }
             } else {
-                message.error('请选择要操作的数据项'); return;
+                message.error(window.yunAdminT('请选择要操作的数据项')); return;
             }
             var params = {
                 id: idarr
             };
 
-            delConfirm(_this, params, this.finishPost, '确认已推送？')
+            delConfirm(_this, params, this.finishPost, window.yunAdminT('确认已推送？'))
         },
         async finishPost(params) {
 
@@ -466,7 +466,7 @@ module.exports = {
                     }
                 }
             } else {
-                message.error('请选择要操作的数据项'); return;
+                message.error(window.yunAdminT('请选择要操作的数据项')); return;
             }
 
             this.tw_comlist = tw_comlist;
@@ -486,10 +486,10 @@ module.exports = {
             let that = this;
 
             if (this.tempid == '') {
-                message.error('请选择模板'); return;
+                message.error(window.yunAdminT('请选择模板')); return;
             }
             if (this.com_uids.length == 0) {
-                message.error('请添加要生成的职位'); return;
+                message.error(window.yunAdminT('请添加要生成的职位')); return;
             }
 
             var params = {
