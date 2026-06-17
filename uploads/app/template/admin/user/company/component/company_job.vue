@@ -1,9 +1,9 @@
 <template>
     <div class="moduleElHight">
-        <div class="admin_datatip"><i class="el-icon-document"></i> 数据统计：职位总数 {{ total }} 条
-            <span class="admin_datatip_n">未通过：{{ wtg }} 条</span>
-            <span class="admin_datatip_n">未审核：{{ dsh }} 条 </span>
-            <span class="admin_datatip_n">已下架：{{ xj }} 条</span>
+        <div class="admin_datatip"><i class="el-icon-document"></i> {{ lc("admin_data_stats_job_total", [total]) }}
+            <span class="admin_datatip_n">{{ lc("admin_failed_count", [wtg]) }}</span>
+            <span class="admin_datatip_n">{{ lc("admin_pending_review_count", [dsh]) }} </span>
+            <span class="admin_datatip_n">{{ lc("admin_offline_count", [xj]) }}</span>
         </div>
         <div class="moduleElTable" :class="{ 'moduleElTableHig': tableHig }" style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
             <el-table :data="tableData" style="width: 100%" stripe

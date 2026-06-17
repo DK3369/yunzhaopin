@@ -50,12 +50,9 @@
             </div>
         </div>
         <div class="admin_datatip">
-            <i class="el-icon-document"></i> 数据统计：共 <span @click="init">{{ userAllNum }}</span> 条
-            <span class="admin_datatip_n">已锁定：<span @click="statusSearch('2')">{{ userStatusNum3 ? userStatusNum3 :
-                0 }}</span> 条</span>
-            <span class="admin_datatip_n">已锁定：</span>
-            <span @click="statusSearch('2')">{{ userStatusNum3 ? userStatusNum3 : 0 }}条</span>
-            <span class="admin_datatip_n">搜索结果： {{ total }} 条</span>
+            <i class="el-icon-document"></i> {{ lc("admin_data_stats") }} <span @click="init">{{ lc("admin_total_count", [userAllNum]) }}</span>
+            <span class="admin_datatip_n" @click="statusSearch('2')">{{ lc("admin_locked_count", [userStatusNum3 ? userStatusNum3 : 0]) }}</span>
+            <span class="admin_datatip_n">{{ lc("admin_search_results_count", [total]) }}</span>
         </div>
         <div class="moduleElTable" style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
             <el-table :data="list" style="width: 100%" stripe ref="multipleTable" @selection-change="handleSelectionChange"
@@ -389,7 +386,7 @@
                 :show-close="true" width="450px" append-to-body>
                 <div style="overflow: hidden; position: relative; width: 100%;">
                     <div class="wxsettip_small ">个人信息</div>
-                    <div class="">姓名：{{ detail.username_n }} 账号：{{ detail.username }}</div>
+                    <div class="">{{ lc("admin_name_value", [detail.username_n]) }} {{ lc("admin_account_value", [detail.username]) }}</div>
                     <div class="wxsettip_small ">企业名称</div>
                     <!--<el-input v-model="ruleFormAccountMerge.com_uid" placeholder="请输入企业名称"></el-input>-->
                     <el-autocomplete style="width: 100%;" v-model="AccountMergeComname" :fetch-suggestions="querySearchCom"
@@ -465,19 +462,19 @@
                             进入个人中心</el-button>
                     </div>
                     <div class="shcomdj">
-                        姓名：{{ resume.name }}
-                        <span class="shcomtel_n">用户名：{{ member.username }}</span>
-                        手机号：{{ resume.telphone }}
+                        {{ lc("admin_name_value", [resume.name]) }}
+                        <span class="shcomtel_n">{{ lc("admin_username_value", [member.username]) }}</span>
+                        {{ lc("admin_mobile_value", [resume.telphone]) }}
                     </div>
                     <div class="shcomtel" style="padding-bottom:15px; padding-top:10px;;border:none;font-size: 13px;">
                         <span class=" ">注册时间：{{ member.reg_date_n }} </span>
                         <span class="shcomtel_n" v-if="member.logion_date != ''">最近登录 ：{{ member.login_date_n }} </span>
                         <span class="shcomtel_n" v-else>从未登录 </span>
-                        登录次数：{{ member.login_hits }}
+                        {{ lc("admin_login_count_value", [member.login_hits]) }}
                         <span class=" shcomtel_n"> IP：{{ member.login_ip }} </span>
                         <span class=" "></span>
-                        <span class="shcomtel_n">来源：{{ source[member.source] }}</span>
-                        <span class=" ">站点：{{ domainList[resume.did] }}</span>
+                        <span class="shcomtel_n">{{ lc("admin_source_value", [source[member.source]]) }}</span>
+                        <span class=" ">{{ lc("admin_site_value", [domainList[resume.did]]) }}</span>
                         <div class="cominfocz">
                             <el-button type="primary" @click="openAccount" size="mini">
                                 <i class="el-icon-edit"></i>账户信息
@@ -529,15 +526,15 @@
                                 </div>
                                 <div class="shshow_p">
                                     <div class="cominfo" v-if="resume.telphone"><i class="el-icon-mobile"></i>
-                                        联系电话：{{ resume.telphone }}</div>
+                                        {{ lc("admin_contact_phone_value", [resume.telphone]) }}</div>
                                     <div class="cominfo" v-if="resume.email"><i class="el-icon-message"></i>
-                                        联系邮箱：{{ resume.email }}</div>
+                                        {{ lc("admin_email_value", [resume.email]) }}</div>
                                     <div class="cominfo" v-if="resume.idcard"><i class="el-icon-postcard"></i>
-                                        身份证号：{{ resume.idcard }}</div>
+                                        {{ lc("admin_idcard_value", [resume.idcard]) }}</div>
                                     <div class="cominfo" v-if="resume.domicile"><i class="el-icon-location-outline"></i>
-                                        户籍所在地：{{ resume.domicile }}</div>
+                                        {{ lc("admin_domicile_value", [resume.domicile]) }}</div>
                                     <div class="cominfo" v-if="resume.address"><i class="el-icon-location-information"></i>
-                                        详细地址：{{ resume.address }}</div>
+                                        {{ lc("admin_detail_address_value", [resume.address]) }}</div>
                                 </div>
                                 <!--个人优势-->
                                 <div class="user_resume_list">
@@ -564,14 +561,14 @@
                                 <div class="user_resume_list">
                                     <div class="shshow_tit"><i class="el-icon-notebook-2"></i> 求职意向 </div>
                                     <div class="shshow_p" v-if="expectData.expect">
-                                        <div class="cominfo">期望职位： {{ expectData.expect.name }} </div>
-                                        <div class="cominfo">从事职位： {{ expectData.expect.job_classname }}</div>
-                                        <div class="cominfo">期望地点： {{ expectData.expect.city_classname }}</div>
-                                        <div class="cominfo">期望薪资： {{ expectData.expect.salary }}</div>
-                                        <div class="cominfo">从事行业： {{ expectData.expect.hy_n }}</div>
-                                        <div class="cominfo">到岗时间： {{ expectData.expect.report_n }}</div>
-                                        <div class="cominfo">工作性质： {{ expectData.expect.type_n }}</div>
-                                        <div class="cominfo">求职状态： {{ expectData.expect.jobstatus_n }}</div>
+                                        <div class="cominfo">{{ lc("admin_expected_position_value", [expectData.expect.name]) }} </div>
+                                        <div class="cominfo">{{ lc("admin_current_position_value", [expectData.expect.job_classname]) }}</div>
+                                        <div class="cominfo">{{ lc("admin_expected_location_value", [expectData.expect.city_classname]) }}</div>
+                                        <div class="cominfo">{{ lc("admin_expected_salary_value", [expectData.expect.salary]) }}</div>
+                                        <div class="cominfo">{{ lc("admin_industry_value", [expectData.expect.hy_n]) }}</div>
+                                        <div class="cominfo">{{ lc("admin_arrival_time_value", [expectData.expect.report_n]) }}</div>
+                                        <div class="cominfo">{{ lc("admin_work_nature_value", [expectData.expect.type_n]) }}</div>
+                                        <div class="cominfo">{{ lc("admin_job_status_value", [expectData.expect.jobstatus_n]) }}</div>
                                     </div>
                                     <div class="user_resume_add">
                                         <div class="">建议完善求职偏好</div>
@@ -911,7 +908,7 @@
                         </el-tab-pane>
                         <el-tab-pane label="积分管理" name="pay">
                             <!--<div class="admin_datatip">-->
-                            <!--	<i class="el-icon-document"></i> 数据统计：目前拥有积分 3526-->
+                            <!--	<i class="el-icon-document"></i> {{ lc("admin_data_stats") }}目前拥有积分 3526-->
                             <!--	<span class="admin_datatip_n">共消费积分：13625 </span>-->
                             <!--</div>-->
                             <div class="moduleElHight">

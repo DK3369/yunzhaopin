@@ -29,15 +29,15 @@
         </div>
         <div class="shshow_p">
             <div class="cominfo" v-if="resume.telphone"><i class="el-icon-mobile"></i>
-                联系电话：{{ resume.telphone }}</div>
+                {{ lc("admin_contact_phone_value", [resume.telphone]) }}</div>
             <div class="cominfo" v-if="resume.email"><i class="el-icon-message"></i>
-                联系邮箱：{{ resume.email }}</div>
+                {{ lc("admin_email_value", [resume.email]) }}</div>
             <div class="cominfo" v-if="resume.idcard"><i class="el-icon-postcard"></i>
-                身份证号：{{ resume.idcard }}</div>
+                {{ lc("admin_idcard_value", [resume.idcard]) }}</div>
             <div class="cominfo" v-if="resume.domicile"><i class="el-icon-location-outline"></i>
-                户籍所在地：{{ resume.domicile }}</div>
+                {{ lc("admin_domicile_value", [resume.domicile]) }}</div>
             <div class="cominfo" v-if="resume.address"><i class="el-icon-location-information"></i>
-                详细地址：{{ resume.address }}</div>
+                {{ lc("admin_detail_address_value", [resume.address]) }}</div>
         </div>
 
         <!--个人优势-->
@@ -63,14 +63,14 @@
         <div class="user_resume_list">
             <div class="shshow_tit"><i class="el-icon-notebook-2"></i> 求职意向</div>
             <div class="shshow_p" v-if="expectData.expect">
-                <div class="cominfo">期望职位： {{expectData.expect.name}} </div>
-                <div class="cominfo">从事职位： {{expectData.expect.job_classname}}</div>
-                <div class="cominfo">期望地点： {{expectData.expect.city_classname}}</div>
-                <div class="cominfo">期望薪资： {{expectData.expect.salary}}</div>
-                <div class="cominfo">从事行业： {{expectData.expect.hy_n}}</div>
-                <div class="cominfo">到岗时间： {{expectData.expect.report_n}}</div>
-                <div class="cominfo">工作性质： {{expectData.expect.type_n}}</div>
-                <div class="cominfo">求职状态： {{expectData.expect.jobstatus_n}}</div>
+                <div class="cominfo">{{ lc("admin_expected_position_value", [expectData.expect.name]) }} </div>
+                <div class="cominfo">{{ lc("admin_current_position_value", [expectData.expect.job_classname]) }}</div>
+                <div class="cominfo">{{ lc("admin_expected_location_value", [expectData.expect.city_classname]) }}</div>
+                <div class="cominfo">{{ lc("admin_expected_salary_value", [expectData.expect.salary]) }}</div>
+                <div class="cominfo">{{ lc("admin_industry_value", [expectData.expect.hy_n]) }}</div>
+                <div class="cominfo">{{ lc("admin_arrival_time_value", [expectData.expect.report_n]) }}</div>
+                <div class="cominfo">{{ lc("admin_work_nature_value", [expectData.expect.type_n]) }}</div>
+                <div class="cominfo">{{ lc("admin_job_status_value", [expectData.expect.jobstatus_n]) }}</div>
             </div>
 
 

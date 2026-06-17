@@ -13,13 +13,13 @@
 				    <span>企业简称：{{Info.shortname}}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.hy">
-				    <span>从事行业：{{Info.hy_n}}</span>
+				    <span>{{ lc("admin_industry_value", [Info.hy_n]) }}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.pr">
-				    <span>企业性质：{{Info.pr_n}}</span>
+				    <span>{{ lc("admin_company_nature_value", [Info.pr_n]) }}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.mun">
-				    <span>企业规模：{{Info.mun_n}}</span>
+				    <span>{{ lc("admin_company_size_value", [Info.mun_n]) }}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.money">
 				    <span>注册资金：{{Info.money}} {{Info.moneytype_n}}</span>
@@ -36,16 +36,16 @@
 			        <span>联系方式</span>
 			    </div>
 				<div class="jiliTanJinCont" v-if="Info.linkman">
-				    <span>联系人：{{Info.linkman}} <span v-if="Info.linkjob">（{{Info.linkjob}})</span></span>
+				    <span>{{ lc("admin_contact_person_value", [Info.linkman]) }} <span v-if="Info.linkjob">（{{Info.linkjob}})</span></span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.linktel">
-				    <span>联系手机：{{Info.linktel}} {{Info.infostatus=='1'?'（公开）':'（不公开）'}}</span>
+				    <span>{{ lc("admin_contact_mobile_value", [Info.linktel]) }} {{Info.infostatus=='1'?'（公开）':'（不公开）'}}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.linkphone">
 				    <span>固定电话：{{Info.linkphone}}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.linkmail">
-				    <span>联系邮箱：{{Info.linkmail}}</span>
+				    <span>{{ lc("admin_email_value", [Info.linkmail]) }}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.linkqq">
 				    <span>联系QQ：{{Info.linkqq}}</span>
@@ -60,7 +60,7 @@
 				    <span>公司二维码：<el-image :src="Info.comqcode" width="150" height="150"></el-image></span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.busstops">
-				    <span>公交站点：{{Info.busstops}}</span>
+				    <span>{{ lc("admin_bus_stop_value", [Info.busstops]) }}</span>
 				</div>
 			</div>
         </div>

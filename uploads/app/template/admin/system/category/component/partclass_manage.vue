@@ -17,7 +17,7 @@
                             v-model="scope.row.name" @blur="alterData(scope)"></el-input>
                         <span v-else>
                             <template v-if="scope.$index == 0">
-                                一级分类：{{ scope.row.name }}
+                                {{ lc("admin_level1_category_value", [scope.row.name]) }}
                             </template>
                             <template v-else>
                                 &emsp;&emsp;┗{{ scope.row.name }}<img @click="editData(scope)" class="editIcon" src="../../../admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14">

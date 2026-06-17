@@ -53,7 +53,7 @@
                         <div class="moduleProps">
                            
                             <span>{{ scope.row.r_name }}</span>
-							 <span>手机号：{{ scope.row.c_mobile }}</span>
+							 <span>{{ lc("admin_mobile_value", [scope.row.c_mobile]) }}</span>
                             <span>UID：{{ scope.row.c_uid }}</span>
                         </div>
                     </template>
@@ -63,7 +63,7 @@
                         <div class="moduleProps">
                             
                             <span>{{ scope.row.p_name }}</span>
-							<span>手机号：{{ scope.row.p_mobile }}</span>
+							<span>{{ lc("admin_mobile_value", [scope.row.p_mobile]) }}</span>
                             <span>UID：{{ scope.row.p_uid }}</span>
                         </div>
                     </template>

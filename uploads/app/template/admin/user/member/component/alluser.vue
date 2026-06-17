@@ -46,9 +46,9 @@
             </div>
         </div>
         <div class="admin_datatip">
-            <i class="el-icon-document"></i> 数据统计：共 {{memNum.memAllNum}} 条
-            <span class="admin_datatip_n cp_n" @click="lockList">已锁定：{{memNum.memStatusNum3}} 条</span>
-            <span class="admin_datatip_n">搜索结果： {{total}} 条</span>
+            <i class="el-icon-document"></i> {{ lc("admin_data_stats") }} {{ lc("admin_total_count", [memNum.memAllNum]) }}
+            <span class="admin_datatip_n cp_n" @click="lockList">{{ lc("admin_locked_count", [memNum.memStatusNum3]) }}</span>
+            <span class="admin_datatip_n">{{ lc("admin_search_results_count", [total]) }}</span>
         </div>
         <div class="moduleElTable" :class="{ 'moduleElTabAllyue': tableHig }" style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
             <el-table :data="tableData" style="width: 100%" stripe @selection-change="selectChange" ref="multipleTable" @sort-change="shortChange" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" v-loading="loading">

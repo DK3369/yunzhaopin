@@ -54,11 +54,11 @@
 
         <div class="moduleElTable moduleElTableSizes">
             <div class="admin_datatip"><i class="el-icon-document"></i>
-                <span class="admin_datatip_n cp_n" @click="stateFun('0')">总金额：￥{{orderSum.orderPriceAll}} </span>
-                <span class="admin_datatip_n cp_n" @click="stateFun('2')">已付款：￥{{orderSum.orderPayed}} </span>
-                <span class="admin_datatip_n cp_n" @click="stateFun('3')" v-if="orderSum.orderPaying">待确认：￥{{orderSum.orderPaying}}</span>
-                <span class="admin_datatip_n cp_n" @click="stateFun('1')" v-if="orderSum.orderPay">待付款：￥{{orderSum.orderPay}}</span>
-                <span class="admin_datatip_n">搜索结果： {{total}} 条</span>
+                <span class="admin_datatip_n cp_n" @click="stateFun('0')">{{ lc("admin_total_amount", [orderSum.orderPriceAll]) }} </span>
+                <span class="admin_datatip_n cp_n" @click="stateFun('2')">{{ lc("admin_paid_amount", [orderSum.orderPayed]) }} </span>
+                <span class="admin_datatip_n cp_n" @click="stateFun('3')" v-if="orderSum.orderPaying">{{ lc("admin_pending_confirm_amount", [orderSum.orderPaying]) }}</span>
+                <span class="admin_datatip_n cp_n" @click="stateFun('1')" v-if="orderSum.orderPay">{{ lc("admin_pending_payment_amount", [orderSum.orderPay]) }}</span>
+                <span class="admin_datatip_n">{{ lc("admin_search_results_count", [total]) }}</span>
             </div>
             <el-table :data="tableData" border style="width: 100%" @selection-change="selectChange"
                 @sort-change="shortChange" ref="multipleTable"

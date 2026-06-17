@@ -28,7 +28,7 @@
                         <el-input v-if="scope.row[scope.column.property + 'isShow']"
                                   :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
                                   v-model="scope.row.name" @blur="alterData(scope, 1)"></el-input>
-                        <span v-else>一级分类：{{scope.row.name}}
+                        <span v-else>{{ lc("admin_level1_category_value", [scope.row.name]) }}
                             <img src="../../../admin/images/bine.png" alt="" style="margin-left: 4px;" width="14"
                                  height="14" @click="editData(scope, 1)">
                         </span>

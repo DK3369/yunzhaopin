@@ -5,7 +5,7 @@
             <div class="jobshcom">{{info.com_name}}
                 <el-tag type="danger" v-if="info.rating_name" size="mini">{{info.rating_name}}</el-tag></div>
             <div class="sh_zwsz_add">
-                联系人：{{info.linkman}} <span class="shcomtel_n">联系电话：{{info.tel}} </span> <span v-if="info.crm_name">业务员：{{info.crm_name}}</span>
+                {{ lc("admin_contact_person_value", [info.linkman]) }} <span class="shcomtel_n">{{ lc("admin_contact_phone_value", [info.tel]) }} </span> <span v-if="info.crm_name">{{ lc("admin_salesperson_value", [info.crm_name]) }}</span>
             </div>
             <div class="shcomtel">
                 <template v-if="info.reg_date_n">注册时间：{{info.reg_date_n}}</template>
@@ -28,13 +28,13 @@
                         <div class="">职位薪资：{{info.job_salary}} </div>
                         <div class="">经验要求：{{info.job_exp}} </div>
                         <div class="">学历要求：{{info.job_edu}} </div>
-                        <div class="" v-if="info.job_number">招聘人数：{{info.job_number}}</div>
+                        <div class="" v-if="info.job_number">{{ lc("admin_headcount_value", [info.job_number]) }}</div>
                         <div class="" v-else>招聘人数：若干人</div>
-                        <div class="">到岗时间：{{info.job_report}} </div>
-                        <div class="" v-if="info.job_sex">性别要求：{{info.job_sex}} </div>
+                        <div class="">{{ lc("admin_arrival_time_value", [info.job_report]) }} </div>
+                        <div class="" v-if="info.job_sex">{{ lc("admin_gender_requirement_value", [info.job_sex]) }} </div>
                         <div class="" v-else>性别要求：不限性别 </div>
                         <div class="">婚况要求：{{info.job_marriage}}</div>
-                        <div class="">工作地址：{{info.address}}</div>
+                        <div class="">{{ lc("admin_work_address_value", [info.address]) }}</div>
                     </div>
                     <div class="shshow_tit"><i class="el-icon-office-building"></i> 职位描述</div>
                     <div class="shshow_p">

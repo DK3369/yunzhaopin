@@ -41,7 +41,7 @@
             </div>
         </div>
         <div class="admin_datatip">
-            <i class="el-icon-document"></i> 数据统计：<span class="admin_datatip_n">已过期：{{gqNum}} 条</span>
+            <i class="el-icon-document"></i> {{ lc("admin_data_stats") }}<span class="admin_datatip_n">{{ lc("admin_expired_count", [gqNum]) }}</span>
         </div>
         <div class="moduleElTable" :class="{ 'moduleElTableHig': tableHig }"
              style="border: 1px solid #ebeef5; width: calc(100% - 2px);">

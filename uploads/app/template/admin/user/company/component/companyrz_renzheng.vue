@@ -29,10 +29,10 @@
                 </div>
             </div>
         </div>
-        <div class="admin_datatip"><i class="el-icon-document"></i> 数据统计：共 {{ comCertAll }} 条
-            <span class="admin_datatip_n">未审核：{{ comCert1 }} 条 </span>
-            <span class="admin_datatip_n">未通过：{{ comCert2 }} 条</span>
-            <span class="admin_datatip_n">搜索结果： {{ total }} 条</span>
+        <div class="admin_datatip"><i class="el-icon-document"></i> {{ lc("admin_data_stats") }} {{ lc("admin_total_count", [comCertAll]) }}
+            <span class="admin_datatip_n">{{ lc("admin_pending_review_count", [comCert1]) }} </span>
+            <span class="admin_datatip_n">{{ lc("admin_failed_count", [comCert2]) }}</span>
+            <span class="admin_datatip_n">{{ lc("admin_search_results_count", [total]) }}</span>
         </div>
         <div class="moduleElTable" :class="{ 'moduleElTableHig': tableHig }"
             style="border: 1px solid #ebeef5; width: calc(100% - 2px); height: calc(100% - 135px) !important;">

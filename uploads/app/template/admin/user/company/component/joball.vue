@@ -57,12 +57,12 @@
             </div>
         </div>
         <div class="admin_datatip" v-if="!simple">
-            <i class="el-icon-document"></i> 数据统计：
-            <span class="admin_datatip_n">共：{{ allNum }} 条</span>
-            <span class="admin_datatip_n">未审核：{{ status1Num }} 条</span>
-            <span class="admin_datatip_n">未通过：{{ status2Num }} 条</span>
-            <span class="admin_datatip_n">已下架：{{ status3Num }} 条</span>
-            <span class="admin_datatip_n">搜索结果：{{total }} 条</span>
+            <i class="el-icon-document"></i> {{ lc("admin_data_stats") }}
+            <span class="admin_datatip_n">{{ lc("admin_total_count", [allNum]) }}</span>
+            <span class="admin_datatip_n">{{ lc("admin_pending_review_count", [status1Num]) }}</span>
+            <span class="admin_datatip_n">{{ lc("admin_failed_count", [status2Num]) }}</span>
+            <span class="admin_datatip_n">{{ lc("admin_offline_count", [status3Num]) }}</span>
+            <span class="admin_datatip_n">{{ lc("admin_search_results_count", [total]) }}</span>
         </div>
 
         <div class="moduleElTable" style="border: 1px solid #ebeef5; width: calc(100% - 2px);">

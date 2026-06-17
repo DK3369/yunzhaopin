@@ -30,11 +30,9 @@
         </div>
         <div class="admin_datatip">
             <i class="el-icon-document"></i>
-            数据统计：共 <span @click="init">{{ tinyAllNum }}</span> 条
-            <span class="admin_datatip_n">未审核：<span @click="statusSearch('2')">{{ tinyStatusNum ? tinyStatusNum : 0
-            }}</span>
-                条 </span>
-            <span class="admin_datatip_n">搜索结果： {{ total }} 条</span>
+            {{ lc("admin_data_stats") }} <span @click="init">{{ lc("admin_total_count", [tinyAllNum]) }}</span>
+            <span class="admin_datatip_n"><span @click="statusSearch('2')">{{ lc("admin_pending_review_count", [tinyStatusNum ? tinyStatusNum : 0]) }}</span> </span>
+            <span class="admin_datatip_n">{{ lc("admin_search_results_count", [total]) }}</span>
         </div>
         <div class="moduleElTable moduleElMoreInt" style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
             <el-table :data="list" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange"

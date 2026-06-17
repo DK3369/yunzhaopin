@@ -29,12 +29,12 @@
         </div>
         <div class="admin_datatip">
             <i class="el-icon-document"></i>
-            数据统计：共 <span @click="init">{{ onceAllNum }}</span> 条
-            <span class="admin_datatip_n">未审核：<span @click="statusSearch('3')">{{ onceStatusNum1 ? onceStatusNum1 :
-                0 }}</span> 条 </span>
-            <span class="admin_datatip_n">已过期：<span @click="statusSearch('2')">{{ onceStatusNum2 ? onceStatusNum2 :
-                0 }}</span> 条</span>
-            <span class="admin_datatip_n">搜索结果： {{ total }} 条</span>
+            {{ lc("admin_data_stats") }} <span @click="init">{{ lc("admin_total_count", [onceAllNum]) }}</span>
+            <span class="admin_datatip_n"><span @click="statusSearch('3')">{{ lc("admin_pending_review_count", [onceStatusNum1 ? onceStatusNum1 :
+                0]) }}</span> </span>
+            <span class="admin_datatip_n"><span @click="statusSearch('2')">{{ lc("admin_expired_count", [onceStatusNum2 ? onceStatusNum2 :
+                0]) }}</span></span>
+            <span class="admin_datatip_n">{{ lc("admin_search_results_count", [total]) }}</span>
         </div>
         <div class="moduleElTable" style="border: 1px solid #ebeef5; width: calc(100% - 2px); height: calc(100% - 135px);">
             <el-table :data="list" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange"
@@ -262,8 +262,8 @@
                                 </table>
 
                                 <!-- <div class="tableTancBito">
-                                    <span>联系电话：{{ detail.phone }}</span>
-                                    <span>联系人：{{ detail.linkman }}</span>
+                                    <span>{{ lc("admin_contact_phone_value", [detail.phone]) }}</span>
+                                    <span>{{ lc("admin_contact_person_value", [detail.linkman]) }}</span>
                                 </div>
                                 <div class="tableTancBito">
                                     <span>工作地点：{{ detail.address }}</span>

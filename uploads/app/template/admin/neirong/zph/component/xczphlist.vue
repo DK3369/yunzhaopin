@@ -33,7 +33,7 @@
                         <div class="">
                             <el-link type="primary" :href="scope.row.url" target="_blank"> {{ scope.row.title }}</el-link>
                         </div>
-                        <div class="">会场：{{ scope.row.address }}</div>
+                        <div class="">{{ lc("admin_venue_value", [scope.row.address]) }}</div>
                     </template>
                 </el-table-column>
                 <el-table-column prop="starttime" label="开始时间" width="180" sortable="custom"></el-table-column>
@@ -286,13 +286,13 @@
                     </div>
                     <div class="shcomtel">
                         <span v-if="info.linkman">
-                            联系人：{{info.linkman}}<span v-if="info.linkjob">（{{info.linkjob}}）</span>
+                            {{ lc("admin_contact_person_value", [info.linkman]) }}<span v-if="info.linkjob">（{{info.linkjob}}）</span>
                         </span>
                         <span class="shcomtel_n" v-if="info.linktel">
-                            联系电话：{{info.linktel}}
+                            {{ lc("admin_contact_phone_value", [info.linktel]) }}
                         </span>
                         <span v-if="info.crm_uid != '0'">
-                            业务员：{{info.crm_name}}
+                            {{ lc("admin_salesperson_value", [info.crm_name]) }}
                         </span>
                     </div>
                     <div class="shshowall">
@@ -304,9 +304,9 @@
                                         {{item}}
                                     </el-tag>
                                 </div>
-                                <div class="" v-if="info.hy">从事行业：{{info.hy_n}}</div>
-                                <div class="" v-if="info.pr">企业性质：{{info.pr_n}}</div>
-                                <div class="" v-if="info.mun">企业规模：{{info.mun_n}}</div>
+                                <div class="" v-if="info.hy">{{ lc("admin_industry_value", [info.hy_n]) }}</div>
+                                <div class="" v-if="info.pr">{{ lc("admin_company_nature_value", [info.pr_n]) }}</div>
+                                <div class="" v-if="info.mun">{{ lc("admin_company_size_value", [info.mun_n]) }}</div>
                                 <div class="" v-if="info.provinceid">企业地址：{{info.job_city_one}} {{info.job_city_two}}
                                     {{info.job_city_three}} {{info.address}}
                                 </div>

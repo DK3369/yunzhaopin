@@ -9,7 +9,7 @@
                     <h3>{{ resumeinfo ? resumeinfo.name : '' }}</h3>
                     <span>{{ stringExpEduAge }}</span>
                     <span v-if="!info.hasOwnProperty('matching')" class="moreInOne">
-                        <span v-if="resumeinfo.telphone">手机号：{{ resumeinfo.telphone }}</span>
+                        <span v-if="resumeinfo.telphone">{{ lc("admin_mobile_value", [resumeinfo.telphone]) }}</span>
                         <span v-if="resumeinfo.email">&nbsp;· 邮箱：{{ resumeinfo.email }}</span>
                     </span>
                     <span v-if="expect.add_ip" class="moreInOne">

@@ -346,7 +346,8 @@ class index_controller extends adminCommon{
 
         $data = array(
             "lang" => is_object($i18n) && method_exists($i18n, "getLang") ? $i18n->getLang() : "zh_cn",
-            "messages" => is_object($i18n) && isset($i18n->autoMessages) && is_array($i18n->autoMessages) ? $i18n->autoMessages : array()
+            "messages" => is_object($i18n) && isset($i18n->autoMessages) && is_array($i18n->autoMessages) ? $i18n->autoMessages : array(),
+            "lc" => is_object($i18n) && isset($i18n->messages["lc"]) && is_array($i18n->messages["lc"]) ? $i18n->messages["lc"] : array()
         );
 
         header("content-type:application/json; charset=utf-8");

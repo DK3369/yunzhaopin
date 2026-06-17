@@ -6,10 +6,10 @@
         <el-tag v-if="info.rating_name" type="danger" size="mini">{{ info.rating_name }}</el-tag>
       </div>
       <div class="sh_zwsz_add">
-        <template v-if="info.linkman">联系人：{{ info.linkman }}{{ info.linkjob ? '（' + info.linkjob + '）' : '' }}</template>
-        <span v-if="info.linktel" class="shcomtel_n">联系电话：{{ info.linktel }}{{ info.infostatus == '1' ? '（公开）' :
+        <template v-if="info.linkman">{{ lc("admin_contact_person_value", [info.linkman]) }}{{ info.linkjob ? '（' + info.linkjob + '）' : '' }}</template>
+        <span v-if="info.linktel" class="shcomtel_n">{{ lc("admin_contact_phone_value", [info.linktel]) }}{{ info.infostatus == '1' ? '（公开）' :
           '（不公开）' }}</span>
-        <template v-if="info.crm_name">业务员：{{ info.crm_name }}</template>
+        <template v-if="info.crm_name">{{ lc("admin_salesperson_value", [info.crm_name]) }}</template>
       </div>
       <div class="shcomtel">
         <template v-if="info.reg_date_n">注册时间：{{ info.reg_date_n }}</template>
@@ -25,9 +25,9 @@
                   <el-tag v-for="(item, index) in info.welfare_n" :key="index" size="mini"
                     class="welfare-margin">{{ item }}</el-tag>
                 </div>
-                <div class="">从事行业：{{ info.hy_n ? info.hy_n : '' }} </div>
-                <div class="">企业性质：{{ info.pr_n ? info.pr_n : '' }} </div>
-                <div class="">企业规模：{{ info.mun_n ? info.mun_n : '' }}</div>
+                <div class="">{{ lc("admin_industry_value", [info.hy_n ? info.hy_n : '']) }} </div>
+                <div class="">{{ lc("admin_company_nature_value", [info.pr_n ? info.pr_n : '']) }} </div>
+                <div class="">{{ lc("admin_company_size_value", [info.mun_n ? info.mun_n : '']) }}</div>
                 <div class="">注册资金：{{ info.money ? info.money : '' }} {{ info.money && info.moneytype_n ? info.moneytype_n : '' }}</div>
                 <div class="">企业地址： {{ info.job_city_one ? info.job_city_one : '' }}&nbsp;{{ info.job_city_two ? info.job_city_two : '' }}&nbsp;{{ info.job_city_three ? info.job_city_three : '' }}&nbsp;{{ info.address ? info.address : '' }}</div>
                 <div class="" v-html="info.content ? info.content : ''"></div>

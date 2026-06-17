@@ -16,7 +16,7 @@
     }
 
     var lang = localStorage.getItem("lang") || getCookie("admin_lang") || "en_us";
-    window.yunAdminI18n = window.yunAdminI18n || { lang: lang, messages: {}, keys: [] };
+    window.yunAdminI18n = window.yunAdminI18n || { lang: lang, messages: {}, lc: {}, keys: [] };
 
     function buildKeys() {
         window.yunAdminI18n.keys = Object.keys(window.yunAdminI18n.messages || {}).sort(function (a, b) {
@@ -58,6 +58,25 @@
             }
         }
         return leading + body + trailing;
+    };
+
+    function replaceParams(text, params) {
+        var output = String(text);
+        if (!params) {
+            return output;
+        }
+        for (var i = 0; i < params.length; i++) {
+            output = output.split("{" + i + "}").join(params[i]);
+        }
+        return output;
+    }
+
+    window.lc = function (key, params, fallback) {
+        var lookupKey = key && key.indexOf(".") === -1 ? "lc." + key : key;
+        var messages = window.yunAdminI18n.lc || {};
+        var text = messages[lookupKey] || messages[key] || fallback || key;
+
+        return replaceParams(text, params || []);
     };
 
     window.yunAdminTransText = function (content) {
@@ -136,6 +155,7 @@
                     var data = JSON.parse(xhr.responseText);
                     window.yunAdminI18n.lang = data.lang || lang;
                     window.yunAdminI18n.messages = data.messages || {};
+                    window.yunAdminI18n.lc = data.lc || {};
                     buildKeys();
                 } catch (e) {}
             }
@@ -149,6 +169,11 @@
 
     if (window.Vue) {
         Vue.mixin({
+            methods: {
+                lc: function (key, params, fallback) {
+                    return window.lc(key, params, fallback);
+                }
+            },
             mounted: function () {
                 var el = this.$el;
                 setTimeout(function () { window.yunAdminTranslateDOM(el); }, 0);

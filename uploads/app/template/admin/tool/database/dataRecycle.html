@@ -59,10 +59,10 @@
             <div class="moduleSchools">
                 <div class="drawerModLis" v-for="(item, key) in info" :key="key">
                     <div class="drawerModTite" style="width:30%">
-                        <span>字段名： {{key}}</span>
+                        <span>{{ lc("admin_field_name_value", [key]) }}</span>
                     </div>
                     <div class="drawerModInpt" style="width:60%">
-                        数据： {{item}}
+                        {{ lc("admin_data_value", [item]) }}
                     </div>
                 </div>
             </div>

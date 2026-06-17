@@ -21,9 +21,9 @@
 			</div>
 					 
 		</div>
-		<div class="admin_datatip"><i class="el-icon-document"></i>  数据统计：共 {{ memNum.count }} 条
+		<div class="admin_datatip"><i class="el-icon-document"></i>  {{ lc("admin_data_stats") }} {{ lc("admin_total_count", [memNum.count]) }}
             <span class="admin_datatip_n cp_n" @click="lockList">未处理：{{ memNum.weishenhe }} 条</span>
-            <span class="admin_datatip_n">搜索结果： {{ total }} 条</span>
+            <span class="admin_datatip_n">{{ lc("admin_search_results_count", [total]) }}</span>
 		</div>
 		<div class="moduleElTable" :class="{ 'moduleElTableHig': tableHig }" style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
 			<el-table :data="tableData" style="width: 100%" stripe  @selection-change="selectChange" ref="multipleTable"

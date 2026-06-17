@@ -27,11 +27,11 @@
             </div>
         </div>
         <div class="admin_datatip">
-            <i class="el-icon-document"></i> 数据统计：共 {{ numAll }} 条
-            <span class="admin_datatip_n">已审核：{{ numAudited }} 条 </span>
-            <span class="admin_datatip_n">未审核：{{ numUnaudited }} 条 </span>
-            <span class="admin_datatip_n">未通过：{{ numFailed }} 条</span>
-            <span class="admin_datatip_n">搜索结果： {{ total }} 条</span>
+            <i class="el-icon-document"></i> {{ lc("admin_data_stats") }} {{ lc("admin_total_count", [numAll]) }}
+            <span class="admin_datatip_n">{{ lc("admin_approved_count", [numAudited]) }} </span>
+            <span class="admin_datatip_n">{{ lc("admin_pending_review_count", [numUnaudited]) }} </span>
+            <span class="admin_datatip_n">{{ lc("admin_failed_count", [numFailed]) }}</span>
+            <span class="admin_datatip_n">{{ lc("admin_search_results_count", [total]) }}</span>
         </div>
         <div class="moduleElTable" :class="{ 'modulElTableGai': tableHig }" style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
             <el-table :data="tableData" style="width: 100%" stripe

@@ -31,12 +31,12 @@
                     aria-disabled="false" size="mini" plain>合并<i class="el-icon-arrow-up el-icon--right"></i></el-button>
             </div>
         </div>
-        <div class="admin_datatip"><i class="el-icon-document"></i> 数据统计：
-            <span class="admin_datatip_n">共：{{ partAllNum }} 条 </span>
-            <span class="admin_datatip_n">未审核：{{ status1Num }} 条 </span>
-            <span class="admin_datatip_n">未通过：{{ status2Num }} 条</span>
-            <span class="admin_datatip_n">已过期：{{ status3Num }} 条</span>
-            <span class="admin_datatip_n">搜索结果：{{ total }} 条 </span>
+        <div class="admin_datatip"><i class="el-icon-document"></i> {{ lc("admin_data_stats") }}
+            <span class="admin_datatip_n">{{ lc("admin_total_count", [partAllNum]) }} </span>
+            <span class="admin_datatip_n">{{ lc("admin_pending_review_count", [status1Num]) }} </span>
+            <span class="admin_datatip_n">{{ lc("admin_failed_count", [status2Num]) }}</span>
+            <span class="admin_datatip_n">{{ lc("admin_expired_count", [status3Num]) }}</span>
+            <span class="admin_datatip_n">{{ lc("admin_search_results_count", [total]) }} </span>
         </div>
         <div class="moduleElTable moduleElMediDFur" :class="{ 'modulElTableGaiPart': tableHig }"
             style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
@@ -263,9 +263,9 @@
                         <!--<el-tag type="danger" size="mini">{{searchlist['rating'].value[auditInfo.rating]}}</el-tag>-->
                     </div>
                     <div class="sh_zwsz_add">
-                        联系人：{{ auditInfo.linkman }} <span class="shcomtel_n"
-                            v-if="auditInfo.linktel">联系电话：{{ auditInfo.linktel }} </span>
-                        <span v-if="auditInfo.crm_salesman">业务员：{{ auditInfo.crm_salesman }}</span>
+                        {{ lc("admin_contact_person_value", [auditInfo.linkman]) }} <span class="shcomtel_n"
+                            v-if="auditInfo.linktel">{{ lc("admin_contact_phone_value", [auditInfo.linktel]) }} </span>
+                        <span v-if="auditInfo.crm_salesman">{{ lc("admin_salesperson_value", [auditInfo.crm_salesman]) }}</span>
                     </div>
                     <!--<div class="shcomtel">注册时间：{{auditInfo.reg_date_n}}-->
                     <!--<span class="shcomtel_n">最近登录时间：{{auditInfo.login_date_n}} </span>-->
@@ -276,12 +276,12 @@
                         <div class="shshow">
                             <div class="shshow_tit"><i class="el-icon-document"></i> 基本要求</div>
                             <div class="shshow_p">
-                                <div class="">工作要求：{{ auditInfo.type_n }}</div>
-                                <div class="" v-if="auditInfo.number">招聘人数：{{ auditInfo.number }}</div>
-                                <div class="" v-if="auditInfo.sex_n">性别要求：{{ auditInfo.sex_n }}</div>
-                                <div class="" v-if="auditInfo.billing_cycle_n">结算周期：{{ auditInfo.billing_cycle_n }}</div>
-                                <div class="" v-if="auditInfo.sdate_n">兼职有效期：{{ auditInfo.sdate_n }}</div>
-                                <div class="" v-if="auditInfo.address">工作地址：{{ auditInfo.address }}</div>
+                                <div class="">{{ lc("admin_work_requirement_value", [auditInfo.type_n]) }}</div>
+                                <div class="" v-if="auditInfo.number">{{ lc("admin_headcount_value", [auditInfo.number]) }}</div>
+                                <div class="" v-if="auditInfo.sex_n">{{ lc("admin_gender_requirement_value", [auditInfo.sex_n]) }}</div>
+                                <div class="" v-if="auditInfo.billing_cycle_n">{{ lc("admin_billing_cycle_value", [auditInfo.billing_cycle_n]) }}</div>
+                                <div class="" v-if="auditInfo.sdate_n">{{ lc("admin_part_valid_until_value", [auditInfo.sdate_n]) }}</div>
+                                <div class="" v-if="auditInfo.address">{{ lc("admin_work_address_value", [auditInfo.address]) }}</div>
                             </div>
                             <div style="display: flex; flex-direction: column;">
                                 <span>工作时间</span>

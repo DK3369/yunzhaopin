@@ -44,7 +44,7 @@
                 </tr>
                 <tr v-for="(item,index) in tpl_temp" :key="index">
                     <th width="150" height="36">{{item}}</th>
-                    <td>代码：{{index}}</td>
+                    <td>{{ lc("admin_code_value", [index]) }}</td>
                 </tr>
 
             </table>

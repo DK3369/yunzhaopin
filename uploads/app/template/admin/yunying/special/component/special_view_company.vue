@@ -81,9 +81,9 @@
       </div>
 
 
-      <div class="admin_datatip"><i class="el-icon-document"></i> 数据统计：企业总数 {{ totalNum }} 条
-        <span class="admin_datatip_n">未加入：{{ noNum }} 条</span>
-        <span class="admin_datatip_n">已加入：{{ applyNum }} 条 </span>
+      <div class="admin_datatip"><i class="el-icon-document"></i> {{ lc("admin_data_stats") }} {{ lc("admin_company_total_count", [totalNum]) }}
+        <span class="admin_datatip_n">{{ lc("admin_not_joined_count", [noNum]) }}</span>
+        <span class="admin_datatip_n">{{ lc("admin_joined_count", [applyNum]) }} </span>
       </div>
       <div class="moduleElenAlRight" :class="{ 'moduleElenkuandu': seachbutn }">
         <div class="moduleElTable">

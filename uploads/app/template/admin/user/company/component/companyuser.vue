@@ -55,11 +55,11 @@
         </div>
         <div class="admin_datatip">
             <i class="el-icon-document"></i> 数据统计
-            <span class="admin_datatip_n">共：{{allNum }} 条</span>
-            <span class="admin_datatip_n">未审核：{{status1Num }} 条</span>
-            <span class="admin_datatip_n">未通过：{{status2Num }} 条</span>
-            <span class="admin_datatip_n">已锁定：{{status3Num }} 条</span>
-            <span class="admin_datatip_n">搜索结果：{{total }} 条</span>
+            <span class="admin_datatip_n">{{ lc("admin_total_count", [allNum]) }}</span>
+            <span class="admin_datatip_n">{{ lc("admin_pending_review_count", [status1Num]) }}</span>
+            <span class="admin_datatip_n">{{ lc("admin_failed_count", [status2Num]) }}</span>
+            <span class="admin_datatip_n">{{ lc("admin_locked_count", [status3Num]) }}</span>
+            <span class="admin_datatip_n">{{ lc("admin_search_results_count", [total]) }}</span>
         </div>
         <div class="moduleElTable" :class="{ 'modulElTableGai': tableHig }"
             style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
@@ -373,14 +373,14 @@
                         <el-tag type="danger" size="mini">{{ curr_com.rating_name }}</el-tag>
                     </div>
                     <div class="sh_zwsz_add">
-                        <span v-if="curr_com.linkman">联系人：{{ curr_com.linkman }}<span v-if="curr_com.linkjob">({{
+                        <span v-if="curr_com.linkman">{{ lc("admin_contact_person_value", [curr_com.linkman]) }}<span v-if="curr_com.linkjob">({{
                             curr_com.linkjob }})</span></span>
-                        <span class="shcomtel_n" v-if="curr_com.linktel">联系手机：{{ curr_com.linktel }}
+                        <span class="shcomtel_n" v-if="curr_com.linktel">{{ lc("admin_contact_mobile_value", [curr_com.linktel]) }}
                             <span>{{ curr_com.infostatus == 1 ? '（公开）' : '（不公开）' }}</span>
                             <span v-if="curr_com.moblie_address">归属地：{{ curr_com.moblie_address }}</span>
                         </span>
                         <span class="shcomtel_n" v-if="curr_com.linkphone">固定电话：{{ curr_com.linkphone }}</span>
-                        <span v-if="curr_com.crm_uid != '0'">业务员：{{ curr_com.crm_name }}</span>
+                        <span v-if="curr_com.crm_uid != '0'">{{ lc("admin_salesperson_value", [curr_com.crm_name]) }}</span>
                     </div>
                     <div class="shcomtel">
                         <span v-if="curr_com.reg_date_n">注册时间：{{ curr_com.reg_date_n }}</span>
@@ -395,9 +395,9 @@
                                     <el-tag v-for="(item, key) in curr_com.welfare_n" :key="key" size="mini">{{ item
                                     }}</el-tag>
                                 </div>
-                                <div v-if="curr_com.hy_n">从事行业：{{ curr_com.hy_n }}</div>
-                                <div v-if="curr_com.pr_n">企业性质：{{ curr_com.pr_n }}</div>
-                                <div v-if="curr_com.mun_n">企业规模：{{ curr_com.mun_n }}</div>
+                                <div v-if="curr_com.hy_n">{{ lc("admin_industry_value", [curr_com.hy_n]) }}</div>
+                                <div v-if="curr_com.pr_n">{{ lc("admin_company_nature_value", [curr_com.pr_n]) }}</div>
+                                <div v-if="curr_com.mun_n">{{ lc("admin_company_size_value", [curr_com.mun_n]) }}</div>
                                 <div v-if="curr_com.provinceid">企业地址：{{ curr_com.job_city_one }} {{ curr_com.job_city_two }}
                                     {{ curr_com.job_city_three }} {{ curr_com.address }}
                                 </div>
@@ -521,8 +521,8 @@
                         <span class="shcomtel_n" v-if="curr_com.login_date_n">最近登录 ：{{ curr_com.login_date_n }} </span>
                         <span class=" " v-if="curr_com.reg_ip"> IP：{{ curr_com.reg_ip }} </span>
                         <span class=" ">
-                            <span class="shcomtel_n" v-if="curr_com.source_n != ''">来源：{{ curr_com.source_n }}</span>
-                            <span class=" ">站点：{{ dnameArr[curr_com.did] }}</span>
+                            <span class="shcomtel_n" v-if="curr_com.source_n != ''">{{ lc("admin_source_value", [curr_com.source_n]) }}</span>
+                            <span class=" ">{{ lc("admin_site_value", [dnameArr[curr_com.did]]) }}</span>
                             <el-button type="text" @click="drawerfpzd = true"><i
                                     class="el-icon-map-location"></i>分配站点</el-button>
                         </span>
@@ -553,9 +553,9 @@
                                 </span>
                             </div>
                             <div class="shshow_p">
-                                <div class="cominfo">联系人：{{ curr_com.linkman ? curr_com.linkman : '暂未填写' }}</div>
-                                <div class="cominfo">联系电话：{{ curr_com.phone ? curr_com.phone : '暂未填写' }}</div>
-                                <div class="cominfo" v-if="curr_com.crm_uid > 0">业务员：{{ curr_com.crm_name }}</div>
+                                <div class="cominfo">{{ lc("admin_contact_person_value", [curr_com.linkman ? curr_com.linkman : '暂未填写']) }}</div>
+                                <div class="cominfo">{{ lc("admin_contact_phone_value", [curr_com.phone ? curr_com.phone : '暂未填写']) }}</div>
+                                <div class="cominfo" v-if="curr_com.crm_uid > 0">{{ lc("admin_salesperson_value", [curr_com.crm_name]) }}</div>
                             </div>
                             <div class="shshow_tit"><i class="el-icon-office-building"></i> 基本资料</div>
                             <div class="shshow_p">
@@ -634,9 +634,9 @@
                                         {{ item }}
                                     </el-tag>
                                 </div>
-                                <div class="cominfo" v-if="curr_com.hy_n != ''">从事行业：{{ curr_com.hy_n }}</div>
-                                <div class="cominfo" v-if="curr_com.pr_n != ''">企业性质：{{ curr_com.pr_n }}</div>
-                                <div class="cominfo" v-if="curr_com.mun_n != ''">企业规模：{{ curr_com.mun_n }}</div>
+                                <div class="cominfo" v-if="curr_com.hy_n != ''">{{ lc("admin_industry_value", [curr_com.hy_n]) }}</div>
+                                <div class="cominfo" v-if="curr_com.pr_n != ''">{{ lc("admin_company_nature_value", [curr_com.pr_n]) }}</div>
+                                <div class="cominfo" v-if="curr_com.mun_n != ''">{{ lc("admin_company_size_value", [curr_com.mun_n]) }}</div>
                                 <div class="cominfo">企业地址：{{ curr_com.job_city_one }} {{ curr_com.job_city_two }}
                                     {{ curr_com.job_city_three }} {{ curr_com.address }}
                                 </div>
@@ -1413,7 +1413,7 @@
                                 <div class="hb_listbox_name" style="background:#fff;">
                                     <div class="hb_cz">
                                         <div class="namneyulan">
-                                            <span class="bmanmic">模板名称：{{ item.name }}</span>
+                                            <span class="bmanmic">{{ lc("admin_template_name_value", [item.name]) }}</span>
                                             <el-link target="_blank" :href="item.preview_url">[预览]</el-link>
                                         </div>
 
