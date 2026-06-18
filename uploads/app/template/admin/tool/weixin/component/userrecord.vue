@@ -161,9 +161,9 @@ module.exports = {
 
         async clearwx() {
             var that = this;
-            this.$confirm('确定要清除三天前的数据？', '温馨提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
+            this.$confirm(window.yunAdminT('确定要清除三天前的数据？'), window.yunAdminT('温馨提示'), {
+                confirmButtonText: window.yunAdminT('确定'),
+                cancelButtonText: window.yunAdminT('取消'),
                 type: 'warning'
             }).then(() => {
                 httpPost('m=tool&c=weixinrecord&a=clearwx', {}).then(function (response) {

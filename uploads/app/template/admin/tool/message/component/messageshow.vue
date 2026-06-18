@@ -416,7 +416,7 @@
                 
                 if (parseInt(that.moblie_codetime) < 2) {
 
-                    message.warning("短信验证时效，建议大于两分钟！");
+                    message.warning(window.yunAdminT('短信验证时效，建议大于两分钟！'));
                     return false;
                     
                 }

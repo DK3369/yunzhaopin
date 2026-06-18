@@ -215,5 +215,11 @@ return array (
     'admin_intended_area_value' => 'Preferred Area: {0};',
     'admin_education_value' => 'Education: {0};',
     'admin_experience_value' => 'Work Experience: {0};',
+    'admin_reply_image_required' => 'Image is required for message {0}.',
+    'admin_reply_card_title_required' => 'Card title is required for message {0}.',
+    'admin_reply_appid_required' => 'Mini Program AppID is required for message {0}.',
+    'admin_reply_path_required' => 'Mini Program path is required for message {0}.',
+    'admin_reply_cover_required' => 'Mini Program cover image is required for message {0}.',
+    'admin_reply_text_required' => 'Text content is required for message {0}.',
   ),
 );

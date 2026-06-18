@@ -255,10 +255,10 @@ module.exports = {
             tableData2: [],
             options: [{
                 value: '1',
-                label: '按年统计'
+                label: window.yunAdminT('按年统计')
             }, {
                 value: '2',
-                label: '按月统计'
+                label: window.yunAdminT('按月统计')
             }],
             value: '',
             statistics : ['gerezce','login_log','jilizce','comzce','company_login_log','fabuzhw', 'jilitod', 'liaotan', 'yaoqms', 'jilixza']

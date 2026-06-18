@@ -322,7 +322,7 @@
                 
                 if (that.sy_email_online == '') {
 
-                    message.warning("请选择邮件发送方式！");
+                    message.warning(window.yunAdminT('请选择邮件发送方式！'));
                     return false;
                     
                 }
@@ -375,15 +375,15 @@
             },
             testEamil:function(id){
             	var that = this;
-            	if(!id){
-            		message.warning("请选择需要测试的邮件服务器！");
+                if(!id){
+                    message.warning(window.yunAdminT('请选择需要测试的邮件服务器！'));
                     return false;
 				}else{
-					this.$prompt('填写测试邮箱', '提示', {
-						confirmButtonText: '确定',
-						cancelButtonText: '取消',
+					this.$prompt(window.yunAdminT('填写测试邮箱'), window.yunAdminT('提示'), {
+						confirmButtonText: window.yunAdminT('确定'),
+						cancelButtonText: window.yunAdminT('取消'),
 						inputPattern: /^([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9\-]+@([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,4}$/,
-						inputErrorMessage: '邮箱格式不正确，请重新输入！',
+						inputErrorMessage: window.yunAdminT('邮箱格式不正确，请重新输入！'),
 					}).then(({ value }) => {
 						var param = {
 							ceshi_email:value,
@@ -414,7 +414,7 @@
             delEmail:function(id){
             	var _this = this;
                 if(!id){
-					message.warning("请选择需要删除的邮件服务器！");
+					message.warning(window.yunAdminT('请选择需要删除的邮件服务器！'));
                     return false;
                 }        
                 var params = {

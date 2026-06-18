@@ -269,10 +269,10 @@
 
                 },
                 editorInit: function () {
-                    var msg = '点击模板参数自动复制粘贴至光标处';
+                    var msg = window.yunAdminT('点击模板参数自动复制粘贴至光标处');
                     if (this.temptype != '1') {
 
-                        msg = '点击模板参数自动复制粘贴，编辑器在源码模式下，需要手动粘贴';
+                        msg = window.yunAdminT('点击模板参数自动复制粘贴，编辑器在源码模式下，需要手动粘贴');
                         if (tem_header) {
                             tem_header.setContent(this.info.header);
                         } else {
@@ -329,7 +329,7 @@
                     }
 
                     this.$notify.info({
-                        title: '提示',
+                        title: window.yunAdminT('提示'),
                         message: msg,
                         duration: 3000
                     });
@@ -533,7 +533,7 @@
 
                         var msg_arr = msg.split('_');
 
-                        msg = '<a data-miniprogram-type="text"  data-miniprogram-appid="' + msg_arr[0] + '" data-miniprogram-path="' + msg_arr[1] + '">查看详情</a>';
+                        msg = '<a data-miniprogram-type="text"  data-miniprogram-appid="' + msg_arr[0] + '" data-miniprogram-path="' + msg_arr[1] + '">' + window.yunAdminT('查看详情') + '</a>';
                     }
 
                     oInput.value = msg;
@@ -606,11 +606,11 @@
                     }
 
                     if (tem_title == '') {
-                        message.error("请填写模板名称！");
+                        message.error(window.yunAdminT('请填写模板名称！'));
                         return false
                     }
                     if (tem_body_v == '') {
-                        message.error("请填写模板正文！");
+                        message.error(window.yunAdminT('请填写模板正文！'));
                         return false
                     }
 

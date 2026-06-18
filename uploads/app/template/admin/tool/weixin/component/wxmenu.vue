@@ -376,7 +376,7 @@ module.exports = {
                         message.error(res.msg);
                     }
                 })
-            }, '确定要同步菜单至微信服务器？');
+            }, window.yunAdminT('确定要同步菜单至微信服务器？'));
         },
         doLayout(){
             if (this.$refs.table) {

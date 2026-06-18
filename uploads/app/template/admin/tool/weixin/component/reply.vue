@@ -477,11 +477,11 @@ module.exports = {
             var conkey = parseInt(this.conkey);
             var conarr = deepClone(this.conarr);
 
-            var msgtype_n = '文本';
+            var msgtype_n = window.yunAdminT('文本');
             if (msgtype == 'image') {
-                msgtype_n = '图片';
+                msgtype_n = window.yunAdminT('图片');
             } else if (msgtype == 'xcx') {
-                msgtype_n = '小程序卡片';
+                msgtype_n = window.yunAdminT('小程序卡片');
             }
             conarr[conkey].msgtype = msgtype;
             conarr[conkey].msgtype_n = msgtype_n;
@@ -506,7 +506,6 @@ module.exports = {
             var row = deepClone(self.row);
             var id = '';
             var msgtype = '';
-            var errmsg = '';
             var isadd = 0;
             var con_post = [];
 
@@ -519,8 +518,6 @@ module.exports = {
             }
 
             for (let i in conarr) {
-
-                errmsg = '消息' + parseInt(i + 1) + '的';
 
                 id = conarr[i].id;
 
@@ -539,7 +536,7 @@ module.exports = {
                 if (msgtype == 'image') {
 
                     if (conarr[i].media_id == '' && conarr[i].newimage == '') {
-                        message.warning(errmsg + '图片不能为空！');
+                        message.warning(window.lc('admin_reply_image_required', [parseInt(i + 1)]));
                         return false;
                     }
 
@@ -549,19 +546,19 @@ module.exports = {
                 } else if (msgtype == 'xcx') {
 
                     if (conarr[i].xcx_title == '') {
-                        message.warning(errmsg + '卡片标题不能为空！');
+                        message.warning(window.lc('admin_reply_card_title_required', [parseInt(i + 1)]));
                         return false;
                     }
                     if (conarr[i].xcx_appid == '') {
-                        message.warning(errmsg + '小程序AppID不能为空！');
+                        message.warning(window.lc('admin_reply_appid_required', [parseInt(i + 1)]));
                         return false;
                     }
                     if (conarr[i].xcx_pagepath == '') {
-                        message.warning(errmsg + '小程序路径不能为空！');
+                        message.warning(window.lc('admin_reply_path_required', [parseInt(i + 1)]));
                         return false;
                     }
                     if (conarr[i].media_id == '' && conarr[i].newimage == '') {
-                        message.warning(errmsg + '小程序封面图不能为空！');
+                        message.warning(window.lc('admin_reply_cover_required', [parseInt(i + 1)]));
                         return false;
                     }
 
@@ -575,7 +572,7 @@ module.exports = {
                 } else {
 
                     if (conarr[i].content == '') {
-                        message.warning(errmsg + '文本内容不能为空！');
+                        message.warning(window.lc('admin_reply_text_required', [parseInt(i + 1)]));
                         return false;
                     }
                     conval.addpic = 0;

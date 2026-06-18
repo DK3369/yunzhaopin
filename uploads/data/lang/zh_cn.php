@@ -215,5 +215,11 @@ return array (
     'admin_intended_area_value' => '意向地区：{0}；',
     'admin_education_value' => '学历：{0}；',
     'admin_experience_value' => '工作经验：{0}；',
+    'admin_reply_image_required' => '消息{0}的图片不能为空！',
+    'admin_reply_card_title_required' => '消息{0}的卡片标题不能为空！',
+    'admin_reply_appid_required' => '消息{0}的小程序AppID不能为空！',
+    'admin_reply_path_required' => '消息{0}的小程序路径不能为空！',
+    'admin_reply_cover_required' => '消息{0}的小程序封面图不能为空！',
+    'admin_reply_text_required' => '消息{0}的文本内容不能为空！',
   ),
 );
