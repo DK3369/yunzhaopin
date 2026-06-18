@@ -29,7 +29,7 @@ module.exports = {
       page: 0,
       tableData: [], //表格数据
       loading:false,
-      emptytext: '暂无数据',
+      emptytext: window.yunAdminT('暂无数据'),
     }
   },
   mounted() {
@@ -69,9 +69,9 @@ module.exports = {
       httpPost('m=system&c=category_job_class&a=ajax', sendData).then(function (response) {
         let res = response.data;
         if (res.error === 0) {
-          message.success('修改成功');
+          message.success(window.yunAdminT('修改成功'));
         } else {
-          message.error('修改失败');
+          message.error(window.yunAdminT('修改失败'));
         }
         _this.oldData = null;
       }).catch(function (error) {
@@ -82,7 +82,7 @@ module.exports = {
       let _this = this;
       let params = { "page": this.page };
       _this.loading = true;
-      _this.emptytext = "数据加载中";
+      _this.emptytext = window.yunAdminT('数据加载中');
       httpPost('m=system&c=category_job_class&a=ajaxchachong', params).then(function (response) {
         let res = response.data;
         if (res.error === 0) {
@@ -90,7 +90,7 @@ module.exports = {
           _this.page = res.data.page;
           _this.loading = false;
           if (_this.tableData.length === 0){
-              _this.emptytext = "暂无数据";
+              _this.emptytext = window.yunAdminT('暂无数据');
           }
         }
       }).catch(function (error) {

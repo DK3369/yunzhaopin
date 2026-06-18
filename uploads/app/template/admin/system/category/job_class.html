@@ -129,15 +129,15 @@
         el: '#cityfl',
         data: function () {
             return {
-                emptytext: '暂无数据',
+                emptytext: window.yunAdminT('暂无数据'),
                 loading: false,
-                title: '添加类别',
+                title: window.yunAdminT('添加类别'),
                 tableData: [], //表格数据
                 checked: false,
                 isIndeterminate: false,// checkbox 的不确定状态
                 selectedItem: [],
                 addVisible: false,
-                titleAddEdit: '添加类别',
+                titleAddEdit: window.yunAdminT('添加类别'),
                 oldData: null,
                 chachongVisible: false,
                 chachongPage: 0,
@@ -181,7 +181,7 @@
                 this.addVisible = false;
                 let _this = this;
                 _this.loading = true;
-                _this.emptytext = "数据加载中";
+                _this.emptytext = window.yunAdminT('数据加载中');
                 httpPost('m=system&c=category_job_class&a=index').then(function (response) {
                     let res = response.data;
                     res.data.forEach((item) => {
@@ -190,7 +190,7 @@
                     _this.tableData = res.data;
                     _this.loading = false;
                     if (_this.tableData.length === 0){
-                        _this.emptytext = "暂无数据";
+                        _this.emptytext = window.yunAdminT('暂无数据');
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -200,7 +200,7 @@
                 let params = {};
                 if (isMore) {
                     if (!this.selectedItem.length) {
-                        message.error('请选择要删除的数据');
+                        message.error(window.yunAdminT('请选择要删除的数据'));
                         return false;
                     }
                     let list = [];
@@ -223,10 +223,10 @@
                 httpPost('m=system&c=category_job_class&a=del', params).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success('删除成功！');
+                        message.success(window.yunAdminT('删除成功！'));
                         _this.getList();
                     } else {
-                        message.error('删除失败！');
+                        message.error(window.yunAdminT('删除失败！'));
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -267,9 +267,9 @@
                 httpPost('m=system&c=category_job_class&a=ajax', sendData, {hideloading: true}).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success('修改成功');
+                        message.success(window.yunAdminT('修改成功'));
                     } else {
-                        message.error('修改失败');
+                        message.error(window.yunAdminT('修改失败'));
                     }
                     _this.oldData = null;
                     _this.getList();
@@ -293,9 +293,9 @@
                     let res = response.data;
                     if (res.error === 0) {
                         _this.getList();
-                        message.success('修改成功');
+                        message.success(window.yunAdminT('修改成功'));
                     } else {
-                        message.error('修改失败');
+                        message.error(window.yunAdminT('修改失败'));
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -305,7 +305,7 @@
                 delConfirm(this, {
                     page: 0,
                     pagesize: 100
-                }, this.doPinyin, '未设置拼音的相关分类将根据中文名称自动生成拼音？');
+                }, this.doPinyin, window.yunAdminT('未设置拼音的相关分类将根据中文名称自动生成拼音？'));
             },
             /**
              * 生成拼音
@@ -316,7 +316,7 @@
                 httpPost('m=system&c=category_job_class&a=ajaxpinyin', params).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success('生成拼音成功！');
+                        message.success(window.yunAdminT('生成拼音成功！'));
                         _this.getList();
                     } else if (res.error === 1) {
                         message.warning(res.msg);
@@ -331,12 +331,12 @@
                 let _this = this;
                 delConfirm(this, {}, function () {
                     httpPost('m=system&c=category_job_class&a=clearpinyin').then(function (response) {
-                        message.success('拼音已清空！');
+                        message.success(window.yunAdminT('拼音已清空！'));
                         _this.getList();
                     }).catch(function (error) {
                         console.log(error);
                     });
-                }, '清空所有职位类别对应拼音？');
+                }, window.yunAdminT('清空所有职位类别对应拼音？'));
             },
         },
         components: {

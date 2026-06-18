@@ -65,7 +65,7 @@ module.exports = {
     },
     data: function () {
         return {
-            emptytext: '暂无数据',
+            emptytext: window.yunAdminT('暂无数据'),
             tableData: [], //表格数据
             checked: false,
             isIndeterminate: false,// checkbox 的不确定状态
@@ -116,9 +116,9 @@ module.exports = {
             httpPost('m=system&c=category_userclass&a=ajax', sendData, {hideloading: true}).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success('修改成功');
+                    message.success(window.yunAdminT('修改成功'));
                 } else {
-                    message.error('修改失败');
+                    message.error(window.yunAdminT('修改失败'));
                 }
                 _this.oldData = null;
                 _this.getList();
@@ -149,7 +149,7 @@ module.exports = {
             let _this = this;
             let params = {id: this.id};
 			_this.loading = true;
-            _this.emptytext = "数据加载中";
+            _this.emptytext = window.yunAdminT('数据加载中');
             httpPost('m=system&c=category_userclass&a=up', params).then(function (response) {
                 let res = response.data;
                 let list = [];
@@ -163,7 +163,7 @@ module.exports = {
                 _this.position = res.data.position;
 				_this.loading = false;
                 if (_this.tableData.length === 0){
-                    _this.emptytext = "暂无数据";
+                    _this.emptytext = window.yunAdminT('暂无数据');
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -181,7 +181,7 @@ module.exports = {
             let params = {};
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error('请选择要删除的数据');
+                    message.error(window.yunAdminT('请选择要删除的数据'));
                     return false;
                 }
                 let list = [];
@@ -204,10 +204,10 @@ module.exports = {
             httpPost('m=system&c=category_userclass&a=del', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success('删除成功！');
+                    message.success(window.yunAdminT('删除成功！'));
                     _this.getList();
                 } else {
-                    message.error('删除失败！');
+                    message.error(window.yunAdminT('删除失败！'));
                 }
             }).catch(function (error) {
                 console.log(error);

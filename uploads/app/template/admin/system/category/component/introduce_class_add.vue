@@ -75,7 +75,7 @@ module.exports = {
             let params = JSON.parse(JSON.stringify(this.ruleForm));
 
             if (params.name == '') {
-                message.error('类别名称不能为空！');
+                message.error(window.yunAdminT('类别名称不能为空！'));
                 return;
             }
             params.id = this.id;

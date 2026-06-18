@@ -72,7 +72,7 @@
         el: '#hyfl',
         data: function () {
             return {
-                emptytext: '暂无数据',
+                emptytext: window.yunAdminT('暂无数据'),
                 loading: false,
                 tableData: [], //表格数据
                 checked: false,
@@ -112,13 +112,13 @@
             getList() {
                 let _this = this;
                 _this.loading = true;
-                _this.emptytext = "数据加载中";
+                _this.emptytext = window.yunAdminT('数据加载中');
                 httpPost('m=system&c=category_reason&a=index').then(function (response) {
                     let res = response.data;
                     _this.tableData = res.data;
                     _this.loading = false;
                     if (_this.tableData.length === 0){
-                        _this.emptytext = "暂无数据";
+                        _this.emptytext = window.yunAdminT('暂无数据');
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -130,21 +130,21 @@
                 params.name = params.name.split("\n").join("-");
 
                 if (params.name == '') {
-                    message.error('举报原因不能为空！');
+                    message.error(window.yunAdminT('举报原因不能为空！'));
                     return;
                 }
                 _this.submitLoading = true;
                 httpPost('m=system&c=category_reason&a=save', params).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success('添加成功！');
+                        message.success(window.yunAdminT('添加成功！'));
                         _this.getList();
                         _this.clearForm();
                         _this.addVisible = false;
                     } else if (res.error === 1) {
-                        message.error('添加失败！');
+                        message.error(window.yunAdminT('添加失败！'));
                     } else if (res.error === 2) {
-                        message.error('已有此类别，请重新输入！');
+                        message.error(window.yunAdminT('已有此类别，请重新输入！'));
                     } else {
                         message.error(res.msg);
                     }
@@ -161,7 +161,7 @@
                 let params = {};
                 if (isMore) {
                     if (!this.selectedItem.length) {
-                        message.error('请选择要删除的数据');
+                        message.error(window.yunAdminT('请选择要删除的数据'));
                         return false;
                     }
                     let list = [];
@@ -184,10 +184,10 @@
                 httpPost('m=system&c=category_reason&a=del', params).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success('删除成功！');
+                        message.success(window.yunAdminT('删除成功！'));
                         _this.getList();
                     } else {
-                        message.error('删除失败！');
+                        message.error(window.yunAdminT('删除失败！'));
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -225,9 +225,9 @@
                 httpPost('m=system&c=category_reason&a=save', sendData, { hideloading: true }).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success('修改成功');
+                        message.success(window.yunAdminT('修改成功'));
                     } else {
-                        message.error('修改失败');
+                        message.error(window.yunAdminT('修改失败'));
                     }
                     _this.oldData = null;
                     _this.getList();

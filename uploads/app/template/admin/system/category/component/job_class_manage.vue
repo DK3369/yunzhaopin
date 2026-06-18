@@ -154,9 +154,9 @@ module.exports = {
             tid: 0,
             threeid: 0,
             addVisible: false,
-            titleAddEdit: '添加类别',
+            titleAddEdit: window.yunAdminT('添加类别'),
             loading: false,
-            emptytext: '暂无数据',
+            emptytext: window.yunAdminT('暂无数据'),
         }
     },
     created() {
@@ -187,7 +187,7 @@ module.exports = {
             //清空列表
             let newlist = [];
             _this.loading = true;
-            _this.emptytext = "数据加载中";
+            _this.emptytext = window.yunAdminT('数据加载中');
             httpPost('m=system&c=category_job_class&a=up', {id: this.id}).then(function (response) {
                 let res = response.data;
                 _this.position = res.data.position;
@@ -216,7 +216,7 @@ module.exports = {
                 _this.tableData = newlist;
                 _this.loading = false;
                 if (_this.tableData.length === 0){
-                    _this.emptytext = "暂无数据";
+                    _this.emptytext = window.yunAdminT('暂无数据');
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -226,7 +226,7 @@ module.exports = {
             let params = {};
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error('请选择要删除的数据');
+                    message.error(window.yunAdminT('请选择要删除的数据'));
                     return false;
                 }
                 let list = [];
@@ -249,10 +249,10 @@ module.exports = {
             httpPost('m=system&c=category_job_class&a=del', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success('删除成功！');
+                    message.success(window.yunAdminT('删除成功！'));
                     _this.getList();
                 } else {
-                    message.error('删除失败！');
+                    message.error(window.yunAdminT('删除失败！'));
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -293,9 +293,9 @@ module.exports = {
             httpPost('m=system&c=category_job_class&a=ajax', sendData, {hideloading: true}).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success('修改成功');
+                    message.success(window.yunAdminT('修改成功'));
                 } else {
-                    message.error('修改失败');
+                    message.error(window.yunAdminT('修改失败'));
                 }
                 _this.oldData = null;
                 _this.getList();
@@ -315,9 +315,9 @@ module.exports = {
                 let res = response.data;
                 if (res.error === 0) {
                     _this.getList();
-                    message.success('修改成功');
+                    message.success(window.yunAdminT('修改成功'));
                 } else {
-                    message.error('修改失败');
+                    message.error(window.yunAdminT('修改失败'));
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -365,15 +365,15 @@ module.exports = {
                 httpPost('m=system&c=category_job_class&a=move', params).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success('职位类别移动成功！')
+                        message.success(window.yunAdminT('职位类别移动成功！'))
                         _this.getList();
                     } else {
-                        message.error('职位类别移动失败！')
+                        message.error(window.yunAdminT('职位类别移动失败！'))
                     }
                 }).catch(function (error) {
                     console.log(error);
                 });
-            }, '移动分类可能导致现有数据职位类别混淆，确认移动？');
+            }, window.yunAdminT('移动分类可能导致现有数据职位类别混淆，确认移动？'));
         },
         editRow(scope) {
             let item = scope.row;
@@ -387,7 +387,7 @@ module.exports = {
                 this.tid = 0;
                 this.threeid = item.id;
             }
-            this.titleAddEdit = '修改类别';
+            this.titleAddEdit = window.yunAdminT('修改类别');
             this.addVisible = true;
         }
     },

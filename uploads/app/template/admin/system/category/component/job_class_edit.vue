@@ -216,7 +216,7 @@ module.exports = {
             let params = JSON.parse(JSON.stringify(this.ruleForm));
             params.submit = 'submit';
             if (params.position == '') {
-                message.error('类别名称不能为空！');
+                message.error(window.yunAdminT('类别名称不能为空！'));
                 return;
             }
             _this.submitLoading = true;

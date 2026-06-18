@@ -69,15 +69,15 @@ module.exports = {
             params.str = params.str.split("\n").join("-");
 
             if (params.ctype == '' || params.ctype == null) {
-                message.error('请选择类型！');
+                message.error(window.yunAdminT('请选择类型！'));
                 return;
             }
             if (params.name == '') {
-                message.error('类别名称不能为空！');
+                message.error(window.yunAdminT('类别名称不能为空！'));
                 return;
             }
             if (params.ctype == '1' && $.trim(params.str) == '') {
-                message.error('调用变量名不能为空！');
+                message.error(window.yunAdminT('调用变量名不能为空！'));
                 return;
             }
             _this.submitLoading = true;

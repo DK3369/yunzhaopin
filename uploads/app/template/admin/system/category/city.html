@@ -112,7 +112,7 @@
         el: '#cityfl',
         data: function () {
             return {
-                emptytext: '暂无数据',
+                emptytext: window.yunAdminT('暂无数据'),
                 loading: false,
                 submitLoading: false,
                 letterOption: [],
@@ -129,7 +129,7 @@
                 level: 1,
                 chachongVisible: false,
                 letterOptions: Object.freeze(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",]),
-                displayOptions: Object.freeze([{"label": "是", "value": "1"}, {"label": "否", "value": "0"}]),
+                displayOptions: Object.freeze([{"label": window.yunAdminT("是"), "value": "1"}, {"label": window.yunAdminT("否"), "value": "0"}]),
                 maps: new Map(),
             }
         },
@@ -272,13 +272,13 @@
                 this.addVisible = false;
                 let _this = this;
                 _this.loading = true;
-                _this.emptytext = "数据加载中";
+                _this.emptytext = window.yunAdminT('数据加载中');
                 httpPost('m=system&c=category_city&a=index').then(function (response) {
                     let res = response.data;
                     _this.tableData = res.data;
                     _this.loading = false;
                     if (_this.tableData.length === 0){
-                        _this.emptytext = "暂无数据";
+                        _this.emptytext = window.yunAdminT('暂无数据');
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -299,7 +299,7 @@
                 this.keyid = 0;
                 this.keyid_name = '';
                 this.level = 1;
-                this.addTitle = '添加省级行政区';
+                this.addTitle = window.yunAdminT('添加省级行政区');
                 this.addVisible = true;
             },
             /**
@@ -311,9 +311,9 @@
                 this.keyid_name = scope.row.name;
                 this.level = levelNew;
                 if (levelNew == 2) {
-                    this.addTitle = '添加地级行政区';
+                    this.addTitle = window.yunAdminT('添加地级行政区');
                 } else if (levelNew == 3) {
-                    this.addTitle = '添加县级行政区';
+                    this.addTitle = window.yunAdminT('添加县级行政区');
                 } else {
                     this.addTitle = '';
                 }
@@ -327,7 +327,7 @@
                 let row = scope.row;
                 let index = scope.$index;
                 if (row.name == "") {
-                    message.error("城市名称不能为空！");
+                    message.error(window.yunAdminT('城市名称不能为空！'));
                     return false;
                 }
 
@@ -336,7 +336,7 @@
                 httpPost('m=system&c=category_city&a=up_single', params).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success('更新成功！');
+                        message.success(window.yunAdminT('更新成功！'));
                     } else {
                         message.error(res.msg);
                     }
@@ -348,10 +348,10 @@
             },
             deleteRow(scope, isMore) {
                 let params = {};
-                let msg = "确定删除吗？";
+                let msg = window.yunAdminT('确定删除吗？');
                 if (isMore) {
                     if (!this.selectedItem.length) {
-                        message.error('请选择要删除的数据');
+                        message.error(window.yunAdminT('请选择要删除的数据'));
                         return false;
                     }
                     let list = [];
@@ -366,7 +366,7 @@
                     params.delType = 'single';
                     params.keyid = scope.row.keyid;
                     params.delid = scope.row.id;
-                    msg = "删除该城市会导致有关数据无法使用，确认删除？";
+                    msg = window.yunAdminT('删除该城市会导致有关数据无法使用，确认删除？');
                 }
 
                 delConfirm(this, params, this.delete, msg);
@@ -376,7 +376,7 @@
                 httpPost('m=system&c=category_city&a=del', params).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success('删除成功！');
+                        message.success(window.yunAdminT('删除成功！'));
                         if (params.delType == 'single') {
                             if (params.keyid == 0) {
                                 _this.getList();
@@ -388,7 +388,7 @@
                             _this.getList();
                         }
                     } else {
-                        message.error('删除失败！');
+                        message.error(window.yunAdminT('删除失败！'));
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -400,7 +400,7 @@
 				var id_arr = [];
 				var cityarr = deepClone(this.selectedItem);
 				if (!cityarr.length) {
-				    message.error('请选择要保存的数据');
+				    message.error(window.yunAdminT('请选择要保存的数据'));
 				    return false;
 				}
 				for(let i in cityarr){
@@ -431,7 +431,7 @@
                 delConfirm(this, {
                     page: 0,
                     pagesize: 100
-                }, this.doPinyin, '未设置拼音的相关分类将根据中文名称自动生成拼音？');
+                }, this.doPinyin, window.yunAdminT('未设置拼音的相关分类将根据中文名称自动生成拼音？'));
             },
             /**
              * 生成拼音
@@ -442,7 +442,7 @@
                 httpPost('m=system&c=category_city&a=ajaxpinyin', params).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success('生成拼音成功！');
+                        message.success(window.yunAdminT('生成拼音成功！'));
                         _this.getList();
                     } else if (res.error === 1) {
                         message.warning(res.msg);
@@ -457,12 +457,12 @@
                 let _this = this;
                 delConfirm(this, {}, function () {
                     httpPost('m=system&c=category_city&a=clearpinyin').then(function (response) {
-                        message.success('拼音已清空！');
+                        message.success(window.yunAdminT('拼音已清空！'));
                         _this.getList();
                     }).catch(function (error) {
                         console.log(error);
                     });
-                }, '清空所有职位类别对应拼音？');
+                }, window.yunAdminT('清空所有职位类别对应拼音？'));
             }
         },
         components: {

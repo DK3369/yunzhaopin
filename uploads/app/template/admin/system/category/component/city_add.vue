@@ -97,7 +97,7 @@ module.exports = {
             this.ruleForm.keyid = this.keyid;
             let params = JSON.parse(JSON.stringify(this.ruleForm));
             if (params.name == '') {
-                message.error('城市名称不能为空！');
+                message.error(window.yunAdminT('城市名称不能为空！'));
                 return;
             }
             _this.submitLoading = true;
