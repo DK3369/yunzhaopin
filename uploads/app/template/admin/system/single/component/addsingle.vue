@@ -169,14 +169,14 @@ module.exports = {
             },
             class_arr:[],
             tpl_arr:[
-                {label:'默认模板',value:'1'},
-                {label:'空白模板',value:'2'},
-                {label:'自定义模板',value:'3'}
+                {label:window.yunAdminT('默认模板'),value:'1'},
+                {label:window.yunAdminT('空白模板'),value:'2'},
+                {label:window.yunAdminT('自定义模板'),value:'3'}
             ],
             type_arr:[
-                {label:'1',name:'自定义页面'},
-                {label:'0',name:'外部链接'},
-                {label:'2',name:'站内链接'}
+                {label:'1',name:window.yunAdminT('自定义页面')},
+                {label:'0',name:window.yunAdminT('外部链接')},
+                {label:'2',name:window.yunAdminT('站内链接')}
             ],
             addloading:false,
             saveloading:false,
@@ -238,15 +238,15 @@ module.exports = {
             var that = this;
 
             if (that.info.name == '') {
-                message.error('请填写单页面名称');
+                message.error(window.yunAdminT('请填写单页面名称'));
                 return false;
             }
             if (that.info.url == '') {
-                message.error('请填写URL链接');
+                message.error(window.yunAdminT('请填写URL链接'));
                 return false;
             }
             if (that.info.title == '') {
-                message.error('请填写标题');
+                message.error(window.yunAdminT('请填写标题'));
                 return false;
             }
 
@@ -272,11 +272,11 @@ module.exports = {
 
             httpPost('m=system&c=singlepage&a=save', param).then(function(res) {
                 if (res.data.error == 0) {
-                    message.success('单页面设置成功',function(){
+                    message.success(window.yunAdminT('单页面设置成功'),function(){
                         that.$emit("close-update");
                     });
                 } else {
-                    message.error('单页面设置失败');
+                    message.error(window.yunAdminT('单页面设置失败'));
                 }
             }).finally(function () {
                 setTimeout(function () {
