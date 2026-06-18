@@ -87,7 +87,7 @@
 					keyword:'',
 					m_id:'',
 					
-                    emptytext: '暂无数据',
+                    emptytext: window.yunAdminT('暂无数据'),
                     loading: false,
                     showadd: false,
                     currentPage: 1,
@@ -100,7 +100,7 @@
                     week: [],
                     info: {},
                     // centerDialogVisible: false,
-                    title: '添加管理员信息',
+                    title: window.yunAdminT('添加管理员信息'),
                     
 					save_load:false,
                 }
@@ -115,13 +115,13 @@
             methods: {
                 add() {
                     var that = this
-                    that.title = '添加管理员信息';
+                    that.title = window.yunAdminT('添加管理员信息');
                     that.info = {};
                     that.showadd = true;
                 },
                 edit(row) {
                     var that = this
-                    that.title = '修改管理员信息';
+                    that.title = window.yunAdminT('修改管理员信息');
                     that.info = row;
                     that.showadd = true;
                 },
@@ -150,7 +150,7 @@
 						m_id:that.m_id
                     }
                     that.loading = true;
-                    that.emptytext = "数据加载中";
+                    that.emptytext = window.yunAdminT('数据加载中');
                     httpPost('m=system&c=role_user&a=index', params).then(function (result) {
                         var res = result.data
                         if (res.error == 0) {
@@ -166,7 +166,7 @@
                             }
                             that.loading = false;
                             if (that.tableData.length === 0){
-                                that.emptytext = "暂无数据";
+                                that.emptytext = window.yunAdminT('暂无数据');
                             }
                         }
                     }).catch(function (e) {
@@ -183,7 +183,7 @@
                     };
                     httpPost('m=system&c=role_user&a=del', params).then(function (response) {
                         if (response.data.error == 0) {
-                            message.success('操作成功');
+                            message.success(window.yunAdminT('操作成功'));
                             that.getList();
                         } else {
                             message.error(response.data.msg);

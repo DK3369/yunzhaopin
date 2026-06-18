@@ -43,7 +43,7 @@
         el: '#logRecordApp',
         data: function () {
             return {
-                emptytext: '暂无数据',
+                emptytext: window.yunAdminT('暂无数据'),
                 loading: false,
                 currentPage: 1,
                 prevPage: 0,
@@ -88,7 +88,7 @@
                     params.keyword = that.keyword
                 }
                 that.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = window.yunAdminT('数据加载中');
                 httpPost('m=system&c=role_logrecord&a=index', params).then(function (result) {
                     var res = result.data
                     if (res.error == 0) {
@@ -102,7 +102,7 @@
                         }
                         that.loading = false;
                         if (that.tableData.length === 0) {
-                            that.emptytext = "暂无数据";
+                            that.emptytext = window.yunAdminT('暂无数据');
                         }
                     }
                 }).catch(function (e) {

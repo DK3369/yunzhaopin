@@ -50,7 +50,7 @@
             el: '#daohaapp',
             data: function () {
                 return {
-                    emptytext: '暂无数据',
+                    emptytext: window.yunAdminT('暂无数据'),
                     loading: false,
                     currentPage: 1,
                     perPage: 0,
@@ -88,7 +88,7 @@
                 async getList() {
                     let that = this;
                     that.loading = true;
-                    that.emptytext = "数据加载中";
+                    that.emptytext = window.yunAdminT('数据加载中');
                     httpPost('m=system&c=role_ugroup&a=index', { page: that.currentPage, pageSize: that.perPage }).then(function (result) {
                         var res = result.data
                         if (res.error == 0) {
@@ -98,7 +98,7 @@
                             that.total = parseInt(res.data.total);
                             that.loading = false;
                             if (that.tableData.length === 0){
-                                that.emptytext = "暂无数据";
+                                that.emptytext = window.yunAdminT('暂无数据');
                             }
                         }
                     }).catch(function (e) {
@@ -107,7 +107,7 @@
                 },
                 rowdel(row) {
                     if (!row.id) {
-                        this.$message({ showClose: true, message: '请选择要删除的数据', type: 'warning' });
+                        this.$message({ showClose: true, message: window.yunAdminT('请选择要删除的数据'), type: 'warning' });
                         return false;
                     }
                     delConfirm(this, row.id, this.delete);
@@ -119,7 +119,7 @@
                     };
                     httpPost('m=system&c=role_ugroup&a=del', params).then(function (response) {
                         if (response.data.error == 0) {
-                            _this.$message.success('操作成功');
+                            _this.$message.success(window.yunAdminT('操作成功'));
                             _this.getList();
                         }
                     }).catch(function (error) {

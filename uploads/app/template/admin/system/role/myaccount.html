@@ -217,23 +217,23 @@
             async submitPwd() {
                 let that = this;
                 if (!that.old_pwd) {
-                    message.error('原始密码不能为空');
+                    message.error(window.yunAdminT('原始密码不能为空'));
                     return false;
                 }
                 if (!that.new_pwd) {
-                    message.error('新密码不能为空');
+                    message.error(window.yunAdminT('新密码不能为空'));
                     return false;
                 }
-                if (!that.new_pwd) {
-                    message.error('确认密码不能为空');
+                if (!that.re_pwd) {
+                    message.error(window.yunAdminT('确认密码不能为空'));
                     return false;
                 }
                 if (that.new_pwd == that.old_pwd) {
-                    message.error('新密码不能与旧密码相同');
+                    message.error(window.yunAdminT('新密码不能与旧密码相同'));
                     return false;
                 }
                 if (that.new_pwd != that.re_pwd) {
-                    message.error('确认密码与新密码不一致');
+                    message.error(window.yunAdminT('确认密码与新密码不一致'));
                     return false;
                 }
                 that.drawer = false;
@@ -263,7 +263,7 @@
                 httpPost('m=index&c=getwxbindstatus', {}).then(function (result) {
                     var res = result.data;
                     if (res.error == 0) {
-                        message.success('绑定成功', function () {
+                        message.success(window.yunAdminT('绑定成功'), function () {
                             clearInterval(that.codesetval);
                             that.user.wxid = res.data.wxid;
                             that.code = false
@@ -318,7 +318,7 @@
                         "agentid": that.user.agent_id,
                         "redirect_uri": that.user.redirect_uri,
                         "state": that.user.state,
-                        "lang": "zh",
+                        "lang": (localStorage.getItem("lang") || "en_us") === "zh_cn" ? "zh" : "en",
                     });
                 })
             },
