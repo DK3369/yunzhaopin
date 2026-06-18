@@ -7940,4 +7940,6 @@ return array (
   '单页面设置成功' => 'Single page settings saved successfully',
   '单页面设置失败' => 'Failed to save single page settings',
   '请选择要删除的数据！' => 'Please select data to delete!',
+  '请选择用户身份' => 'Please select a user type',
+  '请填写信息内容' => 'Please enter message content',
 );

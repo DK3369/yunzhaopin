@@ -120,7 +120,7 @@
             el: '#daohaapp',
             data: function () {
                 return {
-                    emptytext: '暂无数据',
+                    emptytext: window.yunAdminT('暂无数据'),
                     loading: false,
                     searchOption: {
                         type: '1',
@@ -203,7 +203,7 @@
                             pageSize: that.limit,
                         };
                     that.loading = true;
-                    that.emptytext = "数据加载中";
+                    that.emptytext = window.yunAdminT('数据加载中');
                     httpPost('m=system&c=info_feedback&a=index', {...params, ...searchOption}, {hideloading: true}).then(function (data) {
                         let res = data.data;
                         if (res.error == 0) {
@@ -220,7 +220,7 @@
                                 that.page = parseInt(res.data.page); // 最后一页被删除后，取最新的页数
                             }
                             if (that.tableData.length === 0){
-                                that.emptytext = "暂无数据";
+                                that.emptytext = window.yunAdminT('暂无数据');
                             }
                         }
                     }).catch(function (error) {
@@ -273,7 +273,7 @@
                     };
                     httpPost('m=system&c=info_feedback&a=del', params).then(function (response) {
                         if (response.data.error == 0) {
-                            message.success('操作成功');
+                            message.success(window.yunAdminT('操作成功'));
                             _this.getList();
                         } else {
                             message.error(response.data.msg);
