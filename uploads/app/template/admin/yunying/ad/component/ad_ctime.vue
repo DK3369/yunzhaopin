@@ -38,7 +38,7 @@ module.exports = {
             params.jobid = this.jobid;
 
             if (params.endtime == '' || params.endtime < 1) {
-                message.error('请选输入天数！');
+                message.error(lc('admin_vue_00092'));
                 return;
             }
             _this.submitLoading = true;

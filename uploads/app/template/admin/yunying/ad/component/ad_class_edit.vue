@@ -187,23 +187,23 @@ module.exports = {
                 return false;
             }
             if (params.place == '') {
-                message.error('请选择广告位置！');
+                message.error(lc('admin_vue_00088'));
                 return false;
             }
             if (params.type != '1' && params.type != '2') {
-                message.error('请选择广告类型！');
+                message.error(lc('admin_vue_00089'));
                 return false;
             }
             if (params.type == '1') {
                 if (params.btype != '1' && params.btype != '2') {
-                    message.error('请选择消费模式！');
+                    message.error(lc('admin_vue_00090'));
                     return false;
                 } else {
                     if (params.btype == '1' && params.integral_buy == '') {
                         message.error('请输入购买' + this.integral_pricename + '！');
                         return false;
                     } else if (params.btype == '2' && params.integral_buy == '') {
-                        message.error('请输入购买金额！');
+                        message.error(lc('admin_vue_00091'));
                         return false;
                     }
                 }

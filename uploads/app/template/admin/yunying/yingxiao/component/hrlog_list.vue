@@ -19,11 +19,11 @@
                 <template slot="empty">
                     <p>{{dataText}}</p>
                 </template>
-                <el-table-column prop="uid" label="用户ID" width="100">
+                <el-table-column prop="uid" label="{yun:}t key='admin_user_00130'{/yun}" width="100">
                 </el-table-column>
-                <el-table-column prop="com_name" label="企业名称" min-width="240">
+                <el-table-column prop="com_name" label="{yun:}t key='wap_com_00157'{/yun}" min-width="240">
                 </el-table-column>
-                <el-table-column label="职位" width="180">
+                <el-table-column label="{yun:}t key='wap_user_00154'{/yun}" width="180">
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             <span>{yun:}t key='admin_01100'{/yun}</span>
@@ -31,7 +31,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="简历" width="160">
+                <el-table-column label="{yun:}t key='wap_com_00428'{/yun}" width="160">
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             <span>{yun:}t key='admin_yunying_00149'{/yun}</span>
@@ -40,14 +40,14 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="登录" width="130">
+                <el-table-column label="{yun:}t key='wap_js_00145'{/yun}" width="130">
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             <span>{yun:}t key='admin_01103'{/yun}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="深夜工作" min-width="220">
+                <el-table-column label="{yun:}t key='admin_yunying_00168'{/yun}" min-width="220">
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             <span>{yun:}t key='admin_yunying_00150'{/yun}</span>
@@ -55,7 +55,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="150">
+                <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="150">
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
                             <el-button size="mini" @click="updateData(scope.row.id)">{yun:}t key='wap_00225'{/yun}</el-button>
@@ -401,7 +401,7 @@ module.exports = {
             var params = {
                 id: id
             };
-            delConfirm(_this, params, this.updatePost,'确定更新数据？')
+            delConfirm(_this, params, this.updatePost,lc('admin_vue_00099'))
         },
         async updatePost(params) {
         

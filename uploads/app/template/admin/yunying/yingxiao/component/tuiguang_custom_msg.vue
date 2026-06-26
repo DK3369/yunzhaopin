@@ -109,7 +109,7 @@ module.exports = {
                 content = that.content;
 
             if (!utype) {
-                message.error('请选择发送信息的用户');
+                message.error(lc('admin_vue_00103'));
                 return false;
             }
             if (utype == "5") {

@@ -18,7 +18,7 @@
       <div class="shshowall">
         <div class="shshow" style="margin-top: 12px;">
           <el-tabs v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="基本资料" name="first">
+            <el-tab-pane label="{yun:}t key='wap_user_00341'{/yun}" name="first">
               <div class="shshow_p">
                 <div class="" v-if="info.welfare_n">{yun:}t key='admin_00644'{/yun}
                   <el-tag v-for="(item, index) in info.welfare_n" :key="index" size="mini"
@@ -32,7 +32,7 @@
                 <div class="" v-html="info.content ? info.content : ''"></div>
               </div>
             </el-tab-pane>
-            <el-tab-pane label="招聘岗位" name="second">
+            <el-tab-pane label="{yun:}t key='wap_01536'{/yun}" name="second">
               <div>
                 <ul class="shshow_joblist" v-if="total > 0">
                   <li v-for="(item, index) in tableData" :key="index">

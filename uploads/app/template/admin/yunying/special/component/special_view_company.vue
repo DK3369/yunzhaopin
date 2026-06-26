@@ -8,12 +8,12 @@
           <el-input v-model="searchForm.keyword" placeholder="{yun:}t key='admin_00340'{/yun}" class="input-with-select" size="small"
             prefix-icon="el-icon-search" clearable>
             <el-select slot="prepend" v-model="searchForm.type" size="small" placeholder="{yun:}t key='wap_com_00288'{/yun}">
-              <el-option label="企业名称/简称" value="1"></el-option>
-              <el-option label="用户名称" value="2"></el-option>
-              <el-option label="联系人" value="3"></el-option>
-              <el-option label="联系电话" value="4"></el-option>
-              <el-option label="用户邮箱" value="5"></el-option>
-              <el-option label="用户ID" value="6"></el-option>
+              <el-option label="{yun:}t key='admin_yunying_00125'{/yun}" value="1"></el-option>
+              <el-option label="{yun:}t key='admin_user_company_00144'{/yun}" value="2"></el-option>
+              <el-option label="{yun:}t key='wap_01431'{/yun}" value="3"></el-option>
+              <el-option label="{yun:}t key='admin_company_00023'{/yun}" value="4"></el-option>
+              <el-option label="{yun:}t key='admin_00673'{/yun}" value="5"></el-option>
+              <el-option label="{yun:}t key='admin_user_00130'{/yun}" value="6"></el-option>
             </el-select>
           </el-input>
         </div>
@@ -65,8 +65,8 @@
         </div>
         <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
           <el-select v-model="searchForm.job" size="small" slot="prepend" placeholder="{yun:}t key='admin_yunying_00132'{/yun}" clearable @change="handleSearch">
-            <el-option label="有职位" value="1"></el-option>
-            <el-option label="无职位" value="2"></el-option>
+            <el-option label="{yun:}t key='admin_yunying_00135'{/yun}" value="1"></el-option>
+            <el-option label="{yun:}t key='admin_yunying_00134'{/yun}" value="2"></el-option>
           </el-select>
         </div>
         <div class="tableSeachInpt">
@@ -94,7 +94,7 @@
               <p>{{ dataText }}</p>
             </template>
             <el-table-column type="selection" width="55" :selectable="selectable"></el-table-column>
-            <el-table-column label="企业名称" min-width="180">
+            <el-table-column label="{yun:}t key='wap_com_00157'{/yun}" min-width="180">
               <template slot-scope="scope">
                 <el-popover trigger="hover" placement="top">
                   <p>{{ scope.row.name }}<span v-if="scope.row.shortname">{yun:}t key='admin_01230'{/yun}</span></p>
@@ -104,27 +104,27 @@
                 </el-popover>
               </template>
             </el-table-column>
-            <el-table-column prop="rating_name" label="会员等级"></el-table-column>
-            <el-table-column label="联系电话">
+            <el-table-column prop="rating_name" label="{yun:}t key='admin_user_company_00018'{/yun}"></el-table-column>
+            <el-table-column label="{yun:}t key='admin_company_00023'{/yun}">
               <template slot-scope="scope">
                 <template v-if="scope.row.linktel">{{ scope.row.linktel }}</template>
                 <template v-else-if="scope.row.linkphone">{{ scope.row.linkphone }}</template>
               </template>
             </el-table-column>
-            <el-table-column label="业务员">
+            <el-table-column label="{yun:}t key='admin_user_company_00049'{/yun}">
               <template slot-scope="scope">
                 <span v-if="scope.row.crm_uid <= 0" style="color:#c1c1c1;">{{ scope.row.crm_uid_n }}</span>
                 <span v-else-if="scope.row.crm_uid > 0">{{ scope.row.crm_uid_n }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="zz_jobnum" label="在招职位数" width="150"></el-table-column>
-            <el-table-column label="参与状态">
+            <el-table-column prop="zz_jobnum" label="{yun:}t key='admin_yunying_00127'{/yun}" width="150"></el-table-column>
+            <el-table-column label="{yun:}t key='admin_yunying_00128'{/yun}">
               <template slot-scope="scope">
                 <span v-if="scope.row.join == '1'">{yun:}t key='admin_yunying_00133'{/yun}</span>
                 <span v-else style="color: #c1c1c1;">{yun:}t key='admin_yunying_00136'{/yun}</span>
               </template>
             </el-table-column>
-            <el-table-column fixed="right" label="操作" width="210" align="center">
+            <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="210" align="center">
               <template slot-scope="scope">
                 <div class="cz_button">
                   <template v-if="scope.row.jobnum > 0 && scope.row.r_status == 1">

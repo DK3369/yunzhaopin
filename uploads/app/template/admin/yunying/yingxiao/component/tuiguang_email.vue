@@ -21,7 +21,7 @@
                     </td>
                     <td>
                         <div class="TableCaozuo">
-                            <el-button :disabled="anniversary.disabled==1 || anniversary_e == 0" plain size="mini" @click="sendemail('2','2','1','','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
+                            <el-button :disabled="anniversary.disabled==1 || anniversary_e == 0" plain size="mini" @click="sendemail('2','2','1','','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
                             <el-button :disabled="anniversary.disabled==1 || anniversary_e == 0" plain size="mini" @click="outemail('anniversary')">{yun:}t key='admin_01112'{/yun}</el-button>
                             <el-button :disabled="anniversary.disabled==1 || anniversary_e == 0" plain size="mini" @click="finishemail('anniversary')" >{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                         </div>
@@ -38,7 +38,7 @@
                     </td>
                     <td>
                         <div class="TableCaozuo">
-                            <el-button :disabled="todaydue.disabled==1 || todaydue_e == 0" plain size="mini" @click="sendemail('1','3','1','1','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
+                            <el-button :disabled="todaydue.disabled==1 || todaydue_e == 0" plain size="mini" @click="sendemail('1','3','1','1','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
                             <el-button :disabled="todaydue.disabled==1 || todaydue_e == 0" plain size="mini" @click="outemail('todaydue')">{yun:}t key='admin_01112'{/yun}</el-button>
                             <el-button :disabled="todaydue.disabled==1 || todaydue_e == 0" plain size="mini" @click="finishemail('todaydue')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                         </div>
@@ -55,7 +55,7 @@
                     </td>
                     <td>
                         <div class="TableCaozuo">
-                            <el-button :disabled="sevendue.disabled==1 || sevendue_e == 0" plain size="mini" @click="sendemail('1','3','1','7','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
+                            <el-button :disabled="sevendue.disabled==1 || sevendue_e == 0" plain size="mini" @click="sendemail('1','3','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
                             <el-button :disabled="sevendue.disabled==1 || sevendue_e == 0" plain size="mini" @click="outemail('sevendue')">{yun:}t key='admin_01112'{/yun}</el-button>
                             <el-button :disabled="sevendue.disabled==1 || sevendue_e == 0" plain size="mini" @click="finishemail('sevendue')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                         </div>
@@ -72,7 +72,7 @@
                     </td>
                     <td>
                         <div class="TableCaozuo">
-                            <el-button :disabled="useradd.disabled==1 || useradd_e == 0" plain size="mini" @click="sendemail('1','4','1','7','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
+                            <el-button :disabled="useradd.disabled==1 || useradd_e == 0" plain size="mini" @click="sendemail('1','4','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
                             <el-button :disabled="useradd.disabled==1 || useradd_e == 0" plain size="mini" @click="outemail('useradd')">{yun:}t key='admin_01112'{/yun}</el-button>
                             <el-button :disabled="useradd.disabled==1 || useradd_e == 0" plain size="mini" @click="finishemail('useradd')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                         </div>
@@ -89,7 +89,7 @@
                     </td>
                     <td>
                         <div class="TableCaozuo">
-                            <el-button :disabled="userup.disabled==1 || userup_e == 0" plain size="mini" @click="sendemail('1','5','1','7','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
+                            <el-button :disabled="userup.disabled==1 || userup_e == 0" plain size="mini" @click="sendemail('1','5','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
                             <el-button :disabled="userup.disabled==1 || userup_e == 0" plain size="mini" @click="outemail('userup')">{yun:}t key='admin_01112'{/yun}</el-button>
                             <el-button :disabled="userup.disabled==1 || userup_e == 0" plain size="mini" @click="finishemail('userup')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                         </div>
@@ -106,7 +106,7 @@
                     </td>
                     <td>
                         <div class="TableCaozuo">
-                            <el-button :disabled="addjob.disabled==1 || addjob_e == 0" plain size="mini" @click="sendemail('2','6','1','7','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
+                            <el-button :disabled="addjob.disabled==1 || addjob_e == 0" plain size="mini" @click="sendemail('2','6','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
                             <el-button :disabled="addjob.disabled==1 || addjob_e == 0" plain size="mini" @click="outemail('addjob')">{yun:}t key='admin_01112'{/yun}</el-button>
                             <el-button :disabled="addjob.disabled==1 || addjob_e == 0" plain size="mini" @click="finishemail('addjob')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                         </div>
@@ -123,7 +123,7 @@
                     </td>
                     <td>
                         <div class="TableCaozuo">
-                            <el-button :disabled="upjob.disabled==1 || upjob_e == 0" plain size="mini" @click="sendemail('2','7','1','7','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
+                            <el-button :disabled="upjob.disabled==1 || upjob_e == 0" plain size="mini" @click="sendemail('2','7','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
                             <el-button :disabled="upjob.disabled==1 || upjob_e == 0" plain size="mini" @click="outemail('upjob')">{yun:}t key='admin_01112'{/yun}</el-button>
                             <el-button :disabled="upjob.disabled==1 || upjob_e == 0" plain size="mini" @click="finishemail('upjob')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                         </div>

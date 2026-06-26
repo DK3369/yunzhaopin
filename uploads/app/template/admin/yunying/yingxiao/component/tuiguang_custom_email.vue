@@ -167,12 +167,12 @@ module.exports = {
                 content = editor.getHtml();
 
             if (!utype) {
-                message.error('请选择用户类型');
+                message.error(lc('admin_vue_00100'));
                 return false;
             }
             if (utype == 5) {
                 if (email == '') {
-                    message.error('请输入自定义邮箱');
+                    message.error(lc('admin_vue_00101'));
                     return false;
                 }
             }
@@ -181,7 +181,7 @@ module.exports = {
                 return false;
             }
             if (content == '' || content == '<p><br></p>') {
-                message.error('请输入邮件内容');
+                message.error(lc('admin_vue_00102'));
                 return false;
             }
             that.sendDivEmail(utype, title, content, email, 3, 20, 0, 0, 0, "{yun:}t key='admin_yunying_00170'{/yun}");

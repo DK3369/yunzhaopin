@@ -17,7 +17,7 @@
       </div>
       <div v-if="type != null">
         <div class="wxsettip_small">{yun:}t key='admin_01162'{/yun}
-          <el-tooltip class="item" effect="dark" content="复制(CTRL+C)以下內容并添加到模板中" placement="right-start"><i class="el-icon-warning-outline"></i>
+          <el-tooltip class="item" effect="dark" content="{yun:}t key='admin_01165'{/yun}" placement="right-start"><i class="el-icon-warning-outline"></i>
             <el-button>{yun:}t key='admin_00207'{/yun}</el-button>
           </el-tooltip>
         </div>
@@ -92,7 +92,7 @@ module.exports = {
       clipboard.on('error', (e) => {
         // 释放内存
         clipboard.destroy();
-        message.error('复制失败');
+        message.error(lc('admin_vue_00096'));
       });
     },
   },

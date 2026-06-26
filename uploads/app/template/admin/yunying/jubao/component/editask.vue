@@ -190,11 +190,11 @@
                     let that = this;
                     let formData = new FormData();
                     if (that.info.title == '' ||  that.info.title == undefined) {
-                        message.error('请填写问答标题！');
+                        message.error(lc('admin_vue_00087'));
                         return false;
                     }
                     if (that.info.cid == '' ||  that.info.cid == undefined) {
-                        message.error('请选择商品类别！');
+                        message.error(lc('admin_vue_00083'));
                         return false;
                     }
 

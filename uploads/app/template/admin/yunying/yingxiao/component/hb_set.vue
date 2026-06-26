@@ -117,7 +117,7 @@ module.exports = {
                     message.error("{yun:}t key='admin_01090'{/yun}");
                     return false;
                 }else if(ruleForm.sy_haibao_web_name.length > 12){
-                    message.error('网站名称不能大于12个字符');
+                    message.error(lc('admin_vue_00098'));
                     return false;
                 }
             } else if (ruleForm.sy_haibao_web_type == '2') {

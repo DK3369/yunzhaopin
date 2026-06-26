@@ -21,7 +21,7 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="anniversary.disabled==1 || anniversary_m == 0" plain size="mini" @click="sendmsg('2','2','1','0','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
+                                <el-button :disabled="anniversary.disabled==1 || anniversary_m == 0" plain size="mini" @click="sendmsg('2','2','1','0','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
                                 <el-button :disabled="anniversary.disabled==1 || anniversary_m == 0" plain size="mini" @click="outmobile('anniversary')">{yun:}t key='admin_01116'{/yun}</el-button>
                                 <el-button :disabled="anniversary.disabled==1 || anniversary_m == 0" plain size="mini" @click="finishmobile('anniversary')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                             </div>
@@ -38,7 +38,7 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="todaydue.disabled==1 || todaydue_m == 0" plain size="mini" @click="sendmsg('1','3','1','1','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
+                                <el-button :disabled="todaydue.disabled==1 || todaydue_m == 0" plain size="mini" @click="sendmsg('1','3','1','1','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
                                 <el-button :disabled="todaydue.disabled==1 || todaydue_m == 0" plain size="mini" @click="outmobile('todaydue')">{yun:}t key='admin_01116'{/yun}</el-button>
                                 <el-button :disabled="todaydue.disabled==1 || todaydue_m == 0" plain size="mini" @click="finishmobile('todaydue')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                             </div>
@@ -55,7 +55,7 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="sevendue.disabled==1 || sevendue_m == 0" plain size="mini" @click="sendmsg('1','3','1','7','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
+                                <el-button :disabled="sevendue.disabled==1 || sevendue_m == 0" plain size="mini" @click="sendmsg('1','3','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
                                 <el-button :disabled="sevendue.disabled==1 || sevendue_m == 0" plain size="mini" @click="outmobile('sevendue')">{yun:}t key='admin_01116'{/yun}</el-button>
                                 <el-button :disabled="sevendue.disabled==1 || sevendue_m == 0" plain size="mini" @click="finishmobile('sevendue')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                             </div>
@@ -72,7 +72,7 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="useradd.disabled==1 || useradd_m == 0" plain size="mini" @click="sendmsg('1','4','1','7','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
+                                <el-button :disabled="useradd.disabled==1 || useradd_m == 0" plain size="mini" @click="sendmsg('1','4','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
                                 <el-button :disabled="useradd.disabled==1 || useradd_m == 0" plain size="mini" @click="outmobile('useradd')">{yun:}t key='admin_01116'{/yun}</el-button>
                                 <el-button :disabled="useradd.disabled==1 || useradd_m == 0" plain size="mini" @click="finishmobile('useradd')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                             </div>
@@ -89,7 +89,7 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="userup.disabled==1 || userup_m == 0" plain size="mini" @click="sendmsg('1','5','1','7','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
+                                <el-button :disabled="userup.disabled==1 || userup_m == 0" plain size="mini" @click="sendmsg('1','5','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
                                 <el-button :disabled="userup.disabled==1 || userup_m == 0" plain size="mini" @click="outmobile('userup')">{yun:}t key='admin_01116'{/yun}</el-button>
                                 <el-button :disabled="userup.disabled==1 || userup_m == 0" plain size="mini" @click="finishmobile('userup')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                             </div>
@@ -106,7 +106,7 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="addjob.disabled==1 || addjob_m == 0" plain size="mini" @click="sendmsg('2','6','1','7','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
+                                <el-button :disabled="addjob.disabled==1 || addjob_m == 0" plain size="mini" @click="sendmsg('2','6','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
                                 <el-button :disabled="addjob.disabled==1 || addjob_m == 0" plain size="mini" @click="outmobile('addjob')">{yun:}t key='admin_01116'{/yun}</el-button>
                                 <el-button :disabled="addjob.disabled==1 || addjob_m == 0" plain size="mini" @click="finishmobile('addjob')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                             </div>
@@ -123,7 +123,7 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="upjob.disabled==1 || upjob_m == 0" plain size="mini" @click="sendmsg('2','7','1','7','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
+                                <el-button :disabled="upjob.disabled==1 || upjob_m == 0" plain size="mini" @click="sendmsg('2','7','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
                                 <el-button :disabled="upjob.disabled==1 || upjob_m == 0" plain size="mini" @click="outmobile('upjob')">{yun:}t key='admin_01116'{/yun}</el-button>
                                 <el-button :disabled="upjob.disabled==1 || upjob_m == 0" plain size="mini" @click="finishmobile('upjob')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                             </div>

@@ -11,7 +11,7 @@
                 </div>
                 <div class="drawerModInpt" style="display: flex; align-items: center;">
                     <el-input v-model="ruleForm.ad_name" placeholder="{yun:}t key='admin_00217'{/yun}"></el-input>
-                    <el-checkbox v-model="ruleForm.targetChecked" label="新窗口打开" @change="handleTarget"
+                    <el-checkbox v-model="ruleForm.targetChecked" label="{yun:}t key='admin_01152'{/yun}" @change="handleTarget"
                         style="padding-left: 20px;"></el-checkbox>
                 </div>
             </div>
@@ -49,7 +49,7 @@
                     <span>{yun:}t key='admin_01138'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-date-picker v-model="ruleForm.ad_time" type="daterange" range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}"
+                    <el-date-picker v-model="ruleForm.ad_time" type="daterange" range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00343'{/yun}"
                         end-placeholder="{yun:}t key='admin_00344'{/yun}" value-format="yyyy-MM-dd">
                     </el-date-picker>
                 </div>
@@ -297,7 +297,7 @@ module.exports = {
             let _this = this;
             let params = JSON.parse(JSON.stringify(this.ruleForm));
             if (params.ad_name == '') {
-                message.error('广告名称不能为空！');
+                message.error(lc('admin_vue_00093'));
                 return false;
             }
             if ((!Array.isArray(params.ad_time)) || (Array.isArray(params.ad_time) && params.ad_time.length < 1)) {
@@ -305,11 +305,11 @@ module.exports = {
                 return false;
             }
             if (!params.ad_type) {
-                message.error('请选择一种广告类型！');
+                message.error(lc('admin_vue_00094'));
                 return false;
             } else {
                 if (params.ad_type == "word" && params.word_info.trim() === '') {
-                    message.error('请填写文字信息！');
+                    message.error(lc('admin_vue_00095'));
                     return false;
                 }
             }

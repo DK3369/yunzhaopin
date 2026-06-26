@@ -24,14 +24,14 @@
                     </template>
                     <el-table-column type="selection" width="55">
                     </el-table-column>
-                    <el-table-column prop="uid" label="编号" sortable="custom" width="100">
+                    <el-table-column prop="uid" label="{yun:}t key='member_com_00345'{/yun}" sortable="custom" width="100">
                     </el-table-column>
-                    <el-table-column prop="name" label="企业名称" min-width="220">
+                    <el-table-column prop="name" label="{yun:}t key='wap_com_00157'{/yun}" min-width="220">
                         <template slot-scope="scope">
                             <el-link :href="scope.row.comUrl" target="_blank" type="primary">{{ scope.row.name }}</el-link>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="sort" label="排序" sortable="custom" width="120">
+                    <el-table-column prop="sort" label="{yun:}t key='member_com_00022'{/yun}" sortable="custom" width="120">
                         <template slot-scope="scope">
                             <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index"
                                 :id="scope.column.property + scope.$index" v-model="scope.row.sort" @blur="alterData(scope, 'int')"
@@ -42,14 +42,14 @@
               </span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="tpl" label="状态" width="140">
+                    <el-table-column prop="tpl" label="{yun:}t key='member_user_00181'{/yun}" width="140">
                         <template slot-scope="scope">
                             <template v-if="scope.row.status == 1"><span style="color:#61687C;">{yun:}t key='admin_yunying_00133'{/yun}</span></template>
                             <template v-else-if="scope.row.status == 2"><span style="color:red;">{yun:}t key='wap_user_00167'{/yun}</span></template>
                             <template v-else>{yun:}t key='admin_01232'{/yun}</template>
                         </template>
                     </el-table-column>
-                    <el-table-column v-if="special.tpl == 'gl.htm'" prop="limit" label="名企展示" width="150">
+                    <el-table-column v-if="special.tpl == 'gl.htm'" prop="limit" label="{yun:}t key='admin_01233'{/yun}" width="150">
                         <template slot-scope="scope">
                             <div class="cz_button">
                                 <el-button v-if="scope.row.famous == 1" size="mini" @click="handleSpecialFamous(scope)">{yun:}t key='common.cancel'{/yun}</el-button>
@@ -57,7 +57,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="操作" width="140" header-align="center" align="right">
+                    <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140" header-align="center" align="right">
                         <template slot-scope="scope">
                             <div class="cz_button">
                                 <el-button size="mini" @click="handleAudit(scope)">{yun:}t key='admin_yunying_00138'{/yun}</el-button>
@@ -322,9 +322,9 @@ module.exports = {
             params.famous = scope.row.famous;
             let msg = '';
             if (scope.row.famous == 1) {
-                msg = '确定要取消名企吗？';
+                msg = "{yun:}t key='admin_vue_00078'{/yun}";
             } else {
-                msg = '确定要设为名企吗？'
+                msg = "{yun:}t key='admin_vue_00079'{/yun}"
             }
             delConfirm(this, params, this.doSpecialFamous, msg);
         },
@@ -345,7 +345,7 @@ module.exports = {
         handleExport() {
             let params = {};
             if (!this.selectedItem.length) {
-                delConfirm(this, params, this.export, '确定导出所有参会企业吗？');
+                delConfirm(this, params, this.export, lc('admin_vue_00080'));
                 return false;
             } else {
                 let list = [];
@@ -353,7 +353,7 @@ module.exports = {
                     list.push(item.id);
                 }
                 params.cid = list.join(',');
-                delConfirm(this, params, this.export, '确定导出选择的参会企业吗？');
+                delConfirm(this, params, this.export, lc('admin_vue_00081'));
                 return false;
             }
         },

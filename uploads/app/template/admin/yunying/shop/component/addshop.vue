@@ -255,15 +255,15 @@ module.exports = {
             let that = this;
             let formData = new FormData();
             if (that.info.name == '' || that.info.name == undefined) {
-                message.error('请填写商品名称！');
+                message.error(lc('admin_vue_00082'));
                 return false;
             }
             if (that.info.nid == '' || that.info.nid == undefined) {
-                message.error('请选择商品类别！');
+                message.error(lc('admin_vue_00083'));
                 return false;
             }
             if (that.info.pic == '' || that.info.pic == undefined) {
-                message.error('请上传商品图片！');
+                message.error(lc('admin_vue_00084'));
                 return false;
             }
             if (that.info.integral == '' || that.info.integral == undefined) {
@@ -271,11 +271,11 @@ module.exports = {
                 return false;
             }
             if (that.info.restriction == '' || that.info.restriction == undefined) {
-                message.error('请填写限购数量！');
+                message.error(lc('admin_vue_00085'));
                 return false;
             }
             if (that.info.stock == '' || that.info.stock == undefined) {
-                message.error('请填写库存数量！');
+                message.error(lc('admin_vue_00086'));
                 return false;
             }
 

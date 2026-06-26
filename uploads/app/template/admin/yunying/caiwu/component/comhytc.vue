@@ -359,7 +359,7 @@ module.exports = {
                 return;
             }
             if (!this.save.username) {
-                message.error('请选择用户名称');
+                message.error(lc('admin_vue_00077'));
                 return;
             }
             if (leijia == '1') {
@@ -387,7 +387,7 @@ module.exports = {
                     return;
                 }
                 if (!this.save.username) {
-                    message.error('请选择用户名称');
+                    message.error(lc('admin_vue_00077'));
                     return;
                 }
                 oldeTime = (Date.parse(new Date())) / 1000;
@@ -403,7 +403,7 @@ module.exports = {
                 return;
             }
             if (!this.save.username) {
-                message.error('请选择用户名称');
+                message.error(lc('admin_vue_00077'));
                 return;
             }
 
