@@ -66,7 +66,7 @@
                     </div>
                 </div>
                 <div class="homeTopSubCoy homeTopSubFlwex">
-                    <div class="homeTopSubBuue" @click="toPage(1,7,33,'简历管理','/resume',{params:{time_type:'adtime', times: todayrange}})">
+                    <div class="homeTopSubBuue" @click="toPage(1,7,33,lc('wap_com_00105'),'/resume',{params:{time_type:'adtime', times: todayrange}})">
                         <div class="homeTopLeNum">
                             <div class="homeTopLeimg">
                                 <img src="../../images/adxinw.png" alt="">
@@ -103,7 +103,7 @@
                     
                 </div>
                 <div class="homeTopSubCoy homeTopSubFlwex">
-                    <div class="homeTopSubBuue" @click="toPage(1,6,50,'职位记录','/companyjoblog',{params:{time:'1'}})">
+                    <div class="homeTopSubBuue" @click="toPage(1,6,50,lc('admin_00090'),'/companyjoblog',{params:{time:'1'}})">
                         <div class="homeTopLeNum">
                             <div class="homeTopLeimg">
                                 <img src="../../images/adjl.png" alt="">
@@ -120,7 +120,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="homeTopSubBuue" @click="toPage(1,6,50,'职位记录','/companyjoblog',{tab:'jobtellog',params:{end:'1'}})">
+                    <div class="homeTopSubBuue" @click="toPage(1,6,50,lc('admin_00090'),'/companyjoblog',{tab:'jobtellog',params:{end:'1'}})">
                         <div class="homeTopLeNum">
                             <div class="homeTopLeimg">
                                 <img src="../../images/chatyh.png" alt="">
@@ -142,7 +142,7 @@
 
                 <div class="homeTopSubCoy homeTopSubFlwex">
                     <div class="homeTopSubBuue">
-                        <div class="homeTopLeNum" @click="toPage(1,7,38,'简历记录','/xingwei',{params:{time:'1'}})">
+                        <div class="homeTopLeNum" @click="toPage(1,7,38,lc('admin_00089'),'/xingwei',{params:{time:'1'}})">
                             <div class="homeTopLeimg">
                                 <img src="../../images/xaizyh.png" alt="">
                             </div>
@@ -151,7 +151,7 @@
                                 <b>{{numdata.downresumeNum}}</b>
                             </div>
                         </div>
-                        <div class="homeTopLeDay" @click="toPage(1,7,38,'简历记录','/xingwei',{params:{time:'1',activeName:'sixth'}})">
+                        <div class="homeTopLeDay" @click="toPage(1,7,38,lc('admin_00089'),'/xingwei',{params:{time:'1',activeName:'sixth'}})">
                             <div>
                                 <span>{{ lc("admin_free_downloads_today", [numdata.freedownnum]) }}</span>
                             </div>

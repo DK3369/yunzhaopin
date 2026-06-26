@@ -30,7 +30,7 @@
                 </el-carousel>
 				<!-- 无内容显示部分 -->
 				<div class="indexLetEmpty" v-else>
-				    <el-empty description="暂无待处理事项"></el-empty>
+				    <el-empty :description="lc('admin_00092')"></el-empty>
 				</div>
             </div>
         </div>
