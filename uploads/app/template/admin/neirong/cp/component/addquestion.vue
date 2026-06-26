@@ -132,7 +132,7 @@ module.exports = {
                 });
             });
             if (err == true) {
-				message.error("{yun:}t key='common_02044'{/yun}、{yun:}t key='admin_00858'{/yun}、分值都不能为空");
+				message.error(lc('common_02044') + '、' + lc('admin_00858') + '、' + lc('admin_vue_00132'));
                 return false;
             }
 			that.$parent.$parent.askdata = that.list;

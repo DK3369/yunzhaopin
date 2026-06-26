@@ -16018,4 +16018,5 @@ return array(
   'admin_vue_00129' => 'Please enter purchase ',
   'admin_vue_00130' => 'Please upload LOGO',
   'admin_vue_00131' => ' admin group info?',
+  'admin_vue_00132' => 'score values cannot be empty',
 );

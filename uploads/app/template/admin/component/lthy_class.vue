@@ -271,7 +271,7 @@
                     }
 
                     if (selectHyId.length >= max) {
-                        message.warning('最多选择' + max + "{yun:}t key='common_02104'{/yun}");
+                        message.warning(lc('admin_vue_00125') + max + lc('common_02104'));
                         return false;
                     }
                     that.selectHyId.push(id);

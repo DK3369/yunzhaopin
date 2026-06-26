@@ -614,7 +614,7 @@ module.exports = {
                 params.did = that.curr_data.did
             } else { // {yun:}t key='admin_00162'{/yun}
                 if (!that.selectedItem.length) {
-                    message.error("请选择要分配的数据');
+                    message.error(lc('admin_system_00427'));
                     return false;
                 }
                 if (that.multipledid == '') {

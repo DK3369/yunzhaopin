@@ -16019,4 +16019,5 @@ return array(
   'admin_vue_00129' => '请输入购买',
   'admin_vue_00130' => '请上传LOGO',
   'admin_vue_00131' => '管理员权限组信息吗？',
+  'admin_vue_00132' => '分值都不能为空',
 );

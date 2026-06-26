@@ -194,7 +194,7 @@ module.exports = {
                 msg = "{yun:}t key='common_00853'{/yun}";
             } else {// {yun:}t key='common_01711'{/yun}
                 params.id = that.list[idx].id;
-                msg = "你确定要删除当前项吗？';
+                msg = lc('admin_00333');
             }
             params.qid = that.id;
 
