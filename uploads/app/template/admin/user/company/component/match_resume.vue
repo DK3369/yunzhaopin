@@ -28,8 +28,8 @@
                       :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
                       @selection-change="handleSelectionChange" ref="multipleTable" height="100%" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="简历ID" width="90"></el-table-column>
-                <el-table-column label="姓名/手机号/用户名" width="210">
+                <el-table-column prop="id" label="{yun:}t key='member_com_00012'{/yun}" width="90"></el-table-column>
+                <el-table-column label="{yun:}t key='admin_00766'{/yun}" width="210">
                     <template slot-scope="scope">
                         <div class=" ">
                             <div class="username">
@@ -45,7 +45,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="基本信息" >
+                <el-table-column label="{yun:}t key='wap_00456'{/yun}" >
                     <template slot-scope="scope">
                         <div class=" ">
                             <div class="user_resumejob">
@@ -71,7 +71,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="完整度/状态" width="130" align="center">
+                <el-table-column label="{yun:}t key='admin_00509'{/yun}" width="130" align="center">
                     <template slot-scope="scope">
                         <div class=" ">
                             <el-progress type="circle" :percentage="parseInt(scope.row.integrity)" :width="45"></el-progress>
@@ -87,14 +87,14 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="投递岗位" width="80" align="center">
+                <el-table-column label="{yun:}t key='admin_00510'{/yun}" width="80" align="center">
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             {{ scope.row.sq_num ? scope.row.sq_num : 0 }}
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="logintime" label="创建/更新时间 " width="150">
+                <el-table-column prop="logintime" label="{yun:}t key='admin_00767'{/yun}" width="150">
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             <span>{{ scope.row.ctime_n }}</span>
@@ -102,7 +102,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="140" fixed="right">
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button type="small  " size=" " plain @click="sendOrToudi(scope.row.id,scope.row.uid,'0', 1)">{yun:}t key='admin_user_company_00379'{/yun}</el-button>
@@ -129,7 +129,7 @@
         </div>
         <!-- 批量推荐进度弹窗 -->
         <div class="tck_setbox">
-            <el-dialog :title="cztype+'进度'" :visible.sync="showprogress" :with-header="true" append-to-body
+            <el-dialog :title="cztype+'{yun:}t key=\'admin_company_00042\'{/yun}'" :visible.sync="showprogress" :with-header="true" append-to-body
                        :modal-append-to-body="false" :show-close="true" width="200px">
                 <div class="code_img" style="display:flex;justify-content: center;margin-bottom: 20px;">
                     <span style="margin-bottom: 10px;">{yun:}t key='admin_00765'{/yun}</span>
@@ -238,12 +238,12 @@ module.exports = {
         directs:function (cz_type) {
             var that= this
             if (cz_type == 1) {
-                that.cztype = "推送'
+                that.cztype = "{yun:}t key='admin_user_company_00379'{/yun}"
             } else if (cz_type == 2) {
                 that.cztype = "{yun:}t key='admin_user_company_00378'{/yun}"
             }
             if (!this.selectedItem.length) {
-                message.error('请选择要'+that.cztype+'的数据');
+                message.error(lc("admin_company_00043", [that.cztype]));
                 return false;
             }
             delConfirm(this, {}, function (params) {

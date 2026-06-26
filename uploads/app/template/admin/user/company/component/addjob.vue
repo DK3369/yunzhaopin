@@ -43,7 +43,7 @@
                                 <div class="TableInpt">
                                     <el-input v-model="curr_job.maxsalary" :disabled="mychecked" placeholder="{yun:}t key='wap_user_00014'{/yun}"></el-input>
                                 </div>
-                                <el-checkbox style="margin-left:10px;" v-model="mychecked" label="面议" size="medium" border></el-checkbox>
+                                <el-checkbox style="margin-left:10px;" v-model="mychecked" label="{yun:}t key='common_02045'{/yun}" size="medium" border></el-checkbox>
                             </div>
                         </td>
                     </tr>
@@ -64,12 +64,12 @@
                         <td>
                             <div class="TableInpt">
                                 <el-select v-model="curr_job.exp" placeholder="{yun:}t key='admin_00580'{/yun}">
-                                    <el-option v-for="item in cacheData.comdata.job_exp" :key="'exp_'+item" :label="item == 0 ? '经验'+cacheData.comclass_name[item] : cacheData.comclass_name[item]" :value="item"></el-option>
+                                    <el-option v-for="item in cacheData.comdata.job_exp" :key="'exp_'+item" :label="item == 0 ? lc('admin_company_00048', [cacheData.comclass_name[item]]) : cacheData.comclass_name[item]" :value="item"></el-option>
                                 </el-select>
                                 <el-select style="margin-left:10px;" v-model="curr_job.edu" placeholder="{yun:}t key='member_user_00494'{/yun}">
-                                    <el-option v-for="item in cacheData.comdata.job_edu" :key="'edu_'+item" :label="item == 0 ? '经验'+cacheData.comclass_name[item] : cacheData.comclass_name[item]" :value="item"></el-option>
+                                    <el-option v-for="item in cacheData.comdata.job_edu" :key="'edu_'+item" :label="item == 0 ? lc('admin_company_00049', [cacheData.comclass_name[item]]) : cacheData.comclass_name[item]" :value="item"></el-option>
                                 </el-select>
-                                <el-checkbox style="margin-left:10px;" v-model="curr_job.is_graduate" label="可接受应届生" size="medium" border></el-checkbox>
+                                <el-checkbox style="margin-left:10px;" v-model="curr_job.is_graduate" label="{yun:}t key='member_com_00241'{/yun}" size="medium" border></el-checkbox>
                             </div>
                         </td>
                     </tr>
@@ -93,7 +93,7 @@
                         <td>
                             <div class="TableInpt">
                                 <el-select v-model="curr_job.link_id" placeholder="{yun:}t key='wap_user_00100'{/yun}" style="width: 480px;">
-                                    <el-option key="-1" :label="jobCompany.linkmsg + '【企业默认】'" value="-1"></el-option>
+                                    <el-option key="-1" :label="jobCompany.linkmsg + '{yun:}t key=\'admin_company_00053\'{/yun}'" value="-1"></el-option>
                                     <el-option v-for="(item, index) in jobAddressList" :key="index" :label="item.linkmsg" :value="item.id"></el-option>
                                 </el-select>
                                 <el-button style="margin-left: 10px;" size="small" type="primary" @click="addAddr" round>{yun:}t key='admin_user_company_00028'{/yun}</el-button>
@@ -119,7 +119,7 @@
                         <td>
                             <div class="TableSelect">
                                 <el-select v-model="curr_job.sex" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                                    <el-option v-for="(item, index) in cacheData.com_sex" :key="index" :label="index == 3 ? '性别' + item : item" :value="index"></el-option>
+                                    <el-option v-for="(item, index) in cacheData.com_sex" :key="index" :label="index == 3 ? lc('admin_company_00050', [item]) : item" :value="index"></el-option>
                                 </el-select>
                             </div>
                         </td>
@@ -131,7 +131,7 @@
                         <td>
                             <div class="TableSelect">
                                 <el-select v-model="curr_job.marriage" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                                    <el-option v-for="item in cacheData.comdata.job_marriage" :key="item" :label="item == 0 ? '婚姻' + cacheData.comclass_name[item] : cacheData.comclass_name[item]" :value="item"></el-option>
+                                    <el-option v-for="item in cacheData.comdata.job_marriage" :key="item" :label="item == 0 ? lc('admin_company_00051', [cacheData.comclass_name[item]]) : cacheData.comclass_name[item]" :value="item"></el-option>
                                 </el-select>
                             </div>
                         </td>
@@ -143,7 +143,7 @@
                         <td>
                             <div class="TableSelect">
                                 <el-select v-model="curr_job.report" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                                    <el-option v-for="item in cacheData.comdata.job_report" :key="item" :label="item == 0 ? '到岗时间' + cacheData.comclass_name[item] : cacheData.comclass_name[item]" :value="item"></el-option>
+                                    <el-option v-for="item in cacheData.comdata.job_report" :key="item" :label="item == 0 ? lc('admin_company_00052', [cacheData.comclass_name[item]]) : cacheData.comclass_name[item]" :value="item"></el-option>
                                 </el-select>
                             </div>
                         </td>
@@ -216,13 +216,13 @@
                         <td>
                             <div class="job_set_list">{yun:}t key='admin_user_company_00025'{/yun}
                                 <el-select v-model="curr_job.exp_req" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                                    <el-option label="不限" :value="0"></el-option>
+                                    <el-option label="{yun:}t key='admin_company_00054'{/yun}" :value="0"></el-option>
                                     <el-option v-for="item in cacheData.userdata.user_word" :key="item" :label="cacheData.userclass_name[item]" :value="item"></el-option>
                                 </el-select>
                             </div>
                             <div class="job_set_list">{yun:}t key='member_user_00111'{/yun}
                                 <el-select v-model="curr_job.edu_req" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                                    <el-option label="不限" :value="0"></el-option>
+                                    <el-option label="{yun:}t key='admin_company_00054'{/yun}" :value="0"></el-option>
                                     <el-option v-for="item in cacheData.userdata.user_edu" :key="item" :label="cacheData.userclass_name[item]" :value="item"></el-option>
                                 </el-select>
                             </div>
@@ -352,7 +352,7 @@
 							:fetch-suggestions="addressKeyup"
 							placeholder="{yun:}t key='wap_user_00076'{/yun}"
 							@select="poiSearchClick">
-							<i class="el-icon-location-outline el-input__icon" slot="suffix" @click="localsearch('全国')"></i>
+							<i class="el-icon-location-outline el-input__icon" slot="suffix" @click="localsearch("{yun:}t key='member_com_00206'{/yun}")"></i>
 							<template slot-scope="{ item }">
 								<div class="autocompLtite">
 									<div class="name">{{ item.name }}</div>
@@ -968,7 +968,7 @@
                     return false;
                 }
                 if (parseInt(that.curr_job.jobexpoure) < parseInt(that.curr_job.jobhits)) {
-                    message.error('职位曝光量不能低于职位浏览次数！')
+                    message.error("{yun:}t key='admin_user_company_00340'{/yun}")
                     return false;
                 }
                 if (!that.curr_job.id) {

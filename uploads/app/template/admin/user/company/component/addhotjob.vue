@@ -209,23 +209,23 @@ module.exports = {
         mqsave: function () {
             var that = this
             if (that.start == "") {
-                message.error('名企开始时间不能为空！')
+                message.error("{yun:}t key='admin_company_00037'{/yun}")
                 return false
             } else {
                 that.info.time_start_n = that.start
             }
             if (that.end == "") {
-                message.error('名企结束时间不能为空！')
+                message.error("{yun:}t key='admin_company_00038'{/yun}")
                 return false
             } else {
                 that.info.time_end_n = that.end
             }
             if (that.mqlogolist.length == 0 && that.info.hot_pic_n == '') {
-                message.error("企业展示LOGO{yun:}t key='member_com_00044'{/yun}！")
+                message.error("{yun:}t key='admin_company_00046'{/yun}")
                 return false
             }
             if (that.info.beizhu && that.info.beizhu.length > 200) {
-                message.error('不能超过200字以内')
+                message.error("{yun:}t key='admin_company_00039'{/yun}")
                 return false
             }
             var params = new FormData();

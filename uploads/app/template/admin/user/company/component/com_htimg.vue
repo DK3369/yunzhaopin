@@ -162,7 +162,7 @@
                     file.type === 'image/jpg' || file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/gif';
                 const isLt2M = file.size / 1024 / 1024 < 5;
                 if (!isJPG) {
-                    this.$message.error("上传图片只能是 JPG, PNG, JPEG, GIF {yun:}t key='common_02005'{/yun}!");
+                    this.$message.error("JPG, PNG, JPEG, GIF {yun:}t key='common_02005'{/yun}!");
                 }
                 if (!isLt2M) {
                     this.$message.error("{yun:}t key='admin_yunying_00057'{/yun} 2MB!");

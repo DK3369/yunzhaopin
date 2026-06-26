@@ -172,7 +172,7 @@
                                              :fetch-suggestions="addressKeyup"
                                              placeholder="{yun:}t key='admin_user_company_00033'{/yun}"
                                              @select="poiSearchClick">
-                                <i class="el-icon-location-outline el-input__icon" slot="suffix" @click="localsearch('全国')"></i>
+                                <i class="el-icon-location-outline el-input__icon" slot="suffix" @click="localsearch("{yun:}t key='member_com_00206'{/yun}")"></i>
                                 <template slot-scope="{ item }">
                                     <div class="autocompLtite">
                                         <div class="name">{{ item.name }}</div>
@@ -676,7 +676,7 @@
                     return false;
                 }
                 if(that.address == '') {
-                    message.error('公司地址不能为空');
+                    message.error("{yun:}t key='common_06414'{/yun}");
                     return false;
                 }
                 if(that.linkman == '') {
@@ -703,7 +703,7 @@
                     }
                 }
                 if(that.moblie == '') {
-                    message.error('联系手机不能为空');
+                    message.error("{yun:}t key='wap_01460'{/yun}");
                     return false;
                 } else {
                     var obj = that.moblie;
@@ -715,18 +715,18 @@
                 var obj = that.email;
                 var myreg = /^([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9\-]+@([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
                 if(obj != "" && !myreg.test(obj)) {
-                    message.error('联系邮箱格式错误');
+                    message.error("{yun:}t key='wap_com_00131'{/yun}");
                     return false;
                 }
                 // 去除html标签后判断内容是否为空
                 var regex = /(<([^>]+)>)/ig
                 var content = editor_desc.getHtml().replace(regex, "")
                 if (content == "") {
-                    message.error('请输入企业简介！')
+                    message.error("{yun:}t key='member_com_00445'{/yun}")
                     return false;
                 }
                 if(that.rating_name == '') {
-                    message.error('请选择会员套餐！')
+                    message.error("{yun:}t key='common_00924'{/yun}")
                     return false;
                 }
                 if(that.sendmsg == true && that.moblie == '') {

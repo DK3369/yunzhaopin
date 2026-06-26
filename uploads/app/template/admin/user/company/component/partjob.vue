@@ -5,8 +5,8 @@
                 <el-input v-model="search_params.keyword" @keyup.enter.native="search" placeholder="{yun:}t key='admin_00340'{/yun}" size="small"
                     clearable>
                     <el-select v-model="search_params.type" size="small" slot="prepend" placeholder="{yun:}t key='wap_01403'{/yun}">
-                        <el-option label="公司名称" value="1"></el-option>
-                        <el-option label="职位名称" value="2"></el-option>
+                        <el-option label="{yun:}t key='wap_user_00080'{/yun}" value="1"></el-option>
+                        <el-option label="{yun:}t key='wap_com_00288'{/yun}" value="2"></el-option>
                     </el-select>
                 </el-input>
 
@@ -48,8 +48,8 @@
                 :default-sort="{ prop: 'id', order: 'descending' }" @selection-change="handleSelectionChange"
                 ref="multipleTable" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="职位ID" width="120" sortable="custom"></el-table-column>
-                <el-table-column label="职位/企业" min-width="180" show-overflow-tooltip>
+                <el-table-column prop="id" label="{yun:}t key='admin_user_company_00370'{/yun}" width="120" sortable="custom"></el-table-column>
+                <el-table-column label="{yun:}t key='admin_user_company_00360'{/yun}" min-width="180" show-overflow-tooltip>
                     <template slot-scope="props">
                         <div class="moduleProps">
                             <div class=" ">
@@ -63,7 +63,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="comd" label="工作类型/招人数" width="130">
+                <el-table-column prop="comd" label="{yun:}t key='admin_user_company_00383'{/yun}" width="130">
                     <template slot-scope="props">
                         <div class="moduleProps">
                             <span class=" ">{{ props.row.type_n }}</span>
@@ -71,7 +71,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="comd" label=" 薪水/类型" width="130">
+                <el-table-column prop="comd" label="{yun:}t key='admin_user_company_00387'{/yun}" width="130">
                     <template slot-scope="props">
                         <div class="moduleProps">
                             <span class=" ">{{ props.row.salary }}{{ props.row.salary_type_n }}</span>
@@ -79,7 +79,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="logintime" label="更新/结束时间 " width="150">
+                <el-table-column prop="logintime" label="{yun:}t key='admin_00772'{/yun}" width="150">
                     <template slot-scope="props">
                         <div class="moduleProps">
                             <span>{{ props.row.lastupdate_n_n }}</span>
@@ -87,7 +87,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="logintime" label="报名人数 " width="150">
+                <el-table-column prop="logintime" label="{yun:}t key='member_com_00303'{/yun}" width="150">
                     <template slot-scope="props">
                         <!--<a href="index.php?m=admin_comlog&c=partapply&jobid={yun:}$v.id{/yun}" class="admin_cz_sc">-->
                         <!--{yun:}$v.applynum{/yun}人<div class="admin_mb5">查看</div>-->
@@ -102,7 +102,7 @@
                         <span v-else>{yun:}t key='admin_00768'{/yun}</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="comd" label=" 职位推广" width="130">
+                <el-table-column prop="comd" label="{yun:}t key='wap_com_00236'{/yun}" width="130">
                     <template slot-scope="props">
                         <el-tooltip class="item" effect="dark" placement="top-start">
                             <div slot="content">
@@ -110,18 +110,18 @@
                             </div>
                             <div class="job_tg_bth">
                                 <el-switch v-model="props.row.isrec" @change="tgchange($event, props.row, 2)"
-                                    inactive-text="推荐"></el-switch>
+                                    inactive-text="{yun:}t key='wap_com_00237'{/yun}"></el-switch>
                             </div>
                         </el-tooltip>
                     </template>
                 </el-table-column>
-                <el-table-column prop="comd" label=" 招聘状态" width="130">
+                <el-table-column prop="comd" label="{yun:}t key='member_user_00178'{/yun}" width="130">
                     <template slot-scope="props">
                         <el-switch v-model="props.row.iszp" @change="zpstatuschange($event, props.row)"></el-switch>
                         {yun:}t key='admin_00748'{/yun}
                     </template>
                 </el-table-column>
-                <el-table-column prop="zt" label="状态">
+                <el-table-column prop="zt" label="{yun:}t key='member_user_00181'{/yun}">
                     <template slot-scope="props">
                         <div class="admin_state">
                             <span v-if="(props.row.edate > 0 && props.row.edate < nowtime) || props.row.state == 2"
@@ -153,7 +153,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="200" fixed="right">
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="200" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="small " plain @click="jobAudit(scope.row)">{yun:}t key='member_user_00152'{/yun}</el-button>
@@ -482,7 +482,7 @@
                                             placeholder="{yun:}t key='admin_00346'{/yun}" :picker-options="pickerOptions">
                                         </el-date-picker>
                                     </div>
-                                    <el-checkbox style="margin-left:10px;" v-model="iscq" label="长期招聘" size="medium"
+                                    <el-checkbox style="margin-left:10px;" v-model="iscq" label="{yun:}t key='wap_js_00135'{/yun}" size="medium"
                                         border></el-checkbox>
                                 </div>
                             </td>
@@ -761,7 +761,7 @@ module.exports = {
             var that = this
             that.checkedworktime
             if (that.curr_job.name == '') {
-                message.error('职位名称不能为空')
+                message.error("{yun:}t key='member_com_00585'{/yun}")
                 return false;
             }
             if (that.curr_job.type == "") {
@@ -800,7 +800,7 @@ module.exports = {
             var regex = /(<([^>]+)>)/ig
             var content = jobeditor.getHtml().replace(regex, "")
             if (content == "") {
-                message.error('请输入兼职内容')
+                message.error("{yun:}t key='wap_01669'{/yun}")
                 return false;
             } else {
                 that.curr_job.content = jobeditor.getHtml();
@@ -826,7 +826,7 @@ module.exports = {
                 message.error("{yun:}t key='wap_00905'{/yun}"); return false;
             }
             if (that.curr_job.x == "" || that.curr_job.y == "") {
-                message.error("请选择地图"); return false;
+                message.error("{yun:}t key='wap_01709'{/yun}"); return false;
             }
             if (that.curr_job.linkman == "") {
                 message.error("{yun:}t key='wap_com_00013'{/yun}"); return false;
@@ -1019,7 +1019,7 @@ module.exports = {
                 atype: atype
             };
             if (that.auditInfo.c_status == 2) {
-                message.error("锁定操作异常")
+                message.error("{yun:}t key='admin_company_00036'{/yun}")
                 return false;
             } else {
                 params.lock_status = 1;
@@ -1073,7 +1073,7 @@ module.exports = {
                 message.error("{yun:}t key='admin_user_weipin_00001'{/yun}")
                 return false
             }
-            this.jobtgtit = '职位批量推荐'
+            this.jobtgtit = "{yun:}t key='admin_company_00044'{/yun}"
             this.tgjid = this.selectedItem.join(',")
             this.jobtgdrawer = true
         },
@@ -1081,7 +1081,7 @@ module.exports = {
         multipleyq() {
             var that = this
             if (!that.selectedItem.length) {
-                message.error("请选择要操作的数据项')
+                message.error("{yun:}t key='admin_user_weipin_00001'{/yun}")
                 return false;
             }
             that.yqdrawer = true
@@ -1091,7 +1091,7 @@ module.exports = {
         yqSubmit() {
             var that = this
             if (!that.selectedItem.length) {
-                message.error('请选择要操作的数据项')
+                message.error("{yun:}t key='admin_user_weipin_00001'{/yun}")
                 return false;
             }
             that.yq_loading = true;
@@ -1187,7 +1187,7 @@ module.exports = {
             var that = this
             var url = 'm=user&c=partjob&a=recommend'
             if (that.qxtgchecked == 0 && that.jobtgdays == '') {
-                message.error('推荐天数不能为空')
+                message.error("{yun:}t key='common_06282'{/yun}")
                 return false
             }
             var params = {

@@ -4,8 +4,8 @@
             <div class="tableSeachInpt tableSeachInptsmall tableSeacFromer" style="padding: 2px 0;">
 				<el-input v-model="search_params.keyword" @keyup.enter.native="search" placeholder="{yun:}t key='admin_00340'{/yun}" size="small" clearable>
 					<el-select v-model="search_params.ctype" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00140'{/yun}">
-					    <el-option label="企业名称" value="1"></el-option>
-					    <el-option label="备注" value="2"></el-option>
+					    <el-option label="{yun:}t key='wap_com_00157'{/yun}" value="1"></el-option>
+					    <el-option label="{yun:}t key='member_user_00242'{/yun}" value="2"></el-option>
 					</el-select>
 				</el-input>
             </div>
@@ -56,16 +56,16 @@
                     <p>{{dataText}}</p>
                 </template>
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="uid" label="用户ID" width="120" sortable="custom"></el-table-column>
-                <el-table-column prop="name" label="企业名称" min-width="180" show-overflow-tooltip>
+                <el-table-column prop="uid" label="{yun:}t key='admin_user_00130'{/yun}" width="120" sortable="custom"></el-table-column>
+                <el-table-column prop="name" label="{yun:}t key='wap_com_00157'{/yun}" min-width="180" show-overflow-tooltip>
                     <template slot-scope="props">
                         <div class="layuiSmallImg">
                             <a href="javascript:;" class="layuiSmallImgUp" @click="jumpToMember(props.row.uid);">{{props.row.username}}</a>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label=" 等级 " prop="rating" width="130"></el-table-column>
-                <el-table-column prop=" " label="名企图片" width="150">
+                <el-table-column label="{yun:}t key='admin_user_company_00018'{/yun}" prop="rating" width="130"></el-table-column>
+                <el-table-column prop=" " label="{yun:}t key='admin_00624'{/yun}" width="150">
                     <template slot-scope="props">
                         <div class="layuiSmallImg">
                             <el-image v-if="props.row.hot_pic" :src="props.row.hot_pic" :preview-src-list="[props.row.hot_pic]"  style="width:48px;height:48px"></el-image>
@@ -73,30 +73,30 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="" label="服务价格">
+                <el-table-column prop="" label="{yun:}t key='admin_user_company_00021'{/yun}">
                     <template slot-scope="props">
                         {{ lc("admin_currency_yuan", [props.row.service_price]) }}
                     </template>
                 </el-table-column>
-                <el-table-column prop="time_start" label="开始时间" width="150">
+                <el-table-column prop="time_start" label="{yun:}t key='admin_company_00005'{/yun}" width="150">
                     <template slot-scope="props">
                         {{props.row.time_start_n}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="time_end" label="结束时间" width="150">
+                <el-table-column prop="time_end" label="{yun:}t key='admin_company_00006'{/yun}" width="150">
                     <template slot-scope="props">
                         <span v-if="props.row.time_end_n == '已到期'" style="color: red">{yun:}t key='wap_com_00319'{/yun}</span>
                         <span v-else>{{props.row.time_end_n}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="beizhu" label="备注" width="150">
+                <el-table-column prop="beizhu" label="{yun:}t key='member_user_00242'{/yun}" width="150">
                     <template slot-scope="props">
                         <span v-if="props.row.beizhu">{{props.row.beizhu}}</span>
                         <span v-else>{yun:}t key='admin_user_company_00054'{/yun}</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="sort" label="排序" width="150" sortable="custom"></el-table-column>
-                <el-table-column label="操作" width="140" fixed="right">
+                <el-table-column prop="sort" label="{yun:}t key='member_com_00022'{/yun}" width="150" sortable="custom"></el-table-column>
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="mini" plain @click="edit(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>

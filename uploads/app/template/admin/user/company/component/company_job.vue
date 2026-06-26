@@ -9,17 +9,17 @@
             <el-table :data="tableData" style="width: 100%" stripe
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" ref="multipleTable" @sort-change="shortChange" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55" fixed></el-table-column>
-                <el-table-column prop="name" label="职位名称" width="180"></el-table-column>
-                <el-table-column prop="snum" label="简历量" width="80"></el-table-column>
-                <el-table-column prop="jobhits" label="浏览量" width="80"></el-table-column>
-                <el-table-column prop="jobexpoure" label="曝光量" width="80"></el-table-column>
-                <el-table-column label="状态" width="120">
+                <el-table-column prop="name" label="{yun:}t key='wap_com_00288'{/yun}" width="180"></el-table-column>
+                <el-table-column prop="snum" label="{yun:}t key='admin_user_company_00038'{/yun}" width="80"></el-table-column>
+                <el-table-column prop="jobhits" label="{yun:}t key='wap_com_00112'{/yun}" width="80"></el-table-column>
+                <el-table-column prop="jobexpoure" label="{yun:}t key='default_00384'{/yun}" width="80"></el-table-column>
+                <el-table-column label="{yun:}t key='member_user_00181'{/yun}" width="120">
                     <template slot-scope="scope">
                         <el-switch :value="scope.row.status == 0" @change="zpstatuschange($event, scope.row.id)"></el-switch>
                         <div>{yun:}t key='admin_00612'{/yun}</div>
                     </template>
                 </el-table-column>
-                <el-table-column label="推广">
+                <el-table-column label="{yun:}t key='admin_user_company_00040'{/yun}">
                     <template slot-scope="scope">
                         <div style="margin:5px;">
                             {yun:}t key='wap_user_00335'{/yun}
@@ -40,9 +40,9 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="sdate_n" label="发布时间"></el-table-column>
-                <el-table-column prop="lastupdate_n_n" label="更新时间"></el-table-column>
-                <el-table-column label="审核" width="110">
+                <el-table-column prop="sdate_n" label="{yun:}t key='admin_user_weipin_00030'{/yun}"></el-table-column>
+                <el-table-column prop="lastupdate_n_n" label="{yun:}t key='admin_user_company_00272'{/yun}"></el-table-column>
+                <el-table-column label="{yun:}t key='admin_user_00336'{/yun}" width="110">
                     <template slot-scope="scope">
                         <div class="admin_state">
                             <div v-if="scope.row.r_status == '2'">
@@ -72,7 +72,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="110">
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="110">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="mini" @click="jobedit(scope.row)">{yun:}t key='common.edit'{/yun}
@@ -301,19 +301,19 @@ module.exports = {
             if (that.jobtgtype == 1) {
                 url += 'xuanshang'
                 if (that.qxtgchecked == 0 && that.jobtgdays == '') {
-                    message.error('置顶天数不能为空')
+                    message.error("{yun:}t key='common_06281'{/yun}")
                     return false
                 }
             } else if (that.jobtgtype == 2) {
                 url += 'recommend'
                 if (that.qxtgchecked == 0 && that.jobtgdays == '') {
-                    message.error('推荐天数不能为空')
+                    message.error("{yun:}t key='common_06282'{/yun}")
                     return false
                 }
             } else if (that.jobtgtype == 3) {
                 url += 'urgent'
                 if (that.qxtgchecked == 0 && that.jobtgdays == '') {
-                    message.error('紧急天数不能为空')
+                    message.error("{yun:}t key='admin_company_00027'{/yun}")
                     return false
                 }
             }
