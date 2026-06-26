@@ -42,18 +42,18 @@
 						<div class="yun_job_search_cont searchContButton" style="position: relative;">
 							
 							<div class="yun_job_search_textcont">
-								<input type="text" name="keyword" value="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}/if{/yun}" placeholder="请输入职位名称或公司，例如：{yun:}t key='default_00253'{/yun}" class="Search_jobs_text " />
+								<input type="text" name="keyword" value="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}/if{/yun}" placeholder="{yun:}t key='default_00348'{/yun}" class="Search_jobs_text " />
 							</div>
 							
 							<input type="submit" value="{yun:}t key='common.search'{/yun}" class="Search_jobs_submit yun_bg_color jobsSubmit" />
 <!--
 							<div class="Search_jobs_sub_text_bc"> 
 								{yun:}if $uid&&$usertype=='1'{/yun} 
-									<a href="javascript:void(0)" class="Search_jobs_scq" onclick="addfinder('{yun:}$paras{/yun}','1','0')">+ 保存为职位搜索器</a> 
+									<a href="javascript:void(0)" class="Search_jobs_scq" onclick="addfinder('{yun:}$paras{/yun}','1','0')">{yun:}t key='common_02392'{/yun}</a> 
 								{yun:}elseif $uid&&$usertype!='1'{/yun} 
-									<a href="javascript:void(0)" class="Search_jobs_scq" onclick="layer.msg('只有个人会员才可保存！', 2,8);return false;">+ 保存为职位搜索器</a> 
+									<a href="javascript:void(0)" class="Search_jobs_scq" onclick="layer.msg('{yun:}t key='common_02404'{/yun}', 2,8);return false;">{yun:}t key='common_02392'{/yun}</a> 
 								{yun:}else{/yun} 
-									<a href="javascript:void(0)" class="Search_jobs_scq" onclick="showlogin('1');">+ 保存为职位搜索器</a> 
+									<a href="javascript:void(0)" class="Search_jobs_scq" onclick="showlogin('1');">{yun:}t key='common_02392'{/yun}</a> 
 								{yun:}/if{/yun} 
 							</div>-->
 						</div>
@@ -303,7 +303,7 @@
 									</div>
 								</div>
 <div class="Search_jobs_more_chlose">
-									<span class="Search_jobs_more_chlose_s">{yun:}if $smarty.get.hy{/yun}{yun:}$industry_name[$smarty.get.hy]{/yun}{yun:}else{/yun}公司行业{yun:}/if{/yun}</span><i class=""></i>
+									<span class="Search_jobs_more_chlose_s">{yun:}if $smarty.get.hy{/yun}{yun:}$industry_name[$smarty.get.hy]{/yun}{yun:}else{/yun}{yun:}t key='default_00360'{/yun}{yun:}/if{/yun}</span><i class=""></i>
 									
 									<div class="Search_jobs_more_chlose_hylist none">
 										<ul>
@@ -433,7 +433,7 @@
 					<div class="search_mxbox">
 						<a href="{yun:}listurl untype=jobtype{/yun}" class="search_mx {yun:}if $smarty.get.jobtype!='1'{/yun}search_mxcur{yun:}/if{/yun}"><i class="search_mx_a"></i></a> <a href="{yun:}listurl type=jobtype v=1{/yun}" class="search_mx {yun:}if $smarty.get.jobtype=='1'{/yun}search_mxcur{yun:}/if{/yun}"><i class="search_mx_b"></i></a>
 					</div>
-					<div class="search_h1_box_t fr">提升招聘效果，请致电：{yun:}$config.sy_freewebtel{/yun}</div>
+					<div class="search_h1_box_t fr">{yun:}t key='default_00363'{/yun}{yun:}$config.sy_freewebtel{/yun}</div>
 			  	</div>
 
 			</div>
@@ -710,7 +710,7 @@
         <!--没搜索到-->
         <div class=" new_notip">
           <div class="new_notip_img"><img src="{yun:}$style{/yun}/images/notip.png"  ></div>
-          <div class="new_notip_tit">{yun:}t key='common_01912'{/yun}，没有找到满足条件的职位</div> 
+          <div class="new_notip_tit">{yun:}t key='default_00362'{/yun}</div> 
 		  <div class="new_notip_p">{yun:}t key='common_02399'{/yun}</div> 
 
         </div>

@@ -245,7 +245,7 @@
                             <div class="Search_jobs_sub" style="width:1090px;">
 
                                 <div class="Search_jobs_more_chlose">
-                                    <span class="Search_jobs_more_chlose_s">{yun:}if $smarty.get.hy{/yun}{yun:}$industry_name[$smarty.get.hy]{/yun}{yun:}else{/yun}工作行业{yun:}/if{/yun}</span><i class=""></i>
+                                    <span class="Search_jobs_more_chlose_s">{yun:}if $smarty.get.hy{/yun}{yun:}$industry_name[$smarty.get.hy]{/yun}{yun:}else{/yun}{yun:}t key='default_00361'{/yun}{yun:}/if{/yun}</span><i class=""></i>
                                     <div class="Search_jobs_more_chlose_hylist none">
                                         <ul>
                                             {yun:}if $config.fz_type!='2'&&$config.hyclass==''{/yun}
@@ -377,15 +377,15 @@
                         {yun:}if $smarty.get.minsalary && $smarty.get.maxsalary{/yun}
                         <a href="{yun:}listurl m=resume untype='salary'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_user_00106'{/yun}：{yun:}$smarty.get.minsalary{/yun}-{yun:}$smarty.get.maxsalary{/yun}</a>
                         {yun:}elseif $smarty.get.minsalary && !$smarty.get.maxsalary{/yun}
-                        <a href="{yun:}listurl m=resume untype='salary'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_user_00106'{/yun}：{yun:}$smarty.get.minsalary{/yun}及以上</a>
+                        <a href="{yun:}listurl m=resume untype='salary'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_user_00106'{/yun}：{yun:}$smarty.get.minsalary{/yun}{yun:}t key='default_00373'{/yun}</a>
                         {yun:}elseif !$smarty.get.minsalary && $smarty.get.maxsalary{/yun}
-                        <a href="{yun:}listurl m=resume untype='salary'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_user_00106'{/yun}：{yun:}$smarty.get.maxsalary{/yun}及以下</a>
+                        <a href="{yun:}listurl m=resume untype='salary'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_user_00106'{/yun}：{yun:}$smarty.get.maxsalary{/yun}{yun:}t key='default_00374'{/yun}</a>
                         {yun:}/if{/yun}
 
                         {yun:}if $smarty.get.minage && $smarty.get.maxage{/yun}
                         <a href="{yun:}listurl m=resume untype='age'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='wap_com_00302'{/yun}：{yun:}$smarty.get.minage{/yun}-{yun:}$smarty.get.maxage{/yun}</a>
                         {yun:}elseif $smarty.get.minage && !$smarty.get.maxage{/yun}
-                        <a href="{yun:}listurl m=resume untype='age'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='wap_com_00302'{/yun}：{yun:}$smarty.get.minage{/yun}及以上</a>
+                        <a href="{yun:}listurl m=resume untype='age'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='wap_com_00302'{/yun}：{yun:}$smarty.get.minage{/yun}{yun:}t key='default_00373'{/yun}</a>
                         {yun:}/if{/yun}
 
                         {yun:}if $smarty.get.integrity{/yun}
@@ -453,7 +453,7 @@
                     </ul>
 
                     <div class="search_mxbox"> <a href="{yun:}listurl m=resume untype=rtype{/yun}" class="search_mx {yun:}if $smarty.get.rtype!='1'{/yun}search_mxcur{yun:}/if{/yun}"><i class="search_mx_a"></i></a> <a href="{yun:}listurl m=resume type=rtype v=1{/yun}" class="search_mx {yun:}if $smarty.get.rtype=='1'{/yun}search_mxcur{yun:}/if{/yun}"><i class="search_mx_b"></i></a> </div>
-                    <div class="search_h1_box_t fr">提升招聘效果，请致电：{yun:}$config.sy_comwebtel{/yun}</div>
+                    <div class="search_h1_box_t fr">{yun:}t key='default_00363'{/yun}{yun:}$config.sy_comwebtel{/yun}</div>
                 </div>
             </div>
 
@@ -510,7 +510,7 @@
                                         <dt><img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}"  width="130" height="130"></dt>
                                         <dd>{yun:}t key='wap_00426'{/yun}</dd>
                                     </dl>
-                                    <div class="search_nologin_tip_p">{yun:}t key='wap_com_00389'{/yun}，加快审核，高效挑选人才</div>
+                                    <div class="search_nologin_tip_p">{yun:}t key='wap_com_00389'{/yun}{yun:}t key='default_00377'{/yun}</div>
                                     <div class="search_nologin_tip_tel">{yun:}t key='common_02276'{/yun}<span class="search_nologin_tip_tel_n">{yun:}$config.sy_comwebtel{/yun}</span></div>
                                 </div>
                             {yun:}else{/yun}

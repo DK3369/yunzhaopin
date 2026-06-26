@@ -77,7 +77,7 @@ ul{ padding:0; margin:0;}
           <li>{yun:}t key='common_02389'{/yun}<a href="{yun:}url m=job c=comapply id='`$Info.id`'{/yun}"  target="_blank">{yun:}t key='wap_com_00427'{/yun}</a></li>
           <li>{yun:}t key='wap_user_00265'{/yun}：<a href="{yun:}url m=job c=comapply id='`$Info.id`'{/yun}"  target="_blank">{yun:}t key='wap_com_00427'{/yun}</a> </li> 
             {yun:}else{/yun}
-          <li>电子信箱：
+          <li>{yun:}t key='common_02389'{/yun}
               {yun:}if $config.sy_user_change==1{/yun}
                <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='common_02391'{/yun}', 2, 8)" style="color:#999">{yun:}t key='common_02390'{/yun}</a> 
               {yun:}else{/yun} 
@@ -167,7 +167,7 @@ function sendjob(img){
 		if(data==1){ 
 			layer.msg("{yun:}t key='resume_00075'{/yun}", 2,9,function(){location.reload();});return false;	
 		}else if(data==""){ 	
-			layer.msg("未知错误，{yun:}t key='wap_00509'{/yun}！", 2,8);
+			layer.msg("{yun:}t key='default_00372'{/yun}{yun:}t key='wap_00509'{/yun}！", 2,8);
 		}else{ 
 			layer.msg(data, 2,8);
 		}
