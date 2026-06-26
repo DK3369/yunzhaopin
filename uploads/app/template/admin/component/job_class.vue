@@ -88,7 +88,7 @@
                     </div>
                     <div v-else class="noneResults">
                         <div>
-                            <el-empty description="抱歉，没有找到结果！"></el-empty>
+                            <el-empty description="{yun:}t key='admin_00039'{/yun}"></el-empty>
                             
                         </div>
                     </div>

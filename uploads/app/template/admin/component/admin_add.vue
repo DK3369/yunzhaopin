@@ -354,7 +354,7 @@
                 let that = this;
                 let formData = new FormData();
                 if (!that.info.username) {
-                    message.error('请填写用户名');
+                    message.error(lc('wap_js_00056'));
                     return false;
                 }
                 if (!that.info.uid && !that.info.password) {

@@ -65,7 +65,7 @@
                     </div>
                     <div v-else class="noneResults">
                         <div>
-                            <el-empty description="抱歉，没有找到结果！"></el-empty>
+                            <el-empty description="{yun:}t key='admin_00039'{/yun}"></el-empty>
                             
                         </div>
                     </div>
@@ -271,7 +271,7 @@
                     }
 
                     if (selectJobId.length >= max) {
-                        message.warning('最多选择' + max + "{yun:}t key='common_02104'{/yun}");
+                        message.warning(lc('admin_vue_00125') + max + lc('common_02104'));
                         return false;
                     }
                     that.selectJobId.push(id);
