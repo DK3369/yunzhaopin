@@ -111,7 +111,7 @@ class admin_model extends model{
         
         if ($return['id']){
             
-            $return['msg']      = yun_auto_t('管理员(id:').$return['id'].')添加成功';
+            $return['msg']      = yun_at('model_00190') . $return['id'] . yun_at('model_00162');
             $return['errcode']  =  '9';
             
         }else{
@@ -266,11 +266,11 @@ class admin_model extends model{
             $this->update_once('company', array('crm_uid'=>0,'crm_status'=>0), array('crm_uid'=>$whereData['uid']));
             $this->update_once('company_order', array('crm_uid'=>0), array('crm_uid'=>$whereData['uid']));
 
-            $return['msg']      =  yun_auto_t('管理员(ID:').$whereData['uid'].')删除成功';
+            $return['msg']      =  yun_at('model_00191') . $whereData['uid'] . yun_at('model_00112');
             $return['errcode']  =  '9';
             
         }else{
-            $return['msg']      =  yun_auto_t('管理员(ID:').$whereData['uid'].')删除失败';
+            $return['msg']      =  yun_at('model_00191') . $whereData['uid'] . yun_at('model_00137');
             $return['errcode']  =  '8';
         }
         return	$return;
@@ -371,11 +371,11 @@ class admin_model extends model{
         
         if ($return['id']){
             
-            $return['msg']      =  yun_auto_t('管理员类型(ID:').$whereData['id'].')修改成功';
+            $return['msg']      =  yun_at('model_00192') . $whereData['id'] . yun_at('model_00143');
             $return['errcode']  =  '9';
             
         }else{
-            $return['msg']      =  yun_auto_t('管理员类型(ID:').$whereData['id'].')修改失败';
+            $return['msg']      =  yun_at('model_00192') . $whereData['id'] . yun_at('model_00144');
             $return['errcode']  =  '8';
         }
         
@@ -399,11 +399,11 @@ class admin_model extends model{
                 $return['id']  =  $this -> delete_all('admin_user_group',$whereData, '');
                 
                 if ($return['id']){
-                    $return['msg']      =  yun_auto_t('管理员类型(ID:').$whereData['id'].')删除成功';
+                    $return['msg']      =  yun_at('model_00192') . $whereData['id'] . yun_at('model_00112');
                     $return['errcode']  =  '9';
                     
                 }else{
-                    $return['msg']      =  yun_auto_t('管理员类型(ID:').$whereData['id'].')删除失败';
+                    $return['msg']      =  yun_at('model_00192') . $whereData['id'] . yun_at('model_00137');
                     $return['errcode']  =  '8';
                 }
             }

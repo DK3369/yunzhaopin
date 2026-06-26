@@ -552,7 +552,7 @@ class part_model extends model
 
                         $return['id']       =   $this -> upInfo(array('rec_time' => 0), array('id' => array('in', pylode(',', $ids))));
 
-                        $return['msg']      =   yun_auto_t('取消兼职推荐(ID:') . pylode(',', $ids) . ')';
+                        $return['msg']      =   yun_at('model_00175') . pylode(',', $ids) . yun_at('model_00130');
 
                         $return['msg']      =   $return['id'] ? $return['msg'] . 'wap_js_00104' : $return['msg'] . 'wap_js_00103';
                         
@@ -583,7 +583,7 @@ class part_model extends model
                             $return['id']       =   $this -> upInfo(array('rec_time'=>array('+', $time)), array('id'=>array('in',pylode(',', $mid))));
                         }
 
-                        $return['msg']  =   yun_auto_t('兼职推荐(ID:') . pylode(',', $id) . ')';
+                        $return['msg']  =   yun_at('model_00176') . pylode(',', $id) . yun_at('model_00130');
                         $return['msg']  =   $return['id'] ? $return['msg'] . 'model_00011' : $return['msg'] . 'wap_01715';
                     } else {
 
@@ -701,7 +701,7 @@ class part_model extends model
                     $sysmsgM -> addInfo(array('uid' => $uids,'usertype'=>2,  'content' => $msg));
                 }
 
-                $return['msg']  =   yun_auto_t('兼职职位(ID:') . pylode(',', $id) . ')延期';
+                $return['msg']  =   yun_at('model_00177') . pylode(',', $id) . yun_at('model_00178');
                 $return['msg']  =   $return['id'] ? $return['msg'] . 'model_00011' : $return['msg'] . 'wap_01715';
             } else {
 
@@ -973,7 +973,7 @@ class part_model extends model
 
                 $this->addMemberLog($data['uid'], $data['usertype'], '兼职报名：删除报名信息（ID：'.$id.'）', 6, 3);
             }
-            $return['msg']      = yun_auto_t('兼职报名记录(ID:') . pylode(',', $id) . ')';
+            $return['msg']      = yun_at('model_00179') . pylode(',', $id) . yun_at('model_00130');
 
             $return['errcode']  =   $return['id'] ? 9 : 8;
             $return['msg']      =   $return['id'] ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
@@ -1123,7 +1123,7 @@ class part_model extends model
                 $this->addMemberLog($data['uid'], $data['usertype'], '收藏管理：删除兼职收藏（ID：'.$id.'）', 5, 3);
             }
 
-            $return['msg']      =   yun_auto_t('兼职记录(ID:') . pylode(',', $id) . ')';
+            $return['msg']      =   yun_at('model_00180') . pylode(',', $id) . yun_at('model_00130');
             $return['errcode']  =   $return['id'] ? 9 : 8;
             $return['msg']      =   $return['id'] ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
         } else {
@@ -1258,7 +1258,7 @@ class part_model extends model
                         $return['msg']      =   yun_at('common_01233').$jobtnum.'common_01791'.$jobwnum.'common_00798';
                     } else {
 
-                        $return['msg']      =   yun_auto_t('兼职批量审核成功(ID:').$pidstr.')';
+                        $return['msg']      =   yun_at('model_00181') . $pidstr . yun_at('model_00130');
                     }
                     $return['errcode']      =   9;
                 } else {
@@ -1268,17 +1268,17 @@ class part_model extends model
                     $jobtnum                =   $this->getpartJobNum($jobwwhere);
                     if ($jobtnum > 0) {
 
-                        $return['msg']      =   yun_auto_t('审核兼职(ID:').$pidstr.')失败，原因:企业账户未审核';
+                        $return['msg']      =   yun_at('model_00182') . $pidstr . yun_at('model_00183');
                         $return['errcode']  =   8;
                     } else {
 
-                        $return['msg']      =   yun_auto_t('审核兼职(ID:').$pidstr.')设置成功';
+                        $return['msg']      =   yun_at('model_00182') . $pidstr . yun_at('model_00127');
                         $return['errcode']  =   9;
                     }
                 }
             } else {
 
-                $return['msg']      =   yun_auto_t('审核兼职(ID:').$pidstr.')设置失败';
+                $return['msg']      =   yun_at('model_00182') . $pidstr . yun_at('model_00128');
                 $return['errcode']  =   8;
             }
         } else {

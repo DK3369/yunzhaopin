@@ -346,7 +346,7 @@ class article_model extends model{
 			}
 			$contentArr['nbid']		=	$nbid;
 			$cont					=	$this -> insert_into("news_content", $contentArr);
-			$res['msg']				=	yun_auto_t('新闻(ID:').$nbid.')添加成功！';
+			$res['msg']				=	yun_at('model_00187') . $nbid . yun_at('model_00165');
 			$res['data']			=	$nbid;
 		}else{
 		    // 开始时间，修改时，直接按传过来的值处理
@@ -359,7 +359,7 @@ class article_model extends model{
 				$contentArr['nbid']	=	$newsId;
 				$cont				=	$this -> insert_into('news_content', $contentArr);
 			}
-			$res['msg']				=	yun_auto_t('新闻(ID:').$newsId.'admin_neirong_00008';
+			$res['msg']				=	yun_at('model_00187') . $newsId . yun_at('admin_neirong_00008');
 			$res['data']			=	$newsId;
 		}
 		$res['errcode']				=	9;
@@ -470,11 +470,11 @@ class article_model extends model{
 		if(!empty($whereData))
 		{
 			$return['id']		=	$this->update_once('property',$addData,$whereData);
-			$return['msg']		=	yun_auto_t('新闻属性(ID:').$whereData['id'].')';
+			$return['msg']		=	yun_at('model_00188') . $whereData['id'] . yun_at('model_00130');
 			$return['msg']		=	$return['id'] ? $return['msg'].'member_user_00602' : $return['msg'].'member_user_00603';
 		}else{
 			$return['id']		=	$this->insert_into('property',$addData);
-			$return['msg']		=	yun_auto_t('新闻属性(ID:').$return['id'].')';
+			$return['msg']		=	yun_at('model_00188') . $return['id'] . yun_at('model_00130');
 			$return['msg']		=	$return['id'] ? $return['msg'].'admin_system_00138' : $return['msg'].'admin_system_00137';
 		}
 		//操作状态 9：成功 8:失败 配合原有提示函数
@@ -500,7 +500,7 @@ class article_model extends model{
 
 			$return['id']		=	$this -> delete_all("property",array('id' => array('in',$delId)),"");
 
-			$return['msg']		=	yun_auto_t('新闻属性(ID:').$delId.')';
+			$return['msg']		=	yun_at('model_00188') . $delId . yun_at('model_00130');
 			$return['errcode']	=	$return['id'] ? '9' :'8';
 			$return['msg']		=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 		}else{
@@ -544,7 +544,7 @@ class article_model extends model{
 	public function addGroup($addData){
 
 		$return['id']		=	$this->insert_into('news_group', $addData);
-		$return['msg']		=	yun_auto_t('新闻类别(ID:').$return['id'].')';
+		$return['msg']		=	yun_at('model_00189') . $return['id'] . yun_at('model_00130');
 		$return['msg']		=	$return['id'] ? $return['msg'].'admin_system_00138' : $return['msg'].'admin_system_00137';
 		//操作状态 9：成功 8:失败 配合原有提示函数
 		$return['errcode']	=	$return['id'] ? 9 : 8;
@@ -559,7 +559,7 @@ class article_model extends model{
 	*/
 	public function updGroup($whereData, $upData = array()){
 		$return['id']		=	$this->update_once('news_group', $upData, $whereData);
-		$return['msg']		=	yun_auto_t('新闻类别(ID:').$whereData['id'].')';
+		$return['msg']		=	yun_at('model_00189') . $whereData['id'] . yun_at('model_00130');
 		$return['msg']		=	$return['id'] ? $return['msg'].'member_user_00602' : $return['msg'].'member_user_00603';
 		//操作状态 9：成功 8:失败 配合原有提示函数
 		$return['errcode']	=	$return['id'] ? 9 : 8;
@@ -591,7 +591,7 @@ class article_model extends model{
 
 			$return['id']		=	$this -> delete_all("news_group", $where, "");
 
-			$return['msg']		=	yun_auto_t('新闻类别(ID:').$delId.')';
+			$return['msg']		=	yun_at('model_00189') . $delId . yun_at('model_00130');
 			$return['errcode']	=	$return['id'] ? '9' :'8';
 			$return['msg']		=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 		}else{

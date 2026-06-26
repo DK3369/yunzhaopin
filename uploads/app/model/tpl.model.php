@@ -38,7 +38,7 @@ class tpl_model extends model{
 
             $return['id']       =   $this->insert_into('company_tpl', $addData);
 
-            $return['msg']      =   yun_auto_t('企业模板(ID:') . $return['id'] . ')';
+            $return['msg']      =   yun_at('model_00184') . $return['id'] . yun_at('model_00130');
 
             $return['errcode']  =   $return['id'] ? '9' : '8';
 
@@ -57,7 +57,7 @@ class tpl_model extends model{
 					
 			$return['id']		=	$this	->	update_once('company_tpl',$addData,$whereData);
 		
-			$return['msg']		=	yun_auto_t('企业模板(ID:').$whereData['id'].')';
+			$return['msg']		=	yun_at('model_00184') . $whereData['id'] . yun_at('model_00130');
 			
 			$return['errcode']	=	$return['id'] ? '9' :'8';
 			
@@ -84,7 +84,7 @@ class tpl_model extends model{
 
 			$return['id']		=	$this	->	delete_all('company_tpl',array('id'=>array('in',$delId)),'');
 		
-			$return['msg']		=	yun_auto_t('企业模板(ID:').$delId.')';
+			$return['msg']		=	yun_at('model_00184') . $delId . yun_at('model_00130');
 			$return['errcode']	=	$return['id'] ? '9' :'8';
 			$return['msg']		=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 		}
@@ -170,7 +170,7 @@ class tpl_model extends model{
 			
 			$return['id']		=	$this	->	insert_into('resumetpl',$addData);
 		
-			$return['msg']		=	yun_auto_t('模板(ID:').$return['id'].')';
+			$return['msg']		=	yun_at('model_00185') . $return['id'] . yun_at('model_00130');
             
             $return['errcode']	=	$return['id'] ? '9' :'8';
             
@@ -189,7 +189,7 @@ class tpl_model extends model{
 			
 			$return['id']		=	$this	->	update_once('resumetpl',$addData,$whereData);
 			
-			$return['msg']		=	yun_auto_t('模板(ID:').$return['id'].')';
+			$return['msg']		=	yun_at('model_00185') . $return['id'] . yun_at('model_00130');
             
             $return['errcode']	=	$return['id'] ? '9' :'8';
             
@@ -216,7 +216,7 @@ class tpl_model extends model{
 			 
 			$return['id']		=	$this	->	delete_all('resumetpl',array('id'=>array('in',$delId)),'');
 		
-			$return['msg']		=	yun_auto_t('模板(ID:').$delId.')';
+			$return['msg']		=	yun_at('model_00185') . $delId . yun_at('model_00130');
 			$return['errcode']	=	$return['id'] ? '9' :'8';
 			$return['msg']		=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 		}
@@ -342,7 +342,7 @@ class tpl_model extends model{
 			
 			$return['id']	=	$this	->	insert_into('tplindex',$addData);
 			
-			$return['msg']		=	yun_auto_t('主题模板(ID:').$return['id'].')';
+			$return['msg']		=	yun_at('model_00186') . $return['id'] . yun_at('model_00130');
             
             $return['errcode']	=	$return['id'] ? '9' :'8';
             
@@ -361,7 +361,7 @@ class tpl_model extends model{
 			
 			$return['id']	=	$this	->	update_once('tplindex',$addData,$whereData);
 			
-			$return['msg']		=	yun_auto_t('主题模板(ID:').$return['id'].')';
+			$return['msg']		=	yun_at('model_00186') . $return['id'] . yun_at('model_00130');
             
             $return['errcode']	=	$return['id'] ? '9' :'8';
             
@@ -388,7 +388,7 @@ class tpl_model extends model{
 			 
 			$return['id']		=	$this	->	delete_all('tplindex',array('id'=>array('in',$delId)),'');
 		
-			$return['msg']		=	yun_auto_t('主题模板(ID:').$delId.')';
+			$return['msg']		=	yun_at('model_00186') . $delId . yun_at('model_00130');
 			$return['errcode']	=	$return['id'] ? '9' :'8';
 			$return['msg']		=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 		}
