@@ -6,26 +6,26 @@
                 <el-input v-model="search_params.keyword" @keyup.enter.native="search" placeholder="{yun:}t key='admin_00340'{/yun}" class="input-with-select" size="small"
                      clearable>
                     <el-select slot="prepend" v-model="search_params.type" size="small" placeholder="{yun:}t key='admin_user_00140'{/yun}">
-                        <el-option label="名称/简称" value="1"></el-option>
-                        <el-option label="用户名称" value="2"></el-option>
-                        <el-option label="联系人" value="3"></el-option>
-                        <el-option label="联系电话" value="4"></el-option>
-                        <el-option label="用户邮箱" value="5"></el-option>
-                        <el-option label="用户ID" value="6"></el-option>
+                        <el-option label="{yun:}t key='admin_user_company_00126'{/yun}" value="1"></el-option>
+                        <el-option label="{yun:}t key='admin_user_company_00144'{/yun}" value="2"></el-option>
+                        <el-option label="{yun:}t key='wap_user_00267'{/yun}" value="3"></el-option>
+                        <el-option label="{yun:}t key='admin_company_00023'{/yun}" value="4"></el-option>
+                        <el-option label="{yun:}t key='admin_00673'{/yun}" value="5"></el-option>
+                        <el-option label="{yun:}t key='admin_user_00130'{/yun}" value="6"></el-option>
                         <el-option label="IP" value="7"></el-option>
-                        <el-option label="企业地址" value="8"></el-option>
+                        <el-option label="{yun:}t key='admin_company_00024'{/yun}" value="8"></el-option>
                     </el-select>
                 </el-input>
             </div>
             <!--收起部分-->
             <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
                 <el-select v-model="search_params.time_type" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00135'{/yun}" clearable @change="handleTimeChange">
-                    <el-option label="注册时间" value="adtime"></el-option>
-                    <el-option label="登录时间" value="lotime"></el-option>
+                    <el-option label="{yun:}t key='admin_user_00129'{/yun}" value="adtime"></el-option>
+                    <el-option label="{yun:}t key='admin_user_00134'{/yun}" value="lotime"></el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt tableSeachInptsmalltwo" :class="{ 'searchbutnOnff': seachbutn }">
-                <el-date-picker v-model="search_params.times" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="handleTimeChange"></el-date-picker>
+                <el-date-picker v-model="search_params.times" type="daterange" align="right" unlink-panels range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="handleTimeChange"></el-date-picker>
             </div>
             <div class="tableSeachInpt tableSeachInptsmall" v-for="(searchitem, searchidx) in searchlist" :key="searchidx" :class="{ 'searchbutnOnff': seachbutn }">
                 <el-select v-model="search_params[searchidx]" size="small" slot="prepend" :placeholder="searchitem.name" clearable @change="search()">
@@ -71,8 +71,8 @@
                 :default-sort="{ prop: 'uid', order: 'descending' }" @selection-change="handleSelectionChange"
                 ref="multipleTable" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="50"></el-table-column>
-                <el-table-column prop="uid" label="用户ID" width="90" sortable="custom"></el-table-column>
-                <el-table-column label="名称/用户名/认证" min-width="220" show-overflow-tooltip>
+                <el-table-column prop="uid" label="{yun:}t key='admin_user_00130'{/yun}" width="90" sortable="custom"></el-table-column>
+                <el-table-column label="{yun:}t key='admin_00674'{/yun}" min-width="220" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             <div class="username">
@@ -83,14 +83,14 @@
                                 <el-link @click="memberCheck(scope.row.uid, scope.row.usertype)" :underline="false">{{ scope.row.username
                                 }}
                                 </el-link>
-                                <el-tooltip v-if="scope.row.r_status == '2'" class="item" effect="dark" content="已锁定"
+                                <el-tooltip v-if="scope.row.r_status == '2'" class="item" effect="dark" content="{yun:}t key='admin_user_00138'{/yun}"
                                             placement="top-start">
                                     <i class="el-icon-lock" style="color: orange"></i>
                                 </el-tooltip>
                             </div>
                         </div>
                         <div class="rz_box" style="padding-top: 5px;">
-                            <el-tooltip v-if="scope.row.moblie_status == '1'" class="item" effect="dark" content="手机已认证"
+                            <el-tooltip v-if="scope.row.moblie_status == '1'" class="item" effect="dark" content="{yun:}t key='member_user_00117'{/yun}"
                                 placement="top-start">
                                 <div slot="content">
                                     <span style="line-height: 20px;">{yun:}t key='admin_00634'{/yun}</span><br />
@@ -191,7 +191,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="comd" label="等级/到期时间" min-width="180">
+                <el-table-column prop="comd" label="{yun:}t key='admin_00675'{/yun}" min-width="180">
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             <div class="username">
@@ -219,7 +219,7 @@
                         </div>
                     </template>
                 </el-table-column>
-				<el-table-column prop=" " label="企业LOGO" width="100">
+				<el-table-column prop=" " label="{yun:}t key='admin_company_00026'{/yun}" width="100">
 				    <template slot-scope="props">
 				        <div class="layuiSmallImg">
 				            <a href="javascript:;" class="layuiSmallImgUp" @click="makeLogo(props.row.uid, props.row.shortname, props.row.name, 2)">
@@ -235,7 +235,7 @@
 				        </div>
 				    </template>
 				</el-table-column>
-                <el-table-column label="手机号/归属地" min-width="130">
+                <el-table-column label="{yun:}t key='admin_user_00117'{/yun}" min-width="130">
                     <template slot-scope="props">
                         <div class="moduleProps">
                             <span v-if="props.row.linktel || props.row.linkphone">{{ props.row.linktel ? props.row.linktel : props.row.linkphone }}</span>
@@ -247,7 +247,7 @@
                     </template>
                 </el-table-column>
 
-                <el-table-column prop="login_date" label="注册/登录" min-width="150" sortable="custom">
+                <el-table-column prop="login_date" label="{yun:}t key='admin_user_00121'{/yun}" min-width="150" sortable="custom">
                     <template slot-scope="props">
                         <div class="moduleProps">
                             <span class="gsd">{{ props.row.reg_date_n }}</span>
@@ -255,7 +255,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="ip" label="来源/IP/归属地" min-width="180">
+                <el-table-column prop="ip" label="{yun:}t key='admin_00512'{/yun}" min-width="180">
                     <template slot-scope="props">
                         <div class="moduleProps">
                             <span>{{ source[props.row.source] }}</span>
@@ -267,7 +267,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="ip" label="职位数" min-width="100">
+                <el-table-column prop="ip" label="{yun:}t key='admin_user_company_00154'{/yun}" min-width="100">
                     <template slot-scope="props">
                         <div class="moduleProps">
                             <span>{yun:}t key='admin_user_company_00151'{/yun}<el-button type="text" @click="JumpComJob(props.row, 0)">{{ props.row.jobnum ? props.row.jobnum : 0 }}</el-button></span>
@@ -279,7 +279,7 @@
                     </template>
                 </el-table-column>
 
-                <el-table-column prop="zt" label="状态" fixed="right">
+                <el-table-column prop="zt" label="{yun:}t key='member_user_00181'{/yun}" fixed="right">
                     <template slot-scope="props">
                         <div class="admin_state">
                             <span class="admin_state1" v-if="props.row.r_status == '1'">{yun:}t key='wap_user_00165'{/yun}</span>
@@ -310,7 +310,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="140" fixed="right">
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="mini" plain @click="comaudit(scope.row.uid)">{yun:}t key='member_user_00152'{/yun}</el-button>
@@ -342,21 +342,21 @@
                 <!-- <div class="bottomButnNone">
                     <el-popover placement="top-start" width="520" trigger="hover">
                         <div class="bottomButnGend">
-                            <el-button size="mini" @click="exportdrawer = true">导出</el-button>
-                            <el-button size="mini" @click="multiFpzd">批量选择分站</el-button>
-                            <el-button size="mini" @click="fpgw(2, '')">批量分配顾问</el-button>
-                            <el-button size="mini" @click="multirz">批量认证</el-button>
-                            <el-button size="mini" @click="twtaskall">推文任务</el-button>
+                            <el-button size="mini" @click="exportdrawer = true">{yun:}t key='admin_user_00257'{/yun}</el-button>
+                            <el-button size="mini" @click="multiFpzd">{yun:}t key='admin_user_00279'{/yun}</el-button>
+                            <el-button size="mini" @click="fpgw(2, '')">{yun:}t key='admin_user_company_00118'{/yun}</el-button>
+                            <el-button size="mini" @click="multirz">{yun:}t key='admin_user_00292'{/yun}</el-button>
+                            <el-button size="mini" @click="twtaskall">{yun:}t key='admin_user_company_00140'{/yun}</el-button>
                         </div>
-                        <div class="bottomButnMore" slot="reference">更多</div>
+                        <div class="bottomButnMore" slot="reference">{yun:}t key='admin_company_00025'{/yun}</div>
                     </el-popover>
                 </div> -->
 
-                <!-- <el-button size="mini" @click="exportdrawer = true">导出</el-button>
-                <el-button size="mini" @click="multiFpzd">批量选择分站</el-button>
-                <el-button size="mini" @click="fpgw(2, '')">批量分配顾问</el-button>
-                <el-button size="mini" @click="multirz">批量认证</el-button>
-                <el-button size="mini" @click="twtaskall">推文任务</el-button> -->
+                <!-- <el-button size="mini" @click="exportdrawer = true">{yun:}t key='admin_user_00257'{/yun}</el-button>
+                <el-button size="mini" @click="multiFpzd">{yun:}t key='admin_user_00279'{/yun}</el-button>
+                <el-button size="mini" @click="fpgw(2, '')">{yun:}t key='admin_user_company_00118'{/yun}</el-button>
+                <el-button size="mini" @click="multirz">{yun:}t key='admin_user_00292'{/yun}</el-button>
+                <el-button size="mini" @click="twtaskall">{yun:}t key='admin_user_company_00140'{/yun}</el-button> -->
             </div>
             <div class="modulePagNum" style="padding-top: 8px;">
                 <el-pagination background @size-change="handleSizeChange"
@@ -543,7 +543,7 @@
                     </div>
                     <!--企业详情切换-->
                     <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-                        <el-tab-pane label="基本资料" name="first" :lazy="true">
+                        <el-tab-pane label="{yun:}t key='wap_user_00341'{/yun}" name="first" :lazy="true">
                             <div class="shshow_tit">
                                 <i class="el-icon-mobile"></i> {yun:}t key='wap_00462'{/yun}
                                 <span class="shshow_cz">
@@ -561,47 +561,47 @@
                                     <div>{yun:}t key='admin_00658'{/yun}</div>
                                     <div class="rz_box">
                                         <el-tooltip v-if="curr_com.yyzz_status == '1'" class="item" effect="dark"
-                                            content="营业执照已认证" placement="top-start">
+                                            content="{yun:}t key='admin_user_company_00110'{/yun}" placement="top-start">
                                             <el-button type="text">
                                                 <i class="rzicon rzicon_zzyrz"></i>
                                             </el-button>
                                         </el-tooltip>
-                                        <el-tooltip v-else class="item" effect="dark" content="营业执照未认证"
+                                        <el-tooltip v-else class="item" effect="dark" content="{yun:}t key='admin_00677'{/yun}"
                                             placement="top-start">
                                             <el-button type="text">
                                                 <i class="rzicon rzicon_zzwrz"></i>
                                             </el-button>
                                         </el-tooltip>
                                         <el-tooltip v-if="curr_com.moblie_status == '1'" class="item" effect="dark"
-                                            content="手机已认证" placement="top-start">
+                                            content="{yun:}t key='member_user_00117'{/yun}" placement="top-start">
                                             <el-button type="text">
                                                 <i class="rzicon rzicon_sjyrz"></i>
                                             </el-button>
                                         </el-tooltip>
-                                        <el-tooltip v-else class="item" effect="dark" content="手机未认证" placement="top-start">
+                                        <el-tooltip v-else class="item" effect="dark" content="{yun:}t key='wap_01245'{/yun}" placement="top-start">
                                             <el-button type="text">
                                                 <i class="rzicon rzicon_sjwrz"></i>
                                             </el-button>
                                         </el-tooltip>
                                         <el-tooltip v-if="curr_com.email_status == '1'" class="item" effect="dark"
-                                            content="邮箱已认证" placement="top-start">
+                                            content="{yun:}t key='admin_user_00286'{/yun}" placement="top-start">
                                             <el-button type="text">
                                                 <i class="rzicon rzicon_yxyrz"></i>
                                             </el-button>
                                         </el-tooltip>
-                                        <el-tooltip v-else class="item" effect="dark" content="邮箱未认证" placement="top-start">
+                                        <el-tooltip v-else class="item" effect="dark" content="{yun:}t key='wap_01246'{/yun}" placement="top-start">
                                             <el-button type="text">
                                                 <i class="rzicon rzicon_yxwrz"></i>
                                             </el-button>
                                         </el-tooltip>
                                         <el-tooltip
                                             v-if="curr_com.wxid != '' || curr_com.wxopenid != ''"
-                                            class="item" effect="dark" content="微信已认证" placement="top-start">
+                                            class="item" effect="dark" content="{yun:}t key='admin_user_company_00129'{/yun}" placement="top-start">
                                             <el-button type="text">
                                                 <i class="rzicon rzicon_wxyrz"></i>
                                             </el-button>
                                         </el-tooltip>
-                                        <el-tooltip v-else class="item" effect="dark" content="微信未认证" placement="top-start">
+                                        <el-tooltip v-else class="item" effect="dark" content="{yun:}t key='member_user_00504'{/yun}" placement="top-start">
                                             <el-button type="text">
                                                 <i class="rzicon rzicon_wxwrz"></i>
                                             </el-button>
@@ -641,46 +641,46 @@
                                 <div class="cominfo" v-if="curr_com.content" v-html="curr_com.content"></div>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="招聘岗位" name="second">
+                        <el-tab-pane label="{yun:}t key='wap_01536'{/yun}" name="second">
                             <div style="overflow: hidden;position: relative;height:calc(100% - 5px);">
                                 <company_job  v-if="activeName == 'second'" :searchuid="curr_com.uid"></company_job>
                             </div>
                         </el-tab-pane>
                         
-                        <el-tab-pane label="企业日志" name="xwth" :lazy="true">
+                        <el-tab-pane label="{yun:}t key='admin_user_00177'{/yun}" name="xwth" :lazy="true">
                             <div class="eltdraKanOmpany">
                                 <comlog ref="comlog"  v-if="activeName == 'xwth'" :typelist="typeArr" :time="time" :type="'3'"
                                     :keyword="curr_com.uid"></comlog>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="下载简历" name="fiveth" :lazy="true">
+                        <el-tab-pane label="{yun:}t key='wap_00451'{/yun}" name="fiveth" :lazy="true">
                             <div style="overflow: hidden;position: relative;height:calc(100% - 5px);">
                                 <resumedown v-if="activeName == 'fiveth'" :searchcomid="curr_com.uid"></resumedown>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="收到简历" name="sixth" :lazy="true">
+                        <el-tab-pane label="{yun:}t key='member_com_00454'{/yun}" name="sixth" :lazy="true">
                             <div style="overflow: hidden;position: relative;height:calc(100% - 5px);">
                                 <comlog_index v-if="activeName == 'sixth'"  :searchcomid="curr_com.uid" :searchtype="'2'" :searchable="false">
                                 </comlog_index>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="面试邀请" name="msth" :lazy="true">
+                        <el-tab-pane label="{yun:}t key='wap_com_00046'{/yun}" name="msth" :lazy="true">
                             <div style="overflow: hidden;position: relative;height:calc(100% - 5px);">
                                 <comlog_useridmsg v-if="activeName == 'msth'" :searchcomid="curr_com.uid" :searchtype="'2'" :searchable="false">
                                 </comlog_useridmsg>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="积分管理" name="severth" :lazy="true">
+                        <el-tab-pane label="{yun:}t key='admin_00556'{/yun}" name="severth" :lazy="true">
                             <div style="overflow: hidden;position: relative;height:calc(100% - 5px);">
                                 <company_pay ref="jfgl" v-if="activeName == 'severth'" :cuid="curr_com.uid" :searchable="false"></company_pay>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="充值订单" name="company_order" :lazy="true">
+                        <el-tab-pane label="{yun:}t key='admin_user_company_00136'{/yun}" name="company_order" :lazy="true">
                             <div style="overflow: hidden;position: relative;height:calc(100% - 5px);">
                                 <company_order v-if="activeName == 'company_order'" ref="company_order" :cuid="curr_com.uid" :searchable="false"></company_order>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="套餐记录" name="company_tcjl" :lazy="true">
+                        <el-tab-pane label="{yun:}t key='admin_00678'{/yun}" name="company_tcjl" :lazy="true">
                             <div style="overflow: hidden;position: relative;height:calc(100% - 5px);">
                                 <company_tcjl ref="company_tcjl" v-if="activeName == 'company_tcjl'" :cuid="curr_com.uid" :searchable="false"></company_tcjl>
                             </div>
@@ -836,7 +836,7 @@
 										:fetch-suggestions="addressKeyup"
 										placeholder="{yun:}t key='wap_user_00076'{/yun}"
 										@select="poiSearchClick">
-										<i class="el-icon-location-outline el-input__icon" slot="suffix" @click="localsearch('全国')"></i>
+										<i class="el-icon-location-outline el-input__icon" slot="suffix" @click="localsearch("{yun:}t key='member_com_00206'{/yun}")"></i>
 										<template slot-scope="{ item }">
 											<div class="autocompLtite">
 												<div class="name">{{ item.name }}</div>
@@ -1146,7 +1146,7 @@
                             <span>{yun:}t key='admin_00662'{/yun}</span>
                         </div>
                         <div class="huiyuanFrom">
-                            <el-switch v-model="hotjob" active-text="设为名企">
+                            <el-switch v-model="hotjob" active-text="{yun:}t key='admin_user_company_00147'{/yun}">
                             </el-switch>
                         </div>
                     </div>
@@ -1249,7 +1249,7 @@
             <el-dialog title="{yun:}t key='wap_com_00148'{/yun}" :visible.sync="drawerlogo" :with-header="true" append-to-body
                 :modal-append-to-body="false" :show-close="true" width="530px">
                 <el-tabs v-model="logoActiveName" @tab-click="handleLogoTabClick">
-                    <el-tab-pane label="智能生成logo" name="autologo">
+                    <el-tab-pane label="{yun:}t key='admin_user_company_00102'{/yun}" name="autologo">
                         <div>
                             <div class="tw_tip" v-if="tw_tip != ''">
                                 <el-alert :title="tw_tip" type="warning" show-icon :closable="false">
@@ -1279,7 +1279,7 @@
                             <el-button type="text"  icon="el-icon-thumb"  @click="previewLogoHb">{yun:}t key='admin_00664'{/yun}</el-button>
                         </div>
                     </el-tab-pane>
-                    <el-tab-pane label="上传logo图片" name="uplogo">
+                    <el-tab-pane label="{yun:}t key='admin_00684'{/yun}" name="uplogo">
                         <div class="center">
                             <div>
                                 <el-upload class="avatar-uploader" :action="upurl" :show-file-list="false" :data="logodata"
@@ -1368,7 +1368,7 @@
         </div>
         <!--生成海报弹窗-->
         <div class="modluDrawer">
-            <el-drawer :title="'生成海报'" :visible.sync="drawerhb" :modal-append-to-body="false" append-to-body
+            <el-drawer :title="'{yun:}t key='wap_01572'{/yun}'" :visible.sync="drawerhb" :modal-append-to-body="false" append-to-body
                 :show-close="true" :with-header="true" size="95%">
                 <div class="waixunHaib">
                     <ul>
@@ -1399,7 +1399,7 @@
         </div>
         <!--企业模板弹窗-->
         <div class="modluDrawer">
-            <el-drawer :title="'企业模板'" :visible.sync="drawercommb" :modal-append-to-body="false" append-to-body
+            <el-drawer :title="'{yun:}t key='admin_user_company_00135'{/yun}'" :visible.sync="drawercommb" :modal-append-to-body="false" append-to-body
                 :show-close="true" :with-header="true" size="95%">
                 <div class="companyMobans">
                     <ul>
@@ -1546,7 +1546,7 @@
         </div>
         <!--分配顾问弹窗-->
         <div class="modluDrawer">
-            <el-dialog :title="fpgwmulti ? '批量选择顾问' : '分配顾问'" :visible.sync="drawerfpgw" append-to-body width="450px">
+            <el-dialog :title="fpgwmulti ? '{yun:}t key='admin_user_company_00119'{/yun}' : '{yun:}t key='admin_company_00034'{/yun}'" :visible.sync="drawerfpgw" append-to-body width="450px">
                 <div v-if="fpgwmulti == false">
                     <div class="wxsettip_small ">{yun:}t key='admin_user_company_00121'{/yun}</div>
                     <div class="wxsettip_Sealect">
@@ -2055,7 +2055,7 @@ module.exports = {
             dialogPackage: false,
             ruleFormPackage: {},
 
-            emptytext: "暂无数据",
+            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
 
 			// {yun:}t key='admin_user_00191'{/yun}
 			dialogAccount: false,
@@ -2227,7 +2227,7 @@ module.exports = {
         // {yun:}t key='admin_user_00292'{/yun}
         multirz: function () {
             if (this.selectedItem.length == 0) {
-                message.error("请选择要操作的数据项');
+                message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
                 return;
             }
             this.email_rz = ''
@@ -2239,7 +2239,7 @@ module.exports = {
         // 批量认证保存
         multirzSubmit: function () {
             if (this.selectedItem.length == 0) {
-                message.error('请选择要操作的数据项');
+                message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
                 return false
             }
             var that = this,
@@ -2303,7 +2303,7 @@ module.exports = {
                 params.comid = that.curr_uid
             } else { // 批量分配
                 if (that.selectedItem.length == 0) {
-                    message.error('请选择要操作的数据项');
+                    message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
                     return false
                 }
                 params.comid = that.selectedItem.join(',')
@@ -2326,7 +2326,7 @@ module.exports = {
         // {yun:}t key='admin_00162'{/yun}
         multiFpzd: function () {
             if (this.selectedItem.length == 0) {
-                message.error("请选择要操作的数据项')
+                message.error("{yun:}t key='admin_user_weipin_00001'{/yun}")
                 return;
             }
             this.drawerfpzdmulti = true
@@ -2379,7 +2379,7 @@ module.exports = {
         multipleStatus() {
             var that = this
             if (!that.selectedItem.length) {
-                message.error("请选择要操作的数据项');
+                message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
                 return false;
             }
             that.drawerauditmultiple = true
@@ -2388,7 +2388,7 @@ module.exports = {
         multipleStatusSave() {
             var that = this
             if (!that.selectedItem.length) {
-                message.error('请选择要操作的数据项');
+                message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
                 return false;
             }
             that.comShSubmit({
@@ -2412,19 +2412,19 @@ module.exports = {
             if (that.jobtgtype == 1) {
                 url += 'xuanshang'
                 if (that.qxtgchecked == 0 && that.jobtgdays == '') {
-                    message.error('置顶天数不能为空')
+                    message.error("{yun:}t key='common_06281'{/yun}")
                     return false
                 }
             } else if (that.jobtgtype == 2) {
                 url += 'recommend'
                 if (that.qxtgchecked == 0 && that.jobtgdays == '') {
-                    message.error('推荐天数不能为空')
+                    message.error("{yun:}t key='common_06282'{/yun}")
                     return false
                 }
             } else if (that.jobtgtype == 3) {
                 url += 'urgent'
                 if (that.qxtgchecked == 0 && that.jobtgdays == '') {
-                    message.error('紧急天数不能为空')
+                    message.error("{yun:}t key='admin_company_00027'{/yun}")
                     return false
                 }
             }
@@ -2585,7 +2585,7 @@ module.exports = {
                     if (res.error == 0) {
                         message.success("{yun:}t key='admin_user_company_00281'{/yun}" + that.curr_com.name + "{yun:}t key='admin_user_00115'{/yun}")
                     } else {
-                        message.error('重置失败')
+                        message.error("{yun:}t key='admin_company_00028'{/yun}")
                         return false
                     }
                 }).catch(function (e) {
@@ -2606,11 +2606,11 @@ module.exports = {
         dosendmail: function () {
             var that = this
             if (that.mailtit == '') {
-                message.error('邮件标题不能为空！')
+                message.error("{yun:}t key='admin_company_00030'{/yun}")
                 return false
             }
             if (that.mailcontent == '') {
-                message.error('邮件内容不能为空！')
+                message.error("{yun:}t key='admin_company_00031'{/yun}")
                 return false
             }
             var params = {
@@ -2649,7 +2649,7 @@ module.exports = {
         dosend: function () {
             var that = this
             if (that.msgcontent == '') {
-                message.error('短信内容不能为空！')
+                message.error("{yun:}t key='admin_company_00029'{/yun}")
                 return false
             }
             var params = {
@@ -2824,7 +2824,7 @@ module.exports = {
         comeditsave: function () {
             var that = this
             if (that.curr_editcom.linkmail && check_email(that.curr_editcom.linkmail) == false) {
-                message.error('邮箱格式错误！');
+                message.error("{yun:}t key='wap_js_00108'{/yun}");
                 return false;
             }
             if (that.curr_editcom.linktel && isjsMobile(that.curr_editcom.linktel) == false) {
@@ -3099,7 +3099,7 @@ module.exports = {
                         that.getList();
                     })
                 } else {
-                    message.error('站点分配失败')
+                    message.error("{yun:}t key='admin_company_00032'{/yun}")
                     return false
                 }
             }).catch(function (e) {
@@ -3150,7 +3150,7 @@ module.exports = {
             }).then(function (result) {
                 var res = result.data;
                 if (res.error == 0) {
-                    message.success('企业解除暂停成功！', function () {
+                    message.success("{yun:}t key='admin_company_00035'{/yun}", function () {
                         that.curr_com.r_status = 1
                         that.drawerqyzt = false
                         that.getList();
@@ -3265,7 +3265,7 @@ module.exports = {
         previewLogoHb: function () {
             var that = this
             if (that.logocname == '') {
-                message.error('文字描述不能为空')
+                message.error("{yun:}t key='admin_company_00033'{/yun}")
                 return false
             } else if (that.logocname.length < 2 || that.logocname.length > 4) {
                 message.error("{yun:}t key='admin_user_company_00106'{/yun}")
@@ -3280,7 +3280,7 @@ module.exports = {
         makeLogoHb: function () {
             var that = this
             if (that.logocname == '') {
-                message.error('文字描述不能为空')
+                message.error("{yun:}t key='admin_company_00033'{/yun}")
                 return false
             } else if (that.logocname.length < 2 || that.logocname.length > 4) {
                 message.error("{yun:}t key='admin_user_company_00106'{/yun}")
@@ -3859,7 +3859,7 @@ module.exports = {
             if (num > 0) {
                 delConfirm(this, {}, function(params) {
                     that.addTW(id, name, lastupdate)
-                }, '该企业已有推文未发送，是否继续添加？')
+                }, "{yun:}t key='admin_user_company_00077'{/yun}")
             } else {
                 that.addTW(id, name, lastupdate)
             }
@@ -3922,7 +3922,7 @@ module.exports = {
             if (that.member_status == '1') {
                 params.lock_status = that.member_status;
             } else {
-                message.error("锁定操作异常！");
+                message.error("{yun:}t key='admin_company_00036'{/yun}");
                 return false;
             }
             that.comShSubmit(params)
@@ -4110,7 +4110,7 @@ module.exports = {
         openDel(idx) {
             if (typeof idx == 'undefined") { // {yun:}t key='member_com_00055'{/yun}
                 if (!this.selectedItem.length) {
-                    message.error("请选择要删除的数据");
+                    message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
                     return false;
                 }
                 this.ruleFormDel = {
