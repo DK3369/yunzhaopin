@@ -1,11 +1,11 @@
 
 function loadlayer(){
-	return parent.layer.load('执行中，请稍候...',0);
+	return parent.layer.load(yunAt('wap_js_00148'),0);
 } 
 
 //认领简历、企业
 function claim(url){
-	var loadi = layer.load('执行中，请稍候...',0);
+	var loadi = layer.load(yunAt('wap_js_00148'),0);
 	$.get(url,function(data){
 		var data=eval('('+data+')');
 		layer.close(loadi); 
@@ -13,7 +13,7 @@ function claim(url){
 		$("#claimmsg").html(data.msg);
 		$.layer({
 			type : 1,
-			title :'认领信息', 
+			title :yunAt('common_06091'), 
 			border : [10 , 0.3 , '#000', true],
 			area : ['380px','auto'],
 			page : {dom :"#status_div"}
@@ -101,9 +101,9 @@ function logout(url,redirecturl){
 				$('#uclogin').html(msg);
 			}
 			window.localStorage.setItem("socketState", "2");
-			layer.msg('您已成功退出！', 2, 9,function(){window.location.href =redirecturl?redirecturl:weburl;});
+			layer.msg(yunAt('ask_00001'), 2, 9,function(){window.location.href =redirecturl?redirecturl:weburl;});
 		}else{
-			layer.msg('退出失败！', 2, 8);
+			layer.msg(yunAt('ask_00003'), 2, 8);
 		}
 	});
 }
@@ -181,18 +181,18 @@ $(document).ready(function(){
 
 				if($.trim(intertime) == ''){
 				
-					layer.msg('面试时间不能为空！', 2, 8);return false;
+					layer.msg(yunAt('member_com_00681'), 2, 8);return false;
 				}
 				
 				if ((isjsTell(linktel) != true) && (isjsMobile(linktel) != true) && ($.trim(linktel) != '')) {
 					
-				    layer.msg('电话格式错误！', 2,8); return false;
+				    layer.msg(yunAt('member_com_00679'), 2,8); return false;
 				}
 				if($.trim(address) == ''){
 					
-					layer.msg('面试地点不能为空！', 2, 8);return false;
+					layer.msg(yunAt('common_06094'), 2, 8);return false;
 				}
-				layer.load('执行中，请稍候...',0);
+				layer.load(yunAt('wap_js_00148'),0);
 				
 				$.post(weburl+"/index.php?m=ajax&c=sava_ajaxresume",{uid:uid,content:content,username:username,jobname:jobname,address:address,linkman:linkman,linktel:linktel,intertime:intertime,jobid:jobid,jobtype:jobtype,save_yqmb:save_yqmb,ymid:ymid},function(data){
 				
@@ -209,7 +209,7 @@ $(document).ready(function(){
 							$.layer({
 								type : 1,
 								offset: ['100px', ''],
-								title :'邀请面试', 
+								title :yunAt('resume_00029'), 
 								closeBtn : [0 , true],
 								border : [10 , 0.3 , '#000', true],
 								area : ['auto','auto'],
@@ -218,14 +218,14 @@ $(document).ready(function(){
 						}); 
 					}else if(status == 3){
 						
-						layer.msg('您已成功邀请！', 2, 9,function(){location.reload();});
+						layer.msg(yunAt('common_06095'), 2, 9,function(){location.reload();});
 					}else{
 						
 						var login	=	data.login;
 						if(login){
 							
 							layer.confirm(data.msg, {
-								btn: ['登录','取消']  
+								btn: [yunAt('default_00062'),yunAt('default_00266')]  
 							}, function(){
 								window.location.href 		=	wapurl + "index.php?m=login&usertype=2&type=out";
 								window.event.returnValue 	= 	false;
@@ -365,7 +365,7 @@ $(document).ready(function(){
 })
 
 function issq_resume(obj){
-	var i = layer.confirm('TA没有向你投递简历，确定邀请？', function() {
+	var i = layer.confirm(yunAt('wap_01249'), function() {
 		layer.close(i);
 		sq_resume(obj)
 	});
@@ -423,14 +423,14 @@ function sq_resume(obj){
 						var msgLayer = layer.open({
 
 							type: 1,
-							title: '温馨提示',
+							title: yunAt('wap_user_00205'),
 							closeBtn: 1,
 							border: [10, 0.3, '#000', true],
 							area: ['auto', 'auto'],
 							content: $("#jobcheck")
 						});
 					}else{
-						layer.msg('发布职位才可以邀请面试！', 2,8);
+						layer.msg(yunAt('common_06096'), 2,8);
 					}
 				}else if(status == 2){	//	购买服务
 					
@@ -438,7 +438,7 @@ function sq_resume(obj){
 					firstTab();
 					var msglayer = layer.open({
 						type: 1,
-						title: '邀请面试',
+						title: yunAt('resume_00029'),
 						closeBtn: 1,
 						border: [10, 0.3, '#000', true],
 						area: ['auto', 'auto'],
@@ -453,7 +453,7 @@ function sq_resume(obj){
 					
 					var msglayer = layer.open({
 						type: 1,
-						title: '邀请面试',
+						title: yunAt('resume_00029'),
 						closeBtn: 1,
 						border: [10, 0.3, '#000', true],
 						area: ['auto', 'auto'],
@@ -527,7 +527,7 @@ function addJobIndex(num,integral_job,online,pro){
   	var url			= 	weburl + '/index.php?m=ajax&c=ajax_day_action_check';
 	var checkUrl	= 	weburl + '/member/index.php?c=jobadd&act=jobCheck';
 
-	layer.load('执行中，请稍候...',3);
+	layer.load(yunAt('wap_js_00148'),3);
 	
 	$.post(url, {'type': 'jobnum'}, function(data) {
 			
@@ -760,7 +760,7 @@ function check_pl(){//企业评论
 
 function layer_del(msg,url){ 
 	if(msg==''){
-		var i=layer.load('执行中，请稍候...',0);
+		var i=layer.load(yunAt('wap_js_00148'),0);
 		$.ajaxSetup({cache:false});
 		$.get(url,function(data){
 			layer.close(i);
@@ -773,7 +773,7 @@ function layer_del(msg,url){
 		});
 	}else{
 		layer.confirm(msg, function(){
-			var i=layer.load('执行中，请稍候...',0);
+			var i=layer.load(yunAt('wap_js_00148'),0);
 			$.ajaxSetup({cache:false});
 			$.get(url,function(data){
 				layer.close(i);
