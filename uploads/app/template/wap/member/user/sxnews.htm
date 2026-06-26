@@ -4,7 +4,7 @@
 	<div class="m_cardbg" v-for="(item, lkey) in list" :key="lkey">
 	
 		
-		<div class="sx_new_tit">管理员</div>
+		<div class="sx_new_tit">{yun:}t key='wap_user_sxnews_00001'{/yun}</div>
 		<div class="sx_new_cont">
 		
 				
@@ -31,7 +31,7 @@
     <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange" /> 
     </div>
      <div class="wap_member_no" v-show="count==0">
-        暂无记录！
+        {yun:}t key='wap_com_attention_me_00001'{/yun}！
       </div>
 </div>
 </div>
@@ -83,17 +83,17 @@
                 id: id,                
             };
             showConfirm("确定删除？",function(){
-                showLoading('删除中...');
+                showLoading("{yun:}t key='wap_js_user_00007'{/yun}");
                 $.post('{yun:}url d=wxapp h=user m=msg c=delsxnews{/yun}',paramer,function(data){
                     hideLoading();      
                     
                     if (data.error == 1) {
-                        showToast('删除成功',2, function() {
+                        showToast("{yun:}t key='wap_user_blacklist_00002'{/yun}",2, function() {
                             that.list.splice(key, 1);
                             
                         });
                     } else {
-                       showToast('删除失败');
+                       showToast("{yun:}t key='wap_user_blacklist_00001'{/yun}");
                     }
                 },'json');  
             })

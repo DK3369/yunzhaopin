@@ -12,7 +12,7 @@
                 <img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" style="width: 100%;">
             </a>
             <div class="job_header_center">
-                <input type="text" readonly class="searchnew" value="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}/if{/yun}" placeholder="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}else{/yun}{yun:}t key='common_09193'{/yun}{yun:}/if{/yun}">
+                <input type="text" readonly class="searchnew" value="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}/if{/yun}" placeholder="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}else{/yun}{yun:}t key='wap_resume_00017'{/yun}{yun:}/if{/yun}">
             </div>
 
             <input type="hidden" id="searchurl" value="{yun:}$searchurl{/yun}" />
@@ -23,10 +23,10 @@
             <div class="job_header_nav_left category">
                 <ul>
                     <li class="{yun:}if !$smarty.get.recg{/yun}active{yun:}/if{/yun}">
-                        <a href="{yun:}searchurl m=wap c=resume recg=0 untype='recg'{/yun}">{yun:}t key='wap_00051'{/yun}</a>
+                        <a href="{yun:}searchurl m=wap c=resume recg=0 untype='recg'{/yun}">{yun:}t key='common.latest'{/yun}</a>
                     </li>
                     <li class="{yun:}if $smarty.get.recg{/yun}active{yun:}/if{/yun}">
-                        <a href="{yun:}searchurl m=wap c=resume recg=1 untype='recg'{/yun}">{yun:}t key='common_00825'{/yun}</a>
+                        <a href="{yun:}searchurl m=wap c=resume recg=1 untype='recg'{/yun}">{yun:}t key='common.recommended'{/yun}</a>
                     </li>
                 </ul>
             </div>
@@ -43,7 +43,7 @@
                             {yun:}elseif $city_name[$smarty.get.threecityid]{/yun}
                                 {yun:}$city_name[$smarty.get.threecityid]{/yun}
                             {yun:}else{/yun}
-                                {yun:}t key='common_09190'{/yun}
+                                {yun:}t key='common_02110'{/yun}
                             {yun:}/if{/yun}
                         {yun:}/if{/yun}
                         <i class="nav_right_open"></i>
@@ -56,11 +56,11 @@
                         {yun:}elseif $smarty.get.jobpost{/yun}
                             {yun:}$job_name[$smarty.get.jobpost]{/yun}
                         {yun:}else{/yun}
-                            {yun:}t key='common_01662'{/yun}
+                            {yun:}t key='wap_com_attention_me_00002'{/yun}
                         {yun:}/if{/yun}
                         <i class="nav_right_open"></i>
                     </li>
-                    <li onclick="resumemoreShow();">{yun:}t key='wap_00272'{/yun}
+                    <li onclick="resumemoreShow();">{yun:}t key='wap_job_00013'{/yun}
                         <i class="nav_right_open"></i>
                     </li>
 
@@ -69,31 +69,31 @@
         </div>
 
         <div class="yun_newedition_resume" style="padding-top: 2.4rem;">
-            <!--广告-->
+            <!--{yun:}t key='common_01981'{/yun}-->
             {yun:}adlist classid=505 item="lunbo" key=key random=1{/yun}
             <div class="resumezd_banner">{yun:}$lunbo.html{/yun}</div>
             {yun:}/adlist{/yun}
-            <!--广告-->
+            <!--{yun:}t key='common_01981'{/yun}-->
 
-            <!-- 简历列表 -->
+            <!-- {yun:}t key='admin_tool_weixin_component_wxfbtool_00028'{/yun} -->
             <!-- 判断后台配置是否公开简历 -->
             {yun:}if $config.com_search == 1{/yun}
                 {yun:}if !$uid{/yun}
                     {yun:}include file="$wapstyle/resume_topthree.htm"{/yun}
                     <div class="nologintip">
                         <div class="nologinbox">
-                            <div class="nologintit">{yun:}t key='common_03505'{/yun}</div>
-                            <div class="nologin_p">{yun:}t key='wap_00422'{/yun}</div>
+                            <div class="nologintit">{yun:}t key='wap_resume_00003'{/yun}</div>
+                            <div class="nologin_p">{yun:}t key='wap_resume_00019'{/yun}</div>
                             <dl class="nologin_wx">
                                 <dt><img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}" width="130" height="130">
                                 </dt>
-                                <dd>{yun:}t key='wap_00356'{/yun}</dd>
+                                <dd>{yun:}t key='wap_resume_00008'{/yun}</dd>
                             </dl>
                             <div class="nologin_bth">
-                                <a href="{yun:}url m=wap c=login{/yun}" class="nologin_bth_a">{yun:}t key='common_02292'{/yun}</a>
-                                <a href="{yun:}url m=wap c=register{/yun}" class="nologin_bth_a">{yun:}t key='common_00906'{/yun}</a>
+                                <a href="{yun:}url m=wap c=login{/yun}" class="nologin_bth_a">{yun:}t key='common.login'{/yun}</a>
+                                <a href="{yun:}url m=wap c=register{/yun}" class="nologin_bth_a">{yun:}t key='common.register'{/yun}</a>
                             </div>
-                            <div class="nologin_tel">{yun:}t key='common_09196'{/yun}{yun:}$config.sy_comwebtel{/yun}</div>
+                            <div class="nologin_tel">如有需要任何贴心的服务：{yun:}$config.sy_comwebtel{/yun}</div>
                         </div>
                     </div>
                 {yun:}else{/yun}
@@ -104,17 +104,17 @@
                             {yun:}include file="$wapstyle/resume_topthree.htm"{/yun}
                             <div class="nologintip">
                                 <div class="nologinbox">
-                                    <div class="nologintit">{yun:}t key='common_03505'{/yun}</div>
-                                    <div class="nologin_p">{yun:}t key='wap_00422'{/yun}</div>
+                                    <div class="nologintit">{yun:}t key='wap_resume_00003'{/yun}</div>
+                                    <div class="nologin_p">{yun:}t key='wap_resume_00019'{/yun}</div>
                                     <dl class="nologin_wx">
                                         <dt><img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}" width="130" height="130">
                                         </dt>
-                                        <dd>{yun:}t key='wap_00356'{/yun}</dd>
+                                        <dd>{yun:}t key='wap_resume_00008'{/yun}</dd>
                                     </dl>
                                     <div class="nologin_bth">
-                                        <a href="javascript:void(0);" onclick="logoutAsk('{yun:}url m=wap c=loginout{/yun}')" class="nologin_bth_a">{yun:}t key='wap_00423'{/yun}</a>
+                                        <a href="javascript:void(0);" onclick="logoutAsk('{yun:}url m=wap c=loginout{/yun}')" class="nologin_bth_a">{yun:}t key='wap_resume_00020'{/yun}</a>
                                     </div>
-                                    <div class="nologin_tel">{yun:}t key='common_09196'{/yun}{yun:}$config.sy_comwebtel{/yun}</div>
+                                    <div class="nologin_tel">如有需要任何贴心的服务：{yun:}$config.sy_comwebtel{/yun}</div>
                                 </div>
                             </div>
                         {yun:}/if{/yun}
@@ -124,13 +124,13 @@
                             {yun:}include file="$wapstyle/resume_topthree.htm"{/yun}
                             <div class="nologintip">
                                 <div class="nologinbox">
-                                    <div class="nologintit">{yun:}t key='wap_00424'{/yun}</div>
+                                    <div class="nologintit">{yun:}t key='wap_resume_00021'{/yun}</div>
                                     <dl class="nologin_wx">
                                         <dt><img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}" width="130" height="130"></dt>
-                                        <dd>{yun:}t key='wap_00356'{/yun}</dd>
+                                        <dd>{yun:}t key='wap_resume_00008'{/yun}</dd>
                                     </dl>
-                                    <div class="nologintit">{yun:}t key='common_03427'{/yun}</div>
-                                    <div class="nologin_tel">{yun:}t key='common_09196'{/yun}{yun:}$config.sy_comwebtel{/yun}</div>
+                                    <div class="nologintit">{yun:}t key='wap_com_server_00032'{/yun}，加快审核，高效挑选人才</div>
+                                    <div class="nologin_tel">如有需要任何贴心的服务：{yun:}$config.sy_comwebtel{/yun}</div>
                                 </div>
                             </div>
                         {yun:}else{/yun}
@@ -153,9 +153,9 @@
   var jobChoosed  = parseInt('{yun:}$jobChoosed{/yun}');
 
 	function logoutAsk(url){
-		showConfirm("{yun:}t key='wap_00703'{/yun}",function(){
+		showConfirm("{yun:}t key='wap_resume_00022'{/yun}",function(){
 			window.localStorage.setItem("socketState", "2");
-			showLoading("{yun:}t key='wap_00704'{/yun}");
+			showLoading("{yun:}t key='wap_resume_00023'{/yun}");
 			$.get(url, function(){
 				window.location.href = wapurl+'index.php?c=login';
 			})

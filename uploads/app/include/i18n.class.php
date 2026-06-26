@@ -10,6 +10,7 @@ class Yun_I18n
     var $fallbackMessages = array();
     var $autoMessages = array();
     var $fallbackAutoMessages = array();
+    var $autoAliases = array();
     var $available = array();
 
     function Yun_I18n($langPath, $defaultLang = 'zh_cn')
@@ -29,6 +30,7 @@ class Yun_I18n
 
         $this->fallbackMessages = $this->loadMessages($this->fallbackLang);
         $this->fallbackAutoMessages = $this->loadAutoMessages($this->fallbackLang);
+        $this->autoAliases = $this->loadAutoAliases();
         $this->setLang($this->defaultLang);
     }
 
@@ -99,6 +101,7 @@ class Yun_I18n
         $this->currentLang = $lang;
         $this->messages = $this->loadMessages($lang);
         $this->autoMessages = $this->loadAutoMessages($lang);
+        $this->autoAliases = $this->loadAutoAliases();
         return $this->currentLang;
     }
 
@@ -120,7 +123,7 @@ class Yun_I18n
 
     function isAutoKey($key)
     {
-        return is_string($key) && preg_match('/^(common|wap|admin|company|user|ask|member|model)_[0-9]{5}$/', $key);
+        return is_string($key) && preg_match('/^[a-z][a-z0-9_]*_[0-9]{5}$/', $key);
     }
 
     function t($key, $params = array(), $default = '')
@@ -166,6 +169,13 @@ class Yun_I18n
 
         if ($text === '') {
             return $leading . $trailing;
+        }
+
+        if (isset($this->autoAliases[$text])) {
+            $aliasKey = $this->autoAliases[$text];
+            if (isset($this->autoMessages[$aliasKey])) {
+                return $leading . $this->autoMessages[$aliasKey] . $trailing;
+            }
         }
 
         if (isset($this->autoMessages[$text])) {
@@ -284,6 +294,18 @@ class Yun_I18n
             if (is_array($messages)) {
                 $this->sortAutoMessages($messages);
                 return $messages;
+            }
+        }
+        return array();
+    }
+
+    function loadAutoAliases()
+    {
+        $file = $this->langPath . 'auto/aliases.php';
+        if (is_file($file)) {
+            $aliases = include($file);
+            if (is_array($aliases)) {
+                return $aliases;
             }
         }
         return array();

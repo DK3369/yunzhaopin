@@ -5,25 +5,25 @@
        
              <div class="newmember_screenbox">
              <div class="newmember_screen"> 
-             <div class="newmember_screenname"> 求职咨询</div>   </div>
+             <div class="newmember_screenname"> {yun:}t key='wap_com_sysnews_00002'{/yun}</div>   </div>
                         </div>
                 <div class="clear"></div>
                     <div class="admincont_box">  
                     <div class="com_body" >
                 <div class="com_new_tip">
         
-                        <span class="com_new_tip_h">温馨小提示</span>回复请勿输入电话，QQ，邮箱等联系方式
+                        <span class="com_new_tip_h">{yun:}t key='member_com_added_00002'{/yun}</span>回复请勿输入电话，QQ，邮箱等联系方式
                     </div>
                     <iframe id="supportiframe" name="supportiframe" onload="returnmessage('supportiframe');" style="display:none"></iframe>
                     <table class="com_table mt20">
                        {yun:}if $rows{/yun}
                         <tr>
-                            <th>咨询人 </th>
-                            <th>职位名称</th>
-                            <th>咨询时间</th>
-                            <th>咨询内容</th>
+                            <th>{yun:}t key='member_com_msg_00003'{/yun} </th>
+                            <th>{yun:}t key='wap_com_jobadd_00034'{/yun}</th>
+                            <th>{yun:}t key='member_user_commsg_00001'{/yun}</th>
+                            <th>{yun:}t key='wap_user_commsg_00002'{/yun}</th>
                             <th>回复状态 </th>
-                            <th>操作</th>
+                            <th>{yun:}t key='member_user_atn_00003'{/yun}</th>
                         </tr>
                         {yun:}/if{/yun}
                      {yun:}foreach from=$rows item=msg{/yun}
@@ -33,7 +33,7 @@
                                 {yun:}if $msg.eid{/yun}
                                     <a href="{yun:}url m=resume c=show id='`$msg.eid`'{/yun}">{yun:}$msg.username{/yun}</a>
                                 {yun:}else{/yun}
-                                    <div>{yun:}$msg.username{/yun}</div><span class="job_hr_job_cz_line">(暂无简历)</span>  
+                                    <div>{yun:}$msg.username{/yun}</div><span class="job_hr_job_cz_line">({yun:}t key='wap_com_msg_00003'{/yun})</span>  
                                 {yun:}/if{/yun}
                             </td>
 
@@ -41,10 +41,10 @@
                             {yun:}if $msg.job_name{/yun}
                             {yun:}if $msg.type==2{/yun}
                                 <a href="{yun:}url m=lietou c=jobshow id='`$msg.jobid`'{/yun}" class="cblue">{yun:}$msg.job_name{/yun}</a>
-                                <font color="#FF0033">(高级)</font> {yun:}else{/yun}
+                                <font color="#FF0033">({yun:}t key='admin_user_users_zixun_00011'{/yun})</font> {yun:}else{/yun}
                                 <a href="{yun:}url m=job c=comapply id='`$msg.jobid`'{/yun}" class="cblue">{yun:}$msg.job_name{/yun}</a> {yun:}/if{/yun} 
                                 {yun:}else{/yun}
-                                无
+                                {yun:}t key='common_02082'{/yun}
                                 {yun:}/if{/yun}
                                 
                                 </td>
@@ -54,11 +54,11 @@
                                 {yun:}if $msg.reply!=""{/yun}
                                 <a href="javascript:void(0)" onclick="show_reply('{yun:}$msg.reply{/yun}','{yun:}$msg.reply_time|date_format:'%Y-%m-%d %H:%M:%S'{/yun}')" style="color:#999"><span style="font-size:12px;color:#f00; text-decoration:underline; margin-left:5px;">查看我的回复</span></a>
                                 {yun:}else{/yun}
-                                <span onclick="reply_msg('{yun:}$msg.id{/yun}');" class="com_bth cblue" style="cursor:pointer">回复TA</span> 
+                                <span onclick="reply_msg('{yun:}$msg.id{/yun}');" class="com_bth cblue" style="cursor:pointer">{yun:}t key='common_01967'{/yun}TA</span> 
                                 {yun:}/if{/yun}
                             </td>
                             <td align="center">
-                                <a href="javascript:void(0)" onclick="layer_del('您确定要删除？', 'index.php?c=msg&act=del&id={yun:}$msg.id{/yun}'); " class=" com_bth cblue">删除</a>
+                                <a href="javascript:void(0)" onclick="layer_del('{yun:}t key='admin_system_domain_component_domainadmingroup_00001'{/yun}？', 'index.php?c=msg&act=del&id={yun:}$msg.id{/yun}'); " class=" com_bth cblue">{yun:}t key='common.delete'{/yun}</a>
                             </td>
                         </tr>
                         {yun:}foreachelse{/yun}
@@ -107,7 +107,7 @@
             $(".user_ask .user_ask_c").html(data.content);
             var layindex = $.layer({
                 type: 1,
-                title: '咨询内容',
+                title: "{yun:}t key='wap_user_commsg_00002'{/yun}",
                 closeBtn: [0, true],
                 border: [10, 0.3, '#000', true],
                 area: ['440px', 'auto'],
@@ -130,9 +130,9 @@
   
         <div class="user_hf_cont" >
         
-            <div class="">回复内容：<span id="msgs" class="user_ask_h"></span>
+            <div class="">{yun:}t key='wap_com_msg_00001'{/yun}<span id="msgs" class="user_ask_h"></span>
             </div>
-             <div class="user_hf_time">回复时间：<span id="msgrtime"></span></div>
+             <div class="user_hf_time">{yun:}t key='admin_user_users_zixun_00007'{/yun}<span id="msgrtime"></span></div>
             
         </div>
    
@@ -141,7 +141,7 @@
     <div class="user_ask_cont">
         <form action="index.php?c=msg&act=save" target="supportiframe" method="post" id="formstatus" onsubmit="return check_msg();">
             
-                <div class="user_ask">咨询内容：<span class="user_ask_c"></span>  </div>
+                <div class="user_ask">{yun:}t key='wap_user_commsg_00002'{/yun}<span class="user_ask_c"></span>  </div>
                 
                 <div class="user_ask_tit">我的回复：</div>
                 <div>
@@ -149,7 +149,7 @@
                     <textarea id="content" name="reply" class="user_ask_textarea" placeholder="回复信息，请勿输入电话，QQ，邮箱等联系方式"></textarea>
                 </div>
                 <div class="user_ask_bth">
-                    <input type="submit" name='submit' value='提交' class="user_ask_bth_b"> 
+                    <input type="submit" name='submit' value='{yun:}t key='common.submit'{/yun}' class="user_ask_bth_b"> 
                 </div>
        
             <input name="msgid" value="0" id='msgid' type="hidden">

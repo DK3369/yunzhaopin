@@ -29,7 +29,7 @@
         if(hbNum == 0){
             var lr = this.getInviteRegHbList();
             if(!lr){
-                layer.msg("功能无法使用，请联系网站客服", 2, 8)
+                layer.msg("{yun:}t key='wap_user_alltask_00001'{/yun}", 2, 8)
                 return false;
             }
             hbNum = invite_reg_hbids.length; // 重新分配海报数量
@@ -42,7 +42,7 @@
             var next = 0;
         }
 
-        var loading = layer.load('生成中...', 0);
+        var loading = layer.load("{yun:}t key='wap_hb_gongzhao_whb_00002'{/yun}", 0);
 
         var image = new Image();
         image.src = url;
@@ -52,7 +52,7 @@
             layer.open({
                 type: 1,
                 title: false,
-                content: '<div class="hb_tc"><img src="' + image.src + '" style="max-width: 100%;"><div class="hb_tc_bth"><a href="javascript:;" onclick="getInviteRegHb(' + next + ');" class="hb_tc_hyz">换一张</a><a href="javascript:;" onclick="downInviteRegHb(' + hb + ');" class="hb_tc_xz">下载海报</a></div></div>',
+                content: '<div class="hb_tc"><img src="' + image.src + '" style="max-width: 100%;"><div class="hb_tc_bth"><a href="javascript:;" onclick="getInviteRegHb(' + next + ');" class="hb_tc_hyz">{yun:}t key='wap_user_alltask_00025'{/yun}</a><a href="javascript:;" onclick="downInviteRegHb(' + hb + ');" class="hb_tc_xz">下载海报</a></div></div>',
                 area: ['360px', 'auto'],
                 offset: '55px',
                 closeBtn: 0,
@@ -62,15 +62,15 @@
     }
 
     function downInviteRegHb(hb) {
-        var loading = layer.load('下载中...', 0);
+        var loading = layer.load("{yun:}t key='wap_hb_gongzhao_whb_00001'{/yun}", 0);
         var url   =   weburl + '/index.php?m=ajax&c=getInviteRegHb&hb=' +  + invite_reg_hbids[hb];
         var image = new Image();
         image.src = url;
         image.onload = function() {
             layer.closeAll();
             var a = document.createElement('a');          // 创建一个a节点插入的document
-            var event = new MouseEvent('click')           // 模拟鼠标click点击事件
-            a.download = 'whb_' +invite_reg_hbids[hb];     // 设置a节点的download属性值
+            var event = new MouseEvent('click")           // 模拟鼠标click{yun:}t key='admin_tool_weixin_component_wxmenu_00012'{/yun}
+            a.download = "whb_' +invite_reg_hbids[hb];     // 设置a节点的download属性值
             a.href = url;                                 // 将图片的src赋值给a节点的href
             a.dispatchEvent(event);
         }

@@ -12,11 +12,11 @@
 {yun:}include file="$tplstyle/header.htm"{/yun}
 <div class="yun_content">
 <div class="current_Location icon">
-您当前的位置：<a href="{yun:}$config.sy_weburl{/yun}">首页</a> > 排行榜
+{yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > {yun:}t key='default_index_top_00002'{/yun}
 </div>
 <div class="clear"></div>
 <div class="post_Top_box fr">
-<div class="post_Top_box_title Top_box_line2"><strong>推荐职位</strong></div>
+<div class="post_Top_box_title Top_box_line2"><strong>{yun:}t key='home.recommended_jobs'{/yun}</strong></div>
 <ul class="post_Top_box_list">
 {yun:}joblist limit=10 order=lastupdate rec=1 namelen=8  state=1 item=job_jia key=key{/yun}
 <li><span {yun:}if $key+1<='3'{/yun}class="Top_box_span"{yun:}/if{/yun}>{yun:}$key+1{/yun}</span>
@@ -28,7 +28,7 @@
 </div>
 
 <div class="post_Top_box fr" style="margin-right:0px;">
-<div class="post_Top_box_title Top_box_line"><strong>最新公司</strong></div>
+<div class="post_Top_box_title Top_box_line"><strong>{yun:}t key='default_index_top_00001'{/yun}</strong></div>
 <ul class="post_Top_box_list">
 {yun:}comlist limit=10 order=lastupdate   item=com_list key=key{/yun}
 <li><span {yun:}if $key+1<='3'{/yun}class="Top_box_span"{yun:}/if{/yun}>{yun:}$key+1{/yun}</span>
@@ -38,7 +38,7 @@
 </ul>
 </div>
 <div class="post_Top_box">
-<div class="post_Top_box_title Top_box_line"><strong>最新职位</strong></div>
+<div class="post_Top_box_title Top_box_line"><strong>{yun:}t key='home.latest_jobs'{/yun}</strong></div>
 <ul class="post_Top_box_list">
 {yun:}joblist order=lastupdate namelen=8 state=1  key=key limit=10 item=job_list{/yun}
 <li><span {yun:}if $key+1<='3'{/yun}class="Top_box_span"{yun:}/if{/yun}>{yun:}$key+1{/yun}</span>
@@ -49,7 +49,7 @@
 </ul>
 </div>
 <div class="post_Top_box">
-<div class="post_Top_box_title Top_box_line2"><strong>最新人才</strong></div>
+<div class="post_Top_box_title Top_box_line2"><strong>{yun:}t key='home.latest_talents'{/yun}</strong></div>
 <ul class="post_Top_box_list">
 {yun:}userlist limit=10 t_len=20 item=user_list key=key{/yun}
 <li>
@@ -61,7 +61,7 @@
 </ul>
 </div>
 <div class="post_Top_box"  style="margin-right:0px;">
-<div class="post_Top_box_title Top_box_line3"><strong>热门关键字</strong></div>
+<div class="post_Top_box_title Top_box_line3"><strong>{yun:}t key='admin_system_set_guanjianci_00011'{/yun}</strong></div>
 <ul class="post_Top_box_list">
 {yun:}key order=num item=keylist limit=10 key=key  len=8{/yun}
 <li>
@@ -73,7 +73,7 @@
 </ul>
 </div>
 <div class="post_Top_box" >
-<div class="post_Top_box_title Top_box_line3"><strong>热门资讯</strong></div>
+<div class="post_Top_box_title Top_box_line3"><strong>{yun:}t key='default_index_siteindex_00010'{/yun}</strong></div>
     <ul class="post_Top_box_list">
 	{yun:}article t_len=20 order=hits item=a_list urlstatic=1 limit=10 key=key{/yun}
 		{yun:}if $a_list.id{/yun}
@@ -87,7 +87,7 @@
     </ul>
 </div>
 <div class="post_Top_box">
-<div class="post_Top_box_title Top_box_line"><strong>紧急职位</strong></div>
+<div class="post_Top_box_title Top_box_line"><strong>{yun:}t key='member_com_paylogtc_00005'{/yun}</strong></div>
 <ul class="post_Top_box_list">
 {yun:}joblist limit=10 order=lastupdate urgent=1 namelen=8  state=1 item=job_jias key=key{/yun}
 <li><span {yun:}if $key+1<='3'{/yun}class="Top_box_span"{yun:}/if{/yun}>{yun:}$key+1{/yun}</span>

@@ -5,7 +5,7 @@ function CheckPost(){
 	var maxsalary=$.trim($("#maxsalary").val());
 	if(maxsalary){
 		if(parseInt(maxsalary)<=parseInt(minsalary)){
-			layer.msg('最高工资必须大于最低工资！', 2, 8);return false;
+			layer.msg("{yun:}t key='wap_com_jobadd_00010'{/yun}", 2, 8);return false;
 		}
 	}
 }
@@ -14,7 +14,7 @@ function CheckPost(){
     {yun:}include file="$userstyle/left.htm"{/yun}
     <div class="yun_m_rightbox fltR mt20 re">
     
-       <div class="member_right_index_h1 fltL"> <span class="member_right_h1_span fltL">职位搜索器</span> <i class="member_right_h1_icon user_bg"></i></div>
+       <div class="member_right_index_h1 fltL"> <span class="member_right_h1_span fltL">{yun:}t key='member_user_finder_00001'{/yun}</span> <i class="member_right_h1_icon user_bg"></i></div>
 
         <div style="clear:both"></div>
         <div style="float:left" class="formbox02">
@@ -22,9 +22,9 @@ function CheckPost(){
             <div style="clear:both"></div>
             <form action="index.php?c=finder&act=save" method="post" target="supportiframe" name="MyForm" onsubmit="return CheckPost();" class="layui-form">
                 <ul class="Finder_box">
-                    <li><span class="Finder_span">搜索器名称：</span><input name="name" type='text' style="width:260px" value="{yun:}$info.name{/yun}" class="layui-input" placeholder=" 如，搜索会计"></li>
-                    <li><span class="Finder_span">搜索关键字：</span><input name="keyword" type='text' style="width:260px" value="{yun:}$parav.keyword{/yun}" class="layui-input" placeholder=" 如，会计"></li>
-                    <li><span class="Finder_span">行业类别：</span>
+                    <li><span class="Finder_span">{yun:}t key='member_com_finderinfo_00002'{/yun}：</span><input name="name" type='text' style="width:260px" value="{yun:}$info.name{/yun}" class="layui-input" placeholder=" 如，搜索会计"></li>
+                    <li><span class="Finder_span">{yun:}t key='member_com_finderinfo_00001'{/yun}：</span><input name="keyword" type='text' style="width:260px" value="{yun:}$parav.keyword{/yun}" class="layui-input" placeholder=" 如，会计"></li>
+                    <li><span class="Finder_span">{yun:}t key='member_com_finderinfo_00004'{/yun}：</span>
                     <div class="text" ><div class="text_seclet text_seclet_cur0 fltL ">
                     <div class="layui-form-item">
                       <div class="layui-input-inline">
@@ -38,12 +38,12 @@ function CheckPost(){
                     </div>
                     </div></div>
                     </li>
-                    <li><span class="Finder_span">职位类别：</span>
+                    <li><span class="Finder_span">{yun:}t key='wap_user_addexpect_00010'{/yun}：</span>
                     <div class="text" ><div class="text_seclet_cur fltL">
                     <div class="layui-form-item">
                       <div class="layui-input-inline">
                         <select name="job1" lay-filter="job" id="job1id">
-                          <option value="">请选择职位类别</option>
+                          <option value="">{yun:}t key='wap_com_jobadd_00018'{/yun}</option>
                           {yun:}foreach from=$job_index key=j item=v{/yun}
                           <option value="{yun:}$v{/yun}" {yun:}if $parav.job1==$v{/yun}selected="selected"{yun:}/if{/yun}>{yun:}$job_name[$v]{/yun}</option>
                           {yun:}/foreach{/yun}
@@ -51,7 +51,7 @@ function CheckPost(){
                       </div>
                       <div class="layui-input-inline">
                         <select name="job1_son" lay-filter="job" id="job1_sonid">
-                          <option value="">请选择职位类别</option>
+                          <option value="">{yun:}t key='wap_com_jobadd_00018'{/yun}</option>
                           {yun:}foreach from=$job_type[$parav.job1] key=j item=v{/yun}
                           <option value="{yun:}$v{/yun}" {yun:}if $parav.job1_son==$v{/yun}selected="selected"{yun:}/if{/yun}>{yun:}$job_name[$v]{/yun}</option>
                           {yun:}/foreach{/yun}
@@ -59,7 +59,7 @@ function CheckPost(){
                       </div>
                       <div class="layui-input-inline">
                         <select name="job_post" lay-filter="" id="job_postid">
-                          <option value="">请选择职位类别</option>
+                          <option value="">{yun:}t key='wap_com_jobadd_00018'{/yun}</option>
                           {yun:}foreach from=$job_type[$parav.job1_son] key=j item=v{/yun}
                           <option value="{yun:}$v{/yun}" {yun:}if $parav.job_post==$v{/yun}selected="selected"{yun:}/if{/yun}>{yun:}$job_name[$v]{/yun}</option>
                           {yun:}/foreach{/yun}
@@ -68,12 +68,12 @@ function CheckPost(){
                     </div>
                     </div></div>
                     </li>
-                    <li><span class="Finder_span">工作地区：</span>
+                    <li><span class="Finder_span">{yun:}t key='wap_once_add_00004'{/yun}：</span>
                     <div class="text" ><div class=" text_seclet_cur2 fltL">
                     <div class="layui-form-item">
                       <div class="layui-input-inline">
                         <select name="provinceid" lay-filter="city" id="provinceid">
-                          <option value="">请选择工作地区</option>
+                          <option value="">{yun:}t key='member_user_finderinfo_00001'{/yun}</option>
                           {yun:}foreach from=$city_index key=j item=v{/yun}
                           <option value="{yun:}$v{/yun}" {yun:}if $parav.provinceid==$v{/yun}selected="selected"{yun:}/if{/yun}>{yun:}$city_name[$v]{/yun}</option>
                           {yun:}/foreach{/yun}
@@ -81,7 +81,7 @@ function CheckPost(){
                       </div>
                       <div class="layui-input-inline">
                         <select name="cityid" lay-filter="city" id="cityid">
-                          <option value="">请选择工作地区</option>
+                          <option value="">{yun:}t key='member_user_finderinfo_00001'{/yun}</option>
                           {yun:}foreach from=$city_type[$parav.provinceid] key=j item=v{/yun}
                           <option value="{yun:}$v{/yun}" {yun:}if $parav.cityid==$v{/yun}selected="selected"{yun:}/if{/yun}>{yun:}$city_name[$v]{/yun}</option>
                           {yun:}/foreach{/yun}
@@ -89,7 +89,7 @@ function CheckPost(){
                       </div>
                       <div class="layui-input-inline" {yun:}if !$parav.three_cityid{/yun}style='display:none;'{yun:}/if{/yun} id="cityshowth">
                         <select name="three_cityid" lay-filter="" id="three_cityid">
-                          <option value="">请选择工作地区</option>
+                          <option value="">{yun:}t key='member_user_finderinfo_00001'{/yun}</option>
                           {yun:}foreach from=$city_type[$parav.cityid] key=j item=v{/yun}
                           <option value="{yun:}$v{/yun}" {yun:}if $parav.three_cityid==$v{/yun}selected="selected"{yun:}/if{/yun}>{yun:}$city_name[$v]{/yun}</option>
                           {yun:}/foreach{/yun}
@@ -98,18 +98,18 @@ function CheckPost(){
                     </div>
                     </div></div>
                     </li>
-                    <li><span class="Finder_span">薪资待遇：</span>
+                    <li><span class="Finder_span">{yun:}t key='wap_com_jobadd_00036'{/yun}：</span>
                     <div class="text" ><div class="text_seclet text_seclet_cur3 fltL">
                     <div class="layui-form-item">
                       <div class="layui-input-inline">
-                      <input id="minsalary" name="minsalary" type="text" value="{yun:}$parav.minsalary{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" class="layui-input" placeholder="最低薪资">
+                      <input id="minsalary" name="minsalary" type="text" value="{yun:}$parav.minsalary{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" class="layui-input" placeholder="{yun:}t key='wap_user_addexpect_00005'{/yun}">
                       </div>
                       <div class="layui-input-inline">
-                      <input id="maxsalary" name="maxsalary" type="text" value="{yun:}$parav.maxsalary{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"class="layui-input" placeholder="最高薪资">
+                      <input id="maxsalary" name="maxsalary" type="text" value="{yun:}$parav.maxsalary{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"class="layui-input" placeholder="{yun:}t key='wap_user_addexpect_00006'{/yun}">
                       </div>
                     </div>
                     </li>
-                    <li><span class="Finder_span">学历要求：</span>
+                    <li><span class="Finder_span">{yun:}t key='wap_com_jobadd_00029'{/yun}：</span>
                     <div class="text" ><div class="text_seclet text_seclet_cur4 fltL">
                     <div class="layui-form-item">
                       <div class="layui-input-inline">
@@ -123,7 +123,7 @@ function CheckPost(){
                     </div>
                     </div></div>
                     </li>
-                    <li><span class="Finder_span">工作经验：</span>
+                    <li><span class="Finder_span">{yun:}t key='wap_user_info_00017'{/yun}：</span>
                     <div class="text" ><div class="text_seclet text_seclet_cur5 fltL">
                     <div class="layui-form-item">
                       <div class="layui-input-inline">
@@ -137,7 +137,7 @@ function CheckPost(){
                     </div>
                     </div></div>
                     </li>
-                    <li><span class="Finder_span">性别要求：</span>
+                    <li><span class="Finder_span">{yun:}t key='wap_com_partadd_00012'{/yun}：</span>
                     <div class="text" ><div class="text_seclet text_seclet_cur6 fltL">
                     <div class="layui-form-item">
                       <div class="layui-input-inline">
@@ -151,7 +151,7 @@ function CheckPost(){
                     </div>
                     </div></div>
                     </li>
-                    <li><span class="Finder_span">到岗时间：</span>
+                    <li><span class="Finder_span">{yun:}t key='wap_com_jobadd_00025'{/yun}：</span>
                     <div class="text" ><div class="text_seclet text_seclet_cur8 fltL">
                     <div class="layui-form-item">
                       <div class="layui-input-inline">
@@ -165,12 +165,12 @@ function CheckPost(){
                     </div>
                     </div></div>
                     </li>
-                    <li><span class="Finder_span">更新时间：</span>
+                    <li><span class="Finder_span">{yun:}t key='wap_member_publictwo_00004'{/yun}：</span>
                     <div class="text" ><div class="text_seclet text_seclet_cur10 fltL">
                     <div class="layui-form-item">
                       <div class="layui-input-inline">
                         <select name="uptime" lay-filter="" id="uptimeid">
-                          <option value="">请选择更新时间</option>
+                          <option value="">{yun:}t key='member_user_finderinfo_00002'{/yun}</option>
                           {yun:}foreach from=$uptime item=v key=j{/yun}
                           <option value="{yun:}$j{/yun}" {yun:}if $parav.uptime==$j{/yun}selected="selected"{yun:}/if{/yun}>{yun:}$v{/yun}</option>
                           {yun:}/foreach{/yun}
@@ -179,7 +179,7 @@ function CheckPost(){
                     </div>
                     </div></div>
                     </li> 
-                    <li><span class="Finder_span"></span><input name="id" value="{yun:}$info.id{/yun}" type="hidden" /><input class="layui-btn layui-btn-normal" type="submit" value="保存信息" name="submitBtn"></li>
+                    <li><span class="Finder_span"></span><input name="id" value="{yun:}$info.id{/yun}" type="hidden" /><input class="layui-btn layui-btn-normal" type="submit" value="{yun:}t key='member_user_finderinfo_00006'{/yun}" name="submitBtn"></li>
                 </ul>
             </form>
         </div>
@@ -196,7 +196,7 @@ layui.use(['layer', 'form'], function(){
     		$.post(weburl+"/index.php?m=ajax&c=ajax",{str:data.value},function(htm){
     			if(data.elem.name=='provinceid'){
     				$("#cityid").html(htm);
-    				$("#three_cityid").html("<option value=''>请选择</option>");
+    				$("#three_cityid").html("<option value=''>{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>");
     			}else if(data.elem.name=='cityid'){
     				$("#cityshowth").show();
     				$("#three_cityid").html(htm);
@@ -218,7 +218,7 @@ layui.use(['layer', 'form'], function(){
 		$.post(weburl+"/member/index.php?m=ajax&c=getjoblist",{id:data.value},function(htm){
 			if(data.elem.name=='job1'){
 				$("#job1_sonid").html(htm);
-				$("#job_postid").html("<option value=''>请选择</option>");
+				$("#job_postid").html("<option value=''>{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>");
 			}else if(data.elem.name=='job1_son'){
 				$("#job_postid").html(htm);
 			}

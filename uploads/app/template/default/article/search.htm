@@ -12,14 +12,14 @@
 {yun:}include file="$tplstyle/header.htm"{/yun}
 <div class="yun_content">
 <div class="current_Location  png"> 
-您当前的位置：<a href="{yun:}$config.sy_weburl{/yun}">首页</a> > <a href="{yun:}url m=article{/yun}">职场资讯</a> > 
-{yun:}if $classname{/yun}{yun:}$classname{/yun}{yun:}else{/yun}搜索{yun:}/if{/yun}
+{yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <a href="{yun:}url m=article{/yun}">{yun:}t key='home.workplace_news'{/yun}</a> > 
+{yun:}if $classname{/yun}{yun:}$classname{/yun}{yun:}else{/yun}{yun:}t key='common.search'{/yun}{yun:}/if{/yun}
 </div>
 <div class="n_list_box">
 
 <div class="n_list_box_cont">
 <div class="news_index_today_h1" style="margin-top:10px;"> <span class="news_index_today_h1_s">{yun:}if $classname{/yun}{yun:}$classname{/yun}
-    {yun:}else{/yun}搜索{yun:}/if{/yun} </span></div>
+    {yun:}else{/yun}{yun:}t key='common.search'{/yun}{yun:}/if{/yun} </span></div>
 <ul class="news_index_box_list">
 {yun:}article nid='auto.nid' kid='auto.kid' keyword='auto.keyword' ispage=1 urlstatic=1 limit=20  t_len=30 item=item{/yun}
           <dl>
@@ -46,7 +46,7 @@
     <input name='m' value="article" type="hidden"/>
     <input name='c' value="search" type="hidden">
 	
-    <input type="text" id="keyword" name="keyword" value="{yun:}$smarty.get.keyword{/yun}" placeholder="搜索文章" class="news_index_box_search_text"/>
+    <input type="text" id="keyword" name="keyword" value="{yun:}$smarty.get.keyword{/yun}" placeholder="{yun:}t key='default_article_list_00002'{/yun}" class="news_index_box_search_text"/>
     <input type="submit" value="" class="news_index_box_search_bth"/>
     </div>
     </form>
@@ -72,7 +72,7 @@
  <div class="clear"></div>
   <div class="zx_article">
 
- <div class="news_index_today_h1"> <span class="news_index_today_tj_s">推荐文章</span></div>
+ <div class="news_index_today_h1"> <span class="news_index_today_tj_s">{yun:}t key='default_article_list_00001'{/yun}</span></div>
   <div class="clear"></div>
  
           <div class="zx_art_hot mt20">
@@ -97,7 +97,7 @@
             </ul>
           </div>
           <div class="clear"></div>
-        </div>         <div class="news_index_today_h1"> <span class="news_index_today_news_s">最新文章</span></div>
+        </div>         <div class="news_index_today_h1"> <span class="news_index_today_news_s">{yun:}t key='default_article_list_00003'{/yun}</span></div>
   <div class="clear"></div>
         <div class="zx_article mt20">
 
@@ -144,7 +144,7 @@ DD_belatedPNG.fix('.png');
 	$(function() {
 		var $keyword = $("#keyword").val();
 		setHeightKeyWord('fontshow', $keyword, 'Red', true);
-		//分类浏览
+		//{yun:}t key='wap_article_show_00001'{/yun}
 	     var sfEls = $("#news_nav").find("div");
 		 for (var i=0; i<sfEls.length; i++) {
 			  sfEls[i].onmouseover=function() {

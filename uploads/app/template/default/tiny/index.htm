@@ -18,7 +18,7 @@
 
 <div class="tiny_banner">
 	<div class="tiny_banner_cont">
-		<div class="tiny_banner_cur">您当前的位置：<a href="{yun:}$config.sy_weburl{/yun}">首页</a> > <a href="{yun:}url m=tiny{/yun}">普工专区</a></div>
+		<div class="tiny_banner_cur">{yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <a href="{yun:}url m=tiny{/yun}">{yun:}t key='default_tiny_add_00003'{/yun}</a></div>
 		<div class="once_banner_cont_b"><img src="{yun:}$style{/yun}/images/resume_banner.jpg" /> </div>
 		
 		<div class="tiny_banner_bg"></div>
@@ -29,14 +29,14 @@
 			<div class="tiny_banner_fb_fb">
 			{yun:}if $isFb{/yun}						
 				{yun:}if $config.sy_tiny == 0{/yun}	
-				<a href='{yun:}url m=tiny c=add{/yun}' title="发布普工简历" >发布普工简历</a> 
+				<a href='{yun:}url m=tiny c=add{/yun}' title="{yun:}t key='wap_tiny_00002'{/yun}" >{yun:}t key='wap_tiny_00002'{/yun}</a> 
 				{yun:}elseif $num>0{/yun}			
-					<a href='javascript:;' onclick="addtinymsg('一天内只能发布{yun:}$config.sy_tiny{/yun}次，剩余可发布{yun:}$num{/yun}次','{yun:}url m=tiny c=add{/yun}')" class="recruit_user_public">发布普工简历</a>
+					<a href='javascript:;' onclick="addtinymsg('{yun:}t key='wap_once_00005'{/yun}{yun:}$config.sy_tiny{/yun}{yun:}t key='common_02089'{/yun}，剩余可发布{yun:}$num{/yun}{yun:}t key='common_02089'{/yun}','{yun:}url m=tiny c=add{/yun}')" class="recruit_user_public">{yun:}t key='wap_tiny_00002'{/yun}</a>
 				{yun:}else{/yun}
-					<a href="javascript:;" onclick="layer.msg('每天最多可发布{yun:}$config.sy_tiny{/yun}份普工简历！',2,8)" class="">发布普工简历</a>
+					<a href="javascript:;" onclick="layer.msg('每天最多可发布{yun:}$config.sy_tiny{/yun}份普工简历！',2,8)" class="">{yun:}t key='wap_tiny_00002'{/yun}</a>
 				{yun:}/if{/yun}		
 			{yun:}else{/yun}
-			<a href="javascript:;" onclick="layer.msg('网站发布普工简历本日已到上限，如有急需，请联系网站客服！',2,8)" class="">发布普工简历</a>
+			<a href="javascript:;" onclick="layer.msg('网站发布普工简历本日已到上限，如有急需，请联系网站客服！',2,8)" class="">{yun:}t key='wap_tiny_00002'{/yun}</a>
 			{yun:}/if{/yun}
 				
 			</div>
@@ -48,7 +48,7 @@
  </div>
 <div class="micro_resume_bg">
   <div class="micro_resume">
-  <form action="{yun:}if !$config.sy_tinydir{/yun}index.php{yun:}else{/yun}{yun:}url m=tiny{/yun}{yun:}/if{/yun}"   method="get" onsubmit="return search_keyword(this,'请输入普工简历的关键字');">
+  <form action="{yun:}if !$config.sy_tinydir{/yun}index.php{yun:}else{/yun}{yun:}url m=tiny{/yun}{yun:}/if{/yun}"   method="get" onsubmit="return search_keyword(this,'{yun:}t key='default_tiny_index_00001'{/yun}');">
   {yun:}if !$config.sy_tinydir || $config.sy_seo_rewrite!='1'{/yun}<input type="hidden" name="m" value="tiny" id="m" />{yun:}/if{/yun}
   {yun:}foreach from=$finder item=v key=key{/yun}
   <input type="hidden" name="{yun:}$key{/yun}" value="{yun:}$v{/yun}" /> 
@@ -65,7 +65,7 @@
    </ul></div>
   </div>
   <div class="tiny_search_choice">  
-  <input type="button" value="{yun:}if $smarty.get.sex{/yun}{yun:}$user_sex[$smarty.get.sex]{/yun}{yun:}else{/yun}性别要求{yun:}/if{/yun}" id="add_sexs" class="tiny_search_but">
+  <input type="button" value="{yun:}if $smarty.get.sex{/yun}{yun:}$user_sex[$smarty.get.sex]{/yun}{yun:}else{/yun}{yun:}t key='wap_com_partadd_00012'{/yun}{yun:}/if{/yun}" id="add_sexs" class="tiny_search_but">
     <div class="tiny_search_select none"  id="tiny_sex">
     <ul> 
 	{yun:}foreach item=v key=key from=$user_sex{/yun}
@@ -74,7 +74,7 @@
   </ul></div>
   </div>
   <div class="tiny_search_choice">
-  <input type="button" value="{yun:}if $userclass_name[$smarty.get.exp]{/yun}{yun:}$userclass_name[$smarty.get.exp]{/yun}{yun:}else{/yun}工作经验{yun:}/if{/yun}" id="add_exps" class="tiny_search_but">
+  <input type="button" value="{yun:}if $userclass_name[$smarty.get.exp]{/yun}{yun:}$userclass_name[$smarty.get.exp]{/yun}{yun:}else{/yun}{yun:}t key='wap_user_info_00017'{/yun}{yun:}/if{/yun}" id="add_exps" class="tiny_search_but">
     <div class="tiny_search_select none"  id="tiny_exp">
     <ul> 
 	{yun:}foreach from=$userdata.user_word key=key item=v{/yun}
@@ -84,16 +84,16 @@
    </div>
   
   <div class="tiny_search_text">
-	<input id="key_word" class="tiny_search_t" type="text" value="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}else{/yun}请输入普工简历的关键字{yun:}/if{/yun}"  name="keyword" onclick="if(this.value=='请输入普工简历的关键字'){this.value=''}" placeholder="请输入普工简历的关键字" onblur="if(this.value==''){this.value='请输入普工简历的关键字'}"/>
+	<input id="key_word" class="tiny_search_t" type="text" value="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}else{/yun}{yun:}t key='default_tiny_index_00001'{/yun}{yun:}/if{/yun}"  name="keyword" onclick="if(this.value=='{yun:}t key='default_tiny_index_00001'{/yun}'){this.value=''}" placeholder="{yun:}t key='default_tiny_index_00001'{/yun}" onblur="if(this.value==''){this.value='{yun:}t key='default_tiny_index_00001'{/yun}'}"/>
   </div>
-   <input type="submit"  value="搜索" id="search_button" class="tiny_search_bth"/>
+   <input type="submit"  value="{yun:}t key='common.search'{/yun}" id="search_button" class="tiny_search_bth"/>
   </div>
    </form> 
   
   <!--   city--> 
         {yun:}if $config.sy_web_site==1 && $config.cityname && $config.cityname!=$config.sy_indexcity{/yun}
 			<div class="Search_citybox">
-				<div class="Search_cityboxname"> 按&nbsp;地&nbsp; 区：</div>
+				<div class="Search_cityboxname"> 按&nbsp;地&nbsp; {yun:}t key='common_02060'{/yun}：</div>
 				<div class="Search_citybox_right">
 					<div class="Search_cityboxright">
 						<div class="search_secondcity_list">
@@ -104,7 +104,7 @@
 							{yun:}else{/yun}
 								{yun:}if $smarty.get.cityid{/yun}
 									{yun:}if is_array($city_type[$smarty.get.cityid]){/yun} 
-										<a href="{yun:}listurl m=tiny untype=three_cityid{/yun}" class="city_name {yun:}if !$smarty.get.three_cityid {/yun}city_name_active{yun:}/if{/yun}">不限</a> 
+										<a href="{yun:}listurl m=tiny untype=three_cityid{/yun}" class="city_name {yun:}if !$smarty.get.three_cityid {/yun}city_name_active{yun:}/if{/yun}">{yun:}t key='common_01936'{/yun}</a> 
 										{yun:}foreach from=$city_type[$smarty.get.cityid] item=tid key=key{/yun} 
 											<a href="{yun:}listurl m=tiny type=three_cityid v=$tid{/yun}" class="city_name {yun:}if $smarty.get.three_cityid==$tid{/yun}city_name_active{yun:}/if{/yun}">{yun:}$city_name[$tid]{/yun}</a> 
 										{yun:}/foreach{/yun}
@@ -113,7 +113,7 @@
 									{yun:}/if{/yun}
 								{yun:}else{/yun}
 									{yun:}if is_array($city_type[$smarty.get.provinceid]){/yun} 
-										<a href="{yun:}listurl m=tiny untype=cityid{/yun}" class="city_name {yun:}if !$smarty.get.cityid {/yun}city_name_active{yun:}/if{/yun}">不限</a> 
+										<a href="{yun:}listurl m=tiny untype=cityid{/yun}" class="city_name {yun:}if !$smarty.get.cityid {/yun}city_name_active{yun:}/if{/yun}">{yun:}t key='common_01936'{/yun}</a> 
 										{yun:}foreach from=$city_type[$smarty.get.provinceid] item=tid key=key{/yun} 
 											<a href="{yun:}listurl  m=tiny type=cityid v=$tid{/yun}" class="city_name {yun:}if $smarty.get.cityid==$tid{/yun}city_name_active{yun:}/if{/yun}">{yun:}$city_name[$tid]{/yun}</a>
 										{yun:}/foreach{/yun}
@@ -128,10 +128,10 @@
 			</div>
 		{yun:}else{/yun}
 			<div class="Search_citybox">
-				<div class="Search_cityboxname">按&nbsp;地&nbsp; 区：</div>
+				<div class="Search_cityboxname">按&nbsp;地&nbsp; {yun:}t key='common_02060'{/yun}：</div>
 				<div class="Search_citybox_right">
 					<div class="Search_cityall none"> 
-						<a href="{yun:}listurl m=tiny type=provinceid v=0{/yun}" class="city_name">全部</a> 
+						<a href="{yun:}listurl m=tiny type=provinceid v=0{/yun}" class="city_name">{yun:}t key='common.all'{/yun}</a> 
 						{yun:}foreach from=$city_index item=pid key=key{/yun} 
 							<a href="{yun:}listurl m=tiny type=provinceid v=$pid{/yun}" class="city_name {yun:}if $smarty.get.provinceid==$pid{/yun}city_name_active{yun:}/if{/yun}">{yun:}$city_name[$pid]{/yun}</a> 
 						{yun:}/foreach{/yun} 
@@ -144,26 +144,26 @@
 						</a>
 						<a href="javascript:;" {yun:}if $smarty.get.cityid{/yun}onclick="acityshow('2')"{yun:}/if{/yun} class="search_city_list_cur {yun:}if $smarty.get.cityid && is_array($city_type[$smarty.get.cityid]){/yun}search_city_active{yun:}/if{/yun} {yun:}if !$smarty.get.provinceid || !$smarty.get.cityid || !is_array($city_type[$smarty.get.cityid]){/yun}none{yun:}/if{/yun} acity_three" style="text-decoration:none;cursor:pointer;">
 							<span class="search_city_p">
-								{yun:}if !$smarty.get.cityid{/yun}不限{yun:}else{/yun}{yun:}$city_name[$smarty.get.cityid]{/yun}{yun:}/if{/yun}
+								{yun:}if !$smarty.get.cityid{/yun}{yun:}t key='common_01936'{/yun}{yun:}else{/yun}{yun:}$city_name[$smarty.get.cityid]{/yun}{yun:}/if{/yun}
 							</span>
 							<i class="search_city_list_line"></i>
 						</a> 
-						<a href="{yun:}listurl m=tiny type=provinceid v=0{/yun}" class="search_city_list_all {yun:}if !$smarty.get.provinceid{/yun}city_name_active{yun:}/if{/yun}">全部</a>
+						<a href="{yun:}listurl m=tiny type=provinceid v=0{/yun}" class="search_city_list_all {yun:}if !$smarty.get.provinceid{/yun}city_name_active{yun:}/if{/yun}">{yun:}t key='common.all'{/yun}</a>
 						<div class="search_city_list">
 							{yun:}foreach from=$city_index item=pid key=key{/yun} 
 								<a href="{yun:}listurl m=tiny type=provinceid v=$pid{/yun}" class="city_name {yun:}if $smarty.get.provinceid && !$smarty.get.cityid{/yun}{yun:}if $key>12{/yun}none{yun:}/if{/yun}{yun:}else if $smarty.get.cityid{/yun}{yun:}if $key>13{/yun}none{yun:}/if{/yun}{yun:}else{/yun}{yun:}if $key>14{/yun}none{yun:}/if{/yun}{yun:}/if{/yun} {yun:}if $smarty.get.provinceid==$pid{/yun}city_name_active{yun:}/if{/yun}">{yun:}$city_name[$pid]{/yun}</a> 
 							{yun:}/foreach{/yun} 
 						</div>
-						<a href="javascript:;" class="search_city_list_more" id="acity">更多</a>
+						<a href="javascript:;" class="search_city_list_more" id="acity">{yun:}t key='common.more'{/yun}</a>
 					</div>
 					<div class="Search_cityboxclose {yun:}if !$smarty.get.provinceid || ($smarty.get.provinceid && $smarty.get.cityid && is_array($city_type[$smarty.get.cityid])){/yun}none{yun:}/if{/yun}" id="acity_two"> 
-						<a href="{yun:}listurl m=tiny untype=cityid{/yun}" class="city_name {yun:}if $smarty.get.provinceid&&!$smarty.get.cityid&&!$smarty.get.three_cityid{/yun}city_name_active{yun:}/if{/yun}">不限</a> 
+						<a href="{yun:}listurl m=tiny untype=cityid{/yun}" class="city_name {yun:}if $smarty.get.provinceid&&!$smarty.get.cityid&&!$smarty.get.three_cityid{/yun}city_name_active{yun:}/if{/yun}">{yun:}t key='common_01936'{/yun}</a> 
 						{yun:}foreach from=$city_type[$smarty.get.provinceid] item=cid key=key{/yun} 
 							<a href="{yun:}listurl m=tiny type=cityid v=$cid{/yun}" class="city_name {yun:}if $smarty.get.cityid==$cid{/yun}city_name_active{yun:}/if{/yun}">{yun:}$city_name[$cid]{/yun}</a> 
 						{yun:}/foreach{/yun} 
 					</div>
 					<div class="Search_cityboxclose {yun:}if !$smarty.get.cityid || !is_array($city_type[$smarty.get.cityid]){/yun}none{yun:}/if{/yun}" id="acity_three"> 
-						<a href="{yun:}listurl m=tiny untype=three_cityid{/yun}" class="city_name {yun:}if $smarty.get.provinceid && $smarty.get.cityid && !$smarty.get.three_cityid {/yun}city_name_active{yun:}/if{/yun}">不限</a> 
+						<a href="{yun:}listurl m=tiny untype=three_cityid{/yun}" class="city_name {yun:}if $smarty.get.provinceid && $smarty.get.cityid && !$smarty.get.three_cityid {/yun}city_name_active{yun:}/if{/yun}">{yun:}t key='common_01936'{/yun}</a> 
 						{yun:}foreach from=$city_type[$smarty.get.cityid] item=tid key=key{/yun} 
 							<a href="{yun:}listurl m=tiny type=three_cityid v=$tid{/yun}" class="city_name {yun:}if $smarty.get.three_cityid==$tid{/yun}city_name_active{yun:}/if{/yun}">{yun:}$city_name[$tid]{/yun}</a>
 						{yun:}/foreach{/yun} 
@@ -173,7 +173,7 @@
         {yun:}/if{/yun} 
 
         <!--   city end-->
-  <div class="tiny_search_want"><span class="tiny_search_name">关&nbsp;键&nbsp; 字：</span> {yun:}key limit=8 type=13 item=keylist recom=1{/yun} <a href="{yun:}$keylist.url{/yun}"> {yun:}$keylist.key_name{/yun}</a> {yun:}/key{/yun}</div>
+  <div class="tiny_search_want"><span class="tiny_search_name">关&nbsp;键&nbsp; {yun:}t key='common_02073'{/yun}：</span> {yun:}key limit=8 type=13 item=keylist recom=1{/yun} <a href="{yun:}$keylist.url{/yun}"> {yun:}$keylist.key_name{/yun}</a> {yun:}/key{/yun}</div>
   </div>
      
     <div class="micro_resume_cont">
@@ -188,10 +188,10 @@
           <div class="tiny_list_name"><a href="{yun:}url m=tiny c=show id=$wres.id{/yun}" title="{yun:}$wres.job{/yun}"> {yun:}$wres.job|mb_substr:0:30:'utf-8'{/yun}</a></div>
           <span class="tiny_list_time">{yun:}if $wres.redtime==1 || $wres.lastupdate=='昨天'{/yun} <span style="color:red;">{yun:}$wres.lastupdate{/yun}</span> {yun:}else{/yun}
                 {yun:}$wres.lastupdate{/yun}
-                {yun:}/if{/yun}更新</span>
-                 <div class="tiny_list_info">{yun:}$wres.username{/yun} <i>|</i>{yun:}$wres.sex{/yun}<i>|</i> {yun:}$wres.exp_name{/yun}经验</div>
-                <div class="tiny_list_info_tel">  {yun:}if $config.user_wjl_link==1 && $uid<=0{/yun} <span>登录查看联系方式<a href="javascript:void(0);" onclick="showlogin('');" class="tiny_list_info_tel_login">登录</a></span> {yun:}else{/yun}
-                <span class="tiny_tel">联系电话：{yun:}$wres.mobile{/yun}</span>
+                {yun:}/if{/yun}{yun:}t key='wap_invite_00002'{/yun}</span>
+                 <div class="tiny_list_info">{yun:}$wres.username{/yun} <i>|</i>{yun:}$wres.sex{/yun}<i>|</i> {yun:}$wres.exp_name{/yun}{yun:}t key='home.experience_suffix'{/yun}</div>
+                <div class="tiny_list_info_tel">  {yun:}if $config.user_wjl_link==1 && $uid<=0{/yun} <span>登录查看联系方式<a href="javascript:void(0);" onclick="showlogin('');" class="tiny_list_info_tel_login">{yun:}t key='common.login'{/yun}</a></span> {yun:}else{/yun}
+                <span class="tiny_tel">{yun:}t key='wap_user_invitecont_00004'{/yun}：{yun:}$wres.mobile{/yun}</span>
                 {yun:}/if{/yun}</div>
      
         </div>
@@ -203,8 +203,8 @@
       {yun:}if $total==0{/yun}
       <div class="onceseachno">
             <div class="onceseachno_left"> <img src="{yun:}$style{/yun}/images/search-no.gif"/></div>
-            <div class="onceseachno_content"> <strong>很抱歉，没有找到满足条件的简历</strong><br/>
-          <span> 建议您：<br/>
+            <div class="onceseachno_content"> <strong>{yun:}t key='common_01912'{/yun}，没有找到满足条件的简历</strong><br/>
+          <span> {yun:}t key='common_01910'{/yun}：<br/>
           1、适当减少已选择的条件<br/>
           2、适当删减或更改搜索关键字<br/>
           </span> </div>

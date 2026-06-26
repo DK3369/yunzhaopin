@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/job.css?v={yun:}$config.cachecode{/yun}" type="text/css"/>
 <link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/style.css?v={yun:}$config.cachecode{/yun}" type="text/css"/>
 </head>
-<div class="loginlock">温馨提示</div>
+<div class="loginlock">{yun:}t key='wap_user_index_00023'{/yun}</div>
 <style>
 body{ background:#fff}
 </style>  
@@ -25,7 +25,7 @@ body{ background:#fff}
 <div class="prompt_message_cont">
 <div class="prompt_message_i"><i class="prompt_message_i_icon_sd"></i></div>
 <div class="prompt_message_tit">您的帐号被锁定</div>
-<div class="prompt_message_p">很抱歉，由于在您的账户中发现了不安全的情况，您的账户暂时无法使用！请联系客服解除锁定！</div>
+<div class="prompt_message_p">{yun:}t key='common_01912'{/yun}，由于在您的账户中发现了不安全的情况，您的账户暂时无法使用！请联系客服解除锁定！</div>
 <div class="prompt_message_box">
 <div class="prompt_message_p2">如需开通会员,欢迎拨打我们客服热线：</div>
 <div class="prompt_message_tel">{yun:}$config.sy_freewebtel{/yun}</div>
@@ -37,7 +37,7 @@ body{ background:#fff}
 <script type="text/javascript">
 function show(obj){
 var obj=document.getElementById(obj);  //获得id为b的容器
-  //如果下面的内容显示的话就隐藏
+  // Hide the following content if it is shown
   if(obj.style.display=="block"){
      obj.style.display="none";
   }else 

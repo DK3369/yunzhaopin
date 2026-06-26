@@ -183,7 +183,7 @@
 	<input type="hidden" id="kzq" value="{yun:}$smarty.get.c{/yun}"/>
 	<ul class="grade-w" id="provinceid">
 		{yun:}if !isset($nocityall){/yun}
-		<li onclick="check_city_li('0','provinceid');">全部</li>
+		<li onclick="check_city_li('0','provinceid');">{yun:}t key='common.all'{/yun}</li>
 		{yun:}/if{/yun}
 		{yun:}foreach item=v from=$city_index{/yun}
 		<li class="qgrade{yun:}$v{/yun}" onclick="grade1('{yun:}$v{/yun}','{yun:}$city_name[$v]{/yun}','provinceid','{yun:}$smarty.get.a{/yun}')">{yun:}$city_name[$v]{/yun}</li>
@@ -195,25 +195,25 @@
 </div>
 <!-- End grade -->
 
-<!-- Substation 分站地区-->
+<!-- Substation {yun:}t key='admin_system_domain_component_domainadd_00017'{/yun}-->
 <div class="Substation-eject Substation-height pubtwo none">
 	<ul class="Substation-Substation" id="Substation-Substation">
 		<li>
 			{yun:}if $smarty.get.c=="job"{/yun}
-			<a href="{yun:}searchurl m=wap c=job three_cityid='' untype='three_cityid'{/yun}">全部</a>
+			<a href="{yun:}searchurl m=wap c=job three_cityid='' untype='three_cityid'{/yun}">{yun:}t key='common.all'{/yun}</a>
 			{yun:}else if $smarty.get.c=="resume"{/yun}
-			<a href="{yun:}searchurl m=wap c=resume three_cityid='' untype='three_cityid'{/yun}">全部</a>
+			<a href="{yun:}searchurl m=wap c=resume three_cityid='' untype='three_cityid'{/yun}">{yun:}t key='common.all'{/yun}</a>
 			{yun:}else if $smarty.get.c=="part"{/yun}
-			<a href="{yun:}searchurl m=wap c=part three_cityid='' untype='three_cityid'{/yun}">全部</a>
+			<a href="{yun:}searchurl m=wap c=part three_cityid='' untype='three_cityid'{/yun}">{yun:}t key='common.all'{/yun}</a>
 			{yun:}else if $smarty.get.c=="company"{/yun}
-			<a href="{yun:}searchurl m=wap c=company three_cityid='' untype='three_cityid'{/yun}">全部</a>
+			<a href="{yun:}searchurl m=wap c=company three_cityid='' untype='three_cityid'{/yun}">{yun:}t key='common.all'{/yun}</a>
 			
 			{yun:}else if $smarty.get.c=="post"{/yun}
-			<a href="{yun:}searchurl m=wap c=post three_cityid='' untype='three_cityid'{/yun}">全部</a>
+			<a href="{yun:}searchurl m=wap c=post three_cityid='' untype='three_cityid'{/yun}">{yun:}t key='common.all'{/yun}</a>
 			{yun:}else if $smarty.get.c=="post" && $smarty.get.a=="service"{/yun}
-			<a href="{yun:}searchurl m=wap c=post three_cityid='' untype='three_cityid'{/yun}">全部</a>
+			<a href="{yun:}searchurl m=wap c=post three_cityid='' untype='three_cityid'{/yun}">{yun:}t key='common.all'{/yun}</a>
 			{yun:}else if $smarty.get.c=="post" && $smarty.get.a=="famous"{/yun}
-			<a href="{yun:}searchurl m=wap c=post three_cityid='' untype='three_cityid'{/yun}">全部</a>
+			<a href="{yun:}searchurl m=wap c=post three_cityid='' untype='three_cityid'{/yun}">{yun:}t key='common.all'{/yun}</a>
 			{yun:}/if{/yun}
 
 		</li>
@@ -331,7 +331,7 @@
 </div>
 <!-- End Sortcycle -->
 
-<!-------!宣讲会办学时间/普工/店铺发布时间--------->
+<!-------!宣讲会办学时间/{yun:}t key='default_index_siteindex_00013'{/yun}/店铺发布时间--------->
 <div class="Sortadtime-eject Sortadtime-height pubtwo none">
 	<ul class="Sortadtime-Sortadtime" id="Sortadtime-Sortadtime">
 		{yun:}foreach from=$adtime item=v key=key{/yun}

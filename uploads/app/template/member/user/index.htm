@@ -5,8 +5,8 @@
     <div class="yun_m_rightsidebar">
         {yun:}if $config.wx_author == '1' && $member.subscribe!='1'{/yun}
         <div class="yun_wtbd_tip">
-            <div class="yun_wtbd_tip_tit">温馨提示</div>
-            <div class="yun_wtbd_tip_p"> 关注公众号，可便捷操作职位搜索、创建管理求职简历、简历投递实时追踪，投递进度快速提醒...等，随时随地轻松找工作<a href="javascript:;" class="wxtitle yun_wtbd_tip_bth">立即关注</a></div>
+            <div class="yun_wtbd_tip_tit">{yun:}t key='wap_user_index_00023'{/yun}</div>
+            <div class="yun_wtbd_tip_p"> {yun:}t key='wap_user_index_00009'{/yun}，可便捷操作职位搜索、创建管理求职简历、{yun:}t key='member_user_left_00001'{/yun}，投递进度快速提醒...等，随时随地轻松找工作<a href="javascript:;" class="wxtitle yun_wtbd_tip_bth">{yun:}t key='member_user_index_00031'{/yun}</a></div>
         </div>
         {yun:}/if{/yun}
         <div class="yun_m_index_date_box">
@@ -14,7 +14,7 @@
                 <div class="yun_m_index_date_list">
                     <a href="index.php?c=invite">
                         <i class="yun_m_index_date_icon1"></i>{yun:}if $msgnum{/yun}<span class="yun_m_n">{yun:}$msgnum{/yun}</span>{yun:}/if{/yun}
-                        <div class="yun_m_index_datename">面试通知</div>
+                        <div class="yun_m_index_datename">{yun:}t key='wap_user_index_00034'{/yun}</div>
                         <div class="yun_m_index_date_n">
                             <span class="yun_m_index_d_c">{yun:}$yqnum{/yun}</span>
                         </div>
@@ -23,14 +23,14 @@
                 <div class="yun_m_index_date_list">
                     <a href="index.php?c=job">
                         <i class="yun_m_index_date_icon2"></i>
-                        <div class="yun_m_index_datename">申请记录</div>
+                        <div class="yun_m_index_datename">{yun:}t key='member_user_index_00030'{/yun}</div>
                         <div class="yun_m_index_date_n"> {yun:}$statis.sq_jobnum{/yun}</div>
                     </a>
                 </div>
                 <div class="yun_m_index_date_list">
                     <a href="index.php?c=favorite">
                         <i class="yun_m_index_date_icon3"></i>
-                        <div class="yun_m_index_datename">收藏记录</div>
+                        <div class="yun_m_index_datename">{yun:}t key='default_ajax_login_00005'{/yun}</div>
                         <div class="yun_m_index_date_n"> {yun:}$statis.fav_jobnum{/yun}</div>
                     </a>
                 </div>
@@ -45,7 +45,7 @@
  
             <div class="yun_m_index_resume">
                 <div class="yun_m_index_resume_tit">
-                    <div class="yun_m_index_resume_span">我的简历</div>
+                    <div class="yun_m_index_resume_span">{yun:}t key='wap_user_index_00022'{/yun}</div>
                     {yun:}if !empty($rlist){/yun}
                     <div class="user_resume_box">
                         <div class="user_resume_photo">
@@ -60,9 +60,9 @@
                         <div class="user_resume_info">
                             <div class="user_resume_name">{yun:}$resume.name{/yun}<span class="user_resume_job">{yun:}$expectInfo.name{/yun}</span></div>
                             <div class="user_resume_p">
-                                {yun:}if $resume.age{/yun}{yun:}$resume.age{/yun}岁<span class="user_resume_line">|</span>{yun:}/if{/yun}
-                                {yun:}if $resume.exp_n{/yun}{yun:}$resume.exp_n{/yun}经验<span class="user_resume_line">|</span>{yun:}/if{/yun}
-                                {yun:}if $resume.edu_n{/yun}{yun:}$resume.edu_n{/yun}学历{yun:}/if{/yun}
+                                {yun:}if $resume.age{/yun}{yun:}$resume.age{/yun}{yun:}t key='home.age_suffix'{/yun}<span class="user_resume_line">|</span>{yun:}/if{/yun}
+                                {yun:}if $resume.exp_n{/yun}{yun:}$resume.exp_n{/yun}{yun:}t key='home.experience_suffix'{/yun}<span class="user_resume_line">|</span>{yun:}/if{/yun}
+                                {yun:}if $resume.edu_n{/yun}{yun:}$resume.edu_n{/yun}{yun:}t key='home.education_suffix'{/yun}{yun:}/if{/yun}
                             </div>
                             <div class="user_resume_p2">
                                 {yun:}$expectInfo.jobstatus_n{/yun}-{yun:}$expectInfo.report_n{/yun}
@@ -70,39 +70,39 @@
                         </div>
                         <div class="user_resume_c">
                             <div class="user_resume_wzd">
-                                <span class="user_resume_wzd_name">简历完整度：</span>
+                                <span class="user_resume_wzd_name">{yun:}t key='wap_member_publictwo_00006'{/yun}：</span>
                                 <div class="user_resume_wzd_b"><span class="user_resume_wzd_c" style="width:{yun:}$expectInfo.integrity{/yun}%"></span></div>
                                 <span class="user_resume_wzd_r">{yun:}$expectInfo.integrity{/yun}%</span>
                             </div>
                             <div class="clear"></div>
                             <div class="user_resume_p user_resume_pd">更新日期：{yun:}if $resume.lastupdate{/yun}{yun:}$resume.lastupdate|date_format:'%Y-%m-%d %H:%M:%S'{/yun}{yun:}else{/yun}未更新{yun:}/if{/yun}</div>
-                            <div class="user_resume_p">被浏览：{yun:}$expectInfo.hits{/yun}</div>
+                            <div class="user_resume_p">{yun:}t key='member_com_joblist_00018'{/yun}：{yun:}$expectInfo.hits{/yun}</div>
                         </div>
                         <div class="user_resume_cz">
                             <div class="user_resume_cz_p">
-                                <a onclick="layer_del('确定要刷新？', 'index.php?c=resume&act=refresh&id={yun:}$expectInfo.id{/yun}');" href="javascript:void(0)" class="user_resume_cz_a user_resume_cz_icon2">刷新简历</a>
+                                <a onclick="layer_del("{yun:}t key='member_user_index_00020'{/yun}", 'index.php?c=resume&act=refresh&id={yun:}$expectInfo.id{/yun}');" href="javascript:void(0)" class="user_resume_cz_a user_resume_cz_icon2">{yun:}t key='wap_user_index_00017'{/yun}</a>
                             </div>
-                            <div class="user_resume_cz_p"><a href="{yun:}url m=resume c=show id=$expectInfo.id{/yun}" class="user_resume_cz_a user_resume_cz_icon4">预览简历</a></div>
+                            <div class="user_resume_cz_p"><a href="{yun:}url m=resume c=show id=$expectInfo.id{/yun}" class="user_resume_cz_a user_resume_cz_icon4">{yun:}t key='wap_user_index_00035'{/yun}</a></div>
                             {yun:}if $expectInfo.state==1{/yun}
                                 {yun:}if $expectInfo.top_day{/yun}
                                     <div class="user_resume_cz_p">
-                                        <a href="javascript:void(0)" onclick="resumetop('{yun:}$expectInfo.id{/yun}','{yun:}$expectInfo.top_day{/yun}','{yun:}$expectInfo.name{/yun}')" class="user_resume_cz_a user_resume_cz_icon1">简历置顶 <span class="user_resume_cz_yzd">置顶</span>
+                                        <a href="javascript:void(0)" onclick="resumetop('{yun:}$expectInfo.id{/yun}','{yun:}$expectInfo.top_day{/yun}','{yun:}$expectInfo.name{/yun}')" class="user_resume_cz_a user_resume_cz_icon1">{yun:}t key='wap_user_index_00025'{/yun} <span class="user_resume_cz_yzd">{yun:}t key='wap_user_resume_00013'{/yun}</span>
                                         </a>
                                     </div>
                             {yun:}else{/yun}
                             <div class="user_resume_cz_p">
-                                <a href="javascript:void(0)" onclick="resumetop('{yun:}$expectInfo.id{/yun}','','{yun:}$expectInfo.name{/yun}')" class="user_resume_cz_a user_resume_cz_icon1">简历置顶 </a>
+                                <a href="javascript:void(0)" onclick="resumetop('{yun:}$expectInfo.id{/yun}','','{yun:}$expectInfo.name{/yun}')" class="user_resume_cz_a user_resume_cz_icon1">{yun:}t key='wap_user_index_00025'{/yun} </a>
                             </div>
                             {yun:}/if{/yun}
 
                             {yun:}/if{/yun}
                             {yun:}if $expectInfo.doc>0{/yun}
                             <div class="user_resume_cz_p">
-                                <a href="index.php?c=expectq&e={yun:}$expectInfo.id{/yun}" class="user_resume_cz_a user_resume_cz_icon3">修改简历</a>
+                                <a href="index.php?c=expectq&e={yun:}$expectInfo.id{/yun}" class="user_resume_cz_a user_resume_cz_icon3">{yun:}t key='wap_job_show_00026'{/yun}</a>
                             </div>
                             {yun:}else{/yun}
                             <div class="user_resume_cz_p">
-                                <a href="index.php?c=expect&e={yun:}$expectInfo.id{/yun}" class="user_resume_cz_a user_resume_cz_icon3">修改简历</a>
+                                <a href="index.php?c=expect&e={yun:}$expectInfo.id{/yun}" class="user_resume_cz_a user_resume_cz_icon3">{yun:}t key='wap_job_show_00026'{/yun}</a>
                             </div>
                             {yun:}/if{/yun}
                         </div>
@@ -110,9 +110,9 @@
                     {yun:}if $expectInfo.state == 3{/yun}
                     <div class="user_resume_boxtip">
                         <div class="user_resume_boxtip_c">
-                            <div class="user_resume_boxtip_h1">你的简历审核未通过！</div>
-                            {yun:}if $expectInfo.statusbody{/yun}<div class="user_resume_boxtip_p">原因：{yun:}$expectInfo.statusbody{/yun}</div>{yun:}/if{/yun}
-                            <div class="user_resume_boxtip_p">请修改简历信息，提交管理员审核</div>
+                            <div class="user_resume_boxtip_h1">{yun:}t key='member_user_resume_00009'{/yun}！</div>
+                            {yun:}if $expectInfo.statusbody{/yun}<div class="user_resume_boxtip_p">{yun:}t key='member_user_reward_list_00005'{/yun}：{yun:}$expectInfo.statusbody{/yun}</div>{yun:}/if{/yun}
+                            <div class="user_resume_boxtip_p">{yun:}t key='member_user_index_00010'{/yun}</div>
                             <a href="index.php?c=expect&e={yun:}$expectInfo.id{/yun}" class="user_resume_boxtip_bth" {yun:}if $expectInfo.statusbody{/yun}style="margin-top: 15px;"{yun:}/if{/yun}>完善信息 </a>
                         </div>
                     </div>
@@ -120,17 +120,17 @@
                     {yun:}else if $expectInfo.status ==2 || $expectInfo.status ==3{/yun}
                     <div class="user_resume_boxtip">
                         <div class="user_resume_boxtip_c">
-                            <div class="user_resume_boxtip_h1">你的简历已隐藏，企业无法主动发现你！</div>
-                            <div class="user_resume_boxtip_p">开启简历，好工作快速找你</div>
-                            <a href="index.php?c=privacy" class="user_resume_boxtip_bth">公开简历 </a>
+                            <div class="user_resume_boxtip_h1">你的简历已隐藏，{yun:}t key='home.resume_hidden_desc'{/yun}！</div>
+                            <div class="user_resume_boxtip_p">{yun:}t key='member_user_index_00012'{/yun}</div>
+                            <a href="index.php?c=privacy" class="user_resume_boxtip_bth">{yun:}t key='member_user_index_00027'{/yun} </a>
                         </div>
                     </div>
                     {yun:}else if $expectInfo.integrity<100{/yun}
                         <div class="user_resume_boxtip">
                             <div class="user_resume_boxtip_c">
                                 <div class="user_resume_boxtip_h1">你的简历缺少{yun:}$expectInfo.wstitle{/yun}，会极大影响求职成功率哦！</div>
-                                <div class="user_resume_boxtip_p">完善{yun:}$expectInfo.wstitle{/yun}，可以有效提高求职成功率</div>
-                                <a href="{yun:}$expectInfo.wspcurl{/yun}" class="user_resume_boxtip_bth">完善{yun:}$expectInfo.wstitle{/yun} </a>
+                                <div class="user_resume_boxtip_p">{yun:}t key='common_01975'{/yun}{yun:}$expectInfo.wstitle{/yun}，可以有效提高求职成功率</div>
+                                <a href="{yun:}$expectInfo.wspcurl{/yun}" class="user_resume_boxtip_bth">{yun:}t key='common_01975'{/yun}{yun:}$expectInfo.wstitle{/yun} </a>
                             </div>
                         </div>
 
@@ -141,8 +141,8 @@
                     <div class="member_right_no_job">
                         <div class="member_right_no_job_box ">
                             <div class="yun_m_index_job_icon"></div>
-                            <div class="member_right_no_jobr"> 你还没有创建简历，无法申请职位<br>
-                                <a href="index.php?c=expect&act=add" class="member_right_no_jobr_bth" style="text-decoration:underline">创建简历</a>
+                            <div class="member_right_no_jobr"> {yun:}t key='member_user_index_00009'{/yun}<br>
+                                <a href="index.php?c=expect&act=add" class="member_right_no_jobr_bth" style="text-decoration:underline">{yun:}t key='wap_user_index_00015'{/yun}</a>
                             </div>
                         </div>
                     </div>
@@ -159,7 +159,7 @@
                 <span class="yun_user_index_jobmsg_gz_name"> 企业动态</span>
                 <ul class="user_in_gz sxlist">
                     {yun:}foreach from=$ainfo item=alist{/yun}
-                    <li>你关注的<a href="{yun:}url m=company c=show id=$alist.sc_uid{/yun}" target="_blank">{yun:}$alist.com_name{/yun}</a>发布了<a href="{yun:}url m=job c=comapply id=$alist.id{/yun}" target="_blank">{yun:}$alist.jobname{/yun}</a>职位</li>
+                    <li>{yun:}t key='member_user_index_00026'{/yun}<a href="{yun:}url m=company c=show id=$alist.sc_uid{/yun}" target="_blank">{yun:}$alist.com_name{/yun}</a>发布了<a href="{yun:}url m=job c=comapply id=$alist.id{/yun}" target="_blank">{yun:}$alist.jobname{/yun}</a>{yun:}t key='common.job'{/yun}</li>
                     {yun:}/foreach{/yun}
                 </ul>
             </div>
@@ -169,7 +169,7 @@
         <div class="member_right_box_banner fltL" style="width:100%; overflow:hidden"></div>
 
         <div class="yun_m_index_job mt20 fltL">
-            <div class="yun_m_index_job_tit"><span class="yun_m_index_job_tit_s">也许适合你的岗位</span></div>
+            <div class="yun_m_index_job_tit"><span class="yun_m_index_job_tit_s">{yun:}t key='member_user_index_00015'{/yun}</span></div>
             {yun:}if empty($rlist){/yun}
             <div class="member_right_no_job">
                 <div class="member_right_no_job_box ">
@@ -177,7 +177,7 @@
                     <div class="member_right_no_jobr">
                         创建简历以后，系统会根据您的简历，<br>
                         通过后台算法为您匹配最适合您的招聘职位<br>
-                        <a href="index.php?c=expect&act=add" class="member_right_no_jobr_bth" style="text-decoration:underline">创建简历</a>
+                        <a href="index.php?c=expect&act=add" class="member_right_no_jobr_bth" style="text-decoration:underline">{yun:}t key='wap_user_index_00015'{/yun}</a>
                     </div>
                 </div>
             </div>
@@ -186,7 +186,7 @@
                 <div id="nojoblist" class="member_right_no_job none">
                     <div class="member_right_no_job_box ">
                         <div class="yun_m_index_job_icon"></div>
-                        <div class="yun_m_index_job_tip"> 没有适合的职位</div>
+                        <div class="yun_m_index_job_tip"> {yun:}t key='member_user_index_00018'{/yun}</div>
                     </div>
                 </div>
             </div>
@@ -198,28 +198,28 @@
 <!--fristtck start-->
 <div class="index_no_resume_box" id="yingdao" style="display:none;">
     <div class="yun_prompt_writingicon" style="padding-top:0px"><i class="yun_prompt_writingicon_cj"></i></div>
-    <div class="yun_prompt_writing">亲，您还没有简历</div>
-    <div class="yun_prompt_writing_obtain">简历是求职第一步，优质的简历助您找到满意工作！</div>
-    <div class="yun_prompt_writing_tip">创建简历请认真填写</div>
+    <div class="yun_prompt_writing">{yun:}t key='member_user_index_00016'{/yun}</div>
+    <div class="yun_prompt_writing_obtain">{yun:}t key='member_user_index_00006'{/yun}</div>
+    <div class="yun_prompt_writing_tip">{yun:}t key='member_user_index_00014'{/yun}</div>
     <div class="yun_prompt_writing_operation">
-        <a href="index.php?c=expect&act=add" class="yun_prompt_writing_operation_bth">立即创建简历</a>
-        <a class="close_yd" href="javascript:void(0)">暂不创建</a>
+        <a href="index.php?c=expect&act=add" class="yun_prompt_writing_operation_bth">{yun:}t key='member_user_index_00021'{/yun}</a>
+        <a class="close_yd" href="javascript:void(0)">{yun:}t key='member_user_index_00028'{/yun}</a>
     </div>
 </div>
 <!--fristtck end-->
 
 <div id="bdwx" style="display:none;">
-    <div class="yun_wxbd_tit">关注微信公众号，手机轻松求职</div>
+    <div class="yun_wxbd_tit">{yun:}t key='admin_user_company_component_comset_index_00039'{/yun}，手机轻松求职</div>
     <div class="yun_wxbd_box">
         <div class="yun_wxbd_img_c">
             <div class="yun_wxbd_img" id="wx_login_qrcode"></div>
         </div>
         <div id="wx_sx" class="none">
-            <div class="wx_login_show_sxbox"><a href="javascript:void(0);" onclick="getwxbindcode()" class="wx_login_show_sxicon"></a>二维码已失效点击刷新</div>
+            <div class="wx_login_show_sxbox"><a href="javascript:void(0);" onclick="getwxbindcode()" class="wx_login_show_sxicon"></a>{yun:}t key='member_user_binding_00004'{/yun}</div>
         </div>
-        <div class="yun_wxbd_p"> 扫码关注公众号</div>
+        <div class="yun_wxbd_p"> {yun:}t key='default_public_search_public_tips_00008'{/yun}</div>
         <div class="yun_wxbd_ok">
-            <a class="close_yd" href="javascript:void(0)">好，知道了</a>
+            <a class="close_yd" href="javascript:void(0)">好，{yun:}t key='member_com_invite_00004'{/yun}</a>
         </div>
     </div>
 </div>
@@ -228,12 +228,12 @@
 <div id="shuaxin" class="" style="display:none;">
 
     <div class="yun_prompt_writingicon" style="padding-top:0px"><i class="yun_prompt_writingicon_pm"></i></div>
-    <div class="yun_prompt_writing">刷新简历 , 提升排名</div>
-    <div class="yun_prompt_writing_obtain">刷新简历引起企业的关注，提高邀请率</div>
-    <div class="yun_prompt_writing_tip">刷新简历，可提升简历的显示排名，从而提高简历的曝光率</div>
+    <div class="yun_prompt_writing">{yun:}t key='wap_user_index_00017'{/yun} , 提升排名</div>
+    <div class="yun_prompt_writing_obtain">{yun:}t key='member_user_index_00008'{/yun}</div>
+    <div class="yun_prompt_writing_tip">{yun:}t key='wap_user_index_00017'{/yun}，可提升简历的显示排名，从而提高简历的曝光率</div>
     <div class="yun_prompt_writing_operation">
-        <a href="javascript:void(0)" onclick="resumerefresh({yun:}$rlist.id{/yun});" class="yun_prompt_writing_operation_bth">立即刷新简历</a>
-        <a class="sx_bot_qx" href="javascript:void(0)">暂不刷新</a>
+        <a href="javascript:void(0)" onclick="resumerefresh({yun:}$rlist.id{/yun});" class="yun_prompt_writing_operation_bth">{yun:}t key='member_user_index_00022'{/yun}</a>
+        <a class="sx_bot_qx" href="javascript:void(0)">{yun:}t key='member_user_index_00029'{/yun}</a>
     </div>
 </div>
 
@@ -250,7 +250,7 @@
         '{yun:}if empty($rlist) {/yun}'
         var rlayer = layer.open({
             type: 1,
-            title: '温馨提示',
+            title: "{yun:}t key='wap_user_index_00023'{/yun}",
             closeBtn: 0,
             area: ['400px', '330px'],
             content: $("#yingdao"),
@@ -262,7 +262,7 @@
         '{yun:}else if !empty($rlist) && $rlist.lastupdate < $time && $smarty.cookies.exprefresh != "1" && $config["resume_sx"] == 2 {/yun}'
         var shuaxinlayer = layer.open({
             type: 1,
-            title: '刷新简历',
+            title: "{yun:}t key='wap_user_index_00017'{/yun}",
             closeBtn: 0,
             area: ['500px', '330px'],
             content: $("#shuaxin")
@@ -320,7 +320,7 @@
 
         $.post('{yun:}url m=login c=wxlogin{/yun}', {t: 1}, function (data) {
             if (data == 0) {
-                $('#wx_login_qrcode').html('二维码获取失败..');
+                $('#wx_login_qrcode').html("{yun:}t key='common_01335'{/yun}..");
             } else {
                 $('#wx_login_qrcode').html('<img src="' + data + '" width="180" height="180">');
                 setval = setInterval(function () {
@@ -375,73 +375,73 @@
                 var $html = '<div class="member_index_resume_box" id="resumelist' + data.id + '" ><div class="member_index_resume_t"> <div class="yun_m_index_resume_QQ">';
 
                 if (data.state == 1) {
-                    $html += '<font color="green">简历<br>已审核</font>';
+                    $html += '<font color="green">{yun:}t key='common.resume'{/yun}<br>{yun:}t key='wap_user_commsg_00005'{/yun}</font>';
                 } else if (data.state == 0) {
-                    $html += '<font color="#f00">简历<br>审核中</font></span>';
+                    $html += '<font color="#f00">{yun:}t key='common.resume'{/yun}<br>{yun:}t key='wap_user_idcard_00002'{/yun}</font></span>';
                 } else if (data.state == 3) {
-                    $html += '<font color="#f00">未通过<br>审核</font></span>';
+                    $html += '<font color="#f00">{yun:}t key='wap_user_commsg_00007'{/yun}<br>{yun:}t key='member_user_index_00033'{/yun}</font></span>';
                 }
                 $html += '</div>' +
                     '<div class="member_index_resume_t_left">' +
                     '<div class="member_index_resume_t_name fltL">' +
-                    '<div class="member_index_resume_t_name_l member_index_resume_t_name_w80 fltL"> 简历名称：</div>' +
+                    '<div class="member_index_resume_t_name_l member_index_resume_t_name_w80 fltL"> {yun:}t key='member_com_com_resume_xls_00006'{/yun}</div>' +
                     '<div class="index_resume_my_n" id="show_resume" onclick="show_resume(\'resume_expect' + data.id + '\')"> ' + data.resumelist + ' </div>' +
-                    '<div class="index_resume_my_ll">被浏览：' + data.hits + ' 次 </div></div>' +
+                    '<div class="index_resume_my_ll">{yun:}t key='member_com_joblist_00018'{/yun}：' + data.hits + " {yun:}t key='common_02089'{/yun} </div></div>" +
                     ' <div class="member_index_resume_t_wz fltL">' +
-                    ' <div class="member_index_resume_t_name_l fltL"> 完整度 <span class="member_index_resume_t_wz_n">' + data.integrity + '%</span></div>' +
+                    ' <div class="member_index_resume_t_name_l fltL"> {yun:}t key='member_user_index_00032'{/yun} <span class="member_index_resume_t_wz_n">' + data.integrity + '%</span></div>' +
                     ' <div class="member_index_resume_t_wzd"> ' +
                     '<span class="member_index_resume_t_wz_b"> ' +
                     '<em class="member_index_resume_t_wz_c" style="width:' + data.integrity + '%"><i class="ember_index_resume_t_wz_c_q"></i></em></span> ' +
                     ' </div></div>' +
-                    '<div class="member_index_resume_job fltL"><span class="member_index_resume_t_name_l member_index_resume_t_name_w80 fltL">期望职位：</span>' +
-                    '<span class="member_index_resume_jobname">' + data.jobname + '</span><span class="member_index_resume_jobxz">期望薪资：' + data.salary + '</span><span class="member_index_resume_time">更新时间：' + data.lastupdate + '</span> </div></div><div class="member_index_resume_t_cz fltR"><div  class="member_index_resume_set">';
+                    '<div class="member_index_resume_job fltL"><span class="member_index_resume_t_name_l member_index_resume_t_name_w80 fltL">{yun:}t key='wap_user_addexpect_00007'{/yun}</span>' +
+                    '<span class="member_index_resume_jobname">' + data.jobname + '</span><span class="member_index_resume_jobxz">{yun:}t key='wap_user_addexpect_00008'{/yun}：' + data.salary + '</span><span class="member_index_resume_time">{yun:}t key='wap_member_publictwo_00004'{/yun}：' + data.lastupdate + '</span> </div></div><div class="member_index_resume_t_cz fltR"><div  class="member_index_resume_set">';
                 if (data.status == 1) {
-                    $resume_status = '简历已公开';
+                    $resume_status = "{yun:}t key='member_user_index_00025'{/yun}";
                 } else if (data.status == 3) {
-                    $resume_status = '仅对投递企业可见';
+                    $resume_status = "{yun:}t key='member_user_index_00017'{/yun}";
                 } else {
-                    $resume_status = '简历已保密';
+                    $resume_status = "{yun:}t key='member_user_index_00024'{/yun}";
                 }
                 $html += '<a href="index.php?c=privacy"> <div class="yun_user_index_set_name">' + $resume_status + '</div></a>';
 
                 $html += '</div><div class="member_index_resume_t_cz_b">';
                 if (data.state == 1) {
                     if (data.topdatetime > 0) {
-                        $html += '<a href="javascript:void(0)" onclick="resumetop(\'' + data.id + '\',\'' + data.topdate + '\',\'' + data.name + '\')" class="member_index_resume_t_cz_bth ">简历置顶</a>';
+                        $html += '<a href="javascript:void(0)" onclick="resumetop(\'' + data.id + '\',\'' + data.topdate + '\',\'' + data.name + '\')" class="member_index_resume_t_cz_bth ">{yun:}t key='wap_user_index_00025'{/yun}</a>';
                     } else {
-                        $html += '<a href="javascript:void(0)" onclick="resumetop(\'' + data.id + '\',\'\',\'' + data.name + '\')" class="member_index_resume_t_cz_bth ">简历置顶</a>';
+                        $html += '<a href="javascript:void(0)" onclick="resumetop(\'' + data.id + '\',\'\',\'' + data.name + '\')" class="member_index_resume_t_cz_bth ">{yun:}t key='wap_user_index_00025'{/yun}</a>';
                     }
                 }
 
                 if (data.doc > 0) {
-                    $html += ' <a href="index.php?c=expectq&e=' + data.id + '" class="member_index_resume_t_cz_bth ">修改简历</a> ';
+                    $html += ' <a href="index.php?c=expectq&e=' + data.id + '" class="member_index_resume_t_cz_bth ">{yun:}t key='wap_job_show_00026'{/yun}</a> ';
                 } else {
-                    $html += ' <a href="index.php?c=expect&e=' + data.id + '" class="member_index_resume_t_cz_bth ">修改简历</a> ';
+                    $html += ' <a href="index.php?c=expect&e=' + data.id + '" class="member_index_resume_t_cz_bth ">{yun:}t key='wap_job_show_00026'{/yun}</a> ';
                 }
 
-                $html += '<a href="' + data.url + '" target="_blank" class="member_index_resume_t_cz_bth mt15">预览简历</a> <a onclick="layer_del(\'确定要刷新？\', \'index.php?c=resume&act=refresh&id=' + data.id + '\');" href="javascript:void(0)" class="member_index_resume_t_cz_bth member_index_resume_t_cz_bth_hover mt15">刷新简历</a></div> <div class="member_index_resume_t_cz_tip" id="re' + data.id + '"> 刷新简历可提升排名，每天一刷，提高求职成功率！<i class="member_index_resume_t_cz_tip_lt"></i><a href="javascript:;" onclick="$(\'#re' + data.id + '\').hide();" class="member_index_resume_t_cz_tip_close"></a></div></div></div>';
+                $html += '<a href="' + data.url + '" target="_blank" class="member_index_resume_t_cz_bth mt15">{yun:}t key='wap_user_index_00035'{/yun}</a> <a onclick="layer_del(\"{yun:}t key='member_user_index_00019'{/yun}", \'index.php?c=resume&act=refresh&id=' + data.id + '\');" href="javascript:void(0)" class="member_index_resume_t_cz_bth member_index_resume_t_cz_bth_hover mt15">{yun:}t key='wap_user_index_00017'{/yun}</a></div> <div class="member_index_resume_t_cz_tip" id="re' + data.id + '"{yun:}t key='member_user_index_00002'{/yun}"member_index_resume_t_cz_tip_lt"></i><a href="javascript:;" onclick="$(\'#re' + data.id + '\').hide();" class="member_index_resume_t_cz_tip_close"></a></div></div></div>';
                 if ((data.edu == 0 || data.training == 0 || data.skill == 0 || data.work == 0 || data.project == 0 || data.other == 0) && data.doc == 0) {
-                    $html += '<div class="member_index_resume_msg"><div class="member_index_resume_msg_r"><div class="member_index_resume_msg_r_t"> 您还有以下资料没有填写 <span class="member_index_resume_msg_span">（为了更快的找到工作，建议您立即完善简历！）</span> </div>';
+                    $html += '<div class="member_index_resume_msg"><div class="member_index_resume_msg_r"><div class="member_index_resume_msg_r_t"{yun:}t key='member_user_index_00003'{/yun}"member_index_resume_msg_span">（为了更快的找到工作，建议您立即完善简历！）</span> </div>';
                     if (data.work == 0) {
-                        $html += '<a href="index.php?c=expect&e=' + data.id + '#work_upbox" class="member_index_resume_msg_a">+ 工作经历</a>';
+                        $html += '<a href="index.php?c=expect&e=' + data.id + '#work_upbox" class="member_index_resume_msg_a">+ {yun:}t key='wap_resume_index_00017'{/yun}</a>';
                     }
                     if (data.edu == 0) {
-                        $html += '<a href="index.php?c=expect&e=' + data.id + '#edu_upbox" class="member_index_resume_msg_a">+ 教育经历</a>';
+                        $html += '<a href="index.php?c=expect&e=' + data.id + '#edu_upbox" class="member_index_resume_msg_a">+ {yun:}t key='wap_resume_index_00019'{/yun}</a>';
                     }
                     if (data.training == 0) {
-                        $html += '<a href="index.php?c=expect&e=' + data.id + '#training_upbox" class="member_index_resume_msg_a">+ 培训经历</a>';
+                        $html += '<a href="index.php?c=expect&e=' + data.id + '#training_upbox" class="member_index_resume_msg_a">+ {yun:}t key='wap_resume_index_00015'{/yun}</a>';
                     }
                     if (data.skill == 0) {
-                        $html += '<a href="index.php?c=expect&e=' + data.id + '#skill_upbox" class="member_index_resume_msg_a">+ 职业技能</a>';
+                        $html += '<a href="index.php?c=expect&e=' + data.id + '#skill_upbox" class="member_index_resume_msg_a">+ {yun:}t key='wap_resume_index_00021'{/yun}</a>';
                     }
                     if (data.project == 0) {
-                        $html += '<a href="index.php?c=expect&e=' + data.id + '#project_upbox" class="member_index_resume_msg_a">+ 项目经历</a>';
+                        $html += '<a href="index.php?c=expect&e=' + data.id + '#project_upbox" class="member_index_resume_msg_a">+ {yun:}t key='wap_resume_index_00025'{/yun}</a>';
                     }
                     if (data.other == 0) {
-                        $html += '<a href="index.php?c=expect&e=' + data.id + '#other_upbox" class="member_index_resume_msg_a">+ 其他信息</a>';
+                        $html += '<a href="index.php?c=expect&e=' + data.id + '#other_upbox" class="member_index_resume_msg_a">+ {yun:}t key='wap_resume_show_00017'{/yun}</a>';
                     }
                     if (!data.description) {
-                        $html += '<a href="index.php?c=expect&e=' + data.id + '#description_upbox" class="member_index_resume_msg_a">+ 自我评价</a>';
+                        $html += '<a href="index.php?c=expect&e=' + data.id + '#description_upbox" class="member_index_resume_msg_a">+ {yun:}t key='wap_resume_index_00023'{/yun}</a>';
                     }
                     $html += '</div></div>';
                 }
@@ -461,7 +461,7 @@
                 if (res.isnew == 1) {
                     $('.yun_m_index_job_tit_s').html('最新岗位');
                 } else {
-                    $('.yun_m_index_job_tit_s').html('也许适合你的岗位');
+                    $('.yun_m_index_job_tit_s').html("{yun:}t key='member_user_index_00015'{/yun}");
                 }
                 if (res.list.length > 0) {
                     var html = '';
@@ -470,7 +470,7 @@
                         html += '<a href="' + res.list[i].joburl + '" class="member_right_job_box_name cblue" target="_blank">' + res.list[i].name + '</a></div>';
                         html += '<div class="yun_index_joblist_comname"><a href="' + res.list[i].comurl + '" target="_blank">' + res.list[i].com_name + '</a></div>';
                         html += '<div class="yun_index_joblist_xz"><span class="member_right_job_xz">' + res.list[i].jobsalary + '</span></div>';
-                        html += '<div class="yun_index_joblist_yq nowrap">' + res.list[i].citytwo + ' | ' + res.list[i].edu_n + ' | ' + res.list[i].exp_n + '经验</div></li></ul>';
+                        html += '<div class="yun_index_joblist_yq nowrap">' + res.list[i].citytwo + ' | ' + res.list[i].edu_n + ' | ' + res.list[i].exp_n + "{yun:}t key='home.experience_suffix'{/yun}</div></li></ul>";
                     }
                     $("#joblist").prepend(html);
                 } else {
@@ -505,7 +505,7 @@
         var jobstatus = $.trim($("#jobstatusid").val());
         $.post("index.php?c=resume&act=resumerefresh", {jobstatus: jobstatus, id: id}, function (data) {
             if (data == "1") {
-                layer.msg("刷新成功！", 2, 9, function () {
+                layer.msg("{yun:}t key='wap_user_index_00016'{/yun}", 2, 9, function () {
                     window.location.reload();
                 });
                 return false;

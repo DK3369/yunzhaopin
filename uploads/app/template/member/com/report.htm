@@ -6,7 +6,7 @@
   		<div class=right_box>
   			<div class="newmember_screenbox">
   			<div class="newmember_screen">	
-  			<div class="newmember_screenname">	投诉记录</div>   </div>
+  			<div class="newmember_screenname">	{yun:}t key='member_com_left_00003'{/yun}</div>   </div>
 				    </div>
   		  <div class=admincont_box>
   		 
@@ -18,12 +18,12 @@
   					<table class="com_table  ">
   						{yun:}if $rows{/yun}
   						<tr>
-  							<th>被投诉者</th>
-  							<th>投诉者</th>
-				         	<th>投诉内容</th>
-				         	<th>投诉时间 </th>
-				         	<th>回复结果 </th>
-				         	<th>操作</th>
+  							<th>{yun:}t key='member_com_report_00004'{/yun}</th>
+  							<th>{yun:}t key='member_com_report_00005'{/yun}</th>
+				         	<th>{yun:}t key='member_com_report_00002'{/yun}</th>
+				         	<th>{yun:}t key='member_com_report_00003'{/yun} </th>
+				         	<th>{yun:}t key='member_com_report_00001'{/yun} </th>
+				         	<th>{yun:}t key='member_user_atn_00003'{/yun}</th>
             			</tr>
 						{yun:}/if{/yun}
 						{yun:}foreach from=$rows item=msg{/yun}
@@ -32,8 +32,8 @@
 			              	<td align="center">{yun:}$msg.username{/yun}</td>
 			              	<td align="center">{yun:}$msg.r_reason{/yun}</td>
 			              	<td align="center">{yun:}$msg.inputtime|date_format:'%Y-%m-%d %H:%M'{/yun} </td>
-			               	<td align="center">{yun:}if $msg.result{/yun}{yun:}$msg.result{/yun}{yun:}else{/yun}未回复{yun:}/if{/yun} </td>
-			              	<td align="center"><a href="javascript:void(0)" onclick="layer_del('您确定要删除？', 'index.php?c=report&act=del&id={yun:}$msg.id{/yun}'); " class="cblue">删除</a></th>
+			               	<td align="center">{yun:}if $msg.result{/yun}{yun:}$msg.result{/yun}{yun:}else{/yun}{yun:}t key='admin_user_users_zixun_00009'{/yun}{yun:}/if{/yun} </td>
+			              	<td align="center"><a href="javascript:void(0)" onclick="layer_del('{yun:}t key='admin_system_domain_component_domainadmingroup_00001'{/yun}？', 'index.php?c=report&act=del&id={yun:}$msg.id{/yun}'); " class="cblue">{yun:}t key='common.delete'{/yun}</a></th>
 	            		</tr>
 						{yun:}foreachelse{/yun}
 						<tr>

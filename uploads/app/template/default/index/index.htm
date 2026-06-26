@@ -78,7 +78,7 @@
 <div class="w1200">
     <div class="first_floor ">
         <div class="first_floor_top">
-            <!-- 职位类别-->
+            <!-- {yun:}t key='wap_user_addexpect_00010'{/yun}-->
             <div class="yunheader_60zwlb">
                 <div class="leftNav ">
                     <div id="menuLst" class="menuLst">
@@ -114,7 +114,7 @@
                 <!--悬浮结束-->
             </div>
 
-            <!-- 幻灯 公告-->
+            <!-- 幻灯 {yun:}t key='wap_index_00005'{/yun}-->
             <div class="index_frist_box">
                 <div class="index_huandeng" id="ban">
                     <div class="layui-carousel" id="test1" lay-filter="test1">
@@ -152,7 +152,7 @@
                 <!-- 新急聘 -->
             </div>
 
-            <!-- 登录-->
+            <!-- {yun:}t key='common.login'{/yun}-->
             <div class="fastloginbox ">
                 <div class="hp_login"></div>
                 <div class="new_gg  fl">
@@ -166,7 +166,7 @@
             </div>
         </div>
     </div>
-    <!-- 首页banner 区域-->
+    <!-- {yun:}t key='common.home'{/yun}banner {yun:}t key='common_02110'{/yun}-->
     <div class="index_banner fl">
         
         <div class="index_banner_1250 fl">
@@ -229,7 +229,7 @@
 
     <div class="index_zl_box">
         <div class="yunheader_60_tit"><a href="{yun:}url m=job c=search{/yun}" target="_blank" class="yunheader_60_tit_a"><i class="yunheader_60_tit_line"></i>{yun:}t key="home.recommended_jobs"{/yun}<i class="yunheader_60_tit_rline"></i></a></div>
-        <!-- 推荐职位 -->
+        <!-- {yun:}t key='home.recommended_jobs'{/yun} -->
         <div class="index_newjobbox index_zw_item">
             <ul>
                 {yun:}joblist provinceid='auto.provinceid' cityid='auto.cityid' namelen=9 rec=1 comlen=18 limit=32 item=job_list name=job_list1{/yun}
@@ -268,7 +268,7 @@
         <div class="yunheader_60lookmore"><a href="{yun:}url m=job c=search{/yun}">{yun:}t key="common.view_more"{/yun}</a></div>
         <div class="yunheader_60_tit"><a href="{yun:}url m=job c=search{/yun}" target="_blank" class="yunheader_60_tit_a"><i class="yunheader_60_tit_line"></i>{yun:}t key='home.latest_jobs'{/yun}<i class="yunheader_60_tit_rline"></i></a></div>
 
-        <!-- 最新职位 -->
+        <!-- {yun:}t key='home.latest_jobs'{/yun} -->
         <div class="index_newjobbox index_zw_item">
             <ul>
                 {yun:}joblist provinceid='auto.provinceid' cityid='auto.cityid' namelen=9 comlen=18 limit=32 item=job_list name=job_list1{/yun}
@@ -305,7 +305,7 @@
         <div class="yunheader_60lookmore"><a href="{yun:}url m=job c=search{/yun}">{yun:}t key="common.view_more"{/yun}</a></div>
     </div>
 
-    <!-- 热招人才 banner 区域-->
+    <!-- 热招人才 banner {yun:}t key='common_02110'{/yun}-->
     <div class="index_banner fl">
         <div class="index_banner_1250 fl">
             {yun:}adlist classid=92 limit=5 item=adlist_92{/yun}
@@ -314,10 +314,10 @@
         </div>
     </div>
 
-    <!-- 最新简历 -->
+    <!-- {yun:}t key='home.latest_resumes'{/yun} -->
     <div class="index_zl_box">
         <div class="yunheader_60_tit"><a href="{yun:}url m=resume c=search {/yun}" target="_blank" class="yunheader_60_tit_a"><i class="yunheader_60_tit_line"></i>{yun:}t key="home.recommended_talents"{/yun}<i class="yunheader_60_tit_rline"></i></a></div>
-        <!-- 推荐人才 -->
+        <!-- {yun:}t key='home.recommended_talents'{/yun} -->
         <div class="tjuser_list">
             <ul>
                 {yun:}userlist provinceid='auto.provinceid' cityid='auto.cityid' item=ulist_rec post_len=10 limit=8 recg=1 key=key name=userlist2{/yun}
@@ -340,7 +340,7 @@
             </ul>
         </div>
 
-        <!-- 最新人才 -->
+        <!-- {yun:}t key='home.latest_talents'{/yun} -->
         <div class="index_resume_user_list index_zw_item">
             <ul>
                 {yun:}userlist provinceid='auto.provinceid' cityid='auto.cityid' item=ulist post_len=10 limit=16 key=key name=userlist1{/yun}
@@ -409,12 +409,12 @@
         <div class="yunheader_60lookmore"><a href="{yun:}url m=article{/yun}">{yun:}t key="common.view_more"{/yun}</a></div>
     </div>
 
-    <!-- 友情链接-->
+    <!-- {yun:}t key='default_link_index_00003'{/yun}-->
     <div class="index_zl_box">
         <div class="index_link_box fl">
             <div class="new_index_tit">
-                <span class="new_index_tit_list new_index_tit_cur">友情链接<i class="new_index_tit_line"></i></span>
-                {yun:}if $config.sy_linksq==1{/yun} <span class="new_index_tit_list" data-no="1"><a href="{yun:}url m=link{/yun}" target="_blank" class=" "> 申请链接</a></span> {yun:}/if{/yun}
+                <span class="new_index_tit_list new_index_tit_cur">{yun:}t key='default_link_index_00003'{/yun}<i class="new_index_tit_line"></i></span>
+                {yun:}if $config.sy_linksq==1{/yun} <span class="new_index_tit_list" data-no="1"><a href="{yun:}url m=link{/yun}" target="_blank" class=" "> {yun:}t key='default_index_index_00003'{/yun}</a></span> {yun:}/if{/yun}
                 <a href="{yun:}url m=link{/yun}" target="_blank" class="new_index_tit_more">{yun:}t key="common.view_more"{/yun}</a>
             </div>
             <div class=" ">
@@ -453,13 +453,13 @@
                     </div>
                     <div class="tip_bottom_leftbox">
                         <span class="tip_bottom_logo"><h2>海量职位 让求职更简单</h2></span>
-                        <div class="tip_bottom_num "><span>0</span>+企业的共同选择</div>
-                        <div class="tip_bottom_num "><span>0</span>+ 高薪职位任您挑选</div>
+                        <div class="tip_bottom_num "><span>0</span>+{yun:}t key='default_index_index_00002'{/yun}</div>
+                        <div class="tip_bottom_num "><span>0</span>+ {yun:}t key='default_index_index_00001'{/yun}</div>
                     </div>
                     {yun:}if !$uid{/yun}
                     <div class="tip_bottom_member">
-                        <a href="{yun:}url m=login{/yun}" class="tip_bottom_login">登录</a>
-                        <a href="{yun:}url m=register{/yun}" class="tip_bottom_reg">快速注册<i class="tip_bottom_reg_icon"></i></a>
+                        <a href="{yun:}url m=login{/yun}" class="tip_bottom_login">{yun:}t key='common.login'{/yun}</a>
+                        <a href="{yun:}url m=register{/yun}" class="tip_bottom_reg">{yun:}t key='default_index_siteindex_00003'{/yun}<i class="tip_bottom_reg_icon"></i></a>
                     </div>
                     {yun:}/if{/yun}
                 </div>
@@ -522,7 +522,7 @@
         })
     });
 
-    // 名企
+    // {yun:}t key='wap_joblist_vue_00001'{/yun}
     if ($('.swiper-slide').length > 2) {
         var slideLoop = true;
     } else {
@@ -549,11 +549,11 @@
             elem: '#test2',
             width: '290px',
             height: '190px',
-            indicator: 'none' //指示器属性；隐藏：none，容器内部：inside，容器外部：outside；
+            indicator: 'none' //指示器属性；{yun:}t key='admin_user_users_component_resumeall_00022'{/yun}：none，容器内部：inside，容器外部：outside；
         });
     });
 
-    //顶部伸展广告
+    // top stretch ad
     if ($("#js_ads_banner_top_slide a").length > 0) { //判断当前广告是否展开，如果没有，则执行下面代码
         var $slidebannertop = $("#js_ads_banner_top_slide"),
             $bannertop = null;
@@ -565,21 +565,21 @@
                 $bannertop.slideUp(1000);
             }
             $slidebannertop.slideDown(1000);
-        }, 1500); //1500毫秒(1.5秒)后，小广告收回，大广告伸开，执行时间都是1秒(1000毫秒)
+        }, 1500); //1500毫秒(1.5{yun:}t key='common_02094'{/yun})后，小广告收回，大广告伸开，执行时间都是1{yun:}t key='common_02094'{/yun}(1000毫秒)
         setTimeout(function () {
             $slidebannertop.slideUp(1000, function () {
                 if ($bannertop) {
                     $bannertop.slideDown(1000);
                 }
             });
-			// 防止因自动滚动，造成下面的懒加载广告图没出来
+			// Prevent the lazy loading ad image below from not appearing due to automatic scrolling
 			setTimeout(function(){
 				document.body.scrollTop = 1;
 				document.documentElement.scrollTop = 1;
 			},1100);
-        }, 3000); //3.0秒(3000毫秒)之后，大广告收回，小广告展开。
+        }, 3000); //3.0{yun:}t key='common_02094'{/yun}(3000毫秒)之后，大广告收回，小广告展开。
     }else if ($("#js_ads_banner_top a").length > 0) {
-        // 只有小广告，直接显示
+        // Only small ads, displayed directly
         $("#js_ads_banner_top").removeClass('none');
     }
 
@@ -591,7 +591,7 @@
         }, function (data) {
             $(".hp_login").html(data);
         });
-        //热招人才->推荐简历
+        //热招人才->{yun:}t key='default_index_siteindex_00004'{/yun}
         $(document.body).on('mouseenter', '.ran-list li', function () {
             $(this).addClass('show').find('.moren').hide();
             $(this).find('.lr-show').show();

@@ -26,7 +26,7 @@
 </head>
 <body>
 <div class="body"> 
-  <!--导航-->
+  <!--{yun:}t key='wap_company_show_dark_00017'{/yun}-->
 	<header class="header_h">
 		  <div class="header_fixed">
 			  <div class="header">
@@ -43,33 +43,33 @@
 	<div class="header_box" style="background: url({yun:}$info.wapback{/yun}) no-repeat bottom; background-size:100%">
 	</div>
     <div class="clear"></div>
-  <!--搜索-->
+  <!--{yun:}t key='common.search'{/yun}-->
   <div class="jobfair_search">
     <div class="zt_search_text fs24">
-      <p class="search_s">职位类型</p>
+      <p class="search_s">{yun:}t key='wap_spe_gl_00009'{/yun}</p>
       <ul class="search_select">
-        <li data-type="zw" style="display: none;">职位名称</li>
-        <li data-type="qy">企业名称</li>
+        <li data-type="zw" style="display: none;">{yun:}t key='wap_com_jobadd_00034'{/yun}</li>
+        <li data-type="qy">{yun:}t key='wap_com_info_00040'{/yun}</li>
       </ul>
     </div>
     <div class="zt_search_inpb">
       <input name="type" type="hidden" id="search_type" value="zw">
-      <input type="text" id="search_key" class="zt_search_inp fs24" placeholder="请输入关键词">
+      <input type="text" id="search_key" class="zt_search_inp fs24" placeholder="{yun:}t key='wap_spe_gl_00003'{/yun}">
       <input name="" type="button" class="fs24 zt_search_but" value="搜 索">
     </div>
     <div class="clear"></div>
   </div>
   <div class="wite_box search_box none" id="searchResult">
-		<div class="search_tit">搜索结果</div>
+		<div class="search_tit">{yun:}t key='wap_spe_gl_00008'{/yun}</div>
 		<div class="search_list">
 			<ul id="searchlist">
 			</ul>
 	  </div>
-      <a href=" " class="search_czbth">重置</a>
+      <a href=" " class="search_czbth">{yun:}t key='wap_member_publictwo_00005'{/yun}</a>
    </div>
-  <!--名企推荐-->
-  <div id="Recommend" class="Recommend_con"> <img src="{yun:}$config.sy_weburl{/yun}/app/template/wap/images/spe_gl/Recommend.png" class="zt_timg" alt="名企推荐">
-    <div class="zt_tit">名企推荐</div>
+  <!--{yun:}t key='wap_spe_gl_00006'{/yun}-->
+  <div id="Recommend" class="Recommend_con"> <img src="{yun:}$config.sy_weburl{/yun}/app/template/wap/images/spe_gl/Recommend.png" class="zt_timg" alt="{yun:}t key='wap_spe_gl_00006'{/yun}">
+    <div class="zt_tit">{yun:}t key='wap_spe_gl_00006'{/yun}</div>
     <p class="zt_t_des fs32">——<br>
       在这里，和一众好公司并肩</p>
     <div class="Recommend_box">
@@ -105,9 +105,9 @@
     <div class="clear"></div>
   </div>
   
-  <!--企业精选-->
-  <div class="Enterprises_con" id="Enterprises"> <img src="{yun:}$config.sy_weburl{/yun}/app/template/wap/images/spe_gl/Enterprises.png" class="zt_timg" alt="企业精选">
-    <div class="zt_tit cfff">企业精选</div>
+  <!--{yun:}t key='wap_spe_gl_00005'{/yun}-->
+  <div class="Enterprises_con" id="Enterprises"> <img src="{yun:}$config.sy_weburl{/yun}/app/template/wap/images/spe_gl/Enterprises.png" class="zt_timg" alt="{yun:}t key='wap_spe_gl_00005'{/yun}">
+    <div class="zt_tit cfff">{yun:}t key='wap_spe_gl_00005'{/yun}</div>
     <p class="zt_t_des fs32 cfff">——<br>
       在这里，和一众好公司并肩</p>
     <div class="wite_box fs24">
@@ -115,7 +115,7 @@
         <div class="wrapper" id="Enterprises_teb">
           <div class="scroller">
             <ul class="clearfix">
-              <li data-jobclass="0"><a href="javascript:void(0)">所有分类</a></li>
+              <li data-jobclass="0"><a href="javascript:void(0)">{yun:}t key='wap_spe_gl_00007'{/yun}</a></li>
 			  {yun:}foreach from=$comhy item=chv{/yun}
 			  <li data-jobclass="{yun:}$chv.id{/yun}"><a href="javascript:void(0)">{yun:}$chv.name{/yun}</a></li>
 			  {yun:}/foreach{/yun}
@@ -130,14 +130,14 @@
         </ul>
       </div>
       <div class="clear"></div>
-      <div class="page fs24"> <a class="shouqi Enterprises_up"  data-box="Enterprises">收起</a>
+      <div class="page fs24"> <a class="shouqi Enterprises_up"  data-box="Enterprises">{yun:}t key='wap_article_00005'{/yun}</a>
         <input name="type" type="hidden" id="Enterprise_page" class="input_page page_no" value="0" />
-        <a class="gengduo yes Enterprises_down"  data-box="Enterprises">查看更多</a> </div>
+        <a class="gengduo yes Enterprises_down"  data-box="Enterprises">{yun:}t key='common.view_more'{/yun}</a> </div>
     </div>
   </div>
-  <!--职位精选-->
-  <div class="Position_con" id="Position"> <img src="{yun:}$config.sy_weburl{/yun}/app/template/wap/images/spe_gl/Position.png" class="zt_timg" alt="职位精选">
-    <div class="zt_tit cfff">职位精选</div>
+  <!--{yun:}t key='wap_spe_gl_00010'{/yun}-->
+  <div class="Position_con" id="Position"> <img src="{yun:}$config.sy_weburl{/yun}/app/template/wap/images/spe_gl/Position.png" class="zt_timg" alt="{yun:}t key='wap_spe_gl_00010'{/yun}">
+    <div class="zt_tit cfff">{yun:}t key='wap_spe_gl_00010'{/yun}</div>
     <p class="zt_t_des fs32 cfff">——<br>
       好职位尽在{yun:}$config.sy_webname{/yun}</p>
     <div class="wite_box fs24">
@@ -145,7 +145,7 @@
         <div class="wrapper" id="Position_teb">
           <div class="scroller">
             <ul class="clearfix">
-              <li data-jobclass="0"><a href="javascript:void(0)">所有分类</a></li>
+              <li data-jobclass="0"><a href="javascript:void(0)">{yun:}t key='wap_spe_gl_00007'{/yun}</a></li>
 			  {yun:}foreach from=$jobhy item=jhv{/yun}
 			  <li data-jobclass="{yun:}$jhv.id{/yun}"><a href="javascript:void(0)">{yun:}$jhv.name{/yun}</a></li>
 			  {yun:}/foreach{/yun}
@@ -159,9 +159,9 @@
         </ul>
       </div>
       <div class="clear"></div>
-      <div class="page fs24"> <a class="shouqi Position_up" data-box="Position">收起</a>
+      <div class="page fs24"> <a class="shouqi Position_up" data-box="Position">{yun:}t key='wap_article_00005'{/yun}</a>
         <input name="type" type="hidden" id="job_page" class="input_page" value="0" />
-        <a class="gengduo yes Position_down" data-box="Position">查看更多</a> </div>
+        <a class="gengduo yes Position_down" data-box="Position">{yun:}t key='common.view_more'{/yun}</a> </div>
     </div>
   </div>
 </div>
@@ -171,7 +171,7 @@
 		<div class="special_seniorpd_box">
 			<div class="special_seniorpd_cont">
 				<div class="special_box_bth_c special_box_bth_cw2" >
-					<input type='button' value="我是企业，我要报名" onclick="{yun:}if $uid{/yun}{yun:}if $usertype!='2'{/yun} showToast('只有企业用户才能参加报名');{yun:}else{/yun}comapply('{yun:}$info.id{/yun}','{yun:}$info.integral{/yun}','{yun:}url m=wap c=special a=apply{/yun}'){yun:}/if{/yun}{yun:}else{/yun}pleaselogin('您还未登录账号，是否登录？','{yun:}url m=wap c=login{/yun}'){yun:}/if{/yun}" class="special_box_bth"/>
+					<input type='button' value="我是企业，{yun:}t key='wap_part_show_00008'{/yun}" onclick="{yun:}if $uid{/yun}{yun:}if $usertype!='2'{/yun} showToast('只有企业用户才能参加报名');{yun:}else{/yun}comapply('{yun:}$info.id{/yun}','{yun:}$info.integral{/yun}','{yun:}url m=wap c=special a=apply{/yun}'){yun:}/if{/yun}{yun:}else{/yun}pleaselogin("{yun:}t key='wap_ask_00001'{/yun}",'{yun:}url m=wap c=login{/yun}'){yun:}/if{/yun}" class="special_box_bth"/>
 				</div>
 			</div>
 		</div>
@@ -181,11 +181,11 @@
 		<div class="special_seniorpd_cont">
 			<div class="special_box_bth_c">
 				{yun:}if $isapply.status=="0"{/yun}
-				<div class="zt_ybm" style="text-align: center;"  >报名审核中</div>
+				<div class="zt_ybm" style="text-align: center;"  >{yun:}t key='wap_spe_gl_00004'{/yun}</div>
 				{yun:}elseif $isapply.status=="1"{/yun}
-				<div  class="zt_ybm" style="text-align: center;"  >已报名</div>
+				<div  class="zt_ybm" style="text-align: center;"  >{yun:}t key='wap_part_show_00010'{/yun}</div>
 				{yun:}else{/yun}
-				<div  class="zt_ybm" style="text-align: center;"  >请联系管理员</div>
+				<div  class="zt_ybm" style="text-align: center;"  >{yun:}t key='wap_spe_gl_00002'{/yun}</div>
 				{yun:}/if{/yun}
 			</div>
 		</div>
@@ -208,7 +208,7 @@
 	  var wapurl = "{yun:}url m=wap{/yun}";
 	function comapply(id,integral,url){
 		if(integral>0&&integral){
-			let msg = "参加专题招聘，将扣除您"+integral+pricename+"，审核不通过将退还，是否继续？";
+			let msg = "参加专题招聘，将扣除您"+integral+pricename+"，审核不通过将退还，{yun:}t key='common_01784'{/yun}？";
 			showConfirm(msg,function(){			
 				showLoading();
 				$.post(url,{id:id},function(data){
@@ -220,13 +220,13 @@
 						showModal(data.msg,function(){location.href=data.url;});
 					}
 				});
-			},'取消', '继续');
+			},"{yun:}t key='common.cancel'{/yun}", "{yun:}t key='wap_com_jobadd_00052'{/yun}");
 			
 		}
 	}
 	 $(function () {
 	 	if(isover != '' && isover==0){
-	 		showModal('该专题报名已结束！',function(){});
+	 		showModal("{yun:}t key='wap_spe_gl_00001'{/yun}",function(){});
 	 	}
 	 });
 </script>
@@ -250,7 +250,7 @@ $(document).ready(function(){
 		  $(".search_select li").show();
 		  $(".search_select").hide();
 	  })
-	 //搜索传参
+	 // Search parameters
 		$(".zt_search_but").click(function () {
 			var type = $("#search_type").val();
 			var search_key = $.trim($("#search_key").val());
@@ -260,7 +260,7 @@ $(document).ready(function(){
 		})
 	$('#Enterprises_teb').navbarscroll();
 	$('#Position_teb').navbarscroll(); 
-	//分类滑动效果
+	// Category sliding effect
 	 $('.wrapper').bind('touchend',function(){
 		 var move = parseInt($(this).find('.scroller').css("transform").replace(/[^0-9\-,]/g,'').split(',')[4]);
 		 var wrapper_w = parseInt($(this).outerWidth(true));
@@ -331,7 +331,7 @@ $(document).ready(function(){
 			$("#btn_next").click();
 		}, 5000);
 	});
-	//企业精选tab
+	//{yun:}t key='wap_spe_gl_00005'{/yun}tab
 		$(".Enterprises li").click(function () {
 			$(".Enterprises li").removeClass("select");
 			
@@ -342,7 +342,7 @@ $(document).ready(function(){
 			var numb = 6;
 			Enterprisestab(jobclass, page, numb)
 		})
-		//职位精选tab
+		//{yun:}t key='wap_spe_gl_00010'{/yun}tab
 		$(".Position li").click(function () {
 			$(".Position li").removeClass("select");
 			
@@ -353,7 +353,7 @@ $(document).ready(function(){
 			var numb = 6;
 			Positiontab(jobclass, page, numb)
 		})
-	//收起隐藏
+	// Hide
 	$(".shouqi").click(function(){
 		if (!$(this).hasClass("yes")){return false}
 		
@@ -365,9 +365,9 @@ $(document).ready(function(){
 		$(this).removeClass("yes")
 		$("html,body").animate({ scrollTop: $("#"+box).offset().top},100); 
 	})
-	//查看更多加载或显示
+	// View more loading or showing
 	$(".gengduo").click(function () {
-		//最后一页后不执行翻页
+		// Do not perform page turning after the last page
 		if (!$(this).hasClass("yes")){return false}
 		
 		var that = $(this).closest(".page").find(".input_page")
@@ -532,7 +532,7 @@ function goBack(){
 		}else{
 			location.href = wapurl;
 		}
-	}else{ //未知的浏览器
+	}else{ //{yun:}t key='common_01513'{/yun}
 		window.history.go( -1 );
 	}
 }

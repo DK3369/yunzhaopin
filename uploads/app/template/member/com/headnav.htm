@@ -9,24 +9,24 @@
 						</a>
 					</div>
 					<div class="user_headerright">
-						<a href="{yun:}$config.sy_weburl{/yun}" target="_blank" title="返回网站首页" class="user_m_fanh">返回首页</a>
+						<a href="{yun:}$config.sy_weburl{/yun}" target="_blank" title="{yun:}t key='member_user_headnav_00003'{/yun}" class="user_m_fanh">{yun:}t key='member_user_headnav_00006'{/yun}</a>
 						<div class="yun_m_headermsg" onmouseover="tzmsgNumShow('show')" onmouseout="tzmsgNumShow('hide')">
 							<i class="yun_m_headermsg_icon"></i>通知中心
 							<span class="yun_m_headermsg_n" id="tzmsgNum" style="display:none"></span>
 							<div class="yun_m_headermsg_box" style="display:none">
 								<div class="yun_m_headermsg_list">
-									<a href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=hr&state=1">职位申请
+									<a href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=hr&state=1">{yun:}t key='app_template_default_js_comapply_00009'{/yun}
 										<em class="yun_m_headermsg_list_n" id="jobApplyNum"></em>
 									</a>
 								</div>
 								<div class="yun_m_headermsg_list">
-									<a href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=sysnews">系统消息
+									<a href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=sysnews">{yun:}t key='wap_user_sysnews_00002'{/yun}
 										<em class="yun_m_headermsg_list_n" id="sysmsgNum"></em>
 									</a>
 								</div>
 								{yun:}if $config.com_message == 1{/yun}
 								<div class="yun_m_headermsg_list">
-									<a href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=msg">求职咨询
+									<a href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=msg">{yun:}t key='wap_com_sysnews_00002'{/yun}
 										<em class="yun_m_headermsg_list_n" id="jobAskNum"></em>
 									</a>
 								</div>
@@ -46,20 +46,20 @@
 									</div>
 									<div class="new_com_headerviptit"></div>
 									<div class="headervip">
-										<a href="index.php?c=right" class="headervip_bth"><i class="headervipicon headervip1"></i>专属客服</a>
-										<a href="index.php?c=right" target="_blank" class="headervip_bth"><i class="headervipicon headervip2"></i>身份标识</a>
-										<a href="index.php?c=right" class="headervip_bth"><i class="headervipicon headervip3"></i>置顶推广</a>
-										<a href="index.php?c=right" class="headervip_bth"><i class="headervipicon headervip4"></i>查看更多</a>
+										<a href="index.php?c=right" class="headervip_bth"><i class="headervipicon headervip1"></i>{yun:}t key='wap_com_server_00017'{/yun}</a>
+										<a href="index.php?c=right" target="_blank" class="headervip_bth"><i class="headervipicon headervip2"></i>{yun:}t key='wap_com_server_00034'{/yun}</a>
+										<a href="index.php?c=right" class="headervip_bth"><i class="headervipicon headervip3"></i>{yun:}t key='wap_com_server_00030'{/yun}</a>
+										<a href="index.php?c=right" class="headervip_bth"><i class="headervipicon headervip4"></i>{yun:}t key='common.view_more'{/yun}</a>
 									</div>
 									<div class="headerviptit">我的权益</div>
 									<div class="headervip">
-										<a href="index.php?c=paylogtc" class="headervip_bth"><i class="headervipicon headervip1"></i>我的服务</a>
-										<a href="index.php?c=paylog" target="_blank" class="headervip_bth"><i class="headervipicon headervip2"></i>订单管理</a>
+										<a href="index.php?c=paylogtc" class="headervip_bth"><i class="headervipicon headervip1"></i>{yun:}t key='wap_com_finance_00001'{/yun}</a>
+										<a href="index.php?c=paylog" target="_blank" class="headervip_bth"><i class="headervipicon headervip2"></i>{yun:}t key='wap_user_paylog_00006'{/yun}</a>
 										
 									</div>
 									<div class="headervip">
 										
-										<a href="index.php?c=integral" class="headervip_bth"><i class="headervipicon headervip1"></i>{yun:}$config.integral_pricename{/yun}管理</a>
+										<a href="index.php?c=integral" class="headervip_bth"><i class="headervipicon headervip1"></i>{yun:}$config.integral_pricename{/yun}{yun:}t key='wap_com_jobadd_00050'{/yun}</a>
 									</div>
 								</div>
 							</div>
@@ -78,7 +78,7 @@
 											</div>
 											<div class="user_infobox_comname">
 												{yun:}if $company.name{/yun}
-												{yun:}$company.name{/yun}<a href="index.php?c=info" class="user_infobox_combj">编辑</a>
+												{yun:}$company.name{/yun}<a href="index.php?c=info" class="user_infobox_combj">{yun:}t key='common.edit'{/yun}</a>
 												{yun:}if $company_rating.com_pic{/yun} 
 												<img src="{yun:}$company_rating.com_pic{/yun}" width="16">
 												{yun:}/if{/yun}
@@ -89,15 +89,15 @@
 										</div>
 									</div>
 									<div class="user_tc_tset">
-										<a href="index.php?c=vs" title="修改密码" class="user_set_bth"><i class="user_set_icon user_set_icon2"></i>修改密码</a>
-										<a href="index.php?c=binding" class="user_set_bth"><i class="user_set_icon user_set_icon3"></i>账号认证</a>
+										<a href="index.php?c=vs" title="{yun:}t key='member_user_passwd_00027'{/yun}" class="user_set_bth"><i class="user_set_icon user_set_icon2"></i>{yun:}t key='member_user_passwd_00027'{/yun}</a>
+										<a href="index.php?c=binding" class="user_set_bth"><i class="user_set_icon user_set_icon3"></i>{yun:}t key='member_com_headnav_00002'{/yun}</a>
 									</div>
 									<div class="user_tcdl">
-										<a href="javascript:void(0)" onClick="logout('index.php?act=logout')" title="退出登录" class="user_tcdlbth" style="border:none;">退出登录</a>
+										<a href="javascript:void(0)" onClick="logout('index.php?act=logout')" title="{yun:}t key='wap_user_set_00003'{/yun}" class="user_tcdlbth" style="border:none;">{yun:}t key='wap_user_set_00003'{/yun}</a>
 									</div>
 								</div>
 							</div>
-							<span class="user_headertel">招聘咨询电话：<span class="user_headertel_n">{yun:}($config.sy_comwebtel!='')?$config.sy_comwebtel:$config.sy_freewebtel{/yun}</span></span>
+							<span class="user_headertel">{yun:}t key='member_com_headnav_00001'{/yun}：<span class="user_headertel_n">{yun:}($config.sy_comwebtel!='')?$config.sy_comwebtel:$config.sy_freewebtel{/yun}</span></span>
 						</div>
 					</div>
 				</div>

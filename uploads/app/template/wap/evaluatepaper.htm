@@ -27,7 +27,7 @@
 
 {yun:}/if{/yun}
 <span class=" {yun:}if $questions|@count>1{/yun}none{yun:}/if{/yun}" id="submitpaper">
-<input id="submitexam" type="button"  name="submitexam" value="提交"  onclick="return check_evaluate();" class="evaluate_show_bthcont_tj">
+<input id="submitexam" type="button"  name="submitexam" value="{yun:}t key='common.submit'{/yun}"  onclick="return check_evaluate();" class="evaluate_show_bthcont_tj">
 <input type="hidden" name="examid" value="{yun:}$info.id{/yun}" />
 
 </span>
@@ -96,7 +96,7 @@ function nextquestion(type){
 	if(type==2){
 		var checkid=$("#question"+qid+" input:radio:checked").val();
 		if(!checkid){
-			showToast("请选择！");return false;
+			showToast("{yun:}t key='wap_user_addresumeson_00042'{/yun}");return false;
 		}
 		if(parseInt(allnum)>parseInt(qid)){
 			var qids=parseInt(qid)+1;

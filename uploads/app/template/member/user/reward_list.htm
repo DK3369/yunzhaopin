@@ -3,23 +3,23 @@
     {yun:}include file="$userstyle/left.htm"{/yun}
     <div class="yun_m_rightbox fltR mt20 re">
     
-         <div class="member_right_index_h1 fltL"> <span class="member_right_h1_span fltL">{yun:}$config.integral_pricename{/yun}管理</span> <i class="member_right_h1_icon user_bg"></i></div>
+         <div class="member_right_index_h1 fltL"> <span class="member_right_h1_span fltL">{yun:}$config.integral_pricename{/yun}{yun:}t key='wap_com_jobadd_00050'{/yun}</span> <i class="member_right_h1_icon user_bg"></i></div>
           <div class="job_list_tit"> 
         <ul class="">
-	<li ><a href="index.php?c=integral">{yun:}$config.integral_pricename{/yun}任务</a></li>
-      <li><a href="index.php?c=integral_reduce">消费规则</a></li>
- <li class="job_list_tit_cur"><a href="index.php?c=reward_list">{yun:}$config.integral_pricename{/yun}兑换</a></li>
+	<li ><a href="index.php?c=integral">{yun:}$config.integral_pricename{/yun}{yun:}t key='member_com_integral_00002'{/yun}</a></li>
+      <li><a href="index.php?c=integral_reduce">{yun:}t key='wap_user_integral_00001'{/yun}</a></li>
+ <li class="job_list_tit_cur"><a href="index.php?c=reward_list">{yun:}$config.integral_pricename{/yun}{yun:}t key='admin_yunying_shop_shoplist_00003'{/yun}</a></li>
 	</ul> 
     </div>
     
     <div class="reward_box">
       {yun:}if $rows{/yun}
    <div class="reward_tit">
-   <div class="reward_tit_name reward_spname"><span class="reward_sp_pd">商品名称</span></div>
-   <div class="reward_tit_name reward_spje">消费{yun:}$config.integral_pricename{/yun}   </div>
-   <div class="reward_tit_name reward_spsl">兑换数量   </div>
+   <div class="reward_tit_name reward_spname"><span class="reward_sp_pd">{yun:}t key='member_user_reward_list_00001'{/yun}</span></div>
+   <div class="reward_tit_name reward_spje">{yun:}t key='member_com_integral_reduce_00003'{/yun}{yun:}$config.integral_pricename{/yun}   </div>
+   <div class="reward_tit_name reward_spsl">{yun:}t key='wap_redeemshow_00002'{/yun}   </div>
     <div class="reward_tit_name reward_sptime">兑换日期  </div>
-   <div class="reward_tit_name reward_spzt">状态   </div>
+   <div class="reward_tit_name reward_spzt">{yun:}t key='member_user_job_00011'{/yun}   </div>
    </div>
      {yun:}foreach from=$rows item=log{/yun}
      
@@ -28,16 +28,16 @@
    <div class="reward_tit_name reward_spje">{yun:}$log.integral{/yun} </div>
    <div class="reward_tit_name reward_spsl">{yun:}$log.num{/yun} 件   </div>
     <div class="reward_tit_name reward_sptime">{yun:}$log.ctime|date_format:'%Y-%m-%d %H:%M:%S'{/yun}  </div>
-   <div class="reward_tit_name reward_spzt">{yun:}if $log.status=="0"{/yun} <span class="wate_verify">审核中</span>
-   <a href="javascript:void(0)" onclick="layer_del('确定要取消？', 'index.php?c=reward_list&act=del&id={yun:}$log.id{/yun}');" class="cblue">取消兑换</a> 
-   {yun:}elseif $log.status=="1"{/yun} <span class="y_verify">已通过</span> {yun:}elseif $log.status=="2"{/yun} 
-   <span class="n_verify">未通过</span>{yun:}if $log.statusbody{/yun}<a href="javascript:void(0)" onclick="layer.open({title:'查看原因',content: '{yun:}$log.statusbody{/yun}'});" class="cblue">原因</a>{yun:}/if{/yun} {yun:}/if{/yun}   </div>
+   <div class="reward_tit_name reward_spzt">{yun:}if $log.status=="0"{/yun} <span class="wate_verify">{yun:}t key='wap_user_idcard_00002'{/yun}</span>
+   <a href="javascript:void(0)" onclick="layer_del('确定要取消？', 'index.php?c=reward_list&act=del&id={yun:}$log.id{/yun}');" class="cblue">{yun:}t key='wap_user_reward_list_00002'{/yun}</a> 
+   {yun:}elseif $log.status=="1"{/yun} <span class="y_verify">{yun:}t key='member_user_reward_list_00004'{/yun}</span> {yun:}elseif $log.status=="2"{/yun} 
+   <span class="n_verify">{yun:}t key='wap_user_commsg_00007'{/yun}</span>{yun:}if $log.statusbody{/yun}<a href="javascript:void(0)" onclick="layer.open({title:'{yun:}t key='wap_user_reward_list_00003'{/yun}',content: '{yun:}$log.statusbody{/yun}'});" class="cblue">{yun:}t key='member_user_reward_list_00005'{/yun}</a>{yun:}/if{/yun} {yun:}/if{/yun}   </div>
                 
-                <div class="reward_other">备注：{yun:}$log.body{/yun}<span class="reward_tel">电话：{yun:}$log.linktel{/yun}</span><span class="">联系人：{yun:}$log.linkman{/yun}</span></div>
+                <div class="reward_other">{yun:}t key='member_user_paylog_00002'{/yun}：{yun:}$log.body{/yun}<span class="reward_tel">{yun:}t key='common.phone'{/yun}：{yun:}$log.linktel{/yun}</span><span class="">{yun:}t key='wap_user_invitecont_00006'{/yun}：{yun:}$log.linkman{/yun}</span></div>
                 {yun:}if $log.express{/yun}
                <div class="reward_other"> 快递公司：{yun:}$log.express{/yun}
                 {yun:}/if{/yun}{yun:}if $log.expnum{/yun}
-               <span class="reward_tel"> 单号：{yun:}$log.expnum{/yun}</span>
+               <span class="reward_tel"> {yun:}t key='common_01957'{/yun}：{yun:}$log.expnum{/yun}</span>
                 </div>
                 {yun:}/if{/yun}
    </div>
@@ -46,8 +46,8 @@
              {yun:}/foreach{/yun}
            {yun:}if $config.sy_redeem_web==1{/yun}
             <div class="reward_wxts"> 
-                <div class="wxts">温馨提示：</div>
-               您已兑换 <span style="color:#f60;">{yun:}$num{/yun}</span> 份礼品，还有<span style="color:#f60;">{yun:}$statis.integral{/yun}</span>{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}。 <a href="{yun:}url m=redeem{/yun}" class="cblue"  target="_blank" >我要兑换</a><br>
+                <div class="wxts">{yun:}t key='wap_user_index_00023'{/yun}：</div>
+               {yun:}t key='member_user_reward_list_00002'{/yun} <span style="color:#f60;">{yun:}$num{/yun}</span> 份礼品，还有<span style="color:#f60;">{yun:}$statis.integral{/yun}</span>{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}。 <a href="{yun:}url m=redeem{/yun}" class="cblue"  target="_blank" >我要兑换</a><br>
             </div> 
             {yun:}/if{/yun}  
           </div>

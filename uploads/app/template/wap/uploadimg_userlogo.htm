@@ -6,7 +6,7 @@
         <meta http-equiv="Cache-Control" content="no-cache" />
         <title>{yun:}$config.sy_webname{/yun}</title>
         <meta name="keywords" content="人才招聘,网络招聘,wap" />
-        <meta name="description" content="人才招聘网wap网站" />
+        <meta name="description" content="人才招聘网wap{yun:}t key='common_02023'{/yun}" />
         <meta content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport" />
         <meta name="MobileOptimized" content="240" />
         <meta http-equiv="Expires" content="0" />
@@ -27,7 +27,7 @@
         <div class="body_wap">
             <header>
                 <div class="header_bg {yun:}if $tplmoblie.color{/yun}bg{yun:}$tplmoblie.color{/yun}{yun:}/if{/yun}">
-                    <div class="header_h1">上传头像</div>
+                    <div class="header_h1">{yun:}t key='wap_user_alltask_00006'{/yun}</div>
                 </div>
             </header>
             <section class="resume_mangage">
@@ -41,7 +41,7 @@
 								</div>
 								<div class="clear"></div>
 								<div class="photo_xz">
-									<input id="image" type="file" accept="image/*" />选择上传头像
+									<input id="image" type="file" accept="image/*" />{yun:}t key='wap_user_info_00010'{/yun}
 								</div>
 								<div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>选择上传头像点击提交按钮即可上传</div>
 							</div>
@@ -50,7 +50,7 @@
 						</div>
 						<div class="photo_tj">
 							<input type='hidden' name="txt" id="uimage" value="">
-							<input name="submit" type="button" onclick="photo()" value="提交" class="yunset_bth" />
+							<input name="submit" type="button" onclick="photo()" value="{yun:}t key='common.submit'{/yun}" class="yunset_bth" />
 						</div>
 					</div>
 				</div>
@@ -89,7 +89,7 @@
 							},1000);
 							$inputImage.val('');
 						} else {
-							showMessage('请上传图片');
+							showMessage("{yun:}t key='wap_js_compress_00001'{/yun}");
 						}
 					}
 				});
@@ -116,8 +116,8 @@
 				cancel: function() {
 					$('#showResult').fadeIn();
 				},
-				ok_text: '确定',
-				cancel_text: '取消'
+				ok_text: "{yun:}t key='common.confirm'{/yun}",
+				cancel_text: "{yun:}t key='common.cancel'{/yun}"
 			});
 		}
 		function photo() {

@@ -9,9 +9,9 @@
 		 <div class="newmember_screen">	
 	 
 				<div class="com_topbth_box">
-								<input class="com_topbth_input" type="button" value="创建模板" id="createChildId" style="margin-left:0px;" />
+								<input class="com_topbth_input" type="button" value="{yun:}t key='member_com_yqmb_00001'{/yun}" id="createChildId" style="margin-left:0px;" />
 							</div>
-		<div class="newmember_screenname">	面试模板</div>
+		<div class="newmember_screenname">	{yun:}t key='wap_com_set_00005'{/yun}</div>
  
 		 </div>
 		 </div>
@@ -23,7 +23,7 @@
 		
 					<div class="com_new_tip">
 		
-						<span class="com_new_tip_h">温馨小提示</span>邀请面试时可选择对应面试模板 ，现已创建 {yun:}$totalNum{/yun} 个面试模板，最多创建：{yun:}$config.com_yqmb_num{/yun} 个。
+						<span class="com_new_tip_h">{yun:}t key='member_com_added_00002'{/yun}</span>邀请面试时可选择对应面试模板 ，现已创建 {yun:}$totalNum{/yun} 个面试模板，最多创建：{yun:}$config.com_yqmb_num{/yun} {yun:}t key='common_02050'{/yun}。
                        
                     </div>
 
@@ -35,14 +35,14 @@
 						{yun:}if $rows{/yun}
 						<tr>
 							<th>ID</th>
-							<th>模板名称</th>
-							<th>联系人</th>
-							<th>联系电话</th>
+							<th>{yun:}t key='wap_com_yqmbedit_00003'{/yun}</th>
+							<th>{yun:}t key='wap_user_invitecont_00006'{/yun}</th>
+							<th>{yun:}t key='wap_user_invitecont_00004'{/yun}</th>
 							<th>面试地址</th>
-							<th>面试时间</th>
-							<th>面试备注</th>
-							<th>审核状态</th>
-							<th width="120">操作</th>
+							<th>{yun:}t key='wap_user_invite_00002'{/yun}</th>
+							<th>{yun:}t key='member_com_yqmb_00002'{/yun}</th>
+							<th>{yun:}t key='wap_com_special_00001'{/yun}</th>
+							<th width="120">{yun:}t key='member_user_atn_00003'{/yun}</th>
 						</tr>
 						{yun:}/if{/yun}
 						
@@ -58,22 +58,22 @@
 							<td align="center">
 								
 								{yun:}if $v.status==1{/yun}
-								已审核
+								{yun:}t key='wap_user_commsg_00005'{/yun}
 								{yun:}elseif $v.status==0{/yun}
-								<font color=red>未审核</font>
+								<font color=red>{yun:}t key='wap_user_commsg_00006'{/yun}</font>
 								{yun:}elseif $v.status==2{/yun}
-								<font color=red>未通过</font>
+								<font color=red>{yun:}t key='wap_user_commsg_00007'{/yun}</font>
 									{yun:}if $v.statusbody{/yun}
 									<span class="com_m_line">|</span>
-                                    <a href="javascript:;" onclick="show_msg('{yun:}$v.statusbody{/yun}')">查看原因</a>
+                                    <a href="javascript:;" onclick="show_msg('{yun:}$v.statusbody{/yun}')">{yun:}t key='wap_user_reward_list_00003'{/yun}</a>
                                     {yun:}/if{/yun}
 								{yun:}/if{/yun}
 								
 							</td>
 							<td align="center">
-								<a href="javascript:void(0)" data-id="{yun:}$v.id{/yun}" data-linkman="{yun:}$v.linkman{/yun}" data-linktel="{yun:}$v.linktel{/yun}" data-intertime="{yun:}$v.intertime{/yun}" data-address="{yun:}$v.address{/yun}" data-content="{yun:}$v.content{/yun}" data-name="{yun:}$v.name{/yun}" class="com_bth cblue editChildA">修改</a>
+								<a href="javascript:void(0)" data-id="{yun:}$v.id{/yun}" data-linkman="{yun:}$v.linkman{/yun}" data-linktel="{yun:}$v.linktel{/yun}" data-intertime="{yun:}$v.intertime{/yun}" data-address="{yun:}$v.address{/yun}" data-content="{yun:}$v.content{/yun}" data-name="{yun:}$v.name{/yun}" class="com_bth cblue editChildA">{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00005'{/yun}</a>
 								
-                            	<a href="javascript:;" class="com_bth cblue bindChildA" data-id="{yun:}$v.id{/yun}">删除</a>
+                            	<a href="javascript:;" class="com_bth cblue bindChildA" data-id="{yun:}$v.id{/yun}">{yun:}t key='common.delete'{/yun}</a>
 							</td>
 						</tr>
 						{yun:}foreachelse{/yun}
@@ -101,21 +101,21 @@
 	<div class="subaccounts_add">
 		<form action="index.php?c=yqmb&act=editSave"  class="layui-form" target="supportiframe" method="post" id="editchildForm" onsubmit="return check_editchildmsg();">
 			<dl>
-				<dt>模板名称：</dt>
+				<dt>{yun:}t key='wap_com_yqmbedit_00003'{/yun}：</dt>
 				<dd>
-					<input size='20' type="text" id='name' name="name" value='' class="subaccounts_add_text" autocomplete="off" placeholder="请输入模板名称">
+					<input size='20' type="text" id='name' name="name" value='' class="subaccounts_add_text" autocomplete="off" placeholder="{yun:}t key='wap_com_yqmbedit_00001'{/yun}">
 				</dd>
 			</dl>
 			<dl>
-				<dt>联系人：</dt>
+				<dt>{yun:}t key='wap_user_invitecont_00006'{/yun}：</dt>
 				<dd>
-					<input size='20' type="text" id='linkman' name="linkman" value='' class="subaccounts_add_text" autocomplete="off" placeholder="请输入联系人">
+					<input size='20' type="text" id='linkman' name="linkman" value='' class="subaccounts_add_text" autocomplete="off" placeholder="{yun:}t key='wap_com_address_new_00013'{/yun}">
 				</dd>
 			</dl>
 			<dl>
-				<dt>联系电话：</dt>
+				<dt>{yun:}t key='wap_user_invitecont_00004'{/yun}：</dt>
 				<dd>
-					<input size='20' type="text" id='linktel' name="linktel" value='' class="subaccounts_add_text" autocomplete="off" placeholder="请输入联系电话">
+					<input size='20' type="text" id='linktel' name="linktel" value='' class="subaccounts_add_text" autocomplete="off" placeholder="{yun:}t key='wap_com_partadd_00002'{/yun}">
 				</dd>
 			</dl>
 			<dl>
@@ -123,18 +123,18 @@
 				<dd><input size='34' type="text" id='address' name="address" value='' placeholder="请输入面试地址" class="subaccounts_add_text" autocomplete="off"></dd>
 			</dl>
 			<dl>
-				<dt>面试时间：</dt>
+				<dt>{yun:}t key='wap_user_invite_00002'{/yun}：</dt>
 				<dd id="intertimeHtml"></dd>
 			</dl>
 			<dl>
-				<dt>面试备注：</dt>
+				<dt>{yun:}t key='member_com_yqmb_00002'{/yun}：</dt>
 				<dd><textarea id="content" name="content" class="layui-textarea"></textarea></dd>
 			</dl>
 			<dl id="resume_job" style="height:30px;padding-bottom: 20px;">
 				<dd style="margin-left: 130px;">
 					<input type="hidden" name="yid" id="yid" value="0">
-					<input type="submit" name='submit' value='确认' class="submit_btn"> &nbsp;&nbsp;
-					<input type="button" onClick="layer.closeAll();" class="cancel_btn" value='取消'>
+					<input type="submit" name='submit' value='{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00026'{/yun}' class="submit_btn"> &nbsp;&nbsp;
+					<input type="button" onClick="layer.closeAll();" class="cancel_btn" value='{yun:}t key='common.cancel'{/yun}'>
 				</dd>
 			</dl>
 			
@@ -157,13 +157,13 @@
 	});
 	//名称获取焦点
 	$('#usernameId').on('focus', function () {
-		if ($(this).val() == '请输入用户名') {
-			$(this).val('');
+		if ($(this).val() == "{yun:}t key='wap_forgetpw_00008'{/yun}") {
+			$(this).val('");
 		}
 	});
 
-	//添加模板
-	$('#createChildId').on('click', function () {
+	//{yun:}t key='member_com_yqmb_00003'{/yun}
+	$("#createChildId').on('click', function () {
 
 		if(parseInt(totalNum) < parseInt(maxnum)){
 			$('#intertimeHtml').html('');
@@ -185,7 +185,7 @@
 			});
 			var layindex = $.layer({
 				type: 1,
-				title: '添加模板',
+				title: "{yun:}t key='member_com_yqmb_00003'{/yun}",
 				closeBtn: [0, true],
 				border: [10, 0.3, '#000', true],
 				area: ['410px', 'auto'],
@@ -234,7 +234,7 @@
 		});
 		var layindex = $.layer({
 			type: 1,
-			title: '修改模板',
+			title: "{yun:}t key='member_com_yqmb_00004'{/yun}",
 			closeBtn: [0, true],
 			border: [10, 0.3, '#000', true],
 			area: ['410px', 'auto'],
@@ -243,12 +243,12 @@
 		$("#layindex").val(layindex);
 	});
 
-	//提交判断
+	// Submit judgment
 	function check_editchildmsg() {
 		var linkman = $.trim($("#linkman").val());
 		var linktel = $.trim($("#linktel").val());
 		if ($.trim($("#name").val()) == "") {
-			layer.msg('请填写模板名称！', 2, 8);
+			layer.msg("{yun:}t key='member_com_yqmb_00006'{/yun}", 2, 8);
 			return false;
 		}
 		if (linkman == "") {
@@ -272,7 +272,7 @@
 		}
 	}
 
-	//删除模板
+	// DeleteTemplate
 	$('.bindChildA').off('click').on('click', function () {
 		
 		var thisChildId = parseInt($(this).attr('data-id'));
@@ -316,7 +316,7 @@
         $("#msgs").html(msg);
         var layindex = $.layer({
             type: 1,
-            title: '审核说明',
+            title: "{yun:}t key='member_user_commsg_00002'{/yun}",
             closeBtn: [0, true],
             border: [10, 0.3, '#000', true],
             area: ['400px', '210px'],
@@ -335,7 +335,7 @@
                     <div style="height:80px;overflow:auto;" id="msgs"></div>
                 </div>
                 <div class="admin_Operating_sub" style="margin-top:10px;"> &nbsp;&nbsp;
-                    <input type="button" onClick="layer.close($('#layindex').val());" class="cancel_btn" value='确认'>
+                    <input type="button" onClick="layer.close($('#layindex').val());" class="cancel_btn" value='{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00026'{/yun}'>
                 </div>
             </div>
         </div>

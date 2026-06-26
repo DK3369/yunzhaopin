@@ -9,7 +9,7 @@
 (function (global) {
     'use strict';
 
-    var AUTO_KEY_RE = /^(common|wap|admin|company|user|ask|member|model)_[0-9]{5}$/;
+    var AUTO_KEY_RE = /^[a-z][a-z0-9_]*_[0-9]{5}$/;
 
     function getStore() {
         global.yunI18n = global.yunI18n || {

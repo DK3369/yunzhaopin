@@ -13,11 +13,11 @@
           当前状态：
 		<span v-if="show.is_browse==1 || show.is_browse==2">待接受</span>
 		<span v-else-if="show.is_browse==3">
-			<span v-if="show.over" style="color: #FF4200;">已结束</span>
-			<span v-else>同意面试</span>
+			<span v-if="show.over" style="color: #FF4200;">{yun:}t key='wap_user_invite_00006'{/yun}</span>
+			<span v-else>{yun:}t key='wap_user_invitecont_00001'{/yun}</span>
 		</span>
 		<span v-else-if="show.is_browse==4">拒绝面试</span>
-		<span v-else style="color: #FF4200;">已面试</span>
+		<span v-else style="color: #FF4200;">{yun:}t key='wap_user_invitecont_00005'{/yun}</span>
         </div>
       </div>
     <div class="popular_body_card">
@@ -31,21 +31,21 @@
       <div class="popular_card_line" style="margin-bottom: 0px;"></div>
       <div class="invitecont_list">
          
-          <div class="invitecont_list_name">面试时间</div>
+          <div class="invitecont_list_name">{yun:}t key='wap_user_invite_00002'{/yun}</div>
           <div class="popular_template_a">{{show.intertime}}</div> 
       </div>
      
       <div class="invitecont_list">
-        <div class="invitecont_list_name">面试职位</div>
+        <div class="invitecont_list_name">{yun:}t key='wap_user_invite_00003'{/yun}</div>
         <div class="popular_template_a">{{show.jobname}}</div>
       </div>
    
       <div class="invitecont_list">
-        <div class="invitecont_list_name">联系人</div>
+        <div class="invitecont_list_name">{yun:}t key='wap_user_invitecont_00006'{/yun}</div>
         <div class="popular_template_a">{{show.linkman}}</div>
       </div>
       <div class="invitecont_list">
-        <div class="invitecont_list_name">联系电话</div>
+        <div class="invitecont_list_name">{yun:}t key='wap_user_invitecont_00004'{/yun}</div>
         <div class="popular_template_a">{{show.linktel}}
 			<a :href="'tel:'+show.linktel" :data-jobid="show.jobid" onclick="addtellog(this);" class="telicon"> 
             <img src="{yun:}$wap_style{/yun}/images/interview_ipone.png" alt="" width="100%" height="100%"> 
@@ -65,7 +65,7 @@
       </div>
       <div class="invitecont_list" v-if="show.content">
         
-          <div class="invitecont_list_name">备注信息</div>
+          <div class="invitecont_list_name">{yun:}t key='wap_user_invitecont_00002'{/yun}</div>
           <div class=" ">{{show.content}}</div>
         </div> 
      </div>
@@ -85,7 +85,7 @@
         <textarea class="  " id="remark" v-model="remark" name="remark" placeholder="请填写拒绝理由"></textarea>
       </div>
       <div class="invite_no_bth">
-        <input class="" type="button" value="确认"  @click="inviteset(4)"/>
+        <input class="" type="button" value="{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00026'{/yun}"  @click="inviteset(4)"/>
       </div>
     </div>
   </van-popup>
@@ -173,12 +173,12 @@
                 hideLoading();
               that.refuseShow = false;
               if (data.error == 1) {
-                showToast('操作成功',2, function() {
+                showToast("{yun:}t key='wap_user_invitecont_00003'{/yun}",2, function() {
                   that.browse = browse;
                   that.inviteshow();
                 });
               } else {
-                showToast('操作失败');
+                showToast("{yun:}t key='wap_js_public_00004'{/yun}");
               }
 
             },'json');
@@ -201,17 +201,17 @@
                 id: that.id,
                 type: type
               };
-             showLoading('删除中...')
+             showLoading("{yun:}t key='wap_js_user_00007'{/yun}")
 
             $.post('{yun:}url d=wxapp h=user m=job c=invitedel{/yun}', param, function(data){
               hideLoading();
               if (data.error == 1) {
                 that.browse = 5;
-                showToast('删除成功',2, function() {
+                showToast("{yun:}t key='wap_user_blacklist_00002'{/yun}",2, function() {
                   that.list.splice(index, 1);
                 });return false;
               } else {
-                showToast('删除失败');
+                showToast("{yun:}t key='wap_user_blacklist_00001'{/yun}");
               }
             });
 

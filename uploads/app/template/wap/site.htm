@@ -31,7 +31,7 @@
 
 
 		<div v-show="hyShow">
-			<van-index-anchor >行业分站</van-index-anchor>
+			<van-index-anchor >{yun:}t key='wap_site_00002'{/yun}</van-index-anchor>
 			<van-cell :index="hyKey" v-for="(item,hyKey) in filterTex(searchKey, 2)" @click="setsite(item.id)">
 				{{item.hyname}}
 			</van-cell>

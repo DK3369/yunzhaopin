@@ -68,25 +68,25 @@ var weburl="{yun:}$config.sy_weburl{/yun}",
 					<input type="hidden" name="c" value="search" id="search" />
 	
 					<div class="hp_head_search_job fl">
-						<span class="hp_head_search_job_b" id="search_name">职位</span>
+						<span class="hp_head_search_job_b" id="search_name">{yun:}t key='common.job'{/yun}</span>
 						<div class="index_header_seach_find_list yunHeaderSearch_list_box none">
 	
-							<a href="javascript:void(0)" onclick="top_search('job', '找工作', '{yun:}url m=job{/yun}', '{yun:}$config.sy_job_web{/yun}', '{yun:}$config.sy_jobdir{/yun}'); $('#search').attr('name', 'c');">找工作</a>
+							<a href="javascript:void(0)" onclick="top_search('job', '{yun:}t key='default_job_index_00002'{/yun}', '{yun:}url m=job{/yun}', '{yun:}$config.sy_job_web{/yun}', '{yun:}$config.sy_jobdir{/yun}'); $('#search').attr('name', 'c');">{yun:}t key='default_job_index_00002'{/yun}</a>
 	
-							<a href="javascript:void(0)" onclick="top_search('resume', '找人才', '{yun:}url m=resume{/yun}', '{yun:}$config.sy_resume_web{/yun}', '{yun:}$config.sy_resumedir{/yun}'); $('#search').attr('name', 'c');">找人才</a>
+							<a href="javascript:void(0)" onclick="top_search('resume', '{yun:}t key='default_resume_index_00003'{/yun}', '{yun:}url m=resume{/yun}', '{yun:}$config.sy_resume_web{/yun}', '{yun:}$config.sy_resumedir{/yun}'); $('#search').attr('name', 'c');">{yun:}t key='default_resume_index_00003'{/yun}</a>
 	
-							<a href="javascript:void(0)" onclick="top_search('tiny', '普工简历', '{yun:}url m=tiny{/yun}', '{yun:}$config.sy_tiny_web{/yun}', '{yun:}$config.sy_tinydir{/yun}'); $('#search').attr('name', '');">普工简历</a>
+							<a href="javascript:void(0)" onclick="top_search('tiny', '{yun:}t key='wap_js_tiny_add_00001'{/yun}', '{yun:}url m=tiny{/yun}', '{yun:}$config.sy_tiny_web{/yun}', '{yun:}$config.sy_tinydir{/yun}'); $('#search').attr('name', '');">{yun:}t key='wap_js_tiny_add_00001'{/yun}</a>
 	
-							<a href="javascript:void(0)" onclick="top_search('article', '新闻', '{yun:}url m=article{/yun}', '{yun:}$config.sy_article_web{/yun}', '{yun:}$config.sy_articledir{/yun}');" class="none">新闻</a>
+							<a href="javascript:void(0)" onclick="top_search('article', '{yun:}t key='admin_tool_generate_generate_xml_00012'{/yun}', '{yun:}url m=article{/yun}', '{yun:}$config.sy_article_web{/yun}', '{yun:}$config.sy_articledir{/yun}');" class="none">{yun:}t key='admin_tool_generate_generate_xml_00012'{/yun}</a>
 	
-							<a href="javascript:void(0)" onclick="top_search('once', '店铺招聘', '{yun:}url m=once{/yun}', '{yun:}$config.sy_once_web{/yun}', '{yun:}$config.sy_oncedir{/yun}'); $('#search').attr('name', '');">店铺招聘</a>
+							<a href="javascript:void(0)" onclick="top_search('once', '{yun:}t key='wap_js_onceadd_00002'{/yun}', '{yun:}url m=once{/yun}', '{yun:}$config.sy_once_web{/yun}', '{yun:}$config.sy_oncedir{/yun}'); $('#search').attr('name', '');">{yun:}t key='wap_js_onceadd_00002'{/yun}</a>
 						</div>
 					</div>
 	
 					
 						<input class="hp_head_search_text fl" type="text" name="keyword" value="{yun:}$smarty.get.keyword{/yun}"
 						 placeholder="请输入要搜索的关键字，如 会计,仓管,设计师等">
-						<input class="hp_head_search_sr fl" type="submit" value="搜索" style=" float:right" />
+						<input class="hp_head_search_sr fl" type="submit" value="{yun:}t key='common.search'{/yun}" style=" float:right" />
 					
 				</form>
 				</div>
@@ -101,7 +101,7 @@ var weburl="{yun:}$config.sy_weburl{/yun}",
 					<div class="yun_new_header_search_more moreOptions">
 						<div class="">
 							<a href="{yun:}url m=job{/yun}">职位遍历 </a>
-							<a href="{yun:}url m=map{/yun}">地图搜索</a>
+							<a href="{yun:}url m=map{/yun}">{yun:}t key='default_index_header_00001'{/yun}</a>
 							{yun:}if $usertype==1{/yun}
 							<a href="{yun:}url m=member c=finder act=edit{/yun}">高级搜索</a>
 							{yun:}else{/yun}

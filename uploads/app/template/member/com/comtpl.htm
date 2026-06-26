@@ -5,24 +5,24 @@
         <div class=right_box>
       <div class="newmember_tit">
         <ul>
-          <li><a href="index.php?c=info">基本信息</a></li>
-          <li><a href="index.php?c=info&act=side">补充信息</a></li>
-          <li><a href="index.php?c=address">地址管理</a></li>
-          <li><a href="index.php?c=show"> 公司相册</a></li>
-          <li><a href="index.php?c=uppic"> 公司LOGO</a></li>
-          <li><a href="index.php?c=product">产品介绍</a></li>
-          <li><a href="index.php?c=news">公司资讯</a></li>
+          <li><a href="index.php?c=info">{yun:}t key='wap_resume_index_00016'{/yun}</a></li>
+          <li><a href="index.php?c=info&act=side">{yun:}t key='wap_com_info_00058'{/yun}</a></li>
+          <li><a href="index.php?c=address">{yun:}t key='wap_com_set_00003'{/yun}</a></li>
+          <li><a href="index.php?c=show"> {yun:}t key='wap_com_set_00002'{/yun}</a></li>
+          <li><a href="index.php?c=uppic"> {yun:}t key='default_map_index_00001'{/yun}LOGO</a></li>
+          <li><a href="index.php?c=product">{yun:}t key='member_com_address_00004'{/yun}</a></li>
+          <li><a href="index.php?c=news">{yun:}t key='member_com_address_00006'{/yun}</a></li>
           {yun:}if $config.map_key{/yun}
-          <li><a href="index.php?c=map">公司地图</a></li>
+          <li><a href="index.php?c=map">{yun:}t key='member_com_address_00005'{/yun}</a></li>
           {yun:}/if{/yun}
-          <li class="newmember_titcur"><a href="index.php?c=comtpl">个性化模板</a></li>
+          <li class="newmember_titcur"><a href="index.php?c=comtpl">{yun:}t key='member_com_address_00002'{/yun}</a></li>
                </ul>
       </div>
               <div class="clear"></div>
         <div class="newmember_screenbox">
         <div class="newmember_screen">
         <div class="com_topbth_box">
-            <a  href="index.php?c=banner"class="com_ylbth">上传横幅</a>
+            <a  href="index.php?c=banner"class="com_ylbth">{yun:}t key='wap_com_integral_00004'{/yun}</a>
         
         </div>  </div>  </div>
         
@@ -34,15 +34,15 @@
             action="{yun:}$now_url{/yun}&act=settpl">
             <input type="hidden" value="savetpl" name="savetpl" />
             <div class="com_new_tip">
- <span class="com_new_tip_h">温馨小提示</span>公司相册方便求职者了解贵公司的直观呈现，横版拍摄上传效果最佳
+ <span class="com_new_tip_h">{yun:}t key='member_com_added_00002'{/yun}</span>公司相册方便求职者了解贵公司的直观呈现，横版拍摄上传效果最佳
  </div>
             <table class="com_table">
               <tr>
-                <th>图片</th>
-                <th>图片介绍</th>
-                <th>价格</th>
+                <th>{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00013'{/yun}</th>
+                <th>{yun:}t key='member_com_comtpl_00001'{/yun}</th>
+                <th>{yun:}t key='wap_zph_reserve_00002'{/yun}</th>
 
-                <th width="260">操作</th>
+                <th width="260">{yun:}t key='member_user_atn_00003'{/yun}</th>
               </tr>
              {yun:}foreach from=$list item=style{/yun}
               <input type="hidden" value="{yun:}$style.name{/yun}" name="tplname{yun:}$style.id{/yun}" />
@@ -71,11 +71,11 @@
                   {yun:}if $statis.comtpl=='0' || $statis.comtpl=='default'{/yun}
 
                   <span class=" compl_list_b_optsy">使用中</span>
-                  <a href="index.php?c=banner" class="com_bth cblue"> 横幅</a>
+                  <a href="index.php?c=banner" class="com_bth cblue"> {yun:}t key='member_com_comtpl_00002'{/yun}</a>
 
                   {yun:}else{/yun}
                   <a href="javascript:void(0);" onclick="return checktpl('{yun:}$style.id{/yun}');"
-                    class="com_bth cblue">使用</a>
+                    class="com_bth cblue">{yun:}t key='member_user_resumetpl_00002'{/yun}</a>
                   {yun:}/if{/yun}
                   <input type='hidden' id='buytpl_{yun:}$style.id{/yun}' value='1'>
                   {yun:}elseif in_array($t,$buytpl){/yun}
@@ -84,20 +84,20 @@
 
 
                   <span class="  ">使用中</span>
-                  <a href="index.php?c=banner" class="com_bth cblue"> 横幅</a>
+                  <a href="index.php?c=banner" class="com_bth cblue"> {yun:}t key='member_com_comtpl_00002'{/yun}</a>
                                   {yun:}else{/yun}
                   <a href="javascript:void(0);" onclick="return checktpl('{yun:}$style.id{/yun}');"
-                    class="com_bth cblue">使用</a>
+                    class="com_bth cblue">{yun:}t key='member_user_resumetpl_00002'{/yun}</a>
                   {yun:}/if{/yun}
                   {yun:}else{/yun}
                   <input type='hidden' id='buytpl_{yun:}$style.id{/yun}' value='0'>
                   <a href="javascript:void(0);"
                     onclick="return checktpl('{yun:}$style.id{/yun}','{yun:}$style.price{/yun}');"
                     class="com_bth cblue">{yun:}if
-                    $style.price!=0{/yun}购买{yun:}else{/yun}使用{yun:}/if{/yun}</a>
+                    $style.price!=0{/yun}{yun:}t key='member_user_resumetpl_00003'{/yun}{yun:}else{/yun}{yun:}t key='member_user_resumetpl_00002'{/yun}{yun:}/if{/yun}</a>
                   {yun:}/if{/yun} <a
 										href="{yun:}url m=company c=show id=$uid style=$style.url{/yun}"
-                    target="_blank" class="com_bth cblue">预览</a>
+                    target="_blank" class="com_bth cblue">{yun:}t key='wap_hb_admin_whb_00002'{/yun}</a>
                     </div>
                 </td>
               </tr>

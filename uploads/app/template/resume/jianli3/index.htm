@@ -20,9 +20,9 @@
   </div>
   
   <div class="yun_resume_logo_zt">
-  编号：<span class="yun_resume_logo_zt_n">{yun:}$Info.id{/yun}</span> 
- <em class="yun_resume_logo_zt_list"> 简历更新：<span class="yun_resume_logo_zt_n">{yun:}$Info.lastupdate{/yun}  </span>  </em>
-  浏览：<span class="yun_resume_logo_zt_n"><script language="javascript" src="{yun:}url m=resume c=show a=GetHits id='`$Info.id`'{/yun}"></script> 次 </span> <em class="yun_resume_logo_zt_list">两周内简历回复率：<span class="yun_resume_logo_zt_n">{yun:}$pre{/yun}%</span></em></div>
+  {yun:}t key='member_com_sysnews_00002'{/yun}：<span class="yun_resume_logo_zt_n">{yun:}$Info.id{/yun}</span> 
+ <em class="yun_resume_logo_zt_list"> {yun:}t key='api_wxapp_00014'{/yun}：<span class="yun_resume_logo_zt_n">{yun:}$Info.lastupdate{/yun}  </span>  </em>
+  {yun:}t key='wap_user_index_00039'{/yun}：<span class="yun_resume_logo_zt_n"><script language="javascript" src="{yun:}url m=resume c=show a=GetHits id='`$Info.id`'{/yun}"></script> {yun:}t key='common_02089'{/yun} </span> <em class="yun_resume_logo_zt_list">{yun:}t key='resume_jianli3_index_00001'{/yun}<span class="yun_resume_logo_zt_n">{yun:}$pre{/yun}%</span></em></div>
  
    </div>           
  <!--header end-->  
@@ -34,7 +34,7 @@
 			<ul>
 				<li>投递职位：{yun:}$Info.sqInfo.sq_job_name{/yun}</li>
 				<li>投递时间：{yun:}$Info.sqInfo.sq_job_time{/yun}</li>
-				<li>最近登录：{yun:}$Info.login_date_n{/yun}</li>
+				<li>{yun:}t key='admin_yunying_special_component_special_view_company_00009'{/yun}：{yun:}$Info.login_date_n{/yun}</li>
 			</ul>
 		</div>
 		{yun:}/if{/yun}
@@ -43,9 +43,9 @@
 <div class="three_vita_Basic_photo"><img src="{yun:}$Info.photo{/yun}" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_icon{/yun}',2);" width="120" height="120"></div>
 <div class="three_vita_Basic_info">
 <div class="three_vita_name">{yun:}if $Info.m_status=="1"{/yun}{yun:}$Info.name{/yun}{yun:}else{/yun}{yun:}$Info.username_n{/yun}{yun:}/if{/yun}<span class="three_vita_name_nl">（
-{yun:}$Info.job_sex{/yun}，{yun:}$Info.age{/yun}岁）</span>{yun:}if $Info.idcard_status==1 && $Info.idcard{/yun}<img src="{yun:}$config.sy_weburl{/yun}/app/template/resume/images/sf.png" title="身份已认证"><em class="sf_yz">已认证</em>{yun:}/if{/yun}
+{yun:}$Info.job_sex{/yun}，{yun:}$Info.age{/yun}{yun:}t key='home.age_suffix'{/yun}）</span>{yun:}if $Info.idcard_status==1 && $Info.idcard{/yun}<img src="{yun:}$config.sy_weburl{/yun}/app/template/resume/images/sf.png" title="{yun:}t key='resume_jianli3_index_00008'{/yun}"><em class="sf_yz">{yun:}t key='wap_user_alltask_00024'{/yun}</em>{yun:}/if{/yun}
 {yun:}if $UserMember.source==6 && $UserMember.claim==0 && $UserMember.email!=""{/yun}
-<a class="resume_rz resume_three_rz" href="javascript:void(0);" onClick="claim('{yun:}url m=ajax c=claim uid=$Info.uid{/yun}')">认领</a>
+<a class="resume_rz resume_three_rz" href="javascript:void(0);" onClick="claim('{yun:}url m=ajax c=claim uid=$Info.uid{/yun}')">{yun:}t key='resume_jianli3_index_00014'{/yun}</a>
 {yun:}/if{/yun}
 
 
@@ -79,11 +79,11 @@
 
 <div class="three_vita_list_cont">
 
-<div class="three_vita_list_h1"><i class="three_vita_list_h1_icon reaume_iconyx"></i><i class="three_vita_list_h1_iconbg"></i><span class="three_vita_list_h1_span">求职意向</span></div>
-<!--求职意向-->
+<div class="three_vita_list_h1"><i class="three_vita_list_h1_icon reaume_iconyx"></i><i class="three_vita_list_h1_iconbg"></i><span class="three_vita_list_h1_span">{yun:}t key='wap_resume_index_00020'{/yun}</span></div>
+<!--{yun:}t key='wap_resume_index_00020'{/yun}-->
 <div class="three_vita_list mt20">
-<div class="three_vita_Intention ">意向岗位：<span class="three_vita_Intention_em">{yun:}$Info.customjob{/yun}</span> </div>        
-<div class="three_vita_Intention ">工作地点：<span class="three_vita_Intention_em">
+<div class="three_vita_Intention ">{yun:}t key='resume_jianli3_index_00006'{/yun}<span class="three_vita_Intention_em">{yun:}$Info.customjob{/yun}</span> </div>        
+<div class="three_vita_Intention ">{yun:}t key='member_user_partcollect_00001'{/yun}：<span class="three_vita_Intention_em">
 	{yun:}foreach from=$Info.expectcity key=key item=v{/yun} 
 		{yun:}if $key< 5{/yun} 
 			{yun:}$v{/yun}&nbsp;
@@ -91,13 +91,13 @@
 	{yun:}/foreach{/yun}
 </span> 
 </div>        
-<div class="three_vita_Intention">期望行业：<span class="three_vita_Intention_em">{yun:}$Info.hy{/yun} </span> </div>
+<div class="three_vita_Intention">{yun:}t key='admin_tool_database_component_classstat_00048'{/yun}：<span class="three_vita_Intention_em">{yun:}$Info.hy{/yun} </span> </div>
 <div class="three_vita_Intention ">待遇要求<span class="three_vita_Intention_em">：{yun:}$Info.salary{/yun}</span>  </div>                             
-{yun:}if $Info.report{/yun}<div class="three_vita_Intention ">到职时间：<span class="three_vita_Intention_em">{yun:}$Info.report{/yun}</span></div>{yun:}/if{/yun}
-{yun:}if $Info.type{/yun}<div class="three_vita_Intention">职位性质：<span class="three_vita_Intention_em">{yun:}$Info.type{/yun}</span></div>{yun:}/if{/yun}
-{yun:}if $Info.jobstatus{/yun}<div class="three_vita_Intention">求职状态：{yun:}$Info.jobstatus{/yun}</div>{yun:}/if{/yun}
+{yun:}if $Info.report{/yun}<div class="three_vita_Intention ">{yun:}t key='common_01705'{/yun}：<span class="three_vita_Intention_em">{yun:}$Info.report{/yun}</span></div>{yun:}/if{/yun}
+{yun:}if $Info.type{/yun}<div class="three_vita_Intention">{yun:}t key='common_01837'{/yun}：<span class="three_vita_Intention_em">{yun:}$Info.type{/yun}</span></div>{yun:}/if{/yun}
+{yun:}if $Info.jobstatus{/yun}<div class="three_vita_Intention">{yun:}t key='wap_user_addexpect_00009'{/yun}：{yun:}$Info.jobstatus{/yun}</div>{yun:}/if{/yun}
 
-<div class="three_vita_Intention" style="width:100%">工作职能：
+<div class="three_vita_Intention" style="width:100%">{yun:}t key='wap_user_addresume_00037'{/yun}：
 {yun:}foreach from=$Info.expectjob key=key item=v{/yun}
 {yun:}if $key<5{/yun}
 <span class="resume_job_tag"><i class="resume_job_tag_icon"></i>{yun:}$v{/yun}</span>
@@ -106,44 +106,44 @@
 </div>      
                 
 </div>
-<!--求职意向 end-->
+<!--{yun:}t key='wap_resume_index_00020'{/yun} end-->
 {yun:}if $resumeCkeck==1{/yun}
 
 {yun:}if !empty($Info.description){/yun}
-<!--自我评价-->
+<!--{yun:}t key='wap_resume_index_00023'{/yun}-->
 <div class="three_vita_list">
-<div class="three_vita_list_h1"><i class="three_vita_list_h1_icon reaume_iconpj"></i><i class="three_vita_list_h1_iconbg"></i><span class="three_vita_list_h1_span">自我评价</span></div>
+<div class="three_vita_list_h1"><i class="three_vita_list_h1_icon reaume_iconpj"></i><i class="three_vita_list_h1_iconbg"></i><span class="three_vita_list_h1_span">{yun:}t key='wap_resume_index_00023'{/yun}</span></div>
 <div class="three_vita_skill">
-<div class="three_vita_skill_Intention">自我评价：{yun:}$Info.description{/yun} </div>
+<div class="three_vita_skill_Intention">{yun:}t key='wap_resume_index_00023'{/yun}：{yun:}$Info.description{/yun} </div>
 
 </div>
 </div>
 {yun:}/if{/yun}
-<!--自我评价 end-->
+<!--{yun:}t key='wap_resume_index_00023'{/yun} end-->
 
-<!--工作经历-->
+<!--{yun:}t key='wap_resume_index_00017'{/yun}-->
 {yun:}if is_array($Info.user_work) && !empty($Info.user_work){/yun}
 <div class="three_vita_list" id="m3">
-<div class="three_vita_list_h1"><i class="three_vita_list_h1_icon reaume_iconjn"></i><i class="three_vita_list_h1_iconbg"></i><span class="three_vita_list_h1_span ">工作经历</span>
-	{yun:}if $Info.avghour>0{/yun}<span class="yun_resume_jobtime3">平均工作时长：{yun:}$Info.avghourInfo{/yun} </span>{yun:}/if{/yun}</div>
+<div class="three_vita_list_h1"><i class="three_vita_list_h1_icon reaume_iconjn"></i><i class="three_vita_list_h1_iconbg"></i><span class="three_vita_list_h1_span ">{yun:}t key='wap_resume_index_00017'{/yun}</span>
+	{yun:}if $Info.avghour>0{/yun}<span class="yun_resume_jobtime3">{yun:}t key='wap_resume_index_00006'{/yun}：{yun:}$Info.avghourInfo{/yun} </span>{yun:}/if{/yun}</div>
 
 {yun:}foreach item=one from=$Info.user_work{/yun}
 <div class="three_vita_skill">
 <div  class="three_vita_introduction_a three_vita_dw_name">{yun:}$one.name{/yun}</div >  
 <div class="three_vita_skill_introduction">
-	{yun:}if $one.sdate!=0{/yun}<div class="three_vita_introduction_a three_vita_date">工作时间：{yun:}$one.sdate|date_format:"%Y年%m月"{/yun} - {yun:}if $one.edate{/yun}{yun:}$one.edate|date_format:"%Y年%m月"{/yun}{yun:}else{/yun}至今{yun:}/if{/yun} <span style="color: red;">【{yun:}$one.time_n{/yun}】</span></div >{yun:}/if{/yun}
-{yun:}if $one.title{/yun}<div class="three_vita_introduction_a three_vita_date">在职职位：{yun:}$one.title{/yun}</div >{yun:}/if{/yun} 
+	{yun:}if $one.sdate!=0{/yun}<div class="three_vita_introduction_a three_vita_date">{yun:}t key='admin_user_users_component_resume_edit_00030'{/yun}：{yun:}$one.sdate|date_format:"%Y年%m月"{/yun} - {yun:}if $one.edate{/yun}{yun:}$one.edate|date_format:"%Y年%m月"{/yun}{yun:}else{/yun}{yun:}t key='wap_js_userpicker_00004'{/yun}{yun:}/if{/yun} <span style="color: red;">【{yun:}$one.time_n{/yun}】</span></div >{yun:}/if{/yun}
+{yun:}if $one.title{/yun}<div class="three_vita_introduction_a three_vita_date">{yun:}t key='resume_jianli3_index_00011'{/yun}：{yun:}$one.title{/yun}</div >{yun:}/if{/yun} 
 </div>
 {yun:}if $one.content{/yun}<div class="three_vita_skill_Intention">工作职责：{yun:}$one.content{/yun} </div>{yun:}/if{/yun}       
 </div>
 {yun:}/foreach{/yun}
 </div>
 {yun:}/if{/yun}
-<!--工作经历 end-->
-<!--教育经历-->
+<!--{yun:}t key='wap_resume_index_00017'{/yun} end-->
+<!--{yun:}t key='wap_resume_index_00019'{/yun}-->
 {yun:}if is_array($Info.user_edu) && !empty($Info.user_edu){/yun}
 <div class="three_vita_list" id="m0">
-<div class="three_vita_list_h1"><i class="three_vita_list_h1_icon reaume_iconjy"></i><i class="three_vita_list_h1_iconbg"></i><span class="three_vita_list_h1_span">教育经历</span></div>
+<div class="three_vita_list_h1"><i class="three_vita_list_h1_icon reaume_iconjy"></i><i class="three_vita_list_h1_iconbg"></i><span class="three_vita_list_h1_span">{yun:}t key='wap_resume_index_00019'{/yun}</span></div>
 {yun:}foreach item=one from=$Info.user_edu{/yun}
 <div class="three_vita_skill">
 <div class="three_vita_skill_introduction">
@@ -155,12 +155,12 @@
 {yun:}/foreach{/yun}
 </div>
 {yun:}/if{/yun}
-<!--教育经历 end-->
-<!--职业技能-->
+<!--{yun:}t key='wap_resume_index_00019'{/yun} end-->
+<!--{yun:}t key='wap_resume_index_00021'{/yun}-->
 {yun:}if $Info.m_status=="1"{/yun}
 {yun:}if is_array($Info.user_skill) && !empty($Info.user_skill){/yun}
 <div class="three_vita_list" id="m2">
-<div class="three_vita_list_h1"><i class="three_vita_list_h1_icon reaume_iconjn"></i><i class="three_vita_list_h1_iconbg"></i><span class="three_vita_list_h1_span">职业技能</span></div>
+<div class="three_vita_list_h1"><i class="three_vita_list_h1_icon reaume_iconjn"></i><i class="three_vita_list_h1_iconbg"></i><span class="three_vita_list_h1_span">{yun:}t key='wap_resume_index_00021'{/yun}</span></div>
 
 {yun:}foreach item=one from=$Info.user_skill{/yun}
 										<div class="yun_newedition_skilllist" style="width:258px">
@@ -171,7 +171,7 @@
 													<span class="yun_newedition_skill_progress_cd">{yun:}$one.ing_n{/yun}</span>
 												</div>
 											</div>
-											<div class="yun_newedition_skill_time ">{yun:}if $one.longtime{/yun}掌握时长：{yun:}$one.longtime{/yun}年{yun:}/if{/yun}
+											<div class="yun_newedition_skill_time ">{yun:}if $one.longtime{/yun}掌握时长：{yun:}$one.longtime{/yun}{yun:}t key='common_02077'{/yun}{yun:}/if{/yun}
 												{yun:}if $one.picurl{/yun}
 													<img src="{yun:}$one.picurl{/yun}" lay-src="{yun:}$one.picurl{/yun}" width="210" height="153" />
 												{yun:}/if{/yun} 
@@ -183,34 +183,34 @@
 {yun:}/if{/yun}
 {yun:}if is_array($Info.user_xm) && !empty($Info.user_xm){/yun}
 <div class="three_vita_list" id="m4">
-<div class="three_vita_list_h1"><i class="three_vita_list_h1_icon reaume_iconxm"></i><i class="three_vita_list_h1_iconbg"></i><span class="three_vita_list_h1_span">项目经历</span></div>
+<div class="three_vita_list_h1"><i class="three_vita_list_h1_icon reaume_iconxm"></i><i class="three_vita_list_h1_iconbg"></i><span class="three_vita_list_h1_span">{yun:}t key='wap_resume_index_00025'{/yun}</span></div>
 
 {yun:}foreach item=one from=$Info.user_xm{/yun}
 <div class="three_vita_skill">
 <div class="three_vita_skill_introduction">
 <div  class="three_vita_introduction_a three_vita_dw_name" style="width:420px;">{yun:}$one.name{/yun}</div >
-	{yun:}if $one.sdate>0{/yun}<div class="three_vita_introduction_a three_vita_date">时间：{yun:}$one.sdate|date_format:"%Y年%m月"{/yun} - {yun:}$one.edate|date_format:"%Y年%m月"{/yun} </div >{yun:}/if{/yun}
+	{yun:}if $one.sdate>0{/yun}<div class="three_vita_introduction_a three_vita_date">{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00020'{/yun}：{yun:}$one.sdate|date_format:"%Y年%m月"{/yun} - {yun:}$one.edate|date_format:"%Y年%m月"{/yun} </div >{yun:}/if{/yun}
 
 {yun:}if $one.title{/yun} 
 <div  class="three_vita_skill_Intention ">担任：{yun:}$one.title{/yun}</div >  
 {yun:}/if{/yun}
 </div>
-{yun:}if $one.content{/yun}<div class="three_vita_skill_Intention">项目描述：{yun:}$one.content{/yun} </div>{yun:}/if{/yun}
+{yun:}if $one.content{/yun}<div class="three_vita_skill_Intention">{yun:}t key='admin_user_users_component_resume_edit_00035'{/yun}：{yun:}$one.content{/yun} </div>{yun:}/if{/yun}
 </div>
 {yun:}/foreach{/yun}
 </div>
 {yun:}/if{/yun}
 {yun:}if is_array($Info.user_tra) && !empty($Info.user_tra){/yun}
 <div class="three_vita_list" id="m1">
-<div class="three_vita_list_h1"><i class="three_vita_list_h1_icon reaume_iconpx"></i><i class="three_vita_list_h1_iconbg"></i><span class="three_vita_list_h1_span">培训经历</span></div>
+<div class="three_vita_list_h1"><i class="three_vita_list_h1_icon reaume_iconpx"></i><i class="three_vita_list_h1_iconbg"></i><span class="three_vita_list_h1_span">{yun:}t key='wap_resume_index_00015'{/yun}</span></div>
 {yun:}foreach item=one from=$Info.user_tra{/yun}
 <div class="three_vita_skill">
   <div  class="three_vita_introduction_a three_vita_dw_name">{yun:}$one.name{/yun} </div >   
 <div class="three_vita_skill_introduction">
-	{yun:}if $one.sdate>0{/yun}<div class="three_vita_introduction_a three_vita_date">培训时间：{yun:}$one.sdate|date_format:"%Y年%m月"{/yun} - {yun:}$one.edate|date_format:"%Y年%m月"{/yun} </div>{yun:}/if{/yun}
-{yun:}if $one.title{/yun}<div class="three_vita_introduction_a three_vita_date">培训方向：{yun:}$one.title{/yun}</div >{yun:}/if{/yun}    
+	{yun:}if $one.sdate>0{/yun}<div class="three_vita_introduction_a three_vita_date">{yun:}t key='admin_user_users_component_resume_edit_00029'{/yun}：{yun:}$one.sdate|date_format:"%Y年%m月"{/yun} - {yun:}$one.edate|date_format:"%Y年%m月"{/yun} </div>{yun:}/if{/yun}
+{yun:}if $one.title{/yun}<div class="three_vita_introduction_a three_vita_date">{yun:}t key='wap_user_addresumeson_00025'{/yun}：{yun:}$one.title{/yun}</div >{yun:}/if{/yun}    
 </div>
-{yun:}if $one.content{/yun}<div class="three_vita_skill_Intention">专业描述：{yun:}$one.content{/yun} </div>{yun:}/if{/yun}        
+{yun:}if $one.content{/yun}<div class="three_vita_skill_Intention">{yun:}t key='resume_jianli3_index_00010'{/yun}：{yun:}$one.content{/yun} </div>{yun:}/if{/yun}        
 </div>
 {yun:}/foreach{/yun}
 
@@ -219,12 +219,12 @@
 
 {yun:}if is_array($Info.user_other) && !empty($Info.user_other){/yun}
 <div class="three_vita_list" id="m6">
-<div class="three_vita_list_h1"><i class="three_vita_list_h1_icon reaume_iconqt"></i><i class="three_vita_list_h1_iconbg"></i><span class="three_vita_list_h1_span">其他信息</span></div>
+<div class="three_vita_list_h1"><i class="three_vita_list_h1_icon reaume_iconqt"></i><i class="three_vita_list_h1_iconbg"></i><span class="three_vita_list_h1_span">{yun:}t key='wap_resume_show_00017'{/yun}</span></div>
 {yun:}foreach item=one from=$Info.user_other{/yun}
 <div class="three_vita_skill">
-<div class="three_vita_skill_Intention"><i class="three_vita_Intention_i"></i>标题：{yun:}$one.name{/yun} </div>        
+<div class="three_vita_skill_Intention"><i class="three_vita_Intention_i"></i>{yun:}t key='wap_user_addresumeson_00045'{/yun}：{yun:}$one.name{/yun} </div>        
 
-{yun:}if $one.content{/yun}<div class="three_vita_skill_Intention"><i class="three_vita_Intention_i"></i>描述：{yun:}$one.content{/yun} </div>{yun:}/if{/yun}        
+{yun:}if $one.content{/yun}<div class="three_vita_skill_Intention"><i class="three_vita_Intention_i"></i>{yun:}t key='admin_user_users_component_resume_edit_00038'{/yun}：{yun:}$one.content{/yun} </div>{yun:}/if{/yun}        
 </div>   
 {yun:}/foreach{/yun}   
 </div>
@@ -250,9 +250,9 @@
 {yun:}/if{/yun}
 
      {yun:}if $Info.doc && $Info.user_doc.doc{/yun}
-        <!--粘贴简历-->
+        <!--{yun:}t key='member_user_expectq_00007'{/yun}-->
        <div class="three_vita_list">
-<div class="three_vita_list_h1"><i class="three_vita_list_h1_icon reaume_iconzt"></i><i class="three_vita_list_h1_iconbg"></i><span class="three_vita_list_h1_span">简历内容</span></div>
+<div class="three_vita_list_h1"><i class="three_vita_list_h1_icon reaume_iconzt"></i><i class="three_vita_list_h1_iconbg"></i><span class="three_vita_list_h1_span">{yun:}t key='wap_resume_show_00019'{/yun}</span></div>
 <div class="three_vita_skill">
 <div class="three_vita_skill_Intention">      {yun:}$Info.user_doc.doc{/yun} </div>
 
@@ -263,36 +263,36 @@
        {yun:}/if{/yun}
        
 <div class="three_vita_list">
-<div class="three_vita_list_h1"><i class="three_vita_list_h1_icon reaume_iconlx"></i><i class="three_vita_list_h1_iconbg"></i><span class="three_vita_list_h1_span">联系方式</span></div>
+<div class="three_vita_list_h1"><i class="three_vita_list_h1_icon reaume_iconlx"></i><i class="three_vita_list_h1_iconbg"></i><span class="three_vita_list_h1_span">{yun:}t key='wap_resume_index_00022'{/yun}</span></div>
 {yun:}if $Info.m_status=="1"{/yun}
 {yun:}if $Info.telphone{/yun}
-<div class="three_vita_Intention ">联系手机：{yun:}$Info.telphone{/yun}</div>
+<div class="three_vita_Intention ">{yun:}t key='wap_advice_00006'{/yun}：{yun:}$Info.telphone{/yun}</div>
 {yun:}/if{/yun}
 {yun:}if $Info.telhome{/yun}
 <div class="three_vita_Intention">联系座机：{yun:}$Info.telhome{/yun} </div>    
 {yun:}/if{/yun}
 {yun:}if $Info.email{/yun}
-<div class="three_vita_Intention ">电子邮箱：{yun:}$Info.email{/yun} </div>
+<div class="three_vita_Intention ">{yun:}t key='wap_user_ident_00003'{/yun}：{yun:}$Info.email{/yun} </div>
 {yun:}/if{/yun}
 {yun:}if $Info.address{/yun}
-<div class="three_vita_Intention">详细地址：{yun:}$Info.address|mb_substr:0:16:'utf-8'{/yun}</div>
+<div class="three_vita_Intention">{yun:}t key='wap_user_info_00020'{/yun}：{yun:}$Info.address|mb_substr:0:16:'utf-8'{/yun}</div>
 {yun:}/if{/yun}
     {yun:}if $Info.qq{/yun}
 	<div class="three_vita_Intention ">联系Q Q：{yun:}$Info.qq{/yun}</div>
    {yun:}/if{/yun}    
 {yun:}if $Info.homepage{/yun}
-<div class="three_vita_Intention ">个人主页：{yun:}$Info.homepage{/yun}</div>
+<div class="three_vita_Intention ">{yun:}t key='member_com_com_resume_xls_00001'{/yun}：{yun:}$Info.homepage{/yun}</div>
 {yun:}/if{/yun}
 
 <div class="three_vita_Intention "> 
-{yun:}if $Info.idcard{/yun}<span>身份证号：</span>
+{yun:}if $Info.idcard{/yun}<span>{yun:}t key='wap_user_idcard_00001'{/yun}：</span>
 <span class="three_vita_Identity">
 {yun:}$Info.idcard{/yun}
 </span> 
 {yun:}/if{/yun} 
 </div>
 	{yun:}if $Info.wxewm{/yun}
-    <div class="one_vita_ewm_box"><img src="{yun:}$Info.wxewm{/yun}" width="120" height="120"><div class="one_vita_ewm_box_p">个人二维码</div></div>
+    <div class="one_vita_ewm_box"><img src="{yun:}$Info.wxewm{/yun}" width="120" height="120"><div class="one_vita_ewm_box_p">{yun:}t key='resume_jianli3_index_00003'{/yun}</div></div>
     {yun:}/if{/yun}
    {yun:}else{/yun}
    <div class="re_touch" >{yun:}$Info.link_msg{/yun}</div>
@@ -304,40 +304,40 @@
 					  
 						{yun:}if $tj.education{/yun}
 						<div class="yun_newedition_resume_nologin_list">
-							  <div class="resume_bg_tit"><i class="resume_bg_icon resume_bg_icon_jy"></i>教育经历</div>
-							  <div class="resume_bg_r">  {yun:}$tj.edumin{/yun}-{yun:}$tj.edumax{/yun} 已完成{yun:}$tj.education{/yun}段学业</div>
+							  <div class="resume_bg_tit"><i class="resume_bg_icon resume_bg_icon_jy"></i>{yun:}t key='wap_resume_index_00019'{/yun}</div>
+							  <div class="resume_bg_r">  {yun:}$tj.edumin{/yun}-{yun:}$tj.edumax{/yun} {yun:}t key='wap_resume_index_00029'{/yun}{yun:}$tj.education{/yun}{yun:}t key='wap_resume_index_00031'{/yun}</div>
 						</div>
 						{yun:}/if{/yun} 
 						{yun:}if $tj.worknum>0{/yun}
 						<div class="yun_newedition_resume_nologin_list">
 							  <div class="resume_bg_tit"><i
-										  class="resume_bg_icon resume_bg_icon_jl"></i>工作经历</div>
-							  <div class="resume_bg_r"> {yun:}$tj.workmin{/yun}-{yun:}$tj.workmax{/yun} 参加过{yun:}$tj.worknum{/yun}份工作，平均工作时长{yun:}$tj.workavg{/yun}个月，涉及{yun:}$tj.worktit{/yun}等岗位 </div>
+										  class="resume_bg_icon resume_bg_icon_jl"></i>{yun:}t key='wap_resume_index_00017'{/yun}</div>
+							  <div class="resume_bg_r"> {yun:}$tj.workmin{/yun}-{yun:}$tj.workmax{/yun} {yun:}t key='wap_resume_index_00027'{/yun}{yun:}$tj.worknum{/yun}{yun:}t key='common_01887'{/yun}，{yun:}t key='wap_resume_index_00006'{/yun}{yun:}$tj.workavg{/yun}{yun:}t key='wap_resume_index_00034'{/yun}，{yun:}t key='common_02009'{/yun}{yun:}$tj.worktit{/yun}{yun:}t key='wap_resume_index_00032'{/yun} </div>
 						</div>
 						{yun:}/if{/yun} 
 						{yun:}if $tj.xmnum>0{/yun}
 						<div class="yun_newedition_resume_nologin_list">
-							  <div class="resume_bg_tit"><i class="resume_bg_icon resume_bg_icon_xm"></i>项目经历</div>
-							  <div class="resume_bg_r"> {yun:}$tj.xmmin{/yun}-{yun:}$tj.xmmax{/yun} 独自完成或参与过{yun:}$tj.xmnum{/yun}个项目，并在其中担任过{yun:}$tj.xmtit{/yun}等职务 </div>
+							  <div class="resume_bg_tit"><i class="resume_bg_icon resume_bg_icon_xm"></i>{yun:}t key='wap_resume_index_00025'{/yun}</div>
+							  <div class="resume_bg_r"> {yun:}$tj.xmmin{/yun}-{yun:}$tj.xmmax{/yun} {yun:}t key='wap_resume_index_00003'{/yun}{yun:}$tj.xmnum{/yun}{yun:}t key='wap_resume_index_00026'{/yun}，{yun:}t key='wap_resume_index_00004'{/yun}{yun:}$tj.xmtit{/yun}{yun:}t key='wap_resume_index_00033'{/yun} </div>
 						</div>
 						{yun:}/if{/yun}
 						{yun:}if $tj.trainnum>0{/yun}
 						<div class="yun_newedition_resume_nologin_list">
-							  <div class="resume_bg_tit"><i class="resume_bg_icon resume_bg_icon_px"></i>培训经历</div>
-							  <div class="resume_bg_r"> {yun:}$tj.trainmin{/yun}-{yun:}$tj.trainmax{/yun} 参加过{yun:}$tj.trainnum{/yun}次培训，进行自我充电，能力提升</div>
+							  <div class="resume_bg_tit"><i class="resume_bg_icon resume_bg_icon_px"></i>{yun:}t key='wap_resume_index_00015'{/yun}</div>
+							  <div class="resume_bg_r"> {yun:}$tj.trainmin{/yun}-{yun:}$tj.trainmax{/yun} {yun:}t key='wap_resume_index_00027'{/yun}{yun:}$tj.trainnum{/yun}次培训，进行自我充电，能力提升</div>
 						</div>
 						{yun:}/if{/yun} 
 						{yun:}if $tj.skillnum>0{/yun}
 						<div class="yun_newedition_resume_nologin_list">
-							  <div class="resume_bg_tit"><i class="resume_bg_icon resume_bg_icon_jn"></i>职业技能</div>
-							  <div class="resume_bg_r">目前已掌握{yun:}$tj.skillnum{/yun}项技能，其中{yun:}$tj.skillpic{/yun}项拥有技能证书
+							  <div class="resume_bg_tit"><i class="resume_bg_icon resume_bg_icon_jn"></i>{yun:}t key='wap_resume_index_00021'{/yun}</div>
+							  <div class="resume_bg_r">{yun:}t key='wap_resume_index_00010'{/yun}{yun:}$tj.skillnum{/yun}{yun:}t key='wap_resume_index_00008'{/yun}{yun:}$tj.skillpic{/yun}{yun:}t key='wap_resume_index_00005'{/yun}
 							  </div>
 						</div>
 						{yun:}/if{/yun}
 						{yun:}if $tj.shownum>0{/yun}
 						<div class="yun_newedition_resume_nologin_list">
-							  <div class="resume_bg_tit"><i class="resume_bg_icon resume_bg_icon_iconry"></i>作品案例</div>
-							  <div class="resume_bg_r">已上传{yun:}$tj.shownum{/yun}份作品案例给招聘企业提前预览
+							  <div class="resume_bg_tit"><i class="resume_bg_icon resume_bg_icon_iconry"></i>{yun:}t key='wap_resume_show_00016'{/yun}</div>
+							  <div class="resume_bg_r">{yun:}t key='wap_user_alltask_00019'{/yun}{yun:}$tj.shownum{/yun}{yun:}t key='wap_resume_index_00002'{/yun}
 							  </div>
 						</div>
 						{yun:}/if{/yun}
@@ -369,12 +369,12 @@
 			{yun:}if $Info.m_status== 1{/yun}
 			<div class="tcktouch_box_username">{yun:}$Info.name{/yun}</div>
 			
-			<div class="tcktouch_box_tip">联系我时请说是在{yun:}$config.sy_webname{/yun}上看到的</div>
-			<div class="tcktouch_box_p">手机：<span class="tcktouch_box_p_sj">{yun:}$Info.telphone{/yun}</span></div>
-			{yun:}if $Info.email{/yun} <div class="tcktouch_box_p">邮箱：{yun:}$Info.email{/yun} </div>{yun:}/if{/yun} 
+			<div class="tcktouch_box_tip">{yun:}t key='member_com_hr_resume_00001'{/yun}{yun:}$config.sy_webname{/yun}{yun:}t key='wap_job_index_00002'{/yun}</div>
+			<div class="tcktouch_box_p">{yun:}t key='member_user_info_00011'{/yun}：<span class="tcktouch_box_p_sj">{yun:}$Info.telphone{/yun}</span></div>
+			{yun:}if $Info.email{/yun} <div class="tcktouch_box_p">{yun:}t key='member_user_resumeout_00004'{/yun}：{yun:}$Info.email{/yun} </div>{yun:}/if{/yun} 
 			{yun:}if $Info.qq{/yun}<div class="tcktouch_box_p">Q Q：{yun:}$Info.qq{/yun}</div> {yun:}/if{/yun} 
-			{yun:}if $Info.homepage{/yun} <div class="tcktouch_box_p">主页：{yun:}$Info.homepage{/yun}</div> {yun:}/if{/yun} 
-			{yun:}if $Info.wxewm{/yun} <div class="tcktouch_box_ewm"><img src="{yun:}$Info.wxewm{/yun}" width="100" height="100"><div class="tcktouch_box_ewm_p">个人二维码</div></div> {yun:}/if{/yun}
+			{yun:}if $Info.homepage{/yun} <div class="tcktouch_box_p">{yun:}t key='wap_ask_00012'{/yun}：{yun:}$Info.homepage{/yun}</div> {yun:}/if{/yun} 
+			{yun:}if $Info.wxewm{/yun} <div class="tcktouch_box_ewm"><img src="{yun:}$Info.wxewm{/yun}" width="100" height="100"><div class="tcktouch_box_ewm_p">{yun:}t key='resume_jianli3_index_00003'{/yun}</div></div> {yun:}/if{/yun}
 			{yun:}/if{/yun}
 		</div>
 	</div>
@@ -383,20 +383,20 @@
 
 
 {yun:}if $smarty.get.see=='member'{/yun} 
-<!--使用该模板 预览时隐藏  -->
+<!--{yun:}t key='resume_jianli3_index_00004'{/yun} 预览时隐藏  -->
 <div class="expext_yl_box_bth">{yun:}if in_array($tplurl.id,$paytpls){/yun}
-	<a href="javascript:;" onClick="settemplate('确定使用该模板？', '{yun:}url m=ajax c=settpl id=$tplurl.id eid=$Info.id{/yun}');" class="expext_yl_box_sub">使用该模板</a>
+	<a href="javascript:;" onClick="settemplate('确定使用该模板？', '{yun:}url m=ajax c=settpl id=$tplurl.id eid=$Info.id{/yun}');" class="expext_yl_box_sub">{yun:}t key='resume_jianli3_index_00004'{/yun}</a>
 	{yun:}else{/yun}
-	<a href="javascript:void(0);" onClick="settemplate('购买模版将花费{yun:}$tplurl.price{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}，是否继续？', '{yun:}url m=ajax c=pay id=$tplurl.id  eid=$Info.id{/yun}');" class="expext_yl_box_sub">购买并使用该模板</a>
+	<a href="javascript:void(0);" onClick="settemplate('购买模版将花费{yun:}$tplurl.price{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}，{yun:}t key='common_01784'{/yun}？', '{yun:}url m=ajax c=pay id=$tplurl.id  eid=$Info.id{/yun}');" class="expext_yl_box_sub">{yun:}t key='resume_jianli3_index_00002'{/yun}</a>
 	{yun:}/if{/yun}
-	<a href="{yun:}url m=resume c=show id=$eid tmp=$tplurl.id{/yun}" target="_blank" class="expext_yl_box_sub">预览</a>
+	<a href="{yun:}url m=resume c=show id=$eid tmp=$tplurl.id{/yun}" target="_blank" class="expext_yl_box_sub">{yun:}t key='wap_hb_admin_whb_00002'{/yun}</a>
 </div>
 {yun:}/if{/yun} 
 
 <!--footer-->
 <div class="clear"></div>
 {yun:}if $smarty.get.see!='member'{/yun}
-<div class="yun_resume_foot noprint"><a href="{yun:}$config.sy_weburl{/yun}" target="_blank">{yun:}$config.sy_webname{/yun}</a> &copy; 版权所有 {yun:}$config.sy_weburl{/yun}  本网招聘及简历信息等 ,未经书面授权不得转载 <br />
+<div class="yun_resume_foot noprint"><a href="{yun:}$config.sy_weburl{/yun}" target="_blank">{yun:}$config.sy_webname{/yun}</a> &copy; {yun:}t key='api_wapalipay_00001'{/yun} {yun:}$config.sy_weburl{/yun}  本网招聘及简历信息等 ,未经书面授权不得转载 <br />
 <div id="uclogin" class="none"></div>
 </div>
 {yun:}/if{/yun}
@@ -417,15 +417,15 @@
 			form = layui.form,
 			layer = layui.layer;  
 		layer.photos({
-			photos: '#rolling_img1'
-			,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+			photos: '#rolling_img1"
+			,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_neirong_announcement_component_announcement_add_00002'{/yun}）
 		}); 
 		layer.photos({
-		  photos: '#m2',
-		  anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+		  photos: "#m2",
+		  anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_neirong_announcement_component_announcement_add_00002'{/yun}）
 		}); 
 	});
-var integral_pricename='{yun:}$config.integral_pricename{/yun}'; 
+var integral_pricename="{yun:}$config.integral_pricename{/yun}'; 
 var isHeight = "{yun:}$Info.height_status{/yun}";
 <!--//--><![CDATA[//><!--
 var li_num=$("#rolling_img1 li").length;

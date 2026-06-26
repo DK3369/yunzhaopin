@@ -16,7 +16,7 @@
 <div class="special_cont_tip">
 <div><i class="special_cont_tip_left"></i></div>
 
-<div class="special_cont_tip_span">专题介绍<em class="famous_content_t_zt_span_em"> Projects Introduction </em></div>
+<div class="special_cont_tip_span">{yun:}t key='default_special_senior_00001'{/yun}<em class="famous_content_t_zt_span_em"> Projects Introduction </em></div>
 
 </div>
 
@@ -29,7 +29,7 @@
 </div>
 <div class="special_cont_tip">
 <div><i class="special_cont_tip_left"></i></div>
-<div class="special_cont_tip_span">名企招聘<em class="famous_content_t_zt_span_em"> Famous Enterprise Recruitments</em></div>
+<div class="special_cont_tip_span">{yun:}t key='home.famous_companies'{/yun}<em class="famous_content_t_zt_span_em"> Famous Enterprise Recruitments</em></div>
 </div>
     <div class="senior_job_connt">
     
@@ -43,11 +43,11 @@
 			<div class="senior_j_c">
                 <div class="senior_j_h1"><a href="{yun:}$clist.comurl{/yun}" target="_blank">{yun:}$clist.name_n{/yun}</a></div>
 				<div class="senior_j_c_list">
-                招聘职位：{yun:}foreach from=$clist.jobs key=key item=jlist{/yun}{yun:}if $key>0{/yun},{yun:}/if{/yun}<a href="{yun:}$jlist.joburl{/yun}" target="_blank">{yun:}$jlist.name_n{/yun}</a>{yun:}/foreach{/yun} 
+                {yun:}t key='wap_company_index_00001'{/yun}：{yun:}foreach from=$clist.jobs key=key item=jlist{/yun}{yun:}if $key>0{/yun},{yun:}/if{/yun}<a href="{yun:}$jlist.joburl{/yun}" target="_blank">{yun:}$jlist.name_n{/yun}</a>{yun:}/foreach{/yun} 
                 </div>
 			</div>
          <div class="senior_job_zt"> 
-         <span class="fl">共{yun:}$clist.jobnum{/yun}个在招职位</span><a href="{yun:}url m=company c=show id='`$clist.uid`'{/yun}#job" target="_blank" class="fr">更多>></a></div>
+         <span class="fl">{yun:}t key='common_02057'{/yun}{yun:}$clist.jobnum{/yun}{yun:}t key='wap_com_index_00019'{/yun}</span><a href="{yun:}url m=company c=show id='`$clist.uid`'{/yun}#job" target="_blank" class="fr">{yun:}t key='common.more'{/yun}>></a></div>
 	 </div>
  	</div>
 	{yun:}/if{/yun}
@@ -61,26 +61,26 @@
 	<div class="senior_new_t">我是企业，我要加入招聘</div>
 		{yun:}if $uid{/yun}
         {yun:}if $usertype=='2'{/yun}
-		<input type='button' value="我要报名" onclick="comapply('{yun:}$info.id{/yun}','{yun:}$info.integral{/yun}','{yun:}url m=special c=apply{/yun}')" class="senior_new_bth" />
+		<input type='button' value="{yun:}t key='wap_part_show_00008'{/yun}" onclick="comapply('{yun:}$info.id{/yun}','{yun:}$info.integral{/yun}','{yun:}url m=special c=apply{/yun}')" class="senior_new_bth" />
         {yun:}else{/yun}
             {yun:}if $config.sy_user_change==1{/yun}
-                 <input type='button' value="我要报名" onclick="layer.msg('请先申请企业用户才能报名！',2, 8)" class="senior_new_bth" />
+                 <input type='button' value="{yun:}t key='wap_part_show_00008'{/yun}" onclick="layer.msg('请先申请企业用户才能报名！',2, 8)" class="senior_new_bth" />
            {yun:}else{/yun} 
-                <input type='button' value="我要报名" onclick="layer.msg('只有企业用户才能报名！',2, 8)" class="senior_new_bth" />
+                <input type='button' value="{yun:}t key='wap_part_show_00008'{/yun}" onclick="layer.msg('只有企业用户才能报名！',2, 8)" class="senior_new_bth" />
            {yun:}/if{/yun}
         {yun:}/if{/yun}
         {yun:}else{/yun}
-        <input type='button' value="我要报名" onclick="showlogin('2')" class="senior_new_bth" />
+        <input type='button' value="{yun:}t key='wap_part_show_00008'{/yun}" onclick="showlogin('2')" class="senior_new_bth" />
         {yun:}/if{/yun}
 	</div>
 {yun:}else{/yun}
 	<div class="" >
 	{yun:}if $isapply.status=="0"{/yun}
-	<div class="senior_new_bthdd" >报名审核中</div>
+	<div class="senior_new_bthdd" >{yun:}t key='wap_spe_gl_00004'{/yun}</div>
 	{yun:}elseif $isapply.status=="1"{/yun}
-	<div class="senior_new_bthdd" >已报名</div>
+	<div class="senior_new_bthdd" >{yun:}t key='wap_part_show_00010'{/yun}</div>
 	{yun:}else{/yun}
-	<div class="senior_new_bthdd">请联系管理员</div>
+	<div class="senior_new_bthdd">{yun:}t key='wap_spe_gl_00002'{/yun}</div>
 	{yun:}/if{/yun}
 	</div>
 {yun:}/if{/yun}

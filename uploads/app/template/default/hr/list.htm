@@ -12,7 +12,7 @@
 {yun:}include file="$tplstyle/header.htm"{/yun}
 <div class="yun_body">
 <div class="yun_content">
-<div class="current_Location icon com_current_Location png"><div class="fl">您当前的位置：<a href="{yun:}$config.sy_weburl{/yun}">首页</a> > <a href="{yun:}url m=hr{/yun}">工具箱</a></div></div>
+<div class="current_Location icon com_current_Location png"><div class="fl">{yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <a href="{yun:}url m=hr{/yun}">{yun:}t key='default_hr_index_00004'{/yun}</a></div></div>
 <div class="clear"></div>
 <div class="Toolbox_content_box">
 <div class="Toolbox_content_box_left">
@@ -71,8 +71,8 @@ function downhr(id){
 }
 function checkkey(){
 	var keyword=$("input[name=key]").val();
-	if(keyword=="" || keyword=="请输入关键字"){
-		layer.msg('请输入关键字！', 2, 8);return false;
+	if(keyword=="" || keyword=="{yun:}t key='admin_system_info_feedback_00001'{/yun}"){
+		layer.msg("{yun:}t key='admin_system_info_feedback_00001'{/yun}", 2, 8);return false;
 	}
 }
 </script>

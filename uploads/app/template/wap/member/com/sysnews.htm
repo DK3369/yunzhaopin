@@ -4,7 +4,7 @@
 </style>
  
 <div class="chatnewcardbg">  
-    <div class="chatnewcardheader">消息</div> 
+    <div class="chatnewcardheader">{yun:}t key='common.message'{/yun}</div> 
 	
 	<div class="chatnewcard">
         <ul>
@@ -21,7 +21,7 @@
 				<div class="card_logo">
 					<img src="{yun:}$wap_style{/yun}/images/care_a_hang.png" alt="" width="100%" height="100%">
 				</div>
-				<i class="card_word">对我感兴趣</i>
+				<i class="card_word">{yun:}t key='wap_com_sysnews_00001'{/yun}</i>
 			</li>
 			{yun:}if $config.com_message{/yun}
 			<li data-url="msg" class="navigetali">
@@ -31,7 +31,7 @@
 						<span id="jobnum_n" style="background: #f30; padding: 0.03rem 0.15rem;border-radius: 20px; color: #fff;"></span>
 					</div>
 				</div>
-				<i class="card_word">求职咨询</i>
+				<i class="card_word">{yun:}t key='wap_com_sysnews_00002'{/yun}</i>
 			</li>
 			{yun:}/if{/yun}
 			<li data-url="sxnews" class="navigetali">
@@ -41,7 +41,7 @@
 						<span id="sxnum_n" style="background: #f30; padding: 0.03rem 0.15rem;border-radius: 20px; color: #fff;"></span>
 					</div>
 				</div>
-				<i class="card_word">系统消息</i>
+				<i class="card_word">{yun:}t key='wap_user_sysnews_00002'{/yun}</i>
 			</li>
 		</ul>
     </div>
@@ -51,10 +51,10 @@
 	<div class="chatnewtip" > 
 		<i class="chatnewtipicon"></i><div class="chatnewcard_gzhtip"> 
 		<span> 开启微信通知，不错过重要消息</span>
-		<span onclick="toSubscribe();" class="chatnewcard_gzhtip_set">  去设置></span>
+		<span onclick="toSubscribe();" class="chatnewcard_gzhtip_set">  {yun:}t key='wap_publichtm_yun_cert_00005'{/yun}></span>
 	</div></div>
 </div>
-<!--  提示 -->
+<!--  {yun:}t key='wap_js_forgetpw_00010'{/yun} -->
 
 
 <div class="chatnewcard_bgpd  ">
@@ -62,10 +62,10 @@
 		<!-- 关注公众号弹框 -->
 		<van-popup v-model="gzhShow" close-on-click-overlay="true" closeable="true" @close="closeGzhShow" round >
 			<div class="gzh_gzbox">
-				<div class="gzh_gzbox_n">关注公众号</div>
+				<div class="gzh_gzbox_n">{yun:}t key='wap_user_index_00009'{/yun}</div>
 				<img :src="gzhUrl" />
-				<div class="gzh_gzbox_p">长按识别二维码</div>
-				<div class="gzh_gzbox_p">随时随地查找好工作</div>
+				<div class="gzh_gzbox_p">{yun:}t key='wap_user_index_00006'{/yun}</div>
+				<div class="gzh_gzbox_p">{yun:}t key='wap_user_index_00003'{/yun}</div>
 			</div>
 		</van-popup>
 	</div>
@@ -149,9 +149,9 @@
 				} else {
 					gzhConfirm = true;
 					sysapp.$data.gzhShow = false;
-					showConfirm('本账号绑定的微信号，不是当前微信号，是否要换绑为当前微信号？', function () {
+					showConfirm("{yun:}t key='wap_user_sysnews_00001'{/yun}", function () {
 						wxBindChange();
-					}, '否', '是');
+					}, "{yun:}t key='common.no'{/yun}", "{yun:}t key='common.yes'{/yun}");
 				}
 			} else if (res.subscribe == 1) {
 				if (gzhBox) {
@@ -198,7 +198,7 @@
 	var mhurl = '{yun:}url d=wxapp m=chat c=getmh{/yun}';
 	$(function () {
 		typeof fetchData !== 'undefined' && fetchData();
-		// 消息页面-顶部导航点击
+		// Message page-top navigation click
 		$(".navigetali").on("click", function() {
 			var url = $(this).attr('data-url');
 			window.location.href = wapurl + 'member/index.php?c=' + url + '&chat=1';

@@ -16,14 +16,14 @@
         <div class="evaluate_com_pjbox">
             <div class="evaluate_com_mypj">我的评分</div>
             <div class="evaluate_com_pjlist">
-                <div class="evaluate_com_pjtit">企业描述 </div>
+                <div class="evaluate_com_pjtit">{yun:}t key='wap_user_comment_00002'{/yun} </div>
                 <div class="com_pjia_liststar">
                     <van-rate v-model="desscore" :size="25" color="#ffd21e" void-icon="star" void-color="#eee" @change="onChangeDes" :readonly="!control"/>
                 </div>
             </div>
            
             <div class="evaluate_com_pjlist">
-                <div class="evaluate_com_pjtit">企业环境  </div>
+                <div class="evaluate_com_pjtit">{yun:}t key='wap_user_comment_00003'{/yun}  </div>
                 <div class="com_pjia_liststar">
                     <van-rate v-model="comscore" :size="25" color="#ffd21e" void-icon="star" void-color="#eee" @change="onChangeCom" :readonly="!control"/>
                 </div>
@@ -53,7 +53,7 @@
             <div class="com_pjia_bot">
                 
                
-                <input type='checkbox' name='isnm' :checked="msgInfo.isnm=='1'" @click="getvalue"> 匿名评价
+                <input type='checkbox' name='isnm' :checked="msgInfo.isnm=='1'" @click="getvalue"> {yun:}t key='wap_user_comment_00005'{/yun}
                 
             </div>
         </div>
@@ -61,14 +61,14 @@
     </form>
     
     <div class="evaluate_com_mypj_zt" v-if="msgInfo.reply">
-        <div class="evaluate_com_mypj">企业回复</div>
+        <div class="evaluate_com_mypj">{yun:}t key='wap_user_comment_00001'{/yun}</div>
         <div class="evaluate_com_msbox">
             <textarea class="evaluate_textarea">{{msgInfo.reply}}</textarea>
         </div>
     </div>
     
-</div><div class="evaluate_bthall"> <input type='hidden' name='id' id='applyid' value='{yun:}$msg.id{/yun}'> <input type="submit" v-if="msgInfo.id" name='submit' @click="savecomment" value="修改评价" class="evaluate_bth">
-                <input type="submit" v-else name='submit' value="发表评价" @click="savecomment" class="evaluate_bth"></div></div> 
+</div><div class="evaluate_bthall"> <input type='hidden' name='id' id='applyid' value='{yun:}$msg.id{/yun}'> <input type="submit" v-if="msgInfo.id" name='submit' @click="savecomment" value="{yun:}t key='wap_user_comment_00004'{/yun}" class="evaluate_bth">
+                <input type="submit" v-else name='submit' value="{yun:}t key='wap_user_comment_00006'{/yun}" @click="savecomment" class="evaluate_bth"></div></div> 
 <script type="text/javascript">
     var id = '{yun:}$smarty.get.id{/yun}';
         id = id ? id : '0';
@@ -115,7 +115,7 @@
                         that.content = that.msgInfo.content;
                         that.othercontent = that.msgInfo.othercontent;
                         if (that.msgInfo.id > 0) {
-                            // that.control = false; // 暂时关闭禁用功能
+                            // that.control = false; // Temporarily turn off the disabled function
                             that.isnmval = that.msgInfo.isnm;
                         }
                         setTimeout(function() {
@@ -142,7 +142,7 @@
                             }
                         }
                         if (j > 2) {
-                            showModal('最多只能选择3个');
+                            showModal("{yun:}t key='wap_js_cmc_00001'{/yun}3{yun:}t key='common_02050'{/yun}");
                             return false;
                         }
 
@@ -195,7 +195,7 @@
                 formData.comscore = that.comscore;
                 formData.isnmval = that.isnmval;
                 formData.tag = tarr.join(',');
-                showLoading('保存中...');
+                showLoading("{yun:}t key='wap_js_user_00006'{/yun}");
                 $.post('{yun:}url d=wxapp h=user m=job c=commentsave{/yun}',formData,function(data){
                     hideLoading();
                     if (data.error == 1) {

@@ -15,7 +15,7 @@
 <!--content内容部分-->
 <div class="cp_content">
 <div class="wrap">
-<div class="current_Location  png">您当前的位置：<a href="{yun:}$config.sy_weburl{/yun}">首页</a>  >  <span>测评试题</span></div>
+<div class="current_Location  png">{yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a>  >  <span>测评试题</span></div>
 <div class="evaluate_showbox">
 <div class="evaluate_showbox_pic"><img src="{yun:}$info.pic_n{/yun}"  width="220" height="140px;"></div>
 
@@ -23,14 +23,14 @@
 <div class="evaluate_showbox_rightinfo_name">{yun:}$info.name{/yun}</div>
 <div class="evaluate_showbox_rightinfo_p">
 {yun:}$info.description{/yun}</div>
-<div class="evaluation_results_tit_i">{yun:}$info.visits{/yun} 人访问，{yun:}$info.comnum{/yun} 条评论，{yun:}$info.ctime|date_format:"%Y-%m-%d %H:%M"{/yun} 发布</div>
+<div class="evaluation_results_tit_i">{yun:}$info.visits{/yun} {yun:}t key='wap_evaluatelist_00001'{/yun}{yun:}$info.comnum{/yun} {yun:}t key='default_evaluate_gradeshare_00011'{/yun}{yun:}$info.ctime|date_format:"%Y-%m-%d %H:%M"{/yun} {yun:}t key='common.publish'{/yun}</div>
 </div>
 </div>
 <div class="evaluate_showbox mt20" style="border-top:5px solid #f60">
 <div class="evaluate_showbox_cont">
 <div class="evaluate_showbox_top">
 <div class="evaluate_show_name">{yun:}$info.name{/yun}试题</div>
-<div class="evaluate_show_info">共<em class="evaluate_show_info_n">{yun:}$questions|@count{/yun}</em>题</div>
+<div class="evaluate_show_info">{yun:}t key='common_02057'{/yun}<em class="evaluate_show_info_n">{yun:}$questions|@count{/yun}</em>题</div>
 
     <div class="cp_full_yb fl">
     	

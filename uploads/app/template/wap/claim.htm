@@ -8,11 +8,11 @@
 		<div  class="J_listitme_group">
 		 
 			<div class="J_validate_group">
-				<div class="selecttip">新用户名：</div>
+				<div class="selecttip">{yun:}t key='wap_claim_00005'{/yun}</div>
 				<div class="account_td1">
 					<input class="input_295_34" name="username" id="username" type="text" placeholder="请输入新的用户名">
 				</div>
-				<div class="selecttip">新密码：</div>
+				<div class="selecttip">{yun:}t key='wap_user_password_00001'{/yun}：</div>
 				<div class="account_td1">
 					<input class="input_295_34" name="password" id="password" type="password" placeholder="请输入新的用户密码">
 				</div>
@@ -23,7 +23,7 @@
 				<div class="reset_btnbox">
 					<input type="hidden" name="uid" value="{yun:}$smarty.get.uid{/yun}" />
 					<input type="hidden" name="code" value="{yun:}$smarty.get.code{/yun}" />
-					<input type="submit" value="提交" onclick="claimUser();" class="reset_xia">
+					<input type="submit" value="{yun:}t key='common.submit'{/yun}" onclick="claimUser();" class="reset_xia">
 				</div>
 			</div>
 		</div>
@@ -40,13 +40,13 @@
 		if($.trim(username)=="") {
 			showToast('输入新的用户名！');return false;
 		}else if(username.length<2 || username.length>16){
-			showToast('用户名长度应为2-16位！');return false;
+			showToast("{yun:}t key='wap_claim_00001'{/yun}");return false;
 		}
 		if(password.length<6 || password.length>20){
-			showToast('密码长度应为6-20位！');return false;
+			showToast("密码长度应为6-20{yun:}t key='common_02053'{/yun}！");return false;
 		}
 		if(password!=cpassword){
-			showToast('两次输入密码不一致！');return false;
+			showToast("{yun:}t key='wap_js_public_00001'{/yun}");return false;
 		}
 		
 		var formData	=	new FormData();

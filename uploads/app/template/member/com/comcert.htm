@@ -5,7 +5,7 @@
         <div class=right_box> 
                         <div class="newmember_screenbox">
                         <div class="newmember_screen">  
-                            <div class="newmember_screenname"><a  href="index.php?c=binding" class="newcom_fh">返回 </a><span class="newcom_fh_line">|</span>企业资质</div>
+                            <div class="newmember_screenname"><a  href="index.php?c=binding" class="newcom_fh">{yun:}t key='common.back'{/yun} </a><span class="newcom_fh_line">|</span>{yun:}t key='wap_com_ident_00002'{/yun}</div>
                                         </div>
                                     </div>
                         <div class=admincont_box>
@@ -21,7 +21,7 @@
                             {yun:}else{/yun}
                                 {yun:}if !empty($cert){/yun} 
                                     {yun:}if $cert.status==2{/yun}
-                                        您的企业资质审核未通过 {yun:}if $cert.statusbody{/yun}原因：{yun:}$cert.statusbody{/yun}{yun:}/if{/yun}
+                                        {yun:}t key='member_com_comcert_00002'{/yun} {yun:}if $cert.statusbody{/yun}{yun:}t key='admin_system_category_reason_00005'{/yun}{yun:}$cert.statusbody{/yun}{yun:}/if{/yun}
                                     {yun:}else{/yun}
                                         企业资质已上传，请等待管理员审核
                                     {yun:}/if{/yun}
@@ -34,31 +34,31 @@
                         <iframe id="supportiframe" name="supportiframe" onload="returnmessage('supportiframe');" style="display:none"></iframe>
                         <form id="certform" name="MyForm" target="supportiframe" method="post" action="index.php?c=binding&act=savecert" enctype="multipart/form-data">
                            <div class="license_right">
-                            <div class="license_tit">方式二：手机拍照上传</div>
+                            <div class="license_tit">{yun:}t key='member_user_passwd_00012'{/yun}</div>
                             <div class="license_ewm">
-                                <img src="{yun:}url m=upload c=qrcode type=1{/yun}" alt="手机扫码拍照上传" width="130" height="130" />
+                                <img src="{yun:}url m=upload c=qrcode type=1{/yun}" alt="{yun:}t key='member_user_passwd_00014'{/yun}" width="130" height="130" />
                             </div>
-                            <div class="license_right_p"> 扫描二维码 </div>
+                            <div class="license_right_p"> {yun:}t key='member_user_passwd_00023'{/yun} </div>
                             <div class="">  打开我-修改资料-点击我要认证 </div>
                            </div>
                             <div class="authentication">
-                                <div class="authentication_list"><span class="authentication_list_name"><i class="Binding_pop_box_list_left_i">*</i>公司名称：</span><input type="text" value="{yun:}$company.name{/yun}" name="company_name" id="company_name" class="authentication_text"></div>
+                                <div class="authentication_list"><span class="authentication_list_name"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_user_addresumeson_00022'{/yun}：</span><input type="text" value="{yun:}$company.name{/yun}" name="company_name" id="company_name" class="authentication_text"></div>
                                 {yun:}if $config.com_social_credit=="1"{/yun}
-                                <div class="authentication_list"><span class="authentication_list_name"><i class="Binding_pop_box_list_left_i">*</i>统一社会信用代码：</span><input maxlength="18" type="text" value="{yun:}$cert.social_credit{/yun}" name="social_credit" id="social_credit" class="authentication_text"></div>
+                                <div class="authentication_list"><span class="authentication_list_name"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='admin_user_company_component_companyrz_renzheng_00002'{/yun}：</span><input maxlength="18" type="text" value="{yun:}$cert.social_credit{/yun}" name="social_credit" id="social_credit" class="authentication_text"></div>
                                 {yun:}/if{/yun}
 
                                 <div class="authentication_list">
                                     <div class="authentication_tip">
                                     <div class="">营业执照需是在有效期范围内的原件照片，扫描或者加盖公章的复印件，若无营业执照可上传组织机构代码证</div>
                                     </div>
-                                    <span class="authentication_list_name"><i class="Binding_pop_box_list_left_i">*</i>营业执照：</span>
+                                    <span class="authentication_list_name"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_user_index_00030'{/yun}：</span>
                                     <button type="button" class="authentication_bth noupload0" lay-data="{imgid: 'imgicon',parentid: 'imgparent',fieldname:'check'}"> </button>
                                     <input type="hidden" id="old_cert" value="{yun:}$cert.old_check{/yun}" />
                                     <div id="imgparent" style="top:45px" class="authentication_img {yun:}if !$cert.check{/yun}none{yun:}/if{/yun}">
                                          <div class="aut_show">
                                         <img id="imgicon" src="{yun:}$cert.old_check{/yun}"  /> 
-                                        <div id="newbind_imgicon" class="Binding_pop_box_msg_cont_new none">新</div>
-                                        <a id="checka_imgicon"  href="javascript:;" data_url="{yun:}$cert.old_check{/yun}" onclick="showpic(this)"  class="aut_show_p">查看原图</a>
+                                        <div id="newbind_imgicon" class="Binding_pop_box_msg_cont_new none">{yun:}t key='common_02081'{/yun}</div>
+                                        <a id="checka_imgicon"  href="javascript:;" data_url="{yun:}$cert.old_check{/yun}" onclick="showpic(this)"  class="aut_show_p">{yun:}t key='member_user_passwd_00031'{/yun}</a>
                                     </div>
                                     </div>
                                   
@@ -67,58 +67,58 @@
                                 <div class="authentication_list">
                                     <div class="authentication_tip">
                                     <div class="">此处提交经办人身份证材料</div>
-                                    格式要求：原件照片无遮挡，文字信息清晰可辨识，扫描或者加盖公章的复印件，支持{yun:}$config.file_maxsize{/yun}M,支持{yun:}$config.pic_type{/yun}格式
+                                    格式要求：原件照片无遮挡，文字信息清晰可辨识，扫描或者加盖公章的复印件，{yun:}t key='common_01996'{/yun}{yun:}$config.file_maxsize{/yun}M,{yun:}t key='common_01996'{/yun}{yun:}$config.pic_type{/yun}{yun:}t key='common_02005'{/yun}
                                     </div>
-                                    <span class="authentication_list_name"><i class="Binding_pop_box_list_left_i">*</i>经办人身份证：</span>
+                                    <span class="authentication_list_name"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='member_com_binding_00008'{/yun}：</span>
                                     <button type="button" class="authentication_bth noupload1" lay-data="{imgid: 'imgicon1',parentid: 'imgparent1',fieldname:'owner_cert'}">  </button>
                                     <input type="hidden" id="old_owner_cert" value="{yun:}$cert.old_owner_cert{/yun}" />
                                     <div id="imgparent1" style="top:70px" class="authentication_img {yun:}if !$cert.owner_cert{/yun}none{yun:}/if{/yun}">
                                      <div class="aut_show">    <img id="imgicon1" src="{yun:}$cert.old_owner_cert{/yun}" width="40" height="40" /> 
-                                        <div id="newbind_imgicon1" class="Binding_pop_box_msg_cont_new none">新</div>
-                                        <a id="checka_imgicon1"  href="javascript:;" data_url="{yun:}$cert.old_owner_cert{/yun}" onclick="showpic(this)"  class="aut_show_p">查看原图</a></div>
+                                        <div id="newbind_imgicon1" class="Binding_pop_box_msg_cont_new none">{yun:}t key='common_02081'{/yun}</div>
+                                        <a id="checka_imgicon1"  href="javascript:;" data_url="{yun:}$cert.old_owner_cert{/yun}" onclick="showpic(this)"  class="aut_show_p">{yun:}t key='member_user_passwd_00031'{/yun}</a></div>
                                     </div>
                                 </div>
                                 {yun:}/if{/yun}
                                 {yun:}if $config.com_cert_wt=="1"{/yun}
                                 <div class="authentication_list">
                                     <div class="authentication_tip">
-                                    声明：委托书/承诺函材料必须使用网站统一格式。<br ><a href="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.exa_cert_wt{/yun}" target="_blank" style="color:red">请单击这里，下载委托书/承诺函模板</a><br >
-                                    格式要求：原件照片，扫描或者加盖公章的复印件，支持{yun:}$config.file_maxsize{/yun}M,支持{yun:}$config.pic_type{/yun}格式
+                                    声明：{yun:}t key='common_01902'{/yun}/承诺函材料必须使用网站统一格式。<br ><a href="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.exa_cert_wt{/yun}" target="_blank" style="color:red">{yun:}t key='member_com_comcert_00001'{/yun}</a><br >
+                                    格式要求：原件照片，扫描或者加盖公章的复印件，{yun:}t key='common_01996'{/yun}{yun:}$config.file_maxsize{/yun}M,{yun:}t key='common_01996'{/yun}{yun:}$config.pic_type{/yun}{yun:}t key='common_02005'{/yun}
                                     </div>
-                                    <span class="authentication_list_name"><i class="Binding_pop_box_list_left_i">*</i>委托书/承诺函：</span>
+                                    <span class="authentication_list_name"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='common_01902'{/yun}/{yun:}t key='admin_user_company_component_comset_index_00081'{/yun}：</span>
                                     <button type="button" class="authentication_bth noupload2" lay-data="{imgid: 'imgicon2',parentid: 'imgparent2',fieldname:'wt_cert'}"> </button>
                                     <input type="hidden" id="old_wt_cert" value="{yun:}$cert.old_wt_cert{/yun}" />
                                     <div id="imgparent2" style="top:95px" class="authentication_img {yun:}if !$cert.wt_cert{/yun}none{yun:}/if{/yun}">
                                        <div class="aut_show">  <img id="imgicon2" src="{yun:}$cert.old_wt_cert{/yun}" /> 
-                                        <div id="newbind_imgicon2" class="Binding_pop_box_msg_cont_new none">新</div>
-                                        <a id="checka_imgicon2"  href="javascript:;" data_url="{yun:}$cert.old_wt_cert{/yun}" onclick="showpic(this)"  class="aut_show_p">查看原图</a>
+                                        <div id="newbind_imgicon2" class="Binding_pop_box_msg_cont_new none">{yun:}t key='common_02081'{/yun}</div>
+                                        <a id="checka_imgicon2"  href="javascript:;" data_url="{yun:}$cert.old_wt_cert{/yun}" onclick="showpic(this)"  class="aut_show_p">{yun:}t key='member_user_passwd_00031'{/yun}</a>
                                     </div></div>
                                 </div>
                                 {yun:}/if{/yun}
                                 {yun:}if $config.com_cert_other=="1"{/yun}
-                                <div class="authentication_list"><span class="authentication_list_name">其他证明材料：</span>
+                                <div class="authentication_list"><span class="authentication_list_name">{yun:}t key='member_com_info_00035'{/yun}：</span>
                                     <button type="button" class="authentication_bth noupload3" lay-data="{imgid: 'imgicon3',parentid: 'imgparent3',fieldname:'other_cert'}"> </button>
                                     <input type="hidden" id="old_other_cert" value="{yun:}$cert.old_other_cert{/yun}" />
                                     <div id="imgparent3" class="authentication_img {yun:}if !$cert.other_cert{/yun}none{yun:}/if{/yun}">
                                     <div class="aut_show">
                                         <img id="imgicon3" src="{yun:}$cert.old_other_cert{/yun}"  /> 
-                                        <div id="newbind_imgicon3" class="Binding_pop_box_msg_cont_new none">新</div>
-                                        <a id="checka_imgicon3"  href="javascript:;" data_url="{yun:}$cert.old_other_cert{/yun}" onclick="showpic(this)"  class="aut_show_p">查看原图</a>
+                                        <div id="newbind_imgicon3" class="Binding_pop_box_msg_cont_new none">{yun:}t key='common_02081'{/yun}</div>
+                                        <a id="checka_imgicon3"  href="javascript:;" data_url="{yun:}$cert.old_other_cert{/yun}" onclick="showpic(this)"  class="aut_show_p">{yun:}t key='member_user_passwd_00031'{/yun}</a>
                                     </div>     </div>
                                      <!-- <div class="authentication_tip">
                                     <div class="">此处提交其他证明材料</div>
                                     
                                     
-                                    格式要求：支持{yun:}$config.pic_type{/yun}格式，大小不超过{yun:}$config.file_maxsize{/yun}M,</div> -->
+                                    格式要求：{yun:}t key='common_01996'{/yun}{yun:}$config.pic_type{/yun}{yun:}t key='common_02005'{/yun}，大小不超过{yun:}$config.file_maxsize{/yun}M,</div> -->
                                 </div>
                                 {yun:}/if{/yun}
                                 <!--
                                 <div class="authentication_tip" style=" padding-left:170px;">
-                                    格式要求：支持{yun:}$config.pic_type{/yun}格式，大小不超过{yun:}$config.file_maxsize{/yun}M
+                                    格式要求：{yun:}t key='common_01996'{/yun}{yun:}$config.pic_type{/yun}{yun:}t key='common_02005'{/yun}，大小不超过{yun:}$config.file_maxsize{/yun}M
                                 </div>
                                 -->
                                 <div class="authentication_list">
-                                    <input class="license_list_bth" name="upfile" type="button" onclick="check_company_cert()" value="提交" />
+                                    <input class="license_list_bth" name="upfile" type="button" onclick="check_company_cert()" value="{yun:}t key='common.submit'{/yun}" />
                                 </div>
                             </div>
                         </form>
@@ -213,7 +213,7 @@
     function qycertimg(opt,obj){
 
         if (opt.imgid) {
-            //预读本地文件示例，不支持ie8/9
+            // Pre-read local file example, does not support ie8/9
             var imgid = null,
                 parentid = null;
             if (opt.imgid) {
@@ -229,10 +229,10 @@
                     $('#' + imgid).attr('src', result);
                 } else if (imgid && $('#' + imgid).length > 0) {
                     $('#' + imgid).removeClass('none');
-                    $('#' + imgid).attr('src', result); //图片链接（base64）
+                    $('#' + imgid).attr('src", result); //{yun:}t key='admin_js_wangeditor_index_00002'{/yun}（base64）
                 }
 
-                $('#checka_'+imgid).hide();
+                $("#checka_'+imgid).hide();
 
                 if(document.getElementById('newbind_'+imgid)){
                     $('#newbind_'+imgid).removeClass('none');

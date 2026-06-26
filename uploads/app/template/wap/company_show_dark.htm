@@ -29,24 +29,24 @@
                         </span>
                     {yun:}else{/yun}
                         <span class=" atn_{yun:}$row.uid{/yun}">
-                            <a href="javascript:void(0)" onclick="atn('{yun:}$row.uid{/yun}','{yun:}url m=wap c=ajax a=atncompany{/yun}')" id='atn_{yun:}$row.uid{/yun}' class="com_topgzicon " title="关注"></a>
+                            <a href="javascript:void(0)" onclick="atn('{yun:}$row.uid{/yun}','{yun:}url m=wap c=ajax a=atncompany{/yun}')" id='atn_{yun:}$row.uid{/yun}' class="com_topgzicon " title="{yun:}t key='common_01949'{/yun}"></a>
                         </span>
                     {yun:}/if{/yun}
                 {yun:}else{/yun}
                     {yun:}if $usertype{/yun}
-                        <a href="javascript:void(0)" class="com_topgzicon " title="关注" {yun:}if $config.sy_user_change==1{/yun}onclick="showToast('请先申请个人账户');" {yun:}else{/yun}onclick="showToast('只有个人用户才能关注');"{yun:}/if{/yun}> </a>
+                        <a href="javascript:void(0)" class="com_topgzicon " title="{yun:}t key='common_01949'{/yun}" {yun:}if $config.sy_user_change==1{/yun}onclick="showToast('{yun:}t key='wap_company_show_dark_00007'{/yun}');" {yun:}else{/yun}onclick="showToast('{yun:}t key='wap_company_show_dark_00005'{/yun}');"{yun:}/if{/yun}> </a>
                     {yun:}else{/yun}
-                        <a href="javascript:void(0)" class=" com_topgzicon" title="关注" onclick="pleaselogin('您还未登录个人账号，是否登录？','{yun:}url m=wap c=login{/yun}')"></a>
+                        <a href="javascript:void(0)" class=" com_topgzicon" title="{yun:}t key='common_01949'{/yun}" onclick="pleaselogin("{yun:}t key='wap_company_show_dark_00001'{/yun}",'{yun:}url m=wap c=login{/yun}')"></a>
                     {yun:}/if{/yun}
                 {yun:}/if{/yun}
 
                 {yun:}if $hbNum > 0{/yun}
-                    <a href="javascript:void(0);" onclick="shareShow();" title="分享" class="com_topfxicon"></a>
+                    <a href="javascript:void(0);" onclick="shareShow();" title="{yun:}t key='wap_com_job_00055'{/yun}" class="com_topfxicon"></a>
                 {yun:}else{/yun}
                     {yun:}if $config.sy_h5_share==1{/yun}
-                        <a href="javascript:void(0);" data-url='{yun:}url m=wap c=company a=share id=$row.uid{/yun}' id="shareClick" class="com_topfxicon" title="分享"></a>
+                        <a href="javascript:void(0);" data-url='{yun:}url m=wap c=company a=share id=$row.uid{/yun}' id="shareClick" class="com_topfxicon" title="{yun:}t key='wap_com_job_00055'{/yun}"></a>
                     {yun:}else{/yun}
-                        <a href="javascript:void(0);" class="com_topfxicon" id="shareClick" title="分享"></a>
+                        <a href="javascript:void(0);" class="com_topfxicon" id="shareClick" title="{yun:}t key='wap_com_job_00055'{/yun}"></a>
                     {yun:}/if{/yun}
                 {yun:}/if{/yun}
             </div>
@@ -83,7 +83,7 @@
             <img src="{yun:}$row.logo{/yun}" alt="" width="100%" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_unit_icon{/yun}',2);">
         </div>
     </div>
-    <!-- 公司福利 -->
+    <!-- {yun:}t key='wap_com_info_00050'{/yun} -->
     {yun:}if $row.welfare_n{/yun}
     <div class="scw_comfl">
         <ul>
@@ -96,55 +96,55 @@
 
     {yun:}if $row.address{/yun}
     <div class="scw_comadd" {yun:}if $config.map_key{/yun}  onclick="navigateTo('{yun:}url m=wap c=job a=jobmap uid=$row.uid{/yun}')"{yun:}/if{/yun}>
-        <div class="scw_comadd_tit">公司地址</div>
+        <div class="scw_comadd_tit">{yun:}t key='wap_company_show_dark_00015'{/yun}</div>
         <div class="scw_comadd_add">{yun:}$row.address{/yun}
             {yun:}if $row.x && $row.y && $config.map_key{/yun}
             <span class=" ">距离<em id="distance"></em></span>
             <input type="hidden" id="map_x" value="{yun:}$mapx{/yun}"/>
             <input type="hidden" id="map_y" value="{yun:}$mapy{/yun}"/>
-            <span class="scw_comadd_dh">导航</span>
+            <span class="scw_comadd_dh">{yun:}t key='wap_company_show_dark_00017'{/yun}</span>
             {yun:}/if{/yun}
         </div>
     </div>
     {yun:}/if{/yun}
 
     <div class="scw_comcont">
-        <div class="scw_comcont_tit">公司简介</div>
+        <div class="scw_comcont_tit">{yun:}t key='wap_com_info_00051'{/yun}</div>
         <div class="scw_comcont_p">
             {yun:}if $row.content{/yun}
             <p id="com_content" class="About_Us_body attention_to_new">{yun:}$row.content{/yun}</p>
             <div class="com_show_cont none"><a href="javascript:;" onclick="showcc()"></a></div>
             {yun:}else{/yun}
-            <div class="wap_member_no">该企业还没有填写公司简介!</div>
+            <div class="wap_member_no">{yun:}t key='wap_company_show_dark_00003'{/yun}</div>
             {yun:}/if{/yun}
         </div>
     </div>
 
-    <!-- 工商信息 -->
+    <!-- {yun:}t key='wap_company_show_dark_00016'{/yun} -->
     <div class="scw_comcont none" id="businessInfo">
-        <div class="scw_comcont_tit">工商信息</div>
+        <div class="scw_comcont_tit">{yun:}t key='wap_company_show_dark_00016'{/yun}</div>
         <div id="com_business" class="scw_comcont_p">
-            <p class=""> 成立日期：<em id="estiblishTime"></em></p>
-            <p class=""> 组织机构代码：<em id="orgNumber"></em></p>
-            <p class=""> 经营期限：<em id="Time"></em></p>
-            <p class=""> 企业类型：<em id="companyOrgType"></em></p>
-            <p class=""> 登记机关：<em id="regInstitute"></em></p>
-            <p class=""> 经营状态：<em id="regStatus"></em></p>
-            <p class=""> 注册资本：<em id="regCapital"></em></p>
+            <p class=""> {yun:}t key='wap_company_show_dark_00009'{/yun}<em id="estiblishTime"></em></p>
+            <p class=""> {yun:}t key='wap_company_show_dark_00008'{/yun}<em id="orgNumber"></em></p>
+            <p class=""> {yun:}t key='wap_company_show_dark_00012'{/yun}<em id="Time"></em></p>
+            <p class=""> {yun:}t key='wap_publichtm_search_new_00010'{/yun}：<em id="companyOrgType"></em></p>
+            <p class=""> {yun:}t key='wap_company_show_dark_00011'{/yun}<em id="regInstitute"></em></p>
+            <p class=""> {yun:}t key='wap_company_show_dark_00013'{/yun}<em id="regStatus"></em></p>
+            <p class=""> {yun:}t key='wap_company_show_dark_00010'{/yun}<em id="regCapital"></em></p>
             <p class=""> 注册地址：<em id="regLocation"></em></p>
-            <p class=""> 统一社会信用代码：<em id="creditCode"></em></p>
-            <p class=""> 经营范围：<em id="businessScope"></em></p>
+            <p class=""> {yun:}t key='admin_user_company_component_companyrz_renzheng_00002'{/yun}：<em id="creditCode"></em></p>
+            <p class=""> {yun:}t key='wap_company_show_dark_00014'{/yun}<em id="businessScope"></em></p>
             <div class="scw_comcont_tyc">
-                数据来源： <a href="" class="tianyancha" id="tianyancha" target='_blank'> <img src="{yun:}$wap_style{/yun}/images/logo@2x.png" alt="" width="100%"> </a>
+                {yun:}t key='admin_yunying_special_component_special_view_company_00017'{/yun}： <a href="" class="tianyancha" id="tianyancha" target='_blank'> <img src="{yun:}$wap_style{/yun}/images/logo@2x.png" alt="" width="100%"> </a>
             </div>
         </div>
         <div class="on-off"><a href="javascript:void(0);" onclick="showbb()"></a></div>
     </div>
 
-    <!-- 公司相册 -->
+    <!-- {yun:}t key='wap_com_set_00002'{/yun} -->
     {yun:}if $show{/yun}
     <div class="scw_comcont">
-        <div class="scw_comcont_tit">公司相册</div>
+        <div class="scw_comcont_tit">{yun:}t key='wap_com_set_00002'{/yun}</div>
         <div class="business_album">
             <div class="business_album_phone swiper-container nessAlbumPhone" id="imgswiper">
                 <ul class="swiper-wrapper">
@@ -166,7 +166,7 @@
             <div class="scw_jobbox" style=" display: none;">
                 {yun:}if $departmentNames{/yun}
                 <div class=" ">
-                    <a href="javascript:void(0)" class="department_a department_a_cur" data-uid="{yun:}$smarty.get.id{/yun}">全部</a>
+                    <a href="javascript:void(0)" class="department_a department_a_cur" data-uid="{yun:}$smarty.get.id{/yun}">{yun:}t key='common.all'{/yun}</a>
                     {yun:}foreach from=$departmentNames key=j item=v{/yun}
                     <a href="javascript:void(0)" class="department_a" data-name="{yun:}$v{/yun}" data-uid="{yun:}$smarty.get.id{/yun}">{yun:}$v{/yun}</a>
                     {yun:}/foreach{/yun}
@@ -188,10 +188,10 @@
                                 </div>
                                 <div class="newjob_info"><span>{yun:}$job_list.job_city_one{/yun}-{yun:}$job_list.job_city_two{/yun}</span>
                                     {yun:}if $job_list.job_edu{/yun}
-                                    <i class="newjob_info_line"></i><span>{yun:}$job_list.job_edu{/yun}学历</span>
+                                    <i class="newjob_info_line"></i><span>{yun:}$job_list.job_edu{/yun}{yun:}t key='home.education_suffix'{/yun}</span>
                                     {yun:}/if{/yun}
                                     {yun:}if $job_list.job_exp{/yun}
-                                    <i class="newjob_info_line"></i> <span>{yun:}$job_list.job_exp{/yun}经验</span>
+                                    <i class="newjob_info_line"></i> <span>{yun:}$job_list.job_exp{/yun}{yun:}t key='home.experience_suffix'{/yun}</span>
                                     {yun:}/if{/yun}
 
                                 </div>
@@ -214,7 +214,7 @@
                         </a>
                     </div>
                     {yun:}joblistelse{/yun}
-                    <div class="wap_member_no">该企业还没有发布职位信息!</div>
+                    <div class="wap_member_no">{yun:}t key='wap_company_show_dark_00002'{/yun}</div>
                     {yun:}/joblist{/yun}
                 </div>
             </div>
@@ -225,16 +225,16 @@
 
 <div id="app" style="display: none;">
     <!-- 投递简历弹出框 -->
-    <van-dialog v-model="telQrcodeBoxShow" title="联系方式" :show-confirm-button="false" close-on-click-overlay>
+    <van-dialog v-model="telQrcodeBoxShow" title="{yun:}t key='wap_resume_index_00022'{/yun}" :show-confirm-button="false" close-on-click-overlay>
         <div class="">
             <div class="">
                 <div id="tel_wxqrcode" class="" v-html="telQrcode"></div>
-                <div class="">长按识别二维码查看联系方式</div>
+                <div class="">{yun:}t key='wap_company_show_dark_00004'{/yun}</div>
             </div>
         </div>
     </van-dialog>
     <!--分享面板-->
-    <van-share-sheet v-model="shareShow" title="分享到" :options="shareoptions" @select="shareSelect"></van-share-sheet>
+    <van-share-sheet v-model="shareShow" title="{yun:}t key='wap_js_nativeshare_nativeshare_00006'{/yun}" :options="shareoptions" @select="shareSelect"></van-share-sheet>
     {yun:}if $config.sy_h5_share==1{/yun}
     <div class="none" data-url='{yun:}url m=wap c=company a=share id=$row.id{/yun}' id="shareClick"></div>
     {yun:}else{/yun}
@@ -280,7 +280,7 @@
 
     var shareoptions = [
         {
-            name: '微信',
+            name: "{yun:}t key='wap_com_job_00058'{/yun}",
             icon: 'wechat',
             className: 'wechat'
         }
@@ -298,9 +298,9 @@
         el: '#app',
         data: {
             telQrcodeBoxShow: false,
-            telQrcode: '正在获取二维码...',
+            telQrcode: "{yun:}t key='wap_company_show_dark_00006'{/yun}",
             comid: uid,
-            //分享
+            // share
             shareShow: false,
             shareoptions: shareoptions
         },
@@ -350,7 +350,7 @@
                 $('#creditCode').html(business.creditCode);
                 $('#estiblishTime').html(business.estiblishTime);
                 $('#orgNumber').html(business.orgNumber);
-                $('#Time').html(business.fromTime + '至' + business.toTime);
+                $('#Time').html(business.fromTime + "{yun:}t key='common_02098'{/yun}" + business.toTime);
                 $('#companyOrgType').html(business.companyOrgType);
                 $('#regInstitute').html(business.regInstitute);
                 $('#regStatus').html(business.regStatus);
@@ -440,10 +440,10 @@
                                         '<div class="newjob_info">' +
                                             '<span>'+res[i].job_city_one + '-' + res[i].job_city_two + '</span>';
                         if (res[i].job_edu) {
-                            html +=         '<i class="newjob_info_line"></i><span>' + res[i].job_edu + '学历</span>';
+                            html +=         '<i class="newjob_info_line"></i><span>' + res[i].job_edu + "{yun:}t key='home.education_suffix'{/yun}</span>";
                         }
                         if (res[i].job_exp) {
-                            html +=         '<i class="newjob_info_line"></i><span>' + res[i].job_exp + '经验</span>';
+                            html +=         '<i class="newjob_info_line"></i><span>' + res[i].job_exp + "{yun:}t key='home.experience_suffix'{/yun}</span>";
                         }
                         html +=         '</div>';
 
@@ -485,7 +485,7 @@
 </script>
 <script type="text/javascript" src="{yun:}$config.mapurl{/yun}"></script>
 <script>
-    //百度地图测距
+    // Baidu map ranging
     var map = null;
 
     function getdistance() {
@@ -506,7 +506,7 @@
                         $("#map_y").val(map_y);
                         var p1 = [x, y];
                         var p2 = [map_x, map_y];
-                        // 返回 p1 到 p2 间的地面距离，单位：米
+                        // {yun:}t key='common.back'{/yun} p1 到 p2 间的地面距离，单位：米
                         var dis = AMap.GeometryUtil.distance(p1, p2);
                         var mapdistance = '(' + (dis / 1000).toFixed(1) + 'km)';
                         $("#distance").html(mapdistance);
@@ -516,7 +516,7 @@
         } else if (map_x > 0 && map_y > 0) {
             var p1 = [x, y];
             var p2 = [map_x, map_y];
-            // 返回 p1 到 p2 间的地面距离，单位：米
+            // {yun:}t key='common.back'{/yun} p1 到 p2 间的地面距离，单位：米
             var dis = AMap.GeometryUtil.distance(p1, p2);
             var mapdistance = '(' + (dis / 1000).toFixed(1) + 'km)';
             $("#distance").html(mapdistance);

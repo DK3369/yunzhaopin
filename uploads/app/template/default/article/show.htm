@@ -20,7 +20,7 @@ table,table tr th, table tr td { border:1px solid #666; }
 {yun:}include file="$tplstyle/header.htm"{/yun}
 <div class="clear"></div>
 <div class="yun_content">
-  <div class="current_Location  png"> 您当前的位置：<a href="{yun:}$config.sy_weburl{/yun}">首页</a> > <a href="{yun:}url m=article{/yun}">职场资讯</a> > <a href="{yun:}url m=article c=list nid='`$Info.nid`'{/yun}">{yun:}$Info.news_class{/yun}</a></div>
+  <div class="current_Location  png"> {yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <a href="{yun:}url m=article{/yun}">{yun:}t key='home.workplace_news'{/yun}</a> > <a href="{yun:}url m=article c=list nid='`$Info.nid`'{/yun}">{yun:}$Info.news_class{/yun}</a></div>
   <div class="n_list_box">
  
 <div class="n_show_box_cont">
@@ -28,10 +28,10 @@ table,table tr th, table tr td { border:1px solid #666; }
         <div class="zx_cont_main">
           <h1 class="zx_show_cont_h1" {yun:}if $Info.color{/yun}style="color:{yun:}$Info.color{/yun}"{yun:}/if{/yun}>{yun:}$Info.title{/yun}</h1>
           <div class="zx_main_source">
-			<span class="zx_main_source_r"><em>来源：</em>{yun:}if $Info.source{/yun}{yun:}$Info.source|mb_substr:0:16:'utf-8'{/yun}{yun:}else{/yun}{yun:}$config.sy_webname{/yun}{yun:}/if{/yun}</span>
-			<span class="zx_main_source_r"><em>时间：</em>{yun:}$Info.starttime|date_format:"%Y-%m-%d"{/yun}</span>
-			<span class="zx_main_source_r"><em>作者：</em>{yun:}if $Info.author{/yun}{yun:}$Info.author|mb_substr:0:16:'utf-8'{/yun}{yun:}else{/yun}{yun:}$config.sy_webname{/yun}{yun:}/if{/yun}</span>              
-			<span class="zx_main_source_r"><em>浏览量：</em>
+			<span class="zx_main_source_r"><em>{yun:}t key='admin_user_member_component_alluser_00034'{/yun}：</em>{yun:}if $Info.source{/yun}{yun:}$Info.source|mb_substr:0:16:'utf-8'{/yun}{yun:}else{/yun}{yun:}$config.sy_webname{/yun}{yun:}/if{/yun}</span>
+			<span class="zx_main_source_r"><em>{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00020'{/yun}：</em>{yun:}$Info.starttime|date_format:"%Y-%m-%d"{/yun}</span>
+			<span class="zx_main_source_r"><em>{yun:}t key='admin_neirong_news_component_news_00021'{/yun}：</em>{yun:}if $Info.author{/yun}{yun:}$Info.author|mb_substr:0:16:'utf-8'{/yun}{yun:}else{/yun}{yun:}$config.sy_webname{/yun}{yun:}/if{/yun}</span>              
+			<span class="zx_main_source_r"><em>{yun:}t key='wap_com_index_00037'{/yun}：</em>
 				<script language="javascript" src="{yun:}$config.sy_weburl{/yun}/index.php?m=index&c=GetHits&id={yun:}$Info.id{/yun}">
 				</script>
 			</span>
@@ -47,13 +47,13 @@ table,table tr th, table tr td { border:1px solid #666; }
           <div class="zx_ewm_p">微信扫一扫分享资讯</div>
           </div>
           <!--div style="padding:20px 0;">
-           <span class="sour_share fl"><em class="fl" style="line-height:28px;">分享到：</em>
+           <span class="sour_share fl"><em class="fl" style="line-height:28px;">{yun:}t key='wap_js_nativeshare_nativeshare_00006'{/yun}：</em>
          
 		
 			<div class="pyshare bdsharebuttonbox bdshare-button-style0-16" data-tag="share_1">
 				<a class="li s1 bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
-				<a class="li s3 bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
-				<a class="li s5 bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+				<a class="li s3 bds_qzone" data-cmd="qzone" title="{yun:}t key='wap_js_nativeshare_nativeshare_00006'{/yun}QQ空间"></a>
+				<a class="li s5 bds_sqq" data-cmd="sqq" title="{yun:}t key='wap_js_nativeshare_nativeshare_00006'{/yun}QQ好友"></a>
 				<a class="li s6 bds_weixin" data-cmd="weixin" title="分享到微信"></a>
 				<div class="clear"></div>
 			</div></span>
@@ -105,7 +105,7 @@ table,table tr th, table tr td { border:1px solid #666; }
 
 </div>
 
- <div class="news_index_today_h1"> <span class="news_index_today_tj_s">推荐文章</span></div>
+ <div class="news_index_today_h1"> <span class="news_index_today_tj_s">{yun:}t key='default_article_list_00001'{/yun}</span></div>
   <div class="clear"></div>
  
  
@@ -133,7 +133,7 @@ table,table tr th, table tr td { border:1px solid #666; }
               <ul>
                 {yun:}article limit=6 order=hits t_len=17 urlstatic=1 key=key item=news_hits{/yun}
                 {yun:}if $key=='0'&& empty($news_hits){/yun}
-                <li>暂无文章</li>
+                <li>{yun:}t key='default_article_show_00001'{/yun}</li>
                 {yun:}else{/yun}
                 <li><a href="{yun:}$news_hits.url{/yun}" title="{yun:}$news_hits.title{/yun}">{yun:}$news_hits.title{/yun}</a></li>
                 {yun:}/if{/yun} 
@@ -142,7 +142,7 @@ table,table tr th, table tr td { border:1px solid #666; }
             </div>
             <div class="clear"></div>
           </div>
-                 <div class="news_index_today_h1"> <span class="news_index_today_news_s">最新文章</span></div>
+                 <div class="news_index_today_h1"> <span class="news_index_today_news_s">{yun:}t key='default_article_list_00003'{/yun}</span></div>
                         <div class="clear"></div>
           <div class="zx_article mt20">
    
@@ -186,7 +186,7 @@ DD_belatedPNG.fix('.png');
 <![endif]-->
 <script type="text/javascript"> 
 $(function() {
-	//分类浏览
+	//{yun:}t key='wap_article_show_00001'{/yun}
 	 var sfEls = $("#news_nav").find("div");
 	 for (var i=0; i<sfEls.length; i++) {
 		  sfEls[i].onmouseover=function() {

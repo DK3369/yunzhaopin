@@ -24,15 +24,15 @@ table,table tr th, table tr td { border:1px solid #666; }
 	<!--content  start-->
 	<div class="yun_content">
 		<div class="current_Location icon"> 
-			您当前的位置：<a href="{yun:}$config.sy_weburl{/yun}">首页</a> > <a href="{yun:}url m=announcement{/yun}">网站公告</a> 
+			{yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <a href="{yun:}url m=announcement{/yun}">{yun:}t key='common.site_notice'{/yun}</a> 
 		</div>
 		<div class="announcement_box">
 			<h1 class="announcement_show_tit">
-				{yun:}$Info.title{/yun}<a href="{yun:}url m=announcement{/yun}" class="announcement_fh">返回公告列表 >></a>
+				{yun:}$Info.title{/yun}<a href="{yun:}url m=announcement{/yun}" class="announcement_fh">{yun:}t key='default_announcement_show_00001'{/yun} >></a>
 			</h1>
 			<div class="announcement_showtime">
 				{yun:}$Info.startime|date_format:"%Y-%m-%d"{/yun}
-				被浏览：{yun:}$Info.view_num{/yun}次
+				{yun:}t key='member_com_joblist_00018'{/yun}{yun:}$Info.view_num{/yun}{yun:}t key='common_02089'{/yun}
 			</div>
 
 			<div class="announcement_showbox">

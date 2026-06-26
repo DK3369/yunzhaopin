@@ -1,9 +1,9 @@
 {yun:}include file="$askstyle/header.htm"{/yun} 
 <div class="content "> 
-<div class="ask_navcur">当前位置：首页 > 一周热点</div>
+<div class="ask_navcur">{yun:}t key='default_part_show_00003'{/yun}：{yun:}t key='common.home'{/yun} > {yun:}t key='wap_ask_00004'{/yun}</div>
 	<div class="content_hot">
     			<div class="left_cen">
-             <div class="ask_tit"style="padding-bottom:0px;"><span class="ask_tit_icon_s"><i class="ask_tit_icon"></i>一周热点</span></div> 
+             <div class="ask_tit"style="padding-bottom:0px;"><span class="ask_tit_icon_s"><i class="ask_tit_icon"></i>{yun:}t key='wap_ask_00004'{/yun}</span></div> 
 		
 			
              
@@ -24,12 +24,12 @@
                                     <span class="attention q{yun:}$list.id{/yun}" style="margin-top:3px; float:right">
 								{yun:}if $list.isatn!='2'{/yun}
 									{yun:}if in_array($list.id,$my_atten){/yun}
-									<a href="javascript:void(0);" class="watch_qxgz" onclick="attention('{yun:}$list.id{/yun}','1','{yun:}url m=ask c=friend a=attention{/yun}');" >取消关注</a>
+									<a href="javascript:void(0);" class="watch_qxgz" onclick="attention('{yun:}$list.id{/yun}','1','{yun:}url m=ask c=friend a=attention{/yun}');" >{yun:}t key='wap_js_public_00003'{/yun}</a>
 									{yun:}else{/yun}
                                         {yun:}if $uid{/yun}
-                                        <a href="javascript:void(0);" class="watch_gz" onclick="attention('{yun:}$list.id{/yun}','1','{yun:}url m=ask c=friend a=attention{/yun}');">关注问题</a>
+                                        <a href="javascript:void(0);" class="watch_gz" onclick="attention('{yun:}$list.id{/yun}','1','{yun:}url m=ask c=friend a=attention{/yun}');">{yun:}t key='wap_askcontent_00003'{/yun}</a>
                                         {yun:}else{/yun}
-                                        <a href="javascript:void(0)"  onclick="showlogin('');" class='watch_gz'>关注问题</a>
+                                        <a href="javascript:void(0)"  onclick="showlogin('');" class='watch_gz'>{yun:}t key='wap_askcontent_00003'{/yun}</a>
                                         {yun:}/if{/yun}
 									{yun:}/if{/yun} 
 								{yun:}/if{/yun}
@@ -38,7 +38,7 @@
                             <div class="clear"></div>
 								<div style="width:100%; float:left"><span class="gz_icon"><font class="index_num{yun:}$list.id{/yun}">{yun:}$list.atnnum{/yun}</font>人关注</span>
                                     
-									<span class="hd_icon"><font>{yun:}$list.answer_num{/yun}</font>个回答</span>
+									<span class="hd_icon"><font>{yun:}$list.answer_num{/yun}</font>{yun:}t key='ask_attenquestion_00002'{/yun}</span>
 									<span class="ll_icon"><font>{yun:}$list.visit{/yun}</font>次浏览</span>
 									<span class="time_icon">{yun:}$list.add_time|date_format:"%Y-%m-%d %H:%M"{/yun}</span>
 								</div></div>
@@ -59,19 +59,19 @@
 		</div>
         <div class="ask_index_right">
         <div class="ask_tw"style="margin-top:0px" > 
-<div class="ask_tw_t">职场问答</div>
-<div class="ask_tw_p">给你职场领域最专业的帮助</div>
+<div class="ask_tw_t">{yun:}t key='wap_com_jobcolumn_00004'{/yun}</div>
+<div class="ask_tw_p">{yun:}t key='ask_content_00001'{/yun}</div>
 
  {yun:}if $uid{/yun}
-				<a href="{yun:}url m=ask c=addquestion{/yun}" target="_blank"class="ask_tw_btn" >+ 我要提问</a>
+				<a href="{yun:}url m=ask c=addquestion{/yun}" target="_blank"class="ask_tw_btn" >+ {yun:}t key='wap_job_show_00035'{/yun}</a>
 			{yun:}else{/yun}
-				<a href="javascript:void(0);" onclick="showlogin('');"class="ask_tw_btn" >+ 我要提问</a>
+				<a href="javascript:void(0);" onclick="showlogin('');"class="ask_tw_btn" >+ {yun:}t key='wap_job_show_00035'{/yun}</a>
 			{yun:}/if{/yun}
             
    </div>
 
         <div class="ask_index_right_box" >
-        <div class="ask_index_ask_rtit"><span class="ask_index_ask_rtit_s">话题分类</span></div>
+        <div class="ask_index_ask_rtit"><span class="ask_index_ask_rtit_s">{yun:}t key='ask_hotweek_00001'{/yun}</span></div>
         <div class="hot_tagfl_con">
 		{yun:}qcache key=key item=qclasslist name=qcache{/yun}
 						<a href="{yun:}url m=ask c=topic id='`$qclasslist.id`'{/yun}">{yun:}$qclasslist.name{/yun}</a>

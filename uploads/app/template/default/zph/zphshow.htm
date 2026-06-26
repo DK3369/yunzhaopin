@@ -39,17 +39,17 @@
             </li>
             <li>
                 <img src="{yun:}$style{/yun}/images/q_info2.png">
-                <p>{yun:}$Info.jobnum{/yun} <span>个</span> </p>
+                <p>{yun:}$Info.jobnum{/yun} <span>{yun:}t key='common_02050'{/yun}</span> </p>
                 <b>招聘岗位</b>
             </li>
             <li>
                 <img src="{yun:}$style{/yun}/images/q_info3.png">
-                <p>{yun:}$Info.zpnum{/yun} <span>人</span> </p>
-                <b>招聘人数</b>
+                <p>{yun:}$Info.zpnum{/yun} <span>{yun:}t key='common_02051'{/yun}</span> </p>
+                <b>{yun:}t key='wap_com_partadd_00013'{/yun}</b>
             </li>
             <li>
                 <img src="{yun:}$style{/yun}/images/q_info4.png">
-                <p>{yun:}$Info.sqnum{/yun} <span>次</span> </p>
+                <p>{yun:}$Info.sqnum{/yun} <span>{yun:}t key='common_02089'{/yun}</span> </p>
                 <b>简历投递量</b>
             </li>
         </ul>
@@ -58,7 +58,7 @@
     <div class="careerfair_tab careerfair_tabshow">
         <div class="tab_div">
             <ul class="tab_title tab_title_show">
-                <li class="curshow">招聘会介绍</li>
+                <li class="curshow">{yun:}t key='wap_zph_show_00003'{/yun}</li>
                 <li>参会企业名录</li>
                 <li>招聘岗位</li>
             </ul>
@@ -66,29 +66,29 @@
                 <div class="careerfair_tabintr">
                     <div class="careerfair_tabintr_txt img_auto">
                  
-						 <div class="zph_new_tit">活动说明 </div>
+						 <div class="zph_new_tit">{yun:}t key='wap_spe_show_00003'{/yun} </div>
                           <ul class="zph_new_zphsx">
-                          <li>活动时间：{yun:}$Info.starttime{/yun}至{yun:}$Info.endtime{/yun}</li>
+                          <li>{yun:}t key='wap_spe_show_00002'{/yun}：{yun:}$Info.starttime{/yun}{yun:}t key='common_02098'{/yun}{yun:}$Info.endtime{/yun}</li>
 
                             {yun:}if $Info.address!=""{/yun}
-                            <li>活动地点：
+                            <li>{yun:}t key='default_zph_zphshow_00004'{/yun}：
                             {yun:}$Info.address{/yun}</li>
                             {yun:}/if{/yun}
 
                             {yun:}if $Info.organizers!=""{/yun}
-                            <li>主办方：
+                            <li>{yun:}t key='admin_neirong_zph_component_xczphadd_00013'{/yun}：
                             {yun:}$Info.organizers{/yun}</li>
                             {yun:}/if{/yun}
 
-                            <li>咨询电话：{yun:}$Info.phone{/yun}</li>
-                            <li>联 系 人：{yun:}$Info.user{/yun}</li>
+                            <li>{yun:}t key='default_link_index_00004'{/yun}：{yun:}$Info.phone{/yun}</li>
+                            <li>联 系 {yun:}t key='common_02051'{/yun}：{yun:}$Info.user{/yun}</li>
 
                             {yun:}if $Info.traffic!=""{/yun}
-                           <li> 交通路线：
+                           <li> {yun:}t key='admin_neirong_zph_component_xczphadd_00010'{/yun}：
                             {yun:}$Info.traffic{/yun}</li>
                             {yun:}/if{/yun}
 							</ul>
-	<div class="zph_new_tit">招聘会介绍</div>
+	<div class="zph_new_tit">{yun:}t key='wap_zph_show_00003'{/yun}</div>
 							
 							  <div class="zph_new_p">  {yun:}$Info.body{/yun}</div>
 							
@@ -97,22 +97,22 @@
 						
 							
                            {yun:}if $Info.media!=""{/yun}
-                           <div class="zph_new_tit">媒体宣传</div>
+                           <div class="zph_new_tit">{yun:}t key='wap_zph_show_00006'{/yun}</div>
                            <div class="zph_new_p"> {yun:}$Info.media{/yun} </div>
                            {yun:}/if{/yun}
 
                             {yun:}if $Info.packages!=""{/yun}
-                          	<div class="zph_new_tit">服务套餐</div>
+                          	<div class="zph_new_tit">{yun:}t key='default_zph_zphshow_00003'{/yun}</div>
                               <div class="zph_new_p"> {yun:}$Info.packages{/yun}</div>
                             {yun:}/if{/yun}
 
                             {yun:}if $Info.booth!=""{/yun}
-                           	<div class="zph_new_tit">展位设置方案</div>
+                           	<div class="zph_new_tit">{yun:}t key='wap_zph_show_00001'{/yun}</div>
                              <div class="zph_new_p">  {yun:}$Info.booth{/yun}</div>
                             {yun:}/if{/yun}
 
                             {yun:}if $Info.participate!=""{/yun}
-                            	<div class="zph_new_tit">  参与办法</div>
+                            	<div class="zph_new_tit">  {yun:}t key='wap_zph_show_00005'{/yun}</div>
                              <div class="zph_new_p">  {yun:}$Info.participate{/yun}</div>
                             {yun:}/if{/yun}
                             
@@ -142,12 +142,12 @@
                             {yun:}if $uid{/yun}
                                 <a href="{yun:}url m=member c=expect act=add{/yun}" target='_blank'>
                                     <img src="{yun:}$style{/yun}/images/registe.png">
-                                    <span>注册简历</span>
+                                    <span>{yun:}t key='default_zph_index_00001'{/yun}</span>
                                 </a>
                             {yun:}else{/yun}
                                 <a href="javascript:void(0);" onclick="showlogin('1');">
                                     <img src="{yun:}$style{/yun}/images/registe.png">
-                                    <span>注册简历</span>
+                                    <span>{yun:}t key='default_zph_index_00001'{/yun}</span>
                                 </a>
                             {yun:}/if{/yun}
                             <p>线上线下随时可用</p>
@@ -163,7 +163,7 @@
                     </div>
                 </div>
             </div>
-            <!--参会企业-->
+            <!--{yun:}t key='wap_zph_00004'{/yun}-->
             <div class="tab_cont_show">
                 <div class="careerfair_tabdirectory">
                     <ul id="comhtml">
@@ -190,17 +190,17 @@
                          
                             {yun:}/if{/yun}   </div>
                             <div class="tabdirectory tabdirectory_bottom">
-                                <a  href="{yun:}url m=company c=show id='`$zc.uid`'{/yun}" target="_blank">查看更多</a>
+                                <a  href="{yun:}url m=company c=show id='`$zc.uid`'{/yun}" target="_blank">{yun:}t key='common.view_more'{/yun}</a>
                             </div>
                         </li>
                         {yun:}foreachelse{/yun}
-                            <div class="job_fairs_no">暂无企业报名！</div>
+                            <div class="job_fairs_no">{yun:}t key='default_zph_zphcom_00001'{/yun}！</div>
                         {yun:}/foreach{/yun}
                     </ul>
                     {yun:}if $zcpage > 1{/yun}
                     <div class="clear"></div>
                     <div class="fypages">
-                        <a href="javascript:void(0)" class="fypages_a" onclick="compage('1')">上一页</a>
+                        <a href="javascript:void(0)" class="fypages_a" onclick="compage('1')">{yun:}t key='default_special_gl_00003'{/yun}</a>
                         <div class="pages_sz">
                             <div id="nowpage_zc" class="pages_szbox" onclick="compageHtmlShow()">1</div>
                             <div id="pagehtml_zc" class="pages_sz_s" style="display:none">
@@ -209,20 +209,20 @@
                                 {yun:}/for{/yun}
                             </div>
                         </div>
-                        <a href="javascript:void(0)" onclick="compage('2')" class="fypages_a">下一页</a><em class="fypages_a">共{yun:}$zcpage{/yun}页</em>
+                        <a href="javascript:void(0)" onclick="compage('2')" class="fypages_a">{yun:}t key='default_special_gl_00004'{/yun}</a><em class="fypages_a">{yun:}t key='common_02057'{/yun}{yun:}$zcpage{/yun}{yun:}t key='common_02103'{/yun}</em>
                     </div>
                     {yun:}/if{/yun}
                 </div>
             </div>
-            <!--参会职位-->
+            <!--{yun:}t key='wap_zph_00005'{/yun}-->
             <div class="tab_cont_show">
                 <div class="careerfair_tabpost">
                     <div class="careerfair_tabpost_search">
-                        <h4>企业职位搜索</h4>
+                        <h4>{yun:}t key='default_zph_zphshow_00001'{/yun}</h4>
                         <div class="tabpost_search_frame">
                             <form>
-                                <div><input id="jobkeyword" type="text" placeholder="请输入关键词" name=""></div>
-                                <div><button onclick="getJobList();return false;">搜索</button></div>
+                                <div><input id="jobkeyword" type="text" placeholder="{yun:}t key='wap_spe_gl_00003'{/yun}" name=""></div>
+                                <div><button onclick="getJobList();return false;">{yun:}t key='common.search'{/yun}</button></div>
                             </form>
                         </div>
                     </div>
@@ -232,16 +232,16 @@
                             <h3>{yun:}$zj.name{/yun}</h3>
                             <span>{yun:}$zj.job_salary{/yun}</span>
                             <p>{yun:}$zj.com_name{/yun}</p>
-                            <a  href="{yun:}url m=job c=comapply id=$zj.id{/yun}" target="_blank">申请</a>
+                            <a  href="{yun:}url m=job c=comapply id=$zj.id{/yun}" target="_blank">{yun:}t key='wap_zph_show_00011'{/yun}</a>
                         </li>
                         {yun:}foreachelse{/yun}
-                            <div class="job_fairs_no">暂无企业职位！</div>
+                            <div class="job_fairs_no">{yun:}t key='default_zph_zphshow_00002'{/yun}！</div>
                         {yun:}/foreach{/yun}
                     </ul>
                     {yun:}if $zjpage > 1{/yun}
                     <div class="clear"></div>
                     <div class="fypages">
-                        <a href="javascript:void(0)" class="fypages_a" onclick="jobpage('1')">上一页</a>
+                        <a href="javascript:void(0)" class="fypages_a" onclick="jobpage('1')">{yun:}t key='default_special_gl_00003'{/yun}</a>
                         <div class="pages_sz">
                             <div id="nowpage_zj" class="pages_szbox" onclick="jobPageHtmlShow()">1</div>
                             <div id="pagehtml_zj" class="pages_sz_s" style="display:none">
@@ -250,7 +250,7 @@
                                 {yun:}/for{/yun}
                             </div>
                         </div>
-                        <a href="javascript:void(0)" onclick="jobpage('2')" class="fypages_a">下一页</a><em class="fypages_a">共{yun:}$zjpage{/yun}页</em>
+                        <a href="javascript:void(0)" onclick="jobpage('2')" class="fypages_a">{yun:}t key='default_special_gl_00004'{/yun}</a><em class="fypages_a">{yun:}t key='common_02057'{/yun}{yun:}$zjpage{/yun}{yun:}t key='common_02103'{/yun}</em>
                     </div>
                     {yun:}/if{/yun}
                 </div>
@@ -267,7 +267,7 @@
                 <div class="enter_signup_info">
                     <a href="{yun:}url m=zph c=reserve id='`$Info.id`'{/yun}">
                         <img src="{yun:}$style{/yun}/images/baoem.png">
-                        <span>企业报名</span>
+                        <span>{yun:}t key='default_special_gl_00002'{/yun}</span>
                     </a>
                 </div>
             </div>
@@ -278,12 +278,12 @@
                     {yun:}if $uid{/yun} 
                     <a href="javascript:void(0);" onclick="layer.msg('{yun:}if $config.sy_user_change==1{/yun}请先申请企业用户才能在线预订{yun:}else{/yun}只有企业用户才能在线预订{yun:}/if{/yun}', 2, 8);">
                         <img src="{yun:}$style{/yun}/images/baoem.png">
-                        <span>企业报名</span>
+                        <span>{yun:}t key='default_special_gl_00002'{/yun}</span>
                     </a>
                     {yun:}else{/yun} 
                     <a href="javascript:void(0);"  onclick="showlogin('2');">
                         <img src="{yun:}$style{/yun}/images/baoem.png">
-                        <span>企业报名</span>
+                        <span>{yun:}t key='default_special_gl_00002'{/yun}</span>
                     </a>
                     {yun:}/if{/yun}
                 </div>
@@ -425,7 +425,7 @@ DD_belatedPNG.fix('.png');
                                 
                                 
                             html +=    '<div class="tabdirectory tabdirectory_bottom">';
-                            html +=        '<a  href="'+weburl+'/index.php?m=company&c=show&id='+comlist[i].uid+'" target="_blank">查看更多</a>';
+                            html +=        '<a  href="'+weburl+'/index.php?m=company&c=show&id='+comlist[i].uid+'" target="_blank">{yun:}t key='common.view_more'{/yun}</a>';
                             html +=    '</div>';
                             html +='</li>';
                         }
@@ -497,7 +497,7 @@ DD_belatedPNG.fix('.png');
                             html +=    '<h3>'+joblist[i].name+'</h3>';
                             html +=    '<span>'+joblist[i].job_salary+'</span>';
                             html +=    '<p>'+joblist[i].com_name+'</p>';
-                            html +=    '<a  href="'+weburl+'/index.php?m=job&c=comapply&id='+ joblist[i].id+'" target="_blank">申请</a>';
+                            html +=    '<a  href="'+weburl+'/index.php?m=job&c=comapply&id='+ joblist[i].id+'" target="_blank">{yun:}t key='wap_zph_show_00011'{/yun}</a>';
                             html +='</li>';     
                         }
                         $("#jobhtml").html(html);

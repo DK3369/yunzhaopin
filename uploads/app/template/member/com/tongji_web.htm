@@ -4,14 +4,14 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 
 {yun:}include file="$tplstyle/jquery/jquery_js.htm"{/yun}
-<title>后台管理</title>
+<title>{yun:}t key='member_com_header_00001'{/yun}</title>
 </head>
 <body class="body_ifm">
 <div class="admin_atatic_chart fl" id="main2" style="height:300px;"></div>
     <!-- ECharts单文件引入 -->
     <script src="{yun:}$config.sy_weburl{/yun}/js/echarts.min.js?v={yun:}$config.cachecode{/yun}"></script>
     <script type="text/javascript">
-        // 基于准备好的dom，初始化echarts图表
+        // Based on the prepared dom, initialize the echarts chart
         var myChart = echarts.init(document.getElementById('main2')); 
         var option = {tooltip : {trigger: 'axis'},legend: {data:['{yun:}$name{/yun}']},
     calculable : false,

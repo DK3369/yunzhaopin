@@ -10,7 +10,7 @@
         <div class="qqconnect_box_p" style="padding-top:5px;">尊敬的微信用户</div>
     </div>
 	<!--非实名并且是先注册的，有快速创建账号-->
-    <div class="qqconnect_box_p">绑定已有账号{yun:}if $config.reg_real_name_check != 1 && $config.sy_reg_type==1{/yun}，或直接<a href="javascript:void(0);" onclick="creatacount();" style="color: #276bf2">创建新账号</a>{yun:}else{/yun}，<a href="{yun:}url m=wap c=register bind=1{/yun}" style="color: #276bf2">如您没有账号，请注册并绑定</a>{yun:}/if{/yun}</div>
+    <div class="qqconnect_box_p">{yun:}t key='default_wxconnect_index_00001'{/yun}{yun:}if $config.reg_real_name_check != 1 && $config.sy_reg_type==1{/yun}，{yun:}t key='common_01917'{/yun}<a href="javascript:void(0);" onclick="creatacount();" style="color: #276bf2">{yun:}t key='wap_qqbind_00003'{/yun}</a>{yun:}else{/yun}，<a href="{yun:}url m=wap c=register bind=1{/yun}" style="color: #276bf2">{yun:}t key='wap_qqbind_00001'{/yun}</a>{yun:}/if{/yun}</div>
 
     <form method="post" action="{yun:}$config_wapdomain{/yun}/index.php?c=wxconnect&a=wxbind" onsubmit="return checkwxbind(this);">
         <input type="hidden" id="provider" value="weixin"/>
@@ -18,7 +18,7 @@
         <div id="login_normal_box">
             <div class="forminputitem">
                 <div class="wxbind_text">
-                    <input name="username" type="text" id="username" value="{yun:}$smarty.get.username{/yun}" placeholder="邮箱/手机号/用户名" class="wxbind_text_input "/>
+                    <input name="username" type="text" id="username" value="{yun:}$smarty.get.username{/yun}" placeholder="{yun:}t key='member_user_resumeout_00004'{/yun}/{yun:}t key='wap_user_ident_00004'{/yun}/{yun:}t key='admin_user_member_component_alluser_00026'{/yun}" class="wxbind_text_input "/>
                 </div>
             </div>
             <div>
@@ -31,11 +31,11 @@
         {yun:}if $config.sy_msg_login==1{/yun}
             <div id="login_sj_box" style="display: none;">
                 <div class="wxbind_text">
-                    <input name="moblie" id="moblie" type="number" class="wxbind_text_input" value="" placeholder="手机号" data-input-clear="3" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" />
+                    <input name="moblie" id="moblie" type="number" class="wxbind_text_input" value="" placeholder="{yun:}t key='wap_user_ident_00004'{/yun}" data-input-clear="3" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" />
                     <span class="mui-icon mui-icon-clear mui-hidden"></span>
                 </div>
                 <div class="logoin_msg none" id="show_mobile">
-                    <div class="logoin_msg_tx">请填写正确的手机号</div>
+                    <div class="logoin_msg_tx">{yun:}t key='wap_user_bindingbox_00001'{/yun}</div>
                 </div>
             </div>
         {yun:}/if{/yun}
@@ -54,7 +54,7 @@
             </div>
             {yun:}else{/yun}
                 <div class="wxbind_text wxbind_textpd">
-                    <input class="wxbind_text_input" placeholder="验证码" name="authcode" id="checkcode" type="text" maxlength="6">
+                    <input class="wxbind_text_input" placeholder="{yun:}t key='wap_advice_00007'{/yun}" name="authcode" id="checkcode" type="text" maxlength="6">
                     <div class="wxbind_img">
                         <img id="vcode_img" class=" " src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php" onclick="checkCode('vcode_img');">
                     </div>
@@ -65,29 +65,29 @@
         {yun:}if $config.sy_msg_login==1{/yun}
         <div id="login_sjyz_box" style="display: none;">
             <div class="wxbind_text wxbind_textpd">
-                <input name="moblie_code" type="text" maxlength="6" class="wxbind_text_input" id="moblie_code" value="" placeholder="短信验证码">
+                <input name="moblie_code" type="text" maxlength="6" class="wxbind_text_input" id="moblie_code" value="" placeholder="{yun:}t key='wap_com_bindingbox_00002'{/yun}">
                 <div class="logoin_msg none" id="show_dynamiccode">
                     <div class="logoin_msg_tx">请填写发送的验证码</div>
                     <div class="logoin_msg_icon"></div>
                 </div>
-                <a href="javascript:void(0);" class="wxbind_text_send" id="send_msg_tip" onclick="send_msg('{yun:}$config_wapdomain{/yun}/index.php?c=wxconnect&a=sendmsg');"><span id="time">获取验证码</span></a>
+                <a href="javascript:void(0);" class="wxbind_text_send" id="send_msg_tip" onclick="send_msg('{yun:}$config_wapdomain{/yun}/index.php?c=wxconnect&a=sendmsg');"><span id="time">{yun:}t key='wap_user_bindingbox_00005'{/yun}</span></a>
             </div>
         </div>
         {yun:}/if{/yun}
 
         <div class="wxbind_login_bthbox">
-            <a href="javascript:void(0);" class="wxbind_login_bth" id="sublogin" onclick="bindacount();">绑定账号</a>
-            <input class="wxbind_login_bth" id="submlogin" value="绑定账号" type="submit" style="display: none;" />
+            <a href="javascript:void(0);" class="wxbind_login_bth" id="sublogin" onclick="bindacount();">{yun:}t key='wap_qqbind_00004'{/yun}</a>
+            <input class="wxbind_login_bth" id="submlogin" value="{yun:}t key='wap_qqbind_00004'{/yun}" type="submit" style="display: none;" />
         </div>
 
     </form>
 
-    <!-- 验证码 -->
+    <!-- {yun:}t key='wap_advice_00007'{/yun} -->
     <div class="login_otherfs">
         {yun:}if $config.sy_msg_isopen==1 && $config.sy_msg_login==1{/yun}
         <div class="verification_code_word" id="mobile_login">短信登录</div>
         {yun:}/if{/yun}
-        <div class="verification_code_word" id="acount_login" style="display: none"> 用户名登录</div>
+        <div class="verification_code_word" id="acount_login" style="display: none"> {yun:}t key='wap_login_00009'{/yun}</div>
     </div>
 </div>
 
@@ -105,11 +105,11 @@
     var wapurl = "{yun:}url m=wap{/yun}",
         weburl = "{yun:}$config.sy_weburl{/yun}",
         code_web = '{yun:}$config.code_web{/yun}',
-        code_kind = '{yun:}$config.code_kind{/yun}';
+        code_kind = '{yun:}$config.code_kind{/yun}";
 
     $(document).ready(function () {
-        //账号登录和手机登录tab选择
-        $('#acount_login').click(function (data) {
+        //账号登录和手机登录tab{yun:}t key='wap_js_umeditor_dialogs_emotion_emotion_00001'{/yun}
+        $("#acount_login').click(function (data) {
             $('#acount_login').css("display", "none");
             $('#mobile_login').css("display", "block");
             $('#sublogin').css("display", "block");
@@ -138,32 +138,32 @@
     var smsTimer_flag = 90; //倒数 90
     var smsTime_speed = 1000; //速度 1秒钟
 
-    //发送手机短信
+    // SendmobileSMS
     function send_msg(url) {
         var moblie = $('#moblie').val();
         var code;
 
         var verify_token, verify_str;
-        if (moblie == "" || moblie == "请输入手机号码") {
+        if (moblie == "" || moblie == "{yun:}t key='wap_user_bindingbox_00003'{/yun}") {
 
-            showToast("请输入手机号码！");
+            showToast("{yun:}t key='wap_user_bindingbox_00003'{/yun}");
             return false;
         } else {
             if (!isjsMobile(moblie)) {
-                showToast('手机格式错误！');
+                showToast("{yun:}t key='wap_login_00007'{/yun}");
                 return false;
             }
         }
-        var codesear = new RegExp('前台登录');
+        var codesear = new RegExp("{yun:}t key='wap_js_reg_ajax_00022'{/yun}");
         if (codesear.test(code_web)) {
             if (code_kind == 1) {
                 code = $.trim($("#checkcode").val());
                 if (!code) {
-                    showToast('请填写图片验证码！');
+                    showToast("{yun:}t key='wap_js_forgetpw_00001'{/yun}");
                     return false;
                 }
             } else if (code_kind > 2) {
-                // 验证类型改成短信
+                // Change verification type to SMS
                 $('#bind-captcha').attr('data-id', 'send_msg_tip');
                 $('#bind-captcha').attr('data-type', 'click');
                 verify_token = $('input[name="verify_token"]').val();
@@ -211,23 +211,23 @@
                 }
             })
         } else {
-            showToast('请勿重复发送！', 2);
+            showToast("{yun:}t key='wap_js_forgetpw_00003'{/yun}", 2);
             return false;
         }
     }
 
-    //倒计时
+    // Countdown
     function smsTimer(obj) {
         if (smsTimer_flag > 0) {
-            $(obj).html('重新发送(' + smsTimer_flag + 's)');
+            $(obj).html("{yun:}t key='wap_js_forgetpw_00007'{/yun}" + smsTimer_flag + 's)');
             $(obj).attr({
                 'style': 'background: ;'
             });
             smsTimer_flag--;
         } else {
-            $(obj).html('重新发送');
+            $(obj).html("{yun:}t key='wap_js_forgetpw_00009'{/yun}");
             $(obj).attr({
-                'style': 'background: ;'
+                'style': 'background: ;"
             });
             smsTimer_flag = smsTimer_time;
             clearInterval(Timer);
@@ -235,14 +235,14 @@
     }
 
     function changeCaptcha() {
-        // 验证类型改成提交
-        $('#bind-captcha').attr('data-id', 'login_bth');
-        $('#bind-captcha').attr('data-type', 'click');
+        // {yun:}t key='common_01315'{/yun}
+        $("#bind-captcha').attr('data-id', 'login_bth');
+        $('#bind-captcha').attr('data-type', 'click");
     }
 
-    // 判断安卓物理返回键,从wxoauth来的,返回首页;其他的正常返回
+    // 判断安卓物理返回键,从wxoauth来的,{yun:}t key='member_user_headnav_00006'{/yun};其他的正常返回
     var u = navigator.userAgent;
-    var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+    var isAndroid = u.indexOf("Android') > -1 || u.indexOf('Adr') > -1; //android终端
     if (isAndroid) {
         $(function () {
             var wxoauth = $('#wxoauth').val();

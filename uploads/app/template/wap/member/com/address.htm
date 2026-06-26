@@ -8,15 +8,15 @@
             </div>
 
             <div class="com_member_hr_p1">
-                <span class="member_c9">所在区域 </span>{{Link.cityStr}}
+                <span class="member_c9">{yun:}t key='wap_com_address_00002'{/yun} </span>{{Link.cityStr}}
             </div>
 
             <div class="com_member_hr_p1">
-                <span class="member_c9">联&nbsp;&nbsp;系&nbsp;&nbsp;人 </span>{{Link.link_man}}
+                <span class="member_c9">{yun:}t key='admin_user_weipin_component_once_00027'{/yun} </span>{{Link.link_man}}
             </div>
 
             <div class="com_member_hr_p1">
-                <span class="member_c9">联系电话 </span>{{Link.phone_n}}<template v-if="Link.phone"> &nbsp;&nbsp;&nbsp;</template>{{Link.tel_n}}
+                <span class="member_c9">{yun:}t key='wap_user_invitecont_00004'{/yun} </span>{{Link.phone_n}}<template v-if="Link.phone"> &nbsp;&nbsp;&nbsp;</template>{{Link.tel_n}}
             </div>
         </div>
         <div class="Subclass" v-for="(item, akey) in list" :key="akey">
@@ -25,14 +25,14 @@
             </div>
 
             <div class="com_member_hr_p1">
-                <span class="member_c9">所在区域 </span>{{item.city}}
+                <span class="member_c9">{yun:}t key='wap_com_address_00002'{/yun} </span>{{item.city}}
             </div>
 
             <div class="com_member_hr_p1">
-                <span class="member_c9">联&nbsp;&nbsp;系&nbsp;&nbsp;人 </span>{{item.link_man}}
+                <span class="member_c9">{yun:}t key='admin_user_weipin_component_once_00027'{/yun} </span>{{item.link_man}}
             </div>
             <div class="com_member_hr_p1">
-                <span class="member_c9">联系电话 </span>{{item.link_moblie}}<template v-if="item.link_moblie"> &nbsp;&nbsp;&nbsp;</template>{{item.link_phone}}
+                <span class="member_c9">{yun:}t key='wap_user_invitecont_00004'{/yun} </span>{{item.link_moblie}}<template v-if="item.link_moblie"> &nbsp;&nbsp;&nbsp;</template>{{item.link_phone}}
             </div>
             <div class="interview_card_bom">
                 <div class="card_bom_icon">
@@ -43,7 +43,7 @@
                 </div>
             </div>
         </div>
-        <div onclick="navigateTo('index.php?c=newAddress')" href="javascript:void(0)"> <div class="issue_post_body_btn">添加新地址</div></div>
+        <div onclick="navigateTo('index.php?c=newAddress')" href="javascript:void(0)"> <div class="issue_post_body_btn">{yun:}t key='wap_com_address_00001'{/yun}</div></div>
         <div v-if="total >limit" class="page_pd">
             <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange"/>
         </div>
@@ -111,7 +111,7 @@
                     id: id,
                 };
                 showConfirm('确定删除?', () => {
-                    showLoading('删除中...')
+                    showLoading("{yun:}t key='wap_js_user_00007'{/yun}")
                     $.post('{yun:}url d=wxapp h=com m=set c=delAddress{/yun}', paramer, function (data) {
                         hideLoading();
                         if (data.error == 1) {

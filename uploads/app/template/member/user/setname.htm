@@ -3,24 +3,24 @@
     {yun:}include file="$userstyle/left.htm"{/yun}
     <div class="yun_m_rightbox fltR mt20 re">
     
-            <div class="member_right_index_h1 fltL"> <span class="member_right_h1_span fltL">修改账户</span> <i class="member_right_h1_icon user_bg"></i></div>
+            <div class="member_right_index_h1 fltL"> <span class="member_right_h1_span fltL">{yun:}t key='member_user_setname_00001'{/yun}</span> <i class="member_right_h1_icon user_bg"></i></div>
     
     
   <div class="clear"></div>
   <div>
       <div class="passwd_list mt10">
         <ul>
-          <li>新用户名：
+          <li>{yun:}t key='wap_claim_00005'{/yun}
             <input type="text" id="username" name="username" value="" class="pass_text"/>
             &nbsp;&nbsp;<em id="msg_oldpassword">填写您的新用户名！</em></li>
-          <li>　新密码：
+          <li>　{yun:}t key='wap_user_password_00001'{/yun}：
             <input type="password" id="password" name="password" class="pass_text"/>
             &nbsp;&nbsp;<em id="msg_password">新密码格式为 6-20个字符！</em></li>
-          <li>确认密码：
+          <li>{yun:}t key='wap_com_password_00003'{/yun}：
             <input type="password" id="repassword" name="repassword" class="pass_text"/>
             &nbsp;&nbsp;<em id="msg_repassword">请再次确认您的新密码！</em></li>
           <li>
-            <input type="button" name="submit" class="passwd_btn" value=" 修 改 " onclick="Savenamepost();">
+            <input type="button" name="submit" class="passwd_btn" value=" {yun:}t key='member_user_setname_00002'{/yun} " onclick="Savenamepost();">
           </li>
         </ul>
       </div>

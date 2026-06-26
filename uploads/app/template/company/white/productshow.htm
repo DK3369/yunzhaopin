@@ -10,7 +10,7 @@
 </head>
 <body>
    <!--header头部-->
-<div class="header_top"><div class="header_cont">{yun:}$com.name{/yun}欢迎您！<a href="{yun:}$config.sy_weburl{/yun}" class="header_cont_home">人才网首页</a></div></div>
+<div class="header_top"><div class="header_cont">{yun:}$com.name{/yun}{yun:}t key='common_01796'{/yun}<a href="{yun:}$config.sy_weburl{/yun}" class="header_cont_home">{yun:}t key='company_blue_index_00001'{/yun}</a></div></div>
 <div class="">
    <div class="header_bg" >
   <div class="header_banner" ><img  src="{yun:}$banner.pic{/yun}" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_banner{/yun}',2);"> </div></div>
@@ -20,20 +20,20 @@
 <div class="header_comlogo">{yun:}if $com.logo{/yun}<img src="{yun:}$com.logo{/yun}" width="90" height="90" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_unit_icon{/yun}',2);" />{yun:}else{/yun}<img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_unit_icon{/yun}" width="185" height="75" />{yun:}/if{/yun}</div>
 <div class="header_cominfo"> <div class="header_cominfo_top">  <h1 class="header_cominfo_name" style="display:inline-block">{yun:}$com.name{/yun}</h1>
 <div class="header_combox_rz">
-{yun:}if $com.email_status=="1"{/yun} <img src="{yun:}$com_style{/yun}images/rz_yx2.png" alt="邮箱未认证" title="邮箱已认证" class="png" /> {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_yx.png" alt="邮箱未认证" title="邮箱未认证" class="png" /> {yun:}/if{/yun}
-        {yun:}if $com.moblie_status=="1"{/yun} <img src="{yun:}$com_style{/yun}images/rz_sj2.png" alt="手机未认证" title="手机已认证" class="png" /> {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_sj.png" alt="手机未认证" title="手机未认证" class="png" /> {yun:}/if{/yun}
+{yun:}if $com.email_status=="1"{/yun} <img src="{yun:}$com_style{/yun}images/rz_yx2.png" alt="邮箱未认证" title="{yun:}t key='admin_user_users_component_usersall_00020'{/yun}" class="png" /> {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_yx.png" alt="邮箱未认证" title="邮箱未认证" class="png" /> {yun:}/if{/yun}
+        {yun:}if $com.moblie_status=="1"{/yun} <img src="{yun:}$com_style{/yun}images/rz_sj2.png" alt="手机未认证" title="{yun:}t key='member_user_headnav_00004'{/yun}" class="png" /> {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_sj.png" alt="手机未认证" title="手机未认证" class="png" /> {yun:}/if{/yun}
         {yun:}if $com.yyzz_status=="1"{/yun} <img src="{yun:}$com_style{/yun}images/rz_zz2.png" alt="执照未认证" title="执照已认证" class="png" /> {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_zz.png" alt="执照未认证" title="执照未认证" class="png" /> {yun:}/if{/yun}
         </div>
  {yun:}if $ComMember.source==6 && $ComMember.claim==0 && $ComMember.email!=""{/yun}
-        <a href="javascript:claim('{yun:}url m=ajax c=claim uid=$com.uid{/yun}');">认领</a>
+        <a href="javascript:claim('{yun:}url m=ajax c=claim uid=$com.uid{/yun}');">{yun:}t key='resume_jianli3_index_00014'{/yun}</a>
         {yun:}/if{/yun}
         <div class="wrap_l_name_p"> {yun:}if $usertype=='1'{/yun}
-          {yun:}if $isatn.id{/yun} <a href="javascript:void(0)" onclick="atn('{yun:}$com.uid{/yun}','{yun:}url m=ajax c=atncompany{/yun}')" id='atn_{yun:}$com.uid{/yun}' class="wrap_l_name_gz">取消关注</a> {yun:}else{/yun} <a href="javascript:void(0)" onclick="atn('{yun:}$com.uid{/yun}','{yun:}url m=ajax c=atncompany{/yun}')" id='atn_{yun:}$com.uid{/yun}' class="wrap_l_name_gz">关注</a> {yun:}/if{/yun}
+          {yun:}if $isatn.id{/yun} <a href="javascript:void(0)" onclick="atn('{yun:}$com.uid{/yun}','{yun:}url m=ajax c=atncompany{/yun}')" id='atn_{yun:}$com.uid{/yun}' class="wrap_l_name_gz">{yun:}t key='wap_js_public_00003'{/yun}</a> {yun:}else{/yun} <a href="javascript:void(0)" onclick="atn('{yun:}$com.uid{/yun}','{yun:}url m=ajax c=atncompany{/yun}')" id='atn_{yun:}$com.uid{/yun}' class="wrap_l_name_gz">{yun:}t key='common_01949'{/yun}</a> {yun:}/if{/yun}
           {yun:}else{/yun}
             {yun:}if $uid{/yun}
-            <a href="javascript:void(0)" onclick="layer.msg('只有个人用户才能关注', 2, 8)" class="wrap_l_name_gz">关注</a> 
+            <a href="javascript:void(0)" onclick="layer.msg('{yun:}t key='wap_company_show_dark_00005'{/yun}', 2, 8)" class="wrap_l_name_gz">{yun:}t key='common_01949'{/yun}</a> 
             {yun:}else{/yun}
-            <a href="javascript:void(0)" onclick="showlogin('1');" class="wrap_l_name_gz">关注</a> 
+            <a href="javascript:void(0)" onclick="showlogin('1');" class="wrap_l_name_gz">{yun:}t key='common_01949'{/yun}</a> 
             {yun:}/if{/yun} 
           {yun:}/if{/yun}
         </div>
@@ -48,30 +48,30 @@
             
  <div class="header_comtj"> 
  <ul class="header_comtj_list">
-			<li title="该公司在招职位数量">
-				<span class="header_comtj_n">{yun:}$num{/yun}个</span>
-				<span class="header_comtj_p">招聘职位</span>
+			<li title="{yun:}t key='company_white_index_00004'{/yun}">
+				<span class="header_comtj_n">{yun:}$num{/yun}{yun:}t key='common_02050'{/yun}</span>
+				<span class="header_comtj_p">{yun:}t key='wap_company_index_00001'{/yun}</span>
                 <i class="header_comtj_list_icon"></i>
 			</li>
-			<li  title="该公司所有职位收到的简历中，在投递后7天内处理完成的简历所占比例">
+			<li  title="{yun:}t key='company_white_index_00001'{/yun}">
 				<span class="header_comtj_n">{yun:}$pre{/yun}%</span>
-				<span class="header_comtj_p">简历及时处理率</span>
+				<span class="header_comtj_p">{yun:}t key='company_white_index_00005'{/yun}</span>
                  <i class="header_comtj_list_icon"></i>
                 
 			</li>
-			<li  title="该公司所有职位完成简历处理的平均用时">
+			<li  title="{yun:}t key='company_white_index_00002'{/yun}">
 				<span class="header_comtj_n">{yun:}$operatime{/yun}</span>
-				<span class="header_comtj_p">简历处理用时</span>
+				<span class="header_comtj_p">{yun:}t key='company_white_index_00010'{/yun}</span>
                  <i class="header_comtj_list_icon"></i>
 			</li>
-            <li  title="该公司关注人数">
-				<span class="header_comtj_n">{yun:}$com.ant_num{/yun}人</span>
-				<span class="header_comtj_p">关注人数</span>
+            <li  title="{yun:}t key='company_white_index_00006'{/yun}">
+				<span class="header_comtj_n">{yun:}$com.ant_num{/yun}{yun:}t key='common_02051'{/yun}</span>
+				<span class="header_comtj_p">{yun:}t key='company_white_index_00012'{/yun}</span>
                  <i class="header_comtj_list_icon"></i>
 			</li>
-			<li  title="该公司最近一次登录时间">
-				<span class="header_comtj_n"><span class="com_show_info_sj_list_n">{yun:}if $com.login_date{/yun}{yun:}$com.login_date|date_format:"%Y-%m-%d"{/yun}{yun:}else{/yun}未登录 {yun:}/if{/yun}</span></span>
-				<span class="header_comtj_p">企业最后登录</span>
+			<li  title="{yun:}t key='company_white_index_00003'{/yun}">
+				<span class="header_comtj_n"><span class="com_show_info_sj_list_n">{yun:}if $com.login_date{/yun}{yun:}$com.login_date|date_format:"%Y-%m-%d"{/yun}{yun:}else{/yun}{yun:}t key='admin_user_member_component_alluser_00025'{/yun} {yun:}/if{/yun}</span></span>
+				<span class="header_comtj_p">{yun:}t key='company_white_index_00007'{/yun}</span>
                 
 			</li>
 		</ul>
@@ -85,22 +85,22 @@
 </div>
 
     <div class="clear"></div>
-    <!--内容content-->
+    <!--{yun:}t key='wap_user_addresumeson_00044'{/yun}content-->
     <div class="com_cont">
 <div class="com_left">
 
 <div class="com_nav"> <ul>
-    <li><a href="{yun:}url m=company c=show id=$com.uid{/yun}">首页</a><i class="c_currer_line"></i></li>
-    <li ><a href="{yun:}url m=company c=show id=$com.uid{/yun}#about">关于我们</a><i class="c_currer_line"></i></li>
-	<li><a href="{yun:}url m=company c=show id=$com.uid{/yun}#contact">联系方式</a><i class="c_currer_line"></i></li>
-    <li ><a href="{yun:}url m=company c=show id=$com.uid{/yun}#job">招聘职位</a><i class="c_currer_line"></i></li>
-    <li ><a href="{yun:}url m=company c=show id=$com.uid{/yun}#show">企业环境</a><i class="c_currer_line"></i></li>
-    <li ><a href="{yun:}url m=company c=show id=$com.uid{/yun}#news">企业新闻</a><i class="c_currer_line"></i></li>
+    <li><a href="{yun:}url m=company c=show id=$com.uid{/yun}">{yun:}t key='common.home'{/yun}</a><i class="c_currer_line"></i></li>
+    <li ><a href="{yun:}url m=company c=show id=$com.uid{/yun}#about">{yun:}t key='wap_index_00002'{/yun}</a><i class="c_currer_line"></i></li>
+	<li><a href="{yun:}url m=company c=show id=$com.uid{/yun}#contact">{yun:}t key='wap_resume_index_00022'{/yun}</a><i class="c_currer_line"></i></li>
+    <li ><a href="{yun:}url m=company c=show id=$com.uid{/yun}#job">{yun:}t key='wap_company_index_00001'{/yun}</a><i class="c_currer_line"></i></li>
+    <li ><a href="{yun:}url m=company c=show id=$com.uid{/yun}#show">{yun:}t key='wap_user_comment_00003'{/yun}</a><i class="c_currer_line"></i></li>
+    <li ><a href="{yun:}url m=company c=show id=$com.uid{/yun}#news">{yun:}t key='company_green_index_00009'{/yun}</a><i class="c_currer_line"></i></li>
     <li  class="c_currer"><a href="{yun:}url m=company c=show id=$com.uid{/yun}#product">公司产品</a><i class="c_currer_line"></i></li>
   </ul></div><div class="com_left_pd">
   <div class="com_list">
   
-   <div class="com_tit"><span class="com_tit_s"><i class="com_tit_icon com_tit_iconcp"></i>产品展示</span></div>
+   <div class="com_tit"><span class="com_tit_s"><i class="com_tit_icon com_tit_iconcp"></i>{yun:}t key='company_blue_index_00002'{/yun}</span></div>
    <div class="clear"></div>
     <div class="blue_p_h1">{yun:}$ProductInfo.title{/yun}</div>
                 <div class="firm_det_con"><img src="{yun:}$ProductInfo.pic{/yun}" width="300" /></span> </div>
@@ -111,33 +111,33 @@
    </div>
    </div> <div class="com_right">
 <div class="com_right_box">
-<div class="com_tit">基本信息</div>
+<div class="com_tit">{yun:}t key='wap_resume_index_00016'{/yun}</div>
  <div class="c_nr_hybox">
- <div class="c_nr_hy"><em>行业</em><span>{yun:}$com.hy_info{/yun}</span></div>
-              <div class="c_nr_hy"><em>性质</em><span>{yun:}$com.pr_info{/yun}</span></div>
-              <div class="c_nr_hy"><em>规模</em><span>{yun:}$com.mun_info{/yun}</span></div>
-              <div class="c_nr_hy"><em>地区</em><span>{yun:}$com.provinceid{/yun}</span></div>
-          {yun:}if $com.money{/yun}<div class="c_nr_hy"><em>注资</em>{yun:}$com.money{/yun}{yun:}if $com.moneytype==1{/yun}万元{yun:}else{/yun}万美元{yun:}/if{/yun}</div>{yun:}/if{/yun}
-          {yun:}if $com.sdate{/yun}<div class="c_nr_hy"><em>创办</em>{yun:}$com.sdate{/yun}</div>{yun:}/if{/yun}
+ <div class="c_nr_hy"><em>{yun:}t key='admin_user_company_component_joball_00045'{/yun}</em><span>{yun:}$com.hy_info{/yun}</span></div>
+              <div class="c_nr_hy"><em>{yun:}t key='default_part_show_00006'{/yun}</em><span>{yun:}$com.pr_info{/yun}</span></div>
+              <div class="c_nr_hy"><em>{yun:}t key='company_green_index_00014'{/yun}</em><span>{yun:}$com.mun_info{/yun}</span></div>
+              <div class="c_nr_hy"><em>{yun:}t key='default_part_show_00005'{/yun}</em><span>{yun:}$com.provinceid{/yun}</span></div>
+          {yun:}if $com.money{/yun}<div class="c_nr_hy"><em>{yun:}t key='company_green_index_00013'{/yun}</em>{yun:}$com.money{/yun}{yun:}if $com.moneytype==1{/yun}{yun:}t key='wap_js_member_caregory_00004'{/yun}{yun:}else{/yun}{yun:}t key='wap_js_member_caregory_00002'{/yun}{yun:}/if{/yun}</div>{yun:}/if{/yun}
+          {yun:}if $com.sdate{/yun}<div class="c_nr_hy"><em>{yun:}t key='company_green_index_00011'{/yun}</em>{yun:}$com.sdate{/yun}</div>{yun:}/if{/yun}
 </div>
 
-<div class="com_tit" id="contact" data-slide='2'>联系方式</div>
+<div class="com_tit" id="contact" data-slide='2'>{yun:}t key='wap_resume_index_00022'{/yun}</div>
 
 
 
      {yun:}if $looktype=="1"{/yun}
       <div class="firm_det_link"> 
-      {yun:}if $com.linkman{/yun}<span class="firm_mes1">联 &nbsp;系&nbsp;人：<i> <em class="JoB_material_right JoB_material_line">{yun:}$com.linkman{/yun}</em> </i></span>{yun:}/if{/yun}
-      {yun:}if $com.linkjob{/yun}<span class="firm_mes1">联系人职位：<i> <em class="JoB_material_right JoB_material_line">{yun:}$com.linkjob{/yun}</em> </i></span>{yun:}/if{/yun}
-    {yun:}if $com.linkphone{/yun} <span class="firm_mes1">固定电话：<i>{yun:}$com.linkphone{/yun}</i></span> {yun:}/if{/yun}
-          {yun:}if $com.linktel{/yun} <span class="firm_mes1">联系电话：<i> <em class="JoB_material_right JoB_material_line">{yun:}$com.linktel{/yun}</em> </i></span> {yun:}/if{/yun}
-          {yun:}if $com.linkmail{/yun} <span class="firm_mes1">联系邮件：<i>{yun:}$com.linkmail{/yun}</i></span> {yun:}/if{/yun}
-          {yun:}if $com.linkqq{/yun} <span class="firm_mes1">联 系 QQ：<i>{yun:}$com.linkqq{/yun}</i></span> {yun:}/if{/yun}
-          {yun:}if $com.zip{/yun} <span class="firm_mes1">邮政编码：<i>{yun:}$com.zip{/yun}</i></span> {yun:}/if{/yun}        
-          {yun:}if $com.website{/yun} <span class="firm_mes1">企业网址：<i>{yun:}$com.website{/yun}</i></span> {yun:}/if{/yun}
-           {yun:}if $com.busstops{/yun} <span class="firm_mes1" style="width:100%;">公交站点：<i>{yun:}$com.busstops{/yun}</i></span> {yun:}/if{/yun}
-          {yun:}if $com.address{/yun} <span class="firm_mes1" style="width:100%;">公司地址：<i>{yun:}$com.address{/yun}</i></span> {yun:}/if{/yun} 
-           {yun:}if $com.comqcode{/yun} <span class="firm_mes1" style="width:100%;">微信公众号：<i><img src="{yun:}$com.comqcode{/yun}" width="120" height="120"></i></span> {yun:}/if{/yun} 
+      {yun:}if $com.linkman{/yun}<span class="firm_mes1">联 &nbsp;系&nbsp;{yun:}t key='common_02051'{/yun}：<i> <em class="JoB_material_right JoB_material_line">{yun:}$com.linkman{/yun}</em> </i></span>{yun:}/if{/yun}
+      {yun:}if $com.linkjob{/yun}<span class="firm_mes1">{yun:}t key='common_01637'{/yun}：<i> <em class="JoB_material_right JoB_material_line">{yun:}$com.linkjob{/yun}</em> </i></span>{yun:}/if{/yun}
+    {yun:}if $com.linkphone{/yun} <span class="firm_mes1">{yun:}t key='wap_com_address_new_00014'{/yun}：<i>{yun:}$com.linkphone{/yun}</i></span> {yun:}/if{/yun}
+          {yun:}if $com.linktel{/yun} <span class="firm_mes1">{yun:}t key='wap_user_invitecont_00004'{/yun}：<i> <em class="JoB_material_right JoB_material_line">{yun:}$com.linktel{/yun}</em> </i></span> {yun:}/if{/yun}
+          {yun:}if $com.linkmail{/yun} <span class="firm_mes1">{yun:}t key='company_green_index_00005'{/yun}<i>{yun:}$com.linkmail{/yun}</i></span> {yun:}/if{/yun}
+          {yun:}if $com.linkqq{/yun} <span class="firm_mes1">{yun:}t key='company_green_index_00001'{/yun}<i>{yun:}$com.linkqq{/yun}</i></span> {yun:}/if{/yun}
+          {yun:}if $com.zip{/yun} <span class="firm_mes1">{yun:}t key='company_green_index_00006'{/yun}<i>{yun:}$com.zip{/yun}</i></span> {yun:}/if{/yun}        
+          {yun:}if $com.website{/yun} <span class="firm_mes1">{yun:}t key='wap_com_info_00045'{/yun}：<i>{yun:}$com.website{/yun}</i></span> {yun:}/if{/yun}
+           {yun:}if $com.busstops{/yun} <span class="firm_mes1" style="width:100%;">{yun:}t key='wap_com_info_00049'{/yun}：<i>{yun:}$com.busstops{/yun}</i></span> {yun:}/if{/yun}
+          {yun:}if $com.address{/yun} <span class="firm_mes1" style="width:100%;">{yun:}t key='wap_company_show_dark_00015'{/yun}：<i>{yun:}$com.address{/yun}</i></span> {yun:}/if{/yun} 
+           {yun:}if $com.comqcode{/yun} <span class="firm_mes1" style="width:100%;">{yun:}t key='default_footer_00003'{/yun}：<i><img src="{yun:}$com.comqcode{/yun}" width="120" height="120"></i></span> {yun:}/if{/yun} 
            </div>
            {yun:}else{/yun}
            {yun:}if $looktype=="3" || $looktype=="2"|| $looktype=="5"{/yun} 
@@ -147,11 +147,11 @@
             {yun:}elseif $looktype=="6"{/yun} 
              <div class="firm_login">
         <div class="firm_login_con"> <span>{yun:}$look_msg{/yun}</span>
-		<a href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=expect&act=add" class="firm_login_zc">创建简历</a> </div>
+		<a href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=expect&act=add" class="firm_login_zc">{yun:}t key='wap_user_index_00015'{/yun}</a> </div>
       	</div>
          {yun:}elseif $looktype=="4"{/yun} 
       <div class="firm_login">
-        <div class="firm_login_con"> <div><span>{yun:}$look_msg{/yun}</span></div> 请您先 <a class="firm_login_dl" href="javascript:void(0);" onclick="showlogin('1');">登录</a> or <a class="firm_login_zc" href="{yun:}url m=register usertype=1 type=1{/yun}">注册</a>
+        <div class="firm_login_con"> <div><span>{yun:}$look_msg{/yun}</span></div> {yun:}t key='company_white_index_00013'{/yun} <a class="firm_login_dl" href="javascript:void(0);" onclick="showlogin('1');">{yun:}t key='common.login'{/yun}</a> or <a class="firm_login_zc" href="{yun:}url m=register usertype=1 type=1{/yun}">{yun:}t key='common.register'{/yun}</a>
 		</div>
       </div>
     {yun:}/if{/yun}
@@ -164,11 +164,11 @@
 
 <div class="clear"></div>
 <div class="com_right_box">
-<div class="com_tit">分享到朋友圈</div>
+<div class="com_tit">{yun:}t key='wap_evaluategradeshow_00001'{/yun}</div>
 <div class="clear"></div>
        <div class="wx_share_fx">
         <div class="wx_share_fx_img"><img src="{yun:}url m=ajax c=pubqrcode toc=company toa=show toid=$com.uid{/yun}" width="120" height="120"></div>
-        <div class="wx_share_fx_p">分享到朋友圈</div>
+        <div class="wx_share_fx_p">{yun:}t key='wap_evaluategradeshow_00001'{/yun}</div>
         </div></div>
 </div></div>
     <!--内容结束-->

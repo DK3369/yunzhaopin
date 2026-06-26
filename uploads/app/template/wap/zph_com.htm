@@ -17,7 +17,7 @@
                 <div class="word_time_icon">
                     <img src="{yun:}$wap_style{/yun}/images/career_fair_time.png" alt="">
                 </div>
-                <div class="word_time">{yun:}$row.starttime|date_format:"%Y-%m-%d"{/yun} 至 {yun:}$row.endtime|date_format:"%Y-%m-%d"{/yun}</div>
+                <div class="word_time">{yun:}$row.starttime|date_format:"%Y-%m-%d"{/yun} {yun:}t key='common_02098'{/yun} {yun:}$row.endtime|date_format:"%Y-%m-%d"{/yun}</div>
             </div>
             {yun:}if $row.address{/yun}
          
@@ -49,7 +49,7 @@
 		{yun:}if $zph.job{/yun}
         <div class="zph_show_com_box">
             <div class="zph_show_com_job">
-                招聘职位： 
+                {yun:}t key='wap_company_index_00001'{/yun}： 
 				 {yun:}foreach from=$zph.job item=jlist{/yun}
                 <a href="{yun:}url m=wap c=job a=comapply id=$jlist.id{/yun}">{yun:}$jlist.name{/yun}</a>
                 {yun:}/foreach{/yun} 
@@ -58,7 +58,7 @@
     </div>
     {yun:}foreachelse{/yun}
     <div class="job_fair_msg">
-        <div class="wap_member_no">暂无公司报名！</div>
+        <div class="wap_member_no">{yun:}t key='wap_zph_com_00001'{/yun}！</div>
     </div>
     {yun:}/foreach{/yun}
 </div> </div>

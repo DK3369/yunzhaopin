@@ -8,8 +8,8 @@
                     <div class="poster_pic"><img src="{yun:}$v.pic_n{/yun}"></div>
                     <div class="hb_listbox_name" style="background:#fff;">
                         <div class="hb_cz">
-                            <a href="javascript:;" onclick="showWhb('{yun:}$comid{/yun}', '{yun:}$v.style{/yun}');">预览</a>
-                            <a href="javascript:;" onclick="downWhb('{yun:}$comid{/yun}', '{yun:}$v.style{/yun}');">下载</a>
+                            <a href="javascript:;" onclick="showWhb('{yun:}$comid{/yun}', '{yun:}$v.style{/yun}');">{yun:}t key='wap_hb_admin_whb_00002'{/yun}</a>
+                            <a href="javascript:;" onclick="downWhb('{yun:}$comid{/yun}', '{yun:}$v.style{/yun}');">{yun:}t key='wap_hb_admin_whb_00001'{/yun}</a>
                         </div>
                     </div>
                 </div>
@@ -58,8 +58,8 @@
         const url   =   weburl + '/index.php?m=ajax&c=getComHb&uid=' + id + '&style=' + style
         setTimeout(function () {
             var a = document.createElement('a');          // 创建一个a节点插入的document
-            var event = new MouseEvent('click')           // 模拟鼠标click点击事件
-            a.download = 'whb' + style;					  // 设置a节点的download属性值
+            var event = new MouseEvent('click")           // 模拟鼠标click{yun:}t key='admin_tool_weixin_component_wxmenu_00012'{/yun}
+            a.download = "whb' + style;					  // 设置a节点的download属性值
             a.href = url;                                 // 将图片的src赋值给a节点的href
             a.dispatchEvent(event);
         }, 1000);

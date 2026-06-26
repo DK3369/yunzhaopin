@@ -15,17 +15,17 @@
 	<div class=right_box>
 		<div class="newmember_tit">
             <ul>
-                <li><a href="index.php?c=info">基本信息</a></li>
-                <li><a href="index.php?c=info&act=side">补充信息</a></li>
-                <li><a href="index.php?c=address">地址管理</a></li>
-                <li><a href="index.php?c=show"> 公司相册</a></li>
-                <li><a href="index.php?c=uppic"> 公司LOGO</a></li>
-                <li><a href="index.php?c=product">产品介绍</a></li>
-                <li><a href="index.php?c=news">公司资讯</a></li>
+                <li><a href="index.php?c=info">{yun:}t key='wap_resume_index_00016'{/yun}</a></li>
+                <li><a href="index.php?c=info&act=side">{yun:}t key='wap_com_info_00058'{/yun}</a></li>
+                <li><a href="index.php?c=address">{yun:}t key='wap_com_set_00003'{/yun}</a></li>
+                <li><a href="index.php?c=show"> {yun:}t key='wap_com_set_00002'{/yun}</a></li>
+                <li><a href="index.php?c=uppic"> {yun:}t key='default_map_index_00001'{/yun}LOGO</a></li>
+                <li><a href="index.php?c=product">{yun:}t key='member_com_address_00004'{/yun}</a></li>
+                <li><a href="index.php?c=news">{yun:}t key='member_com_address_00006'{/yun}</a></li>
                 {yun:}if $config.map_key{/yun}
-                <li class="newmember_titcur"><a href="index.php?c=map">公司地图</a></li>
+                <li class="newmember_titcur"><a href="index.php?c=map">{yun:}t key='member_com_address_00005'{/yun}</a></li>
                 {yun:}/if{/yun}
-                <li><a href="index.php?c=comtpl">个性化模板</a></li>
+                <li><a href="index.php?c=comtpl">{yun:}t key='member_com_address_00002'{/yun}</a></li>
 
             </ul>
 		</div>
@@ -40,7 +40,7 @@
 	   	 
 								<div class="mapbox">
      <div class="com_new_tip mt20"> 
-          <span class="com_new_tip_h">温馨小提示</span>搜索框内输入地址搜索，在地图区域点击公司所在的位置，点击保存地图</div>
+          <span class="com_new_tip_h">{yun:}t key='member_com_added_00002'{/yun}</span>搜索框内输入地址搜索，在地图区域点击公司所在的位置，点击保存地图</div>
       
           
     
@@ -48,7 +48,7 @@
 		
 			<div class="joblist_mapsearch_box">
 		
-            <input id="map_keyword" type="text" value="{yun:}$row.address{/yun}" class="joblist_mapsearch_text" placeholder="建议格式：XX市XX县XX路" onkeyup="addressKeyup();" /><input type="button" value="精准查找" onclick="localsearch();" class="joblist_mapsearch_bth"/>
+            <input id="map_keyword" type="text" value="{yun:}$row.address{/yun}" class="joblist_mapsearch_text" placeholder="建议格式：XX{yun:}t key='common_02076'{/yun}XX{yun:}t key='wap_com_info_00062'{/yun}XX路" onkeyup="addressKeyup();" /><input type="button" value="精准查找" onclick="localsearch();" class="joblist_mapsearch_bth"/>
                 <div class="comEleaseMaps" id="poiSearch" style="display: none;"></div>
             </div>
 		
@@ -72,7 +72,7 @@
                  <span class="com_info_text_s"> Y轴：</span>
                   <input name="yvalue" id="map_y" onkeyup="this.value=this.value.replace(/[^0-9.]/g,'')" readonly="readonly" value="{yun:}$row.y{/yun}"  class="com_info_text">
                 
-                  <input type="submit" name="savemap" class="com_info_mapbth" value="保存地图" style="">
+                  <input type="submit" name="savemap" class="com_info_mapbth" value="{yun:}t key='member_com_map_00001'{/yun}" style="">
                   <span id="by_map" class="errordisplay">请先设置地图位置</span></td>
               </tr>
             
@@ -128,11 +128,11 @@
                         for(var i in e.tips){
                             html +=  '<li data-id="' + i + '">';
                             html += 	  '<div class="comEleaseMapTite">';
-                            html +=			  '<span>名称:</span>';
+                            html +=			  "<span>{yun:}t key='member_com_customize_nav_00003'{/yun}:</span>";
                             html +=  		  '<b>' + e.tips[i].name + '</b>';
                             html +=  	  '</div>';
                             html +=  	  '<div class="comEleaseMapTipst">';
-                            html +=  		   '<span>地址:' + e.tips[i].address + '</span>';
+                            html +=  		   "<span>{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00014'{/yun}:" + e.tips[i].address + '</span>';
                             html +=  	   '</div>';
                             html +=  '</li>';
                         }
@@ -147,7 +147,7 @@
                                 var c = location.split(',');
                                 document.getElementById("map_x").value = c[0];
                                 document.getElementById("map_y").value = c[1];
-                                // 设置marker
+                                // {yun:}t key='wap_com_jobadd_00053'{/yun}marker
                                 var lngLat = new AMap.LngLat(c[0],c[1]);
                                 map.setZoomAndCenter(17,lngLat);
                                 var marker = new AMap.Marker({

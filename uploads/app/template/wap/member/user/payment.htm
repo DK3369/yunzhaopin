@@ -3,22 +3,22 @@
 <div class="pay_choice_box">
 	<form action="" method="post" onsubmit="return order_form();" id="paymentform">
 		<div class="pay_xymoney">
-			<span class="pay_xymoney_name">订单号</span>
+			<span class="pay_xymoney_name">{yun:}t key='wap_user_payment_00004'{/yun}</span>
 			<div class="pay_xymoney_t"><em class="">{yun:}$order.order_id{/yun}</em></div>
 		</div>
 		<div class="pay_xymoney">
-			<span class="pay_xymoney_name">支付金额</span>
-			<div class="pay_xymoney_t"><em class="pay_xymoney_t_n"><span id="price">{yun:}$order.order_price{/yun}</span></em> 元</div>
+			<span class="pay_xymoney_name">{yun:}t key='wap_user_payment_00001'{/yun}</span>
+			<div class="pay_xymoney_t"><em class="pay_xymoney_t_n"><span id="price">{yun:}$order.order_price{/yun}</span></em> {yun:}t key='common_02056'{/yun}</div>
 		</div>
 		<div class="pay_xymoney">
-			<span class="pay_xymoney_name">订单类型</span>
+			<span class="pay_xymoney_name">{yun:}t key='wap_user_payment_00002'{/yun}</span>
 			<div class="pay_xymoney_t">
 				<em class="">
-					{yun:}if $order.type==1{/yun}购买会员
-					{yun:}else if $order.type=='2'{/yun}{yun:}$config.integral_pricename{/yun}充值
-					{yun:}else if $order.type=='3'{/yun}银行转帐
+					{yun:}if $order.type==1{/yun}{yun:}t key='default_public_search_public_tips_00029'{/yun}
+					{yun:}else if $order.type=='2'{/yun}{yun:}$config.integral_pricename{/yun}{yun:}t key='common_01946'{/yun}
+					{yun:}else if $order.type=='3'{/yun}{yun:}t key='admin_system_set_payset_00056'{/yun}
 					{yun:}else if $order.type=='4'{/yun}金额充值
-					{yun:}else if $order.type=='14'{/yun}简历置顶
+					{yun:}else if $order.type=='14'{/yun}{yun:}t key='wap_user_index_00025'{/yun}
 					{yun:}/if{/yun}
 				</em>
 			</div>
@@ -26,7 +26,7 @@
 		<div id="pay_style" class="member_set_meal_fk_fbox mt10">
 			{yun:}if $config.alipay==1 && $isweixin!=1{/yun}
 			<div class="member_set_meal_fk_fs member_set_meal_fk_fs_zfb" onclick="paycheck('alipay');">
-				<i class="alipay member_set_meal_fk_xz"></i>支付宝
+				<i class="alipay member_set_meal_fk_xz"></i>{yun:}t key='wap_user_payment_00003'{/yun}
 			</div>
 			{yun:}/if{/yun} 
 		</div>
@@ -34,11 +34,11 @@
 		<input type="hidden" value="{yun:}$order.order_price{/yun}" id="order_price" name="price" /> 
 		{yun:}if $config.alipay==1{/yun}
 			<div class="member_set_meal_fk_zf">
-				<input type="submit" class="member_set_meal_fk_zf_bth" value="确认支付">
+				<input type="submit" class="member_set_meal_fk_zf_bth" value="{yun:}t key='wap_user_pay_00001'{/yun}">
 			</div>
 		{yun:}else{/yun}
 			<div class="pay_zfgb_tip">
-				<span>网站已关闭支付功能，请联系管理员！</span>
+				<span>网站已关闭支付功能，{yun:}t key='wap_spe_gl_00002'{/yun}！</span>
 			</div>
 		{yun:}/if{/yun}
 

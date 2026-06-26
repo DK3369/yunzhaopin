@@ -6,18 +6,18 @@
             <div class="popular_position">
                 <div class="popular_position_top" @click="pageTo(resume.wapurl)">
                     <h3>{{resume.name}}</h3>
-                    <div style="color:#999">{{resume.sex_n}}·{{resume.exp_n}}经验·{{resume.edu_n}}学历·{{resume.age}}岁</div>
-                    <div style="color:#999; padding-top: 0.266666rem;" v-if="resume.living">居住地：{{resume.living}}</div>
+                    <div style="color:#999">{{resume.sex_n}}·{{resume.exp_n}}{yun:}t key='home.experience_suffix'{/yun}·{{resume.edu_n}}{yun:}t key='home.education_suffix'{/yun}·{{resume.age}}{yun:}t key='home.age_suffix'{/yun}</div>
+                    <div style="color:#999; padding-top: 0.266666rem;" v-if="resume.living">{yun:}t key='common_01907'{/yun}：{{resume.living}}</div>
                 </div>
                 <div class="popular_position_bottom">
                     当前状态：
                     <span v-if="show.is_browse==1 || show.is_browse==2">待接受</span>
                     <span v-else-if="show.is_browse==3">
-                        <span v-if="show.over" style="color: #FF4200;">已结束</span>
-                        <span v-else>同意面试</span>
+                        <span v-if="show.over" style="color: #FF4200;">{yun:}t key='wap_user_invite_00006'{/yun}</span>
+                        <span v-else>{yun:}t key='wap_user_invitecont_00001'{/yun}</span>
                     </span>
                     <span v-else-if="show.is_browse==4">拒绝面试</span>
-                    <span v-else style="color: #FF4200;">已面试</span>
+                    <span v-else style="color: #FF4200;">{yun:}t key='wap_user_invitecont_00005'{/yun}</span>
                 </div>
             </div>
             <div class="popular_body_card">
@@ -28,19 +28,19 @@
                 </div>
                 <div class="popular_card_line" style="margin-bottom: 0px;"></div>
                 <div class="invitecont_list">
-                    <div class="invitecont_list_name">面试时间</div>
+                    <div class="invitecont_list_name">{yun:}t key='wap_user_invite_00002'{/yun}</div>
                     <div class="popular_template_a">{{show.intertime}}</div>
                 </div>
                 <div class="invitecont_list">
-                    <div class="invitecont_list_name">面试职位</div>
+                    <div class="invitecont_list_name">{yun:}t key='wap_user_invite_00003'{/yun}</div>
                     <div class="popular_template_a">{{show.jobname}}</div>
                 </div>
                 <div class="invitecont_list">
-                    <div class="invitecont_list_name">联系人</div>
+                    <div class="invitecont_list_name">{yun:}t key='wap_user_invitecont_00006'{/yun}</div>
                     <div class="popular_template_a">{{show.linkman}}</div>
                 </div>
                 <div class="invitecont_list">
-                    <div class="invitecont_list_name">联系电话</div>
+                    <div class="invitecont_list_name">{yun:}t key='wap_user_invitecont_00004'{/yun}</div>
                     <div class="popular_template_a">{{show.linktel}}</div>
                 </div>
                 <div class="invitecont_list">
@@ -53,7 +53,7 @@
                     <input type="hidden" id="map_y" :value="show.y"/>
                 </div>
                 <div class="invitecont_list" v-if="show.content">
-                    <div class="invitecont_list_name">备注信息</div>
+                    <div class="invitecont_list_name">{yun:}t key='wap_user_invitecont_00002'{/yun}</div>
                     <div class=" ">{{show.content}}</div>
                 </div>
             </div>

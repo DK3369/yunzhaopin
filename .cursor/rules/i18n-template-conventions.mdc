@@ -7,20 +7,21 @@ alwaysApply: true
 
 ## 语言包 key 格式（本项目）
 
-- **目标格式**：编号 key，如 `wap_00703`、`common_09190`（`模块_五位数字`）。
-- **错误格式**：整段中文当 key（当前 `data/lang/auto/zh_cn.php` 里大量此类，是待改状态，不要照抄）。
+- **目标格式**：`页面前缀_五位编号`，如 `wap_resume_00022`、`admin_com_job_00013`。
+- **全站通用**（多页共用）才用 `common_00001`。
+- **错误格式**：整段中文当 key；或 `wap_00703` 这种没有页面名的单段前缀。
 - 改模板前：在 `data/lang/auto/zh_cn.php` **grep 确认 key 已存在**；没有则**先加语言包再改模板**。
 - `zh_cn.php` 与 `en_us.php` **key 必须一一对应**，value 分别为中文/英文。
 
 ## 模板写法
 
 ```smarty
-{yun:}t key='wap_00703'{/yun}
+{yun:}t key='wap_resume_00022'{/yun}
 ```
 
 - HTML 属性：外层双引号包 Smarty 标签时常用 `placeholder="{yun:}t key='...'{/yun}"`。
 - **JS 字符串**：外层用**双引号**，内层 key 用单引号，例如：
-  `showConfirm("{yun:}t key='wap_00703'{/yun}", function(){`
+  `showConfirm("{yun:}t key='wap_resume_00022'{/yun}", function(){`
 - 禁止：`'...{yun:}t key='xxx'{/yun}...'`（内外单引号冲突）。
 
 ## 改动后
@@ -31,4 +32,4 @@ alwaysApply: true
 ## 禁止
 
 - 未核对 key 格式就批量替换语言包或模板。
-- 假设 `aliases.php` 存在（可能已被删）；以实际文件为准。
+- 假设 `aliases.php` 不存在；以实际文件为准（迁移后会生成 `data/lang/auto/aliases.php`）。

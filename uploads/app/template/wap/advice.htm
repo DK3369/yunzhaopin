@@ -2,23 +2,23 @@
 <style>body{ background:#fff}</style>
 <div class="">
 	<div class="fk_box_lx">
-	<div class="fk_box_tit">反馈你的问题</div>
-        <span class="advice_list_fs" data-code="1">建议</span> 
-		<span class="advice_list_fs" data-code="2">意见</span>
-		<span class="advice_list_fs" data-code="3">求助</span> 
-		<span class="advice_list_fs" data-code="4">投诉</span> 
+	<div class="fk_box_tit">{yun:}t key='wap_advice_00004'{/yun}</div>
+        <span class="advice_list_fs" data-code="1">{yun:}t key='common_01983'{/yun}</span> 
+		<span class="advice_list_fs" data-code="2">{yun:}t key='wap_advice_00008'{/yun}</span>
+		<span class="advice_list_fs" data-code="3">{yun:}t key='wap_advice_00010'{/yun}</span> 
+		<span class="advice_list_fs" data-code="4">{yun:}t key='wap_advice_00009'{/yun}</span> 
 		<input type="hidden" name="infotype" />
     <div class="fk_textarea"><textarea class="advice_list_textarea" id="content" name="content" data-id="{yun:}$id{/yun}" placeholder="留下您的意见或反馈，我们会不断改进~"></textarea></div>
     	</div>
 	<div class="advice_list_c">
 	<div class="advice_list">
-		<span class="advice_list_s">联系人</span>
-		<input class="advice_list_text" name="username" id="username" type="text" placeholder="请输入您的姓名" value="{yun:}$advice_name{/yun}">
+		<span class="advice_list_s">{yun:}t key='wap_user_invitecont_00006'{/yun}</span>
+		<input class="advice_list_text" name="username" id="username" type="text" placeholder="{yun:}t key='wap_advice_00003'{/yun}" value="{yun:}$advice_name{/yun}">
 	</div>
 	
 	<div class="advice_list ">
-		<span class="advice_list_s">联系手机</span>
-		<input class="advice_list_text" name="moblie" id="moblie" type="text" placeholder="请输入手机号" value="{yun:}$advice_mobile{/yun}">
+		<span class="advice_list_s">{yun:}t key='wap_advice_00006'{/yun}</span>
+		<input class="advice_list_text" name="moblie" id="moblie" type="text" placeholder="{yun:}t key='wap_js_forgetpw_00004'{/yun}" value="{yun:}$advice_mobile{/yun}">
 	</div>
 	{yun:}if strpos($config.code_web,"意见反馈")!==false{/yun} 
 		{yun:}if $config.code_kind>2{/yun}
@@ -33,9 +33,9 @@
 		</div>
 		{yun:}else{/yun}
 		<div class="advice_list ">
-			<span class="advice_list_s">验证码</span>
+			<span class="advice_list_s">{yun:}t key='wap_advice_00007'{/yun}</span>
 			<div class="advice_list_yz">
-				<input class="zx_yx_input" id="msg_CheckCode" type="text" placeholder="请输入验证码" value="" maxlength="6" name="authcode">
+				<input class="zx_yx_input" id="msg_CheckCode" type="text" placeholder="{yun:}t key='wap_user_bindingbox_00004'{/yun}" value="" maxlength="6" name="authcode">
 			</div>
 			<img class="advice_list_yzm" id="vcode_imgs" src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php" onclick="checkCode('vcode_imgs');">
 		</div>
@@ -48,7 +48,7 @@
 			<div class="advice_list_yz">
 				<input class="zx_yx_input" name="advice_code" id="advice_code" type="text" maxlength='6'  placeholder="输入短信验证码">
 			</div>
-			<div class="advice_list_hqbth" id="send_msg_tip" onclick="send_advice_msg('{yun:}$config_wapdomain{/yun}/index.php?c=advice&a=sendmsg');"> 短信验证码
+			<div class="advice_list_hqbth" id="send_msg_tip" onclick="send_advice_msg('{yun:}$config_wapdomain{/yun}/index.php?c=advice&a=sendmsg');"> {yun:}t key='wap_com_bindingbox_00002'{/yun}
 			</div>
 		</div>
 		
@@ -58,13 +58,13 @@
 
     </div>
 	<div class="advice_list_but mt15">
-		<input class="" type="submit" id="submit" name="submit" value="提交" onclick="advice('vcode_imgs');">
+		<input class="" type="submit" id="submit" name="submit" value="{yun:}t key='common.submit'{/yun}" onclick="advice('vcode_imgs');">
 	</div>
 </div>
 
 <div class="advice_list_p">
-	尊敬的用户您好!<br>我们将在第一时间及时回复您的反馈，如您的问题比较紧急，请致电服务热线!
-	<div>客服热线：{yun:}$config.sy_freewebtel{/yun}</div>
+	{yun:}t key='wap_advice_00002'{/yun}!<br>我们将在第一时间及时回复您的反馈，如您的问题比较紧急，请致电服务热线!
+	<div>{yun:}t key='wap_advice_00005'{/yun}：{yun:}$config.sy_freewebtel{/yun}</div>
 </div>
 {yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
 {yun:}include file="$wapstyle/verify_js.htm"{/yun}
@@ -78,29 +78,29 @@
 	var smsTimer_flag = 90; //倒数 90
 	var smsTime_speed = 1000; //速度 1秒钟
 
-	//发送手机短信
+	// SendmobileSMS
 	function send_advice_msg(url) {
 		var moblie = $('#moblie').val();
 		var code;
 		
 		var verify_token,verify_str;
-		if(moblie == "" || moblie == "请输入手机号码") {
+		if(moblie == "" || moblie == "{yun:}t key='wap_user_bindingbox_00003'{/yun}") {
 
-			showToast("请输入手机号码！");
+			showToast("{yun:}t key='wap_user_bindingbox_00003'{/yun}");
 			return false;
 		} else {
 
 			if(!isjsMobile(moblie)) {
-				showToast('手机格式错误！');
+				showToast("{yun:}t key='wap_login_00007'{/yun}");
 				return false;
 			}
 		}
-		var codesear = new RegExp('意见反馈');
+		var codesear = new RegExp("{yun:}t key='wap_user_index_00021'{/yun}");
 		if(codesear.test(code_web)) {
 			if(code_kind == 1) {
 				code = $.trim($("#msg_CheckCode").val());
 				if(!code) {
-					showToast('请填写图片验证码！');
+					showToast("{yun:}t key='wap_js_forgetpw_00001'{/yun}");
 					return false;
 				}
 			} else if(code_kind > 2) {
@@ -149,20 +149,20 @@
 				}
 			})
 		} else {
-			showToast('请勿重复发送！', 2);
+			showToast("{yun:}t key='wap_js_forgetpw_00003'{/yun}", 2);
 			return false;
 		}
 	}
-	//倒计时
+	// Countdown
 	function smsTimer(obj) {
 		if(smsTimer_flag > 0) {
-			$(obj).html('重新发送(' + smsTimer_flag + 's)');
+			$(obj).html("{yun:}t key='wap_js_forgetpw_00007'{/yun}" + smsTimer_flag + 's)');
 			$(obj).attr({
 				'style': 'background:#eaebed;'
 			});
 			smsTimer_flag--;
 		} else {
-			$(obj).html('重新发送');
+			$(obj).html("{yun:}t key='wap_js_forgetpw_00009'{/yun}");
 			$(obj).attr({
 				'style': 'background:#eaebed;'
 			});
@@ -216,7 +216,7 @@
 		if(sy_advice_mobilecode=='1'){
 			var advice_code = $('#advice_code').val();
 			if(advice_code==''){
-				showToast('请填写手机验证码!', 2);
+				showToast("{yun:}t key='wap_advice_00001'{/yun}", 2);
 				return false;
 			}
 		}
@@ -224,12 +224,12 @@
 		var verify_token = '',verify_str = '';
 		var authcode = '';
 		if(sy_advice_mobilecode!='1'){
-			var codesear = new RegExp('意见反馈');
+			var codesear = new RegExp("{yun:}t key='wap_user_index_00021'{/yun}");
 			if(codesear.test(code_web)) {
 				if(code_kind == 1) {
 					authcode = $.trim($("#msg_CheckCode").val());
 					if(!authcode) {
-						showToast('请填写图片验证码！');
+						showToast("{yun:}t key='wap_js_forgetpw_00001'{/yun}");
 						return false;
 					}
 				} else if(code_kind > 2) {

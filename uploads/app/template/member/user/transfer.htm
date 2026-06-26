@@ -5,9 +5,9 @@
 
 		   <div class="yun_m_rightbox fltR mt20 re">
     
-         <div class="member_right_index_h1 fltL"> <span class="member_right_h1_span fltL">账户分离</span> <i class="member_right_h1_icon user_bg"></i></div>
+         <div class="member_right_index_h1 fltL"> <span class="member_right_h1_span fltL">{yun:}t key='wap_user_safe_00004'{/yun}</span> <i class="member_right_h1_icon user_bg"></i></div>
          <div class="resume_box_list">
-	<div class="resume_Prompt"><i class="resume_Prompt_icon"></i>提示：账户分离后数据无法恢复，该账号下所有与当前身份相关的数据都将迁入新账户 </div>
+	<div class="resume_Prompt"><i class="resume_Prompt_icon"></i>{yun:}t key='wap_js_forgetpw_00010'{/yun}：账户分离后数据无法恢复，该账号下所有与当前身份相关的数据都将迁入新账户 </div>
 
 <div class="clear"></div>
 			 {yun:}if $userStatue || $userStat || $userSta{/yun}
@@ -25,12 +25,12 @@
 		<iframe id="supportiframe"  name="supportiframe" onload="returnmessage('supportiframe');" style="display:none"></iframe>
         <form id="infoform" action="index.php?c=transfer&act=save" name="myform" method="post" target="supportiframe"  autocomplete="off"  class="layui-form" onsubmit="return checkform();">
 		<div class="transfer_textlist">
-		<span class="transfer_textlist_n"><font color="#f00">*</font>  解绑类型：</span>
+		<span class="transfer_textlist_n"><font color="#f00">*</font>  {yun:}t key='member_user_transfer_00001'{/yun}：</span>
 		<div class="transfer_textxz">
-		<input   name="bdtype[]"  value="moblie"  type="checkbox" title="解绑手机" data-tag="解绑手机" class="changewelfare" >
-		<input   name="bdtype[]"  value="email"  type="checkbox" title="解绑邮箱" data-tag="解绑邮箱" class="changewelfare" >
-		<input   name="bdtype[]"  value="wxid"  type="checkbox" title="解绑微信" data-tag="解绑微信" class="changewelfare" >
-		<input   name="bdtype[]"  value="qqid"  type="checkbox" title="解绑QQ" data-tag="解绑QQ" class="changewelfare" >
+		<input   name="bdtype[]"  value="moblie"  type="checkbox" title="{yun:}t key='wap_user_transfer_00004'{/yun}" data-tag="{yun:}t key='wap_user_transfer_00004'{/yun}" class="changewelfare" >
+		<input   name="bdtype[]"  value="email"  type="checkbox" title="{yun:}t key='wap_user_transfer_00005'{/yun}" data-tag="{yun:}t key='wap_user_transfer_00005'{/yun}" class="changewelfare" >
+		<input   name="bdtype[]"  value="wxid"  type="checkbox" title="{yun:}t key='wap_user_transfer_00003'{/yun}" data-tag="{yun:}t key='wap_user_transfer_00003'{/yun}" class="changewelfare" >
+		<input   name="bdtype[]"  value="qqid"  type="checkbox" title="{yun:}t key='wap_js_reg_ajax_00025'{/yun}QQ" data-tag="{yun:}t key='wap_js_reg_ajax_00025'{/yun}QQ" class="changewelfare" >
 		<input   name="bdtype[]"  value="sinaid"  type="checkbox" title="解绑微博" data-tag="解绑微博" class="changewelfare" >
 		</div>
 		</div>
@@ -38,13 +38,13 @@
 
           <div class="transfer_textlist"><span class="transfer_textlist_n"><font color="#f00">*</font> 新账户用户名：</span><input type="text"  name="username" value="" class="transfer_text" placeholder="请设置新账户用户名">
           	<div style="padding-top:10px; color:#999; font-size:12px; ">
-          	用户名要求长度{yun:}$config.sy_reg_nameminlen{/yun}-{yun:}$config.sy_reg_namemaxlen{/yun}位
+          	用户名要求长度{yun:}$config.sy_reg_nameminlen{/yun}-{yun:}$config.sy_reg_namemaxlen{/yun}{yun:}t key='common_02053'{/yun}
             {yun:}if $config.reg_name_han=='1' || $config.reg_name_sp=='1' || $config.reg_name_num=='1' || $config.reg_name_zm=='1'{/yun}
-                ,必须包含
-                {yun:}if $config.reg_name_han=='1'{/yun}汉字 {yun:}/if{/yun}
-                {yun:}if $config.reg_name_num=='1'{/yun}数字 {yun:}/if{/yun}
-                {yun:}if $config.reg_name_zm=='1'{/yun}字母 {yun:}/if{/yun}
-                {yun:}if $config.reg_name_sp=='1'{/yun}其它字符@!#.$-_{yun:}/if{/yun}
+                ,{yun:}t key='wap_com_password_00002'{/yun}
+                {yun:}if $config.reg_name_han=='1'{/yun}{yun:}t key='wap_user_setname_00003'{/yun} {yun:}/if{/yun}
+                {yun:}if $config.reg_name_num=='1'{/yun}{yun:}t key='common_01997'{/yun} {yun:}/if{/yun}
+                {yun:}if $config.reg_name_zm=='1'{/yun}{yun:}t key='common_01973'{/yun} {yun:}/if{/yun}
+                {yun:}if $config.reg_name_sp=='1'{/yun}{yun:}t key='common_01697'{/yun}@!#.$-_{yun:}/if{/yun}
             {yun:}/if{/yun}
             </div>
           </div>
@@ -53,13 +53,13 @@
            	{yun:}if $config.reg_pw_sp=='1' || $config.reg_pw_num=='1' || $config.reg_pw_zm=='1'{/yun}
                            
              <div style="padding-top:10px; color:#999; font-size:12px; ">
-                    密码必须包含{yun:}if $config.reg_pw_num=='1'{/yun}数字 {yun:}/if{/yun}{yun:}if $config.reg_pw_zm=='1'{/yun}字母 {yun:}/if{/yun}{yun:}if $config.reg_pw_sp=='1'{/yun}其它字符@!#.$-_{yun:}/if{/yun}
+                    {yun:}t key='wap_com_password_00001'{/yun}{yun:}if $config.reg_pw_num=='1'{/yun}{yun:}t key='common_01997'{/yun} {yun:}/if{/yun}{yun:}if $config.reg_pw_zm=='1'{/yun}{yun:}t key='common_01973'{/yun} {yun:}/if{/yun}{yun:}if $config.reg_pw_sp=='1'{/yun}{yun:}t key='common_01697'{/yun}@!#.$-_{yun:}/if{/yun}
                 </div>
          
             {yun:}/if{/yun}
            </div>
 
-            <div class="transfer_textlist"> <div class="transfer_tip">数据迁移后，可登录新账户，绑定手机、微信等</div>
+            <div class="transfer_textlist"> <div class="transfer_tip">数据迁移后，可登录新账户，{yun:}t key='member_com_info_00049'{/yun}、微信等</div>
 				<input type="submit" name="submit" value="确认分离" class="transfer_bth">
             </div>
 
@@ -98,14 +98,14 @@
 
 		}
 		if(username == '') {
-			layer.msg('请输入用户名！', 2, 8);return false;
+			layer.msg("{yun:}t key='wap_forgetpw_00008'{/yun}", 2, 8);return false;
 		}
 		if(password == '') {
-			layer.msg('请输入6至20位新密码!', 2, 8);return false;
+			layer.msg("{yun:}t key='admin_neirong_question_config_00010'{/yun}6{yun:}t key='common_02098'{/yun}20位新密码!", 2, 8);return false;
 
 		}else if(password.length<6 || password.length>20 ){
 			
-			  layer.msg('请输入6至20位新密码!', 2, 8);return false;
+			  layer.msg("{yun:}t key='admin_neirong_question_config_00010'{/yun}6{yun:}t key='common_02098'{/yun}20位新密码!", 2, 8);return false;
 		}
 		layer.msg('数据迁移中，请稍候....', {
 		  icon: 16

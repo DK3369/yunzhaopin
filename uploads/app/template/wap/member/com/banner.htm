@@ -31,16 +31,16 @@
 				<input type='hidden' name='preview' value='' id='preview'>
             </div>
             <i class="yunset_identity_pic_tj"></i>
-            <div class="yunset_identity_tip">上传企业横幅</div>
-                  <span class="yunset_identity_tip_a">选择上传图片</span>
+            <div class="yunset_identity_tip">{yun:}t key='wap_com_banner_00001'{/yun}</div>
+                  <span class="yunset_identity_tip_a">{yun:}t key='wap_com_banner_00002'{/yun}</span>
         </div>
     </div>
    
-    <div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>格式为 {yun:}$config.pic_type{/yun}不得超过{yun:}$config.file_maxsize{/yun}M</div>
+    <div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>格式为 {yun:}$config.pic_type{/yun}{yun:}t key='common_01663'{/yun}{yun:}$config.file_maxsize{/yun}M</div>
 
     <div class="yunset_bth_box">
         <input type="hidden" id="img" value="1">
-        <input type="submit" name="submit" value="{yun:}if !$banner.pic{/yun}保存{yun:}else{/yun}更新/修改{yun:}/if{/yun}" class="yunset_bth">
+        <input type="submit" name="submit" value="{yun:}if !$banner.pic{/yun}{yun:}t key='common.save'{/yun}{yun:}else{/yun}{yun:}t key='wap_invite_00002'{/yun}/{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00005'{/yun}{yun:}/if{/yun}" class="yunset_bth">
     </div>
 
 </form>

@@ -184,7 +184,7 @@
 	<input type="hidden" id="kzq" value="{yun:}$smarty.get.c{/yun}"/>
 	<ul class="grade-w" id="provinceid">
 		{yun:}if !isset($nocityall){/yun}
-		<li onclick="check_city_li('0','provinceid');">全部</li>
+		<li onclick="check_city_li('0','provinceid');">{yun:}t key='common.all'{/yun}</li>
 		{yun:}/if{/yun}
 		{yun:}foreach item=v from=$city_index{/yun}
 		<li class="qgrade{yun:}$v{/yun}" onclick="grade1('{yun:}$v{/yun}','{yun:}$city_name[$v]{/yun}','provinceid','{yun:}$smarty.get.a{/yun}')">{yun:}$city_name[$v]{/yun}</li>
@@ -196,24 +196,24 @@
 </div>
 <!-- End grade -->
 
-<!-- Substation 分站地区-->
+<!-- Substation {yun:}t key='admin_system_domain_component_domainadd_00017'{/yun}-->
 <div class="Substation-eject Substation-height pubtwo">
 	<ul class="Substation-Substation" id="Substation-Substation">
 		<li>
 			{yun:}if $smarty.get.c=="job"{/yun}
-			<a href="{yun:}searchurl m=wap c=job three_cityid='' untype='three_cityid'{/yun}">全部</a>
+			<a href="{yun:}searchurl m=wap c=job three_cityid='' untype='three_cityid'{/yun}">{yun:}t key='common.all'{/yun}</a>
 			{yun:}else if $smarty.get.c=="resume"{/yun}
-			<a href="{yun:}searchurl m=wap c=resume three_cityid='' untype='three_cityid'{/yun}">全部</a>
+			<a href="{yun:}searchurl m=wap c=resume three_cityid='' untype='three_cityid'{/yun}">{yun:}t key='common.all'{/yun}</a>
 			{yun:}else if $smarty.get.c=="part"{/yun}
-			<a href="{yun:}searchurl m=wap c=part three_cityid='' untype='three_cityid'{/yun}">全部</a>
+			<a href="{yun:}searchurl m=wap c=part three_cityid='' untype='three_cityid'{/yun}">{yun:}t key='common.all'{/yun}</a>
 			{yun:}else if $smarty.get.c=="company"{/yun}
-			<a href="{yun:}searchurl m=wap c=company three_cityid='' untype='three_cityid'{/yun}">全部</a>
+			<a href="{yun:}searchurl m=wap c=company three_cityid='' untype='three_cityid'{/yun}">{yun:}t key='common.all'{/yun}</a>
 			{yun:}else if $smarty.get.c=="post"{/yun}
-			<a href="{yun:}searchurl m=wap c=post three_cityid='' untype='three_cityid'{/yun}">全部</a>
+			<a href="{yun:}searchurl m=wap c=post three_cityid='' untype='three_cityid'{/yun}">{yun:}t key='common.all'{/yun}</a>
 			{yun:}else if $smarty.get.c=="post" && $smarty.get.a=="service"{/yun}
-			<a href="{yun:}searchurl m=wap c=post three_cityid='' untype='three_cityid'{/yun}">全部</a>
+			<a href="{yun:}searchurl m=wap c=post three_cityid='' untype='three_cityid'{/yun}">{yun:}t key='common.all'{/yun}</a>
 			{yun:}else if $smarty.get.c=="post" && $smarty.get.a=="famous"{/yun}
-			<a href="{yun:}searchurl m=wap c=post three_cityid='' untype='three_cityid'{/yun}">全部</a>
+			<a href="{yun:}searchurl m=wap c=post three_cityid='' untype='three_cityid'{/yun}">{yun:}t key='common.all'{/yun}</a>
 			{yun:}/if{/yun}
 
 		</li>
@@ -253,7 +253,7 @@
 			<div class="conditional_screening_pv">
 				<div class="conditional_screening_all">
 				<div class="conditional_screening_cont">
-						<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">经验要求</span></div>
+						<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_jobadd_00033'{/yun}</span></div>
 						<ul class="conditional_screening_list" id="Sortexp-Sortexp">
 							{yun:}foreach from=$userdata.user_word item=v{/yun}
 							<li id="uexp{yun:}$v{/yun}" {yun:}if $smarty.get.exp==$v{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_userexp_li('{yun:}$v{/yun}','exp')"><a href="javascript:void(0)">{yun:}$userclass_name[$v]{/yun}</a>
@@ -263,7 +263,7 @@
 				</div>
 				
 					<div class="conditional_screening_cont">
-						<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">简历完整度</span></div>
+						<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_member_publictwo_00006'{/yun}</span></div>
 						<ul class="conditional_screening_list">
 						{yun:}foreach from=$integrity_name key=k item=v{/yun}
 						<li id="integrity{yun:}$k{/yun}" {yun:}if $smarty.get.integrity==$k{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_integrity_li('{yun:}$k{/yun}','integrity')"><a href="javascript:void(0)">{yun:}$v{/yun}</a></li>
@@ -271,7 +271,7 @@
 						</ul>
 					</div>
 					<div class="conditional_screening_cont">
-						<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">学历要求</span></div>
+						<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_jobadd_00029'{/yun}</span></div>
 						<ul class="conditional_screening_list">
 						{yun:}foreach from=$userdata.user_edu item=v{/yun}
 						<li id="uedu{yun:}$v{/yun}" {yun:}if $smarty.get.edu==$v{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_uedu_li('{yun:}$v{/yun}','edu')"><a href="javascript:void(0)">{yun:}$userclass_name[$v]{/yun}</a></li>
@@ -279,7 +279,7 @@
 						</ul>
 					</div>
 					<div class="conditional_screening_cont">
-						<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">到岗时间</span></div>
+						<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_jobadd_00025'{/yun}</span></div>
 						<ul class="conditional_screening_list">
 						{yun:}foreach from=$userdata.user_report item=v{/yun}
 						<li id="report{yun:}$v{/yun}" {yun:}if $smarty.get.report==$v{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_report_li('{yun:}$v{/yun}','report')"><a href="javascript:void(0)">{yun:}$userclass_name[$v]{/yun}</a></li>
@@ -287,18 +287,18 @@
 						</ul>
 					</div>
 					<div class="conditional_screening_cont">
-						<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">更新时间</span></div>
+						<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_member_publictwo_00004'{/yun}</span></div>
 						<ul class="conditional_screening_list">
-						<li id="uuptime" {yun:}if $smarty.get.uptime==''{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_useruptime_li('','uptime')"><a href="javascript:void(0)">全部</a></li>
+						<li id="uuptime" {yun:}if $smarty.get.uptime==''{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_useruptime_li('','uptime')"><a href="javascript:void(0)">{yun:}t key='common.all'{/yun}</a></li>
 						{yun:}foreach from=$uptime key=key item=v{/yun}
 						<li id="uuptime{yun:}$key{/yun}" {yun:}if $smarty.get.uptime==$key{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_useruptime_li('{yun:}$key{/yun}','uptime')"><a href="javascript:void(0)">{yun:}$v{/yun}</a></li>
 						{yun:}/foreach{/yun}
 						</ul>
 					</div>
 					<div class="conditional_screening_cont">
-						<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">个人标签</span></div>
+						<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_member_publictwo_00001'{/yun}</span></div>
 						<ul class="conditional_screening_list">
-						<li id="tag" {yun:}if $smarty.get.tag==''{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_tag_li('','tag')"><a href="javascript:void(0)">全部</a></li>
+						<li id="tag" {yun:}if $smarty.get.tag==''{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_tag_li('','tag')"><a href="javascript:void(0)">{yun:}t key='common.all'{/yun}</a></li>
 						{yun:}foreach from=$userdata.user_tag item=v{/yun}
 						<li id="tag{yun:}$v{/yun}" {yun:}if $smarty.get.tag==$v{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_tag_li('{yun:}$v{/yun}','tag')"><a href="javascript:void(0)">{yun:}$userclass_name[$v]{/yun}</a></li>
 						{yun:}/foreach{/yun}
@@ -306,9 +306,9 @@
 					</div>
 
 					<div class="conditional_screening_cont">
-						<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">工作性质</span></div>
+						<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_user_addexpect_00004'{/yun}</span></div>
 						<ul class="conditional_screening_list">
-						<li id="rtype" {yun:}if $smarty.get.type==''{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_rtype_li('','rtype')"><a href="javascript:void(0)">全部</a></li>
+						<li id="rtype" {yun:}if $smarty.get.type==''{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_rtype_li('','rtype')"><a href="javascript:void(0)">{yun:}t key='common.all'{/yun}</a></li>
 						{yun:}foreach from=$userdata.user_type item=v{/yun}
 						<li id="rtype{yun:}$v{/yun}" {yun:}if $smarty.get.type==$v{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_rtype_li('{yun:}$v{/yun}','rtype')"><a href="javascript:void(0)">{yun:}$userclass_name[$v]{/yun}</a></li>
 						{yun:}/foreach{/yun}
@@ -317,8 +317,8 @@
                     
 				</div>
 				<div class="conditional_screening_operation">
-				<div class="conditional_screening_operation_left"><a href="{yun:}if $smarty.get.a{/yun}{yun:}url m=wap c=$smarty.get.c a=$smarty.get.a{/yun}{yun:}else{/yun}{yun:}url m=wap c=$smarty.get.c{/yun}{yun:}/if{/yun}" class="conditional_screening_operation_cz">重置</a></div>
-				<div class="conditional_screening_operation_right"><a href="javascript:void(0)" onclick="$('#resume').submit();" class="conditional_screening_operation_ok">确定</a></div>
+				<div class="conditional_screening_operation_left"><a href="{yun:}if $smarty.get.a{/yun}{yun:}url m=wap c=$smarty.get.c a=$smarty.get.a{/yun}{yun:}else{/yun}{yun:}url m=wap c=$smarty.get.c{/yun}{yun:}/if{/yun}" class="conditional_screening_operation_cz">{yun:}t key='wap_member_publictwo_00005'{/yun}</a></div>
+				<div class="conditional_screening_operation_right"><a href="javascript:void(0)" onclick="$('#resume').submit();" class="conditional_screening_operation_ok">{yun:}t key='common.confirm'{/yun}</a></div>
 				</div>
 			</div>
 			{yun:}if $smarty.get.provinceid{/yun}<input type="hidden" name="provinceid" value="{yun:}$smarty.get.provinceid{/yun}"/>{yun:}/if{/yun}
@@ -388,12 +388,12 @@
 		<div class="conditional_screening_cont">
 			<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">薪资范围</span></div>
 			<ul class="conditional_screening_list">
-			<li {yun:}if $smarty.get.minsalary==''&&$smarty.get.maxsalary==''{/yun}class="conditional_screening_salary_cur"{yun:}/if{/yun}><a href="{yun:}$config_wapdomain{/yun}/index.php?c=job">全部</a></li>
+			<li {yun:}if $smarty.get.minsalary==''&&$smarty.get.maxsalary==''{/yun}class="conditional_screening_salary_cur"{yun:}/if{/yun}><a href="{yun:}$config_wapdomain{/yun}/index.php?c=job">{yun:}t key='common.all'{/yun}</a></li>
 			<li {yun:}if $smarty.get.minsalary=='2000'&&$smarty.get.maxsalary=='4000'{/yun}class="conditional_screening_salary_cur"{yun:}/if{/yun}><a href="{yun:}$config_wapdomain{/yun}/index.php?c=job&minsalary=2000&maxsalary=4000">2000-4000</a></li>
 			<li {yun:}if $smarty.get.minsalary=='4000'&&$smarty.get.maxsalary=='6000'{/yun}class="conditional_screening_salary_cur"{yun:}/if{/yun}><a href="{yun:}$config_wapdomain{/yun}/index.php?c=job&minsalary=4000&maxsalary=6000">4000-6000</a></li>
 			<li {yun:}if $smarty.get.minsalary=='6000'&&$smarty.get.maxsalary=='8000'{/yun}class="conditional_screening_salary_cur"{yun:}/if{/yun}><a href="{yun:}$config_wapdomain{/yun}/index.php?c=job&minsalary=6000&maxsalary=8000">6000-8000</a></li>
 			<li {yun:}if $smarty.get.minsalary=='8000'&&$smarty.get.maxsalary=='10000'{/yun}class="conditional_screening_salary_cur"{yun:}/if{/yun}><a href="{yun:}$config_wapdomain{/yun}/index.php?c=job&minsalary=8000&maxsalary=10000">8000-10000</a></li>
-			<li {yun:}if $smarty.get.minsalary=='10000'{/yun}class="conditional_screening_salary_cur"{yun:}/if{/yun}><a href="{yun:}$config_wapdomain{/yun}/index.php?c=job&minsalary=10000">10000以上</a></li>
+			<li {yun:}if $smarty.get.minsalary=='10000'{/yun}class="conditional_screening_salary_cur"{yun:}/if{/yun}><a href="{yun:}$config_wapdomain{/yun}/index.php?c=job&minsalary=10000">10000{yun:}t key='common_01942'{/yun}</a></li>
 			</ul>
 		</div>
 		<div class="clear"></div>
@@ -410,7 +410,7 @@
 		</div>
 
         <div class="conditional_screening_cont">
-			<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">学历要求</span></div>
+			<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_jobadd_00029'{/yun}</span></div>
 			<ul class="conditional_screening_list">
 			{yun:}foreach from=$comdata.job_edu item=v{/yun}
 			<li id="edu{yun:}$v{/yun}" {yun:}if $smarty.get.edu==$v{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_edu_li('{yun:}$v{/yun}','edu')"><a href="javascript:void(0)">{yun:}$comclass_name[$v]{/yun}</a></li>
@@ -418,7 +418,7 @@
 			</ul>
          </div>
 	    <div class="conditional_screening_cont">
-			<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">经验要求</span></div>
+			<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_jobadd_00033'{/yun}</span></div>
 			<ul class="conditional_screening_list">
 			{yun:}foreach from=$comdata.job_exp item=v{/yun}
 			<li id="exp{yun:}$v{/yun}" {yun:}if $smarty.get.exp==$v{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_exp_li('{yun:}$v{/yun}','exp')"><a href="javascript:void(0)">{yun:}$comclass_name[$v]{/yun}</a></li>
@@ -426,7 +426,7 @@
 			</ul>
          </div>
 		<div class="conditional_screening_cont">
-			<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">性别要求</span></div>
+			<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_partadd_00012'{/yun}</span></div>
 			<ul class="conditional_screening_list">
 			{yun:}foreach from=$com_sex key=key item=v{/yun}
 			<li id="sex{yun:}$key{/yun}" {yun:}if $smarty.get.sex==$key{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_sex_li('{yun:}$key{/yun}','sex')"><a href="javascript:void(0)">{yun:}$v{/yun}</a></li>
@@ -435,9 +435,9 @@
         </div>
         
         <div class="conditional_screening_cont">
-        <div class="conditional_screening_tit"><span class="conditional_screening_tit_n">更新时间</span></div>
+        <div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_member_publictwo_00004'{/yun}</span></div>
 			<ul class="conditional_screening_list">
-			<li id="uptime" {yun:}if $smarty.get.uptime==''{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_uptime_li('','uptime')"><a href="javascript:void(0)">全部</a></li>
+			<li id="uptime" {yun:}if $smarty.get.uptime==''{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_uptime_li('','uptime')"><a href="javascript:void(0)">{yun:}t key='common.all'{/yun}</a></li>
 			{yun:}foreach from=$uptime key=key item=v{/yun}
 			<li id="uptime{yun:}$key{/yun}" {yun:}if $smarty.get.uptime==$key{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_uptime_li('{yun:}$key{/yun}','uptime')"><a href="javascript:void(0)">{yun:}$v{/yun}</a></li>
 			{yun:}/foreach{/yun}
@@ -445,18 +445,18 @@
         </div>
       
         <div class="conditional_screening_cont">
-			<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">公司性质</span></div>
+			<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_member_publictwo_00002'{/yun}</span></div>
 			<ul class="conditional_screening_list">
-			<li  id="pr" {yun:}if $smarty.get.pr==''{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_pr_li('','pr')"><a href="javascript:void(0)">全部</a></li>
+			<li  id="pr" {yun:}if $smarty.get.pr==''{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_pr_li('','pr')"><a href="javascript:void(0)">{yun:}t key='common.all'{/yun}</a></li>
 			{yun:}foreach from=$comdata.job_pr item=v{/yun}
 			<li id="pr{yun:}$v{/yun}" {yun:}if $smarty.get.pr==$v{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_pr_li('{yun:}$v{/yun}','pr')"><a href="javascript:void(0)">{yun:}$comclass_name[$v]{/yun}</a></li>
 			{yun:}/foreach{/yun}
 			</ul>
         </div>
         <div class="conditional_screening_cont">
-			<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">公司规模</span></div>
+			<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_member_publictwo_00003'{/yun}</span></div>
 			<ul class="conditional_screening_list">
-			<li id="mun" {yun:}if $smarty.get.mun==''{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_mun_li('','mun')"><a href="javascript:void(0)">全部</a></li>
+			<li id="mun" {yun:}if $smarty.get.mun==''{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_mun_li('','mun')"><a href="javascript:void(0)">{yun:}t key='common.all'{/yun}</a></li>
 			{yun:}foreach from=$comdata.job_mun item=v{/yun}
 			<li id="mun{yun:}$v{/yun}" {yun:}if $smarty.get.mun==$v{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_mun_li('{yun:}$v{/yun}','mun')"><a href="javascript:void(0)">{yun:}$comclass_name[$v]{/yun}</a></li>
 			{yun:}/foreach{/yun}
@@ -464,8 +464,8 @@
         </div> 
         </div>
          <div class="conditional_screening_operation">
-          <div class="conditional_screening_operation_left"><a href="{yun:}if $smarty.get.a{/yun}{yun:}url m=wap c=$smarty.get.c a=$smarty.get.a{/yun}{yun:}else{/yun}{yun:}url m=wap c=$smarty.get.c{/yun}{yun:}/if{/yun}" class="conditional_screening_operation_cz">重置</a></div>
-          <div class="conditional_screening_operation_right"><a href="javascript:void(0)" onclick="$('#job').submit();" class="conditional_screening_operation_ok">确定</a></div></div>
+          <div class="conditional_screening_operation_left"><a href="{yun:}if $smarty.get.a{/yun}{yun:}url m=wap c=$smarty.get.c a=$smarty.get.a{/yun}{yun:}else{/yun}{yun:}url m=wap c=$smarty.get.c{/yun}{yun:}/if{/yun}" class="conditional_screening_operation_cz">{yun:}t key='wap_member_publictwo_00005'{/yun}</a></div>
+          <div class="conditional_screening_operation_right"><a href="javascript:void(0)" onclick="$('#job').submit();" class="conditional_screening_operation_ok">{yun:}t key='common.confirm'{/yun}</a></div></div>
         </div>
         {yun:}if $smarty.get.provinceid{/yun}<input type="hidden" name="provinceid" value="{yun:}$smarty.get.provinceid{/yun}"/>{yun:}/if{/yun}
         {yun:}if $smarty.get.cityid{/yun}<input type="hidden" name="cityid" value="{yun:}$smarty.get.cityid{/yun}"/>{yun:}/if{/yun}

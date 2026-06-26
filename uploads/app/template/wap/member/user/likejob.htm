@@ -7,16 +7,16 @@
 	  		<div class="com_member_company" @click="pageTo(item.wapcom_url)">{{item.com_name}}</div>
 			 <div class="com_member_particulars">
 			 	<div>{{item.job_salary}}</div>
-			 	<div class="" v-if="item.job_edu"> | {{item.job_edu}}学历</div>
-			 	<div v-if="item.job_exp"> | {{item.job_exp}}经验</div>
+			 	<div class="" v-if="item.job_edu"> | {{item.job_edu}}{yun:}t key='home.education_suffix'{/yun}</div>
+			 	<div v-if="item.job_exp"> | {{item.job_exp}}{yun:}t key='home.experience_suffix'{/yun}</div>
 			 </div>
 	 		<div class="com_member_matched_degree"> 职位匹配度：{{item.pre}}% </div>
 	  	</div>
 		
 	</div>
-	<div class="wap_member_no" v-if="!count">暂无匹配职位
+	<div class="wap_member_no" v-if="!count">{yun:}t key='wap_user_likejob_00001'{/yun}
 		<div>
-		<a class="wap_member_no_submit" href="{yun:}url m=wap c=job{/yun}">搜索职位</a>
+		<a class="wap_member_no_submit" href="{yun:}url m=wap c=job{/yun}">{yun:}t key='wap_user_invite_00001'{/yun}</a>
 		</div>
 	</div>
 </div>

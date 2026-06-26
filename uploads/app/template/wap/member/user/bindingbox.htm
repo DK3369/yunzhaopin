@@ -5,29 +5,29 @@
 		{yun:}if $smarty.get.type=="moblie"{/yun}
         <div class="verification_form">
             <div class="verification_form_Mobile">
-                <input type="number" name="moblie" :value="moblie" @input="moblieInput" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请输入手机号码" />
+                <input type="number" name="moblie" :value="moblie" @input="moblieInput" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="{yun:}t key='wap_user_bindingbox_00003'{/yun}" />
             </div>
             <div class="verification_form_Mobile">
-                <input type="text" name="authcode" @input="authcodeInput" :value="authcode" placeholder="请输入图片验证码" style="width: 40%">
+                <input type="text" name="authcode" @input="authcodeInput" :value="authcode" placeholder="{yun:}t key='wap_user_bindingbox_00002'{/yun}" style="width: 40%">
                 <div class="verification_Mobile_verification">
                     <img id="vcode_img" :src="authcodeUrl" onclick="checkCode('vcode_img');" width="100%" height="100%">
                 </div>
             </div>
             <div class="verification_form_code">
-                <input type="number" name="code" oninput="value=value.replace(/^0|[\^d]/g,'')" maxlength="6" placeholder="请输入验证码" />
-                <div class="verification_form_text" onclick="sendmoblie('vcode_img');" id="time">获取验证码</div>
+                <input type="number" name="code" oninput="value=value.replace(/^0|[\^d]/g,'')" maxlength="6" placeholder="{yun:}t key='wap_user_bindingbox_00004'{/yun}" />
+                <div class="verification_form_text" onclick="sendmoblie('vcode_img');" id="time">{yun:}t key='wap_user_bindingbox_00005'{/yun}</div>
             </div>
-            <div class="verification_form_btn" onclick="formSubmit()">确认</div>
+            <div class="verification_form_btn" onclick="formSubmit()">{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00026'{/yun}</div>
         </div>
 		{yun:}/if{/yun}
 		
 		{yun:}if $smarty.get.type=="email"{/yun}
         <div class="verification_form">
             <div class="verification_form_Mobile">
-                <input type="text" name="email" :value="email" @input="emailInput" placeholder="请输入邮箱">
+                <input type="text" name="email" :value="email" @input="emailInput" placeholder="{yun:}t key='wap_js_forgetpw_00006'{/yun}">
             </div>
             <div class="verification_form_Mobile">
-                <input type="text" name="authcode" @input="authcodeInput" :value="authcode" placeholder="请输入图片验证码" style="width: 40%">
+                <input type="text" name="authcode" @input="authcodeInput" :value="authcode" placeholder="{yun:}t key='wap_user_bindingbox_00002'{/yun}" style="width: 40%">
                 <div class="verification_Mobile_verification">
                     <img id="vcode_img" :src="authcodeUrl" onclick="checkCode('vcode_img');" width="100%" height="100%" />
                 </div>
@@ -87,7 +87,7 @@
             if (field.moblie == '') {
                 return showToast('请填写手机号');
             } else if (!isjsMobile(field.moblie)) {
-                return showToast('请填写正确的手机号');
+                return showToast("{yun:}t key='wap_user_bindingbox_00001'{/yun}");
             }
             if (field.authcode == '') {
                 return showToast('请填写图片验证码');
@@ -101,7 +101,7 @@
             if (field.email == '') {
                 return showToast('请填写邮箱');
             } else if (!check_email(field.email)) {
-                return showToast('邮箱格式错误');
+                return showToast("{yun:}t key='wap_js_forgetpw_00005'{/yun}");
             }
             if (field.authcode == '') {
                 return showToast('请填写图片验证码');
@@ -123,7 +123,7 @@
             hideLoading();
             if (data.error == 1) {
                 if (type == 'moblie') {
-                    showToast('绑定成功', 2, function () {
+                    showToast("{yun:}t key='wap_user_bindingbox_00006'{/yun}", 2, function () {
                         goBack();
                     });
                 } else if (type == 'email') {

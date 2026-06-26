@@ -1,46 +1,46 @@
 {yun:}include file="$wapstyle/member/cheader.htm"{/yun}
-<!--账号设置-->
+<!--{yun:}t key='member_user_binding_00013'{/yun}-->
 <div class="none" id="yunvue">
     <!-- 页面整体部分 -->
     <div class="issue_post_body_new">
         <div class="issue_post_body_card" style="padding-top: 0px; margin-top: 0px;;">
             <div class="com_set_list" onclick="navigateTo('index.php?c=comcert')">
-                <div class="com_set_listname">企业资质</div>
+                <div class="com_set_listname">{yun:}t key='wap_com_ident_00002'{/yun}</div>
                 <div v-if="info.yyzz_status==1">
-                    <div class="com_set_listp">企业资质已认证</div>
-                    <div class="com_set_ok">已认证</div>
+                    <div class="com_set_listp">{yun:}t key='wap_com_ident_00001'{/yun}</div>
+                    <div class="com_set_ok">{yun:}t key='wap_user_alltask_00024'{/yun}</div>
                 </div>
                 <div class="" v-else-if="info.cert_pic">
-                    <div class="com_set_listp" v-if="info.yyzz_status==2" style="color: #f00;">审核未通过</div>
-                    <div class="com_set_listp" v-else-if="info.yyzz_status==0" style="color: #00e1b3;">等待管理员审核</div>
+                    <div class="com_set_listp" v-if="info.yyzz_status==2" style="color: #f00;">{yun:}t key='wap_user_resume_00003'{/yun}</div>
+                    <div class="com_set_listp" v-else-if="info.yyzz_status==0" style="color: #00e1b3;">{yun:}t key='wap_user_ident_00002'{/yun}</div>
                 </div>
                 <div v-else>
                     <div class="com_set_listp">企业资质未认证</div>
-                    <div class="com_set_no">未认证</div>
+                    <div class="com_set_no">{yun:}t key='wap_user_idcard_00003'{/yun}</div>
                 </div>
                 <div class="com_set_listicon">
                     <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
                 </div>
             </div>
             <div class="com_set_list" onclick="navigateTo('index.php?c=bindingbox&type=moblie')">
-                <div class="com_set_listname">手机号码</div>
+                <div class="com_set_listname">{yun:}t key='wap_user_info_00018'{/yun}</div>
                 <div class=" ">
                     <div class="com_set_listp" v-if="info.linktel">{{info.linktel}}</div>
-                    <div class="com_set_listp" v-else>用于登录和找回密码</div>
-                    <div class="com_set_ok" v-if="info.moblie_status==1">已绑定</div>
-                    <div class="com_set_no" v-else>未绑定</div>
+                    <div class="com_set_listp" v-else>{yun:}t key='wap_user_ident_00001'{/yun}</div>
+                    <div class="com_set_ok" v-if="info.moblie_status==1">{yun:}t key='wap_user_alltask_00023'{/yun}</div>
+                    <div class="com_set_no" v-else>{yun:}t key='wap_user_ident_00005'{/yun}</div>
                 </div>
                 <div class="com_set_listicon">
                     <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
                 </div>
             </div>
             <div class="com_set_list" onclick="navigateTo('index.php?c=bindingbox&type=email')">
-                <div class="com_set_listname">电子邮箱</div>
+                <div class="com_set_listname">{yun:}t key='wap_user_ident_00003'{/yun}</div>
                 <div class=" ">
                     <div class="com_set_listp" v-if="info.linkmail">{{info.linkmail}}</div>
-                    <div class="com_set_listp" v-else>用于登录和找回密码</div>
-                    <div class="com_set_ok" v-if="info.email_status==1">已绑定</div>
-                    <div class="com_set_no" v-else>未绑定</div>
+                    <div class="com_set_listp" v-else>{yun:}t key='wap_user_ident_00001'{/yun}</div>
+                    <div class="com_set_ok" v-if="info.email_status==1">{yun:}t key='wap_user_alltask_00023'{/yun}</div>
+                    <div class="com_set_no" v-else>{yun:}t key='wap_user_ident_00005'{/yun}</div>
                 </div>
                 <div class="com_set_listicon">
                     <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
@@ -51,15 +51,15 @@
                     {yun:}if $config.wx_rz=='1'{/yun}
                     <li>
                         <div class="bingding_box_iconbg" :class="bind.wxbind ? 'bingding_yx_g':''"><i class="bingding_box_iconwx"></i></div>
-                        <div class="bingding_box_name">微信绑定</div>
+                        <div class="bingding_box_name">{yun:}t key='wap_user_alltask_00011'{/yun}</div>
                         <template v-if="bind.wxbind == 1">
-                            <div class="bingding_box_p">你已绑定微信，下次你可以直接使用微信快捷登录</div>
-                            <span @click="bindClear('weixin')" class="bingding_box_bth_jc">解除绑定</span>
+                            <div class="bingding_box_p">{yun:}t key='wap_user_binding_00004'{/yun}</div>
+                            <span @click="bindClear('weixin')" class="bingding_box_bth_jc">{yun:}t key='wap_user_binding_00009'{/yun}</span>
                         </template>
                         <template v-else>
-                            <span v-if="bind.wxbind == 2" class="bingding_box_bth" onclick="tobind('{yun:}url m=wap c=wxconnect login=1{/yun}')">重新绑定</span>
-                            <span v-else class="bingding_box_bth" onclick="tobind('{yun:}url m=wap c=wxconnect login=1{/yun}')">立即绑定</span>
-                            <div class="bingding_box_p">绑定微信，下次你可以直接使用微信快捷登录</div>
+                            <span v-if="bind.wxbind == 2" class="bingding_box_bth" onclick="tobind('{yun:}url m=wap c=wxconnect login=1{/yun}')">{yun:}t key='wap_user_binding_00010'{/yun}</span>
+                            <span v-else class="bingding_box_bth" onclick="tobind('{yun:}url m=wap c=wxconnect login=1{/yun}')">{yun:}t key='wap_user_alltask_00015'{/yun}</span>
+                            <div class="bingding_box_p">{yun:}t key='member_user_binding_00010'{/yun}，下次你可以直接使用微信快捷登录</div>
                         </template>
                     </li>
                     {yun:}/if{/yun}
@@ -67,28 +67,28 @@
                     {yun:}if $config.sy_qqlogin=='1'{/yun}
                     <li>
                         <div class="bingding_box_iconbg" :class="bind.qqbind ? 'bingding_yx_qq':''"><i class="bingding_box_iconqq"></i></div>
-                        <div class="bingding_box_name">QQ绑定</div>
+                        <div class="bingding_box_name">QQ{yun:}t key='member_user_passwd_00036'{/yun}</div>
                         <template v-if="bind.qqbind == 1">
-                            <div class="bingding_box_p">你已绑定QQ号，下次你可以直接使用QQ快捷登录</div>
-                            <span @click="bindClear('qq')" class="bingding_box_bth_jc">解除绑定</span>
+                            <div class="bingding_box_p">你已绑定QQ号，下次你可以直接使用QQ{yun:}t key='common_01767'{/yun}</div>
+                            <span @click="bindClear('qq')" class="bingding_box_bth_jc">{yun:}t key='wap_user_binding_00009'{/yun}</span>
                         </template>
                         <template v-else>
-                            <span class="bingding_box_bth" onclick="tobind('{yun:}url m=qqconnect login=1{/yun}')">立即绑定</span>
-                            <div class="bingding_box_p">绑定QQ号，下次你可以直接使用QQ快捷登录</div>
+                            <span class="bingding_box_bth" onclick="tobind('{yun:}url m=qqconnect login=1{/yun}')">{yun:}t key='wap_user_alltask_00015'{/yun}</span>
+                            <div class="bingding_box_p">{yun:}t key='member_user_passwd_00036'{/yun}QQ号，下次你可以直接使用QQ{yun:}t key='common_01767'{/yun}</div>
                         </template>
                     </li>
                     {yun:}/if{/yun}
                     {yun:}if $config.sy_sinalogin=='1'{/yun}
                     <li>
                         <div class="bingding_box_iconbg" :class="bind.sinabind ? 'bingding_yx_xl':''"><i class="bingding_box_iconxl"></i></div>
-                        <div class="bingding_box_name">新浪微博绑定</div>
+                        <div class="bingding_box_name">{yun:}t key='wap_user_binding_00007'{/yun}</div>
                         <template v-if="bind.sinabind == 1">
-                            <div class="bingding_box_p">你已绑定新浪微博，下次你可以直接使用新浪微博快捷登录</div>
-                            <span @click="bindClear('sina')" class="bingding_box_bth_jc">解除绑定</span>
+                            <div class="bingding_box_p">{yun:}t key='wap_user_binding_00001'{/yun}</div>
+                            <span @click="bindClear('sina')" class="bingding_box_bth_jc">{yun:}t key='wap_user_binding_00009'{/yun}</span>
                         </template>
                         <template v-else>
-                            <span class="bingding_box_bth" onclick="tobind('{yun:}url m=wap c=sinaconnect login=1{/yun}')">立即绑定</span>
-                            <div class="bingding_box_p">绑定新浪微博，下次你可以直接使用新浪微博快捷登录</div>
+                            <span class="bingding_box_bth" onclick="tobind('{yun:}url m=wap c=sinaconnect login=1{/yun}')">{yun:}t key='wap_user_alltask_00015'{/yun}</span>
+                            <div class="bingding_box_p">{yun:}t key='wap_user_binding_00002'{/yun}</div>
                         </template>
                     </li>
                     {yun:}/if{/yun}

@@ -2,7 +2,7 @@
 <!-- <link rel="stylesheet" href="{yun:}$config_wapdomain{/yun}/js/mui/css/mui.min.css?v={yun:}$config.cachecode{/yun}" type="text/css" /> -->
 <link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/style.css?v={yun:}$config.cachecode{/yun}" type="text/css"/>
 <div class="evaluate_box" id="app">
-    <!--列表-->
+    <!--{yun:}t key='wap_map_00002'{/yun}-->
     {yun:}if $rows{/yun}
         {yun:}foreach from=$rows item=v{/yun}
         <div class="evaluate_list">
@@ -19,7 +19,7 @@
         {yun:}/if{/yun}
     {yun:}else{/yun}
     <div class="wap_member_nosearch">
-        <div class="wap_member_no_tip"> 很抱歉,这个星球没有测评试卷呢！</div>
+        <div class="wap_member_no_tip"> {yun:}t key='common_01912'{/yun},这个星球没有测评试卷呢！</div>
     </div>
     {yun:}/if{/yun}
 </div>

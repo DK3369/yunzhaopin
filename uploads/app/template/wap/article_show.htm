@@ -26,9 +26,9 @@
 
     <div class="news_cont_ms">
         {yun:}$Info.starttime|date_format:"%Y-%m-%d"{/yun}
-        <span class="news_list_box_ly">来源：{yun:}if $Info.source{/yun}{yun:}$Info.source|mb_substr:0:16:'utf-8'{/yun}{yun:}else{/yun}{yun:}$config.sy_webname{/yun}{yun:}/if{/yun}</span>
-        点击：<span id="click"><script language="javascript" src="{yun:}url m=wap c=article a=GetHits id='`$Info.id`'{/yun}"></script></span> 次
-        <span class="news_list_box_ly">作者：{yun:}if $Info.author{/yun}{yun:}$Info.author|mb_substr:0:16:'utf-8'{/yun}{yun:}else{/yun}{yun:}$config.sy_webname{/yun}{yun:}/if{/yun}</span>
+        <span class="news_list_box_ly">{yun:}t key='admin_user_member_component_alluser_00034'{/yun}：{yun:}if $Info.source{/yun}{yun:}$Info.source|mb_substr:0:16:'utf-8'{/yun}{yun:}else{/yun}{yun:}$config.sy_webname{/yun}{yun:}/if{/yun}</span>
+        点击：<span id="click"><script language="javascript" src="{yun:}url m=wap c=article a=GetHits id='`$Info.id`'{/yun}"></script></span> {yun:}t key='common_02089'{/yun}
+        <span class="news_list_box_ly">{yun:}t key='admin_neirong_news_component_news_00021'{/yun}：{yun:}if $Info.author{/yun}{yun:}$Info.author|mb_substr:0:16:'utf-8'{/yun}{yun:}else{/yun}{yun:}$config.sy_webname{/yun}{yun:}/if{/yun}</span>
     </div>
 
     <div class="wap_news_cont">
@@ -58,7 +58,7 @@
 
     <div class="clear"></div>
 
-    <div class="news_in_tit">分类浏览</div>
+    <div class="news_in_tit">{yun:}t key='wap_article_show_00001'{/yun}</div>
     <div class="clear"></div>
 
     {yun:}articleclass item=v{/yun}
@@ -73,7 +73,7 @@
     <div class="newsShowButOne">
         <a href="{yun:}url m=wap{/yun}">
             <img src="{yun:}$wap_style{/yun}/images/tab_icon_home_n.png" alt="">
-            <span>首页</span>
+            <span>{yun:}t key='common.home'{/yun}</span>
         </a>
     </div>
     <div class="newsShowButTwo">

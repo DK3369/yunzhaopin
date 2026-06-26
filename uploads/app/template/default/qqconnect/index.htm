@@ -21,7 +21,7 @@
 	<div class="wx_login_box">
 		<div class="wx_login_bdtit">
 			<div class="wx_login_bdtit_b">
-				<div id="bindacount" class="wx_login_bdname">账号登录
+				<div id="bindacount" class="wx_login_bdname">{yun:}t key='default_public_search_login_00003'{/yun}
 					<i id="tabacount" class="{yun:}if $smarty.get.type=='ba'{/yun}wx_login_bdnameline{yun:}/if{/yun}"></i>
 				</div>
 				{yun:}if $config.sy_msg_isopen==1 && $config.sy_msg_login==1{/yun}
@@ -32,29 +32,29 @@
 			</div>
 			<!--非实名并且是先注册的，有快速创建账号-->
 			<div class="wx_login_bd_p">
-				绑定已有账号{yun:}if $config.reg_real_name_check != 1 && $config.sy_reg_type==1{/yun}，或直接<a href="javascript:void(0);" onclick="creatacount();" style="color: #276bf2">创建新账号</a>{yun:}else{/yun}，<a href="{yun:}url m=register bind=2{/yun}" style="color: #276bf2">如您没有账号，请注册并绑定</a>{yun:}/if{/yun}
+				{yun:}t key='default_wxconnect_index_00001'{/yun}{yun:}if $config.reg_real_name_check != 1 && $config.sy_reg_type==1{/yun}，{yun:}t key='common_01917'{/yun}<a href="javascript:void(0);" onclick="creatacount();" style="color: #276bf2">{yun:}t key='wap_qqbind_00003'{/yun}</a>{yun:}else{/yun}，<a href="{yun:}url m=register bind=2{/yun}" style="color: #276bf2">{yun:}t key='wap_qqbind_00001'{/yun}</a>{yun:}/if{/yun}
 			</div>
-			<a href="{yun:}$config.sy_weburl{/yun}" class="wx_login_bd_sy">< 返回首页</a>
+			<a href="{yun:}$config.sy_weburl{/yun}" class="wx_login_bd_sy">< {yun:}t key='member_user_headnav_00006'{/yun}</a>
 		</div>
 
 		{yun:}if $smarty.get.type=='ba'{/yun}
 		<div class="wx_login_bdlist">
-			<span class="wx_login_bdlistname">用户名：</span>
+			<span class="wx_login_bdlistname">{yun:}t key='admin_user_member_component_alluser_00026'{/yun}：</span>
 			<div class="wx_login_bdtext">
-				<input type="text" id="username" name="username" autocomplete="off" placeholder="邮箱/手机号/用户名" class="wx_login_input" />
+				<input type="text" id="username" name="username" autocomplete="off" placeholder="{yun:}t key='member_user_resumeout_00004'{/yun}/{yun:}t key='wap_user_ident_00004'{/yun}/{yun:}t key='admin_user_member_component_alluser_00026'{/yun}" class="wx_login_input" />
 				<div class="logoin_msg none" id="show_name">
-					<div class="logoin_msg_tx">请填写用户名</div>
+					<div class="logoin_msg_tx">{yun:}t key='wap_js_reg_ajax_00016'{/yun}</div>
 					<div class="logoin_msg_icon"></div>
 				</div>
 			</div>
 		</div>
 
 		<div class="wx_login_bdlist">
-			<span class="wx_login_bdlistname">密码：</span>
+			<span class="wx_login_bdlistname">{yun:}t key='wap_user_transfer_00006'{/yun}：</span>
 			<div class="wx_login_bdtext">
-				<input type="password" id="password" name="password" autocomplete="off" placeholder="密码" class="wx_login_input" />
+				<input type="password" id="password" name="password" autocomplete="off" placeholder="{yun:}t key='wap_user_transfer_00006'{/yun}" class="wx_login_input" />
 				<div class="logoin_msg none" id="show_pass">
-					<div class="logoin_msg_tx">请填写密码</div>
+					<div class="logoin_msg_tx">{yun:}t key='wap_js_reg_ajax_00021'{/yun}</div>
 					<div class="logoin_msg_icon"></div>
 				</div>
 			</div>
@@ -63,9 +63,9 @@
 
 		{yun:}if !$smarty.get.type{/yun}
 			<div class="wx_login_bdlist">
-				<span class="wx_login_bdlistname">手机号：</span>
+				<span class="wx_login_bdlistname">{yun:}t key='wap_user_ident_00004'{/yun}：</span>
 				<div class="wx_login_bdtext">
-					<input type="text" id="moblie" autocomplete="off" placeholder="请输入手机号" class="wx_login_input">
+					<input type="text" id="moblie" autocomplete="off" placeholder="{yun:}t key='wap_js_forgetpw_00004'{/yun}" class="wx_login_input">
 					<span class="reg_tips reg_tips_red none" id="ajax_moblie"></span>
 				</div>
 			</div>
@@ -87,9 +87,9 @@
 			</div>
 			{yun:}else{/yun}
 			<div class="wx_login_bdlist">
-				<span class="wx_login_bdlistname">验证码：</span>
+				<span class="wx_login_bdlistname">{yun:}t key='wap_advice_00007'{/yun}：</span>
 				<div class="wx_login_bdtext">
-					<input type="text" id="CheckCode" autocomplete="off" placeholder="请输入图片验证码" class="wx_login_input" maxlength="6" style="width:150px;">
+					<input type="text" id="CheckCode" autocomplete="off" placeholder="{yun:}t key='wap_user_bindingbox_00002'{/yun}" class="wx_login_input" maxlength="6" style="width:150px;">
 					<a href="javascript:void(0);" onclick="checkCode('vcode_img');" class="wx_login_yzm"> <img id="vcode_img" class="authcode" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php" /></a>
 					<span class="reg_tips reg_tips_red none" id="ajax_CheckCode"></span>
 				</div>
@@ -102,7 +102,7 @@
 			<span class="wx_login_bdlistname">短信验证：</span>
 			<div class="wx_login_bdtext">
 				<input type="text" id="moblie_code" autocomplete="off" placeholder="请输入短信验证码" class="wx_login_input" style="width:150px;">
-				<a href="javascript:void(0);" href="javascript:void(0);" id="send_msg_tip" onclick="send_bind_msg('{yun:}url m=login c=sendmsg{/yun}');" class="wx_login_dxyz"><span>获取短信验证</span></a>
+				<a href="javascript:void(0);" href="javascript:void(0);" id="send_msg_tip" onclick="send_bind_msg('{yun:}url m=login c=sendmsg{/yun}');" class="wx_login_dxyz"><span>{yun:}t key='default_wxconnect_index_00002'{/yun}</span></a>
 				<span class="reg_tips reg_tips_red none" id="ajax_moblie_code"></span>
 				<input type="hidden" id="send" value="0" />
 			</div>
@@ -112,9 +112,9 @@
 			<span class="wx_login_bdlistname">&nbsp;</span>
 			<div class="wx_login_bdtext">
 				{yun:}if $smarty.get.type=='ba'{/yun}
-				<a href="javascript:void(0);" onclick="bindacount('vcode_img');" class="wx_login_btb">绑定已有账号</a>
+				<a href="javascript:void(0);" onclick="bindacount('vcode_img');" class="wx_login_btb">{yun:}t key='default_wxconnect_index_00001'{/yun}</a>
 				{yun:}else{/yun}
-				<a href="javascript:void(0);" onclick="bindphone('vcode_img');" id='sublogin' class="wx_login_btb ">绑定已有账号</a>
+				<a href="javascript:void(0);" onclick="bindphone('vcode_img');" id='sublogin' class="wx_login_btb ">{yun:}t key='default_wxconnect_index_00001'{/yun}</a>
 				{yun:}/if{/yun}
 			</div>
 		</div>

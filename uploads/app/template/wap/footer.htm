@@ -98,22 +98,22 @@
 						}else if(fabu_resume_maxnum >0 || fabu_resume_maxnum == ''){
 			      			location.href = wapurl+"member/index.php?c=addresume";
 			      		}else{
-			      			showToast("你的简历数已经达到系统设置的简历数了");
+			      			showToast("{yun:}t key='wap_user_resume_00001'{/yun}");
 			      		}
 					}else if(usertype=='2'){
 		                var url = "{yun:}url d=wxapp h=com m=index c=addCheck{/yun}";
-		                comjobAdd(url, { job: 'job' }, function (res) {
+		                comjobAdd(url, { job: 'job" }, function (res) {
 							if (res.error==1) {
-			                    // 套餐不足
+			                    // {yun:}t key='common_01740'{/yun}
 			                    modalVue.$data.mb_content = res.msg;
-			                    modalVue.$data.cancelText = '不用了';
-			                    modalVue.$data.confirmText = '去购买';
+			                    modalVue.$data.cancelText = "不用了';
+			                    modalVue.$data.confirmText = "{yun:}t key='wap_com_com_00011'{/yun}";
 			                    modalVue.$data.yunModal = true;
 			                    modalType = 'job';
 			                } else if(res.error==2){
 			                    modalVue.$data.mb_content = res.msg;
-			                    modalVue.$data.cancelText = '取消';
-			                    modalVue.$data.confirmText = '去发布';
+			                    modalVue.$data.cancelText = "{yun:}t key='common.cancel'{/yun}";
+			                    modalVue.$data.confirmText = "{yun:}t key='wap_com_com_00010'{/yun}";
 			                    modalVue.$data.tourl = res.tourl;
 			                    modalVue.$data.yunModal = true;
 			                    modalType = 'toaddjob';

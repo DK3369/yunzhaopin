@@ -35,11 +35,11 @@
 							<select id="jobclass_search" name="jobclass_search" xm-select-type="jobclass"
 								xm-select="jobclass_search" xm-select-search="" xm-select-radio=""
 								xm-select-skin="default" xm-select-direction="down">
-								<option value="">输入搜索职能</option>
+								<option value="">{yun:}t key='member_com_resume_00002'{/yun}</option>
 							</select>
 							{yun:}if $jionly!='1'{/yun}
 							<div onclick="index_job_new(1,'#workadds_job','#job_post','left:100px;top:100px; position:absolute;','1','form');"
-								class="news_expect_text_new_nth" title="选择职位类别"></div>
+								class="news_expect_text_new_nth" title="{yun:}t key='member_user_expectq_00006'{/yun}"></div>
 							{yun:}/if{/yun}
 						</div>
 
@@ -58,9 +58,9 @@
 						</div>
 
 	<div class="com_resume_homesearch_stj" style="margin-left: 10px;">
-							<input type="text" placeholder="搜索求职意向、工作经历" class="com_resume_homesearch_stj_text"
+							<input type="text" placeholder="搜索求职意向、{yun:}t key='wap_resume_index_00017'{/yun}" class="com_resume_homesearch_stj_text"
 								value="{yun:}$smarty.get.keyword{/yun}" name="keyword">
-							<input type="submit" value="搜索 " class="com_resume_homesearch_stj_bth">
+							<input type="submit" value="{yun:}t key='common.search'{/yun} " class="com_resume_homesearch_stj_bth">
 						</div>
 
 						<div class="clear"></div>
@@ -71,9 +71,9 @@
 								<span class="ps_xz_box_name">
 									{yun:}if $smarty.get.minsalary!="" || $smarty.get.maxsalary!=""{/yun}
 									{yun:}if $smarty.get.minsalary!="" && $smarty.get.maxsalary==""{/yun}
-									{yun:}$smarty.get.minsalary{/yun}以上
+									{yun:}$smarty.get.minsalary{/yun}{yun:}t key='common_01942'{/yun}
 									{yun:}elseif $smarty.get.minsalary=="" && $smarty.get.maxsalary!=""{/yun}
-									{yun:}$smarty.get.maxsalary{/yun}以下
+									{yun:}$smarty.get.maxsalary{/yun}{yun:}t key='common_01943'{/yun}
 									{yun:}else{/yun}
 									{yun:}$smarty.get.minsalary{/yun} - {yun:}$smarty.get.maxsalary{/yun}
 									{yun:}/if{/yun}
@@ -92,7 +92,7 @@
 									<a href="javascript:void(0)" onClick="setSalary('8000','10000')"
 										class="resume_xzfw">8000-10000</a>
 									<a href="javascript:void(0)" onClick="setSalary('10000','')"
-										class="resume_xzfw">10000以上</a>
+										class="resume_xzfw">10000{yun:}t key='common_01942'{/yun}</a>
 									<div class="clear"></div>
 									<input type="text" id="min" name="minsalary" size="6"
 										value="{yun:}if $smarty.get.minsalary{/yun}{yun:}$smarty.get.minsalary{/yun}{yun:}/if{/yun}"
@@ -101,7 +101,7 @@
 									<input type="text" id="max" name="maxsalary" size="6"
 										value="{yun:}if $smarty.get.maxsalary{/yun}{yun:}$smarty.get.maxsalary{/yun}{yun:}/if{/yun}"
 										onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" class="resume_xz_text" />
-									<input type="submit" value="确定" class="resume_xz_bth">
+									<input type="submit" value="{yun:}t key='common.confirm'{/yun}" class="resume_xz_bth">
 								</div>
 							</div>
 							<div class="ps_xz_box" id="age_sel" onmouseout='closeAgeOption();'
@@ -109,9 +109,9 @@
 								<span class="ps_xz_box_name">
 									{yun:}if $smarty.get.minage!="" || $smarty.get.maxage!=""{/yun}
 									{yun:}if $smarty.get.minage!="" && $smarty.get.maxage==""{/yun}
-									{yun:}$smarty.get.minage{/yun}岁以上
+									{yun:}$smarty.get.minage{/yun}{yun:}t key='wap_com_jobadd_00042'{/yun}
 									{yun:}elseif $smarty.get.minage=="" && $smarty.get.maxage!=""{/yun}
-									{yun:}$smarty.get.maxage{/yun}岁以下
+									{yun:}$smarty.get.maxage{/yun}{yun:}t key='wap_com_jobadd_00043'{/yun}
 									{yun:}else{/yun}
 									{yun:}$smarty.get.minage{/yun} - {yun:}$smarty.get.maxage{/yun}
 									{yun:}/if{/yun}
@@ -122,14 +122,14 @@
 
 								<div class="resume_xz age_option" style="display:none;z-index:1;">
 									<a href="javascript:void(0)" onClick="setAge('16','20')"
-										class="resume_xzfw">16-20岁</a>
+										class="resume_xzfw">16-20{yun:}t key='home.age_suffix'{/yun}</a>
 									<a href="javascript:void(0)" onClick="setAge('21','30')"
-										class="resume_xzfw">21-30岁</a>
+										class="resume_xzfw">21-30{yun:}t key='home.age_suffix'{/yun}</a>
 									<a href="javascript:void(0)" onClick="setAge('31','40')"
-										class="resume_xzfw">31-40岁</a>
+										class="resume_xzfw">31-40{yun:}t key='home.age_suffix'{/yun}</a>
 									<a href="javascript:void(0)" onClick="setAge('41','50')"
-										class="resume_xzfw">41-50岁</a>
-									<a href="javascript:void(0)" onClick="setAge('50','')" class="resume_xzfw">50岁以上</a>
+										class="resume_xzfw">41-50{yun:}t key='home.age_suffix'{/yun}</a>
+									<a href="javascript:void(0)" onClick="setAge('50','')" class="resume_xzfw">50{yun:}t key='wap_com_jobadd_00042'{/yun}</a>
 									<div class="clear"></div>
 									<div class="">
 										<input type="text" id="minage" name="minage" size="2"
@@ -141,13 +141,13 @@
 											value="{yun:}if $smarty.get.maxage{/yun}{yun:}$smarty.get.maxage{/yun}{yun:}/if{/yun}"
 											onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"
 											class="resume_xz_text" />
-										<input type="submit" value="确定" class="resume_xz_bth">
+										<input type="submit" value="{yun:}t key='common.confirm'{/yun}" class="resume_xz_bth">
 									</div>
 								</div>
 							</div>
 							<div class="com_resume_homesearch_select">
 								<select name="exp" lay-filter="resume_submit">
-									<option value="">工作年限</option>
+									<option value="">{yun:}t key='wap_tiny_add_00001'{/yun}</option>
 									{yun:}foreach from=$userdata.user_word key=j item=v{/yun}
 									<option value="{yun:}$v{/yun}" {yun:}if $smarty.get.exp==$v{/yun}
 										selected{yun:}/if{/yun}>{yun:}$userclass_name[$v]{/yun}</option>
@@ -157,7 +157,7 @@
 
 							<div class="com_resume_homesearch_select">
 								<select name="edu" lay-filter="resume_submit">
-									<option value="">学历要求</option>
+									<option value="">{yun:}t key='wap_com_jobadd_00029'{/yun}</option>
 									{yun:}foreach from=$userdata.user_edu key=j item=v{/yun}
 									<option value="{yun:}$v{/yun}" {yun:}if $smarty.get.edu==$v{/yun}
 										selected{yun:}/if{/yun}>{yun:}$userclass_name[$v]{/yun}</option>
@@ -167,7 +167,7 @@
 
 							<div class="com_resume_homesearch_select">
 								<select name="uptime" lay-filter="resume_submit">
-									<option value="">更新时间</option>
+									<option value="">{yun:}t key='wap_member_publictwo_00004'{/yun}</option>
 									{yun:}foreach from=$uptime key=j item=v{/yun}
 									<option value="{yun:}$j{/yun}" {yun:}if $smarty.get.uptime==$j{/yun}
 										selected{yun:}/if{/yun}>{yun:}$v{/yun}</option>
@@ -176,7 +176,7 @@
 							</div>
 							<div class="com_resume_homesearch_select">
 								<select name="sex" lay-filter="resume_submit">
-									<option value="">性别</option>
+									<option value="">{yun:}t key='wap_com_jobadd_00049'{/yun}</option>
 									{yun:}foreach from=$user_sex key=j item=v{/yun}
 									<option value="{yun:}$j{/yun}" {yun:}if $smarty.get.sex==$j{/yun}
 										selected{yun:}/if{/yun}>{yun:}$v{/yun}</option>
@@ -185,7 +185,7 @@
 							</div>
 							<div class="com_resume_homesearch_select">
 								<select name="type" lay-filter="resume_submit">
-									<option value="">工作性质</option>
+									<option value="">{yun:}t key='wap_user_addexpect_00004'{/yun}</option>
 									{yun:}foreach from=$userdata.user_type key=j item=v{/yun}
 									<option value="{yun:}$v{/yun}" {yun:}if $smarty.get.type==$v{/yun}
 										selected{yun:}/if{/yun}>{yun:}$userclass_name[$v]{/yun}</option>
@@ -200,11 +200,11 @@
 										$smarty.get.pic{/yun}checked{yun:}/if{/yun}></div>
 
 								<div class="com_resume_homesearch_xb"><input type="checkbox" lay-skin="primary"
-										lay-filter='resume_submit' title="已认证" name="idcard" value="1" {yun:}if
+										lay-filter='resume_submit' title="{yun:}t key='wap_user_alltask_00024'{/yun}" name="idcard" value="1" {yun:}if
 										$smarty.get.idcard{/yun}checked{yun:}/if{/yun}></div>
 
 								<div class="com_resume_homesearch_xb"><input type="checkbox" lay-skin="primary"
-										lay-filter='resume_submit' title="有作品" name="work" value="1" {yun:}if
+										lay-filter='resume_submit' title="{yun:}t key='member_com_resume_00007'{/yun}" name="work" value="1" {yun:}if
 										$smarty.get.work{/yun}checked{yun:}/if{/yun}></div>
 
 
@@ -224,7 +224,7 @@
 				<div class="com_resume_homebox">
 					<div class="clear"></div>
 					<div class="com_resume_listbox_tit">
-						<div class="com_resume_t">人才列表</div>
+						<div class="com_resume_t">{yun:}t key='member_com_resume_00005'{/yun}</div>
 						<div class="com_resume_listbox_titlook">查看方式
 							<a href="{yun:}searchurl m=member c=resume untype='rtype'{/yun}"
 								class="com_resume_listbox_titlook_zs {yun:}if $smarty.get.rtype!='1'{/yun}com_resume_listbox_titlook_cur{yun:}/if{/yun}"><i
@@ -234,7 +234,7 @@
 									class="com_resume_listbox_titlook_zsxx"></i></a>
 						</div>
 					</div>
-					<!--简历列表-->
+					<!--{yun:}t key='admin_tool_weixin_component_wxfbtool_00028'{/yun}-->
 					<div class="com_resume_listbox">
 
 
@@ -250,7 +250,7 @@
 								<tr>
 									<td colspan="7" class="table_end">
 										<div class="msg_no">
-											<p class="com_msg_no_name">账号审核中</p>
+											<p class="com_msg_no_name">{yun:}t key='member_com_resume_00004'{/yun}</p>
 											<p class="">暂时无法挑选人才</p>
 										</div>
 									</td>
@@ -275,7 +275,7 @@
 													<a href="javascript:void(0)"
 														onclick="com_lookresume_check('{yun:}$user.id{/yun}','{yun:}$user.status{/yun}')">{yun:}$user.username_n{/yun}
 														{yun:}if $user.moblie_status=='1'{/yun}
-														<i class="com_user_sjrz" title="手机已认证"></i>
+														<i class="com_user_sjrz" title="{yun:}t key='member_user_headnav_00004'{/yun}"></i>
 														{yun:}/if{/yun}
 													</a>
 												</span>
@@ -283,19 +283,19 @@
 													{yun:}if $user.isLookEd{/yun}<span
 														class="look_user">浏览过</span>{yun:}/if{/yun}
 													{yun:}if $user.userid_msg == 1{/yun}<span
-														class="hr_yyy">已邀约</span>{yun:}/if{/yun}
+														class="hr_yyy">{yun:}t key='wap_com_hr_00004'{/yun}</span>{yun:}/if{/yun}
 													{yun:}if $user.islink == 1{/yun}<span
-														class="hr_yxz">已下载</span>{yun:}/if{/yun}
+														class="hr_yxz">{yun:}t key='wap_com_hr_00003'{/yun}</span>{yun:}/if{/yun}
 												</div>
 												
 
 											</div>
 											<div class="com_resume_userinfo_p" style="padding:5px 0">
 												{yun:}$user.sex{/yun} · {yun:}if
-												$user.age==0{/yun}保密{yun:}else{/yun}{yun:}$user.age{/yun}岁{yun:}/if{/yun}
-												· {yun:}if $user.exp_n{/yun}{yun:}$user.exp_n{/yun}经验 ·
+												$user.age==0{/yun}{yun:}t key='wap_user_resume_00011'{/yun}{yun:}else{/yun}{yun:}$user.age{/yun}{yun:}t key='home.age_suffix'{/yun}{yun:}/if{/yun}
+												· {yun:}if $user.exp_n{/yun}{yun:}$user.exp_n{/yun}{yun:}t key='home.experience_suffix'{/yun} ·
 												{yun:}/if{/yun}{yun:}if
-												$user.edu_n{/yun}{yun:}$user.edu_n{/yun}学历{yun:}/if{/yun}
+												$user.edu_n{/yun}{yun:}$user.edu_n{/yun}{yun:}t key='home.education_suffix'{/yun}{yun:}/if{/yun}
 											</div>
 											
 
@@ -305,18 +305,18 @@
 											</div>
 									</td>
 									<td>
-										<div class="com_resume_userinfo_yx">求职意向：{yun:}if $user.expectjob{/yun}
+										<div class="com_resume_userinfo_yx">{yun:}t key='wap_resume_index_00020'{/yun}：{yun:}if $user.expectjob{/yun}
 											{yun:}foreach from=$user.expectjob item=v key=key{/yun} {yun:}if $key lt
 											5{/yun} <span
 												class="com_resume_userinfo_yx_n">{yun:}$v{/yun}</span>{yun:}/if{/yun}
 											{yun:}/foreach{/yun} {yun:}/if{/yun}</div>
 										<div class="com_resume_userinfo_city">
-											<span class="com_resume_userinfo_add">期望地点： {yun:}if
+											<span class="com_resume_userinfo_add">{yun:}t key='admin_user_users_component_resume_edit_00033'{/yun}： {yun:}if
 												$user.expectcity{/yun}{yun:}foreach from=$user.expectcity item=v
 												key=key{/yun} {yun:}if $key lt 5{/yun}{yun:}$v{/yun}{yun:}/if{/yun}
 												{yun:}/foreach{/yun} {yun:}/if{/yun}</span>
 											<span
-												class="com_resume_userinfo_add mt10">期望薪资：{yun:}$user.salary_n{/yun}</span>
+												class="com_resume_userinfo_add mt10">{yun:}t key='wap_user_addexpect_00008'{/yun}：{yun:}$user.salary_n{/yun}</span>
 										</div>
 						</div>
 						</td>
@@ -326,11 +326,11 @@
 						</td>
 						<td align="right">
 							<div class="com_resume_userinfo_xz">
-								<div class="com_resume_userinfo_time">{yun:}$user.time{/yun}更新</div>
+								<div class="com_resume_userinfo_time">{yun:}$user.time{/yun}{yun:}t key='wap_invite_00002'{/yun}</div>
 							</div>
 							<a href="javascript:void(0)" style="background: #3d7dfd; color: #fff;"
 								onclick="com_lookresume_check('{yun:}$user.id{/yun}','{yun:}$user.status{/yun}','{yun:}$user.state{/yun}', {from: 'rck'})"
-								class=" com_bth cblue">查看简历</a>
+								class=" com_bth cblue">{yun:}t key='wap_com_msg_00004'{/yun}</a>
 							
 						</td>
 						</tr>
@@ -354,17 +354,17 @@
 					<div class="com_resume_show">
 						<table class="com_table">
 							<tr style="background:#f8f8f8">
-								<td>姓名</td>
-								<td>期望职位</td>
+								<td>{yun:}t key='wap_tiny_add_00004'{/yun}</td>
+								<td>{yun:}t key='wap_user_addexpect_00007'{/yun}</td>
 
-								<td>性别</td>
-								<td>年龄</td>
-								<td>学历</td>
-								<td>工作经验</td>
-								<td>期望薪资</td>
-								<td>求职地区</td>
-								<td>更新时间</td>
-								<td>操作</td>
+								<td>{yun:}t key='wap_com_jobadd_00049'{/yun}</td>
+								<td>{yun:}t key='wap_com_jobadd_00048'{/yun}</td>
+								<td>{yun:}t key='home.education_suffix'{/yun}</td>
+								<td>{yun:}t key='wap_user_info_00017'{/yun}</td>
+								<td>{yun:}t key='wap_user_addexpect_00008'{/yun}</td>
+								<td>{yun:}t key='member_com_resume_00006'{/yun}</td>
+								<td>{yun:}t key='wap_member_publictwo_00004'{/yun}</td>
+								<td>{yun:}t key='member_user_atn_00003'{/yun}</td>
 							</tr>
 
 							{yun:}if $config.com_status_search==1 && $comInfo.r_status!=1{/yun}
@@ -396,12 +396,12 @@
 										onclick="com_lookresume_check('{yun:}$user2.id{/yun}','{yun:}$user2.status{/yun}')"
 										class="com_resume_showjobname">{yun:}$user2.name{/yun}{yun:}if
 										$user2.moblie_status=='1'{/yun}<i class="com_user_sjrz"
-											title="手机已认证"></i>{yun:}/if{/yun}</a></td>
+											title="{yun:}t key='member_user_headnav_00004'{/yun}"></i>{yun:}/if{/yun}</a></td>
 								<td>{yun:}$user2.sex{/yun}</td>
-								<td>{yun:}if $user2.age==0{/yun}保密{yun:}else{/yun}{yun:}$user2.age{/yun}岁{yun:}/if{/yun}
+								<td>{yun:}if $user2.age==0{/yun}{yun:}t key='wap_user_resume_00011'{/yun}{yun:}else{/yun}{yun:}$user2.age{/yun}{yun:}t key='home.age_suffix'{/yun}{yun:}/if{/yun}
 								</td>
-								<td>{yun:}$user2.edu_n{/yun}学历</td>
-								<td>{yun:}$user2.exp_n{/yun}经验</td>
+								<td>{yun:}$user2.edu_n{/yun}{yun:}t key='home.education_suffix'{/yun}</td>
+								<td>{yun:}$user2.exp_n{/yun}{yun:}t key='home.experience_suffix'{/yun}</td>
 								<td>{yun:}$user2.salary_n{/yun}</td>
 								<td>{yun:}if $user2.expectcity{/yun}{yun:}foreach from=$user2.expectcity item=v
 									key=key{/yun} {yun:}if $key lt 5{/yun}{yun:}$v{/yun}{yun:}/if{/yun}
@@ -409,7 +409,7 @@
 								<td>{yun:}$user2.time{/yun}</td>
 								<td><a href="javascript:void(0)"
 										onclick="com_lookresume_check('{yun:}$user2.id{/yun}','{yun:}$user2.status{/yun}','{yun:}$user2.state{/yun}', {from: 'rck'})"
-										class="com_bth">查看</a>
+										class="com_bth">{yun:}t key='wap_com_zhaopinzhou_00002'{/yun}</a>
 									
 								</td>
 							</tr>
@@ -432,7 +432,7 @@
 					</div>
 					<!--  列表展示 -->
 					{yun:}/if{/yun}
-					<!--简历列表 end-->
+					<!--{yun:}t key='admin_tool_weixin_component_wxfbtool_00028'{/yun} end-->
 
 
 					{yun:}if $total == 0{/yun}

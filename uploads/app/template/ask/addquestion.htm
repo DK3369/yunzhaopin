@@ -7,17 +7,17 @@
 <div class="content ">
 	<div class="quiz">
 		<div class="quiz_con">
-			<div class="ask_tit_que">我要提问</div>
+			<div class="ask_tit_que">{yun:}t key='wap_job_show_00035'{/yun}</div>
 			<div class="clear"></div>
 			
 			<form id='myform' name="myform" target="supportiframe" action="{yun:}url m=ask c=save{/yun}" method="post" onSubmit="return checkform();">
 				<div class="quiz_fl">
-					<input name="title" type="text" placeholder="问题标题" id="title" class="quix_txt"  onblur="if(this.value==''){this.value='问题标题'}" onclick="if(this.value=='问题标题'){this.value=''}" value="问题标题"/>
+					<input name="title" type="text" placeholder="{yun:}t key='ask_addquestion_00002'{/yun}" id="title" class="quix_txt"  onblur="if(this.value==''){this.value='{yun:}t key='ask_addquestion_00002'{/yun}'}" onclick="if(this.value=='{yun:}t key='ask_addquestion_00002'{/yun}'){this.value=''}" value="{yun:}t key='ask_addquestion_00002'{/yun}"/>
 					<div class="quiz_chi">
 						<span>选择问题种类</span> 
 						<div class="quiz_box">
 							<div class="quiz_box_first">
-								<div class="quiz_box_title">选择分类：</div>
+								<div class="quiz_box_title">{yun:}t key='ask_addquestion_00001'{/yun}：</div>
 								<ul class="quiz_select">
 									{yun:}qcache  item=qclist{/yun}
 										<li class="qc{yun:}$qclist.id{/yun}">
@@ -54,8 +54,8 @@
 					</div>
 					{yun:}else{/yun}
 						<div class="affirm" style="padding-top:10px;width:100%; float:left">
-							<span  class=" fl" style="line-height:35px;"> 验证码：</span>
-							<input class="quix_input fl" id="ask_CheckCode" type="text"  placeholder="请输入验证码" onblur="if(this.value==''){this.value='请输入验证码'}" onclick="if(this.value=='请输入验证码'){this.value=''}" value="请输入验证码" maxlength="6" name="authcode" style="width:150px;height:35px; text-indent:10px;color:#666" >
+							<span  class=" fl" style="line-height:35px;"> {yun:}t key='wap_advice_00007'{/yun}：</span>
+							<input class="quix_input fl" id="ask_CheckCode" type="text"  placeholder="{yun:}t key='wap_user_bindingbox_00004'{/yun}" onblur="if(this.value==''){this.value='{yun:}t key='wap_user_bindingbox_00004'{/yun}'}" onclick="if(this.value=='{yun:}t key='wap_user_bindingbox_00004'{/yun}'){this.value=''}" value="{yun:}t key='wap_user_bindingbox_00004'{/yun}" maxlength="6" name="authcode" style="width:150px;height:35px; text-indent:10px;color:#666" >
 							<img  class="fl" id="vcode_imgs" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php" onclick="checkCode('vcode_imgs');">
 						</div>
 					{yun:}/if{/yun}

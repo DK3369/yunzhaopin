@@ -11,22 +11,22 @@
 	<!--页面主内容区开始-->
 	<ul class="yun_newwap_box mt15">
 		<li class="yun_newwap_text">
-			<span class="yun_newwap_text_name"> <i>*</i>姓名</span >
+			<span class="yun_newwap_text_name"> <i>*</i>{yun:}t key='wap_tiny_add_00004'{/yun}</span >
 			<span class="yun_newwap_text_box">
-				<input type="text" name="username" id="username"  value="{yun:}$row.username{/yun}" placeholder="请输入姓名">
+				<input type="text" name="username" id="username"  value="{yun:}$row.username{/yun}" placeholder="{yun:}t key='wap_user_info_00011'{/yun}">
 				<input type="hidden" name="id" id="id"  value="{yun:}$row.id{/yun}">
 			</span>
 		</li> 
-		<li><span class="yun_newwap_text_name"><i>*</i>性别</span><span class="yun_newwap_text_box">
+		<li><span class="yun_newwap_text_name"><i>*</i>{yun:}t key='wap_com_jobadd_00049'{/yun}</span><span class="yun_newwap_text_box">
 		<button id='sexPicker' type='button' data-sex="{yun:}$row.sex{/yun}" v-cloak @click="sexShow=true">{{sexTex}}</button>
 		<input type="hidden" id="sex" name="sex"  v-bind:value="sex">
 		</span></li>
-		<li><span class="yun_newwap_text_name"><i>*</i>工作年限</span><span class="yun_newwap_text_box">
-		<button id='expPicker' type='button' placeholder="请选择" data-exp="{yun:}$row.exp{/yun}" @click="expShow=true" v-cloak>{{expTex ? expTex : '请选择工作年限'}}</button>
+		<li><span class="yun_newwap_text_name"><i>*</i>{yun:}t key='wap_tiny_add_00001'{/yun}</span><span class="yun_newwap_text_box">
+		<button id='expPicker' type='button' placeholder="{yun:}t key='wap_user_addresumeson_00042'{/yun}" data-exp="{yun:}$row.exp{/yun}" @click="expShow=true" v-cloak>{{expTex ? expTex : '请选择工作年限'}}</button>
 		<input type="hidden" id="exp" name="exp" :value="expValue">
 		</span></li>
 		<li>
-			<span class="yun_newwap_text_name"><i>*</i>工作地区</span>
+			<span class="yun_newwap_text_name"><i>*</i>{yun:}t key='wap_once_add_00004'{/yun}</span>
 			<span class="yun_newwap_text_box" @click="showArea=true">
 				<button id='cityPicker' type='button' v-cloak>{{city  ? city : '请填写工作地区'}}</button>
 				<input type="hidden" id="provinceid" name="provinceid" v-model="provinceid">
@@ -34,9 +34,9 @@
                 <input type="hidden" id="three_cityid" name="three_cityid" v-model="three_cityid">
 			</span>
 		</li>
-		<li><span class="yun_newwap_text_name"><i>*</i>自我介绍</span>
+		<li><span class="yun_newwap_text_name"><i>*</i>{yun:}t key='wap_tiny_add_00002'{/yun}</span>
 		<div class="yun_newwap_text_js" @click="onProduc">
-			<span id="productionshow" v-cloak>{{production ? production : '请填写'}}</span>
+			<span id="productionshow" v-cloak>{{production ? production : '{yun:}t key='wap_com_jobadd_00045'{/yun}'}}</span>
 		</div>
 		<textarea style="display:none" id="production" :value="production"></textarea>
 		</li>
@@ -45,14 +45,14 @@
 		<li class="yun_newwap_text"><span class="yun_newwap_text_name">理想工作</span><span class="yun_newwap_text_box">
 			<input type="text" name="job"  id="job" value="{yun:}$row.job{/yun}" placeholder="填写工作名称，如：服装厂操作工">
 		</span></li>
-		<li class="yun_newwap_text"><span class="yun_newwap_text_name"><i>*</i>联系手机</span><span class="yun_newwap_text_box">
+		<li class="yun_newwap_text"><span class="yun_newwap_text_name"><i>*</i>{yun:}t key='wap_advice_00006'{/yun}</span><span class="yun_newwap_text_box">
 		<input type="text" name="mobile" id="mobile" value="{yun:}$row.mobile{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" class="" placeholder="请填写联系手机" >
 		</span></li>
 		{yun:}if strpos($config.code_web,"普工简历")!==false{/yun}
 			{yun:}if $config.code_kind == 1{/yun}
-			<li class="yun_newwap_text"><span class="yun_newwap_text_name">验证码</span>
+			<li class="yun_newwap_text"><span class="yun_newwap_text_name">{yun:}t key='wap_advice_00007'{/yun}</span>
 				<div class="yun_newwap_yz">
-					<input type="text" id="checkcode" name="checkcode" id="checkcode" value="" placeholder="请输入图片验证码">
+					<input type="text" id="checkcode" name="checkcode" id="checkcode" value="" placeholder="{yun:}t key='wap_user_bindingbox_00002'{/yun}">
 					<div class="yun_newwap_yz_img">
 						<img id="vcode_img" class="" src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php" onclick="checkCode('vcode_img');" />
 					</div>
@@ -61,27 +61,27 @@
 			{yun:}/if{/yun}
 		{yun:}/if{/yun}
 		{yun:}if $config.sy_msg_isopen==1{/yun}
-        <li class="yun_newwap_text"><span class="yun_newwap_text_name"><i>*</i>短信验证码</span>
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name"><i>*</i>{yun:}t key='wap_com_bindingbox_00002'{/yun}</span>
             <div class="yun_newwap_text_box yun_newwap_text_sjyz" style="padding-right:120px;">
-       			<input type="text" style="background: none !important;" id="moblie_code" class="inputitem_w input" name="moblie_code" placeholder="填写验证码"><a href="javascript:;" id="send_msg_tip" onclick="send_msg('{yun:}url m=wap c=tiny a=sendmsg{/yun}')" class="yun_newwap_text_sjyz_send" style="width:">获取验证码</a>
+       			<input type="text" style="background: none !important;" id="moblie_code" class="inputitem_w input" name="moblie_code" placeholder="填写验证码"><a href="javascript:;" id="send_msg_tip" onclick="send_msg('{yun:}url m=wap c=tiny a=sendmsg{/yun}')" class="yun_newwap_text_sjyz_send" style="width:">{yun:}t key='wap_user_bindingbox_00005'{/yun}</a>
             </div>
         </li>
 		{yun:}/if{/yun}
 		
 		
 		{yun:}if $row.id==''{/yun} 
-		<li class="yun_newwap_text"><span class="yun_newwap_text_name"><i>*</i>设置密码</span><span class="yun_newwap_text_box">
-		<input type="password" name="password" id="password" value="" onkeyup="this.value=this.value.replace(/^ +| +$/g,'')" class=" "placeholder="请输入密码" >
+		<li class="yun_newwap_text"><span class="yun_newwap_text_name"><i>*</i>{yun:}t key='wap_once_add_00011'{/yun}</span><span class="yun_newwap_text_box">
+		<input type="password" name="password" id="password" value="" onkeyup="this.value=this.value.replace(/^ +| +$/g,'')" class=" "placeholder="{yun:}t key='wap_js_public_00002'{/yun}" >
 		</span></li>
 		{yun:}else{/yun}
-		<li class="yun_newwap_text"><span class="yun_newwap_text_name">密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码</span><span class="yun_newwap_text_box">
-		<input type="password" name="password" id="password" value="" onkeyup="this.value=this.value.replace(/^ +| +$/g,'')" class=" "placeholder="请输入密码">
+		<li class="yun_newwap_text"><span class="yun_newwap_text_name">密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{yun:}t key='common_02093'{/yun}</span><span class="yun_newwap_text_box">
+		<input type="password" name="password" id="password" value="" onkeyup="this.value=this.value.replace(/^ +| +$/g,'')" class=" "placeholder="{yun:}t key='wap_js_public_00002'{/yun}">
 		</span></li>
 		{yun:}/if{/yun}			
-		<div class="yun_newwap_box_ts">提示：密码用于刷新/修改/删除此信息</div>		
+		<div class="yun_newwap_box_ts">{yun:}t key='wap_js_forgetpw_00010'{/yun}：密码用于刷新/{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00005'{/yun}/删除此信息</div>		
 	</ul>
 	<div class="yun_newwap_bth">
-		<button id="oncesubmit" class="mui-btn mui-btn-block mui-btn-primary" onclick="oncesubmit()">保 存</button>
+		<button id="oncesubmit" class="mui-btn mui-btn-block mui-btn-primary" onclick="oncesubmit()">{yun:}t key='wap_com_address_new_00017'{/yun}</button>
 	</div>
     
 	<van-popup v-model="sexShow" position="bottom"  >
@@ -105,7 +105,7 @@
 	<van-popup v-model="showArea" round position="bottom">
        <van-cascader
         v-model="areaValue"
-        title="请选择地区"
+        title="{yun:}t key='wap_publichtm_publictwo_00001'{/yun}"
         :options="areaList"
         @close="showArea = false"
         @finish="onAreaFinish"
@@ -147,11 +147,11 @@
 		<div id="productionhtml">
 			<div class="yun_wap_info_brief">
               	
-				<div class="yun_wap_info_brief_tit"> 自我介绍 </div>
+				<div class="yun_wap_info_brief_tit"> {yun:}t key='wap_tiny_add_00002'{/yun} </div>
 					<div class="yun_wap_info_brief_c"><textarea class="  tip contenttext" name="production" placeholder="请填写自我介绍" v-model="production"></textarea>
 				</div>
 			    <div class="yunset_bth_box" @click="cancelProduc">
-			     	<a class="yun_wap_info_brief_tit_bc mui-action-back" >保存</a>
+			     	<a class="yun_wap_info_brief_tit_bc mui-action-back" >{yun:}t key='common.save'{/yun}</a>
 			    </div>
 			</div>	
 		</div>
@@ -173,31 +173,31 @@
 	var smsTimer_flag = 120; //倒数 120
 	var smsTime_speed = 1000; //速度 1秒钟
 
-	//发送手机短信
+	// SendmobileSMS
 	function send_msg(url) {
 		var moblie = $('#mobile').val();
 		var code;
 	
 		var verify_token;
 		var verify_str;
-		if(moblie == "" || moblie == "请输入手机号码") {
+		if(moblie == "" || moblie == "{yun:}t key='wap_user_bindingbox_00003'{/yun}") {
 
-			showToast("请输入手机号码！");
+			showToast("{yun:}t key='wap_user_bindingbox_00003'{/yun}");
 			return false;
 		} else {
 
 			if(!isjsMobile(moblie)) {
-				showToast('手机格式错误！');
+				showToast("{yun:}t key='wap_login_00007'{/yun}");
 				return false;
 			}
 		}
-		var codesear = new RegExp('普工简历');
+		var codesear = new RegExp("{yun:}t key='wap_js_tiny_add_00001'{/yun}");
 
 		if(codesear.test(code_web) && exitsid("moblie_code")) {
 			if(code_kind == 1) {
 				code = $.trim($("#checkcode").val());
 				if(!code) {
-					showToast('请填写图片验证码！');
+					showToast("{yun:}t key='wap_js_forgetpw_00001'{/yun}");
 					return false;
 				}
 			} else if(code_kind > 2) {
@@ -248,21 +248,21 @@
 				}
 			})
 		} else {
-			showToast('请勿重复发送！', 2);
+			showToast("{yun:}t key='wap_js_forgetpw_00003'{/yun}", 2);
 			return false;
 		}
 	}
 	
-	//倒计时
+	// Countdown
 	function smsTimer(obj) {
 		if(smsTimer_flag > 0) {
-			$(obj).html('重新发送(' + smsTimer_flag + 's)');
+			$(obj).html("{yun:}t key='wap_js_forgetpw_00007'{/yun}" + smsTimer_flag + 's)');
 			$(obj).attr({
 				'style': ''
 			});
 			smsTimer_flag--;
 		} else {
-			$(obj).html('重新发送');
+			$(obj).html("{yun:}t key='wap_js_forgetpw_00009'{/yun}");
 			$(obj).attr({
 				'style': ''
 			});
@@ -297,8 +297,8 @@
     searchUrlObj = JSON.parse('{yun:}$searchUrlObj{/yun}');
     '{yun:}/if{/yun}'
     var cityData    =   cityCategory(cityParam);
-	var sexTex = '{yun:}if $row.sex==1{/yun}男{yun:}elseif $row.sex==2{/yun}女{yun:}else{/yun}请选择性别{yun:}/if{/yun}'
-    var sexDefault = sexTex == '女' ? 1 : 0;
+	var sexTex = '{yun:}if $row.sex==1{/yun}{yun:}t key='common_02092'{/yun}{yun:}elseif $row.sex==2{/yun}{yun:}t key='common_02069'{/yun}{yun:}else{/yun}{yun:}t key='wap_js_partpicker_00001'{/yun}{yun:}/if{/yun}'
+    var sexDefault = sexTex == "{yun:}t key='common_02069'{/yun}" ? 1 : 0;
 
     var vm = new Vue({
         el: '#main',

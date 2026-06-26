@@ -15,7 +15,7 @@
 <div class="yun_body">
     <div class="yun_content">
         <div class="current_Location icon">
-            您当前的位置：<a href="{yun:}$config.sy_weburl{/yun}">首页</a> > <a href="{yun:}url m=resume{/yun}">找人才</a>
+            {yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <a href="{yun:}url m=resume{/yun}">{yun:}t key='default_resume_index_00003'{/yun}</a>
         </div>
 
         <div class="clear"></div>
@@ -29,26 +29,26 @@
                 <div class="search_Look_left">
                     <input type="text" name="keyword" id="userkeyword" value="请输入要搜索的关键字" onclick="if(this.value=='请输入要搜索的关键字'){this.value=''}" onblur="if(this.value==''){this.value='请输入要搜索的关键字'}" class="search_Look_text placeholder"/>
                 </div>
-                <input type="submit" value="搜索" class="search_submit"/>
+                <input type="submit" value="{yun:}t key='common.search'{/yun}" class="search_submit"/>
             </form>
         </div>
 
-        <div class="search_Look_tag"> 关键字：
+        <div class="search_Look_tag"> {yun:}t key='admin_tool_weixin_component_reply_00017'{/yun}：
             {yun:}key limit=8 recom=1 type=5 item=key{/yun}
             <a href="{yun:}$key.url{/yun}">{yun:}$key.key_name{/yun}</a>
             {yun:}/key{/yun}
         </div>
 
         <div class="clear"></div>
-        <!--行业类别-->
+        <!--{yun:}t key='member_com_finderinfo_00004'{/yun}-->
         <div class="maincenter">
             <div id="sortBox">
 
                 <div class="search_menuBox">
                     <ul>
-                        <li class="search_cur" id="typejob" onmousemove="searchtype('job');">职位招聘</li>
+                        <li class="search_cur" id="typejob" onmousemove="searchtype('job');">{yun:}t key='member_com_job_00009'{/yun}</li>
                         <li id="typehy" onmousemove="searchtype('hy');">行业招聘</li>
-                        <li id="typecity" onmousemove="searchtype('city');" style="border-right:none;">地区招聘</li>
+                        <li id="typecity" onmousemove="searchtype('city');" style="border-right:none;">{yun:}t key='default_resume_index_00001'{/yun}</li>
                     </ul>
                 </div>
 
@@ -63,7 +63,7 @@
                     </div>
                     <!-- 行业招聘 end-->
 
-                    <!-- 职位招聘 start-->
+                    <!-- {yun:}t key='member_com_job_00009'{/yun} start-->
                     <div class="contentBox_cont" id="type_job" style="display:block">
                         {yun:}foreach item=v from=$job_index{/yun}
                         <div class="Category_tit">
@@ -74,7 +74,7 @@
                             <dl>
                                 <dt>
                                     <a href="{yun:}listurl m=resume t=index type=job1_son job1=$v job1_son=$val{/yun}">{yun:}$job_name[$val]{/yun}</a>
-                                    <a href="javascript:showtype('{yun:}$val{/yun}');" class="spread " id="job_{yun:}$val{/yun}">[展开]</a>
+                                    <a href="javascript:showtype('{yun:}$val{/yun}');" class="spread " id="job_{yun:}$val{/yun}">[{yun:}t key='admin_user_member_component_alluser_00031'{/yun}]</a>
                                 </dt>
                                 <dd id="job{yun:}$val{/yun}">
                                     {yun:}foreach item=value from=$job_type[$val]{/yun}
@@ -86,9 +86,9 @@
                         </div>
                         {yun:}/foreach{/yun}
                     </div>
-                    <!-- 职位招聘 end-->
+                    <!-- {yun:}t key='member_com_job_00009'{/yun} end-->
 
-                    <!-- 地区招聘 start-->
+                    <!-- {yun:}t key='default_resume_index_00001'{/yun} start-->
                     {yun:}if $config.sy_web_city_one{/yun}
                         {yun:}if $config.sy_web_city_one{/yun}
                             <div class="contentBox_cont none" id="type_city">
@@ -127,13 +127,13 @@
                             {yun:}/foreach{/yun}
                         </div>
                     {yun:}/if{/yun}
-                    <!-- 地区招聘 end-->
+                    <!-- {yun:}t key='default_resume_index_00001'{/yun} end-->
                 </div>
             </div>
         </div>
-        <!--行业类别 end-->
+        <!--{yun:}t key='member_com_finderinfo_00004'{/yun} end-->
         <div class="search_post_jj">
-            <div class="search_post_jj_h1"><span>最新人才</span></div>
+            <div class="search_post_jj_h1"><span>{yun:}t key='home.latest_talents'{/yun}</span></div>
             <div class="hp_people">
                 <ul>
                     {yun:}userlist item=ulist post_len=10 limit=10 key=key name=userlist1{/yun}
@@ -149,7 +149,7 @@
                                     <a {yun:}if $config.com_search==1 && !$uid{/yun} href="javascript:;" onclick="showlogin('2');" {yun:}else{/yun}href="{yun:}url m=resume c=show id=$ulist.id{/yun}" target="_blank"{yun:}/if{/yun}>{yun:}$ulist.username_n|mb_substr:0:10:"utf-8"{/yun}</a>
                                 </div>
                                 <div class="hp_people_box_ft_v">
-                                    {yun:}$ulist.exp_n{/yun}经验<i class="index_job_line">|</i>{yun:}$ulist.edu_n{/yun}学历
+                                    {yun:}$ulist.exp_n{/yun}{yun:}t key='home.experience_suffix'{/yun}<i class="index_job_line">|</i>{yun:}$ulist.edu_n{/yun}{yun:}t key='home.education_suffix'{/yun}
                                 </div>
                                 <div class="hp_people_box_ft_y">{yun:}$ulist.job_post_n{/yun}</div>
                             </div>
@@ -185,13 +185,13 @@
 
         function showtype(id) {
             $("#job" + id).addClass('current');
-            $("#job_" + id).html('[收起]');
+            $("#job_" + id).html("[{yun:}t key='wap_article_00005'{/yun}]");
             $("#job_" + id).attr('href', 'javascript:hidetype(\'' + id + '\');');
         }
 
         function hidetype(id) {
             $("#job" + id).removeClass('current');
-            $("#job_" + id).html('[展开]');
+            $("#job_" + id).html("[{yun:}t key='admin_user_member_component_alluser_00031'{/yun}]");
             $("#job_" + id).attr('href', 'javascript:showtype(\'' + id + '\');');
         }
     </script>

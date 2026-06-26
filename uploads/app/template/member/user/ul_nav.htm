@@ -1,10 +1,10 @@
 <div class="tabmenubox01 mt9">
     <ul>
         <li {yun:}if $smarty.get.c=='job'{/yun}class="cur"{yun:}/if{/yun}>
-            <a href="index.php?c=job" title="职位管理">申请的职位</a>
+            <a href="index.php?c=job" title="{yun:}t key='wap_com_index_00031'{/yun}">{yun:}t key='wap_user_job_00003'{/yun}</a>
         </li>
         <li {yun:}if $smarty.get.c=='favorite'{/yun}class="cur"{yun:}/if{/yun}>
-            <a href="index.php?c=favorite">收藏的职位</a>
+            <a href="index.php?c=favorite">{yun:}t key='wap_user_job_00002'{/yun}</a>
         </li>
         <li {yun:}if $smarty.get.c=='blacklist'{/yun}class="cur"{yun:}/if{/yun}>
             <a href="index.php?c=blacklist">企业黑名单</a>

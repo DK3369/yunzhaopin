@@ -8,27 +8,27 @@
             <div class="com_show_t1">
                 <h2>{yun:}$row.title{/yun}</h2>
             </div>
-            <div class="com_show_t2">{yun:}$row.companyname{/yun}&nbsp;&nbsp;<span class="">被浏览：{yun:}$row.hits{/yun}</span></div>
+            <div class="com_show_t2">{yun:}$row.companyname{/yun}&nbsp;&nbsp;<span class="">{yun:}t key='member_com_joblist_00018'{/yun}：{yun:}$row.hits{/yun}</span></div>
         </div>
     </div>
 </section>
 <section>
     <div class="mt10">
         <div class="com_new_contnet_box ">
-            <div class="wap_title"><span class="">基本信息</span></div>
+            <div class="wap_title"><span class="">{yun:}t key='wap_resume_index_00016'{/yun}</span></div>
             <ul class="user_contnet_ul">
-                <li class="com_show_li"><span class="user_contnet_info_n">联&nbsp; 系&nbsp;人：</span>{yun:}$row.linkman{/yun}</li>
-                <li class="com_show_li"><span class="user_contnet_info_n">工资：</span>{yun:}if $row.salary{/yun} {yun:}$row.salary{/yun} {yun:}else{/yun}面议 {yun:}/if{/yun}
+                <li class="com_show_li"><span class="user_contnet_info_n">联&nbsp; 系&nbsp;{yun:}t key='common_02051'{/yun}：</span>{yun:}$row.linkman{/yun}</li>
+                <li class="com_show_li"><span class="user_contnet_info_n">{yun:}t key='default_once_add_00003'{/yun}：</span>{yun:}if $row.salary{/yun} {yun:}$row.salary{/yun} {yun:}else{/yun}{yun:}t key='common.negotiable'{/yun} {yun:}/if{/yun}
                 </li>
                 {yun:}if $row.address{/yun}
-                <li class="com_show_li"><span class="user_contnet_info_n">地址：</span>{yun:}$row.address{/yun}</li>
+                <li class="com_show_li"><span class="user_contnet_info_n">{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00014'{/yun}：</span>{yun:}$row.address{/yun}</li>
                 {yun:}/if{/yun}
-                <li class="com_show_li"><span class="user_contnet_info_n">工作地区：</span>{yun:}$city_name[$row.provinceid]{/yun}-{yun:}$city_name[$row.cityid]{/yun}</li>
-                <li class="com_show_li"><span class="user_contnet_info_n">联系电话：</span>{yun:}if $config.user_wzp_link=='1' && !$smarty.cookies.uid{/yun}
+                <li class="com_show_li"><span class="user_contnet_info_n">{yun:}t key='wap_once_add_00004'{/yun}：</span>{yun:}$city_name[$row.provinceid]{/yun}-{yun:}$city_name[$row.cityid]{/yun}</li>
+                <li class="com_show_li"><span class="user_contnet_info_n">{yun:}t key='wap_user_invitecont_00004'{/yun}：</span>{yun:}if $config.user_wzp_link=='1' && !$smarty.cookies.uid{/yun}
                     <a href='{yun:}url m=wap c=login usertype=2{/yun}'>
                         <font color='red'>登录后查看联系电话</font>
                     </a> {yun:}else{/yun}{yun:}$row.phone{/yun}{yun:}/if{/yun}</li>
-                <li class="com_show_li"><span class="user_contnet_info_n">截止日期：</span>{yun:}$row.edate_n{/yun}</li>
+                <li class="com_show_li"><span class="user_contnet_info_n">{yun:}t key='wap_com_job_00043'{/yun}：</span>{yun:}$row.edate_n{/yun}</li>
             </ul>
         </div>
     </div>
@@ -37,7 +37,7 @@
 <section>
     <div class="mt10">
         <div class="com_new_contnet_box ">
-            <div class="wap_title"><span class="">店铺形象</span></div>
+            <div class="wap_title"><span class="">{yun:}t key='wap_once_show_00003'{/yun}</span></div>
             <img src="{yun:}$row.pic_n{/yun}" width="100%">
         </div>
     </div>
@@ -46,19 +46,19 @@
 <section>
     <div class="mt10">
         <div class="com_new_contnet_box ">
-            <div class="wap_title"><span class="">职位描述</span></div>
+            <div class="wap_title"><span class="">{yun:}t key='wap_com_jobadd_00035'{/yun}</span></div>
             {yun:}$row.require_n{/yun} </div>
     </div>
 </section>
 <section>
     <div class="mt10">
         <div class="com_new_contnet_box ">
-            <div class="wap_title"><span class="">管理信息</span></div>
+            <div class="wap_title"><span class="">{yun:}t key='wap_once_show_00004'{/yun}</span></div>
             <div class="tiny_tag">只有发布者本人才可以操作</div>
             <div style="width:100%; text-align:center">
-                <a href="javascript:;" onclick="checkshowjob('once', '{yun:}$row.id{/yun}', 1);" class=" tiny_cz_sx">刷新</a>
-                <a href="javascript:;" onclick="checkshowjob('once', '{yun:}$row.id{/yun}', 2);" class=" tiny_cz_sx">修改</a>
-                <a href="javascript:;" onclick="checkshowjob('once', '{yun:}$row.id{/yun}', 3);" class="tiny_cz">删除 </a>
+                <a href="javascript:;" onclick="checkshowjob('once', '{yun:}$row.id{/yun}', 1);" class=" tiny_cz_sx">{yun:}t key='wap_user_resume_00012'{/yun}</a>
+                <a href="javascript:;" onclick="checkshowjob('once', '{yun:}$row.id{/yun}', 2);" class=" tiny_cz_sx">{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00005'{/yun}</a>
+                <a href="javascript:;" onclick="checkshowjob('once', '{yun:}$row.id{/yun}', 3);" class="tiny_cz">{yun:}t key='common.delete'{/yun} </a>
             </div>
         </div>
     </div>
@@ -68,19 +68,19 @@
     <van-popup v-model="jobBox" position="center" round>
         <div class="tiny_show_tckbox" style="left:50%;bottom:220px; margin-left:10px;height: 320px; z-index:10000;width:312px;" id="oncelist">
           <div class="tiny_show_tckbox_cont" style="width:312px;">
-            <h3 style="font-size: 16px;margin: 10px 0 10px 0;">修改发布信息</h3>
+            <h3 style="font-size: 16px;margin: 10px 0 10px 0;">{yun:}t key='wap_once_show_00001'{/yun}</h3>
             <div class="tiny_show_tckbox_cont_p">招聘密码：</div>
             <div class="tiny_show_tckbox_p">
               <input type="password" value="" id="once_password" class="tiny_show_tckbox_text" placeholder="请输入添加时的密码">
             </div>
-        	<div class="tiny_show_tckbox_cont_p">验证码：</div>
+        	<div class="tiny_show_tckbox_cont_p">{yun:}t key='wap_advice_00007'{/yun}：</div>
             <div class="tiny_show_tckbox_p">
-              <input type="text" name="checkcode" id="checkcode"  class="reinputText reinputText_w100" placeholder="请输入图片验证码" style="width:150px;display:inline">
+              <input type="text" name="checkcode" id="checkcode"  class="reinputText reinputText_w100" placeholder="{yun:}t key='wap_user_bindingbox_00002'{/yun}" style="width:150px;display:inline">
         		<img id="vcode_img" class="authcode" src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php" onclick="checkCode('vcode_img');"/>
             </div>
             <div class="tiny_show_tckbox_bth">
-              <input type="submit" value="确定" class="tiny_show_tckbox_bth1" onclick="checkOncePassword($('#onceid').val(),'vcode_img');" />
-               <input type="button" value="取消" class="tiny_show_tckbox_bth2" @click="jobBox = false" />
+              <input type="submit" value="{yun:}t key='common.confirm'{/yun}" class="tiny_show_tckbox_bth1" onclick="checkOncePassword($('#onceid').val(),'vcode_img');" />
+               <input type="button" value="{yun:}t key='common.cancel'{/yun}" class="tiny_show_tckbox_bth2" @click="jobBox = false" />
               <input type="hidden" :value="operation_type" name="operation_type" id="operation_type" />
               <input type="hidden" :value=onceid name="onceid" id="onceid" />
             </div>

@@ -2,7 +2,7 @@
 <div class="yun_w1200">
     {yun:}include file="$userstyle/left.htm"{/yun}
 	<div class="yun_m_rightsidebar">
-		<div class="user_new_tit"><span class="user_new_tit_n">对我感兴趣</span><span class="user_new_tit_r">安全提醒：招聘企业无权收取任何费用，求职中请加强自我保护，避免上当受骗！</span></div>
+		<div class="user_new_tit"><span class="user_new_tit_n">{yun:}t key='wap_com_sysnews_00001'{/yun}</span><span class="user_new_tit_r">{yun:}t key='member_user_favorite_00001'{/yun}</span></div>
      <div class="yun_m_rightbox fltR mt20 re">
 
        
@@ -18,10 +18,10 @@
                         {yun:}if !empty($look){/yun}
 						
 						<div class="user_new_listtit">
-								<div class=" user_new_job">企业</div>
+								<div class=" user_new_job">{yun:}t key='common.company'{/yun}</div>
 							<div class=" user_new_job" style="width:280px;">招聘岗位</div>
-							<div class=" user_new_zt">浏览时间</div>
-							<div class=" user_new_cz">操作</div>
+							<div class=" user_new_zt">{yun:}t key='member_user_look_00002'{/yun}</div>
+							<div class=" user_new_cz">{yun:}t key='member_user_atn_00003'{/yun}</div>
 						</div>
 						
                         {yun:}/if{/yun}
@@ -33,23 +33,23 @@
 									    <a href="{yun:}url m=company c=show id='`$log.com_id`'{/yun}" target="_blank" title="{yun:}$log.com{/yun}" class="user_new_jobname">
 									    {yun:}$log.com_name{/yun}
 									    </a>
-										<div class="look_myresume_comxz">{yun:}if $log.pr_n{/yun}{yun:}$log.pr_n{/yun} <span class="look_myresume_comline">|</span>{yun:}/if{/yun} {yun:}$log.mun_n{/yun} {yun:}if $log.sdate{/yun} <span class="look_myresume_comline">|</span> {yun:}$log.sdate{/yun}年{yun:}/if{/yun}</div>
+										<div class="look_myresume_comxz">{yun:}if $log.pr_n{/yun}{yun:}$log.pr_n{/yun} <span class="look_myresume_comline">|</span>{yun:}/if{/yun} {yun:}$log.mun_n{/yun} {yun:}if $log.sdate{/yun} <span class="look_myresume_comline">|</span> {yun:}$log.sdate{/yun}{yun:}t key='common_02077'{/yun}{yun:}/if{/yun}</div>
 									    {yun:}/if{/yun}
-									{yun:}else{/yun}暂无名称！ <div class="look_myresume_comxz">该企业还未没有完善公司信息</div>{yun:}/if{/yun}
+									{yun:}else{/yun}{yun:}t key='member_user_look_00001'{/yun}！ <div class="look_myresume_comxz">该企业还未没有完善公司信息</div>{yun:}/if{/yun}
 									&nbsp
 									<div class=""></div>
 								</div>
 							<div class=" user_new_job" style="width:280px;">
 							{yun:}if $log.com_job{/yun}
 							<div class="user_new_joball">{yun:}$log.com_job{/yun}</div>
-							<span class="user_new_joball_n">{yun:}$log.com_job_num{/yun}</span> 个在招职位 <a href="{yun:}url m=job{/yun}?keyword={yun:}$log.com_name{/yun}" class="user_new_joball_more">更多></a>
-							{yun:}else{/yun}暂无职位{yun:}/if{/yun}&nbsp
+							<span class="user_new_joball_n">{yun:}$log.com_job_num{/yun}</span> {yun:}t key='wap_com_index_00019'{/yun} <a href="{yun:}url m=job{/yun}?keyword={yun:}$log.com_name{/yun}" class="user_new_joball_more">{yun:}t key='common.more'{/yun}></a>
+							{yun:}else{/yun}{yun:}t key='app_template_default_js_map_00001'{/yun}{yun:}/if{/yun}&nbsp
 							
 							
 							</div>
 							<div class=" user_new_zt">{yun:}$log.datetime|date_format:'%Y-%m-%d'{/yun}</div>
-							<div class=" user_new_cz"><a href="javascript:void(0)" onclick="layer_del('确定要删除？', 'index.php?c=look&act=del&id={yun:}$log.id{/yun}');" class="user_new_yqh_sc">
-                                删除
+							<div class=" user_new_cz"><a href="javascript:void(0)" onclick="layer_del("{yun:}t key='wap_user_look_job_00001'{/yun}", 'index.php?c=look&act=del&id={yun:}$log.id{/yun}');" class="user_new_yqh_sc">
+                                {yun:}t key='common.delete'{/yun}
                                 </a></div>
 						</div>
 						

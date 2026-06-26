@@ -16,7 +16,7 @@
 		<div class="evaluate_com_pjbox">
 			<div class="evaluate_com_mypj">我的评分</div>
 			<div class="evaluate_com_pjlist">
-				<div class="evaluate_com_pjtit">企业描述 </div>
+				<div class="evaluate_com_pjtit">{yun:}t key='wap_user_comment_00002'{/yun} </div>
 				<div class="com_pjia_liststar">
 					<div tabindex="0" role="radiogroup" class="van-rate">
 						<van-rate v-model="desscore" :size="25" color="#ffd21e" void-icon="star" void-color="#eee" :readonly="!control"/>
@@ -24,7 +24,7 @@
 				</div>
 			</div>
 			<div class="evaluate_com_pjlist">
-				<div class="evaluate_com_pjtit">企业环境 </div>
+				<div class="evaluate_com_pjtit">{yun:}t key='wap_user_comment_00003'{/yun} </div>
 				<div class="com_pjia_liststar">
 					<div tabindex="0" role="radiogroup" class="van-rate">
 						<van-rate v-model="comscore" :size="25" color="#ffd21e" void-icon="star" void-color="#eee" :readonly="!control"/>
@@ -43,7 +43,7 @@
 		<div class="evaluate_com_mypj">心得体会</div>		
 		<div class="evaluate_textareashow">{{content}}</div>
 
-		<div class="evaluate_com_mypj">公司印象</div>
+		<div class="evaluate_com_mypj">{yun:}t key='wap_com_pl_00001'{/yun}</div>
 		<div class="evaluate_textareashow">{{othercontent}}</div>		
 	</div>
 	<div class="m_cardbg">
@@ -56,7 +56,7 @@
 
 		</div>
 		<div class="evaluate_bthall">
-		    <input type="submit" name='submit' value="提交" @click="savecomment" class="evaluate_bth">
+		    <input type="submit" name='submit' value="{yun:}t key='common.submit'{/yun}" @click="savecomment" class="evaluate_bth">
 		</div>
 	</div>
 </div> 
@@ -130,7 +130,7 @@
                 }                
                 formData.id = that.id;
                 formData.reply = that.reply;
-                showLoading('保存中...');
+                showLoading("{yun:}t key='wap_js_user_00006'{/yun}");
                 $.post('{yun:}url d=wxapp h=com m=job c=commentsave{/yun}',formData,function(data){
                     hideLoading();
                     if (data.error == 1) {

@@ -2,10 +2,10 @@
 <div class="yun_w1200">
     {yun:}include file="$userstyle/left.htm"{/yun}
     <div class="yun_m_rightbox fltR mt20 re">
-       <div class="member_right_index_h1 fltL"> <span class="member_right_h1_span fltL">简历外发</span> <i class="member_right_h1_icon user_bg"></i></div>   
+       <div class="member_right_index_h1 fltL"> <span class="member_right_h1_span fltL">{yun:}t key='member_user_left_00007'{/yun}</span> <i class="member_right_h1_icon user_bg"></i></div>   
        <div class="resume_box_list">
         {yun:}if $config.sy_resumeout_day_num{/yun}
-        <div class="resume_Prompt"><i class="resume_Prompt_icon"></i>提示：每天最多可外发简历{yun:}$config.sy_resumeout_day_num{/yun}次。</div>
+        <div class="resume_Prompt"><i class="resume_Prompt_icon"></i>{yun:}t key='wap_js_forgetpw_00010'{/yun}：每天最多可外发简历{yun:}$config.sy_resumeout_day_num{/yun}{yun:}t key='common_02089'{/yun}。</div>
         {yun:}/if{/yun}
         <div class="message_content" style="margin-top:0;">  
             <div id="" class="resume_fk_box" style="margin-top:0;">
@@ -17,7 +17,7 @@
                     <div class="layui-form-item">
                       <div class="layui-input-inline">
                         <select lay-filter="resume" id="resumeallid">
-                        <option value="">请选择简历</option>
+                        <option value="">{yun:}t key='member_user_resumeout_00001'{/yun}</option>
                         {yun:}foreach from=$rows item=resume{/yun}
                         <option value="{yun:}$resume.id{/yun}-{yun:}$resume.name{/yun}">{yun:}$resume.name{/yun}</option>
                         {yun:}/foreach{/yun}
@@ -37,22 +37,22 @@
                   <div class="yun_send_resume_list">
                     <div class="yun_send_resume_list_name"><span class="yun_send_resume_list_x">*</span>应聘的企业名称：</div> 
                     <div class="yun_send_resume_list_right" >
-                    <input type="text" class="yun_send_resume_txt" id="comname" name="comname" value="" maxlength="20"><i>（限20字）</i>
+                    <input type="text" class="yun_send_resume_txt" id="comname" name="comname" value="" maxlength="20"><i>（限20{yun:}t key='common_02073'{/yun}）</i>
                     </div>
                   </div>
                   <div class="yun_send_resume_list">
                     <div class="yun_send_resume_list_name"><span class="yun_send_resume_list_x">*</span>应聘的职位名称：</div>
                     <div class="yun_send_resume_list_right" >
-                    <input type="text" class="yun_send_resume_txt" id="jobname" name="jobname" value="" maxlength="20"><i>（限20字）</i>
+                    <input type="text" class="yun_send_resume_txt" id="jobname" name="jobname" value="" maxlength="20"><i>（限20{yun:}t key='common_02073'{/yun}）</i>
                     </div>
                   </div>
                   <div class="yun_send_resume_list">
                     <div class="yun_send_resume_list_name">&nbsp;</div> 
                     <div class="yun_send_resume_list_right" >
                     {yun:}if $outmsg!=''{/yun}
-                    <a href="javascript:void(0);" onclick="layer.msg('{yun:}$outmsg{/yun}',2,8)" class="layui-btn layui-btn-normal" rel="nofollow">发送</a>
+                    <a href="javascript:void(0);" onclick="layer.msg('{yun:}$outmsg{/yun}',2,8)" class="layui-btn layui-btn-normal" rel="nofollow">{yun:}t key='resume_resume_share_00002'{/yun}</a>
                     {yun:}else{/yun}
-                    <input type="submit" name="submit" class="layui-btn layui-btn-normal" value="发送">
+                    <input type="submit" name="submit" class="layui-btn layui-btn-normal" value="{yun:}t key='resume_resume_share_00002'{/yun}">
                     {yun:}/if{/yun}
                     </div>
                   </div>
@@ -60,13 +60,13 @@
             </div>
         </div>
         <div class="resumeout_tit mt40">
-            <div class="resumeout_span resumeout_comname" >企业名称</div>
-            <div class="resumeout_span resumeout_jobname" >职位名称</div>
-            <div class="resumeout_span resumeout_pop" >接收人</div>
-            <div class="resumeout_span resumeout_emil">邮箱</div>
+            <div class="resumeout_span resumeout_comname" >{yun:}t key='wap_com_info_00040'{/yun}</div>
+            <div class="resumeout_span resumeout_jobname" >{yun:}t key='wap_com_jobadd_00034'{/yun}</div>
+            <div class="resumeout_span resumeout_pop" >{yun:}t key='member_user_resumeout_00003'{/yun}</div>
+            <div class="resumeout_span resumeout_emil">{yun:}t key='member_user_resumeout_00004'{/yun}</div>
             <div class="resumeout_span resumeout_xg">相关简历</div>
-            <div class="resumeout_span resumeout_send" >发送时间</div>
-            <div class="resumeout_span List_Title_w80" >操作</div>
+            <div class="resumeout_span resumeout_send" >{yun:}t key='member_user_resumeout_00002'{/yun}</div>
+            <div class="resumeout_span List_Title_w80" >{yun:}t key='member_user_atn_00003'{/yun}</div>
         </div>
         {yun:}foreach from=$out item=item{/yun}
         <div class="resumeout_listbox">
@@ -76,7 +76,7 @@
             <div class="resumeout_span resumeout_emil">{yun:}$item.email{/yun}</div>
             <div class="resumeout_span resumeout_xg">{yun:}$item.resume{/yun}</div>
             <div class="resumeout_span resumeout_send" >{yun:}$item.datetime|date_format:"%Y-%m-%d"{/yun}</div>
-            <div class="resumeout_span List_Title_w80" ><a href="javascript:void(0)" onclick="layer_del('确定要删除？','index.php?c=resumeout&act=del&id={yun:}$item.id{/yun}');" class="List_dete cblue"> 删除</a></div>
+            <div class="resumeout_span List_Title_w80" ><a href="javascript:void(0)" onclick="layer_del("{yun:}t key='wap_user_look_job_00001'{/yun}",'index.php?c=resumeout&act=del&id={yun:}$item.id{/yun}');" class="List_dete cblue"> {yun:}t key='common.delete'{/yun}</a></div>
         </div>
         {yun:}foreachelse{/yun}
         <div class="msg_no">暂无简历外发信息！</div>

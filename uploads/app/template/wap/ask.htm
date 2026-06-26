@@ -9,7 +9,7 @@
 <div class="ask_header_bg">
     <div class="ask_search_box">
 
-        <a {yun:}if $uid{/yun} href="{yun:}url m=wap c=ask a=addquestion {/yun}" {yun:}else{/yun}href="javascript:void(0)" onclick="pleaselogin('您还未登录账号，是否登录？','{yun:}url m=wap c=login{/yun}')" {yun:}/if{/yun} class="ask_search_box_tw">
+        <a {yun:}if $uid{/yun} href="{yun:}url m=wap c=ask a=addquestion {/yun}" {yun:}else{/yun}href="javascript:void(0)" onclick="pleaselogin("{yun:}t key='wap_ask_00001'{/yun}",'{yun:}url m=wap c=login{/yun}')" {yun:}/if{/yun} class="ask_search_box_tw">
         	<span class="ask_search_box_tw_c">提问</span></a>
         <div class="ask_search_ct">
             <form name="myform" method="get" action="{yun:}url m=wap{/yun}index.php">
@@ -41,11 +41,11 @@
 
     <div class="ask_top_nav" style="display:none;">
         <div class="ask_top_nav_list">
-            <a href="{yun:}url m=wap c='ask'{/yun}" class="ask_top_nav_iconhome">问答首页</a>
-            <a {yun:}if $uid{/yun} href="{yun:}url m=wap c=ask a=myquestion uid=$uid{/yun}" {yun:}else{/yun}href="javascript:void(0)" onclick="pleaselogin('您还未登录账号，是否登录？','{yun:}url m=wap c=login{/yun}')" {yun:}/if{/yun} class="ask_top_nav_iconzy">我的主页</a>
-            <a href="{yun:}url m=wap c=ask a=hotweek {/yun}" class="ask_top_nav_iconhot">一周热点</a>
-            <a href="{yun:}url m=wap c=ask a=topic {/yun}" class="ask_top_nav_iconht">职场话题</a>
-            <a {yun:}if $uid{/yun} href="{yun:}url m=wap c=ask a=addquestion{/yun}" {yun:}else{/yun}href="javascript:void(0)" onclick="pleaselogin('您还未登录账号，是否登录？','{yun:}url m=wap c=login{/yun}')" {yun:}/if{/yun} class="ask_top_nav_icontw">我要提问</a>
+            <a href="{yun:}url m=wap c='ask'{/yun}" class="ask_top_nav_iconhome">{yun:}t key='wap_ask_00011'{/yun}</a>
+            <a {yun:}if $uid{/yun} href="{yun:}url m=wap c=ask a=myquestion uid=$uid{/yun}" {yun:}else{/yun}href="javascript:void(0)" onclick="pleaselogin("{yun:}t key='wap_ask_00001'{/yun}",'{yun:}url m=wap c=login{/yun}')" {yun:}/if{/yun} class="ask_top_nav_iconzy">我的主页</a>
+            <a href="{yun:}url m=wap c=ask a=hotweek {/yun}" class="ask_top_nav_iconhot">{yun:}t key='wap_ask_00004'{/yun}</a>
+            <a href="{yun:}url m=wap c=ask a=topic {/yun}" class="ask_top_nav_iconht">{yun:}t key='wap_ask_00009'{/yun}</a>
+            <a {yun:}if $uid{/yun} href="{yun:}url m=wap c=ask a=addquestion{/yun}" {yun:}else{/yun}href="javascript:void(0)" onclick="pleaselogin("{yun:}t key='wap_ask_00001'{/yun}",'{yun:}url m=wap c=login{/yun}')" {yun:}/if{/yun} class="ask_top_nav_icontw">{yun:}t key='wap_job_show_00035'{/yun}</a>
         </div>
     </div>
 
@@ -53,13 +53,13 @@
 
 <ul class="ask_indexnav mt10">
     <li>
-        <a href="{yun:}url m=wap c=ask a=topic {/yun}">职场话题</a>
+        <a href="{yun:}url m=wap c=ask a=topic {/yun}">{yun:}t key='wap_ask_00009'{/yun}</a>
     </li>
     <li>
-        <a href="{yun:}url m=wap c=ask a=hotweek {/yun}">一周热点</a>
+        <a href="{yun:}url m=wap c=ask a=hotweek {/yun}">{yun:}t key='wap_ask_00004'{/yun}</a>
     </li>
     <li>
-        <a {yun:}if $uid{/yun} href="{yun:}url m=wap c=ask a=myquestion uid=$uid{/yun}" {yun:}else{/yun}href="javascript:void(0)" onclick="pleaselogin('您还未登录账号，是否登录？','{yun:}url m=wap c=login{/yun}')" {yun:}/if{/yun}>我的主页</a>
+        <a {yun:}if $uid{/yun} href="{yun:}url m=wap c=ask a=myquestion uid=$uid{/yun}" {yun:}else{/yun}href="javascript:void(0)" onclick="pleaselogin("{yun:}t key='wap_ask_00001'{/yun}",'{yun:}url m=wap c=login{/yun}')" {yun:}/if{/yun}>我的主页</a>
     </li>
 
 </ul>
@@ -78,7 +78,7 @@
         <li>
             <a href="{yun:}url m=wap c=ask a=topic {/yun}">
                 <span class="ask_msg_more"></span>
-                <h3>更多</h3>
+                <h3>{yun:}t key='common.more'{/yun}</h3>
             </a>
         </li>
     </ul>
@@ -86,7 +86,7 @@
 <div class="clear"></div>
 <!--nav-->
 
-<div class="ask_jxtit mt10"><span class="ask_jxtit_name">精选问答</span></div>
+<div class="ask_jxtit mt10"><span class="ask_jxtit_name">{yun:}t key='wap_ask_00008'{/yun}</span></div>
 
 <ul class="ask_jx">
     {yun:}qlist is_recom=1 name=list t_len=30 limit=5 item=rlist{/yun}
@@ -96,7 +96,7 @@
             <div class="ask_jx_name">
                 <a href="{yun:}url m=wap c=ask a=content id='`$rlist.id`'{/yun}">{yun:}$rlist.title{/yun}</a>
             </div>
-            <div class="ask_jx_info"><span class="ask_jx_data ask_jx_data_hd">{yun:}$rlist.answer_num{/yun} 回答</span><span class="ask_jx_data ask_jx_data_yl">{yun:}$rlist.visit{/yun} 阅读</span><span class="ask_jx_data ask_jx_data_gz">{yun:}$rlist.atnnum{/yun} 关注</span></div>
+            <div class="ask_jx_info"><span class="ask_jx_data ask_jx_data_hd">{yun:}$rlist.answer_num{/yun} {yun:}t key='wap_nav_00004'{/yun}</span><span class="ask_jx_data ask_jx_data_yl">{yun:}$rlist.visit{/yun} 阅读</span><span class="ask_jx_data ask_jx_data_gz">{yun:}$rlist.atnnum{/yun} {yun:}t key='common_01949'{/yun}</span></div>
 
             <div class="ask_jx_info_img"><img src="{yun:}$rlist.pic{/yun}" width="20" height="20">
                 <a href="{yun:}url m=wap c=ask a=myquestion uid='`$rlist.uid`'{/yun}" class="ask_jx_username">{yun:}$rlist.nickname|mb_substr:0:25:'utf-8'{/yun}</a> <span class="ask_jx_time">{yun:}$rlist.add_time|date_format:"%Y-%m-%d"{/yun}</span></div>
@@ -130,21 +130,21 @@
 </div>
 <div class="clear"></div>
 <div class="ask_ct" id="fontshow">
-    <div class="ask_jxtit"><span class="ask_jxtit_name">最新问题</span></div>
+    <div class="ask_jxtit"><span class="ask_jxtit_name">{yun:}t key='wap_ask_00007'{/yun}</span></div>
 
     <ul class="ask_new">
         {yun:}qlist item=list name=list keyword='auto.keyword' ispage=1 t_len=40 limit=10{/yun}
         <li>
             <a href="{yun:}url m=wap c=ask a=content id='`$list.id`'{/yun}">{yun:}$list.title{/yun}</a>
-            <span class="ask_new_n">{yun:}$list.answer_num{/yun}个回答</span>
+            <span class="ask_new_n">{yun:}$list.answer_num{/yun}{yun:}t key='ask_attenquestion_00002'{/yun}</span>
 
         </li>
 
         {yun:}qlistelse{/yun}
-        <div class="wap_notip">暂无问题</div>
+        <div class="wap_notip">{yun:}t key='wap_ask_00006'{/yun}</div>
         {yun:}/qlist{/yun}
         <div class="ask_new_more">
-            <a href="{yun:}url m=wap c=ask a=list{/yun}" class="">查看更多</a>
+            <a href="{yun:}url m=wap c=ask a=list{/yun}" class="">{yun:}t key='common.view_more'{/yun}</a>
         </div>
     </ul>
 </div>
@@ -168,7 +168,7 @@
 	}
 </script>
 <div class="ask_tw">
-    <a {yun:}if $uid{/yun} href="{yun:}url m=wap c=ask a=addquestion {/yun}" {yun:}else{/yun}href="javascript:void(0)" onclick="pleaselogin('您还未登录账号，是否登录？','{yun:}url m=wap c=login{/yun}')" {yun:}/if{/yun} class=""><span class="ask_tw_p">提问</span></a>
+    <a {yun:}if $uid{/yun} href="{yun:}url m=wap c=ask a=addquestion {/yun}" {yun:}else{/yun}href="javascript:void(0)" onclick="pleaselogin("{yun:}t key='wap_ask_00001'{/yun}",'{yun:}url m=wap c=login{/yun}')" {yun:}/if{/yun} class=""><span class="ask_tw_p">提问</span></a>
 </div>
 </body>
 </html>

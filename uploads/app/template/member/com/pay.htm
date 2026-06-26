@@ -8,7 +8,7 @@
                 var min_integral = '{yun:}$config.integral_min_recharge{/yun}';
                 var jifen = '{yun:}$config.integral_pricename{/yun}';
                 if (parseInt(min_integral) > 0 && parseInt(min_integral) > parseInt(integral)) {
-                    layer.msg('最低充值：' + min_integral + jifen, 2);
+                    layer.msg("{yun:}t key='default_public_search_public_tips_00027'{/yun}" + min_integral + jifen, 2);
                     return false;
                 }
 
@@ -22,10 +22,10 @@
         <div class=right_box>
             <div class="newmember_tit">
                 <ul>
-                    <li> <a href="index.php?c=right">会员服务</a></li>
-                    <li class="newmember_titcur"> <a href="index.php?c=pay">充值服务</a></li>
-                    <li> <a href="index.php?c=paylogtc" class=" ">我的服务</a></li>
-                    <li><a href="index.php?c=integral">{yun:}$config.integral_pricename{/yun}管理</a></li>
+                    <li> <a href="index.php?c=right">{yun:}t key='wap_com_index_00022'{/yun}</a></li>
+                    <li class="newmember_titcur"> <a href="index.php?c=pay">{yun:}t key='member_com_added_00003'{/yun}</a></li>
+                    <li> <a href="index.php?c=paylogtc" class=" ">{yun:}t key='wap_com_finance_00001'{/yun}</a></li>
+                    <li><a href="index.php?c=integral">{yun:}$config.integral_pricename{/yun}{yun:}t key='wap_com_jobadd_00050'{/yun}</a></li>
                 </ul>
             </div> 
              
@@ -37,7 +37,7 @@
 
             
                   <div class="com_new_tip "> 
-            <span class="com_new_tip_h">温馨小提示</span>当前{yun:}$config.integral_pricename{/yun}兑换比为1元={yun:}$config.integral_proportion{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}{yun:}if
+            <span class="com_new_tip_h">{yun:}t key='member_com_added_00002'{/yun}</span>{yun:}t key='common_01984'{/yun}{yun:}$config.integral_pricename{/yun}兑换比为1{yun:}t key='common_02056'{/yun}={yun:}$config.integral_proportion{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}{yun:}if
                         $config.integral_min_recharge>0{/yun}，单次最低充值{yun:}$config.integral_min_recharge{/yun}{yun:}$config.integral_pricename{/yun}。{yun:}/if{/yun}
                     <a href="javascript:void(0);" onclick="use_card();" class=" ">充值卡充值</a></div>
                     <div class=" "  >
@@ -54,7 +54,7 @@
 
                             <div class="payment_list">
 
-                                <div class="payment_list_s">充值数量</div>
+                                <div class="payment_list_s">{yun:}t key='member_com_pay_00001'{/yun}</div>
 
                                 <div class="payment_list_r">
                                     {yun:}foreach from=$integralclass_index item=v key=k{/yun}
@@ -70,14 +70,14 @@
                                         </div>
                                         {yun:}if $integralclass_discount[$v]{/yun}
                                         <em
-                                            class="payment_list_text_zk">{yun:}$integralclass_discount[$v]/10{/yun}折</em>
+                                            class="payment_list_text_zk">{yun:}$integralclass_discount[$v]/10{/yun}{yun:}t key='common_02080'{/yun}</em>
                                         {yun:}/if{/yun}
                                     </span>
                                     {yun:}/foreach{/yun}
 
                                     <div class="payment_list_zdy">
                                         <input type="text" id="autointegral" onBlur="comautointegral();"
-                                            class="payment_list_input" placeholder="自定义" onfocus="zdyfocus()"
+                                            class="payment_list_input" placeholder="{yun:}t key='wap_user_pay_00003'{/yun}" onfocus="zdyfocus()"
                                             onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" maxlength='6' />
                                         <div class="payment_list_text_dw">{yun:}$config.integral_pricename{/yun}</div>
                                     </div>
@@ -86,12 +86,12 @@
                             <div class="payment_list">
                                 <div class="payment_list_s">应付金额</div>
                                 <div class="payment_list_r">
-                                    <span class="payintegral" id="payintegral">0</span>元
+                                    <span class="payintegral" id="payintegral">0</span>{yun:}t key='common_02056'{/yun}
                                     <input type="hidden" name="price" size="10" id="user_vip_price">
                                 </div>
                             </div>
                             <div class="payment_list">
-                                <div class="payment_list_s">支付备注</div>
+                                <div class="payment_list_s">{yun:}t key='member_com_pay_00002'{/yun}</div>
                                 <div class="payment_list_r">
                                     <textarea name="remark" id="remark" cols="40"
                                         class="payment_list_textarea"></textarea>
@@ -100,7 +100,7 @@
                             <div class="payment_list coupon">
                                 <div class="payment_list_s">&nbsp;</div>
                                 <div class="payment_list_r">
-                                    <input type="submit" name="submit" class="payment_list_other" value="提交订单">
+                                    <input type="submit" name="submit" class="payment_list_other" value="{yun:}t key='member_user_pay_00002'{/yun}">
                                 </div>
                             </div>
                         </form>
@@ -117,14 +117,14 @@
                 <img src="{yun:}$com_style{/yun}/images/payimgs.png?v={yun:}$config.cachecode{/yun}" alt="">
             </div>
             <div class="pay_tip_top">
-                <div class="pay_tip_box_ts">付款提醒</div>
+                <div class="pay_tip_box_ts">{yun:}t key='member_user_pay_00001'{/yun}</div>
                 <div class="payiTipse">
-                    您有 <font color="#FF3300">{yun:}$nopayorder{/yun}</font> 个订单未付款，是否继续充值！
+                    您有 <font color="#FF3300">{yun:}$nopayorder{/yun}</font> {yun:}t key='common_01445'{/yun}，是否继续充值！
                 </div>
                 
             </div>
             <div class="payimaLinks">
-                <a class="pay_tip_box_bth" href="index.php?c=paylog">去付款</a>
+                <a class="pay_tip_box_bth" href="index.php?c=paylog">{yun:}t key='wap_user_pay_00002'{/yun}</a>
                 <a class="pay_tip_box_bth_jx" href="javascript:void(0);" onclick="layer.closeAll()">继续充值</a>
             </div>
         </div>
@@ -136,17 +136,17 @@
         <iframe id="supportiframe" name="supportiframe" onload="returnmessage('supportiframe');"
             style="display:none"></iframe>
         <form action="index.php?c=paylog&act=card" target="supportiframe" method="post" id='myform'>
-            <div class="job_box_inp" style="padding:10px 5px 5px 20px"><span class="fltL"> 卡号：</span>
+            <div class="job_box_inp" style="padding:10px 5px 5px 20px"><span class="fltL"> {yun:}t key='admin_system_set_payset_00061'{/yun}：</span>
                 <input name="card" class="com_info_text placeholder fltL" type="text"
                     onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" style="width:220px;" />
             </div>
-            <div class="job_box_inp" style="padding:10px 5px 5px 20px"><span class="fltL"> 密码：</span>
+            <div class="job_box_inp" style="padding:10px 5px 5px 20px"><span class="fltL"> {yun:}t key='wap_user_transfer_00006'{/yun}：</span>
                 <input name="password" class="com_info_text placeholder fltL" type="text"
                     onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" style="width:220px;" />
             </div>
             <span class="job_box_botton" style="width:100%;">
                 <a class="job_box_yes job_box_botton2" href="javascript:void(0);"
-                    onclick="setTimeout(function(){$('#myform').submit()},0);">确定</a>
+                    onclick="setTimeout(function(){$('#myform').submit()},0);">{yun:}t key='common.confirm'{/yun}</a>
             </span>
         </form>
     </div>
@@ -215,7 +215,7 @@
         "{yun:}if $nopayorder{/yun}"
         $.layer({
             type: 1,
-            title: '付款提醒',
+            title: "{yun:}t key='member_user_pay_00001'{/yun}",
             closeBtn: [0, true],
             border: [10, 0.3, '#000', true],
             area: ['420px', '280px'],
@@ -251,7 +251,7 @@
                 $(".payment_list_cur").removeClass('payment_list_cur');
                 $(this).addClass('payment_list_cur');
             } else {
-                layer.msg('最低充值：' + min_integral + jifen, 2);
+                layer.msg("{yun:}t key='default_public_search_public_tips_00027'{/yun}" + min_integral + jifen, 2);
                 return false;
             }
             $("#autointegral").val('');

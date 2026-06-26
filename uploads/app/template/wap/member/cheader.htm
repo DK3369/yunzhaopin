@@ -8,7 +8,7 @@
 	<meta http-equiv="Cache-Control" content="no-siteapp" />
 	<title>{yun:}$config.sy_webname{/yun}</title>
 	<meta name="keywords" content="人才招聘,网络招聘,wap" />
-	<meta name="description" content="人才招聘网wap网站" />
+	<meta name="description" content="人才招聘网wap{yun:}t key='common_02023'{/yun}" />
 	<script src="{yun:}$wap_style{/yun}/js/flexible.js?v={yun:}$config.cachecode{/yun}"></script>
 	<link href="{yun:}$wap_style{/yun}/css/base.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet">
 	<link href="{yun:}$wap_style{/yun}/css/member/memberwap.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet">
@@ -36,26 +36,26 @@
 		</a>
 	</div>
 	<div class="position_header_serch">
-		<input type="search" id="jobSearch" placeholder="搜索职位">
+		<input type="search" id="jobSearch" placeholder="{yun:}t key='wap_user_invite_00001'{/yun}">
 	</div>
 	{yun:}if $smarty.get.c=='part'{/yun}
 	<div onclick="partadd()" class="position_header_issue">
 		<div class="header_issue_icon">
 			<img src="{yun:}$wap_style{/yun}/images/job_issue.png" alt="">
 		</div>
-		<div class="header_issue_text">发布兼职</div>
+		<div class="header_issue_text">{yun:}t key='wap_member_cheader_00003'{/yun}</div>
 	</div>
 	{yun:}else{/yun}
 	<div onclick="jobadd()" class="position_header_issue">
 		<div class="header_issue_icon">
 			<img src="{yun:}$wap_style{/yun}/images/job_issue.png" alt="">
 		</div>
-		<div class="header_issue_text">发布职位</div>
+		<div class="header_issue_text">{yun:}t key='common.publish_job'{/yun}</div>
 	</div>
 	{yun:}/if{/yun}
 </div>
 {yun:}elseif $smarty.get.c== 'finance'|| $smarty.get.c == 'pay' || $smarty.get.c == 'paylog'|| $smarty.get.c == 'integral'|| $smarty.get.c =='server'{/yun}
-<!-- 升级VIP -->
+<!-- {yun:}t key='common_01956'{/yun}VIP -->
 <div class="m_backheader">
 	
 	<div class="m_header_c">
@@ -113,7 +113,7 @@
 		<!-- 创建邀请模板-->
 		{yun:}if $smarty.get.c=='yqmb'{/yun}
 		<div class="header_fa_add">
-			<a  href="javascript:;" onclick="addYqmb();" class="header_fa_add_p">添加</a>
+			<a  href="javascript:;" onclick="addYqmb();" class="header_fa_add_p">{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00023'{/yun}</a>
 		</div>
 		{yun:}/if{/yun}
 	</div>

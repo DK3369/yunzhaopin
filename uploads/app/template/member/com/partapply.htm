@@ -4,18 +4,18 @@
 		{yun:}include file="$comstyle/left.htm"{/yun}
     	
 		<div class="com_tit"> 
-			<span class="com_tit_span">兼职报名</span> 
+			<span class="com_tit_span">{yun:}t key='wap_user_partapply_00003'{/yun}</span> 
 
 
 			<div class="com_tit_navbth">
 			      <div class="new_com_r_box">
-			        <a href="index.php?c=job&w=1" title="职位管理" class="new_com_r_a11">职位管理</a>
-			          <a href="index.php?c=partok&w=1" title="兼职管理" class="new_com_r_a11">兼职管理</a>
+			        <a href="index.php?c=job&w=1" title="{yun:}t key='wap_com_index_00031'{/yun}" class="new_com_r_a11">{yun:}t key='wap_com_index_00031'{/yun}</a>
+			          <a href="index.php?c=partok&w=1" title="{yun:}t key='wap_user_job_00004'{/yun}" class="new_com_r_a11">{yun:}t key='wap_user_job_00004'{/yun}</a>
 			          
 			      </div>
 			      <div class="new_com_r_box">
-			          <a href="index.php?c=partapply" title="兼职报名" class="new_com_r_a12 lookme">兼职报名</a>
-					  <a href="index.php?c=zhaopin" title="招聘数据" class="new_com_r_a14">招聘数据</a>
+			          <a href="index.php?c=partapply" title="{yun:}t key='wap_user_partapply_00003'{/yun}" class="new_com_r_a12 lookme">{yun:}t key='wap_user_partapply_00003'{/yun}</a>
+					  <a href="index.php?c=zhaopin" title="{yun:}t key='wap_com_index_00028'{/yun}" class="new_com_r_a14">{yun:}t key='wap_com_index_00028'{/yun}</a>
 			      </div>
 			  </div>
 
@@ -28,7 +28,7 @@
     			<div class="com_body">
          			
          			<div class="com_new_tip"> 
-          				<span class="com_new_tip_h">温馨小提示</span>共有 {yun:}$total{/yun} 位求职者报名贵公司发布的兼职 
+          				<span class="com_new_tip_h">{yun:}t key='member_com_added_00002'{/yun}</span>共有 {yun:}$total{/yun} 位求职者报名贵公司发布的兼职 
           			</div>
            
 			  		<div class=admin_textbox_04>
@@ -36,14 +36,14 @@
 			          	<div class="hr_tip_box">
 			          		<div class="hr_subMetx">
 								
-								<span class="hr_subMetx_span fltL">招聘职位：</span>
+								<span class="hr_subMetx_span fltL">{yun:}t key='wap_company_index_00001'{/yun}：</span>
 								
 								<div class="text_seclet text_seclet_cur2 re">
-			                		<input id="qypr" class="SpFormLBut text_seclet_w250" type="button" onclick="search_show('job_qypr');" {yun:}if $jobname{/yun}value="{yun:}$jobname{/yun}"{yun:}else{/yun}value="全部职位"{yun:}/if{/yun} />
+			                		<input id="qypr" class="SpFormLBut text_seclet_w250" type="button" onclick="search_show('job_qypr');" {yun:}if $jobname{/yun}value="{yun:}$jobname{/yun}"{yun:}else{/yun}value="{yun:}t key='wap_com_zhaopin_00007'{/yun}"{yun:}/if{/yun} />
 			                		
 			                		<div id="job_qypr" class="cus-sel-opt-panel" style="display: none;">
 					                  	<ul class="Search_Condition_box_list">
-					                    	<li><a href="index.php?c=partapply&status={yun:}$smarty.get.status{/yun}">全部职位</a></li>
+					                    	<li><a href="index.php?c=partapply&status={yun:}$smarty.get.status{/yun}">{yun:}t key='wap_com_zhaopin_00007'{/yun}</a></li>
 					                  		{yun:}foreach from=$JobList item=one{/yun}
 					                        	<li> <a href="index.php?c=partapply&jobid={yun:}$one.id{/yun}&status={yun:}$smarty.get.status{/yun}">{yun:}$one.name{/yun}</a> </li>
                                 {yun:}/foreach{/yun}
@@ -53,8 +53,8 @@
 							</div>
 							
 					     	<div class="hr_subMetx"> 
-					         	<span class="hr_subMetx_span fltL">简历状态：</span>
-				               	<a href="index.php?c=partapply&jobid={yun:}$smarty.get.jobid{/yun}" class="hr_subMetx_a {yun:}if $smarty.get.status==''{/yun}hr_subMetx_cur{yun:}/if{/yun}">不限</a>
+					         	<span class="hr_subMetx_span fltL">{yun:}t key='member_com_hr_00017'{/yun}：</span>
+				               	<a href="index.php?c=partapply&jobid={yun:}$smarty.get.jobid{/yun}" class="hr_subMetx_a {yun:}if $smarty.get.status==''{/yun}hr_subMetx_cur{yun:}/if{/yun}">{yun:}t key='common_01936'{/yun}</a>
 				              	{yun:}foreach from=$StateList item=one{/yun}
 				                	<a {yun:}if $smarty.get.status==$one.id{/yun}class="hr_subMetx_cur"{yun:}/if{/yun} href="index.php?c=partapply&jobid={yun:}$smarty.get.jobid{/yun}&status={yun:}$one.id{/yun}">{yun:}$one.name{/yun}</a>
 				                {yun:}/foreach{/yun}
@@ -70,14 +70,14 @@
 				            	{yun:}if $rows{/yun}
 				               	<tr> 
 				                	<th>&nbsp;</th> 
-				                 	<th>兼职名称</th> 
-				                 	<th>姓名</th> 
-				                 	<th>手机号码</th> 
-				                	<th>性别</th> 
-				                	<th>学历</th> 
-				                	<th>申请时间</th> 
+				                 	<th>{yun:}t key='wap_com_partadd_00006'{/yun}</th> 
+				                 	<th>{yun:}t key='wap_tiny_add_00004'{/yun}</th> 
+				                 	<th>{yun:}t key='wap_user_info_00018'{/yun}</th> 
+				                	<th>{yun:}t key='wap_com_jobadd_00049'{/yun}</th> 
+				                	<th>{yun:}t key='home.education_suffix'{/yun}</th> 
+				                	<th>{yun:}t key='wap_com_partapply_00001'{/yun}</th> 
 				                  	<th>标记状态</th> 
-				                	<th>操作</th> 
+				                	<th>{yun:}t key='member_user_atn_00003'{/yun}</th> 
 				             	</tr>
 								{yun:}/if{/yun}
 				                {yun:}foreach item=v from=$rows{/yun}
@@ -90,12 +90,12 @@
 								   	<td align="center">{yun:}$v.edu_n{/yun}&nbsp;</td> 
 				                   	<td align="center">{yun:}$v.ctime|date_format:'%Y-%m-%d'{/yun} &nbsp;</td> 
 				                  	<td align="center">  
-				                    	<span class="com_mem_hr_list_bj {yun:}if $v.status=='1'{/yun}com_mem_hr_list_bj_cur com_mem_hr_list_red{yun:}/if{/yun}" name='{yun:}$v.id{/yun}' status='1'>  <i class="com_mem_hr_list_icon"></i>未查看<i class="com_mem_hr_no_icon"></i></span>
-				                    	<span class="com_mem_hr_list_bj {yun:}if $v.status=='2'{/yun}com_mem_hr_list_bj_cur{yun:}/if{/yun}" name='{yun:}$v.id{/yun}' status='2'>  <i class="com_mem_hr_list_icon"></i>已查看</span>     
-								   		<span class="com_mem_hr_list_bj {yun:}if $v.status=='3'{/yun}com_mem_hr_list_bj_cur{yun:}/if{/yun}" name='{yun:}$v.id{/yun}' status='3'>  <i class="com_mem_hr_list_icon"></i>已联系  </span>    
+				                    	<span class="com_mem_hr_list_bj {yun:}if $v.status=='1'{/yun}com_mem_hr_list_bj_cur com_mem_hr_list_red{yun:}/if{/yun}" name='{yun:}$v.id{/yun}' status='1'>  <i class="com_mem_hr_list_icon"></i>{yun:}t key='wap_user_invite_00007'{/yun}<i class="com_mem_hr_no_icon"></i></span>
+				                    	<span class="com_mem_hr_list_bj {yun:}if $v.status=='2'{/yun}com_mem_hr_list_bj_cur{yun:}/if{/yun}" name='{yun:}$v.id{/yun}' status='2'>  <i class="com_mem_hr_list_icon"></i>{yun:}t key='wap_user_invite_00005'{/yun}</span>     
+								   		<span class="com_mem_hr_list_bj {yun:}if $v.status=='3'{/yun}com_mem_hr_list_bj_cur{yun:}/if{/yun}" name='{yun:}$v.id{/yun}' status='3'>  <i class="com_mem_hr_list_icon"></i>{yun:}t key='member_com_partapply_00001'{/yun}  </span>    
 				            		</td>  
 				            		<td align="center">
-				       					<a href="javascript:void(0)" onclick="layer_del('确定删除该条信息？', 'index.php?c=partapply&act=del&del={yun:}$v.id{/yun}'); " class="com_bth cblue">删除</a>
+				       					<a href="javascript:void(0)" onclick="layer_del('确定删除该条信息？', 'index.php?c=partapply&act=del&del={yun:}$v.id{/yun}'); " class="com_bth cblue">{yun:}t key='common.delete'{/yun}</a>
 				             		</td>
 				              	</tr>
 				              	
@@ -110,8 +110,8 @@
                                 <tr>
 				                	<td colspan="9" class="">
 				                		<div class="com_Release_job_bot"> <span class="com_Release_job_qx">
-					                  		<input id='checkAll'  type="checkbox" lay-filter="allcom" class="com_Release_job_qx_check" lay-skin="primary">全选</span>
-					                  		<input class="c_btn_02" type="button" name="subdel" value="批量删除" onclick="return really('delid[]');" />
+					                  		<input id='checkAll'  type="checkbox" lay-filter="allcom" class="com_Release_job_qx_check" lay-skin="primary">{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00006'{/yun}</span>
+					                  		<input class="c_btn_02" type="button" name="subdel" value="{yun:}t key='member_com_address_00007'{/yun}" onclick="return really('delid[]');" />
 				                		</div>
                                         <div class="diggg mt10 fltR">{yun:}$pagenav{/yun}</div>
 				                	</td>

@@ -15,12 +15,12 @@
 <div class="pwdmain_title_r">激活邮箱</div>
     <div class="getpwd">
         <div class="pwdcon">
-            <div class="pwdalert"> 请输入您的注册账号。 </div>
+            <div class="pwdalert"> {yun:}t key='default_activate_index_00001'{/yun}。 </div>
             <div class="pwdemail" >
 
                 <ul>
                 <li>
-                    <span>用户名：</span>
+                    <span>{yun:}t key='admin_user_member_component_alluser_00026'{/yun}：</span>
                     <input id="username" type="text" name="username" value="" class="fedcon_text">
                   </li>
 
@@ -48,7 +48,7 @@ function send_str(){
 	 if($.trim(username)=="") { 
 		layer.msg('请填写您注册时的用户名！', 2, 8);return false;
 	 }else{
-		layer.load('正在发送....',0);
+		layer.load("{yun:}t key='default_activate_index_00003'{/yun}....",0);
 		$.post('{yun:}url m=activate c=sendstr{/yun}',{username:username},function(data){		
 			layer.closeAll();
 			if(data==0){
@@ -58,7 +58,7 @@ function send_str(){
 			}else if(data==2){
 				layer.msg("该用户名不存在", 2, 8);
 			}else if(data==3){
-				layer.msg("还没有设置邮箱，请联系管理员！", 2, 8);
+				layer.msg("还没有设置邮箱，{yun:}t key='wap_spe_gl_00002'{/yun}！", 2, 8);
 			}
 		});
 	 }

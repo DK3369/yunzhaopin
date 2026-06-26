@@ -30,7 +30,7 @@
                                 <a class="" href="{yun:}url m=zph c=show id='`$zph.id`'{/yun}"> <img  class="fair_left_imgs" src="{yun:}$zph.is_themb{/yun}" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_zph_icon{/yun}',2);"></a>
                                 
                                     {yun:}if $zph.stime < 0 && $zph.etime < 0{/yun}
-                                        <!-- <span>已结束...</span> -->
+                                        <!-- <span>{yun:}t key='wap_user_invite_00006'{/yun}...</span> -->
                                     {yun:}elseif $zph.stime < 0 && $zph.etime > 0{/yun}
                                         <div class="promptbox"><img src="{yun:}$style{/yun}/images/goon.png">
                                         <span>进行中...</span></div>
@@ -42,19 +42,19 @@
                             </div>
                             <div class="fair_cont_info fair_cont_infotxt">
                                 <h3> <a class="" href="{yun:}url m=zph c=show id='`$zph.id`'{/yun}">{yun:}$zph.title{/yun}</a></h3>
-                                <p class="cont_infotxt_time">举办时间： <span>{yun:}date('Y-m-d H:i', strtotime($zph.starttime)){/yun} </span>至<span>{yun:}date('Y-m-d H:i', strtotime($zph.endtime)){/yun}</span></p>
-                                <p class="cont_infotxt_add">举办地点：<span>{yun:}$zph.address{/yun}</span></p>
+                                <p class="cont_infotxt_time">{yun:}t key='wap_zph_show_00004'{/yun}： <span>{yun:}date('Y-m-d H:i', strtotime($zph.starttime)){/yun} </span>{yun:}t key='common_02098'{/yun}<span>{yun:}date('Y-m-d H:i', strtotime($zph.endtime)){/yun}</span></p>
+                                <p class="cont_infotxt_add">{yun:}t key='admin_neirong_zph_component_xczphadd_00008'{/yun}：<span>{yun:}$zph.address{/yun}</span></p>
                             </div>
                             {yun:}if $zph.stime < 0 && $zph.etime < 0{/yun}
                                 <a class="fair_cont_link fair_cont_obso" href="{yun:}url m=zph c=show id='`$zph.id`'{/yun}">往期回顾</a>
                             {yun:}else{/yun}
-                                <a class="fair_cont_link" href="{yun:}url m=zph c=show id='`$zph.id`'{/yun}">查看详情</a>
+                                <a class="fair_cont_link" href="{yun:}url m=zph c=show id='`$zph.id`'{/yun}">{yun:}t key='wap_zph_00006'{/yun}</a>
                             {yun:}/if{/yun} 
                         </li>
                         {yun:}/fairs{/yun} 
                     </ul>
                     {yun:}if !$total{/yun} 
-                        <div class="no_tip">很抱歉，还没有招聘会的相关信息</div>
+                        <div class="no_tip">{yun:}t key='common_01912'{/yun}，还没有招聘会的相关信息</div>
                     {yun:}else{/yun}
                         <div class="clear"></div>
                         <div class="search_pages">
@@ -69,7 +69,7 @@
                     <h4>求职参会必备</h4>
                         <a href="{yun:}url m=login{/yun}" >
                             <img src="{yun:}$style{/yun}/images/registe.png">
-                            <span>注册简历</span>
+                            <span>{yun:}t key='default_zph_index_00001'{/yun}</span>
                         </a>
                     <p>线上线下随时可用</p>
                 </div>
@@ -78,14 +78,14 @@
                         <h4>求职参会必备</h4>
                             <a href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=expect&act=add">
                                 <img src="{yun:}$style{/yun}/images/registe.png">
-                                <span>注册简历</span>
+                                <span>{yun:}t key='default_zph_index_00001'{/yun}</span>
                             </a>
                         <p>线上线下随时可用</p>
                     </div>
                 {yun:}/if{/yun}
                 <div class="fixed_info fixed_info_weChat">
                     <img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}"  width="130" height="130">
-                    <span>关注公众号</span>
+                    <span>{yun:}t key='wap_user_index_00009'{/yun}</span>
                     <p>即时了解参会岗位信息</p>
                 </div>
             </div>

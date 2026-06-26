@@ -5,19 +5,19 @@
 			<div class="com_cardlist" @click="toPage(item.wapurl)">
 				<div class="com_cardlist_tit">{{item.zphname}}</div>
 				
-				<div class="com_cardlist_p"><span class="com_cardlist_p_name">参会展位</span>
+				<div class="com_cardlist_p"><span class="com_cardlist_p_name">{yun:}t key='wap_com_zhaopinhui_00002'{/yun}</span>
 					{{item.sidname ? item.sidname : ''}}-{{item.cidname ? item.cidname : ''}}-{{item.bidname ? item.bidname : ''}}
 				</div>
-				<div class="com_cardlist_p"><span class="com_cardlist_p_name">参会会场</span>{{item.address}}</div>
-				<div class="com_cardlist_p"><span class="com_cardlist_p_name">开始时间</span>{{item.starttime}}</div>
-			    <div class="com_cardlist_p"><span class="com_cardlist_p_name">结束时间</span>{{item.endtime}}</div>
-				<div class="com_cardlist_p"><span class="com_cardlist_p_name">审核状态</span>
-					<span v-if="item.status==1">已审核</span>
-					<span v-else-if="item.status==2" class="wap_member_wtg">未通过</span>
-					<span v-else>未审核</span>
+				<div class="com_cardlist_p"><span class="com_cardlist_p_name">{yun:}t key='wap_com_zhaopinhui_00001'{/yun}</span>{{item.address}}</div>
+				<div class="com_cardlist_p"><span class="com_cardlist_p_name">{yun:}t key='wap_user_addresumeson_00029'{/yun}</span>{{item.starttime}}</div>
+			    <div class="com_cardlist_p"><span class="com_cardlist_p_name">{yun:}t key='wap_user_addresumeson_00038'{/yun}</span>{{item.endtime}}</div>
+				<div class="com_cardlist_p"><span class="com_cardlist_p_name">{yun:}t key='wap_com_special_00001'{/yun}</span>
+					<span v-if="item.status==1">{yun:}t key='wap_user_commsg_00005'{/yun}</span>
+					<span v-else-if="item.status==2" class="wap_member_wtg">{yun:}t key='wap_user_commsg_00007'{/yun}</span>
+					<span v-else>{yun:}t key='wap_user_commsg_00006'{/yun}</span>
 				</div>
 				<div class="com_cardlist_p" v-if="item.status == 2">
-					<span class="com_cardlist_p_name">审核原因</span>{{item.statusbody}}
+					<span class="com_cardlist_p_name">{yun:}t key='wap_user_commsg_00004'{/yun}</span>{{item.statusbody}}
 				</div>
 				<div class="com_card_cz" v-if="item.notstart==1">
 					<span class="com_card_delete" @click.stop="delzph(item.id, zk)"></span>
@@ -82,7 +82,7 @@
 					var paramer = {ids: id};
 					var url = '{yun:}url d=wxapp h=com m=zph c=delzph{/yun}';
 					showConfirm('确定取消报名？', function() {
-						showLoading('取消中');
+						showLoading("{yun:}t key='wap_user_collect_00002'{/yun}");
 						$.post(url , paramer, function(data){
 							if (data.error == 1) {
 								that.list.splice(key, 1);

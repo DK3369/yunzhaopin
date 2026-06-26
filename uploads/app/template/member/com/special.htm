@@ -5,7 +5,7 @@ function statusbody(id){
   $("#showbody").html(statusbody)
   $.layer({
     type : 1,
-    title : '审核说明',
+    title : "{yun:}t key='member_user_commsg_00002'{/yun}",
     closeBtn : [0 , true],
     border : [10 , 0.3 , '#000', true],
     area : ['320px','auto'],
@@ -19,7 +19,7 @@ function statusbody(id){
     <div class=right_box>
     <div class="newmember_screenbox">
     <div class="newmember_screen">  
-    <div class="newmember_screenname">  专题招聘</div>   </div>
+    <div class="newmember_screenname">  {yun:}t key='wap_com_jobcolumn_00002'{/yun}</div>   </div>
             </div>
       <div class=admincont_box>
        
@@ -29,18 +29,18 @@ function statusbody(id){
           <table class="com_table ">
       {yun:}if $rows{/yun}
             <tr>
-              <th >专题名称</th>
-              <th>时间</th>
-              <th>状态 </th>
-              <th width="60">操作</th>
+              <th >{yun:}t key='member_com_special_00001'{/yun}</th>
+              <th>{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00020'{/yun}</th>
+              <th>{yun:}t key='member_user_job_00011'{/yun} </th>
+              <th width="60">{yun:}t key='member_user_atn_00003'{/yun}</th>
             </tr>
       {yun:}/if{/yun}
             {yun:}foreach item=v from=$rows{/yun}
             <tr>
               <td><a href="{yun:}url m=special c=show id='`$v.sid`'{/yun}" class="cblue" target=_blank>{yun:}$v.title{/yun}</a></td>
               <td align="center">{yun:}$v.time|date_format:'%Y-%m-%d'{/yun}</td>
-              <td align="center">{yun:}if $v.status==1{/yun}<font color="green">已审核</font>{yun:}elseif $v.status==2{/yun}<span class="tip_no"><i class="tip_no_icon"></i>未通过</span>{yun:}else{/yun}<span class="tip_no"><i class="tip_no_icon"></i>未审核</span>{yun:}/if{/yun}{yun:}if $v.status==2{/yun} <a href="javascript:void(0);" class="wtg_ly cblue " id="statusbody{yun:}$v.id{/yun}" statusbody="{yun:}$v.statusbody{/yun}" onclick="statusbody('{yun:}$v.id{/yun}');" >说明</a> {yun:}/if{/yun}</td>
-              <td align="center"> <a href="javascript:void(0)" onclick="layer_del('确定要删除？', 'index.php?c=special&act=del&id={yun:}$v.id{/yun}');" class="com_bth cblue">删除</a></td>
+              <td align="center">{yun:}if $v.status==1{/yun}<font color="green">{yun:}t key='wap_user_commsg_00005'{/yun}</font>{yun:}elseif $v.status==2{/yun}<span class="tip_no"><i class="tip_no_icon"></i>{yun:}t key='wap_user_commsg_00007'{/yun}</span>{yun:}else{/yun}<span class="tip_no"><i class="tip_no_icon"></i>{yun:}t key='wap_user_commsg_00006'{/yun}</span>{yun:}/if{/yun}{yun:}if $v.status==2{/yun} <a href="javascript:void(0);" class="wtg_ly cblue " id="statusbody{yun:}$v.id{/yun}" statusbody="{yun:}$v.statusbody{/yun}" onclick="statusbody('{yun:}$v.id{/yun}');" >{yun:}t key='member_com_info_00053'{/yun}</a> {yun:}/if{/yun}</td>
+              <td align="center"> <a href="javascript:void(0)" onclick="layer_del("{yun:}t key='wap_user_look_job_00001'{/yun}", 'index.php?c=special&act=del&id={yun:}$v.id{/yun}');" class="com_bth cblue">{yun:}t key='common.delete'{/yun}</a></td>
             </tr>
             {yun:}foreachelse{/yun}
             <tr>

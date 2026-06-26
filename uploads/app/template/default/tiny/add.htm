@@ -13,28 +13,28 @@
 
 {yun:}include file="$tplstyle/header.htm"{/yun}
 	<div class="yun_content">
-		<div class="current_Location png"> 您当前的位置：
-			<a href="{yun:}$config.sy_weburl{/yun}">首页</a> >
-			<a href="{yun:}url m=tiny{/yun}">普工专区</a> > 发布简历
+		<div class="current_Location png"> {yun:}t key='common_01498'{/yun}：
+			<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> >
+			<a href="{yun:}url m=tiny{/yun}">{yun:}t key='default_tiny_add_00003'{/yun}</a> > {yun:}t key='common.publish_resume'{/yun}
 		</div>
     
     <form  method="post" id="subform" action="{yun:}url m=tiny c=save{/yun}" onSubmit="return check_resume_tiny()" target="supportiframe" class="layui-form">
       <div class="once_add_box">
     <div class="once_title">快速发布求职信息</div>
       <div class="once_add_cont">
-            <div class="once_title_p"><i class="once_title_p_icon once_title_p_icon_zw"></i>个人信息</div>
-      <div class="once_add_list"><span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>姓名：</span>
+            <div class="once_title_p"><i class="once_title_p_icon once_title_p_icon_zw"></i>{yun:}t key='default_tiny_add_00002'{/yun}</div>
+      <div class="once_add_list"><span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_tiny_add_00004'{/yun}：</span>
          <div class="once_add_list_text">	 <input  type="text" value="{yun:}$info.username{/yun}" name="username" id="username" class="once_add_list_input"/>
         </div></div>
         
-        <div class="once_add_list"><span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>性别：</span> 
+        <div class="once_add_list"><span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_com_jobadd_00049'{/yun}：</span> 
          <div class="once_add_list_text" style="position:relative">	 <!--      yun_info_sex_cur 控制他的状态-->
            <input type="hidden" id="sex" name="sex" value="{yun:}$info.sex{/yun}" />
           {yun:}foreach from=$user_sex key=j item=v{/yun}
              <span class="yun_info_sex {yun:}if $info.sex==$j{/yun}yun_info_sex_cur{yun:}/if{/yun}" id="sex{yun:}$j{/yun}" onclick="checksex('{yun:}$j{/yun}')"><i class="usericon_sex usericon_sex{yun:}$j{/yun}"></i>{yun:}$v{/yun}</span> 
           {yun:}/foreach{/yun}   
         </div></div>
-        <div class="once_add_list"><span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>联系手机：</span>
+        <div class="once_add_list"><span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_advice_00006'{/yun}：</span>
          <div class="once_add_list_text">	 <input type="text" name="mobile" id="mobile" value="{yun:}$info.mobile{/yun}" class="once_input_simple once_input_simple_w240" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"/>
         </div></div>
 		{yun:}if strpos($config.code_web,"普工简历")!==false{/yun}
@@ -51,7 +51,7 @@
 				</div>
 			{yun:}else{/yun}
 				<div class="once_add_list">
-					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>验证码 </span>
+					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_advice_00007'{/yun} </span>
 					<input id="authcode" class="once_add_list_input" type="text" maxlength="6" name="authcode" />
 					<a class="fl">
 						<img id="vcodeimgs" onclick="checkCode('vcodeimgs');" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php" style="margin-left:10px;border:1px solid #eee" />
@@ -64,9 +64,9 @@
 		{yun:}/if{/yun}
 		{yun:}if $config.sy_msg_isopen==1{/yun}
 		<div class="once_add_list">
-			<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>短信验证码</span>
+			<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_com_bindingbox_00002'{/yun}</span>
 			<div class="once_add_list_text">	
-				<input style="width:135px" class="once_add_list_input" type="text" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" id="moblie_code" maxlength="6" name="moblie_code" /><a href="javascript:;" id="send_msg_tip" onclick="sendmsg('{yun:}url m=tiny c=sendmsg{/yun}');" class="msgbtn">获取短信校验码</a>
+				<input style="width:135px" class="once_add_list_input" type="text" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" id="moblie_code" maxlength="6" name="moblie_code" /><a href="javascript:;" id="send_msg_tip" onclick="sendmsg('{yun:}url m=tiny c=sendmsg{/yun}');" class="msgbtn">{yun:}t key='member_com_binding_00004'{/yun}</a>
 			</div>
 		</div>
 		{yun:}/if{/yun}
@@ -75,14 +75,14 @@
 			var smsTimer_time = 120;		//倒数 90
 			var smsTimer_flag = 120;		//倒数 90
 			var smsTime_speed = 1000;	//速度 1秒钟
-			//倒计时
+			// Countdown
 			function smsTimer(obj){
 				if (smsTimer_flag > 0) {
-					$(obj).html('重新发送('+smsTimer_flag+'s)');
+					$(obj).html("{yun:}t key='wap_js_forgetpw_00007'{/yun}"+smsTimer_flag+'s)');
 					$(obj).attr({'style':'color:#f00;font-weight: bold;'});
 					smsTimer_flag--;
 				}else{
-					$(obj).html('重新发送');
+					$(obj).html("{yun:}t key='wap_js_forgetpw_00009'{/yun}");
 					$(obj).attr({'style':'color:#f00;font-weight: bold;'});
 					smsTimer_flag = smsTimer_time;
 					clearInterval(Timer);
@@ -91,18 +91,18 @@
 			function sendmsg(url){
 				var moblie = $('#mobile').val();
 				if(!isjsMobile(moblie)){
-					layer.msg('请填写正确手机号', 2, 8);
+					layer.msg("{yun:}t key='default_public_search_login_00002'{/yun}", 2, 8);
 					return false;
 				}
 
 				var verify_token = '', verify_str = '';
 				var code = '';						
-				var codesear = new RegExp('普工简历');
+				var codesear = new RegExp("{yun:}t key='wap_js_tiny_add_00001'{/yun}");
 				if(codesear.test(code_web) && exitsid("moblie_code")) {
 					if(code_kind == 1) {
 						var authcode = $("#authcode").val();
 						if(!authcode) {
-							layer.msg('请输入验证码', 2, 8);
+							layer.msg("{yun:}t key='wap_user_bindingbox_00004'{/yun}", 2, 8);
 							return false;
 						}
 					} else if(code_kind > 2) {
@@ -123,7 +123,7 @@
 				
 				if(smsTimer_time==smsTimer_flag){							
 					Timer = setInterval("smsTimer($('#send_msg_tip'))", smsTime_speed);
-					layer.load('执行中，请稍候...',0);
+					layer.load("{yun:}t key='wap_js_publicselect_00003'{/yun}",0);
 					$.post(url,{moblie:moblie,code:authcode,verify_token:verify_token,verify_str:verify_str},function(data){
 						
 						layer.closeAll('loading');
@@ -148,15 +148,15 @@
 						}
 					})
 				}else {
-					layer.msg('请勿重复发送！', 2, 8);return false;
+					layer.msg("{yun:}t key='wap_js_forgetpw_00003'{/yun}", 2, 8);return false;
 				}
 			}
 			
 		</script>
-      <div class="once_add_list"><span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>工作年限：</span>
+      <div class="once_add_list"><span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_tiny_show_00001'{/yun}</span>
        <div class="once_add_list_text">	 <div class="tiny_exp_text" style="border:none;">
             <select id="expid" name="exp">
-              <option value=''>请选择</option>
+              <option value=''>{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>
               {yun:}foreach from=$userdata.user_word key=j item=v{/yun}
               <option value='{yun:}$v{/yun}' {yun:}if $info.exp==$v{/yun}selected{yun:}/if{/yun}>{yun:}$userclass_name[$v]{/yun}</option>
               {yun:}/foreach{/yun}
@@ -165,10 +165,10 @@
         </div>
        
         </div>
-      <div class="once_add_list"><span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>工作地区：</span>
+      <div class="once_add_list"><span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_once_add_00004'{/yun}：</span>
        <div class="layui-input-inline">
 			<select id="provinceid" lay-filter="citys" name="provinceid">
-			<option value=''>请选择</option>
+			<option value=''>{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>
 			{yun:}foreach from=$city_index item=v{/yun}
 			<option value="{yun:}$v{/yun}" {yun:}if $info.provinceid==$v{/yun}selected{yun:}/if{/yun}>{yun:}$city_name[$v]{/yun}</option>
 			{yun:}/foreach{/yun}
@@ -176,7 +176,7 @@
 		</div>
 		<div class="layui-input-inline">
 			<select id="cityid" lay-filter="citys" name="cityid">
-			<option value=''>请选择</option>
+			<option value=''>{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>
 			{yun:}foreach from=$city_type[$info.provinceid] item=v{/yun}
 			<option value="{yun:}$v{/yun}" {yun:}if $info.cityid==$v{/yun}selected{yun:}/if{/yun}>{yun:}$city_name[$v]{/yun}</option>
 			{yun:}/foreach{/yun}
@@ -184,7 +184,7 @@
 		</div>
 		<div class="layui-input-inline">
 			<select id="three_cityid" name="three_cityid">
-			<option value=''>请选择</option>
+			<option value=''>{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>
 			{yun:}foreach from=$city_type[$info.cityid] item=v{/yun}
 			<option value="{yun:}$v{/yun}" {yun:}if $info.three_cityid==$v{/yun}selected{yun:}/if{/yun}>{yun:}$city_name[$v]{/yun}</option>
 			{yun:}/foreach{/yun}
@@ -196,19 +196,19 @@
         <div class="once_add_list_text">	  <input type="text" id="job" name="job" value="{yun:}$info.job{/yun}" class="once_add_list_input "/>
           <span class="once_fb_list_tip"> 如：服装厂操作工</span> </div>
           </div>
-     <div class="once_add_list"><span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>自我介绍：</span> <div class="once_add_list_text">
+     <div class="once_add_list"><span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_tiny_add_00002'{/yun}：</span> <div class="once_add_list_text">
           <textarea id="production" name="production" class="once_simplew_textarea"placeholder="请输入你擅长的技能，例如：电机熟练工，能吃苦耐劳">{yun:}$info.production{/yun}</textarea>
         </div></div>
-               <div class="once_title_p"><i class="once_title_p_icon once_title_p_icon_zh"></i>账户信息</div>
+               <div class="once_title_p"><i class="once_title_p_icon once_title_p_icon_zh"></i>{yun:}t key='admin_user_users_component_resume_add_00001'{/yun}</div>
                
-       <div class="once_add_list"><span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>设置密码：</span>
+       <div class="once_add_list"><span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_once_add_00011'{/yun}：</span>
          <div class="once_add_list_text">	 <input type="password" name="password" id="password" value="" class="once_add_list_input"  onkeyup="this.value=this.value.replace(/^ +| +$/g,'')"/>
-          <em class="once_add_list_text_dw">密码可用于刷新/修改/删除信息！</em> </div></div>
+          <em class="once_add_list_text_dw">密码可用于刷新/{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00005'{/yun}/删除信息！</em> </div></div>
         
 		
      <div class="once_add_list"><span class="once_add_list_name">&nbsp;</span> 
        <div class="once_add_list_text">	   <input type="hidden" name="id" id="id" value="{yun:}$info.id{/yun}"/>
-          <input class="once_add_list_bth" type="submit" value="发布信息" id="botton" />
+          <input class="once_add_list_bth" type="submit" value="{yun:}t key='default_once_add_00002'{/yun}" id="botton" />
           <input type="hidden" id="cionly" name="cionly" value="{yun:}if empty($city_type){/yun}1{yun:}/if{/yun}">
        </div></div>
       </div>

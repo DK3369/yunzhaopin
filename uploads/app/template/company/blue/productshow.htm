@@ -20,25 +20,25 @@
       
        <h1 class="wrap_l_name_n" style="display:inline-block">{yun:}$com.name{/yun}</h1>
       {yun:}if $com.email_status=="1"{/yun} 
-      <img src="{yun:}$com_style{/yun}images/rz_yx2.png" alt="邮箱未认证" title="邮箱已认证" class="png" /> 
+      <img src="{yun:}$com_style{/yun}images/rz_yx2.png" alt="邮箱未认证" title="{yun:}t key='admin_user_users_component_usersall_00020'{/yun}" class="png" /> 
       {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_yx.png" alt="邮箱未认证" title="邮箱未认证" class="png" />     {yun:}/if{/yun}
         {yun:}if $com.moblie_status=="1"{/yun} 
-        <img src="{yun:}$com_style{/yun}images/rz_sj2.png" alt="手机未认证" title="手机已认证" class="png" /> 
+        <img src="{yun:}$com_style{/yun}images/rz_sj2.png" alt="手机未认证" title="{yun:}t key='member_user_headnav_00004'{/yun}" class="png" /> 
         {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_sj.png" alt="手机未认证" title="手机未认证" class="png" /> {yun:}/if{/yun}
         {yun:}if $com.yyzz_status=="1"{/yun} 
         <img src="{yun:}$com_style{/yun}images/rz_zz2.png" alt="执照未认证" title="执照已认证" class="png" /> {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_zz.png" alt="执照未认证" title="执照未认证" class="png" /> 
         {yun:}/if{/yun}
         {yun:}if $ComMember.source==6 && $ComMember.claim==0 && $ComMember.email!=""{/yun}
-        <a href="javascript:claim('{yun:}url m=ajax c=claim uid=$com.uid{/yun}');">认领</a>
+        <a href="javascript:claim('{yun:}url m=ajax c=claim uid=$com.uid{/yun}');">{yun:}t key='resume_jianli3_index_00014'{/yun}</a>
         {yun:}/if{/yun}
      
         {yun:}if $usertype=='1'{/yun}
-          {yun:}if $isatn.id{/yun} <a href="javascript:void(0)" onclick="atn('{yun:}$com.uid{/yun}','{yun:}url m=ajax c=atncompany{/yun}')" id='atn_{yun:}$com.uid{/yun}' class="wrap_l_name_gz">取消关注</a> {yun:}else{/yun} <a href="javascript:void(0)" onclick="atn('{yun:}$com.uid{/yun}','{yun:}url m=ajax c=atncompany{/yun}')" id='atn_{yun:}$com.uid{/yun}' class="wrap_l_name_gz">关注</a> {yun:}/if{/yun}
+          {yun:}if $isatn.id{/yun} <a href="javascript:void(0)" onclick="atn('{yun:}$com.uid{/yun}','{yun:}url m=ajax c=atncompany{/yun}')" id='atn_{yun:}$com.uid{/yun}' class="wrap_l_name_gz">{yun:}t key='wap_js_public_00003'{/yun}</a> {yun:}else{/yun} <a href="javascript:void(0)" onclick="atn('{yun:}$com.uid{/yun}','{yun:}url m=ajax c=atncompany{/yun}')" id='atn_{yun:}$com.uid{/yun}' class="wrap_l_name_gz">{yun:}t key='common_01949'{/yun}</a> {yun:}/if{/yun}
           {yun:}else{/yun} 
             {yun:}if $uid{/yun}
-            <a href="javascript:void(0)" onclick="layer.msg('只有个人用户才能关注', 2,8)" class="wrap_l_name_gz">关注</a> 
+            <a href="javascript:void(0)" onclick="layer.msg('{yun:}t key='wap_company_show_dark_00005'{/yun}', 2,8)" class="wrap_l_name_gz">{yun:}t key='common_01949'{/yun}</a> 
             {yun:}else{/yun}
-            <a href="javascript:void(0)" onclick="showlogin('1');" class="wrap_l_name_gz">关注</a> 
+            <a href="javascript:void(0)" onclick="showlogin('1');" class="wrap_l_name_gz">{yun:}t key='common_01949'{/yun}</a> 
             {yun:}/if{/yun} 
           {yun:}/if{/yun}
 		  
@@ -56,7 +56,7 @@
 <!--头部结束-->
 
     <div class="clear"></div>
-    <!--内容content-->
+    <!--{yun:}t key='wap_user_addresumeson_00044'{/yun}content-->
     <div class="c_q_content">
         <div class="wrap">
             <div class="c_q_cont">
@@ -65,19 +65,19 @@
                     <div class="c_cont_info">
                         <div class="com_nav">
                             <ul>
-                                <li class="com_nav_cur"><a href="{yun:}url m=company c=show id=$com.uid{/yun}#about">关于我们</a></li>
-                                <li><a href="{yun:}url m=company c=show id=$com.uid{/yun}#job">招聘职位</a></li>
-                                <li><a href="{yun:}url m=company c=show id=$com.uid{/yun}#show">企业环境</a></li>
-                                <li><a href="{yun:}url m=company c=show id=$com.uid{/yun}#news">企业新闻</a></li>
-                                <li><a href="{yun:}url m=company c=show id=$com.uid{/yun}#news">产品展示</a></li>
-                                <li><a href="{yun:}$config.sy_weburl{/yun}">人才网首页</a></li>
+                                <li class="com_nav_cur"><a href="{yun:}url m=company c=show id=$com.uid{/yun}#about">{yun:}t key='wap_index_00002'{/yun}</a></li>
+                                <li><a href="{yun:}url m=company c=show id=$com.uid{/yun}#job">{yun:}t key='wap_company_index_00001'{/yun}</a></li>
+                                <li><a href="{yun:}url m=company c=show id=$com.uid{/yun}#show">{yun:}t key='wap_user_comment_00003'{/yun}</a></li>
+                                <li><a href="{yun:}url m=company c=show id=$com.uid{/yun}#news">{yun:}t key='company_green_index_00009'{/yun}</a></li>
+                                <li><a href="{yun:}url m=company c=show id=$com.uid{/yun}#news">{yun:}t key='company_blue_index_00002'{/yun}</a></li>
+                                <li><a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='company_blue_index_00001'{/yun}</a></li>
                             </ul>
                         </div>
                     </div>
                     <div class="c_cont_jianjie">
                         <div class="c_jianjie_left fl" style="width:100%">
                             <div class="c_left_st">
-                                <div class="c_left_gs">产品展示</div>
+                                <div class="c_left_gs">{yun:}t key='company_blue_index_00002'{/yun}</div>
                                 <div class="blue_p_h1">{yun:}$ProductInfo.title{/yun}</div>
                                 <div class="firm_det_con"><img src="{yun:}$ProductInfo.pic{/yun}" width="300" /></div>
                                 <div class="c_left_nr company_img_auto">{yun:}$ProductInfo.body{/yun}</div>

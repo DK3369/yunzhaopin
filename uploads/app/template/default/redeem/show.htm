@@ -11,7 +11,7 @@
 <body class="Integral_body">
 {yun:}include file="$tplstyle/header.htm"{/yun}
 <div class="yun_Integral">
-  <div class="current_Location"> 您当前的位置：<a href="{yun:}$config.sy_weburl{/yun}">首页</a> > <a href="{yun:}url m=redeem{/yun}">{yun:}$config.integral_pricename{/yun}商城</a> > {yun:}$row.name{/yun}</div>
+  <div class="current_Location"> {yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <a href="{yun:}url m=redeem{/yun}">{yun:}$config.integral_pricename{/yun}{yun:}t key='wap_redeem_00004'{/yun}</a> > {yun:}$row.name{/yun}</div>
   <div class="clear"></div>
  
     <div class="yun_Integral_show">
@@ -20,9 +20,9 @@
       <h1 class="yun_Integral_show_right_name">{yun:}$row.name{/yun}</h1>
       <ul class="yun_Integral_show_texts ">
         <li>所需{yun:}$config.integral_pricename{/yun}：<i class="dh_jf">{yun:}$row.integral{/yun}</i>{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}</li>
-        <li>剩余库存：<i class="dh_j">{yun:}$row.stock{/yun}</i> 件（已兑换 <b>{yun:}$row.num{/yun}</b> 件）</li>
+        <li>{yun:}t key='wap_redeemshow_00003'{/yun}：<i class="dh_j">{yun:}$row.stock{/yun}</i> 件（{yun:}t key='wap_user_reward_list_00004'{/yun} <b>{yun:}$row.num{/yun}</b> 件）</li>
         {yun:}if $row.stock!="0"{/yun}
-        <li>限购数量：{yun:}if $row.restriction=="0"{/yun}不限{yun:}else{/yun}{yun:}$row.restriction{/yun}件{yun:}/if{/yun}</li>
+        <li>{yun:}t key='wap_redeemshow_00005'{/yun}：{yun:}if $row.restriction=="0"{/yun}{yun:}t key='common_01936'{/yun}{yun:}else{/yun}{yun:}$row.restriction{/yun}件{yun:}/if{/yun}</li>
         <form action="index.php" method="get" onsubmit="return checkform_redeem_show();">
           {yun:}if  !$config.sy_redeemdir || $config.sy_seo_rewrite!='1'{/yun}
           <input type="hidden" value="redeem" name="m" />
@@ -35,11 +35,11 @@
           <input type="hidden" id="num" name="num" value="1" />
           <input type="hidden" id="myintegral" value="{yun:}$info.integral{/yun}" />
           <input type="hidden" id="redeemintegral" value="{yun:}$row.integral{/yun}" />
-          <li><span class="fl" style="line-height:35px;">兑换数量：</span>
+          <li><span class="fl" style="line-height:35px;">{yun:}t key='wap_redeemshow_00002'{/yun}：</span>
             <span class="dh_box"><span class="dh_f fl">-</span><span class="dh_numb">1</span><span class="dh_plus fr">+</span></span>
           </li>
           <li>
-            <input class="yun_Integral_show_bth" type="submit" value="立即兑换">
+            <input class="yun_Integral_show_bth" type="submit" value="{yun:}t key='default_redeem_show_00002'{/yun}">
           </li>
         </form>
         {yun:}/if{/yun}
@@ -51,16 +51,16 @@
     <div class="redeem_detail fl">
       <ul class="redeem_detail_h fl">
         <li tab_name="xq" {yun:}if $smarty.get.page==''{/yun}class="redeem_detail_content"{yun:}/if{/yun}>礼品详情</li>
-        <li tab_name="jl" {yun:}if $smarty.get.page{/yun}class="redeem_detail_content"{yun:}/if{/yun}>兑换记录</li>
+        <li tab_name="jl" {yun:}if $smarty.get.page{/yun}class="redeem_detail_content"{yun:}/if{/yun}>{yun:}t key='wap_user_finance_00003'{/yun}</li>
       </ul>
       <div class="redeem_gift_detail fl {yun:}if $smarty.get.page{/yun}none{yun:}/if{/yun}" id="xq" style=" padding:20px; width:840px;"> {yun:}$row.content_n{/yun} </div>
       <div class="clear"></div>
       <div class="redeem_gift_detail fl {yun:}if $smarty.get.page==''{/yun} none{yun:}/if{/yun}" id="jl" >
       
         <ul class="redeem_record_title redeem_record_h fl">
-          <li class="redeem_record_a">会员名称</li>
+          <li class="redeem_record_a">{yun:}t key='admin_user_company_component_comrating_index_edit_00018'{/yun}</li>
           <li class="redeem_record_b">商品数量（件）</li>
-          <li class="redeem_record_c">兑换时间</li>
+          <li class="redeem_record_c">{yun:}t key='wap_user_reward_list_00001'{/yun}</li>
           <!--<li class="redeem_record_d">兑换状态</li>-->
         </ul>
         {yun:}foreach item=v from=$jilu{/yun}
@@ -68,13 +68,13 @@
           <li class="redeem_record_a">{yun:}$v.username|mb_substr:0:1:'utf-8'{/yun}***{yun:}$v.username|mb_substr:-1:1:'utf-8'{/yun}</li>
           <li class="redeem_record_b">{yun:}$v.num{/yun}件</li>
           <li class="redeem_record_c">{yun:}$v.ctime|date_format:"%Y-%m-%d %H:%M:%S"{/yun}</li>
-          <!--<li class="redeem_record_d"> {yun:}if $v.status=="1"{/yun}已兑换
-            {yun:}elseif $v.status=="2"{/yun}审核未通过
-            {yun:}else{/yun}未审核
+          <!--<li class="redeem_record_d"> {yun:}if $v.status=="1"{/yun}{yun:}t key='wap_user_reward_list_00004'{/yun}
+            {yun:}elseif $v.status=="2"{/yun}{yun:}t key='wap_user_resume_00003'{/yun}
+            {yun:}else{/yun}{yun:}t key='wap_user_commsg_00006'{/yun}
             {yun:}/if{/yun}</li>-->
         </ul>
         {yun:}foreachelse{/yun}
-        <div class="yun_Integral_no">暂无兑换记录</div>
+        <div class="yun_Integral_no">{yun:}t key='default_redeem_show_00001'{/yun}</div>
         {yun:}/foreach{/yun}
         <div class="clear"></div>
         <div class="pages"> {yun:}$pagenav{/yun}</div>
@@ -83,7 +83,7 @@
   </div>
   </div>
   <div class="redeem_show_right fr" style="margin-top:15px;">
-    <div class="redeem_hotgoods_h fl">热门兑换</div>
+    <div class="redeem_hotgoods_h fl">{yun:}t key='wap_redeem_00003'{/yun}</div>
     <div class="redeem_hotgoods_lists fl">  {yun:}redeem item=v hot=1 limit=5{/yun}
       <dl>
         <dt><a href="{yun:}$v.url{/yun}"><img src="{yun:}$v.pic{/yun}" width="45" height="45"/></a></dt>

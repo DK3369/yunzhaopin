@@ -11,17 +11,17 @@
                     </div>
                     <div class="padt_bm">
                         <div class="com_member_hr_p1">
-                            <span class="member_c9">基本信息 </span>{{item.sex_n}} ·
-                            {{item.age_n}}岁·
+                            <span class="member_c9">{yun:}t key='wap_resume_index_00016'{/yun} </span>{{item.sex_n}} ·
+                            {{item.age_n}}{yun:}t key='home.age_suffix'{/yun}·
                             {{item.edu_n}}
                         </div>
-                        <div class="com_member_hr_p1"><span class="member_c9">手机号码</span>{{item.telphone}}</div>
+                        <div class="com_member_hr_p1"><span class="member_c9">{yun:}t key='wap_user_info_00018'{/yun}</span>{{item.telphone}}</div>
                         <div class="com_member_hr_p1">
                             <span class="member_c9">申请兼职 </span>
                             <em @click="toPart(item.wapjob_url)" class="wap_m_post_user">{{item.partname}} </em>
                         </div>
                         <div class="com_member_hr_p1">
-                            <span class="member_c9">申请时间 </span>{{item.ctime_n}}
+                            <span class="member_c9">{yun:}t key='wap_com_partapply_00001'{/yun} </span>{{item.ctime_n}}
                         </div>
                     </div>
                     <div class="interview_card_bom">
@@ -86,7 +86,7 @@
                     keyword: that.searchKeyword
                 };
 
-                showLoading('加载中');
+                showLoading("{yun:}t key='wap_com_part_00002'{/yun}");
                 $.post('{yun:}url d=wxapp h=com m=part c=applylist{/yun}', paramer, function (data) {
                     hideLoading();
                     $("#yunvue").css('display', 'block');
@@ -133,15 +133,15 @@
                     ids: id,
                 };
                 showConfirm('确定删除？', function () {
-                    showLoading('删除中');
+                    showLoading("{yun:}t key='wap_user_sq_00010'{/yun}");
                     $.post('{yun:}url d=wxapp h=com m=part c=delapply{/yun}', paramer, function (data) {
                         hideLoading();
                         if (data.error == 1) {
-                            showToast('删除成功', 2, function () {
+                            showToast("{yun:}t key='wap_user_blacklist_00002'{/yun}", 2, function () {
                                 that.info.splice(key, 1);
                             });
                         } else {
-                            showToast('删除失败');
+                            showToast("{yun:}t key='wap_user_blacklist_00001'{/yun}");
                         }
                     }, 'json')
                 });

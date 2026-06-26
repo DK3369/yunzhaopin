@@ -2,7 +2,7 @@
     <div style="margin:0px;padding:0px;font-size:12px;">
         <form action="" method="post" enctype="multipart/form-data" name="upimg" onsubmit="return CheckPost();">
             <input type="file" name="file" id="file" style="height:30px;" value="" />
-            <input type="submit" name="subuppic" id="button" value="上传" style="height:30px;" />
+            <input type="submit" name="subuppic" id="button" value="{yun:}t key='member_user_checkimg_00001'{/yun}" style="height:30px;" />
             <input name="upload" type="hidden" id="upload" value="upload" />
             <input type="hidden" name="MAX_FILE_SIZE" value="3000000" />
         </form>
@@ -10,7 +10,7 @@
     <script>
         function CheckPost() {
             if (upimg.file.value == "") {
-                layer.msg('请选择图片！', 2, 8);
+                layer.msg("{yun:}t key='wap_upload_00007'{/yun}", 2, 8);
                 upimg.file.focus();
                 return false;
             }

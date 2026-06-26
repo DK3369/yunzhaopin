@@ -23,10 +23,10 @@
 								{yun:}$zduser.username_n{/yun}
 							{yun:}/if{/yun}</span>{yun:}if $zduser.rec_resume{/yun}<span class="usertj"> </span>{yun:}/if{/yun}
 						</div>
-						<div class="new_userlist_info">{yun:}$zduser.exp_n{/yun}经验 · {yun:}$zduser.edu_n{/yun}学历 ·
-							{yun:}if $zduser.age == 0{/yun}保密{yun:}else{/yun}{yun:}$zduser.age{/yun}岁{yun:}/if{/yun}</div>
+						<div class="new_userlist_info">{yun:}$zduser.exp_n{/yun}{yun:}t key='home.experience_suffix'{/yun} · {yun:}$zduser.edu_n{/yun}{yun:}t key='home.education_suffix'{/yun} ·
+							{yun:}if $zduser.age == 0{/yun}{yun:}t key='wap_user_resume_00011'{/yun}{yun:}else{/yun}{yun:}$zduser.age{/yun}{yun:}t key='home.age_suffix'{/yun}{yun:}/if{/yun}</div>
 						<div class="new_userlist_p">求职期望 {yun:}$zduser.name{/yun}，{yun:}$zduser.salary_n{/yun}
-						<span class="yun_newedition_resume_zd" >置顶</span></div>
+						<span class="yun_newedition_resume_zd" >{yun:}t key='wap_user_resume_00013'{/yun}</span></div>
 						{yun:}if $zduser.work_content || $zduser.edu_content{/yun}
 						<div class="user_undergo_box">
 							{yun:}if $zduser.edu_content{/yun}
@@ -70,7 +70,7 @@
 						{yun:}/if{/yun}</span>{yun:}if $user.rec_resume{/yun}<span class="usertj"> </span>{yun:}/if{/yun}
 					</div>
 
-					<div class="new_userlist_info">{yun:}$user.exp_n{/yun}经验 · {yun:}$user.edu_n{/yun}学历 · {yun:}if $user.age == 0{/yun}保密{yun:}else{/yun}{yun:}$user.age{/yun}岁{yun:}/if{/yun}</div>
+					<div class="new_userlist_info">{yun:}$user.exp_n{/yun}{yun:}t key='home.experience_suffix'{/yun} · {yun:}$user.edu_n{/yun}{yun:}t key='home.education_suffix'{/yun} · {yun:}if $user.age == 0{/yun}{yun:}t key='wap_user_resume_00011'{/yun}{yun:}else{/yun}{yun:}$user.age{/yun}{yun:}t key='home.age_suffix'{/yun}{yun:}/if{/yun}</div>
 					<div class="new_userlist_p">求职期望 {yun:}$user.name{/yun}，{yun:}$user.salary_n{/yun} <span class="yun_newedition_resume_zd">{yun:}$user.time{/yun}</span></div>
 
 
@@ -98,17 +98,17 @@
 			{yun:}/userlist{/yun}
 		</div>
 
-		<!--简历列表 end-->
+		<!--{yun:}t key='admin_tool_weixin_component_wxfbtool_00028'{/yun} end-->
 
 		<!--没有搜索到人才-->
 		{yun:}if $total <= 0{/yun}
 			{yun:}if $smarty.get.keyword!="" {/yun}
 			<div class="wap_member_no">没有搜索到人才</div>
 			{yun:}else{/yun}
-			<div class="wap_member_no">暂无人才</div>
+			<div class="wap_member_no">{yun:}t key='wap_resumelist_00002'{/yun}</div>
 			{yun:}/if{/yun}
 			<div class="wap_member_no_submit">
-				<a class="wap_mb_no_sr" href="{yun:}url m=wap c='resume'{/yun}">重新搜索</a>
+				<a class="wap_mb_no_sr" href="{yun:}url m=wap c='resume'{/yun}">{yun:}t key='wap_announcement_00002'{/yun}</a>
 			</div>
 		{yun:}else{/yun}
 			{yun:}if $total>20{/yun}
@@ -118,7 +118,7 @@
 
 		{yun:}if $total<=0 && $recnum>0{/yun}
 		<section id="muireclist">
-				<div class="user_listtit"> "  为你推荐 " </div>
+				<div class="user_listtit"> "  {yun:}t key='wap_com_zhaopin_00005'{/yun} " </div>
 			{yun:}userlist limit=3 post_len=18 city_len=10 recg=1 item=userrec{/yun}
 			<div class="user_list_cont">
 				
@@ -137,9 +137,9 @@
 						<span class="user_city_n">{yun:}$userrec.city_name_n{/yun}</span>
 						<i class="user_list_p_line">|</i>
 							<span class="user_list_jy_p">{yun:}$userrec.exp_n{/yun}</span>
-						<i class="user_list_p_line">|</i> {yun:}$userrec.edu_n{/yun}学历
+						<i class="user_list_p_line">|</i> {yun:}$userrec.edu_n{/yun}{yun:}t key='home.education_suffix'{/yun}
 					</aside>
-					<aside class="user_list_pyxjob"> <em class="user_p_ov"><span class="user_list_j">意向职位：</span>
+					<aside class="user_list_pyxjob"> <em class="user_p_ov"><span class="user_list_j">{yun:}t key='wap_com_resumecolumn_00003'{/yun}：</span>
 			<span class="user_list_yxjob">{yun:}$userrec.job_post_n{/yun}</span></em> </aside>
 				</div>
 				
@@ -154,7 +154,7 @@
 		<div id="listdiv"></div>
 		<!--微信端上拉加载样式-->
 		<div id="pageLoading" class="lodbox none"><span class="lodbox_p"><i class="lodbox_iocn"></i>正在加载...</span></div>
-		<div id="pageNoMore" class="lodbox none"> -没有更多了-</div>
+		<div id="pageNoMore" class="lodbox none"> -{yun:}t key='admin_user_users_component_usersall_00017'{/yun}-</div>
 	{yun:}/if{/yun}
 </div>
 {yun:}if $isweixin && $config.sy_wxwap_list==2{/yun}

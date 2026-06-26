@@ -68,7 +68,7 @@
                         {yun:}if !empty($job_type[$vv]){/yun}
                         <li id="jobtwo{yun:}$vv{/yun}" class="jobthree job{yun:}$vv{/yun} none">
                             <div class="mui-input-row mui-checkbox citythree_pd">
-                                <label class="label_box" for="jobcheckAll{yun:}$vv{/yun}">全部</label>
+                                <label class="label_box" for="jobcheckAll{yun:}$vv{/yun}">{yun:}t key='common.all'{/yun}</label>
                                 <input type="checkbox" value="{yun:}$vv{/yun}" id="jobcheckAll{yun:}$vv{/yun}" class="checkAll" />
                             </div>
                         </li>
@@ -97,7 +97,7 @@
                             <a class="grade_chlose_box_a" v-for="(job, jk) in jobnameArr" :key="jk" :data-id="jk">{{job}}</a>
                         </div>
                     </div>
-                    <a class="grade_chlose_bth" @click="jobShow = false">确定 <span id="jobpencent" class="none">1/5</span></a>
+                    <a class="grade_chlose_bth" @click="jobShow = false">{yun:}t key='common.confirm'{/yun} <span id="jobpencent" class="none">1/5</span></a>
                 </div>
             </div>
         </div>
@@ -117,7 +117,7 @@
                 <div class="zn_search">
                     <div class="zn_search_text_c">
                         <div class="zn_search_text">
-                            <input id="cclass_svalue" type="text" value="" data-type='cityclass' placeholder="请输入城市类别" class="zn_search_t inputListener">
+                            <input id="cclass_svalue" type="text" value="" data-type='cityclass' placeholder="{yun:}t key='wap_public_resume_city_job_00001'{/yun}" class="zn_search_t inputListener">
                         </div>
                     </div>
                 </div>
@@ -172,7 +172,7 @@
                         {yun:}foreach from=$v item=vv{/yun}
                         {yun:}if !empty($city_type[$vv]){/yun}
                         <li id="citytwo{yun:}$vv{/yun}" class="citythree city{yun:}$vv{/yun} none">
-                            <div class="mui-input-row mui-checkbox citythree_pd"><label for="citycheckAll{yun:}$vv{/yun}">全部</label><input type="checkbox" value="{yun:}$vv{/yun}" id="citycheckAll{yun:}$vv{/yun}" class="checkAll" /></div>
+                            <div class="mui-input-row mui-checkbox citythree_pd"><label for="citycheckAll{yun:}$vv{/yun}">{yun:}t key='common.all'{/yun}</label><input type="checkbox" value="{yun:}$vv{/yun}" id="citycheckAll{yun:}$vv{/yun}" class="checkAll" /></div>
                         </li>
                         {yun:}/if{/yun}
                         {yun:}/foreach{/yun}
@@ -200,7 +200,7 @@
                             </div>
                         </div>
                     </div>
-                    <a class="grade_chlose_bth" @click="cityShow = false">确定<span id="citypencent" class="none">1/5</span></a>
+                    <a class="grade_chlose_bth" @click="cityShow = false">{yun:}t key='common.confirm'{/yun}<span id="citypencent" class="none">1/5</span></a>
                 </div>
             </div>
         </div>

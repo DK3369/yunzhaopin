@@ -2,7 +2,7 @@
 <div id="yunvue" class="none">
 <div class="mui-content">
     <div class="privacy_title">
-        <p>提示：设置为公开时,企业才能搜索到默认简历</p>
+        <p>{yun:}t key='wap_js_forgetpw_00010'{/yun}：设置为公开时,企业才能搜索到默认简历</p>
     </div>
     <div class="privacy_body">
         <ul class="privacy_body_card">
@@ -84,7 +84,7 @@
                 var paramer = {                   
                     status: status,
                 };
-                showLoading('设置中');
+                showLoading("{yun:}t key='wap_user_privacy_00001'{/yun}");
                 $.post('{yun:}url d=wxapp h=user m=privacy c=up{/yun}', paramer, function(data){
                     hideLoading();
                     if (data.error == 1) {
@@ -92,9 +92,9 @@
                         list = data.data;
                         that.status = list.status;
 						window.localStorage.setItem("needRefresh", 1);
-                        showToast('操作成功');
+                        showToast("{yun:}t key='wap_user_invitecont_00003'{/yun}");
                         if(jobid){
-                            // 从职位详情页来的，修改后要刷新职位页面
+                            // From the job details page, you need to refresh the job page after modification.
                             history.back();
                         }
                     }

@@ -7,7 +7,7 @@
 			<div class="pay_header_p">
 				<div class="pay_header_icon">
                 <img src="{yun:}$wap_style{/yun}/images/integral_notice.png" alt="" width="100%" >
-            </div>   当前{{cache.name}}兑换比为1元={{cache.proportion}}{{cache.unit}}{{cache.name}} {{cache.min_recharge > 0 ?'，单次最低充值' + cache.min_recharge + cache.unit + cache.name :''}}。
+            </div>   {yun:}t key='common_01984'{/yun}{{cache.name}}兑换比为1{yun:}t key='common_02056'{/yun}={{cache.proportion}}{{cache.unit}}{{cache.name}} {{cache.min_recharge > 0 ?'，单次最低充值' + cache.min_recharge + cache.unit + cache.name :''}}。
 		  </div> 
 	  </div> 
 	
@@ -22,12 +22,12 @@
                     <i :class="choose_id==item.val?'currcolor':''" class="body_card_bumber">{{class_name[item.val]}}</i>
                     <i :class="choose_id==item.val?'currcolor':''">{{cache.name}}</i>
                     <div class="body_card_bumber_discount " v-if="class_discount[item.val]>0">
-                        {{class_discount[item.val]}}折
+                        {{class_discount[item.val]}}{yun:}t key='common_02080'{/yun}
                     </div>
                 </li>
 
                 <li data-id="0" @click="setClass" :class="choose_id==0?'discount_opt_for':'body_card_bumber'">
-                    <i :class="choose_id==0?'currcolor':''" class="body_card_bumber">自定义</i>
+                    <i :class="choose_id==0?'currcolor':''" class="body_card_bumber">{yun:}t key='wap_user_pay_00003'{/yun}</i>
                     <i :class="choose_id==0?'currcolor':''">{{cache.name}}</i>
                 </li>
             </ul>
@@ -63,12 +63,12 @@
                 </div>
                 </div>
                 <div class="gb_tip" v-else>
-                    网站已关闭支付接口，请联系管理员
+                    网站已关闭支付接口，{yun:}t key='wap_spe_gl_00002'{/yun}
                 </div>
             </div>
         </div>
         <!-- 确认按钮 -->
-        <div class="integral_body_btn" @click="dingdan" v-if="config.fkal">确认支付</div>
+        <div class="integral_body_btn" @click="dingdan" v-if="config.fkal">{yun:}t key='wap_user_pay_00001'{/yun}</div>
     </div>
 
 </div></div>
@@ -165,7 +165,7 @@
                         that.zdyjf = that.class_name[choosed];
                     } else {
 
-                        showToast('最低充值:' + that.cache.min_recharge + that.cache.name);
+                        showToast("{yun:}t key='default_public_search_public_tips_00027'{/yun}" + that.cache.min_recharge + that.cache.name);
                     }
                 }
             },
@@ -198,9 +198,9 @@
                         that.config = res.fktype;
                         $("#yunvue").css('display', 'block');
                         if (parseInt(res.nopayorder) > 0) {
-                            showConfirm('您还有' + res.nopayorder + '个订单未付款，是否继续充值！', function () {
+                            showConfirm('您还有' + res.nopayorder + "{yun:}t key='common_01445'{/yun}，是否继续充值！", function () {
                                 that.pageTo("index.php?c=paylog");
-                            }, '继续充值', '去付款');
+                            }, '继续充值', "{yun:}t key='wap_user_pay_00002'{/yun}");
                         }
                     }
                 }, 'json');
@@ -214,7 +214,7 @@
                     return showToast('请填写充值数量');
                 }
                 if (that.fktype == '') {
-                    return showToast('请选择支付方式');
+                    return showToast("{yun:}t key='wap_user_index_00005'{/yun}");
                 }
                 var paramer = {
                     integralid: that.choosed,

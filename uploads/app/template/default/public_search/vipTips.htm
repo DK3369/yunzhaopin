@@ -8,20 +8,20 @@
 		</div>
 		<div class="taoCanModTips">
 			{yun:}if $isPaused == 1{/yun}
-			<span>当前账户会员权益已暂停，请联系客服开启服务~  </span>
+			<span>{yun:}t key='wap_com_index_00006'{/yun}  </span>
 			{yun:}else if $noPermission == 1{/yun}
-			<span>联系客服，开通会员服务哦~</span>
+			<span>{yun:}t key='wap_com_server_00032'{/yun}，开通会员服务哦~</span>
 			{yun:}/if{/yun}
 		</div>
 		<div class="taoCanModButn" onclick="showWeChat('{yun:}$consultant.wechat{/yun}');">
-			<span>联系客服</span>
+			<span>{yun:}t key='wap_com_server_00032'{/yun}</span>
 		</div>
 		<div class="taoCanModTell">
 			{yun:}if $crm == 1{/yun}
 			<span>招聘顾问：{yun:}$consultant.name{/yun}</span>
 			<span style="color: #D31603; margin: 0 0 0 6px;">{yun:}$consultant.mobile{/yun}</span>
 			{yun:}else if $crm == 2{/yun}
-			<span>联系方式：</span>
+			<span>{yun:}t key='wap_resume_index_00022'{/yun}：</span>
 			<span style="color: #D31603; margin: 0 0 0 6px;">{yun:}$webTel{/yun}</span>
 			{yun:}/if{/yun}
 		</div>

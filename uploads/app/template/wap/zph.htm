@@ -11,7 +11,7 @@
 <div class="newzph_pd" id="app">
     <div class="newzph_tit">
         <ul class="tab_title">
-            <li onclick="tabshow('zph')" class="newzph_tit_cur">现场招聘会</li>
+            <li onclick="tabshow('zph')" class="newzph_tit_cur">{yun:}t key='wap_zph_00003'{/yun}</li>
         </ul>
     </div>
     <div>
@@ -30,23 +30,23 @@
                     <div class="newzph_sj">
                         <div class="newzph_sj_n_b">
                             <span class="newzph_sj_n">{yun:}$zph.comnum{/yun}</span>家
-                        </div>参会企业
+                        </div>{yun:}t key='wap_zph_00004'{/yun}
                     </div>
                     <div class="newzph_sj">
                         <div class="newzph_sj_n_b">
-                            <span class="newzph_sj_n">{yun:}$zph.jobnum{/yun}</span>个
-                        </div>参会职位
+                            <span class="newzph_sj_n">{yun:}$zph.jobnum{/yun}</span>{yun:}t key='common_02050'{/yun}
+                        </div>{yun:}t key='wap_zph_00005'{/yun}
                     </div>
                     <div class="newzph_sj">
                         <div class="newzph_sj_n_b">
-                            <span class="newzph_sj_n"> {yun:}$zph.zpnum{/yun}</span>人
-                        </div>招聘人数
+                            <span class="newzph_sj_n"> {yun:}$zph.zpnum{/yun}</span>{yun:}t key='common_02051'{/yun}
+                        </div>{yun:}t key='wap_com_partadd_00013'{/yun}
                     </div>
                     {yun:}if $zph.stime<'0'&&$zph.etime>'0'{/yun}
-                        <span  class="newzph_sj_bth">查看详情</span>
+                        <span  class="newzph_sj_bth">{yun:}t key='wap_zph_00006'{/yun}</span>
                         <div class="newzph_jxz">正在进行中...</div>
                         {yun:}elseif $zph.stime>'0'{/yun}
-                        <span class="newzph_sj_bth">查看详情</span>
+                        <span class="newzph_sj_bth">{yun:}t key='wap_zph_00006'{/yun}</span>
                         <div class="newzph_bmz">火爆报名中...</div>
                         {yun:}else{/yun}
                         <span class="newzph_sj_bthwq">往期回顾</span>

@@ -3,7 +3,7 @@
 	{yun:}include file="$userstyle/left.htm"{/yun}
 	<div class="yun_m_rightbox fltR mt20 re">
 		<div class="member_right_index_h1 fltL"> 
-			<span class="member_right_h1_span fltL">财务明细</span> 
+			<span class="member_right_h1_span fltL">{yun:}t key='member_user_left_00009'{/yun}</span> 
 			<i class="member_right_h1_icon user_bg"></i>
 		</div>
 	<div>
@@ -12,7 +12,7 @@
 	
 	<div class="job_list_tit"> 
 		<ul class="">
-			<li><a href="index.php?c=paylist">充值记录</a></li>
+			<li><a href="index.php?c=paylist">{yun:}t key='member_user_paylist_00001'{/yun}</a></li>
 			<li class="job_list_tit_cur"><a href="index.php?c=paylog">账单明细</a></li>
 		</ul> 
 	</div> 
@@ -22,8 +22,8 @@
 		<div class="paylist_tit">
 			<div class="paylist_span paylist_dh">流水单号</div>
 			<div class="paylist_span paylist_money">财务出入</div>
-			<div class="paylist_span paylist_paylong_bz">备注</div>
-			<div class="paylist_span paylist_cz"> 操作时间	 </div>
+			<div class="paylist_span paylist_paylong_bz">{yun:}t key='member_user_paylog_00002'{/yun}</div>
+			<div class="paylist_span paylist_cz"> {yun:}t key='member_user_paylog_00001'{/yun}	 </div>
 		</div>
 	{yun:}/if{/yun}
 	{yun:}foreach from=$rows item=log{/yun}
@@ -32,7 +32,7 @@
 			<div class="paylist_span paylist_dh">{yun:}$log.order_id{/yun}</div>
 			<div class="paylist_span paylist_money">
 				{yun:}$log.order_price{/yun}
-				{yun:}if $log.type==2{/yun}元
+				{yun:}if $log.type==2{/yun}{yun:}t key='common_02056'{/yun}
 				{yun:}else{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}
 				{yun:}/if{/yun}
 			</div>

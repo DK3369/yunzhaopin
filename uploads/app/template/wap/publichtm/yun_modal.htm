@@ -12,7 +12,7 @@
 <div id="modalVue" class="none">
 	<van-popup v-model="yunModal" round>
 		<div class="enterprise_mask_box">
-			<div class="mask_box_top">温馨提示</div>
+			<div class="mask_box_top">{yun:}t key='wap_user_index_00023'{/yun}</div>
 			<div class="mask_box_cen">{{mb_content}}</div>
 			<div class="mask_box_bom">
 				<ul>
@@ -31,8 +31,8 @@ var modalVue = new Vue({
 			singleid: '',
 			yunModal: false,
 			mb_content: '',
-			cancelText: '取消',
-			confirmText: '确定',
+			cancelText: "{yun:}t key='common.cancel'{/yun}",
+			confirmText: "{yun:}t key='common.confirm'{/yun}",
 			tourl:''
 		},
 		mounted(){

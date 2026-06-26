@@ -15,12 +15,12 @@
 <body style="background:#f8f8f8">
 {yun:}include file="$tplstyle/header.htm"{/yun}
 <div class="yun_content">
-    <div class="current_Location com_current_Location png none"><div class="fl">您当前的位置：<a href="{yun:}$config.sy_weburl{/yun}">首页</a> > <a href="{yun:}url m=article{/yun}">职场资讯</a></div></div>
+    <div class="current_Location com_current_Location png none"><div class="fl">{yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <a href="{yun:}url m=article{/yun}">{yun:}t key='home.workplace_news'{/yun}</a></div></div>
     <div class="news_index_box">
     
         <div class="news_index_box_nav">
         <ul>
-         <li class="news_index_box_nav_hov"><a href="{yun:}url m=article{/yun}">今日推荐</a></li>
+         <li class="news_index_box_nav_hov"><a href="{yun:}url m=article{/yun}">{yun:}t key='default_article_index_00001'{/yun}</a></li>
          {yun:}articleclass r_list=1 r_news=1 item=v{/yun}
           <li><a href="{yun:}$v.url{/yun}" class="zx_fl_list_a" title="{yun:}$v.name{/yun}">{yun:}$v.name{/yun}</a></li>
            
@@ -52,7 +52,7 @@
 		</div>
 	</div>
   
-    <div class="news_index_today_h1"> <span class="news_index_today_h1_s">最新资讯</span></div>
+    <div class="news_index_today_h1"> <span class="news_index_today_h1_s">{yun:}t key='default_index_siteindex_00008'{/yun}</span></div>
 <ul class="news_index_box_list">
     {yun:}article limit=20 item=newarticle{/yun}
 <li>
@@ -94,7 +94,7 @@
         </ul>
         </div>
     <div class="news_index_box_hot">
-        <div class="news_index_today_h1"> <span class="news_index_today_tj_s">今日推荐</span></div>
+        <div class="news_index_today_h1"> <span class="news_index_today_tj_s">{yun:}t key='default_article_index_00001'{/yun}</span></div>
      <ul class="">
   {yun:}article limit=8 urlstatic=1 type='tj' item=news{/yun}
   <li><a href="{yun:}$news.url{/yun}" target="_blank" title="{yun:}$news.title{/yun}">{yun:}$news.title{/yun}</a><!--<em>{yun:}$news.time{/yun}</em>--></li>

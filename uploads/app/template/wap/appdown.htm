@@ -30,16 +30,16 @@ body{ background:#fff}
 <div class="app_down_kh">找自己喜欢的工作</div>
 {yun:}if $down.qrcode{/yun}
 <div class="app_down_pic"><div class="app_down_pic_b"><img src="{yun:}$down.qrcode{/yun}" width="160" height="160"></div></div>
-<div class="app_down_bbh">长按识别二维码下载</div>
+<div class="app_down_bbh">{yun:}t key='wap_appdown_00001'{/yun}</div>
 {yun:}/if{/yun}
 {yun:}if $down.url{/yun}
-<div class="app_down_bth"><a href="{yun:}$down.url{/yun}">立即下载</a></div>
+<div class="app_down_bth"><a href="{yun:}$down.url{/yun}">{yun:}t key='wap_appdown_00002'{/yun}</a></div>
 {yun:}/if{/yun}
 
 <div class="app_sm">
 <div class="app_down_bbh">高薪职位招聘，找工作求职必备</div>
 {yun:}if $down.version{/yun}
-<div class="app_down_bbh">版本号：{yun:}$down.version{/yun}</div>
+<div class="app_down_bbh">{yun:}t key='admin_system_set_version_00002'{/yun}：{yun:}$down.version{/yun}</div>
 {yun:}/if{/yun}
 </div>
 </div>
@@ -59,7 +59,7 @@ function goBack(){
 		}else{
 			location.href = wapurl;
 		}
-	}else{ //未知的浏览器
+	}else{ //{yun:}t key='common_01513'{/yun}
 		window.history.go( -1 );
 	}
 }
