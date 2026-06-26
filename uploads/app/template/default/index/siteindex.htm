@@ -105,7 +105,7 @@
 		{yun:}if $hot_list.job_edu{/yun}<span class="fz_index_jobinfo_line">|</span>{yun:}$hot_list.job_edu{/yun}{yun:}t key='home.education_suffix'{/yun}{yun:}/if{/yun}
 		</div>
 		<div class="">{yun:}$hot_list.com_n{/yun}</div>
-		<span class="fz_index_jobtime">{yun:}if $hot_list.time=='昨天'||$hot_list.redtime=='1'{/yun} 
+		<span class="fz_index_jobtime">{yun:}if $hot_list.time==$time_yesterday_label||$hot_list.redtime=='1'{/yun} 
 			<span style="color:red;">{yun:}$hot_list.time{/yun}</span>
 		{yun:}else{/yun} 
 			{yun:}$hot_list.time{/yun}
@@ -123,7 +123,7 @@
 		{yun:}if $rec_list.job_edu{/yun}<span class="fz_index_jobinfo_line">|</span>{yun:}$rec_list.job_edu{/yun}{yun:}t key='home.education_suffix'{/yun}{yun:}/if{/yun}
 		</div>
 		<div class="">{yun:}$rec_list.com_n{/yun}</div>
-		<span class="fz_index_jobtime">{yun:}if $rec_list.time=='昨天'||$rec_list.redtime=='1'{/yun} 
+		<span class="fz_index_jobtime">{yun:}if $rec_list.time==$time_yesterday_label||$rec_list.redtime=='1'{/yun} 
 			<span style="color:red;">{yun:}$rec_list.time{/yun}</span>
 		{yun:}else{/yun} 
 			{yun:}$rec_list.time{/yun}
@@ -141,7 +141,7 @@
 		{yun:}if $new_list.job_edu{/yun}<span class="fz_index_jobinfo_line">|</span>{yun:}$new_list.job_edu{/yun}{yun:}t key='home.education_suffix'{/yun}{yun:}/if{/yun}
 		</div>
 		<div class="">{yun:}$new_list.com_n{/yun}</div>
-		<span class="fz_index_jobtime">{yun:}if $new_list.time=='昨天'||$new_list.redtime=='1'{/yun} 
+		<span class="fz_index_jobtime">{yun:}if $new_list.time==$time_yesterday_label||$new_list.redtime=='1'{/yun} 
 			<span style="color:red;">{yun:}$new_list.time{/yun}</span>
 		{yun:}else{/yun} 
 			{yun:}$new_list.time{/yun}

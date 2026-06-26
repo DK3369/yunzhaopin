@@ -186,7 +186,7 @@
        
           <div class="tiny_list">
           <div class="tiny_list_name"><a href="{yun:}url m=tiny c=show id=$wres.id{/yun}" title="{yun:}$wres.job{/yun}"> {yun:}$wres.job|mb_substr:0:30:'utf-8'{/yun}</a></div>
-          <span class="tiny_list_time">{yun:}if $wres.redtime==1 || $wres.lastupdate=='昨天'{/yun} <span style="color:red;">{yun:}$wres.lastupdate{/yun}</span> {yun:}else{/yun}
+          <span class="tiny_list_time">{yun:}if $wres.redtime==1 || $wres.lastupdate==$time_yesterday_label{/yun} <span style="color:red;">{yun:}$wres.lastupdate{/yun}</span> {yun:}else{/yun}
                 {yun:}$wres.lastupdate{/yun}
                 {yun:}/if{/yun}{yun:}t key='wap_00225'{/yun}</span>
                  <div class="tiny_list_info">{yun:}$wres.username{/yun} <i>|</i>{yun:}$wres.sex{/yun}<i>|</i> {yun:}$wres.exp_name{/yun}{yun:}t key='home.experience_suffix'{/yun}</div>

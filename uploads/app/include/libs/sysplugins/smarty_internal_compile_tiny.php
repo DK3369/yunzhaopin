@@ -98,9 +98,9 @@ class Smarty_Internal_Compile_Tiny extends Smarty_Internal_CompileBase{
 				//昨天开始时间戳
 				$beginYesterday=mktime(0,0,0,date(\'m\'),date(\'d\')-1,date(\'Y\'));
 				if($time>$beginYesterday && $time<$beginToday){
-					'.$name.'[$key][\'lastupdate\'] = "昨天";
+					'.$name.'[$key][\'lastupdate\'] = yun_at("common_02000");
 				}elseif($time>$beginToday){
-					'.$name.'[$key][\'lastupdate\'] = "今天";
+					'.$name.'[$key][\'lastupdate\'] = yun_at("common_01940");
 					'.$name.'[$key][\'redtime\'] =1;
 				}else{
 					'.$name.'[$key][\'lastupdate\'] = date("Y-m-d",$value[\'lastupdate\']);					

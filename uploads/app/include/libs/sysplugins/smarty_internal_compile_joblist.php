@@ -489,7 +489,7 @@ class Smarty_Internal_Compile_Joblist extends Smarty_Internal_CompileBase{
 					$beginYesterday=mktime(0,0,0,date(\'m\'),date(\'d\')-1,date(\'Y\'));
 					
 					if($time>$beginYesterday && $time<$beginToday){
-						'.$name.'[$key][\'time\'] ="昨天";
+						'.$name.'[$key][\'time\'] = yun_at("common_02000");
 					}elseif($time>$beginToday){	
 						'.$name.'[$key][\'time\'] = '.$name.'[$key][\'lastupdate\'];
 						'.$name.'[$key][\'redtime\'] =1;

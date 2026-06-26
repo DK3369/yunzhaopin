@@ -187,7 +187,7 @@
 			{yun:}elseif $pl.job_city_two{/yun}
 			{yun:}$pl.job_city_one{/yun}-{yun:}$pl.job_city_two{/yun}
 			{yun:}/if{/yun}{yun:}else{/yun}{yun:}t key='admin_00254'{/yun} {yun:}/if{/yun}</span> 
-		<span class="yun_part_jobinfo_s">{yun:}t key='wap_com_00333'{/yun}：{yun:}$pl.number{/yun}{yun:}t key='common_02051'{/yun}</span> <span class="yun_part_jobinfo_s">所属类型：{yun:}$partclass_name[$pl.type]{/yun}</span> <span class="yun_part_jobinfo_s">更新日期： {yun:}if $pl.time=='今天' || $pl.time=='昨天'{/yun} <span style="color:red;">{yun:}$pl.time{/yun}</span> {yun:}else{/yun}
+		<span class="yun_part_jobinfo_s">{yun:}t key='wap_com_00333'{/yun}：{yun:}$pl.number{/yun}{yun:}t key='common_02051'{/yun}</span> <span class="yun_part_jobinfo_s">所属类型：{yun:}$partclass_name[$pl.type]{/yun}</span> <span class="yun_part_jobinfo_s">更新日期： {yun:}if $pl.time==$time_today_label || $pl.time==$time_yesterday_label{/yun} <span style="color:red;">{yun:}$pl.time{/yun}</span> {yun:}else{/yun}
         {yun:}$pl.time{/yun}
         {yun:}/if{/yun}</span></div>
       <span class="yun_part_jobxz"><em class="yun_part_jobxz_n">{yun:}$pl.salary{/yun}</em> {yun:}$pl.job_salary_type{/yun} </span> <span class="yun_part_jobjs">{yun:}$pl.job_billing_cycle{/yun}</span> </div>

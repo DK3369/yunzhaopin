@@ -48,7 +48,7 @@
 			<div class="resume_newlist_date"><img src="{yun:}$style{/yun}/images/Top.gif"/></div>
 		{yun:}else{/yun}
 		<div class="resume_newlist_date">
-			{yun:}if $user3.redtime==1 || $user.time=='昨天'{/yun}
+			{yun:}if $user3.redtime==1 || $user.time==$time_yesterday_label{/yun}
 				<span style="color:red;">{yun:}$user3.time{/yun}</span>
 			{yun:}else{/yun}
 				{yun:}$user3.time{/yun}

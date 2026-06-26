@@ -143,9 +143,9 @@ class Smarty_Internal_Compile_Partlist extends Smarty_Internal_CompileBase{
 				//昨天开始时间戳
 				$beginYesterday=mktime(0,0,0,date(\'m\'),date(\'d\')-1,date(\'Y\'));
 				if($time>$beginYesterday && $time<$beginToday){
-					'.$name.'[$key][\'time\'] = "昨天";
+					'.$name.'[$key][\'time\'] = yun_at("common_02000");
 				}elseif($time>$beginToday){
-					'.$name.'[$key][\'time\'] = "今天";
+					'.$name.'[$key][\'time\'] = yun_at("common_01940");
 				}else{
 					'.$name.'[$key][\'time\'] = date("Y-m-d",$value[\'lastupdate\']);
 				}

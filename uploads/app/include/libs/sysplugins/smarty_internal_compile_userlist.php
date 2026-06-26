@@ -647,7 +647,7 @@ class Smarty_Internal_Compile_Userlist extends Smarty_Internal_CompileBase{
 				//昨天开始时间戳
 				$beginYesterday=mktime(0,0,0,date(\'m\'),date(\'d\')-1,date(\'Y\'));
 				if($time>$beginYesterday && $time<$beginToday){
-					'.$name.'[$k][\'time\'] = "昨天";
+					'.$name.'[$k][\'time\'] = yun_at("common_02000");
 				}elseif($time>$beginToday){
 					'.$name.'[$k][\'time\'] = lastupdateStyle($v[\'lastupdate\']);
 					'.$name.'[$k][\'redtime\'] =1;

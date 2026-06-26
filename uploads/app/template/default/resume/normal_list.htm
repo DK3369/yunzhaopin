@@ -99,7 +99,7 @@
 					{yun:}/foreach{/yun}
 				{yun:}/if{/yun}</div>
 	  <div class="resume_newlist_date">
-	      {yun:}if $user.redtime==1 || $user.time=='昨天'{/yun}
+	      {yun:}if $user.redtime==1 || $user.time==$time_yesterday_label{/yun}
 					<span style="color:red;">{yun:}$user.time{/yun}</span>
 				{yun:}else{/yun}
 					{yun:}$user.time{/yun}

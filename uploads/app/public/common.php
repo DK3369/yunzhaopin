@@ -130,6 +130,10 @@ class common{
 			$this->yunset('lang_list', $i18n->getAvailable());
 			$this->yunset('lang', $i18n->all());
 		}
+		if (function_exists('yun_at')) {
+			$this->yunset('time_yesterday_label', yun_at('common_02000'));
+			$this->yunset('time_today_label', yun_at('common_01940'));
+		}
 		
 		$this->yunset("config",$this->config);
 

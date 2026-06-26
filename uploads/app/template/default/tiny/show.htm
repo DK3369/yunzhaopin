@@ -79,7 +79,7 @@
 										<div class="tiny_show_qxbox_jobinfo">
 											<span class="">{yun:}$list.username{/yun} </span><i>|</i>{yun:}$list.sex{/yun}<i>|</i> {yun:}$list.exp_name{/yun}{yun:}t key='home.experience_suffix'{/yun} 
 											<span class="tiny_show_tjbox_jobtime">
-												{yun:}if $list.redtime==1 || $list.lastupdate=='昨天'{/yun} 
+												{yun:}if $list.redtime==1 || $list.lastupdate==$time_yesterday_label{/yun} 
 													<span style="color:red;">{yun:}$list.lastupdate{/yun}</span> 
 												{yun:}else{/yun}
 													{yun:}$list.lastupdate{/yun}

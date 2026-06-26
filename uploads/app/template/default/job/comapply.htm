@@ -340,7 +340,7 @@
                         </div>
                         <div class="job_details_com_otherjob_r">
                             <div class="job_details_com_otherjob_time">
-                                {yun:}if $job.time=='昨天'||$job.redtime=='1'{/yun}
+                                {yun:}if $job.time==$time_yesterday_label||$job.redtime=='1'{/yun}
                                 <span style="color:red;">{yun:}$job.time{/yun}</span>
                                 {yun:}else{/yun}
                                 {yun:}$job.time{/yun}

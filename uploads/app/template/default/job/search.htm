@@ -688,7 +688,7 @@
 						{yun:}/if{/yun}
 					</div>
 					<span class="yunjoblist_new_time"> 
-						{yun:}if $job_list.time=='昨天'||$job_list.redtime=='1'{/yun} 
+						{yun:}if $job_list.time==$time_yesterday_label||$job_list.redtime=='1'{/yun} 
 						<span style="color:red;">{yun:}$job_list.time{/yun}</span> 
 						{yun:}else{/yun} 
 						{yun:}$job_list.time{/yun} 
