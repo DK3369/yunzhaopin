@@ -4,9 +4,9 @@
             <div class="tableSeachInpt tableSeachInptsmall">
                 <el-input placeholder="{yun:}t key='admin_00340'{/yun}" size="small" @keyup.enter.native="doUserQuery" v-model="search.keyword" class="input-with-select" clearable>
                     <el-select v-model="search.type" slot="prepend" placeholder="{yun:}t key='admin_user_00140'{/yun}">
-                        <el-option label="用户名" value="1"></el-option>
-                        <el-option label="手机号" value="2"></el-option>
-                        <el-option label="用户ID" value="3"></el-option>
+                        <el-option label="{yun:}t key='admin_user_00140'{/yun}" value="1"></el-option>
+                        <el-option label="{yun:}t key='wap_01619'{/yun}" value="2"></el-option>
+                        <el-option label="{yun:}t key='admin_user_00130'{/yun}" value="3"></el-option>
                         <el-option label="IP" value="4"></el-option>
                     </el-select>
                 </el-input>
@@ -24,18 +24,18 @@
             </div>
             <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
                 <el-select v-model="search.status" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00133'{/yun}" clearable @change="doUserQuery">
-                    <el-option label="正常" value="1"></el-option>
-                    <el-option label="锁定" value="2"></el-option>
+                    <el-option label="{yun:}t key='admin_user_00149'{/yun}" value="1"></el-option>
+                    <el-option label="{yun:}t key='admin_user_00150'{/yun}" value="2"></el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
                 <el-select v-model="search.time_type" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00135'{/yun}" clearable @change="handleTimeChange">
-                    <el-option label="注册时间" value="adtime"></el-option>
-                    <el-option label="登录时间" value="lotime"></el-option>
+                    <el-option label="{yun:}t key='admin_user_00129'{/yun}" value="adtime"></el-option>
+                    <el-option label="{yun:}t key='admin_user_00134'{/yun}" value="lotime"></el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt tableSeachInptsmalltwo">
-                <el-date-picker v-model="search.times" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="handleTimeChange"></el-date-picker>
+                <el-date-picker v-model="search.times" type="daterange" align="right" unlink-panels range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="handleTimeChange"></el-date-picker>
             </div>
             <div class="tableSeachInpt">
                 <el-button type="primary" icon="el-icon-search" size="mini" @click="doUserQuery">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
@@ -56,19 +56,19 @@
                     <p>{{dataText}}</p>
                 </template>
                 <el-table-column type="selection" width="55"> </el-table-column>
-                <el-table-column prop="uid" label="用户ID" width="90" sortable="custom"> </el-table-column>
-                <el-table-column label="名称/用户名" min-width="180" show-overflow-tooltip>
+                <el-table-column prop="uid" label="{yun:}t key='admin_user_00130'{/yun}" width="90" sortable="custom"> </el-table-column>
+                <el-table-column label="{yun:}t key='admin_user_00119'{/yun}" min-width="180" show-overflow-tooltip>
                     <template slot-scope="props">
                         <div class="moduleProps">
                             <div>{{props.row.countname }}</div>
                             <el-link @click="getMemberUrl(props.row.uid,props.row.usertype)" target="_blank" type="primary">{{props.row.username }}</el-link>
-                            <el-tooltip v-if="props.row.status == 2" class="item" effect="dark" content="已锁定" placement="top-start">
+                            <el-tooltip v-if="props.row.status == 2" class="item" effect="dark" content="{yun:}t key='admin_user_00138'{/yun}" placement="top-start">
                                 <i class="el-icon-lock" style="color: orange"></i>
                             </el-tooltip>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="usersf" label="当前身份" min-width="120">
+                <el-table-column prop="usersf" label="{yun:}t key='admin_user_00127'{/yun}" min-width="120">
                     <template slot-scope="props">
                         <div class="user_sf">
                             <span class="user_sf1" v-if="props.row.usertype == 2">{yun:}t key='admin_user_00124'{/yun}</span>
@@ -77,7 +77,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="手机号/归属地" min-width="130">
+                <el-table-column label="{yun:}t key='admin_user_00117'{/yun}" min-width="130">
                     <template slot-scope="props">
                         <div class="moduleProps">
                             <span>{{ props.row.moblie }}</span>
@@ -90,18 +90,18 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="login_date" label="注册/登录" min-width="170" sortable="custom">
+                <el-table-column prop="login_date" label="{yun:}t key='admin_user_00121'{/yun}" min-width="170" sortable="custom">
                     <template slot-scope="props">
                         <div class=""> <span class="gsd">{{ props.row.reg_date_n }}</span></div>
                         <div class=""> <span>{{ props.row.login_date > 0 ? props.row.login_date_n : '{yun:}t key='admin_user_00139'{/yun}' }}</span></div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="userly" label="来源" min-width="180">
+                <el-table-column prop="userly" label="{yun:}t key='admin_user_00148'{/yun}" min-width="180">
                     <template slot-scope="props">
                         {{sourceArr[props.row.source]}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="ip" label="IP/归属地" min-width="180">
+                <el-table-column prop="ip" label="{yun:}t key='admin_00440'{/yun}" min-width="180">
                     <template slot-scope="props">
                         <div class="moduleProps" v-if="props.row.login_ip">
                             <span>{{ props.row.login_ip }}</span>
@@ -114,7 +114,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="zt" label="状态" width="60" fixed="right">
+                <el-table-column prop="zt" label="{yun:}t key='member_user_00181'{/yun}" width="60" fixed="right">
                     <template slot-scope="props">
                         <div class="admin_state">
                             <span v-if="props.row.status == 1">{yun:}t key='admin_user_00149'{/yun}</span>
@@ -124,7 +124,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="140" fixed="right">
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="small " plain @click="detailFun(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
@@ -641,7 +641,7 @@ module.exports = {
         del: function(detail) {
             let _this = this;
             let url = this.uri + 'admin_member&a=del';
-            let msg = '确定要删除?';
+            let msg = "{yun:}t key='admin_vue_00028'{/yun}";
             delConfirm(_this, detail, function(params) {
                 httpPost(url, { del: detail.uid }).then(function(res) {
                     if (res.data.error > 0) {
@@ -664,7 +664,7 @@ module.exports = {
                 params = {};
             params.del = ids;
             let url = this.uri + 'admin_member&a=del';
-            let msg = '确定要删除?';
+            let msg = "{yun:}t key='admin_vue_00028'{/yun}";
             delConfirm(_this, params, function(params) {
                 httpPost(url, params).then(function(res) {
                     if (res.data.error > 0) {

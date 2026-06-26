@@ -2,14 +2,14 @@
     <div class="moduleElHight">
         <div class="moduleSeachbig">
             <div class="tableSeachInpt tableSeachInptsmalltwo">
-                <el-date-picker v-model="search.times" type="daterange" range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" size="mini" @change="doUserQuery"></el-date-picker>
+                <el-date-picker v-model="search.times" type="daterange" range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" size="mini" @change="doUserQuery"></el-date-picker>
             </div>
             <div class="tableSeachInpt tableSeachInptsmall">
                 <el-input placeholder="{yun:}t key='admin_user_00158'{/yun}" @keyup.enter.native="doUserQuery" size="small" v-model="search.keyword" class="input-with-select" clearable>
                 	<el-select v-model="search.type" slot="prepend" placeholder="{yun:}t key='admin_user_00136'{/yun}">
-                		<el-option label="用户名" value="1"></el-option>
-                		<el-option label="内容" value="2"></el-option>
-                		<el-option label="用户ID" value="3"></el-option>
+                		<el-option label="{yun:}t key='admin_user_00140'{/yun}" value="1"></el-option>
+                		<el-option label="{yun:}t key='wap_user_00102'{/yun}" value="2"></el-option>
+                		<el-option label="{yun:}t key='admin_user_00130'{/yun}" value="3"></el-option>
                 	</el-select>
                 </el-input>
             </div>
@@ -24,14 +24,14 @@
                     <p>{{dataText}}</p>
                 </template>
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="uid" label="用户ID" width="110"></el-table-column>
-                <el-table-column prop="ltname" label="猎头名称" width="150"></el-table-column>
-                <el-table-column prop="username" label="用户名" min-width="100" show-overflow-tooltip></el-table-column>
+                <el-table-column prop="uid" label="{yun:}t key='admin_user_00130'{/yun}" width="110"></el-table-column>
+                <el-table-column prop="ltname" label="{yun:}t key='admin_00449'{/yun}" width="150"></el-table-column>
+                <el-table-column prop="username" label="{yun:}t key='admin_user_00140'{/yun}" min-width="100" show-overflow-tooltip></el-table-column>
                 <el-table-column prop="ip" label="IP"></el-table-column>
-                <el-table-column prop="remoteport" label="端口"></el-table-column>
-                <el-table-column prop="ctime_ymd" label="时间" sortable="custom"></el-table-column>
-                <el-table-column prop="content" label="内容" min-width="180" show-overflow-tooltip></el-table-column>
-                <el-table-column label="操作" width="80" fixed="right">
+                <el-table-column prop="remoteport" label="{yun:}t key='admin_user_00159'{/yun}"></el-table-column>
+                <el-table-column prop="ctime_ymd" label="{yun:}t key='wap_js_00088'{/yun}" sortable="custom"></el-table-column>
+                <el-table-column prop="content" label="{yun:}t key='wap_user_00102'{/yun}" min-width="180" show-overflow-tooltip></el-table-column>
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button type="danger" size="mini" @click="del(scope.row)">{yun:}t key='common.delete'{/yun}</el-button>
@@ -159,7 +159,7 @@ module.exports = {
 				params = {};
 			params.del = detail.id;
             let url = this.uri + 'admin_loginlog&a=dellog';
-            let msg = '确定要删除?';
+            let msg = "{yun:}t key='admin_vue_00028'{/yun}";
 			delConfirm(_this, params, function (params) {
 				httpPost(url, params).then(function(res) {
 					if (res.data.error > 0) {
@@ -175,14 +175,14 @@ module.exports = {
         batchDel: function () {
             let ids = this.idsArr;
             if (!ids.length) {
-                message.error('请选择需要删除的用户');
+                message.error(lc('admin_vue_00034'));
                 return
             }
             let _this = this,
 				params = {};
 			params.del = ids;
             let url = this.uri + 'admin_loginlog&a=dellog'
-            let msg = '确定要删除?';
+            let msg = "{yun:}t key='admin_vue_00028'{/yun}";
 			delConfirm(_this, params, function (params) {
 				httpPost(url, params).then(function(res) {
 					if (res.data.error > 0) {

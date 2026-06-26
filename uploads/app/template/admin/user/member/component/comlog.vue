@@ -4,8 +4,8 @@
             <div class="tableSeachInpt tableSeachInptsmall">
                 <el-input placeholder="{yun:}t key='admin_00446'{/yun}" size="small" @keyup.enter.native="doUserQuery" v-model="search.keyword" class="input-with-select" clearable>
                     <el-select v-model="search.type" slot="prepend" placeholder="{yun:}t key='admin_user_00140'{/yun}">
-                        <el-option label="用户名" value="1"></el-option>
-                        <el-option label="用户ID" value="3"></el-option>
+                        <el-option label="{yun:}t key='admin_user_00140'{/yun}" value="1"></el-option>
+                        <el-option label="{yun:}t key='admin_user_00130'{/yun}" value="3"></el-option>
                     </el-select>
                 </el-input>
             </div>
@@ -14,7 +14,7 @@
                 </el-input>
             </div>
             <div class="tableSeachInpt tableSeachInptsmalltwo">
-                <el-date-picker v-model="search.time" type="daterange" range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}" value-format="yyyy-MM-dd" end-placeholder="{yun:}t key='admin_00344'{/yun}" size="mini" @change="doUserQuery"></el-date-picker>
+                <el-date-picker v-model="search.time" type="daterange" range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00343'{/yun}" value-format="yyyy-MM-dd" end-placeholder="{yun:}t key='admin_00344'{/yun}" size="mini" @change="doUserQuery"></el-date-picker>
             </div>
             <div class="tableSeachInpt tableSeachInptsmall">
                 <el-select v-model="search.operas" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00155'{/yun}" clearable @change="doUserQuery">
@@ -23,10 +23,10 @@
             </div>
             <div class="tableSeachInpt tableSeachInptsmall">
                 <el-select v-model="search.parrs" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00030'{/yun}" clearable @change="doUserQuery">
-                    <el-option label="增加" value="1"></el-option>
-                    <el-option label="修改" value="2"></el-option>
-                    <el-option label="删除" value="3"></el-option>
-                    <el-option label="刷新" value="4"></el-option>
+                    <el-option label="{yun:}t key='admin_user_00156'{/yun}" value="1"></el-option>
+                    <el-option label="{yun:}t key='wap_js_00073'{/yun}" value="2"></el-option>
+                    <el-option label="{yun:}t key='wap_js_00077'{/yun}" value="3"></el-option>
+                    <el-option label="{yun:}t key='admin_company_00020'{/yun}" value="4"></el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt tableSeachInptsmall">
@@ -50,10 +50,10 @@
                     <p>{{ dataText }}</p>
                 </template>
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="uid" label="用户ID" width="110" sortable="custom"></el-table-column>
-                <el-table-column prop="username" label="用户名" width="150">
+                <el-table-column prop="uid" label="{yun:}t key='admin_user_00130'{/yun}" width="110" sortable="custom"></el-table-column>
+                <el-table-column prop="username" label="{yun:}t key='admin_user_00140'{/yun}" width="150">
                 </el-table-column>
-                <el-table-column prop="zzh" label="企业名称" min-width="180" show-overflow-tooltip>
+                <el-table-column prop="zzh" label="{yun:}t key='wap_com_00157'{/yun}" min-width="180" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <el-link v-if="scope.row.pid > 0"
                             :href="scope.row.comp_url"
@@ -62,7 +62,7 @@
                             target="_blank">{{ scope.row.comname }}</el-link>
                     </template>
                 </el-table-column>
-                <el-table-column prop="neirong" label="内容" min-width="180" show-overflow-tooltip>
+                <el-table-column prop="neirong" label="{yun:}t key='wap_user_00102'{/yun}" min-width="180" show-overflow-tooltip>
                     <template slot-scope="scope">
                         {{ scope.row.content }}
                         <template v-if="scope.row.sub_n">
@@ -71,8 +71,8 @@
                     </template>
                 </el-table-column>
                 <el-table-column prop="ip" label="IP" width="150"></el-table-column>
-                <el-table-column prop="ctime_ymd" label="时间" width="180" sortable="custom"></el-table-column>
-                <el-table-column label="操作" width="80" fixed="right">
+                <el-table-column prop="ctime_ymd" label="{yun:}t key='wap_js_00088'{/yun}" width="180" sortable="custom"></el-table-column>
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button type="danger" size="mini" @click="del(scope.row)">{yun:}t key='common.delete'{/yun}</el-button>
@@ -242,7 +242,7 @@ module.exports = {
                 params = {};
             params.del = detail.id;
             let url = this.uri + 'admin_memberlog&a=delLog';
-            let msg = '确定要删除?';
+            let msg = "{yun:}t key='admin_vue_00028'{/yun}";
             delConfirm(_this, params, function (params) {
                 httpPost(url, params).then(function (res) {
                     if (res.data.error > 0) {
@@ -258,14 +258,14 @@ module.exports = {
         batchDel: function () {
             let ids = this.idsArr;
             if (!ids.length) {
-                message.error('请选择需要删除的企业日志');
+                message.error(lc('admin_vue_00029'));
                 return
             }
             let _this = this,
                 params = {};
             params.del = ids;
             let url = this.uri + 'admin_memberlog&a=delLog'
-            let msg = '确定要删除?';
+            let msg = "{yun:}t key='admin_vue_00028'{/yun}";
             delConfirm(_this, params, function (params) {
                 httpPost(url, params).then(function (res) {
                     if (res.data.error > 0) {

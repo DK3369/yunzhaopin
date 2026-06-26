@@ -8,8 +8,8 @@
 			</div>
 			<div class="tableSeachInpt">
 				<el-select v-model="search.appealstate" size="small" clearable placeholder="{yun:}t key='admin_user_00161'{/yun}" @change="doUserQuery">
-                    <el-option label="未处理" value="1"></el-option>
-                    <el-option label="已处理" value="2"></el-option>
+                    <el-option label="{yun:}t key='admin_user_00164'{/yun}" value="1"></el-option>
+                    <el-option label="{yun:}t key='admin_user_00163'{/yun}" value="2"></el-option>
                 </el-select>
 			</div>
 			<div class="tableSeachInpt">
@@ -23,9 +23,9 @@
 					<p>{{dataText}}</p>
 				</template>
                 <el-table-column type="selection" width="55"> </el-table-column>
-                <el-table-column prop="uid" label="用户ID" width="120" sortable="custom"> </el-table-column>
-                <el-table-column prop="username" label="申诉账号" > </el-table-column>
-                <el-table-column  label="联系方式" >
+                <el-table-column prop="uid" label="{yun:}t key='admin_user_00130'{/yun}" width="120" sortable="custom"> </el-table-column>
+                <el-table-column prop="username" label="{yun:}t key='admin_00452'{/yun}" > </el-table-column>
+                <el-table-column  label="{yun:}t key='wap_00462'{/yun}" >
                     <template slot-scope="scope">
                         {{scope.row.moblie}}
                         <template v-if="scope.row.moblie && promiss.moblie">
@@ -38,9 +38,9 @@
                         </template>
                     </template>
                 </el-table-column>
-                <el-table-column prop="appeal" label="申诉信息" > </el-table-column>
-                <el-table-column prop="appealtime_ymd" label="申请时间" width="160" sortable="custom"> </el-table-column>
-                <el-table-column prop="zt" label="状态" width="80">
+                <el-table-column prop="appeal" label="{yun:}t key='admin_00453'{/yun}" > </el-table-column>
+                <el-table-column prop="appealtime_ymd" label="{yun:}t key='wap_com_00342'{/yun}" width="160" sortable="custom"> </el-table-column>
+                <el-table-column prop="zt" label="{yun:}t key='member_user_00181'{/yun}" width="80">
                     <template slot-scope="props">
                         <div class="admin_state">
                             <span v-if="props.row.appealstate == 2" class="admin_state1">{yun:}t key='admin_user_00163'{/yun}</span>
@@ -48,7 +48,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="240" fixed="right">
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="240" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button  v-if="scope.row.appealstate == 1"   size="mini" plain @click="set(scope.row)">{yun:}t key='wap_js_00094'{/yun}</el-button>
@@ -338,7 +338,7 @@ module.exports = {
 				params = {};
 			params.id = detail.uid;
             let url = this.uri + 'admin_appeal&a=success';
-			let msg = '确定申诉已完成?';
+			let msg = "{yun:}t key='admin_vue_00035'{/yun}";
 			delConfirm(_this, params, function (params) {
 				httpPost(url, params).then(function(res) {
 					if (res.data.error > 0) {
@@ -391,7 +391,7 @@ module.exports = {
             	params = {};
             params.id = detail.uid;
             let url = this.uri + 'admin_appeal&a=del';
-			let msg = '确定要删除?';
+			let msg = "{yun:}t key='admin_vue_00028'{/yun}";
 			delConfirm(_this, params, function (params) {
 				httpPost(url, params).then(function(res) {
 					if (res.data.error > 0) {
@@ -408,14 +408,14 @@ module.exports = {
         batchDel: function () {
             let ids = this.idsArr;
             if (!ids.length) {
-                message.error('请选择需要删除的用户!');
+                message.error(lc('admin_vue_00030'));
                 return
             }
             let _this = this,
             	params = {};
             params.del = ids;
             let url = this.uri + 'admin_member&a=del'
-			let msg = '确定要删除?';
+			let msg = "{yun:}t key='admin_vue_00028'{/yun}";
 			delConfirm(_this, params, function (params) {
 				httpPost(url, params).then(function(res) {
 					if (res.data.error > 0) {

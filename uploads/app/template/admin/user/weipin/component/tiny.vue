@@ -5,9 +5,9 @@
                 <div class="moduleInptList moduleInptWidt">
                     <el-input size="small" placeholder="{yun:}t key='admin_user_weipin_00003'{/yun}" @keyup.enter.native="search" v-model="searchForm.keyword" clearable class="input-with-select">
                         <el-select v-model="searchForm.type" slot="prepend" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                            <el-option label="用户姓名" :value="1"></el-option>
-                            <el-option label="意向职位" :value="2"></el-option>
-                            <el-option label="手机号码" :value="3"></el-option>
+                            <el-option label="{yun:}t key='admin_00429'{/yun}" :value="1"></el-option>
+                            <el-option label="{yun:}t key='wap_com_00353'{/yun}" :value="2"></el-option>
+                            <el-option label="{yun:}t key='wap_user_00241'{/yun}" :value="3"></el-option>
                         </el-select>
                     </el-input>
                 </div>
@@ -43,9 +43,9 @@
                 </template>
                 <el-table-column type="selection" width="55">
                 </el-table-column>
-                <el-table-column prop="id" label="编号" width="90" sortable="custom">
+                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="90" sortable="custom">
                 </el-table-column>
-                <el-table-column label="姓名" min-width="180">
+                <el-table-column label="{yun:}t key='wap_00529'{/yun}" min-width="180">
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             <span><el-link :underline="false" @click="openDetail(scope.row)" type="primary">{{
@@ -53,20 +53,20 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="sex_n" label="性别" width="140">
+                <el-table-column prop="sex_n" label="{yun:}t key='wap_com_00303'{/yun}" width="140">
                 </el-table-column>
-                <el-table-column prop="exp_n" label="工作年限" width="140">
+                <el-table-column prop="exp_n" label="{yun:}t key='wap_00526'{/yun}" width="140">
                 </el-table-column>
-                <el-table-column prop="job" label="意向职位" min-width="160">
+                <el-table-column prop="job" label="{yun:}t key='wap_com_00353'{/yun}" min-width="160">
                 </el-table-column>
-                <el-table-column prop="mobile" label="手机" width="140">
+                <el-table-column prop="mobile" label="{yun:}t key='wap_01557'{/yun}" width="140">
                 </el-table-column>
-                <el-table-column prop="time" label="发布时间" width="140" sortable="custom">
+                <el-table-column prop="time" label="{yun:}t key='admin_user_weipin_00030'{/yun}" width="140" sortable="custom">
                     <template slot-scope="scope">
                         <div>{{ scope.row.time_n }}</div>
                     </template>
                 </el-table-column>
-                <el-table-column label="状态" width="120">
+                <el-table-column label="{yun:}t key='member_user_00181'{/yun}" width="120">
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             <div class="admin_state">
@@ -76,7 +76,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="站点" width="140">
+                <el-table-column label="{yun:}t key='admin_user_weipin_00050'{/yun}" width="140">
                     <template slot-scope="scope">
                         <div class="moduleProps moduleTrButn">
                             <span>{{ domainList[scope.row.did] }}</span>
@@ -84,7 +84,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="140">
+                <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="140">
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
                             <el-button size="mini" style="margin-right: 8px;" @click="openAudit(scope.row)">{yun:}t key='member_user_00152'{/yun}</el-button>
@@ -613,12 +613,12 @@ module.exports = {
                 params = {},
                 msg = '';
 
-            if (typeof idx == 'undefined") { // {yun:}t key='member_com_00055'{/yun}
+            if (typeof idx == 'undefined') { // {yun:}t key='member_com_00055'{/yun}
                 params.del = this.idArr;
-                msg = "你确定要删除选中项吗？";
+                msg = lc('common_00853');
             } else {// {yun:}t key='common_01711'{/yun}
                 params.del = that.list[idx].id;
-                msg = "你确定要删除当前项吗？';
+                msg = lc('admin_00333');
             }
 
             delConfirm(this, params, function (params) {
@@ -635,7 +635,7 @@ module.exports = {
         },
 
         openDomain(row) {
-            if (typeof row == 'undefined") { // {yun:}t key='admin_yunying_00106'{/yun}
+            if (typeof row == 'undefined') { // {yun:}t key='admin_yunying_00106'{/yun}
                 this.detail = {};
                 this.$set(this.ruleFormDomain, "id', this.idArr);
                 this.$set(this.ruleFormDomain, 'did', '');
@@ -680,7 +680,7 @@ module.exports = {
         openAudit(row) {
             let that = this;
 
-            if (typeof row != 'undefined") { // 单个审核
+            if (typeof row != 'undefined') { // 单个审核
                 that.detail = row;
                 that.ruleFormAudit = {
                     id: row.id,
@@ -863,7 +863,7 @@ module.exports = {
         refresh(row) {
             let that = this;
 
-            message.confirm('确认刷新简历？', function () {
+            message.confirm(lc('admin_vue_00024'), function () {
                 httpPost('m=user&c=weipin_tiny&a=refresh', { id: row.id }).then(function (response) {
                     let res = response.data;
 

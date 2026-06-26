@@ -5,10 +5,10 @@
                 <div class="moduleInptList moduleInptWidt">
                     <el-input placeholder="{yun:}t key='admin_user_weipin_00003'{/yun}" @keyup.enter.native="search" size="small" v-model="searchForm.keyword" clearable class="input-with-select">
                         <el-select v-model="searchForm.type" slot="prepend" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                            <el-option label="职位名称" :value="2"></el-option>
-                            <el-option label="联系电话" :value="3"></el-option>
-                            <el-option label="联系人" :value="4"></el-option>
-                            <el-option label="店铺名" :value="5"></el-option>
+                            <el-option label="{yun:}t key='wap_com_00288'{/yun}" :value="2"></el-option>
+                            <el-option label="{yun:}t key='admin_company_00023'{/yun}" :value="3"></el-option>
+                            <el-option label="{yun:}t key='wap_01431'{/yun}" :value="4"></el-option>
+                            <el-option label="{yun:}t key='admin_user_weipin_00046'{/yun}" :value="5"></el-option>
                         </el-select>
                     </el-input>
                 </div>
@@ -45,9 +45,9 @@
                 </template>
                 <el-table-column type="selection" width="55">
                 </el-table-column>
-                <el-table-column prop="id" label="编号" width="90" sortable="custom">
+                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="90" sortable="custom">
                 </el-table-column>
-                <el-table-column label="职位名称/店铺名" min-width="180">
+                <el-table-column label="{yun:}t key='admin_user_weipin_00006'{/yun}" min-width="180">
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             <span><el-link :underline="false" @click="openPage(scope.row.once_url)" type="primary">{{
@@ -56,7 +56,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="店铺形象" width="140" align="center">
+                <el-table-column label="{yun:}t key='wap_00362'{/yun}" width="140" align="center">
                     <template slot-scope="scope">
                         <div class="moduleProps" style="display: flex; align-items: center; justify-content: center;">
                             <el-image v-if="scope.row.pic" :src="scope.row.pic_n" style="width: 50px; height: 50px">
@@ -65,11 +65,11 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="phone" label="联系电话" width="140">
+                <el-table-column prop="phone" label="{yun:}t key='admin_company_00023'{/yun}" width="140">
                 </el-table-column>
-                <el-table-column prop="linkman" label="联系人" width="140">
+                <el-table-column prop="linkman" label="{yun:}t key='wap_01431'{/yun}" width="140">
                 </el-table-column>
-                <el-table-column prop="ctime" label="发布时间" width="140" sortable="custom">
+                <el-table-column prop="ctime" label="{yun:}t key='admin_user_weipin_00030'{/yun}" width="140" sortable="custom">
                     <template slot-scope="scope">
                         <div class="admin_state">
                             <span v-if="scope.row.status == 2" class="admin_state3">{{ scope.row.ctime_n }}</span>
@@ -77,12 +77,12 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="edate" label="结束时间" width="140" sortable="custom">
+                <el-table-column prop="edate" label="{yun:}t key='admin_company_00006'{/yun}" width="140" sortable="custom">
                     <template slot-scope="scope">
                         <div>{{ scope.row.edate_n }}</div>
                     </template>
                 </el-table-column>
-                <el-table-column label="状态" width="120">
+                <el-table-column label="{yun:}t key='member_user_00181'{/yun}" width="120">
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             <div class="admin_state">
@@ -97,7 +97,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="站点" width="140">
+                <el-table-column label="{yun:}t key='admin_user_weipin_00050'{/yun}" width="140">
                     <template slot-scope="scope">
                         <div class="moduleProps moduleTrButn">
                             <span>{{ domainList[scope.row.did] }}</span>
@@ -105,7 +105,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="140">
+                <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="140">
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
                             <el-button size="mini" style="margin-right: 8px;" @click="openAudit(scope.row)">{yun:}t key='member_user_00152'{/yun}</el-button>
@@ -831,12 +831,12 @@ module.exports = {
                 params = {},
                 msg = '';
 
-            if (typeof idx == 'undefined") { // {yun:}t key='member_com_00055'{/yun}
+            if (typeof idx == 'undefined') { // {yun:}t key='member_com_00055'{/yun}
                 params.del = this.idArr;
-                msg = "你确定要删除选中项吗？";
+                msg = lc('common_00853');
             } else {// {yun:}t key='common_01711'{/yun}
                 params.del = that.list[idx].id;
-                msg = "你确定要删除当前项吗？';
+                msg = lc('admin_00333');
             }
 
             delConfirm(this, params, function (params) {
@@ -853,7 +853,7 @@ module.exports = {
         },
 
         openDomain(row) {
-            if (typeof row == 'undefined") { // {yun:}t key='admin_yunying_00106'{/yun}
+            if (typeof row == 'undefined') { // {yun:}t key='admin_yunying_00106'{/yun}
                 this.detail = {};
                 this.$set(this.ruleFormDomain, "id', this.idArr);
                 this.$set(this.ruleFormDomain, 'did', '');
@@ -899,7 +899,7 @@ module.exports = {
         openAudit(row) {
             let that = this;
 
-            if (typeof row != 'undefined") { // 单个审核
+            if (typeof row != 'undefined') { // 单个审核
                 that.detail = row;
                 that.ruleFormAudit = {
                     id: row.id,
@@ -1111,7 +1111,7 @@ module.exports = {
                 return false;
             }
             if (typeof ruleForm.edate === 'undefined' || $.trim(ruleForm.edate) == "") {
-                message.error('请输入有效时间');
+                message.error(lc('admin_vue_00036'));
                 return false;
             }
             if (typeof ruleForm.linkman === 'undefined' || $.trim(ruleForm.linkman) == "") {
@@ -1135,11 +1135,11 @@ module.exports = {
                 return false;
             }
             if (typeof ruleForm.address === 'undefined' || $.trim(ruleForm.address) == "") {
-                message.error('请输入工作地点');
+                message.error(lc('admin_vue_00037'));
                 return false;
             }
             if (typeof ruleForm.require === 'undefined' || $.trim(ruleForm.require) == "") {
-                message.error('请输入招聘要求');
+                message.error(lc('admin_vue_00038'));
                 return false;
             }
 
@@ -1173,7 +1173,7 @@ module.exports = {
         refresh(row) {
             let that = this;
 
-            message.confirm('确认刷新职位？', function () {
+            message.confirm(lc('admin_vue_00039'), function () {
                 httpPost('m=user&c=weipin_once&a=refresh_job', { id: row.id }).then(function (response) {
                     let res = response.data;
 

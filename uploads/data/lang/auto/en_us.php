@@ -15938,4 +15938,18 @@ return array (
   'admin_vue_00025' => 'Talent name',
   'admin_vue_00026' => 'IP/Location',
   'admin_vue_00027' => ' default avatars!',
+
+  'admin_vue_00028' => 'Confirm delete?',
+  'admin_vue_00029' => 'Please select company logs to delete',
+  'admin_vue_00030' => 'Please select users to delete!',
+  'admin_vue_00031' => 'Confirm account cancellation?',
+  'admin_vue_00032' => 'Favorites & follows',
+  'admin_vue_00033' => 'Applications & entrustments',
+  'admin_vue_00034' => 'Please select users to delete',
+  'admin_vue_00035' => 'Confirm appeal completed?',
+
+  'admin_vue_00036' => 'Please enter valid duration',
+  'admin_vue_00037' => 'Please enter work location',
+  'admin_vue_00038' => 'Please enter hiring requirements',
+  'admin_vue_00039' => 'Confirm refresh job?',
 );
