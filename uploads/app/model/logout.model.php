@@ -178,7 +178,7 @@ class logout_model extends model{
 	                    $noticeM -> sendSMSType($sendData);
 	                }
 	                
-	                $return['msg']      =  yun_auto_t('注销账号申请(ID：').$row['id'].')处理成功';
+	                $return['msg']      =  yun_at('model_00208') . $row['id'] . yun_at('model_00209');
 	                $return['errcode']  =  9;
 	                
 	            }else{

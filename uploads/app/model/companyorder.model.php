@@ -599,10 +599,10 @@ class companyorder_model extends model
 			$return['id']				=	$this -> delete_all('company_pay',array('id' => array('in',$id)),'');
 			
 			if($return['id']){
-				$return['msg']      	=  yun_auto_t('消费记录(ID:').$id.')删除成功';
+				$return['msg']      	=  yun_at('model_00216') . $id . yun_at('model_00112');
 				$return['errcode']  	=  '9';
 			}else{
-				$return['msg']      	=  yun_auto_t('消费记录(ID:').$id.')删除失败';
+				$return['msg']      	=  yun_at('model_00216') . $id . yun_at('model_00137');
 				$return['errcode']  	=  '8';
 			}
 		}else{

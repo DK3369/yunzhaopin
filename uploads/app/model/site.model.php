@@ -182,7 +182,7 @@ class site_model extends model
             }
 
             $return['id'] = $this->delete_all("domain", array('id' => array('in', $delId)), "");
-            $return['msg'] = yun_auto_t('分站(ID:') . $delId . ')';
+            $return['msg'] = yun_at('model_00206') . $delId . yun_at('model_00130');
             $return['error'] = $return['id'] ? 0 : 1;
             $return['msg'] = $return['id'] ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
         } else {

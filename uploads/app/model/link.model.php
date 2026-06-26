@@ -124,7 +124,7 @@ class link_model extends model{
 				}
 				if($data['utype']=='admin'){
 					
-					$return['msg']	=	yun_auto_t('友情链接(ID:').$return['id'].')'.$msg.'wap_js_00104';
+					$return['msg']	=	yun_at('model_00211') . $return['id'] . yun_at('model_00130') . $msg . 'wap_js_00104';
 				}
 				$return['errcode']	=	9;
 			}else{
@@ -164,7 +164,7 @@ class link_model extends model{
 			
 			$return['id']	=	$this -> delete_all('admin_link',array('id' => array('in',$ids)),'');
 			$this->get_cache();
-			$return['msg']		=	yun_auto_t('友情链接(ID:').$ids.')';
+			$return['msg']		=	yun_at('model_00211') . $ids . yun_at('model_00130');
 			$return['errcode']	=	$return['id'] ? '9' :'8';
 			$return['msg']		=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 		}
@@ -182,7 +182,7 @@ class link_model extends model{
 				
 				$this->get_cache();
 				
-				$return['msg']		=	yun_auto_t('友情链接(ID:').$data['uid'].")分配站点成功！";
+				$return['msg']		=	yun_at('model_00211') . $data['uid'] . yun_at('model_00212');
 				$return['errcode']	=	9;
 			}else{
 				$return['msg']		=	yun_at('admin_user_00030');

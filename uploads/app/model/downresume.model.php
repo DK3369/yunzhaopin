@@ -373,11 +373,11 @@ class downresume_model extends model
 
                 $this->addMemberLog($data['uid'], $data['usertype'], 'common_00539'.$id."）", 3, 3);
 
-                $return['msg']          =   yun_auto_t('下载记录(ID:') . $id . ')删除成功';
+                $return['msg']          =   yun_at('model_00213') . $id . yun_at('model_00112');
                 $return['errcode']      =   '9';
             } else {
 
-                $return['msg']          =   yun_auto_t('下载记录(ID:') . $id . ')删除失败';
+                $return['msg']          =   yun_at('model_00213') . $id . yun_at('model_00137');
                 $return['errcode']      =   '8';
             }
         } elseif ($data['where']) {
@@ -1131,11 +1131,11 @@ class downresume_model extends model
                     $this->addMemberLog($data['uid'], $data['usertype'], 'common_00440'.$id."）", 3, 3);
                 }
 
-                $return['msg'] = yun_auto_t('简历免费下载记录(ID:') . $id . ')删除成功';
+                $return['msg'] = yun_at('model_00214') . $id . yun_at('model_00112');
                 $return['errcode'] = '9';
             } else {
 
-                $return['msg'] = yun_auto_t('简历免费下载记录(ID:') . $id . ')删除失败';
+                $return['msg'] = yun_at('model_00214') . $id . yun_at('model_00137');
                 $return['errcode'] = '8';
             }
         } elseif ($data['where']) {

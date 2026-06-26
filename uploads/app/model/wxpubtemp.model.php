@@ -330,7 +330,7 @@ class wxpubtemp_model extends model
 
         $return['id']       =   $this -> delete_all('wxpub_temps',$where,'');
         
-        $return['msg']      =   yun_auto_t('模板(ID:').$delId.')';
+        $return['msg']      =   yun_at('model_00185') . $delId . yun_at('model_00130');
         
         $return['errcode']  =   $return['id'] ? '9' :'8';
         
@@ -778,7 +778,7 @@ class wxpubtemp_model extends model
         
         $return['id']       =   $this -> delete_all('wxpub_twtask',$where,'');
         
-        $return['msg']      =   yun_auto_t('推文任务(ID:').$delId.')';
+        $return['msg']      =   yun_at('model_00223') . $delId . yun_at('model_00130');
         
         $return['errcode']  =   $return['id'] ? '9' :'8';
         

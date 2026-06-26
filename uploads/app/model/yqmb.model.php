@@ -288,13 +288,13 @@ class yqmb_model extends model
                     $sysmsgM->addInfo(array('uid' => $uids, 'usertype' => 2, 'content' => $msg));
                 }
 
-                $return['msg']      =   yun_auto_t('邀请面试模板(ID:') . $idstr . ')审核成功!';
+                $return['msg']      =   yun_at('model_00193') . $idstr . yun_at('model_00109');
 
                 $return['errcode']  =   9;
 
             } else {
 
-                $return['msg']      =   yun_auto_t('审核模板(ID:') . $idstr . ')设置失败';
+                $return['msg']      =   yun_at('model_00194') . $idstr . yun_at('model_00128');
                 $return['errcode']  =   8;
             }
 

@@ -1657,7 +1657,7 @@ class zph_model extends model{
                                                     $return['url']      =   $this->config['sy_weburl'].'wap/member/index.php?c=getserver&id='.$uid.'&server=15';
                                                     if ($serverOpen) {
 
-                                                        $return['msg']  =   yun_auto_t('您的等级特权已经用完，继续报名将消费 <span style=color:red;>').$price."</span> 元，是否继续？";
+                                                        $return['msg']  =   yun_at('common_00434') . ' <span style=color:red;>' . $price . yun_at('common_00608');
                                                     } else {
 
                                                         $return['msg']  =   yun_at('common_00709') . '<a href="'.$this->config['sy_weburl'].'/wap/member/index.php?c=rating" style="color:red;cursor:pointer;">'.yun_at('default_00090').'</a>！';
@@ -1762,7 +1762,7 @@ class zph_model extends model{
             $return['msg'] = yun_at('common_00714');
 
         } else {
-            $return['msg'] = yun_auto_t('报名失败,请稍候重试！');
+            $return['msg'] = yun_at('model_00054');
         }
 
 	    return $return;

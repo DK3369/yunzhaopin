@@ -56,7 +56,7 @@ class recycle_model extends model
         if (isset($data) && !empty($data)) {
 
             $return['id']       =   $this->insert_into('outside', $data);
-            $return['msg']      =   yun_auto_t('回收站(ID:') . $return['id'] . ')';
+            $return['msg']      =   yun_at('model_00225') . $return['id'] . yun_at('model_00130');
             $return['errcode']  =   $return['id'] ? '9' : '8';
             $return['msg']      =   $return['id'] ? $return['msg'] . 'admin_system_00138' : $return['msg'] . 'admin_system_00137';
 
@@ -174,7 +174,7 @@ class recycle_model extends model
 
             $return['id']   =   $this->delete_all('recycle', $whereData, $data['limit'], '', '1');
 
-            $return['msg']  =   yun_auto_t('回收站数据(ID:') . $delId . ')';
+            $return['msg']  =   yun_at('model_00226') . $delId . yun_at('model_00130');
 
             $return['errcode']  =   $return['id'] ? '9' : '8';
 

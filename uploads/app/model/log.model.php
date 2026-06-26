@@ -426,7 +426,7 @@ class log_model extends model{
 			
 			$return['id']				=	$this -> delete_all("login_log", array('id' => array('in',$delId)),"");
 			
-			$return['msg']				=	yun_auto_t('会员登录日志(ID:').pylode(',', $delId).')';
+			$return['msg']				=	yun_at('model_00210') . pylode(',', $delId) . yun_at('model_00130');
 			$return['errcode']			=	$return['id'] ? '9' :'8';
 			$return['msg']				=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 		}elseif($where){

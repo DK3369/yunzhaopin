@@ -160,7 +160,7 @@ class advice_model extends model{
 		 
 			$return['id']		=	$this->delete_all('advice_question',array('id'=>array('in',$delId)),"");
 			
-	        $return['msg']		=	yun_auto_t('意见反馈(ID:').$delId.')';
+	        $return['msg']		=	yun_at('model_00233') . $delId . yun_at('model_00130');
 			$return['errcode']	=	$return['id'] ? '9' :'8';
 			$return['msg']		=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 	    }else{
@@ -174,7 +174,7 @@ class advice_model extends model{
 		if(!empty($data)){
 			$nid      					=	$this->update_once('advice_question',$data,$whereData);
 			
-	        $return['msg']				=	yun_auto_t('意见反馈(ID:').$whereData['id'].')';
+	        $return['msg']				=	yun_at('model_00233') . $whereData['id'] . yun_at('model_00130');
 			$return['errcode']			=	$nid ? '9' :'8';
 			$return['msg']				=	$nid ? $return['msg'].'common_06362' : $return['msg'].'common_06363';
 	    }else{

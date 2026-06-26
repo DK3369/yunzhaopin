@@ -829,7 +829,7 @@ class statis_model extends model{
 
             $result =   $this->delete_all('company_statis_detail', array('id' => array('in', pylode(',', $ids))), '');
 
-            $return['msg']      =   yun_auto_t('套餐记录(ID:').$id.')';
+            $return['msg']      =   yun_at('model_00205') . $id . yun_at('model_00130');
             $return['errcode']  =   $result ? '9' : '8';
             $return['msg']      =   $result ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
         } else {

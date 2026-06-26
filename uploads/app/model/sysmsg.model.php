@@ -542,11 +542,11 @@ class sysmsg_model extends model{
 	        
 	        if ($nid){
 	            
-	            $return['msg']      =  yun_auto_t('系统消息(ID:').$id.')删除成功';
+	            $return['msg']      =  yun_at('model_00204') . $id . yun_at('model_00112');
 	            $return['errcode']  =  '9';
 	        }else{
 
-	            $return['msg']      =  yun_auto_t('系统消息(ID:').$id.')删除成功';
+	            $return['msg']      =  yun_at('model_00204') . $id . yun_at('model_00112');
 	            $return['errcode']  =  '8';
 	        }
 	    } elseif ($data['where']) {

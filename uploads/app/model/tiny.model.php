@@ -429,11 +429,11 @@ class tiny_model extends model{
                 //简历刷新成功，修改个人基本信息表中的更新时间
                 $this->update_once('resume_tiny', $post, array('id' => array('in', pylode(',', $ids))));
 
-                $return['msg']      =   yun_auto_t('刷新简历(ID:') . $idstr . ')成功';
+                $return['msg']      =   yun_at('model_00126') . $idstr . yun_at('model_00201');
                 $return['errcode']  =   '9';
             } else {
 
-                $return['msg']      =   yun_auto_t('刷新简历(ID:') . $idstr . ')失败';
+                $return['msg']      =   yun_at('model_00126') . $idstr . yun_at('model_00202');
                 $return['errcode']  =   '8';
             }
         } else {

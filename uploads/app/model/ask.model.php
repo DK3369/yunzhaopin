@@ -833,10 +833,10 @@ class ask_model extends model{
                     $sysmsgM -> addInfo(array('uid' => $uids,'usertype'=>2,'content'=>$msg));
                 }
                 
-                $return['msg']      =   yun_auto_t('问答回复(ID:').$idstr.')审核成功';
+                $return['msg']      =   yun_at('model_00217') . $idstr . yun_at('model_00109');
 				$return['errcode']  =  0;
 			}else{
-                $return['msg']      =  yun_auto_t('审核回复(ID:').$idstr.')审核失败';
+                $return['msg']      =  yun_at('model_00218') . $idstr . yun_at('model_00219');
                 $return['errcode']  =  1;
             }
         }else {
@@ -896,10 +896,10 @@ class ask_model extends model{
                     $sysmsgM -> addInfo(array('uid' => $uids,'usertype'=>2,'content'=>$msg));
                 }
                 
-                $return['msg']      =  yun_auto_t('审核回复评论(ID:').$idstr.')设置成功';
+                $return['msg']      =  yun_at('model_00220') . $idstr . yun_at('model_00127');
 				$return['errcode']  =  0;
 			}else{
-                $return['msg']      =  yun_auto_t('审核回复评论(ID:').$idstr.')设置失败';
+                $return['msg']      =  yun_at('model_00220') . $idstr . yun_at('model_00128');
                 $return['errcode']  =  1;
             }
         }else {
@@ -1144,7 +1144,7 @@ class ask_model extends model{
 			
 			$this -> delete_all("answer_review",array('aid'=>array('in',$delId)),'');
 			
-			$result['msg']		=	yun_auto_t('用户回答(ID:').$delId.')';
+			$result['msg']		=	yun_at('model_00221') . $delId . yun_at('model_00130');
 			
 			$result['errcode']	=	$result['id']?9:8;
 			

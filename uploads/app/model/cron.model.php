@@ -96,12 +96,12 @@ class cron_model extends model
 
                 $nbid           =   $this->insert_into('cron', $data);
 
-                $return['msg']  =   yun_auto_t('计划任务(id:') . $nbid . ")添加";
+                $return['msg']  =   yun_at('model_00229') . $nbid . yun_at('model_00231');
             } else {
 
                 $nbid           =   $this->update_once('cron', $data, array('id' => $id));
 
-                $return['msg']  =   yun_auto_t('计划任务(ID:') . $id . ")修改";
+                $return['msg']  =   yun_at('model_00230') . $id . yun_at('model_00232');
             }
 
             $return['errcode']  =   $nbid ? '9' : '8';
@@ -122,7 +122,7 @@ class cron_model extends model
         if (!empty($delId)) {
 
             $nbid               =   $this->delete_all('cron', array('id' => $delId), '');
-            $return['msg']      =   yun_auto_t('计划任务(ID:') . $delId . ")";
+            $return['msg']      =   yun_at('model_00230') . $delId . yun_at('model_00130');
             $return['errcode']  =   $nbid ? '9' : '8';
             $return['msg']      =   $nbid ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
         }

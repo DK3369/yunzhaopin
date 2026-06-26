@@ -4043,13 +4043,13 @@ class userinfo_model extends model
 	                //登录日志
 	                if ($type=='weixin'){
 	                    
-	                    $state_content  =  $data['source'] == 1 ? yun_auto_t('PC绑定微信') : yun_auto_t('wap绑定微信');
+	                    $state_content  =  $data['source'] == 1 ? yun_at('model_00195') : yun_at('model_00196');
 	                }elseif ($type=='qq'){
 	                    
-	                    $state_content  =  $data['source'] == 1 ? yun_auto_t('PC绑定QQ') : yun_auto_t('wap绑定QQ');
+	                    $state_content  =  $data['source'] == 1 ? yun_at('model_00197') : yun_at('model_00198');
 	                }elseif ($type=='sinaweibo'){
 	                    
-	                    $state_content  =  $data['source'] == 1 ? yun_auto_t('PC绑定新浪微博') : yun_auto_t('wap绑定新浪微博');
+	                    $state_content  =  $data['source'] == 1 ? yun_at('model_00199') : yun_at('model_00200');
 	                }
 	                //会员日志，记录手动登录
 					require_once ('log.model.php');

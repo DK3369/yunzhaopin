@@ -532,10 +532,10 @@ class once_model extends model{
 				$return['id']		=	$this -> update_once("once_job",array('edate'=>$time),array('id'=>$value['id']));
 			}
 			if($return['id']){
-				$return['msg']		=	yun_auto_t('店铺招聘延期(ID:').implode(',', $id).')设置成功！';
+				$return['msg']		=	yun_at('model_00207') . implode(',', $id) . yun_at('model_00165');
 				$return['errcode']	=	9;
 			}else{
-				$return['msg']		=	yun_auto_t('店铺招聘延期(ID:').implode(',', $id).')设置失败！';
+				$return['msg']		=	yun_at('model_00207') . implode(',', $id) . yun_at('model_00166');
 				$return['errcode']	=	8;
 			}
 		}else{
@@ -717,10 +717,10 @@ class once_model extends model{
             $result['id'] = $this->update_once('once_job', $post, array('id' => array('in', $idstr)));
 
             if ($result['id']) {
-                $return['msg'] = yun_auto_t('刷新职位(ID:') . $idstr . ')成功';
+                $return['msg'] = yun_at('model_00203') . $idstr . yun_at('model_00201');
                 $return['errcode'] = 0;
             } else {
-                $return['msg'] = yun_auto_t('刷新职位(ID:') . $idstr . ')失败';
+                $return['msg'] = yun_at('model_00203') . $idstr . yun_at('model_00202');
                 $return['errcode'] = 1;
             }
         } else {

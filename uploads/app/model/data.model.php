@@ -68,7 +68,7 @@ class data_model extends model{
 			
 			$return['id']		=	$this -> insert_into('outside',$data);
 			
-            $return['msg']		=	yun_auto_t('数据调用(ID:').$return['id'].')';
+            $return['msg']		=	yun_at('model_00228') . $return['id'] . yun_at('model_00130');
 			
 			$return['errcode']	=	$return['id'] ? '9' :'8';
             
@@ -105,7 +105,7 @@ class data_model extends model{
 			);
 			$return['id']		=	$this -> update_once('outside',$data,$whereData);
 			
-            $return['msg']		=	yun_auto_t('数据调用(ID:').$return['id'].')';
+            $return['msg']		=	yun_at('model_00228') . $return['id'] . yun_at('model_00130');
 			
 			$return['errcode']	=	$return['id'] ? '9' :'8';
             
@@ -140,7 +140,7 @@ class data_model extends model{
             }
 
             $return['id'] = $this->delete_all('outside', array('id' => array('in', $delId)), '');
-            $return['msg'] = yun_auto_t('数据调用(ID:') . $delId . ')';
+            $return['msg'] = yun_at('model_00228') . $delId . yun_at('model_00130');
             $return['errcode'] = $return['id'] ? '9' : '8';
             $return['msg'] = $return['id'] ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
         } else {

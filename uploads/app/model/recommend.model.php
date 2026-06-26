@@ -59,7 +59,7 @@ class recommend_model extends model{
 			
 			$return['id']		=	$this -> insert_into('outside',$data);
 			
-            $return['msg']		=	yun_auto_t('回收站(ID:').$return['id'].')';
+            $return['msg']		=	yun_at('model_00225') . $return['id'] . yun_at('model_00130');
 			
 			$return['errcode']	=	$return['id'] ? '9' :'8';
             

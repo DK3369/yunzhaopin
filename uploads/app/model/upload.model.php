@@ -543,7 +543,7 @@ class upload_model extends model{
                 $return['docurl']   =   '/' . $upload;
             } else {
 
-                $return['msg']      =   yun_auto_t('文件上传失败，请检查DATA目录权限！');
+                $return['msg']      =   yun_at('model_00234');
             }
         }
         return $return;

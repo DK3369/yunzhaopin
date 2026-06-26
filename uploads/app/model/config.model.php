@@ -318,7 +318,7 @@ class config_model extends model{
             
             if ($nid) {
             
-                $return['msg']      =   yun_auto_t('预警信息(ID:') . $delId . ')';
+                $return['msg']      =   yun_at('model_00215') . $delId . yun_at('model_00130');
                 $return['errcode']  =   $nid ? '9' : '8';
                 $return['msg']      =   $nid ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
             }

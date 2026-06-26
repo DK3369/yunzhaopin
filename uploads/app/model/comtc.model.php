@@ -248,7 +248,7 @@ class comtc_model extends model
 
                                     if ($serverOpen) {
 
-                                        $return['msg']  =   yun_auto_t('您的会员套餐已用完，继续邀请将扣除<span style=color:red;>') . $return['jifen'].'</span>' . $this->config['integral_pricename'] . 'common_06074';
+                                        $return['msg']  =   yun_at('common_00473') . '<span style=color:red;>' . $return['jifen'] . '</span>' . $this->config['integral_pricename'] . 'common_06074';
                                     } else {
 
                                         $return['msg']  =   yun_at('common_00267');
@@ -258,7 +258,7 @@ class comtc_model extends model
                                 } else {
                                     if ($serverOpen) {
 
-                                        $return['msg']  =   yun_auto_t('您的会员套餐已用完，继续邀请将扣除<span style=color:red;>') . $this->config['integral_interview'] . 'common_00608';
+                                        $return['msg']  =   yun_at('common_00473') . '<span style=color:red;>' . $this->config['integral_interview'] . yun_at('common_00608');
                                     } else {
 
                                         $return['msg']  =   yun_at('common_00267');

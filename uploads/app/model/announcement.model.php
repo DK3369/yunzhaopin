@@ -216,7 +216,7 @@ class announcement_model extends model{
 
 			if($nid){
 
-				$return['msg']		=	yun_auto_t('公告(ID:') . $delId . ')';
+				$return['msg']		=	yun_at('model_00222') . $delId . yun_at('model_00130');
 
 				$return['errcode']	=	$nid ? '9' :'8';
 
