@@ -11,7 +11,7 @@ class finance_controller extends user_controller{
         if($info['topdate']>1){
 			$info['topdate']	=	date('Y-m-d',$info['topdate']);
 		}else{
-			$info['topdate']	=	'未设置';
+			$info['topdate']	=	yun_auto_t('未设置');
 		}
 		$data['info']	=	$info;
 	    $data['webtel']	=	$this->config['sy_freewebtel'];
@@ -167,15 +167,15 @@ class finance_controller extends user_controller{
 	    	$List[$lk]['dingdan_state']		=	$lv['order_state'];
 	    	$List[$lk]['dingdan_type']		=	$lv['order_type'];
 	    	if ($lv['type']=='1'){
-		    	$List[$lk]['type_n']		=	'购买会员';
+		    	$List[$lk]['type_n']		=	yun_auto_t('购买会员');
 		    }elseif($lv['type']=='2'){
-		    	$List[$lk]['type_n']		=	$this->config['integral_pricename'].'充值';
+		    	$List[$lk]['type_n']		=	$this->config['integral_pricename']. yun_auto_t('充值');
 		    }elseif($lv['type']=='3'){
-		    	$List[$lk]['type_n']		=	'银行转账';
+		    	$List[$lk]['type_n']		=	yun_auto_t('银行转账');
 		    }elseif($lv['type']=='4'){
-		    	$List[$lk]['type_n']		=	'金额充值';
+		    	$List[$lk]['type_n']		=	yun_auto_t('金额充值');
 		    }elseif($lv['type']=='14'){
-		    	$List[$lk]['type_n']		=	'简历置顶';
+		    	$List[$lk]['type_n']		=	yun_auto_t('简历置顶');
 		    }
 	    }
 		$data['list']		=	$List ;
@@ -217,7 +217,7 @@ class finance_controller extends user_controller{
 				    $msg	=	yun_auto_t('请检查订单状态,本订单无需付款');
 				}else{
 					$ordertype	=	array(
-						'2'	=>	$this->config['integral_pricename'].'充值',
+						'2'	=>	$this->config['integral_pricename']. yun_auto_t('充值'),
 						'3'	=>	yun_auto_t('银行转帐'),
 						'4'	=>	yun_auto_t('金额充值'),
 						'14'=>	yun_auto_t('简历置顶')

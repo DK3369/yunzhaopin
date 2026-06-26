@@ -2,7 +2,7 @@
 function getSex() {
     return {
         'id': [0, 3, 1, 2],
-        'name': [WAP_JS_I18N.s37ef15ec, WAP_JS_I18N.s8441b348, '男', '女']
+        'name': [WAP_JS_I18N.s37ef15ec, WAP_JS_I18N.s8441b348, WAP_API_ENUM.SEX_MALE, WAP_API_ENUM.SEX_FEMALE]
     };
 }
 

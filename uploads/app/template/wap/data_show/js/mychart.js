@@ -14,7 +14,7 @@ window.onload = function () {
     }, 500)
 }
 var legendintrval1 = legendintrval3 = legendintrval7 = '';
-// 数据图表
+
 function echart1() {
     $.get('index.php?c=ajax&a=cityData', function (res) {
         var myChart = echarts.init(document.getElementById('main1'));
@@ -443,7 +443,7 @@ function echart4() {
                     barWidth: 20,
                     itemStyle: {
                         normal: {
-                            //这里是颜色
+
                             color: function (params) {
                                 var colorList = ['#424BBD', '#58DBD3', '#029DF7', '#F4003E', '#FF9337', '#FFC722', '#ca8622'];
                                 return colorList[params.dataIndex]
@@ -511,7 +511,7 @@ function echart5() {
                     show: false
                 },
                 axisLabel: {
-                    show: false, // 不显示坐标轴上的文字
+                    show: false,
                 },
                 splitLine: {
                     lineStyle: {
@@ -600,7 +600,7 @@ function echart6() {
                     show: true
                 },
                 axisLabel: {
-                    show: false, // 不显示坐标轴上的文字
+                    show: false,
                 }
             },
             series: [
@@ -957,7 +957,7 @@ function echart9() {
                     barWidth: 20,
                     itemStyle: {
                         normal: {
-                            //这里是颜色
+
                             color: function (params) {
                                 var colorList = ['#424BBD', '#58DBD3', '#029DF7', '#F4003E', '#FF9337', '#FFC722', '#4367F9'];
                                 return colorList[params.dataIndex]

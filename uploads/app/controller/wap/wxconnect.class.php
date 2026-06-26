@@ -76,8 +76,8 @@ class wxconnect_controller extends common
 								$this->MODEL('integral')->invtalCheck($userinfo['uid'], $userinfo['usertype'], "integral_bind_wx", "微信扫码绑定", 28);
                                 // ，
                                 $LogM       =   $this->MODEL('log');
-                                $logContent =   '账号认证：绑定微信';
-                                $logDetail  =   'H5 微信绑定';
+                                $logContent =   yun_auto_t('账号认证：绑定微信');
+                                $logDetail  =   yun_auto_t('H5 微信绑定');
                                 $LogM->addMemberLog($userinfo['uid'], $userinfo['usertype'], $logContent, 12, 1, $logDetail);
                             }
                             
@@ -94,8 +94,8 @@ class wxconnect_controller extends common
                                 }
                                 // ，
                                 $LogM       =   $this->MODEL('log');
-                                $logContent =   '账号登录：快捷登录';
-                                $logDetail  =   'H5 微信快捷登录';
+                                $logContent =   yun_auto_t('账号登录：快捷登录');
+                                $logDetail  =   yun_auto_t('H5 微信快捷登录');
                                 $LogM->addMemberLog($userinfo['uid'], $userinfo['usertype'], $logContent, 32, 1, $logDetail);
 
                                 $logtime    =   date("Ymd", $userinfo['login_date']);
@@ -117,7 +117,7 @@ class wxconnect_controller extends common
                                     $logdata['uid']         =   $userinfo['uid'];
                                     $logdata['usertype']    =   $userinfo['usertype'];
                                     $logdata['did']         =   $userinfo['did'];
-                                    $logdata['content']     =   'WAP微信登录';
+                                    $logdata['content']     =   yun_auto_t('WAP微信登录');
                                     $LogM->addLoginlog($logdata);
                                     $ip    =  fun_ip_get();
                                     $upLogin = array(
@@ -138,7 +138,7 @@ class wxconnect_controller extends common
 
                                 $uc_user    =   uc_get_user($userinfo['username']);
                                 $ucsynlogin =   uc_user_synlogin($uc_user[0]);
-                                $msg        =   '登录成功！';
+                                $msg        =   yun_auto_t('登录成功！');
                                 $this->wapheader('member/');
                             } else {
 
@@ -171,8 +171,8 @@ class wxconnect_controller extends common
 								$this->MODEL('integral')->invtalCheck($this->uid, $this->usertype, "integral_bind_wx", "微信扫码绑定", 28);
                                 // ，
                                 $LogM       =   $this->MODEL('log');
-                                $logContent =   '账号认证：绑定微信';
-                                $logDetail  =   'H5微信绑定';
+                                $logContent =   yun_auto_t('账号认证：绑定微信');
+                                $logDetail  =   yun_auto_t('H5微信绑定');
                                 $LogM->addMemberLog($this->uid, $this->usertype, $logContent, 12, 1, $logDetail);
                             }
 
@@ -246,7 +246,7 @@ class wxconnect_controller extends common
                 }
             } else {
 
-                $result['msg']      =   '微信登录信息已失效，请重新登录！';
+                $result['msg']      =   yun_auto_t('微信登录信息已失效，请重新登录！');
             }
             echo yun_json_encode($result);
         } else {

@@ -59,7 +59,7 @@ class wxoauth_controller extends common{
 					        }
                             // ，
                             $LogM       =   $this->MODEL('log');
-                            $logDetail  =   '授权登录：微信oauth登录成功';
+                            $logDetail  =   yun_auto_t('授权登录：微信oauth登录成功');
                             $LogM->addMemberLog($userinfo['uid'], $userinfo['usertype'], '账号登录：授权登录', 32, 1, $logDetail);
 					        
 					        $logtime	=	date("Ymd",$userinfo['login_date']);
@@ -71,7 +71,7 @@ class wxoauth_controller extends common{
 					            $logdata['uid']		  =	 $userinfo['uid'];
 					            $logdata['usertype']  =	 $userinfo['usertype'];
 					            $logdata['did']		  =	 $userinfo['did'];
-					            $logdata['content']   =  '微信oauth登录';
+					            $logdata['content']   =  yun_auto_t('微信oauth登录');
 					            $LogM->addLoginlog($logdata);
 					        }
 					    }

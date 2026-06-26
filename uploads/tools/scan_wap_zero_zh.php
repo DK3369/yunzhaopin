@@ -28,7 +28,10 @@ function classifyHit($line, $file, $enumFile) {
     if (preg_match('/code_web|strstr\s*\(\s*\$config\.code_web|strpos\s*\(\s*\$config\.code_web/i', $t)) {
         return 'config';
     }
-    if (preg_match('/yun_auto_t|yun_t\s*\(|yun_at\s*\(|yun:}t\s+key=|WAP_API_ENUM|WAP_CODE_WEB|WAP_JS_I18N|PICKER_I18N|CMC_I18N|PRESENT_API_VALUE|WapDbEnum/i', $t)) {
+    if (preg_match('/yun_auto_t\s*\(|yun_t\s*\(|yun_at\s*\(|yun:}t\s+key=|WAP_API_ENUM|WAP_CODE_WEB|WAP_JS_I18N|PICKER_I18N|CMC_I18N|PRESENT_API_VALUE|WapDbEnum/i', $t)) {
+        return 'i18n_wrapped';
+    }
+    if (preg_match("/yun_auto_t\s*\(\s*'[^']*[\x{4e00}-\x{9fff}]/u", $line)) {
         return 'i18n_wrapped';
     }
     if (preg_match("/(===|==|!==|!=)\s*['\"][^'\"]*[\x{4e00}-\x{9fff}]/u", $t)

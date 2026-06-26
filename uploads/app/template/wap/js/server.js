@@ -12,20 +12,20 @@ $("ul#rating_select").on("click", "li", function() {
 
     var id			=	$(this).attr('data-id');
 
-    var meal		=	$(this).attr('data-meal') ? $(this).attr('data-meal') : '';			//  1： 选择会员套餐服务，强制金额消费
+    var meal		=	$(this).attr('data-meal') ? $(this).attr('data-meal') : ''; //
 
-    var price		=	$(this).attr('data-price');	        //	单项购买金额
-    var server		=	$(this).attr('data-server') ? $(this).attr('data-server') : '';		//	单项服务类型
-    var single_id	=	$(this).attr('data-singleid');	    //	单项购买金额
+    var price		=	$(this).attr('data-price'); //
+    var server		=	$(this).attr('data-server') ? $(this).attr('data-server') : ''; //
+    var single_id	=	$(this).attr('data-singleid'); //
 
-    var integral	=	$(this).attr('data-integral');		//	账户积分
-    var	pro			=	$(this).attr('data-pro');			//	积分比例
+    var integral	=	$(this).attr('data-integral'); //
+    var	pro			=	$(this).attr('data-pro'); //
 
-    $(this).addClass("pitch_on"); 						    //	点击li添加class
-    $(this).siblings('li').removeClass("pitch_on"); 	    //	删除兄弟li的class属性
+    $(this).addClass("pitch_on"); //
+    $(this).siblings('li').removeClass("pitch_on"); //
 
-    $(".vip_div").css('display', 'none');	                //	公用属性用来隐藏
-    $("#rating_"+id).css('display', 'block');		        //	根据id显示点击的服务
+    $(".vip_div").css('display', 'none'); //
+    $("#rating_"+id).css('display', 'block'); //
 
     if (id<3){
         $('#vip_qy').css('display', 'block');
@@ -33,7 +33,7 @@ $("ul#rating_select").on("click", "li", function() {
         $('#vip_qy').css('display', 'none');
     }
 
-    $(".vip_div").find('ul li .dredge_body_tab_body_right img').attr('src', imgWurl);	//	会员套餐默认都是未选中
+    $(".vip_div").find('ul li .dredge_body_tab_body_right img').attr('src', imgWurl); //
 
     // 	,
     /*$(".detail_id").each(function(index,el){
@@ -43,11 +43,11 @@ $("ul#rating_select").on("click", "li", function() {
             $(el).css('display', 'block');
         }
     })
-    $(".vip_div").find('ul li i').attr('src', imgWurl);*/	    //	增值服务默认都是未选中
+    $(".vip_div").find('ul li i').attr('src', imgWurl);*/ //
 
 
 
-    if(parseFloat(price) > 0){		//	单项购买点击 获取服务金额
+    if(parseFloat(price) > 0){ //
 
         $("#order_price").html(price);
         $("#server_price").val(price);
@@ -57,9 +57,9 @@ $("ul#rating_select").on("click", "li", function() {
         $("#server_price").val(0);
     }
 
-    if(server){						//	单项购买点击 获取服务类型
+    if(server){ //
         $("#server").val(server);
-        if(server == 'jobtop' || server == 'jobrec' || server == 'joburgent' || server == 'autojob' || server == 'partrec'){	//	职位推广服务
+        if(server == 'jobtop' || server == 'jobrec' || server == 'joburgent' || server == 'autojob' || server == 'partrec'){ //
             if(parseFloat(price) > 0){
 
                 $("#tg_price").val(price);
@@ -90,7 +90,7 @@ $("ul#rating_select").on("click", "li", function() {
 
     $("#single_integral").html(accMul(price, pro));
 
-    if(integral && pro && only_price_arr.indexOf(server)==-1){	// 积分模式
+    if(integral && pro && only_price_arr.indexOf(server)==-1){ //
 
         var integral_need	=	accMul(price, pro);
 
@@ -98,7 +98,7 @@ $("ul#rating_select").on("click", "li", function() {
 
         $("#xdays").val('');
 
-        if(parseInt(integral) >= parseInt(integral_need)){	//	积分充足的情况
+        if(parseInt(integral) >= parseInt(integral_need)){ //
 
             $(".integral_buy_div").css('display', 'block');
             $(".integral_pay_div").css('display', 'none');
@@ -110,7 +110,7 @@ $("ul#rating_select").on("click", "li", function() {
 
         }else{
 
-            var integral_cj	=	accSub(parseInt(integral_need), parseInt(integral));	//	还需充值积分
+            var integral_cj	=	accSub(parseInt(integral_need), parseInt(integral)); //
 
             if(parseInt(integral_min) < parseInt(integral_cj)){
 
@@ -157,17 +157,17 @@ $("ul#rating_select").on("click", "li", function() {
     }
 })
 
-/* 选择不同会员等级操作 */
+/* */
 $("ul#vip_rating_1").on("click", "li", function() {
 
-    var id			=	$(this).attr('data-id');		    //	会员等级ID
-    var price		=	$(this).attr('data-price');		    //	会员服务金额
-    var server		=	$(this).attr('data-server');	    //	服务类型
+    var id			=	$(this).attr('data-id'); //
+    var price		=	$(this).attr('data-price'); //
+    var server		=	$(this).attr('data-server'); //
 
-    var integral	=	$(this).attr('data-integral');	    //	账号积分
-    var pro			=	$(this).attr('data-pro');		    //	积分比例
+    var integral	=	$(this).attr('data-integral'); //
+    var pro			=	$(this).attr('data-pro'); //
 
-    var meal		=	$(this).attr('data-meal');		    //  1： 选择会员套餐服务，强制金额消费
+    var meal		=	$(this).attr('data-meal'); //
 
     $(this).find('.dredge_body_tab_body_right img').attr('src', imgSurl);
     $(this).siblings('li').find('.dredge_body_tab_body_right img').attr('src', imgWurl);
@@ -177,7 +177,7 @@ $("ul#vip_rating_1").on("click", "li", function() {
     $("#integral_dk").val('');
 
 
-    if(integral && pro){	// 积分模式
+    if(integral && pro){ //
 
         var integral_need	=	accMul(parseFloat(price), parseInt(pro));
 
@@ -233,14 +233,14 @@ $("ul#vip_rating_1").on("click", "li", function() {
 
 $("ul#vip_rating_2").on("click", "li", function() {
 
-    var id			=	$(this).attr('data-id');		//	会员等级ID
-    var price		=	$(this).attr('data-price');		//	会员服务金额
-    var server		=	$(this).attr('data-server');	//	服务类型
+    var id			=	$(this).attr('data-id'); //
+    var price		=	$(this).attr('data-price'); //
+    var server		=	$(this).attr('data-server'); //
 
-    var integral	=	$(this).attr('data-integral');	//	账号积分
-    var pro			=	$(this).attr('data-pro');		//	积分比例
+    var integral	=	$(this).attr('data-integral'); //
+    var pro			=	$(this).attr('data-pro'); //
 
-    var meal		=	$(this).attr('data-meal');		//  1： 选择会员套餐服务，强制金额消费
+    var meal		=	$(this).attr('data-meal'); //
 
     $(this).find('.dredge_body_tab_body_right img').attr('src', imgSurl);
     $(this).siblings('li').find('.dredge_body_tab_body_right img').attr('src', imgWurl);
@@ -251,7 +251,7 @@ $("ul#vip_rating_2").on("click", "li", function() {
 
 
 
-    if(integral && pro){	// 积分模式
+    if(integral && pro){ //
 
         var integral_need	=	accMul(parseFloat(price), parseInt(pro));
 
@@ -309,11 +309,11 @@ $("ul#vip_rating_2").on("click", "li", function() {
 
 
 
-/* 抵扣积分输入操作 */
+/* */
 function checkIntegralDK(integral, pro){
 
-    var integral_dk		=	$("#integral_dk").val();		// 	抵扣输入积分
-    var server_price	=	$("#server_price").val();		//	所选服务金额
+    var integral_dk		=	$("#integral_dk").val(); //
+    var server_price	=	$("#server_price").val(); //
 
 
 
@@ -327,7 +327,7 @@ function checkIntegralDK(integral, pro){
 
     var order_price		=	server_price;
 
-    var integral_need	=   accMul(parseFloat(server_price), parseInt(pro));	// 	套餐金额转积分
+    var integral_need	=   accMul(parseFloat(server_price), parseInt(pro)); //
 
     if(parseInt(integral_need) == 0){
 
@@ -345,32 +345,32 @@ function checkIntegralDK(integral, pro){
             $("#integral_dk").val(parseInt(integral_dk));
         }
 
-        if(parseInt(integral) >= parseInt(integral_need)) { 					// 	拥有积分充足
+        if(parseInt(integral) >= parseInt(integral_need)) { //
 
-            if(parseInt(integral_dk) >= parseInt(integral_need)) { 				// 	输入抵扣积分超过购买积分
+            if(parseInt(integral_dk) >= parseInt(integral_need)) { //
 
-                $("#integral_dk").val(parseInt(integral_need));					//	抵扣积分变更最大所需积分
+                $("#integral_dk").val(parseInt(integral_need)); //
 
-                order_price	=	0 ;	                                            // 	抵扣积分后所需金额
+                order_price	=	0 ; //
             } else {
 
-                order_price	= 	accSub(parseFloat(server_price), accDiv(parseInt(integral_dk), parseInt(pro)));	//	抵扣积分后所需金额
+                order_price	= 	accSub(parseFloat(server_price), accDiv(parseInt(integral_dk), parseInt(pro))); //
             }
-        } else {																//	拥有积分不充足
+        } else { //
 
-            if(parseInt(integral_dk) > parseInt(integral)) {					//	抵扣所有积分
+            if(parseInt(integral_dk) > parseInt(integral)) { //
 
                 $("#integral_dk").val(parseInt(integral));
 
-                order_price	= 	accSub(parseFloat(server_price), accDiv(integral, parseInt(pro)));		//	抵扣积分后所需金额
+                order_price	= 	accSub(parseFloat(server_price), accDiv(integral, parseInt(pro))); //
             } else {
 
-                order_price	= 	accSub(parseFloat(server_price), accDiv(integral_dk, parseInt(pro)));	//	抵扣积分后所需金额
+                order_price	= 	accSub(parseFloat(server_price), accDiv(integral_dk, parseInt(pro))); //
             }
         }
     }
 
-    /* 根据抵扣后金额，判断支付方式 */
+/* */
     if(order_price > 0){
 
         $(".order_price_div").css('display', 'flex');
@@ -386,7 +386,7 @@ function checkIntegralDK(integral, pro){
     }
 }
 
-/* 支付方式选择  */
+/* */
 function paycheck(type){
 
     $("#paytype").val(type);
@@ -399,7 +399,7 @@ function paycheck(type){
     }
 }
 
-/* 金额支付购买 */
+/* */
 function orderBuy(){
 
     var server 		= $("#server").val();
@@ -502,7 +502,7 @@ function orderBuy(){
 
             var data = eval('(' + data + ')');
 
-            if (data.error == '0') { // 下单成功
+            if (data.error == '0') { //
 
                 showToast(data.msg, 2, function () {
                     location.href = data.url;
@@ -519,7 +519,7 @@ function orderBuy(){
     }
 }
 
-/* 积分支付购买 */
+/* */
 function integralBuy(){
 
     showLoading();
@@ -612,7 +612,7 @@ function integralBuy(){
 
         var data = eval('(' + data + ')');
 
-        if(data.error == '0') { // 成功
+        if(data.error == '0') { //
 
             showToast(data.msg, 2, function() {
                 location.href = rurl;

@@ -14,28 +14,28 @@ class register_controller extends common
         }
         if ($this->config['reg_user_stop'] != 1) {//关闭会员注册
 
-            $this->ACT_msg_wap('index.php', '网站已关闭注册！', 2, 5);
+            $this->ACT_msg_wap('index.php', yun_auto_t('网站已关闭注册！'), 2, 5);
 
         } else {
             if ($this->uid) {
-                $this->ACT_msg_wap('index.php', '您已经登录了！', 2, 5);
+                $this->ACT_msg_wap('index.php', yun_auto_t('您已经登录了！'), 2, 5);
             }
             $type = $_GET['type'];
             if ($type) {
                 switch ($type) {
                     case 1:
                         if ($this->config['reg_user'] != 1) {
-                            $this->ACT_msg_wap('index.php', '用户名注册已关闭！', 2, 5);
+                            $this->ACT_msg_wap('index.php', yun_auto_t('用户名注册已关闭！'), 2, 5);
                         }
                         break;
                     case 2:
                         if ($this->config['reg_moblie'] != 1) {
-                            $this->ACT_msg_wap('index.php', '手机号注册已关闭！', 2, 5);
+                            $this->ACT_msg_wap('index.php', yun_auto_t('手机号注册已关闭！'), 2, 5);
                         }
                         break;
                     case 3:
                         if ($this->config['reg_email'] != 1) {
-                            $this->ACT_msg_wap('index.php', 'email注册已关闭！', 2, 5);
+                            $this->ACT_msg_wap('index.php', yun_auto_t('email注册已关闭！'), 2, 5);
                         }
                     default:
                         break;

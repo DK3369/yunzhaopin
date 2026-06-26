@@ -415,7 +415,7 @@ class job_controller extends com_controller
 
         if ($row['is_link'] == 3){
 
-            $row['linkmsg']         =   '不向求职者展示联系方式';
+            $row['linkmsg']         =   yun_auto_t('不向求职者展示联系方式');
         } elseif ($row['is_link'] == 2){
 
             $cityStr            =   $job_link['city_one'] . $job_link['city_two'] . $job_link['city_three'];
@@ -621,7 +621,7 @@ class job_controller extends com_controller
                     }else if (empty($rv['s_time']) && $rv['e_time']){
                         $job['sx_time_n']      =   '00:00 - '.$rv['e_time'];
                     }else{
-                        $job['sx_time_n']      =   '不限';
+                        $job['sx_time_n']      =   yun_auto_t('不限');
                     }
                 }
             }else{
@@ -685,7 +685,7 @@ class job_controller extends com_controller
     
 	   if(!$_POST['ids'] || !$this->member['uid']){
 			$data['error']	=	3;
-			$data['msg']	=	'参数不正确';
+			$data['msg']	=	yun_auto_t('参数不正确');
 		}else{
 			$jobM	=	$this -> Model('job');
 			$PackM	=	$this -> Model('pack');
@@ -933,7 +933,7 @@ class job_controller extends com_controller
                 if ($statis['rating_type'] == 1){
 
                     $statisM = $this->MODEL('statis');
-                    $payDetail  =   '上架职位，消耗上架套餐数量：1';
+                    $payDetail  =   yun_auto_t('上架职位，消耗上架套餐数量：1');
                     $statisM->addStatisDetail(array('uid' => $this->uid, 'type' => 1, 'num' => 1, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                 }
             }
@@ -943,8 +943,8 @@ class job_controller extends com_controller
 			if($nid){
 
 			    $logM       =   $this->MODEL('log');
-                $logContent =   '职位更新：调整职位招聘状态';
-                $logDetail  =   $_POST['status'] == 0 ? '调整职位《'.$jobInfo['name'].'》招聘状态：下架->上架' : '调整职位('.$jobInfo['name'].')招聘状态：上架->下架';
+                $logContent =   yun_auto_t('职位更新：调整职位招聘状态');
+                $logDetail  =   $_POST['status'] == 0 ? '调整职位《'.$jobInfo['name']. yun_auto_t('》招聘状态：下架->上架') : '调整职位('.$jobInfo['name']. yun_auto_t(')招聘状态：上架->下架');
                 $logM->addMemberLog($this->member['uid'], $this->member['usertype'], $logContent, 1, 2, $logDetail);
 
 				$this->render_json(0, 'ok');

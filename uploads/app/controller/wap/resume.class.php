@@ -158,7 +158,7 @@ class resume_controller extends common{
         if ($this->uid && $this->usertype == 2) {
             $companyInfo    =   $companyM->getCompanyInfo(array('uid' => $this->uid), array('field' => 'r_status'));
             if ($companyInfo['r_status'] != '1' && $companyInfo['r_status'] != '4') {
-                $this->ACT_msg_wap(1, '账户正在审核中，无法查看！', 2, 5);
+                $this->ACT_msg_wap(1, yun_auto_t('账户正在审核中，无法查看！'), 2, 5);
             }
         }
 		// 
@@ -166,7 +166,7 @@ class resume_controller extends common{
 		    
 			if($_COOKIE['resumevisitors'] >= $this->config['sy_resume_visitors']){ 				
 			     
-			    $this->ACT_msg_wap($returnUrl,'游客用户，每天只能访问'.$this->config['sy_resume_visitors'].'份简历，请登录后继续访问！', 2, 5);
+			    $this->ACT_msg_wap($returnUrl,yun_auto_t('游客用户，每天只能访问').$this->config['sy_resume_visitors']. yun_auto_t('份简历，请登录后继续访问！'), 2, 5);
 			}else{
 			    
 				if ($_COOKIE['resumevisitors']==''){
@@ -186,11 +186,11 @@ class resume_controller extends common{
 			
 			if(empty($def_job)){
 			
-			    $this->ACT_msg_wap(1,'没有找到该人才！', 2, 5);
+			    $this->ACT_msg_wap(1,yun_auto_t('没有找到该人才！'), 2, 5);
 			    
 			}else if($def_job['def_job'] < 1){
 			    
-			    $this->ACT_msg_wap(1,'还没有创建简历！', 2, 5);
+			    $this->ACT_msg_wap(1,yun_auto_t('还没有创建简历！'), 2, 5);
 			}else if($def_job['def_job']){
 			    
 				$id      =	$def_job['def_job'];
@@ -205,29 +205,29 @@ class resume_controller extends common{
 		$resume_expect	     =	$resumeM -> getInfoByEid(array('eid' => $id, 'uid' => $this->uid, 'usertype' => $this->usertype));
 		
 		if(empty($resume_expect)){
-		    $this->ACT_msg_wap(1,'没有找到该人才！', 2, 5);
+		    $this->ACT_msg_wap(1,yun_auto_t('没有找到该人才！'), 2, 5);
 		}
 
 		// 
 		if($resume_expect['state'] == 0 && $resume_expect['uid'] != $this->uid){		    
 
-		    $this->ACT_msg_wap(1,'简历正在审核中！', 2, 5);
+		    $this->ACT_msg_wap(1,yun_auto_t('简历正在审核中！'), 2, 5);
 			
 		}elseif($resume_expect['r_status'] == 2 && $resume_expect['uid'] != $this->uid){
 		    
-		    $this->ACT_msg_wap(1,'简历暂被锁定，请稍后查看！', 2, 5);
+		    $this->ACT_msg_wap(1,yun_auto_t('简历暂被锁定，请稍后查看！'), 2, 5);
 
 		}elseif($resume_expect['state'] == 3 && $resume_expect['uid'] != $this->uid){
 
-		    $this->ACT_msg_wap(1,'简历审核暂未通过！', 2, 5);
+		    $this->ACT_msg_wap(1,yun_auto_t('简历审核暂未通过！'), 2, 5);
 		}
 		if ($this->config['com_search'] == 1 && !$this->uid){
-            $this->ACT_msg_wap($returnUrl, '请先登录', 2, 5);
+            $this->ACT_msg_wap($returnUrl, yun_auto_t('请先登录'), 2, 5);
         }
 		// 
 		if($this->config['sy_user_visit_resume'] == '0' && $this->usertype == 1 && $this->uid != $resume_expect['uid']){
 			
-		    $this->ACT_msg_wap($returnUrl,'个人用户无权限查看！', 2, 5);
+		    $this->ACT_msg_wap($returnUrl,yun_auto_t('个人用户无权限查看！'), 2, 5);
 		}
 
 		if ($this->uid != $resume_expect['uid']) {
@@ -245,7 +245,7 @@ class resume_controller extends common{
                 }
             }
             if (!$canShow){
-                $this->ACT_msg_wap(1,'简历已设置不对外开放', 2, 5);
+                $this->ACT_msg_wap(1,yun_auto_t('简历已设置不对外开放'), 2, 5);
             }
         }
 
@@ -255,7 +255,7 @@ class resume_controller extends common{
         
         if(!empty($blackInfo)){
             
-            $this->ACT_msg_wap(1, '该用户已关闭简历!', 2, 5);
+            $this->ACT_msg_wap(1, yun_auto_t('该用户已关闭简历!'), 2, 5);
             
         }
 		// 

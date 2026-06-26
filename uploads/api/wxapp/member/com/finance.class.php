@@ -61,7 +61,7 @@ class finance_controller extends com_controller
 				}else{
 					$ordertype	=	array(
 						'1'	=>	yun_auto_t('购买会员'),
-						'2'	=>	$this->config['integral_pricename'].'充值',
+						'2'	=>	$this->config['integral_pricename']. yun_auto_t('充值'),
 						'3'	=>	yun_auto_t('银行转帐'),
 						'5'	=>	yun_auto_t('购买增值包'),
 
@@ -149,7 +149,7 @@ class finance_controller extends com_controller
 				
 	            $statis 	= 	$statisM->getInfo(array('uid'=>$uid),array('usertype'=>2,'field'=>'`rating`,`vip_etime`'));
 	            if(!isVip($statis['vip_etime'])){
-	                $data['errmsg']	=	'会员已过期，请先购买会员';
+	                $data['errmsg']	=	yun_auto_t('会员已过期，请先购买会员');
 	                return $data;
 	            }
 	        }
@@ -381,7 +381,7 @@ class finance_controller extends com_controller
 		$where['pay_time'][] = array('>',strtotime('today'));
 		$where['pay_time'][] = array('<',strtotime('tomorrow'));
 		if($statis['vip_etime']==0){
-			$statis['vip_fwtime']		=	'永久';
+			$statis['vip_fwtime']		=	yun_auto_t('永久');
 		}else{
 			$statis['vip_fwtime']		=	$statis['vip_stime_n'].'-'.$statis['vip_etime_n'];
 		}
@@ -426,7 +426,7 @@ class finance_controller extends com_controller
 		$statis   	=  	$statisM -> vipOver($suid, 2);
 		if($statis['vip_etime']==0){
 
-    		$statis['vip_fwtime']	=	'永久';
+    		$statis['vip_fwtime']	=	yun_auto_t('永久');
 
 		}else{
 

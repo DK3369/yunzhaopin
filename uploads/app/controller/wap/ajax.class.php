@@ -148,14 +148,14 @@ class ajax_controller extends common{
 					}
 					$signday	=	$member['signday']+1;
 					
-					$msg		=	'连续签到'.$signday."天";
+					$msg		=	yun_auto_t('连续签到').$signday."天";
 					
 				}else{
 					$signday	=	'1';
 					
 					$integral	=	$this->config['integral_signin'];
 					
-					$msg		=	'第一次签到';
+					$msg		=	yun_auto_t('第一次签到');
 					
 				}
 				$arr	=	array();
@@ -244,8 +244,8 @@ class ajax_controller extends common{
 	        $result  =  $noticeM->sendCode($moblie, 'cert', 2, $user);
 
             $logM	    =   $this->MODEL('log');
-            $logContent =   '账号认证：发送手机认证验证码';
-            $logDetail  =   '手机认证，发送短信验证码；认证手机号码：'.$moblie;
+            $logContent =   yun_auto_t('账号认证：发送手机认证验证码');
+            $logDetail  =   yun_auto_t('手机认证，发送短信验证码；认证手机号码：').$moblie;
             $logM->addMemberLog($user['uid'], $user['usertype'], $logContent, 12, 1, $logDetail);
 			
 	        echo yun_json_encode($result);exit();
@@ -363,10 +363,10 @@ class ajax_controller extends common{
 		$data   =   '';
 		if(is_array($job_type[$_POST['id']])){	
 		    if($_POST['type']=="jobone_son"){				
-				$data	.=	'<li onclick="check_job_li(\''.$_POST['id'].'\',\'job1\');"><a href="javascript:;">全部</a></li>';
+				$data	.=	'<li onclick="check_job_li(\''.$_POST['id']. yun_auto_t('\',\'job1\');"><a href="javascript:;">全部</a></li>');
 			}
 			if($_POST['type']=="job_post"){				
-				$data	.=	'<li onclick="check_job_li(\''.$_POST['id'].'\',\'job1_son\');"><a href="javascript:;">全部</a></li>';
+				$data	.=	'<li onclick="check_job_li(\''.$_POST['id']. yun_auto_t('\',\'job1_son\');"><a href="javascript:;">全部</a></li>');
 			}			
 			foreach($job_type[$_POST['id']] as $v){				
 				if($_POST['type']=="jobone_son"){
@@ -384,10 +384,10 @@ class ajax_controller extends common{
 			}			
 		}else{
 			if($_POST['type']=="jobone_son"){				
-				$data	.=	'<li onclick="check_job_li(\''.$_POST['id'].'\',\'job1\');"><a href="javascript:;">全部</a></li>';
+				$data	.=	'<li onclick="check_job_li(\''.$_POST['id']. yun_auto_t('\',\'job1\');"><a href="javascript:;">全部</a></li>');
 			}
 			if($_POST['type']=="job_post"){				
-				$data	.=	'<li onclick="check_job_li(\''.$_POST['id'].'\',\'job1_son\');"><a href="javascript:;">全部</a></li>';
+				$data	.=	'<li onclick="check_job_li(\''.$_POST['id']. yun_auto_t('\',\'job1_son\');"><a href="javascript:;">全部</a></li>');
 			}
 		}
 		echo $data;
@@ -405,11 +405,11 @@ class ajax_controller extends common{
 				if (!empty($this->config['sy_web_city_two']) && in_array($_POST['kzq'], array('job','resume','company'))){
 				    $city_type[$_POST['id']] = array($this->config['sy_web_city_two']);
 				}else{
-				    $data .=  '<li onclick="check_city_li(\''.$_POST['id'].'\',\'provinceid\');"><a href="javascript:;">全部</a></li>';
+				    $data .=  '<li onclick="check_city_li(\''.$_POST['id']. yun_auto_t('\',\'provinceid\');"><a href="javascript:;">全部</a></li>');
 				}
 			}
 			if($_POST['type']=="three_cityid"){				
-				$data	.=	'<li onclick="check_city_li(\''.$_POST['id'].'\',\'cityid\');"><a href="javascript:;">全部</a></li>';
+				$data	.=	'<li onclick="check_city_li(\''.$_POST['id']. yun_auto_t('\',\'cityid\');"><a href="javascript:;">全部</a></li>');
 			}		
 			foreach($city_type[$_POST['id']] as $v){				
 				if($_POST['type']=="cityid"){
@@ -425,10 +425,10 @@ class ajax_controller extends common{
 			}		
 		}else{
 			if($_POST['type']=="cityid"){				
-				$data	.=	'<li onclick="check_city_li(\''.$_POST['id'].'\',\'provinceid\');"><a href="javascript:;">全部</a></li>';
+				$data	.=	'<li onclick="check_city_li(\''.$_POST['id']. yun_auto_t('\',\'provinceid\');"><a href="javascript:;">全部</a></li>');
 			}
 			if($_POST['type']=="three_cityid"){				
-				$data	.=	'<li onclick="check_city_li(\''.$_POST['id'].'\',\'cityid\');"><a href="javascript:;">全部</a></li>';
+				$data	.=	'<li onclick="check_city_li(\''.$_POST['id']. yun_auto_t('\',\'cityid\');"><a href="javascript:;">全部</a></li>');
 			}
 		}
 		echo $data;
@@ -543,7 +543,7 @@ class ajax_controller extends common{
 	// wap
 	function getredeem_action(){
 		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('redeem.cache.php') : PLUS_PATH.'redeem.cache.php');
-		$data   =   '<li onclick="check_redeem_li(\''.$_POST['id'].'\',\'nid\');"><a href="javascript:;">全部</a></li>';
+		$data   =   '<li onclick="check_redeem_li(\''.$_POST['id']. yun_auto_t('\',\'nid\');"><a href="javascript:;">全部</a></li>');
 		if(is_array($redeem_type[$_POST['id']])){
 			foreach($redeem_type[$_POST['id']] as $v){				
 				if($_POST['type']=="tnid"){
@@ -832,8 +832,8 @@ class ajax_controller extends common{
     	$this->yunset('datashowtitle', $this->config['sy_datashow_title']);
         $this->yunset("headertitle","数据展示");
 
-        $title = $this->config['sy_datashow_title'] ? $this->config['sy_datashow_title'] . '招聘大数据' : '年度数据 - '.$this->config['sy_webname'];
-        $desc = '年度数据 - '.$this->config['sy_webname'];
+        $title = $this->config['sy_datashow_title'] ? $this->config['sy_datashow_title'] . yun_auto_t('招聘大数据') : '年度数据 - '.$this->config['sy_webname'];
+        $desc = yun_auto_t('年度数据 - ').$this->config['sy_webname'];
         $shareLogo = checkpic($this->config['sy_wx_sharelogo']);
         if ($this->config['sy_seo_rewrite'] == 1) {
             $url = $this->config['sy_weburl'].'/u/'.$_GET['str'];

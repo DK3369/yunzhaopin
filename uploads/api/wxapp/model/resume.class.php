@@ -190,7 +190,7 @@ class resume_controller extends wxapp_controller
 		if($member['uid'] && $usertype==2){
 			$companyinfo=$companyM->getCompanyInfo(array('uid'=>$member['uid']),array('field'=>'r_status'));
             if ($companyinfo['r_status']!='1' && $companyinfo['r_status'] != '4') {
-                $msg    =   '账户正在审核中，无法查看！';
+                $msg    =   yun_auto_t('账户正在审核中，无法查看！');
             }
 		}
         if($_POST['rewardid']){//来自企业会员中心-应聘悬赏简历-查看简历
@@ -201,11 +201,11 @@ class resume_controller extends wxapp_controller
 
             if(empty($reward)){
 
-                $msg    =   '未找到相关数据！';
+                $msg    =   yun_auto_t('未找到相关数据！');
 
             }elseif($reward['status']=='0'){
 
-                $msg    =   '请先支付职位赏金！';
+                $msg    =   yun_auto_t('请先支付职位赏金！');
 
             }else{
                 $id     =   $reward['eid'];
@@ -222,7 +222,7 @@ class resume_controller extends wxapp_controller
                 $id     =   $def_job['def_job'];
 
             }else{
-                $msg    =   '未找到相关数据！';
+                $msg    =   yun_auto_t('未找到相关数据！');
 
             }
         }else{
@@ -246,22 +246,22 @@ class resume_controller extends wxapp_controller
 
             if(empty($expect)){
 
-                $msg        =   '没有找到该人才！';
+                $msg        =   yun_auto_t('没有找到该人才！');
 
             }elseif($expect['state'] == 0 && $uid != $expect['uid']){
 
-                $msg        =   '简历正在审核中！';
+                $msg        =   yun_auto_t('简历正在审核中！');
 
             }elseif($expect['r_status'] == 2 && $uid != $expect['uid']){
 
-                $msg        =   '简历暂被锁定，请稍后查看！';
+                $msg        =   yun_auto_t('简历暂被锁定，请稍后查看！');
 
             }elseif($expect['state'] == 3 && $uid != $expect['uid']){
 
-                $msg        =   '简历审核暂未通过！';
+                $msg        =   yun_auto_t('简历审核暂未通过！');
 
             }elseif($this->config['sy_user_visit_resume'] == '0' && $usertype == 1 && $uid != $expect['uid']){
-                $msg        =   '个人用户无权限查看！';
+                $msg        =   yun_auto_t('个人用户无权限查看！');
 
             }else{
                 if ($uid != $expect['uid']) {
@@ -279,14 +279,14 @@ class resume_controller extends wxapp_controller
                         }
                     }
                     if (!$canShow){
-                        $msg  =  '简历已设置不对外开放！';
+                        $msg  =  yun_auto_t('简历已设置不对外开放！');
                     }else{
                         // 
                         $blackM     =   $this->MODEL('black');
                         $blackInfo  =   $blackM -> getBlackInfo(array('p_uid' => $uid, 'c_uid'=> $expect['uid']));
 
                         if(!empty($blackInfo)){
-                            $msg    =   '该用户已关闭简历!';
+                            $msg    =   yun_auto_t('该用户已关闭简历!');
                         }
                     }
                 }
@@ -449,7 +449,7 @@ class resume_controller extends wxapp_controller
         $ymlist =   $yqmbM  ->getList(array('uid'=>$member['uid'],'status'=>1));
         $ymData =   array();
         $ykey   =   0;
-        $ymData[$ykey]['name']          = '请选择';
+        $ymData[$ykey]['name']          = yun_auto_t('请选择');
         $ymData[$ykey]['id']            = '';
         $ymData[$ykey]['link_man']      = '';
         $ymData[$ykey]['link_mobile']   = '';

@@ -60,7 +60,7 @@ class zpdata_controller extends com_controller
                 $refreshNum = '-';
             } else {
                 $refreshNum = $statis['breakjob_num'];
-                $refreshUnit = '次/天';
+                $refreshUnit = yun_auto_t('次/天');
             }
             $rating['breakjob_num'] == 0 && $refreshTcNum = '-';
 
@@ -68,7 +68,7 @@ class zpdata_controller extends com_controller
                 $inviteNum = '-';
             } else {
                 $inviteNum = $statis['invite_resume'];
-                $inviteUnit = '次/天';
+                $inviteUnit = yun_auto_t('次/天');
             }
             $rating['interview'] == 0 && $inviteTcNum = '-';
 
@@ -76,7 +76,7 @@ class zpdata_controller extends com_controller
                 $downNum = '-';
             } else {
                 $downNum = $statis['down_resume'];
-                $downUnit = '份/天';
+                $downUnit = yun_auto_t('份/天');
             }
             $rating['resume'] == 0 && $downTcNum = '-';
 
@@ -84,7 +84,7 @@ class zpdata_controller extends com_controller
                 $zphNum = '-';
             } else {
                 $zphNum = $statis['zph_num'];
-                $zphUnit = '次/天';
+                $zphUnit = yun_auto_t('次/天');
             }
             $rating['zph_num'] == 0 && $zphTcNum = '-';
 
@@ -92,7 +92,7 @@ class zpdata_controller extends com_controller
                 $topNum = '-';
             } else {
                 $topNum = $statis['top_num'];
-                $topUnit = '天';
+                $topUnit = yun_auto_t('天');
             }
             $rating['top_num'] == 0 && $topTcNum = '-';
 
@@ -100,7 +100,7 @@ class zpdata_controller extends com_controller
                 $urgentNum = '-';
             } else {
                 $urgentNum = $statis['urgent_num'];
-                $urgentUnit = '天';
+                $urgentUnit = yun_auto_t('天');
             }
             $rating['urgent_num'] == 0 && $urgentTcNum = '-';
 
@@ -108,30 +108,30 @@ class zpdata_controller extends com_controller
                 $recNum = '-';
             } else {
                 $recNum = $statis['rec_num'];
-                $recUnit = '天';
+                $recUnit = yun_auto_t('天');
             }
             $rating['rec_num'] == 0 && $recTcNum = '-';
         } else {
             $refreshNum = $statis['breakjob_num'];
-            $refreshUnit = '次';
+            $refreshUnit = yun_auto_t('次');
 
             $inviteNum = $statis['invite_resume'];
-            $inviteUnit = '次';
+            $inviteUnit = yun_auto_t('次');
 
             $downNum = $statis['down_resume'];
-            $downUnit = '份';
+            $downUnit = yun_auto_t('份');
 
             $zphNum = $statis['zph_num'];
-            $zphUnit = '次';
+            $zphUnit = yun_auto_t('次');
 
             $topNum = $statis['top_num'];
-            $topUnit = '天';
+            $topUnit = yun_auto_t('天');
 
             $urgentNum = $statis['urgent_num'];
-            $urgentUnit = '天';
+            $urgentUnit = yun_auto_t('天');
 
             $recNum = $statis['rec_num'];
-            $recUnit = '天';
+            $recUnit = yun_auto_t('天');
         }
 
         // 

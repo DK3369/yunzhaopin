@@ -1,4 +1,4 @@
-/* 自适应尺寸 */
+/*  */
 @media (max-width: 1600px) {
     .analyBackImg img.dianzui2 {
         right: -32%;
@@ -390,7 +390,7 @@
         font-size: 20px;
     }
 
-    /*后加的*/
+    /**/
     .analyEchaFenbuer{
         width: 120px;
         left: calc(100% - 150px);

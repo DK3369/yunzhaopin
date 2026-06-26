@@ -52,7 +52,7 @@ class resume_controller extends com_controller{
 	{
 		if(!$_POST['id']||!$_POST['browse']){
 			$data['error']	=	3;
-			$data['msg']	=	'参数不正确';
+			$data['msg']	=	yun_auto_t('参数不正确');
 		}else{
 			$id		=	(int)$_POST['id'];
 			$browse	=	(int)$_POST['browse'];
@@ -69,10 +69,10 @@ class resume_controller extends com_controller{
 			$nid    =   $JobM -> BrowseSqJob($id,$data);
 			if($nid){
 				$data['error']	=	1;
-				$data['msg']	=	'设置成功';
+				$data['msg']	=	yun_auto_t('设置成功');
 			}else{
 				$data['error']	=	2;
-				$data['msg']	=	'设置失败';
+				$data['msg']	=	yun_auto_t('设置失败');
 			}
 		}
 		$this->render_json($data['error'],$data['msg']);
@@ -81,16 +81,16 @@ class resume_controller extends com_controller{
 	{
 		if(!$_POST['ids']){
 			$data['error']=3;
-			$data['msg']='参数不正确';
+			$data['msg']=yun_auto_t('参数不正确');
 		}else{
 			$JobM   =   $this -> MODEL('job');
 			$arr    =   $JobM -> delSqJob($_POST['ids'],array('utype'=>'com','uid'=>$this->member['uid'],'usertype'=>$this->member['usertype']));
 			if($arr){
 				$data['error']	=	1;
-				$data['msg']	=	'删除成功';
+				$data['msg']	=	yun_auto_t('删除成功');
 			}else{
 				$data['error']	=	2;
-				$data['msg']	=	'删除失败';
+				$data['msg']	=	yun_auto_t('删除失败');
 			}
 		}
 
@@ -157,7 +157,7 @@ class resume_controller extends com_controller{
 	{
 		if(!$_POST['ids']){
 			$data['error']	=	3;
-			$data['msg']	=	'参数不正确';
+			$data['msg']	=	yun_auto_t('参数不正确');
 		}else{
 			$downM    =  $this	->	MODEL('downresume');
 			$return   =  $downM -> delInfo( intval($_POST['ids']),array('uid'=>$this->member['uid'],'usertype'=>$_POST['usertype']));
@@ -234,7 +234,7 @@ class resume_controller extends com_controller{
 	{
 		if(!$_POST['ids']){
 			$data['error']	=	3;
-			$data['msg']	=	'参数不正确';
+			$data['msg']	=	yun_auto_t('参数不正确');
 		}else{
 			$ResumeM    =	$this->MODEL('resume');
 			$return   	=	$ResumeM -> delTalentPool($_POST['ids'],array('uid'=>$this->member['uid'],'usertype'=>$_POST['usertype']));
@@ -321,7 +321,7 @@ class resume_controller extends com_controller{
 	{
 		if(!$_POST['ids']){
 			$data['error']	=	3;
-			$data['msg']	=	'参数不正确';
+			$data['msg']	=	yun_auto_t('参数不正确');
 		}else{
 			$id 		=  intval($_POST['ids']);
 			$JobM		=  $this -> MODEL('job');
@@ -368,7 +368,7 @@ class resume_controller extends com_controller{
 	{
 		if(!$_POST['ids']){
 			$data['error']	=	3;
-			$data['msg']	=	'参数不正确';
+			$data['msg']	=	yun_auto_t('参数不正确');
 		}else{
 			$lookresumeM    =  $this->MODEL('lookresume');
 			$return         =  $lookresumeM -> delInfo(array('id'=>$_POST['ids'],'uid'=>$this->member['uid'],'usertype'=>$this->member['usertype']));
@@ -414,7 +414,7 @@ class resume_controller extends com_controller{
 	{
 		if(!$_POST['ids']){
 			$data['error']	=	3;
-			$data['msg']	=	'参数不正确';
+			$data['msg']	=	yun_auto_t('参数不正确');
 		}else{
 			$jobM	=	$this -> MODEL('job');
 			$return	=	$jobM -> delLookJob($_POST['ids'],array('uid'=>$this->member['uid'],'usertype'=>$this->member['usertype']));

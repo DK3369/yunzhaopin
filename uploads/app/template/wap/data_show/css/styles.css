@@ -73,9 +73,9 @@ button {
 * ======`-.____`-.___\_____/___.-`____.-'======
 * `=---='
 *          .............................................
-*           佛曰：bug泛滥，我已瘫痪！
+*           ：bug，！
 */
-/* ---分割线--头部样式--- */
+/* -------- */
 .analyAlls {
   position: relative;
   width: 100%;
@@ -165,7 +165,7 @@ button {
   z-index: -1;
 }
 
-/* 数据开始样式 */
+/*  */
 .analyTitle {
   overflow: hidden;
   position: relative;
@@ -603,7 +603,7 @@ button {
   font-size: 28px;
 }
 
-/* 装饰 */
+/*  */
 .analyBackImg{
   overflow: hidden;
   width: 100%;
@@ -705,7 +705,7 @@ button {
 }
 
 
-/*目标连接*/
+/**/
 .analyLinks{
   overflow: hidden;
   position: relative;

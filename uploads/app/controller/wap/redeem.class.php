@@ -24,7 +24,7 @@ class redeem_controller extends common{
 		}
 		$this->yunset('photo',$photo);
 		
-		$this->yunset('headertitle',$this->config['integral_pricename'].'商城');
+		$this->yunset('headertitle',$this->config['integral_pricename']. yun_auto_t('商城'));
 		$this->seo("redeem");
 		$this->yuntpl(array('wap/redeem'));
 	}
@@ -42,7 +42,7 @@ class redeem_controller extends common{
 		$this->yunset("searchurl",$searchurl);
 		
 		$this->seo('redeem');
-		$this->yunset('headertitle',$this->config['integral_pricename'].'商城');
+		$this->yunset('headertitle',$this->config['integral_pricename']. yun_auto_t('商城'));
 		$this->yuntpl(array('wap/redeemlist'));
 	}
 	function show_action(){

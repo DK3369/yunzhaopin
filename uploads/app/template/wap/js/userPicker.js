@@ -1,5 +1,5 @@
-// API sentinel for "present" end date; keep Chinese for backend comparison
-var PRESENT_API_VALUE = '至今';
+// API sentinel for "present" end date; use centralized enum when available
+var PRESENT_API_VALUE = (typeof WAP_API_ENUM !== 'undefined' ? WAP_API_ENUM.PRESENT : '');
 
 function userPickerI18n(key) {
 	var i18n = typeof USER_PICKER_I18N !== 'undefined' ? USER_PICKER_I18N : {};

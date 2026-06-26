@@ -104,19 +104,19 @@ class company_controller extends common
 
         if (!is_array($row)) {
             
-            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], '没有找到该企业！');
+            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('没有找到该企业！'));
             
         } elseif ($row['r_status'] == 0 && $row['uid'] != $this->uid) {
             
-            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], '该企业正在审核中，请稍后查看！');
+            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('该企业正在审核中，请稍后查看！'));
             
         } elseif ($row['r_status'] == 3 && $row['uid'] != $this->uid) {
             
-            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], '该企业未通过审核！');
+            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('该企业未通过审核！'));
             
         } elseif ($row['r_status'] == 2) {
             
-            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], '该企业暂被锁定，请稍后查看！');
+            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('该企业暂被锁定，请稍后查看！'));
             
         }
 

@@ -262,7 +262,7 @@ class login_controller extends common{
 	            $result	    		=	$userinfoM->bindacount($lData,'weixin');
 	            
 	        }else{
-	            $result['msg']		=	'微信登录信息已失效，请重新登录！';
+	            $result['msg']		=	yun_auto_t('微信登录信息已失效，请重新登录！');
 	        }
 	    }else if($_POST['provider']=='qq'){
 	    	session_start();
@@ -280,7 +280,7 @@ class login_controller extends common{
 			    $result	    		=  $userinfoM->bindacount($lData,'qq');
 			    
 			}else{
-			    $result['msg'] 		= 'QQ登录信息已失效，请重新登录！';
+			    $result['msg'] 		= yun_auto_t('QQ登录信息已失效，请重新登录！');
 			}
 
 	    }else if($_POST['provider']=='sinaweibo'){
@@ -298,7 +298,7 @@ class login_controller extends common{
 			    $result	    		=  $userinfoM->bindacount($lData,'sinaweibo');
 			    
 			}else{
-			    $result['msg'] 		= '微博登录信息已失效，请重新登录！';
+			    $result['msg'] 		= yun_auto_t('微博登录信息已失效，请重新登录！');
 			}
 	    }
 
@@ -328,16 +328,16 @@ class login_controller extends common{
 		        
 		        if ($result['errcode'] == 9){
 		            $res['error'] 	= 1;
-					$res['msg'] 	= '注册成功，请选择身份类型';
+					$res['msg'] 	= yun_auto_t('注册成功，请选择身份类型');
 					$res['url'] 	= Url('wap',array('c'=>'register','a'=>'ident'));
 		        }else{
 		            $res['error'] 	= 2;
-					$res['msg'] 	= '账号注册失败！';
+					$res['msg'] 	= yun_auto_t('账号注册失败！');
 					$res['url'] 	= Url('wap');
 		        }
 			}else{
 				$res['error'] 	= 2;
-				$res['msg'] 	= '微信登录信息已失效，请重新登录！';
+				$res['msg'] 	= yun_auto_t('微信登录信息已失效，请重新登录！');
 				$res['url'] 	= Url('wap');
 			}
 		}else if($_POST['provider']=='qq'){
@@ -354,16 +354,16 @@ class login_controller extends common{
 		        $result     =  $userinfoM->fastReg($wdata, '' ,'qq');
 		        if ($result['errcode'] == 9){
 		            $res['error'] 	= 1;
-					$res['msg'] 	= '注册成功，请选择身份类型';
+					$res['msg'] 	= yun_auto_t('注册成功，请选择身份类型');
 					$res['url'] 	= Url('wap',array('c'=>'register','a'=>'ident'));
 		        }else{
 		            $res['error'] 	= 2;
-					$res['msg'] 	= '账号注册失败！';
+					$res['msg'] 	= yun_auto_t('账号注册失败！');
 					$res['url'] 	= Url('wap');
 		        }
 			}else{
 			    $res['error'] 	= 2;
-				$res['msg'] 	= 'QQ登录信息已失效，请重新登录！';
+				$res['msg'] 	= yun_auto_t('QQ登录信息已失效，请重新登录！');
 				$res['url'] 	= Url('wap');
 			}
 
@@ -381,16 +381,16 @@ class login_controller extends common{
 		        
 		        if ($result['errcode'] == 9){
 		            $res['error'] 	= 1;
-					$res['msg'] 	= '注册成功，请选择身份类型';
+					$res['msg'] 	= yun_auto_t('注册成功，请选择身份类型');
 					$res['url'] 	= Url('wap',array('c'=>'register','a'=>'ident'));
 		        }else{
 		            $res['error'] 	= 2;
-					$res['msg'] 	= '账号注册失败！';
+					$res['msg'] 	= yun_auto_t('账号注册失败！');
 					$res['url'] 	= Url('wap');
 		        }
 			}else{
 			    $res['error'] 	= 2;
-				$res['msg'] 	= '微博登录信息已失效，请重新登录！';
+				$res['msg'] 	= yun_auto_t('微博登录信息已失效，请重新登录！');
 				$res['url'] 	= Url('wap');
 			}
 		}

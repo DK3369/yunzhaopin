@@ -147,15 +147,15 @@ class forgetpw_controller extends common{
 					}
 					$userinfoM->upInfo(array("uid"=>$uid),array("password"=>$password));
 					
-					$res['msg']		=	'密码修改成功！';
+					$res['msg']		=	yun_auto_t('密码修改成功！');
 					$res['error']	=	0;
 					echo yun_json_encode($res);die;
 				}else{
-					$res['msg']		=	'没有该用户';
+					$res['msg']		=	yun_auto_t('没有该用户');
 				}
 			}
         }else{
-            $res['msg']				=	'对不起,没有该用户';
+            $res['msg']				=	yun_auto_t('对不起,没有该用户');
         }
         echo yun_json_encode($res);die;
     }

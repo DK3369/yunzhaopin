@@ -120,8 +120,8 @@ class qqconnect_controller extends common
                         $userinfoM->upInfo(array('uid' => $userinfo['uid']), $qqdata);
                         // ，
                         $LogM       =   $this->MODEL('log');
-                        $logContent =   '账号登录：快捷登录';
-                        $logDetail  =   'H5 QQ快捷登录';
+                        $logContent =   yun_auto_t('账号登录：快捷登录');
+                        $logDetail  =   yun_auto_t('H5 QQ快捷登录');
                         $LogM->addMemberLog($userinfo['uid'], $userinfo['usertype'], $logContent, 32, 1, $logDetail);
 
                         $logtime = date("Ymd", $userinfo['login_date']);
@@ -143,7 +143,7 @@ class qqconnect_controller extends common
                             $logdata['uid']         =   $userinfo['uid'];
                             $logdata['usertype']    =   $userinfo['usertype'];
                             $logdata['did']         =   $userinfo['did'];
-                            $logdata['content']     =   'WAPQQ登录';
+                            $logdata['content']     =   yun_auto_t('WAPQQ登录');
                             $LogM->addLoginlog($logdata);
                             $ip    =  fun_ip_get();
                             $upLogin = array(
@@ -162,7 +162,7 @@ class qqconnect_controller extends common
                         $this->obj->uc_open();
                         $user = uc_get_user($userinfo['username']);
                         $ucsynlogin = uc_user_synlogin($user[0]);
-                        $msg = '登录成功！';
+                        $msg = yun_auto_t('登录成功！');
                         $this->wapheader('member/index.php');
                     } else {
 
@@ -250,7 +250,7 @@ class qqconnect_controller extends common
                     $result['msg']  =   $return['msg'];
                 }
             } else {
-                $result['msg']      =   'QQ登录信息已失效，请重新登录！';
+                $result['msg']      =   yun_auto_t('QQ登录信息已失效，请重新登录！');
             }
             echo yun_json_encode($result);
         } else {

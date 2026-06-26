@@ -171,7 +171,7 @@ class tiny_controller extends wxapp_controller{
         $result	=	$noticeM->sendCode($moblie, 'code', $port, array(), 6, 120, 'msg');
         if($result['error']==1){
             $errcode	=	1;
-            $msg = '发送成功';
+            $msg = yun_auto_t('发送成功');
         }else{
             $errcode	=	2;
             $msg		=	$result['msg'];
@@ -185,7 +185,7 @@ class tiny_controller extends wxapp_controller{
 		if($_POST['submit']){
 			if(!$_POST['username'] || !$_POST['password'] || !$_POST['sex'] || !$_POST['exp'] || !$_POST['mobile'] || !$_POST['production'] || !$_POST['job']){
 				$data['error']	=	3;
-				$data['msg']	=	'请完善信息！';
+				$data['msg']	=	yun_auto_t('请完善信息！');
 				echo json_encode($data);die;
 			}
 
@@ -290,10 +290,10 @@ class tiny_controller extends wxapp_controller{
 				 
 				if($nid){
 					$rdata['error']	=	1;
-					$rdata['msg']	=	'修改成功！';
+					$rdata['msg']	=	yun_auto_t('修改成功！');
 				}else{
 					$rdata['error']	=	2;
-					$rdata['msg']	=	'修改失败！';
+					$rdata['msg']	=	yun_auto_t('修改失败！');
 				}
 			}else{
 				$rdata['error']	=	2;

@@ -115,7 +115,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 		var id = this.getAttribute('data-id');
 		var choosetwo = document.getElementById('jobcheckAll' + id);
 
-		if(document.getElementById('jobclass'+id)){//搜索项存在的设为未选中状态
+		if(document.getElementById('jobclass'+id)){ //
 			document.getElementById('jobclass'+id).checked = false;
 		}
 
@@ -127,7 +127,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 				ele.checked = false;
 				ele.disabled = false;
 
-				if(document.getElementById('jobclass'+ele.value)){//搜索项的三级设为未选中 可选中状态
+				if(document.getElementById('jobclass'+ele.value)){ //
 					document.getElementById('jobclass'+ele.value).checked = false;
 					document.getElementById('jobclass'+ele.value).disabled = false;
 				}
@@ -201,7 +201,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 					ele.checked = true;
 					ele.disabled = true;
 
-					if(document.getElementById('jobclass'+ele.value)){//搜索项的三级设为已选中 不可选中状态
+					if(document.getElementById('jobclass'+ele.value)){ //
 						document.getElementById('jobclass'+ele.value).checked = true;
 						document.getElementById('jobclass'+ele.value).disabled = true;
 					}
@@ -244,7 +244,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 							return showToast(CMC_I18N.maxPrefix+jcnum+CMC_I18N.maxSuffix);
 						}
 					}
-					if(jcnum==1){//单选
+					if(jcnum==1){ //
 
 						singleDeal(list);
 						jobclass = [];
@@ -278,7 +278,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 					ele.checked = false;
 					ele.disabled = false;
 
-					if(document.getElementById('jobclass'+ele.value)){//搜索项的三级设为未选中 可选中状态
+					if(document.getElementById('jobclass'+ele.value)){ //
 						document.getElementById('jobclass'+ele.value).checked = false;
 						document.getElementById('jobclass'+ele.value).disabled = false;
 					}
@@ -366,7 +366,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 						return showToast(CMC_I18N.maxPrefix+jcnum+CMC_I18N.maxSuffix);
 					}
 				}
-				if(jcnum==1){//单选
+				if(jcnum==1){ //
 
 					singleDeal(list);
 					jobclass = [];
@@ -452,7 +452,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 				}
 			}
 			if(this.checked == true) {
-				if(jcnum==1){//单选
+				if(jcnum==1){ //
 					singleDeal(list);
 					jobclass = [];
 					jobclassname = '';
@@ -547,7 +547,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 				}
 			}
 			if(this.checked == true) {
-				if(jcnum==1){//单选
+				if(jcnum==1){ //
 
 					singleDeal(list);
 					jobclass = [];
@@ -776,7 +776,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 		var id = this.getAttribute('data-id');
 		var choosetwo = document.getElementById('citycheckAll' + id);
 
-		if(document.getElementById('cityclass'+id)){//搜索项存在的设为未选中状态
+		if(document.getElementById('cityclass'+id)){ //
 			document.getElementById('cityclass'+id).checked = false;
 		}
 
@@ -788,7 +788,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 				ele.checked = false;
 				ele.disabled = false;
 
-				if(document.getElementById('cityclass'+ele.value)){//搜索项的三级设为未选中 可选中状态
+				if(document.getElementById('cityclass'+ele.value)){ //
 					document.getElementById('cityclass'+ele.value).checked = false;
 					document.getElementById('cityclass'+ele.value).disabled = false;
 				}
@@ -874,7 +874,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 					ele.checked = true;
 					ele.disabled = true;
 
-					if(document.getElementById('cityclass'+ele.value)){//搜索项的三级设为已选中 不可选中状态
+					if(document.getElementById('cityclass'+ele.value)){ //
 						document.getElementById('cityclass'+ele.value).checked = true;
 						document.getElementById('cityclass'+ele.value).disabled = true;
 					}
@@ -945,7 +945,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 					ele.checked = false;
 					ele.disabled = false;
 
-					if(document.getElementById('cityclass'+ele.value)){//搜索项的三级设为未选中 可选中状态
+					if(document.getElementById('cityclass'+ele.value)){ //
 						document.getElementById('cityclass'+ele.value).checked = false;
 						document.getElementById('cityclass'+ele.value).disabled = false;
 					}
@@ -1296,7 +1296,7 @@ if(typeof zn_search == "undefined"){
 
 					itemv	=	item.toLowerCase();
 
-					if(itemv.indexOf(inputv)!= -1){//当前级（可为1/2/3级）
+					if(itemv.indexOf(inputv)!= -1){ //
 						thisclass.push(index);
 					}
 				})
@@ -1329,7 +1329,7 @@ if(typeof zn_search == "undefined"){
 						hastwo = false;
 						fsArr.push({"name":fsn[fsone[i]],"value":fsone[i],'class':'1',"selected":'',"disabled":''});
 						if(fst[fsone[i]] && fst[fsone[i]].length>0){
-							for(var j=0;j<fst[fsone[i]].length;j++){//先判断选项里是否有二级属于此一级
+							for(var j=0;j<fst[fsone[i]].length;j++){ //
 								if(fstwo.indexOf(parseInt(fst[fsone[i]][j]))!=-1){
 									hastwo = true;
 								}
@@ -1337,7 +1337,7 @@ if(typeof zn_search == "undefined"){
 						}
 
 
-						if(hastwo){//有二级
+						if(hastwo){ //
 							if(fstwo.length>0){
 								for(var m=0;m<fstwo.length;m++){
 									if(fst[fsone[i]] && (fst[fsone[i]].indexOf(fstwo[m])!=-1 || fst[fsone[i]].indexOf(fstwo[m].toString())!=-1)){
@@ -1464,7 +1464,7 @@ function showSearchResult(type,resultArr){
 			fs_parent	= city_parent;
 		}
 
-		var choosedArr	= choosedid.trim()=='' ? [] : choosedid.split(',');//已选中的值
+		var choosedArr	= choosedid.trim()=='' ? [] : choosedid.split(','); //
 
 
 		var cval 		= 0,
@@ -1487,7 +1487,7 @@ function showSearchResult(type,resultArr){
 
 			disabled 		= '';
 
-			for(var i=0;i<choosedArr.length;i++){//检查已选项里是否有该项的上级,有的话，该项设为 选中 不可选状态
+			for(var i=0;i<choosedArr.length;i++){ //
 				cval	=	parseInt(choosedArr[i]);
 
 				if(ft[cval]
@@ -1517,7 +1517,7 @@ function showSearchResult(type,resultArr){
 
 function singleDeal(list){
 	for(var j=0;j<list.length;j++){
-		if(document.getElementById('jobclass'+list[j])){//搜索项存在的设为未选中状态
+		if(document.getElementById('jobclass'+list[j])){ //
 			document.getElementById('jobclass'+list[j]).checked = false;
 		}
 		// 
@@ -1539,7 +1539,7 @@ function singleDeal(list){
 				ele.checked = false;
 				ele.disabled = false;
 
-				if(document.getElementById('jobclass'+ele.value)){//搜索项的三级设为未选中 可选中状态
+				if(document.getElementById('jobclass'+ele.value)){ //
 					document.getElementById('jobclass'+ele.value).checked = false;
 					document.getElementById('jobclass'+ele.value).disabled = false;
 				}

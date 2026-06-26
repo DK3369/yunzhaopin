@@ -44,39 +44,39 @@ class index_controller extends user_controller{
             if ($expect['integrity'] > 0 && $expect['integrity'] < 100){
                 $ur  =  $resumeM->getUserResumeInfo(array('uid' => $this->member['uid'],'eid'=>$expect['id']));
                 if ($ur['expect'] == 0){
-                    $resume['wstitle'] = '求职意向';
+                    $resume['wstitle'] = yun_auto_t('求职意向');
                     $resume['wsappurl']= '/pson/pages/usermember/addexpect/index?id='.$expect['id'];
                     $resume['wswapurl']= 'index.php?c=addexpect&eid=' .$expect['id'];
                     $resume['wsts'] = 1;
                 }elseif ($ur['work'] == 0){
-                    $resume['wstitle'] ='工作经历';
+                    $resume['wstitle'] =yun_auto_t('工作经历');
                     $resume['wsappurl']= '/pson/pages/usermember/addresume/addresumeson?type=work&eid=' .$expect['id'];
                     $resume['wswapurl']= 'index.php?c=addresumeson&type=work&eid=' .$expect['id'];
                     $resume['wsts'] = 1;
                 }elseif ($ur['edu'] == 0){
-                    $resume['wstitle'] ='教育经历';
+                    $resume['wstitle'] =yun_auto_t('教育经历');
                     $resume['wsappurl']= '/pson/pages/usermember/addresume/addresumeson?type=edu&eid=' .$expect['id'];
                     $resume['wswapurl']= 'index.php?c=addresumeson&type=edu&eid=' .$expect['id'];
                     $resume['wsts'] = 1;
                 }elseif ($ur['project'] == 0){
-                    $resume['wstitle'] ='项目经历';
+                    $resume['wstitle'] =yun_auto_t('项目经历');
                     $resume['wsappurl']= '/pson/pages/usermember/addresume/addresumeson?type=project&eid=' .$expect['id'];
                     $resume['wswapurl']= 'index.php?c=addresumeson&type=project&eid=' .$expect['id'];
                     $resume['wsts'] = 2;
                 }elseif ($ur['training'] == 0){
-                    $resume['wstitle'] ='培训经历';
+                    $resume['wstitle'] =yun_auto_t('培训经历');
                     $resume['wsappurl']= '/pson/pages/usermember/addresume/addresumeson?type=training&eid=' .$expect['id'];
                     $resume['wswapurl']= 'index.php?c=addresumeson&type=training&eid=' .$expect['id'];
                     $resume['wsts'] = 2;
                 }elseif ($ur['skill'] == 0){
-                    $resume['wstitle'] ='职业技能';
+                    $resume['wstitle'] =yun_auto_t('职业技能');
                     $resume['wsappurl']= '/pson/pages/usermember/addresume/addresumeson?type=skill&eid=' .$expect['id'];
                     $resume['wswapurl']= 'index.php?c=addresumeson&type=skill&eid=' .$expect['id'];
                     $resume['wsts'] = 2;
                 }
             }
 			if($expect['status']==2 || $expect['status']==3){
-				$resume['wstitle'] ='隐私设置';
+				$resume['wstitle'] =yun_auto_t('隐私设置');
                 $resume['wsappurl']= '/pson/pages/usermember/privacy/index';
                 $resume['wswapurl']= 'index.php?c=privacy';
                 $resume['wsts'] = 3;

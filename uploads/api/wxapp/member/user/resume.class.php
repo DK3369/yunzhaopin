@@ -50,7 +50,7 @@ class resume_controller extends user_controller{
 		foreach($rows as $key=>$val){
 		    $r['id']  =  $val['id'];
 			if($val['defaults']){
-			    $r['name']	=  $val['name'].'(默认)';
+			    $r['name']	=  $val['name']. yun_auto_t('(默认)');
 			}else{
 			    $r['name']	=  $val['name'];
 			}
@@ -251,7 +251,7 @@ class resume_controller extends user_controller{
         if ($this->config['resume_create_exp'] == '1' || $this->config['resume_create_edu'] == '1' || $this->config['resume_create_project'] == '1') {
             if (isset($_POST['presave']) && empty($_POST['eid'])){
                 // 
-                $eData['content']   =   '简历创建未完成，中途退出，信息不完整';     // 简历备注为未完善
+                $eData['content']   =   yun_auto_t('简历创建未完成，中途退出，信息不完整');     // 简历备注为未完善
                 $eData['state']     =   0;              // 简历状态为未审核
             } else {
 
@@ -395,7 +395,7 @@ class resume_controller extends user_controller{
 			foreach ($expectDate as $k=>$v){
 				if (empty($v)){
 					$data['error']=3;
-					$data['msg']='请完善信息！！';
+					$data['msg']=yun_auto_t('请完善信息！！');
                     $this->render_json($data['error'],$data['msg']);
 				}
 			}
@@ -630,7 +630,7 @@ class resume_controller extends user_controller{
 				$ResumeM->upInfo(array('id'=>(int)$_POST['eid'],'uid'=>$this->member['uid']),array('eData'=>array('whour'=>$whour,'avghour'=>$avghour)));
 			}
 
-			$nid?$data['msg']	=	'保存成功！':$data['msg']='保存失败！';
+			$nid?$data['msg']	=	yun_auto_t('保存成功！'):$data['msg']=yun_auto_t('保存失败！');
 			$nid?$data['error']	=	'1' : $data['error'] = '2';
 		}
 		$this->render_json($data['error'],$data['msg']);
@@ -675,8 +675,8 @@ class resume_controller extends user_controller{
             $resumeM->upResumeInfo(array('uid' => $this->member['uid']), array('rData' => array('status' => $status)));
 
             $logM       =   $this->MODEL('log');
-            $logContent =   '简历更新：设置隐私状态';
-            $logDetail  =   '更新简历隐私状态：公开';
+            $logContent =   yun_auto_t('简历更新：设置隐私状态');
+            $logDetail  =   yun_auto_t('更新简历隐私状态：公开');
             $logM->addMemberLog($this->member['uid'], 1, $logContent, 2, 2, $logDetail);
         }
         $data['error']  =   $return['errcode'] == 9 ? 1 : 2;
@@ -815,7 +815,7 @@ class resume_controller extends user_controller{
 			
 			$data['id']		=	'';
 			
-			$data['content']	=	'暂无示例';
+			$data['content']	=	yun_auto_t('暂无示例');
 
 		}
 		
@@ -917,7 +917,7 @@ class resume_controller extends user_controller{
 		
 		$udata['show']	=  count($list);
 		$ResumeM->upUserResume($udata,array('eid'=>(int)$_POST['eid'],'uid'=>$this->member['uid']));
-		$nid?$data['msg']	=	'保存成功！':$data['msg']='保存失败！';
+		$nid?$data['msg']	=	yun_auto_t('保存成功！'):$data['msg']=yun_auto_t('保存失败！');
 		$nid?$data['error']	=	'1' : $data['error'] = '2';
 		$this->render_json($data['error'],$data['msg']);
 	}

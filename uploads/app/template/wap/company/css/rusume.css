@@ -65,7 +65,7 @@ em, i {
 .section_photo_con{
 	padding: 130px 40px 0px 40px;
 }
-/*标题*/
+/**/
 .company_tit{ position:absolute;left:65px;top:20px; font-size:16px;
 -webkit-transform:translate(0,-100px);
 -moz-transform:translate(0,-100px);
@@ -104,7 +104,7 @@ transition:all 1s linear 0.5s;
 -o-transform:translate(0,0px);
 transform:translate(0,0px);
 }
-/*指向*/
+/**/
 .company_end{width:100%; position:absolute;bottom:30px; text-align:center}
 .company_end_icon{width:30px;height:30px; color:#fff; font-size:30px; opacity:0.8;display:block; margin:0 auto;
 -webkit-animation:company_end_icon 2s linear infinite both;
@@ -130,7 +130,7 @@ transform:translate(0px, 30px);
 }
 }
 
-/*第一屏*/
+/**/
 .company_one{width:100%;height:100%; background:url(../images/bgone.png) no-repeat; background-size:100%; position:relative}
 .active .company_logo{ position:absolute;top:30%;left:50%; background:rgba(255,255,255,0.5); padding:10px; z-index:1000; margin-left:-55px;
  -webkit-animation:company_logo 1s  linear;
@@ -264,7 +264,7 @@ transform:translate(0px, 30px);
 }
 }
 
-/*第二屏*/
+/**/
 .active  .section_img{width:134px;height:230px; background:url(../images/bgtwo1.png) no-repeat; background-size:90%; position:absolute;left:-50px;top:150px;
 -webkit-animation:section_img 1s 0.5s both;
 -moz-animation:section_img 1s 0.5s both;
@@ -473,7 +473,7 @@ transform:rotate(0deg);
 }
 }
 
-/*招聘职位*/
+/**/
 .section_job_con{ padding:90px 20px 0px 20px;}
 .active .company_job{width:100%; padding:10px 0; position:relative; line-height:30px; 
 -webkit-transform-origin:center center;
@@ -587,7 +587,7 @@ transform:translate(0px, 0px) rotateX(0deg);
 
 }
 }
-/*企业简介*/
+/**/
 .company_about{ padding:90px 0px;width:100%;height:270px; overflow:hidden; line-height:30px;
 -webkit-transform:translate(500px,0px);
 -moz-transform:translate(500px,0px);
@@ -602,7 +602,7 @@ transition:all 1s linear;
 }
 .company_about_cont{ padding:0px 15px;overflow:hidden;}
 .active .company_about{-webkit-transform:translate(0px,0px);}
-/*企业环境*/
+/**/
  .section_photo_con img{width:100%;}
 .active .slide{-webkit-animation:section_photo_con_img 1.5s  linear  both;
 -moz-animation:section_photo_con_img 1.5s  linear  both;
@@ -627,7 +627,7 @@ transform:translate(0px, 0px);
 }
 }
 .section_photo_p{width:100%; text-align:center; padding-top:30px;}
-/*联系方式*/
+/**/
 
 .section_touch_ul{ padding:20px; margin-top:100px;}
 .section_touch_ul li{background: rgba(255,255,255,0.1); text-align:center; padding:10px 0; margin-top:20px; opacity:0}
@@ -707,7 +707,7 @@ transform:rotate(0deg);
 .company_tit_p_touch_l_c{width:100%; text-align:center; margin-top:20px;}
 .company_tit_p_touch_log{ display:inline-block;width:90px; padding:5px 10px;color:#fff; background:#09F;color:#fff;}
 .company_tit_p_touch_reg{ display:inline-block;width:90px; padding:5px 10px;color:#fff; background:#f60;color:#fff; margin-left:10px;}
-/*320px布局*/
+/*320px*/
 /* iphone 4 */
 @media (min-device-width : 175px) and (max-device-width : 320px) and (-webkit-min-device-pixel-ratio : 2) {
 .company_about{height:200px;}

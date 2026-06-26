@@ -2,15 +2,15 @@ function myFunction(_this) {
     _this.value = _this.value.replace(/[^0-9]/g, '');
 }
 
-/* 选择不同充值积分操作 */
+/* */
 $("ul#integral_num").on("click", "li", function () {
 
-    var integral = $(this).attr('data-integral'); // 充值积分
+    var integral = $(this).attr('data-integral'); //
 
     if (parseInt(integral) >= parseInt(min_integral) || parseInt(integral) == 0) {
 
-        $(this).addClass("discount_opt_for"); // 点击li添加class
-        $(this).siblings('li').removeClass("discount_opt_for"); // 删除兄弟li的class属性
+        $(this).addClass("discount_opt_for"); //
+        $(this).siblings('li').removeClass("discount_opt_for"); //
     } else {
 
         showToast(WAP_JS_I18N.s79b262be+ min_integral + jifen, 2);
@@ -29,8 +29,8 @@ $("ul#integral_num").on("click", "li", function () {
         $('#user_defined').val('');
     } else {
 
-        var integralid  = $(this).attr('data-id'); // 积分类别id
-        var discount    = $(this).attr('data-discount'); // 积分折扣
+        var integralid  = $(this).attr('data-id'); //
+        var discount    = $(this).attr('data-discount'); //
 
         if (parseInt(discount) > 0) {
             var price   = (integral / pro) * (discount / 100);

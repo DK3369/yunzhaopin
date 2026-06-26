@@ -23,7 +23,7 @@ em { font-style: normal;}
 
 
 
-/*第一页*/
+/**/
 @-webkit-keyframes 'up'{
  0%,30%{opacity:0;-webkit-transform:translate(0,10px);transform:translate(0,10px);}
  60%{opacity:1;-webkit-transform:translate(0,0);transform:translate(0,0)}
@@ -76,12 +76,12 @@ to { stroke-dashoffset: 0; }
 .active .dazzle1 ul .daz_a2{ animation: fadeInUp 1s ease 0s 1 both; -webkit-animation:fadeInUp 1s ease 0s 1 both;}
 .active .dazzle1 ul .daz_a3{ animation: stress 1s ease 0s 3 both; -webkit-animation:stress 1s ease 0s 3 both;}
 
-/*第二页*/
+/**/
 
 
 
 
-/*第四页*/
+/**/
 
 @-webkit-keyframes fadeInDown{
 	0%{opacity:0;-webkit-transform:translate3d(0,-100%,0);transform:translate3d(0,-100%,0)}
@@ -132,7 +132,7 @@ to { stroke-dashoffset: 0; }
 .active .dazzle4 ul .daz_f9{  -webkit-animation: fadeInDown 0.8s ease 0.2s 1 both; animation: fadeInDown 0.8s ease 0.2s 1 both;}
 
 
-/*进度模式*/
+/**/
 
 .section_slide{ background: linear-gradient(#787675,#828081,#787675);  background:-webkit-linear-gradient(#787675,#828081,#787675);}
 .slide{ position:relative; overflow:hidden;}
@@ -208,7 +208,7 @@ to { stroke-dashoffset: 0; }
 
 .tem_tit_con{-webkit-animation:fadeInRight_fan 1s ease 0s 1 both; animation:fadeInRight_fan 1s ease 0s 1 both;}
 .active .tem_tit_con{-webkit-animation:fadeInRight 1s ease 0.2s 1 both; animation:fadeInRight 1s ease 0.2s 1 both;}
-/*联系方式*/
+/**/
 .section_gift_t_touch{width:160px; position:absolute;top:20px;left:50%; font-size:16px;color:#fff; margin-left:-80px; text-align:center; -webkit-transform:translate(500px,0px); -webkit-transition:all 1s ease-in}
 .active  .section_gift_t_touch{-webkit-transform:translate(0px,0px);}
 .section_touch_ul{ padding:20px; }
@@ -342,7 +342,7 @@ transform:rotate(0deg);
 	100%{opacity:1;-webkit-transform:none;transform:none}
 }
 
-/*向左滑动*/
+/**/
 
 .slip{ position:absolute; top:6%; right:6%;color:#eee; z-index:2; font-size:1em;}
 .slip span{}
@@ -398,7 +398,7 @@ transform:rotate(0deg);
 .daz_gcon4 a{ color:#fff; font-size:1em; background:#0167a2; padding:14px 25px; border-radius:5px; letter-spacing:1px;}
 .app_det1_aa{width:40%; background:#36F;color:#fff; display:inline-block; padding:4px 10px; text-align:center}
 .app_det1_bb{width:40%; background:#f60;color:#fff; display:inline-block; padding:4px 10px;text-align:center}
-/*效果*/
+/**/
 @-webkit-keyframes fadeInLeft{
 	0%{opacity:0;-webkit-transform:translate3d(-100%,0,0);transform:translate3d(-100%,0,0)}
 	100%{opacity:1;-webkit-transform:none;transform:none}

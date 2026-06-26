@@ -10,7 +10,7 @@ class special_controller extends common{
 		$specialM	=	$this->MODEL('special');
 		$info		=	$specialM->getSpecialOne(array("id"=>(int)$_GET['id'],"display"=>1));
         if(empty($info)){
-            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], '没有找到该专题招聘');
+            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('没有找到该专题招聘'));
         }
 		$this->yunset("info",$info);
 

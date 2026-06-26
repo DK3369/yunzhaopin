@@ -63,10 +63,10 @@
 	}
 	var open = function(msg, callback) {
 		/**
-		 *如下情况直接打开系统分享
-		 * 1、未配置微信分享通道
-		 * 2、用户手机未安装威胁你
-		 * 3、360浏览器下
+/* */
+ * 1、
+ * 2、
+ * 3、360
 		 */
 
 		/*if(shareServices.weixin && isWechatInstalled() && !/360\sAphone/.test(navigator.userAgent)) {
@@ -83,20 +83,20 @@
 			}, function(e) {
 				var index = e.index;
 				switch(index) {
-					case 1: //分享到微信好友
+					case 1: //
 						msg.extra = {
 							scene: 'WXSceneSession'
 						};
 						share('weixin', msg, callback);
 						break;
-					case 2: //分享到微信朋友圈
+					case 2: //
 						msg.title = msg.content;
 						msg.extra = {
 							scene: 'WXSceneTimeline'
 						};
 						share('weixin', msg, callback);
 						break;
-					case 3: //更多分享
+					case 3: //
 						var url = msg.href ? ('( ' + msg.href + ' )') : '';
 						msg.title = msg.title + url;
 						msg.content = msg.content + url;

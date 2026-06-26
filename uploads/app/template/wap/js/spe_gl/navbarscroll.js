@@ -1,18 +1,18 @@
 /*
- * 移动端模拟导航可点击自动滑动 0.1.4
- * 导航可左右滑动，可点击边缘的一个，自动滚动下一个到可视范围【依赖于iscroll.js】
+ * 0.1.4
+ * ，，【iscroll.js】
  */
 (function ($) {
     $.fn.navbarscroll = function (options) {
         // 、
         var _defaults = {
-            className:'cur', //当前选中点击元素的class类名
-            clickScrollTime:300, //点击后滑动时间
-            duibiScreenWidth:0.4, //单位以rem为准，默认为0.4rem
-            scrollerWidth:3, //单位以px为准，默认为3,[仅用于特殊情况：外层宽度因为小数点造成的不精准情况]
-            defaultSelect:0, //初始选中第n个，默认第0个
-            fingerClick:0, //目标第0或1个选项触发,必须每一项长度一致，方可用此项
-            endClickScroll:function(thisObj){}//回调函数
+            className:'cur', //
+            clickScrollTime:300, //
+            duibiScreenWidth:0.4, //
+            scrollerWidth:3, //
+            defaultSelect:0, //
+            fingerClick:0, //
+            endClickScroll:function(thisObj){} //
         }
         var _opt = $.extend(_defaults, options);
         this.each(function () {

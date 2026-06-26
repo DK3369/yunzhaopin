@@ -3,7 +3,7 @@
 class tiny_controller extends common{
 	function index_action(){
 		if($this->config['sy_tiny_web']=="2"){
-			$this->ACT_msg_wap('index.php','很抱歉！该模块已关闭！', 1, 3);
+			$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);
 		}
 		$tinyM		=	$this->MODEL('tiny');
 		
@@ -75,7 +75,7 @@ class tiny_controller extends common{
     }
 	function add_action(){
 		if($this->config['sy_tiny_web']=="2"){
-			$this->ACT_msg_wap('index.php','很抱歉！该模块已关闭！', 1, 3);
+			$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);
 		}
 		$this->get_moblie();
         $tinyM	=	$this->MODEL('tiny');
@@ -141,7 +141,7 @@ class tiny_controller extends common{
 	}
 	function show_action(){
 		if($this->config['sy_tiny_web']=="2"){
-			$this->ACT_msg_wap('index.php','很抱歉！该模块已关闭！', 1, 3);
+			$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);
 		}
 		$id			=	(int)$_GET['id'];
 		$tinyM		=	$this->MODEL('tiny');

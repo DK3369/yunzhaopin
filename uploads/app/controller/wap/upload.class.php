@@ -307,7 +307,7 @@ class upload_controller extends common{
 		    }
 		}else{
 			$error	=	2;
-		    $msg 	= 	'请选择图片';
+		    $msg 	= 	yun_auto_t('请选择图片');
 		}
 
 		$return['error'] 	= $error;

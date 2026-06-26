@@ -173,7 +173,7 @@ class info_controller extends com_controller{
 
 		if(empty($this->member['uid'])){
 		    $error	=	3;
-		    $msg	=	'参数不正确';
+		    $msg	=	yun_auto_t('参数不正确');
 		}else{
 		    if(empty($this -> comInfo['uid'])){
 		        $userinfoM  =  $this->MODEL("userinfo");
@@ -218,7 +218,7 @@ class info_controller extends com_controller{
 
         if(empty($this->member['uid'])){
             $error	=	3;
-            $msg	=	'参数不正确';
+            $msg	=	yun_auto_t('参数不正确');
         }else{
             if($_POST['wappic']==1){
                 $data['base'] = $_POST['uimage'];
@@ -247,7 +247,7 @@ class info_controller extends com_controller{
 
         if(empty($this->member['uid']) || empty($_POST['id'])){
             $error	=	3;
-            $msg	=	'参数不正确';
+            $msg	=	yun_auto_t('参数不正确');
         }else{
             $oid	=	$companyM->delCompanyShow(is_array($_POST['id']) ? $_POST['id'] : explode(',', $_POST['id']),array('uid'=>$this->member['uid']));
 
@@ -255,10 +255,10 @@ class info_controller extends com_controller{
                 $logM->member_log("删除企业环境展示",16,3, $this->member['uid'], $this->member['usertype']);//会员日志
 
                 $error	=	1;
-                $msg	=	'删除成功';
+                $msg	=	yun_auto_t('删除成功');
             }else{
                 $error	=	2;
-                $msg	=	'删除失败';
+                $msg	=	yun_auto_t('删除失败');
             }
         }
         $this->render_json($error, $msg);
@@ -266,16 +266,16 @@ class info_controller extends com_controller{
 	function delcomqcode_action(){
         if(empty($this->member['uid'])){
             $error	=	3;
-            $msg	=	'参数不正确';
+            $msg	=	yun_auto_t('参数不正确');
         }else{
             $comM      =   $this->MODEL('company');
             $return = $comM->upInfo($this->member['uid'],array(),array('comqcode'=>''));
             if($return){
                 $error	=	1;
-                $msg	=	'删除成功';
+                $msg	=	yun_auto_t('删除成功');
             }else{
                 $error	=	2;
-                $msg	=	'删除失败';
+                $msg	=	yun_auto_t('删除失败');
             }
         }
         $this->render_json($error, $msg);

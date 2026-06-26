@@ -86,8 +86,8 @@ class sinaconnect_controller extends common
 
                             // ，
                             $LogM       =   $this->MODEL('log');
-                            $logContent =   '账号登录：快捷登录';
-                            $logDetail  =   'H5 新浪微博快捷登录';
+                            $logContent =   yun_auto_t('账号登录：快捷登录');
+                            $logDetail  =   yun_auto_t('H5 新浪微博快捷登录');
                             $LogM->addMemberLog($userinfo['uid'], $userinfo['usertype'], $logContent, 32, 1, $logDetail);
 
                             $logtime    =   date("Ymd", $userinfo['login_date']);
@@ -109,7 +109,7 @@ class sinaconnect_controller extends common
                                 $logdata['uid']         =   $userinfo['uid'];
                                 $logdata['usertype']    =   $userinfo['usertype'];
                                 $logdata['did']         =   $userinfo['did'];
-                                $logdata['content']     =   'WAP微博登录';
+                                $logdata['content']     =   yun_auto_t('WAP微博登录');
                                 $LogM->addLoginlog($logdata);
                                 $ip    =  fun_ip_get();
                                 $upLogin = array(
@@ -208,7 +208,7 @@ class sinaconnect_controller extends common
                 }
             } else {
 
-                $result['msg']      =   '微博登录信息已失效，请重新登录！';
+                $result['msg']      =   yun_auto_t('微博登录信息已失效，请重新登录！');
             }
             echo yun_json_encode($result);
         } else {

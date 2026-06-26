@@ -322,7 +322,7 @@ class part_controller extends com_controller
             if ($statis['addjobnum'] == 0) {
 
                 $arr['error']   =   3;
-                $arr['msg']     =   '您的会员已到期 ';
+                $arr['msg']     =   yun_auto_t('您的会员已到期 ');
                 $this->render_json($arr['error'], $arr['msg']);
             }
         }
@@ -458,7 +458,7 @@ class part_controller extends com_controller
                         if ($this->config['sy_iospay'] == 2) {
 
                             $return['errcode']  =   2;
-                            $return['msg']      =   '您好，目前不支持上架职位';// 苹果关闭支付功能
+                            $return['msg']      =   yun_auto_t('您好，目前不支持上架职位');// 苹果关闭支付功能
                         }
                         $this->render_json($return['errcode'], $return['msg']);
                     }
@@ -485,7 +485,7 @@ class part_controller extends com_controller
                 if ($statis['rating_type'] == 1){
 
                     $statisM = $this->MODEL('statis');
-                    $payDetail  =   '上架兼职，消耗上架套餐数量：1';
+                    $payDetail  =   yun_auto_t('上架兼职，消耗上架套餐数量：1');
                     $statisM->addStatisDetail(array('uid' => $this->uid, 'type' => 1, 'num' => 1, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                 }
             }
@@ -495,8 +495,8 @@ class part_controller extends com_controller
             if ($nid) {
 
                 $logM       =   $this->MODEL('log');
-                $logContent =   '职位更新：调整兼职招聘状态';
-                $logDetail  =   $_POST['status'] == 0 ? '调整兼职《'.$part['name'].'》招聘状态：下架->上架' : '调整兼职('.$part['name'].')招聘状态：上架->下架';
+                $logContent =   yun_auto_t('职位更新：调整兼职招聘状态');
+                $logDetail  =   $_POST['status'] == 0 ? '调整兼职《'.$part['name']. yun_auto_t('》招聘状态：下架->上架') : '调整兼职('.$part['name']. yun_auto_t(')招聘状态：上架->下架');
                 $logM->addMemberLog($this->member['uid'], $this->member['usertype'], $logContent, 9, 2, $logDetail);
 
                 $this->render_json(0, 'ok');

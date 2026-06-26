@@ -57,7 +57,7 @@ function clickzph() {
 		showLoading();
 		$.post(wapurl + "index.php?c=ajax&a=ajaxzphjob",{zid : zid, id : id,jobid:jobid}, function(data) {
 			hideLoading();
-			if (data.status == 1 || data.status == 3) {	// 1-报名成功 3-展位有其他人报名
+			if (data.status == 1 || data.status == 3) { //
 				showToast(data.msg,2,function(){
 					location.reload();
 				});

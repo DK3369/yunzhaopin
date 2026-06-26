@@ -3,7 +3,7 @@
 class once_controller extends common{
 	function index_action(){
 		if($this->config['sy_once_web']=="2"){
-			$this->ACT_msg_wap('index.php','很抱歉！该模块已关闭！', 1, 3);
+			$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);
 		}
 		
 		$CacheM		=	$this->MODEL('cache');
@@ -61,7 +61,7 @@ class once_controller extends common{
     }
 	function add_action(){ 
 		if($this->config['sy_once_web']=="2"){
-			$this->ACT_msg_wap('index.php','很抱歉！该模块已关闭！', 1, 3);
+			$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);
 		}
  		$ip		=	fun_ip_get();
 		$this->yunset("ip",$ip);
@@ -150,7 +150,7 @@ class once_controller extends common{
 	}
 	function show_action(){
 		if($this->config['sy_once_web']=="2"){
-			$this->ACT_msg_wap('index.php','很抱歉！该模块已关闭！', 1, 3);
+			$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);
 		}
 		
         $onceM	=	$this->MODEL('once');
@@ -183,7 +183,7 @@ class once_controller extends common{
 	
 	function pay_action(){
 		if($this->config['sy_once_web']=="2"){
-			$this->ACT_msg_wap('index.php','很抱歉！该模块已关闭！', 1, 3);
+			$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);
 		}
 		$onceM	=	$this->MODEL('once');
 		$row	=	$onceM->getOnceInfo(array('id'=>(int)$_GET[id]));
@@ -277,9 +277,9 @@ class once_controller extends common{
 		$orderM	=	$this->MODEL('companyorder');
 		$return	=	$orderM->del((int)$_GET['id'],array('utype'=>'once'));
 		if($return['errcode']==9){
-			$return['msg']='取消订单成功！';
+			$return['msg']=yun_auto_t('取消订单成功！');
 		}else{
-			$return['msg']='取消订单失败！';
+			$return['msg']=yun_auto_t('取消订单失败！');
 		}
 		$this->layer_msg($return['msg'],$return['errcode'],$return['layertype'],$_SERVER['HTTP_REFERER']);
 	}

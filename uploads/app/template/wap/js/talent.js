@@ -161,7 +161,7 @@ function tsend(i){
 		$("#send").val(0);
 	}else{
 		$("#send").val(1);
-		$("#time").html(i+"秒");
+		$("#time").html(i + WAP_JS_I18N.ssecond);
 		setTimeout("tsend("+i+");",1000);
 	}
 }

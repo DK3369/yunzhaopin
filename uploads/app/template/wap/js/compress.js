@@ -30,7 +30,7 @@ function readMultiFiles(files) {
 
 // res，fileSize
 function compress(res, fileSize, ismul,type) {
-    var img = new Image(), maxW = 1000; //设置最大宽度
+    var img = new Image(), maxW = 1000; //
 
     img.onload = function () {
         var cvs = document.createElement('canvas'), ctx = cvs.getContext('2d');
@@ -51,19 +51,19 @@ function compress(res, fileSize, ismul,type) {
 		if (Orientation != "" && Orientation != 1 && Orientation != undefined) {
 
 			switch (Orientation) {
-				case 6://需要顺时针90度旋转
+				case 6: //
 					cvs.width = h;
 					cvs.height = w;
 					ctx.rotate(Math.PI / 2);
 					ctx.drawImage(img, 0, -h, w, h);
 					break;
-				case 8://需要逆时针90度旋转
+				case 8: //
 					cvs.width = h;
 					cvs.height = w;
 					ctx.rotate(-90 * Math.PI / 180);
 					ctx.drawImage(img, -w, 0, w, h);
 					break;
-				case 3://需要180度旋转
+				case 3: //
 					ctx.rotate(180 * Math.PI / 180);
 					ctx.drawImage(img, -w, -h, w, h);
 					break;

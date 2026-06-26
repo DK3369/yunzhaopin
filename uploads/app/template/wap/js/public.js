@@ -12,12 +12,12 @@ function wapPub(key) {
 function getFormValue(formid) {
 	var itemForm = $("#" + formid).eq(0);
 
-	var nameIndex = {}, //数组 name 索引
+	var nameIndex = {}, //
 		field = {},
-		fieldElem = itemForm.find('input,select,textarea') //获取所有表单域
+		fieldElem = itemForm.find('input,select,textarea') //
 	
 	fieldElem.each(function(_, item) {
-		var init_name; //初始 name
+		var init_name; //
 
 		item.name = (item.name || '').replace(/^\s*|\s*&/, '');
 		if (!item.name) return;
@@ -28,7 +28,7 @@ function getFormValue(formid) {
 			init_name = item.name.replace(/^(.*)\[\]$/, '$1[' + (nameIndex[key]++) + ']');
 		}
 
-		if (/^checkbox|radio$/.test(item.type) && !item.checked) return; //复选框和单选框未选中，不记录字段     
+		if (/^checkbox|radio$/.test(item.type) && !item.checked) return; //
 		field[init_name || item.name] = item.value;
 	});
 	
@@ -101,7 +101,7 @@ function goBack(){
 		}else{
 			location.href = wapurl;
 		}
-	}else{ //未知的浏览器
+	}else{ //
 		window.history.go( -1 );
 	}
 }
@@ -316,9 +316,9 @@ function savepwd(){
 	});
 }
 /****
-* name:localStorage的key
-* data:localStorage的Value
-* expire:localStorage的过期时间,默认是1天后过期
+* name:localStoragekey
+* data:localStorageValue
+* expire:localStorage,1
 ****/
 // 
 function localStorageSet(name, data, expire = 24){
@@ -367,10 +367,10 @@ function deepClone (obj) {
 
 var timeout = null;
 /**
- * 防抖原理：一定时间内，只有最后一次操作，再过wait毫秒后才执行函数
+ * ：，，wait
  *
- * @param {Function} func 要执行的回调函数
- * @param {Number} wait 延时的时间
+ * @param {Function} func
+ * @param {Number} wait
  * @return null
  */
 function debounce(func, wait = 500) {
@@ -623,7 +623,7 @@ function get_comment(aid,show,url){
 				hideLoading(); 
 				var html='';  
 				var datas = Array();
-				data = data.replace(/\s+/g,"[[space]]");// eval的字符串中有空格会出错
+				data = data.replace(/\s+/g,"[[space]]"); //
 				datas = eval("("+data+")");
 				$.each(datas,function(key,val){
 					html+="<li>"+

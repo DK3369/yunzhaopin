@@ -292,7 +292,7 @@ if(typeof ingData != "undefined" && ingUserPickerBtn){
 // 
 var addtagbox = $('.addtagbox')[0];
 if(addtagbox){
-	addtagbox.addEventListener('tap', function(event) {//添加
+	addtagbox.addEventListener('tap', function(event) { //
 		var addfuli = document.getElementById('addfuli').value;
 		var error=0;
 		var num=0;

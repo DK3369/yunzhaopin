@@ -40,6 +40,9 @@ class wxapp_controller extends common
         if (is_string($msg) && $msg !== '' && preg_match('/[\x{4e00}-\x{9fff}]/u', $msg)) {
             $msg = yun_auto_t($msg);
         }
+        if (function_exists('yun_auto_array') && is_array($data) && $data) {
+            $data = yun_auto_array($data);
+        }
 
         $result =   array(
             'error' =>  $error,
@@ -265,7 +268,7 @@ class wxapp_controller extends common
 	    );
 
 	    if($this->config['alipay']=='1' &&  $this->config['alipaytype']=='1'){
-	        $fktype['fkal']  =  '支付宝';
+	        $fktype['fkal']  =  yun_auto_t('支付宝');
 	    }
 	    return $fktype;
 	}

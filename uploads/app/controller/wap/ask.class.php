@@ -575,7 +575,7 @@ class ask_controller extends common{
 	}
 	function addquestion_action(){
 		if($this->uid==''){				
-			$this->ACT_msg_wap($this->config['sy_weburl'].'/wap/index.php?c=login','请先登录！', 1, 3);
+			$this->ACT_msg_wap($this->config['sy_weburl'].'/wap/index.php?c=login',yun_auto_t('请先登录！'), 1, 3);
 		 }
 	    $CacheM		=	$this -> MODEL('cache');
 		
@@ -662,8 +662,8 @@ class ask_controller extends common{
             if($new_id){
 
                 $logM           =   $this->MODEL('log');
-                $logContent     =   '举报：问答';
-                $logDetail      =   '举报问答：《'.$question['title'].'》；原因：'.$_POST['reason'];
+                $logContent     =   yun_auto_t('举报：问答');
+                $logDetail      =   yun_auto_t('举报问答：《').$question['title']. yun_auto_t('》；原因：').$_POST['reason'];
                 $logM->addMemberLog($this->uid, $this->usertype, $logContent, 23, 1, $logDetail);
 
                 echo '1';

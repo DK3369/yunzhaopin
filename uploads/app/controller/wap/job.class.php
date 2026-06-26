@@ -106,7 +106,7 @@ class job_controller extends common
 
         $this->yunset('backurl', Url('wap'));
         $this->yunset('headertitle', yun_auto_t('职位搜索'));
-        $this->yunset('topplaceholder', '请输入职位关键字,如：会计...');
+        $this->yunset('topplaceholder', yun_auto_t('请输入职位关键字,如：会计...'));
 
         $this->yuntpl(array('wap/job')); 
         
@@ -130,7 +130,7 @@ class job_controller extends common
         $this->yunset('sexData', $arr_data['sex']);
         $id = intval($_GET['id']);
         if (empty($id)) {
-            $this->ACT_msg_wap(1, '参数错误！', 2, 5);
+            $this->ACT_msg_wap(1, yun_auto_t('参数错误！'), 2, 5);
         }
         
         // 
@@ -153,7 +153,7 @@ class job_controller extends common
         }
         $job        =   $JobM -> getInfo(array('id' => $id), $jobField);
         if (empty($job)) {
-            $this->ACT_msg_wap(1, '职位不存在！', 2, 5);
+            $this->ACT_msg_wap(1, yun_auto_t('职位不存在！'), 2, 5);
         }
         $job['staticimg'] =   $staticimg;
         $userinfoM  =   $this->MODEL('userinfo');
@@ -172,17 +172,17 @@ class job_controller extends common
         } else {
             
             if ($job['r_status'] == 0 || $job['r_status'] == 3) {
-                $this->ACT_msg_wap(1, '企业暂未通过审核！');
+                $this->ACT_msg_wap(1, yun_auto_t('企业暂未通过审核！'));
             } elseif ($job['r_status'] == 2 || $job['r_status'] == 4) {
-                $this->ACT_msg_wap(1, '企业已被锁定！');
+                $this->ACT_msg_wap(1, yun_auto_t('企业已被锁定！'));
             }
             
             if ($job['state'] == 0) {
-                $this->ACT_msg_wap(1, '职位审核中！', 2, 5);
+                $this->ACT_msg_wap(1, yun_auto_t('职位审核中！'), 2, 5);
             } elseif ($job['state'] == 2) {
                 $this->yunset('entype', 1);
             } elseif ($job['state'] == 3) {
-                $this->ACT_msg_wap(1, '该职位未通过审核！', 2, 5);
+                $this->ACT_msg_wap(1, yun_auto_t('该职位未通过审核！'), 2, 5);
             } 
         }
 
@@ -891,7 +891,7 @@ class job_controller extends common
         } else {
 
             $return['errcode']  =   2;
-            $return['errmsg']   =   '暂未开启海报分享';
+            $return['errmsg']   =   yun_auto_t('暂未开启海报分享');
         }
     }
 	/**

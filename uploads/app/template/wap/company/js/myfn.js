@@ -18,7 +18,7 @@ $(function(){
     document.addEventListener(‘touchmove‘,function(event){
         event.preventDefault(); },false);
 
-//控制音乐播放停止和音乐ico图标变换
+
 
     $(".page").swipeUp(function(){
         swichpage();
@@ -36,11 +36,11 @@ $(function(){
 
     function swichpage() {
 
-//判断当前页是否为最后一页
 
-        //获取总页数,以及总页数的+1后的序号，供后面for循环使用
 
-        //如果是最后一页，显示第一页，并移除所有page上的所有css效果类，否则显示下一页，并移除上一页的切换动画效果
+
+
+
         if (curpage == totalpage) {
             for (var i = 1; i < nexttotalpage; i++) {
                 $(".page" + i).removeClass("hide");

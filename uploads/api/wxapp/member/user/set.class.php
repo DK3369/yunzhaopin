@@ -119,8 +119,8 @@ class set_controller extends user_controller
 		if ($result['error'] == 1){
 
             $logM       =   $this->MODEL('log');
-            $logContent =   '账号认证：发送手机认证验证码';
-            $logDetail  =   '手机认证，发送短信验证码；认证手机号码：'.$moblie;
+            $logContent =   yun_auto_t('账号认证：发送手机认证验证码');
+            $logDetail  =   yun_auto_t('手机认证，发送短信验证码；认证手机号码：').$moblie;
             $logM->addMemberLog($user['uid'], $user['usertype'], $logContent, 12, 1, $logDetail);
 
 		    $this->render_json(0,'ok');
@@ -170,7 +170,7 @@ class set_controller extends user_controller
 
 				$error			=		2;
 
-				$msg    		=    	'手机号码已存在，请重新填写新号码';
+				$msg    		=    	yun_auto_t('手机号码已存在，请重新填写新号码');
 				   
           	}else{
 
@@ -192,18 +192,18 @@ class set_controller extends user_controller
 	
 				if($return==4){
 					$error		=		2;
-					$msg		=		'验证码时间已过期，请重新获取验证码';
+					$msg		=		yun_auto_t('验证码时间已过期，请重新获取验证码');
 				}elseif($return ==3){
 					$error		=		2;
-					$msg		=		'验证码错误';
+					$msg		=		yun_auto_t('验证码错误');
 				}elseif($return ==2){
 					$error		=		2;
-					$msg		=		'验证码不存在，请获取验证码';
+					$msg		=		yun_auto_t('验证码不存在，请获取验证码');
 				}elseif($return==1){
 					$error		=		1;
 				}else{
 					$error		=		2;
-					$msg		=		'绑定失败';
+					$msg		=		yun_auto_t('绑定失败');
 				} 
 			}
           
@@ -233,7 +233,7 @@ class set_controller extends user_controller
             }
           	if($Info){
 				$error			=		2;
-				$msg    		=    	'邮箱已存在，请重新填写邮箱';
+				$msg    		=    	yun_auto_t('邮箱已存在，请重新填写邮箱');
           	}else{
 
 				$data      	=   array(
@@ -247,17 +247,17 @@ class set_controller extends user_controller
 				if($return  == 3){
 
 					$error			=		2;
-					$msg    		=    	'邮件没有配置，请联系管理员！';
+					$msg    		=    	yun_auto_t('邮件没有配置，请联系管理员！');
 				}elseif($return ==2){
 
 					$error			=		2;
-					$msg			=		'邮件通知已关闭，请联系管理员';
+					$msg			=		yun_auto_t('邮件通知已关闭，请联系管理员');
 				}elseif($return ==1){
 					$error			=		1;
 				}else{
 				
 					$error			=		2;
-					$msg			=		'操作错误';
+					$msg			=		yun_auto_t('操作错误');
 				}
 			
 			}
@@ -288,7 +288,7 @@ class set_controller extends user_controller
 			}
 		}else{
 			$error	=	2;
-			$msg	=	'修改失败';
+			$msg	=	yun_auto_t('修改失败');
 		}
 		
 		$this -> render_json($error, $msg);
@@ -343,7 +343,7 @@ class set_controller extends user_controller
 	        $uni = 'wxapp';
 	        if (isset($_POST['provider'])){
 	            if ($_POST['provider'] == 'h5'){
-	                $uni = 'H5/微信';
+	                $uni = yun_auto_t('H5/微信');
 	            }
 	        }
 	        if ($_POST['type'] == 'qq'){
@@ -358,8 +358,8 @@ class set_controller extends user_controller
 	        $comM -> delBd($this->member['uid'], array('type'=>$_POST['type'], 'usertype'=>$this->member['usertype']));
 
             $logM       =   $this->Model('log');
-            $logContent =   '账号认证：解除绑定';
-            $logDetail  =   $uni.'解除绑定';
+            $logContent =   yun_auto_t('账号认证：解除绑定');
+            $logDetail  =   $uni. yun_auto_t('解除绑定');
             $logM->addMemberLog($this->member['uid'],$this->member['usertype'], $logContent, 12, 3, $logDetail);
 	        
 	        $this->render_json(0, 'ok');

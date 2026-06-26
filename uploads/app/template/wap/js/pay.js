@@ -57,10 +57,10 @@ function myFunction(_this) {
 	_this.value = _this.value.replace(/[^0-9]/g, '');
 }
 
-/* 选择不同会员等级操作 */
+/* */
 $("ul#level_rating").on("tap", "li", function() {
-	$(this).addClass("member_set_meal_cur"); // 点击li添加class
-	$(this).siblings('li').removeClass("member_set_meal_cur"); // 删除兄弟li的class属性
+	$(this).addClass("member_set_meal_cur"); //
+	$(this).siblings('li').removeClass("member_set_meal_cur"); //
 
 	var price = $(this).find("#server_price").val();
 	$("#price").html(price);
@@ -80,10 +80,10 @@ $("ul#level_rating").on("tap", "li", function() {
 	$("#spread_integral_box").hide();
 })
 
-/* 选择不同增值服务操作 */
+/* */
 $("ul#pack_type").on("tap", "li", function() {
-	$(this).addClass("value_added_cur"); // 点击li添加class
-	$(this).siblings('li').removeClass("value_added_cur"); // 删除兄弟li的class属性
+	$(this).addClass("value_added_cur"); //
+	$(this).siblings('li').removeClass("value_added_cur"); //
 
 	var price = $(this).find("#server_price").val();
 	$("#price").html(price);
@@ -103,12 +103,12 @@ $("ul#pack_type").on("tap", "li", function() {
 
 })
 
-/* 选择不同充值积分操作 */
+/* */
 $("ul#integral_num").on("click", "li", function() {
-	var integral = $(this).attr('data-integral'); // 充值积分
+	var integral = $(this).attr('data-integral'); //
 	if(parseInt(integral)>=parseInt(min_integral) || parseInt(integral)==0){
-		$(this).addClass("pay_choice_cur"); // 点击li添加class
-		$(this).siblings('li').removeClass("pay_choice_cur"); // 删除兄弟li的class属性
+		$(this).addClass("pay_choice_cur"); //
+		$(this).siblings('li').removeClass("pay_choice_cur"); //
 	}else{
 		showToast(wapPub('minRechargePrefix') + min_integral + jifen, 2);
 		return false;
@@ -122,8 +122,8 @@ $("ul#integral_num").on("click", "li", function() {
 		$('#integral_int').val(integral);
 		$('#user_defined').val('');
 	} else {
-		var integralid = $(this).attr('data-id'); // 积分类别id
-		var discount = $(this).attr('data-discount'); // 积分折扣
+		var integralid = $(this).attr('data-id'); //
+		var discount = $(this).attr('data-discount'); //
 
 		if(parseInt(discount) > 0) {
 			var price = (integral / pro) * (discount / 100);
@@ -143,7 +143,7 @@ $("ul#integral_num").on("click", "li", function() {
 	}
 })
 
-/* 支付方式选择 */
+/* */
 function paycheck(type) {
 	var type;
 	if(type == "alipay") {
@@ -163,7 +163,7 @@ function paycheck(type) {
  	}
 }
 
-/* 积分填写 */
+/* */
 
 function checkIntegralNum() {
 	var integral = $("#user_defined").val();
@@ -439,10 +439,10 @@ if(document.getElementById('integral_switch')) {
 		if(event.detail.isActive) {
 			document.getElementById('spread_integral_box').style.display = 'block';
 		} else {
-			if(document.getElementById('spread_integral_box')) { // 兑换积分部分隐藏
+			if(document.getElementById('spread_integral_box')) { //
 				document.getElementById('spread_integral_box').style.display = 'none';
 			}
-			if(document.getElementById('integral_pay')) { // 积分输入框
+			if(document.getElementById('integral_pay')) { //
 				document.getElementById('integral_pay').value = '';
 			}
 			if(document.getElementById('qrzf_btn')) {
@@ -451,10 +451,10 @@ if(document.getElementById('integral_switch')) {
 					document.getElementById('zffs').style.display = '';
 				}
 			}
-			if(document.getElementById('price') && document.getElementById('r_price')) { // 发布职位抵扣积分，关闭时恢复价格
+			if(document.getElementById('price') && document.getElementById('r_price')) { //
 				document.getElementById('price').innerText = document.getElementById('r_price').innerHTML
 			}
-			if(document.getElementById('dkjfh_price') && document.getElementById('r_price')) { // 刷新职位抵扣后金额隐藏
+			if(document.getElementById('dkjfh_price') && document.getElementById('r_price')) { //
 				document.getElementById('dkjfh_price').innerText = '';
 				document.getElementById('dkhdiv').style.display = 'none';
 			}

@@ -45,7 +45,7 @@ function cityCategory(param){
 
 		for(var i = 0; i < ci.length; i++) {
 
-			if(oneid && ci[i]!=oneid){//指定一级城市
+			if(oneid && ci[i]!=oneid){ //
 				continue;
 			}
 
@@ -64,7 +64,7 @@ function cityCategory(param){
 	    		
 				for(var j = 0; j < ct[ci[i]].length; j++) {
 
-					if(twoid && ct[ci[i]][j]!=twoid){//指定二级级城市
+					if(twoid && ct[ci[i]][j]!=twoid){ //
 						continue;
 					}
 
@@ -81,7 +81,7 @@ function cityCategory(param){
 	          			
 						for(var k = 0; k <ct[ct[ci[i]][j]].length; k++) {
 
-							if(threeid && ct[ct[ci[i]][j]][k]!=threeid){//指定一级城市
+							if(threeid && ct[ct[ci[i]][j]][k]!=threeid){ //
 								continue;
 							}
 
