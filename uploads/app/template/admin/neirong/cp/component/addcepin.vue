@@ -158,7 +158,7 @@ module.exports = {
             var that = this
             var params = new FormData();
             if (!that.info.name) {
-				message.error('请输入试卷名称');
+				message.error(lc('admin_00108'));
                 return false;
             }
             if (!that.info.keyid) {

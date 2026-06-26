@@ -5,18 +5,18 @@
                 <div class="moduleInptList" style="margin-bottom: 8px;">
                     <el-input size="small" placeholder="{yun:}t key='admin_00340'{/yun}" v-model="keyword" class="input-with-select" clearable>
                         <el-select v-model="type" slot="prepend" placeholder="{yun:}t key='wap_user_00103'{/yun}">
-                            <el-option label="标题" value="1"></el-option>
-                            <el-option label="作者" value="2"></el-option>
+                            <el-option label="{yun:}t key='wap_user_00103'{/yun}" value="1"></el-option>
+                            <el-option label="{yun:}t key='admin_00172'{/yun}" value="2"></el-option>
                         </el-select>
                     </el-input>
                 </div>
                 <div class="tableSeachInpt tableSeachInptsmall">
                     <el-select size="small" style="margin-right: 0;" v-model="publish" slot="prepend" placeholder="{yun:}t key='admin_user_weipin_00030'{/yun}" clearable @change="search">
-                        <el-option label="今天" value="1"></el-option>
-                        <el-option label="最近三天" value="3"></el-option>
-                        <el-option label="最近七天" value="7"></el-option>
-                        <el-option label="最近半月" value="15"></el-option>
-                        <el-option label="最近一个月" value="30"></el-option>
+                        <el-option label="{yun:}t key='common_01940'{/yun}" value="1"></el-option>
+                        <el-option label="{yun:}t key='admin_user_00179'{/yun}" value="3"></el-option>
+                        <el-option label="{yun:}t key='admin_user_00178'{/yun}" value="7"></el-option>
+                        <el-option label="{yun:}t key='admin_user_00180'{/yun}" value="15"></el-option>
+                        <el-option label="{yun:}t key='admin_user_00175'{/yun}" value="30"></el-option>
                     </el-select>
                 </div>
                 <div class="tableSeachInpt tableSeachInpElect">
@@ -39,16 +39,16 @@
         <div class="moduleElTable" style="height: calc(100% - (60px + 50px + 20px + 12px));">
             <el-table :data="tableData" stripe border style="width: 100%;" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" @selection-change="handleSelectionChange" ref="multipleTable" :empty-text="emptytext" :default-sort="{ prop: 'id', order: 'descending' }" @sort-change='sortChange' v-loading="loading">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="新闻ID" sortable="custom" width="110">
+                <el-table-column prop="id" label="{yun:}t key='admin_00807'{/yun}" sortable="custom" width="110">
                 </el-table-column>
-                <el-table-column label="新闻标题" min-width="180" max-width="300" show-overflow-tooltip>
+                <el-table-column label="{yun:}t key='member_com_00043'{/yun}" min-width="180" max-width="300" show-overflow-tooltip>
                     <template slot-scope="props">
                         <el-link :href="props.row.url" target="_blank" class="admin_cz_sc" :style="props.row.color ? 'color:'+props.row.color : ''">{{props.row.title}}
                             <div class="admin_mb5" v-html="props.row.titype"></div>
                         </el-link>
                     </template>
                 </el-table-column>
-                <el-table-column label="新闻类别" width="130">
+                <el-table-column label="{yun:}t key='admin_00170'{/yun}" width="130">
                     <template slot-scope="props">
                         <el-tag type=" " size="small">
                             <el-link type="primary" :href="props.row.classurl" target="_blank">{{ props.row.name }}
@@ -56,25 +56,25 @@
                         </el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="showtime" label="显示时间" width="130">
+                <el-table-column prop="showtime" label="{yun:}t key='admin_00808'{/yun}" width="130">
                     <template slot-scope="props">
                         {yun:}t key='admin_00795'{/yun}
                         <div style="padding-top:5px;color:#999;">{yun:}t key='admin_00153'{/yun}</div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="datetime_n" label="发布时间" sortable="custom" width="135">
+                <el-table-column prop="datetime_n" label="{yun:}t key='admin_user_weipin_00030'{/yun}" sortable="custom" width="135">
                 </el-table-column>
-                <el-table-column prop="hits" label="浏览量" sortable="custom" width="115">
+                <el-table-column prop="hits" label="{yun:}t key='wap_com_00112'{/yun}" sortable="custom" width="115">
                 </el-table-column>
-                <el-table-column prop="sort" label="排序" sortable="custom" width="95">
+                <el-table-column prop="sort" label="{yun:}t key='member_com_00022'{/yun}" sortable="custom" width="95">
                 </el-table-column>
-                <el-table-column prop="zd" label="站点" width="75">
+                <el-table-column prop="zd" label="{yun:}t key='admin_user_weipin_00050'{/yun}" width="75">
                     <template slot-scope="scope">
                         <span>{{ dnamearr[scope.row.did] }}</span>
                         <el-link type="primary" @click="fp(scope.row)">{yun:}t key='admin_user_weipin_00048'{/yun}</el-link>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="140" fixed="right">
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="small " type=" " @click="add(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
@@ -192,7 +192,7 @@
         </div>
         <!--批量设置、取消属性-->
         <div class="modluDrawer">
-            <el-dialog :title="sx_type == 1 ? '批量设置属性' : '批量取消属性'" width="400px" :visible.sync="drawersxmultiple" :modal-append-to-body="false">
+            <el-dialog :title="sx_type == 1 ? lc('admin_vue_00118') : lc('admin_00163')" width="400px" :visible.sync="drawersxmultiple" :modal-append-to-body="false">
                 <div class="toolClasDia fenpeizhand">
                     <div class="toolClasList">
                         <div class="toolClasTite">
@@ -221,7 +221,7 @@
         </div>
         <!-- 新增、修改弹窗 -->
         <div class="modluDrawer">
-            <el-drawer :title="curr_data.id ? '修改新闻' : '添加新闻'" :close-on-press-escape="false" :wrapper-closable="false" :visible.sync="draweradd" append-to-body :modal-append-to-body="false" :show-close="true" :with-header="true" size="880px">
+            <el-drawer :title="curr_data.id ? lc('admin_vue_00119') : lc('admin_vue_00120')" :close-on-press-escape="false" :wrapper-closable="false" :visible.sync="draweradd" append-to-body :modal-append-to-body="false" :show-close="true" :with-header="true" size="880px">
                 <div class="drawerModlue">
                     <div class="tableDome_tip tableDoAlert">
                         <div class="shiTopAllTips">
@@ -833,7 +833,7 @@ module.exports = {
             var regex = /(<([^>]+)>)/ig
             var result = ue.getContent().replace(regex, "");
             if (!result) {
-                message.error('请输入新闻内容');
+                message.error(lc('admin_vue_00061'));
                 return false;
             }
             var params = new FormData();

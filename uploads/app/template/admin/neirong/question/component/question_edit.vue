@@ -169,7 +169,7 @@ module.exports = {
                 return;
             }
             if (typeof params.cid == 'undefined' || params.cid == '') {
-                message.warning('请选择问答类别');
+                message.warning(lc('admin_vue_00064'));
                 return;
             }
 

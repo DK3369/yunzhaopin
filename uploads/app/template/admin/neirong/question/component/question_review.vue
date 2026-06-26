@@ -5,21 +5,21 @@
                       :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55">
                 </el-table-column>
-                <el-table-column prop="id" label="编号" width="80">
+                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="80">
                 </el-table-column>
-                <el-table-column prop="content_n" label="内容">
+                <el-table-column prop="content_n" label="{yun:}t key='wap_user_00102'{/yun}">
                 </el-table-column>
-                <el-table-column label="评论者昵称" width="150">
+                <el-table-column label="{yun:}t key='admin_00790'{/yun}" width="150">
                     <template slot-scope="scope">
                         <div>{{scope.row.nickname ? scope.row.nickname : scope.row.username}}</div>
                     </template>
                 </el-table-column>
-                <el-table-column label="评论时间" width="160">
+                <el-table-column label="{yun:}t key='admin_00791'{/yun}" width="160">
                     <template slot-scope="scope">
                         <div>{{scope.row.add_time_n}}</div>
                     </template>
                 </el-table-column>
-                <el-table-column label="状态" width="100">
+                <el-table-column label="{yun:}t key='member_user_00181'{/yun}" width="100">
                     <template slot-scope="scope">
                         <div class="admin_state">
                             <span v-if="scope.row.status == 1" class="admin_state1">{yun:}t key='wap_user_00165'{/yun}</span>
@@ -28,7 +28,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="200" align="center">
+                <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="200" align="center">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="small " plain @click="openAudit(scope.row)">{yun:}t key='member_user_00152'{/yun}</el-button>
@@ -250,7 +250,7 @@
 
                 if (typeof idx == 'undefined") { // {yun:}t key='member_com_00055'{/yun}
                     params.del = this.idArr;
-                    msg = "你确定要删除选中项吗？";
+                    msg = "{yun:}t key='common_00853'{/yun}";
                 } else {// {yun:}t key='common_01711'{/yun}
                     params.id = that.list[idx].id;
                     msg = "你确定要删除当前项吗？';
@@ -324,7 +324,7 @@
                     params = that.ruleForm;
 
                 if (params.content === '') {
-                    message.warning('请输入评论内容');
+                    message.warning(lc('admin_vue_00065'));
                     return false;
                 }
 

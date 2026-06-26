@@ -11,13 +11,13 @@
                       ref="multipleTable" @selection-change="handleSelectionChange" @sort-change="sortChange" :empty-text="emptytext"
                       style="width: 100%;height: 100%;" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" v-loading="loading" height="100%">
                 <el-table-column type="selection" width="55"> </el-table-column>
-                <el-table-column prop="id" label="编号" width="90" sortable="custom">
+                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="90" sortable="custom">
                 </el-table-column>
-                <el-table-column prop="name" label="类别">
+                <el-table-column prop="name" label="{yun:}t key='admin_00223'{/yun}">
                 </el-table-column>
-                <el-table-column prop="add_time_n" label="发布时间">
+                <el-table-column prop="add_time_n" label="{yun:}t key='admin_user_weipin_00030'{/yun}">
                 </el-table-column>
-                <el-table-column label="操作" width="200" fixed="right">
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="200" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="small " plain @click="openAdd(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
@@ -41,7 +41,7 @@
         </div>
 
         <div class="modluDrawer">
-            <el-drawer :title="detail.id ? '修改类别' : '添加类别'" :visible.sync="drawerAdd" append-to-body :show-close="true"
+            <el-drawer :title="detail.id ? lc('admin_00221') : lc('admin_00222')" :visible.sync="drawerAdd" append-to-body :show-close="true"
                        :with-header="true" size="45%">
                 <add :refresh="random" :id="detail.id ? detail.id : ''" source="manage" @child-event="closeAdd"></add>
             </el-drawer>
@@ -191,7 +191,7 @@ module.exports = {
 
             if (typeof idx == 'undefined") { // {yun:}t key='member_com_00055'{/yun}
                 params.del = this.idArr;
-                msg = "你确定要删除选中项吗？";
+                msg = "{yun:}t key='common_00853'{/yun}";
             } else {// {yun:}t key='common_01711'{/yun}
                 params.id = that.list[idx].id;
                 msg = "你确定要删除当前项吗？';

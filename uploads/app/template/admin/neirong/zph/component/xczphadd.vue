@@ -672,7 +672,7 @@
             async save() {
                 let that = this;
                 if (that.info.title == '') {
-                    message.error('请填写招聘会名称');
+                    message.error(lc('admin_vue_00069'));
                     return false;
                 }
                 that.info.body = editor_desc.getHtml() != '<p><br></p>' ? editor_desc.getHtml() : '';

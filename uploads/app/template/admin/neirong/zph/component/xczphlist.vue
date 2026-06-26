@@ -4,14 +4,14 @@
             <div class="moduleSeachInpt">
                 <el-input placeholder="{yun:}t key='admin_00340'{/yun}" size="small" style="margin-right: 8px;" v-model="keyword" class="input-with-select" clearable>
                     <el-select v-model="type" slot="prepend" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                        <el-option label="招聘会名称" value="1"></el-option>
-                        <el-option label="会场" value="2"></el-option>
+                        <el-option label="{yun:}t key='member_com_00377'{/yun}" value="1"></el-option>
+                        <el-option label="{yun:}t key='admin_00321'{/yun}" value="2"></el-option>
                     </el-select>
                 </el-input>
                 <el-select v-model="status" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00406'{/yun}" clearable style="margin-right: 10px; text-align: left;" @change="search">
-                    <el-option label="已开始" value="1"></el-option>
-                    <el-option label="未开始" value="3"></el-option>
-                    <el-option label="已结束" value="2"></el-option>
+                    <el-option label="{yun:}t key='admin_00319'{/yun}" value="1"></el-option>
+                    <el-option label="{yun:}t key='admin_00320'{/yun}" value="3"></el-option>
+                    <el-option label="{yun:}t key='wap_user_00259'{/yun}" value="2"></el-option>
                 </el-select>
                 <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
             </div>
@@ -27,8 +27,8 @@
         <div class="moduleElTable moduleElMoreLive" style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
             <el-table :data="tableData" style="width: 100%" stripe :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" @selection-change="handleSelectionChange" ref="multipleTable" :default-sort="{ prop: 'id', order: 'descending' }" @sort-change='sortChange' v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="编号" width="80" sortable="custom"></el-table-column>
-                <el-table-column label="招聘会名称" min-width="180" show-overflow-tooltip>
+                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="80" sortable="custom"></el-table-column>
+                <el-table-column label="{yun:}t key='member_com_00377'{/yun}" min-width="180" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <div class="">
                             <el-link type="primary" :href="scope.row.url" target="_blank"> {{ scope.row.title }}</el-link>
@@ -36,9 +36,9 @@
                         <div class="">{{ lc("admin_venue_value", [scope.row.address]) }}</div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="starttime" label="开始时间" width="180" sortable="custom"></el-table-column>
-                <el-table-column prop="endtime" label="结束时间" width="180" sortable="custom"></el-table-column>
-                <el-table-column label="参会企业" min-width="80" show-overflow-tooltip>
+                <el-table-column prop="starttime" label="{yun:}t key='admin_company_00005'{/yun}" width="180" sortable="custom"></el-table-column>
+                <el-table-column prop="endtime" label="{yun:}t key='admin_company_00006'{/yun}" width="180" sortable="custom"></el-table-column>
+                <el-table-column label="{yun:}t key='wap_00559'{/yun}" min-width="80" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <div style="padding-top: 10px;">
                             <el-button @click="showComList(scope.row)" type="text">
@@ -53,25 +53,25 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="zd" label="站点" width="75">
+                <el-table-column prop="zd" label="{yun:}t key='admin_user_weipin_00050'{/yun}" width="75">
                     <template slot-scope="scope">
                         <span>{{ dnamearr[scope.row.did] }}</span>
                         <el-link type="primary" @click="fp(scope.row)">{yun:}t key='admin_user_weipin_00048'{/yun}</el-link>
                     </template>
                 </el-table-column>
-                <el-table-column prop="id" label="招聘会图片" width="180">
+                <el-table-column prop="id" label="{yun:}t key='admin_00846'{/yun}" width="180">
                     <template slot-scope="scope">
                         <el-link type="primary" @click="piclist(scope.row)">{yun:}t key='admin_00586'{/yun}</el-link>
                     </template>
                 </el-table-column>
-                <el-table-column prop="zt" label="显示状态">
+                <el-table-column prop="zt" label="{yun:}t key='admin_00285'{/yun}">
                     <template slot-scope="scope">
                         <div class="admin_state">
                             <span class="admin_state1">{yun:}t key='admin_00849'{/yun}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" fixed="right" width="140">
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" fixed="right" width="140">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="mini">
@@ -121,15 +121,15 @@
             </el-dialog>
         </div>
         <!--参会企业-->
-        <el-drawer :title="curr_data.title + ' - 参会企业'" :visible.sync="comdrawer" :modal-append-to-body="false" append-to-body size="80%" @close="closeComList">
+        <el-drawer :title="curr_data.title + ' - ' + lc('wap_00559')" :visible.sync="comdrawer" :modal-append-to-body="false" append-to-body size="80%" @close="closeComList">
             <div class="moduleElHight" style="padding: 0 20px;">
                 <div class="modulemoreSeach">
                     <div class="moduleSeachbig">
                         <div class="tableSeachInpt tableSeachInptsmall newsinput">
                             <el-select v-model="com_status" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00406'{/yun}" clearable @change="comSearch">
-                                <el-option label="已通过" value="1"></el-option>
-                                <el-option label="未审核" value="3"></el-option>
-                                <el-option label="未通过" value="2"></el-option>
+                                <el-option label="{yun:}t key='member_user_00042'{/yun}" value="1"></el-option>
+                                <el-option label="{yun:}t key='wap_user_00166'{/yun}" value="3"></el-option>
+                                <el-option label="{yun:}t key='wap_user_00167'{/yun}" value="2"></el-option>
                             </el-select>
                         </div>
                         <div class="tableSeachInpt">
@@ -152,11 +152,11 @@
                 <div class="moduleElTable" style="border: 1px solid #ebeef5; width: calc(100% - 2px); height: calc(100% - 100px);">
                     <el-table :data="comTableData" style="width: 100%" stripe :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" @selection-change="handleComSelectionChange" ref="comMultipleTable" :default-sort="{ prop: 'id', order: 'descending' }" @sort-change='comSortChange' :key="comTblKey" v-loading="loading" :empty-text="emptytext">
                         <el-table-column type="selection" width="55"></el-table-column>
-                        <el-table-column prop="id" label="编号" sortable="custom"></el-table-column>
-                        <el-table-column prop="comname" label="参与企业" min-width="180" show-overflow-tooltip></el-table-column>
-                        <el-table-column prop="jobname" label="职位" min-width="180" show-overflow-tooltip></el-table-column>
-                        <el-table-column prop="space_n" label="位置" sortable="custom"></el-table-column>
-                        <el-table-column prop="sort" label="排序" sortable="custom">
+                        <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" sortable="custom"></el-table-column>
+                        <el-table-column prop="comname" label="{yun:}t key='admin_00299'{/yun}" min-width="180" show-overflow-tooltip></el-table-column>
+                        <el-table-column prop="jobname" label="{yun:}t key='wap_user_00154'{/yun}" min-width="180" show-overflow-tooltip></el-table-column>
+                        <el-table-column prop="space_n" label="{yun:}t key='admin_00306'{/yun}" sortable="custom"></el-table-column>
+                        <el-table-column prop="sort" label="{yun:}t key='member_com_00022'{/yun}" sortable="custom">
                             <template slot-scope="scope">
                                 <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index" v-model="scope.row.sort" @blur="alterData(scope, 1)"></el-input>
                                 <span v-else>
@@ -165,7 +165,7 @@
                                 </span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="zt" label="状态">
+                        <el-table-column prop="zt" label="{yun:}t key='member_user_00181'{/yun}">
                             <template slot-scope="props">
                                 <div class="admin_state">
                                     <span v-if="props.row.status == '1'" class="admin_state1"> {yun:}t key='admin_user_00149'{/yun}</span>
@@ -174,7 +174,7 @@
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" fixed="right" width="150" align="center">
+                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" fixed="right" width="150" align="center">
                             <template slot-scope="scope">
                                 <div class="cz_button">
                                     <el-button size="" plain @click="cominfo(scope.row)">{yun:}t key='member_com_00380'{/yun}</el-button>
@@ -657,11 +657,11 @@ module.exports = {
         saveAddCom() {
             var that = this
             if (!that.comid) {
-                message.error('请选择参会企业！');
+                message.error(lc('admin_vue_00075'));
                 return false
             }
             if (!that.sel_cdid || !that.sel_zwid) {
-                message.error('请选择展位！');
+                message.error(lc('admin_vue_00076'));
                 return false
             }
             this.submitLoading = true
@@ -921,7 +921,7 @@ module.exports = {
                 params.did = that.curr_data.did
             } else { // {yun:}t key='admin_00162'{/yun}
                 if (!that.selectedItem.length) {
-                    message.error("请选择要分配的数据项');
+                    message.error(lc('admin_00312'));
                     return false;
                 }
                 params.uid = that.selectedItem.join(',')

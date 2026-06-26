@@ -1,7 +1,7 @@
 <template>
     <div class="moduleElHight" style="padding: 0 20px;">
         <!-- <div class="tableDome_tip">
-            <el-alert title="可添加招聘会时的参会图片" type="success" :closable="false">
+            <el-alert title="{yun:}t key='admin_00847'{/yun}" type="success" :closable="false">
             </el-alert>
         </div> -->
         <div class="modulemoreSeach" style="width: 100%;">
@@ -16,7 +16,7 @@
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" v-loading="loading"
                 :empty-text="emptytext">
                 <el-table-column prop="id" label="ID"></el-table-column>
-                <el-table-column prop="wenjian" label="图片" width="150">
+                <el-table-column prop="wenjian" label="{yun:}t key='wap_js_00081'{/yun}" width="150">
                     <template slot-scope="scope">
                         <div class="demo-image__preview">
                             <el-image width="100%" height="60px" :src="scope.row.pic_n" :preview-src-list="srcList">
@@ -24,11 +24,11 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="title" label="图片名称">
+                <el-table-column prop="title" label="{yun:}t key='admin_00845'{/yun}">
                 </el-table-column>
-                <el-table-column prop="sort" label="排序">
+                <el-table-column prop="sort" label="{yun:}t key='member_com_00022'{/yun}">
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="250">
+                <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="250">
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
                             <el-button size="mini" @click="editPic(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
@@ -41,7 +41,7 @@
             </el-table>
         </div>
         <div class="modluDrawer">
-            <el-drawer :title="info.id ? '修改图片' : '添加图片'" :visible.sync="editBox" append-to-body
+            <el-drawer :title="info.id ? lc('admin_vue_00122') : lc('admin_00586')" :visible.sync="editBox" append-to-body
                 :modal-append-to-body="false" :show-close="true" :with-header="true" size="45%">
                 <div class="drawerModlue">
                     <div class="drawerModInfo">
@@ -201,7 +201,7 @@ module.exports = {
             let that = this;
             let formData = new FormData();
             if (that.info.title == '') {
-                message.error('请填写图片名称');
+                message.error(lc('admin_vue_00073'));
                 return false;
             }
             if (that.info.pic_n == '') {

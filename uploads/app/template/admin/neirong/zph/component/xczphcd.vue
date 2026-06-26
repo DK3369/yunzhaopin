@@ -22,8 +22,8 @@
             <el-table :data="tableData" style="width: 100%" stripe @selection-change="handleSelectionChange"
                       :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="编号" width="80" sortable="custom"></el-table-column>
-                <el-table-column prop="name" label="名称">
+                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="80" sortable="custom"></el-table-column>
+                <el-table-column prop="name" label="{yun:}t key='member_com_00021'{/yun}">
                     <template slot-scope="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']"
                                   :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -34,7 +34,7 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="sort" label="排序">
+                <el-table-column prop="sort" label="{yun:}t key='member_com_00022'{/yun}">
                     <template slot-scope="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']"
                                   :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -45,7 +45,7 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="pic_n" label="位置图" width="180">
+                <el-table-column prop="pic_n" label="{yun:}t key='admin_00832'{/yun}" width="180">
                     <template slot-scope="props">
                         <div class="demo-image__preview">
                             <el-image style="width: 20px; height: 20px" :src="props.row.pic_n" :preview-src-list="srcList">
@@ -53,7 +53,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" fixed="right" width="200">
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" fixed="right" width="200">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="mini" plain @click="toadd(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
@@ -86,9 +86,9 @@
                           default-expand-all :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
                           :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" @selection-change="handleSubTblSelectionChange" ref="multipleSubTable" v-loading="loading" :empty-text="emptytext">
                     <el-table-column type="selection" width="55"></el-table-column>
-                    <el-table-column prop="id" label="编号" width="180">
+                    <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="180">
                     </el-table-column>
-                    <el-table-column label="名称" property="name">
+                    <el-table-column label="{yun:}t key='member_com_00021'{/yun}" property="name">
                         <template slot-scope="scope">
                             <el-input v-if="scope.row[scope.column.property + 'isShow']"
                                       :ref="'edit_' + scope.column.property + scope.$index" :id="'edit_' + scope.column.property + scope.$index"
@@ -99,7 +99,7 @@
                         </span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="价格" property="price">
+                    <el-table-column label="{yun:}t key='wap_00563'{/yun}" property="price">
                         <template slot-scope="scope">
                             <el-input v-if="scope.row[scope.column.property + 'isShow']"
                                       :ref="'edit_' + scope.column.property + scope.$index" :id="'edit_' + scope.column.property + scope.$index"
@@ -110,7 +110,7 @@
                             </span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="排序" property="sort">
+                    <el-table-column label="{yun:}t key='member_com_00022'{/yun}" property="sort">
                         <template slot-scope="scope">
                             <el-input v-if="scope.row[scope.column.property + 'isShow']"
                                       :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -122,7 +122,7 @@
                             </span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="操作" width="140" fixed="right">
+                    <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140" fixed="right">
                         <template slot-scope="scope">
                             <div class="cz_button">
                                 <el-button type="danger" size="small "
@@ -145,7 +145,7 @@
         </el-drawer>
         <!--修改场地、新增场地-->
         <div class="modluDrawer">
-            <el-drawer :title="curr_data.id ? '修改场地' : '新增场地'" :visible.sync="draweradd" append-to-body :modal-append-to-body="false" :show-close="true"
+            <el-drawer :title="curr_data.id ? lc('admin_vue_00121') : lc('admin_00829')" :visible.sync="draweradd" append-to-body :modal-append-to-body="false" :show-close="true"
                        :with-header="true" size="50%">
                 <div class="processDrawer"  style="overflow-y: auto; position: relative; width: 100%; height: 100%;">
                     <div>
@@ -170,7 +170,7 @@
                             </div>
                             <div class="drawerModInpt">
                                 <el-select v-model="fir_id" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="firChange">
-                                    <el-option label="请选择" value="">
+                                    <el-option label="{yun:}t key='wap_user_00100'{/yun}" value="">
                                     </el-option>
                                     <el-option v-for="item in tableData" :key="item.id" :label="item.name" :value="item.id">
                                     </el-option>
@@ -187,7 +187,7 @@
                             </div>
                             <div class="drawerModInpt">
                                 <el-select v-model="sec_id" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                                    <el-option label="请选择" value="">
+                                    <el-option label="{yun:}t key='wap_user_00100'{/yun}" value="">
                                     </el-option>
                                     <el-option v-for="item in secClass" :key="item.id" :label="item.name" :value="item.id">
                                     </el-option>
@@ -654,7 +654,7 @@
             async save() {
                 let that = this;
                 if (that.curr_data.name == '') {
-                    message.error('请填写场地名称');
+                    message.error(lc('admin_vue_00071'));
                     return false;
                 }
                 that.curr_data.content = editor.getHtml()

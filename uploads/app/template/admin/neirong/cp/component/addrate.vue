@@ -110,7 +110,7 @@ module.exports = {
 				}
 			});
 			if (err == true) {
-				message.error('请完善评语管理！');
+				message.error(lc('admin_vue_00123'));
 				return false;
 			}
 			that.$parent.$parent.ratedata = that.list;

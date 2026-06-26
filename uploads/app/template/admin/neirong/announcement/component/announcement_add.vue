@@ -171,17 +171,17 @@
                     return;
                 }
                 if (typeof params.keyword == 'undefined' || params.keyword == '') {
-                    message.warning('请输入公告关键字');
+                    message.warning(lc('admin_vue_00066'));
                     return;
                 }
 
                 if (params.startime && params.endtime && params.startime > params.endtime) {
-                    message.warning('结束时间必须大于开始时间');
+                    message.warning(lc('admin_vue_00067'));
                     return;
                 }
 
                 if (typeof params.description == 'undefined' || params.description == '') {
-                    message.warning('请输入公告描述');
+                    message.warning(lc('admin_vue_00068'));
                     return;
                 }
 
