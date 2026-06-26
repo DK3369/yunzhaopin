@@ -1407,14 +1407,14 @@ class company_model extends model{
                 } else {
                     $return['msg'] = yun_at('common_01020');
                 }
-                $return['msg'] = yun_auto_t('企业资质(ID:').$uid.')修改成功';
+                $return['msg'] = yun_at('model_00147').$uid.yun_at('model_00143');
                 $return['errcode']  =  '9';
                 // pc会员中心预览即上传，处理预览图
                 if ($data['preview']){
                     $return['picurl']  =  checkpic($picurl);
                 }
             }else{
-                $return['msg']      =  yun_auto_t('企业资质(ID:').$uid.')修改失败';
+                $return['msg']      =  yun_at('model_00147').$uid.yun_at('model_00144');
                 $return['errcode']  =  '8';
             }
         }else{
@@ -1903,7 +1903,7 @@ class company_model extends model{
                 if ($return['id']) {
                     if ($data['type'] == '3') {
 
-                        $return['msg']  =   yun_auto_t('企业认证(UID:') . pylode(',', $uid);
+                        $return['msg']  =   yun_at('model_00148') . pylode(',', $uid);
                    }
                     $return['msg']      .=  ')删除成功';
                     $return['errcode']  =   '9';
@@ -1986,7 +1986,7 @@ class company_model extends model{
                 $msgM->addInfo(array('uid' => $uids, 'usertype' => 2, 'content' => $msg));
             }
 
-            $return['msg']      =   yun_auto_t('顾问(ID:') . $crm_uid . ')';
+            $return['msg']      =   yun_at('model_00149') . $crm_uid . yun_at('model_00130');
             $return['errcode']  =   $result ? '9' : '8';
             $return['msg']      =   $result ? $return['msg'] . 'common_06401' : $return['msg'] . 'common_06402';
         }
@@ -2035,7 +2035,7 @@ class company_model extends model{
 
                 }
 
-                $return['msg']		=	yun_auto_t('名企招聘(ID:').$return['id'].')';
+                $return['msg']		=	yun_at('model_00150').$return['id'].yun_at('model_00130');
 
                 $return['errcode']	=	$return['id'] ? '9' :'8';
                 $return['msg']		=	$return['id'] ? $return['msg'].'model_00011' : $return['msg'].'wap_01715';
@@ -2089,7 +2089,7 @@ class company_model extends model{
 					$this -> update_once('company',array('hottime' => $data['time_end'], 'rec' => '1','hotstart' =>$data['time_start']),array('uid'=>$uid));
                 }
 
-                $return['msg']		=	yun_auto_t('名企招聘(ID:').$return['id'].')';
+                $return['msg']		=	yun_at('model_00150').$return['id'].yun_at('model_00130');
 
                 $return['errcode']	=	$return['id'] ? '9' :'8';
                 $return['msg']		=	$return['id'] ? $return['msg'].'model_00011' : $return['msg'].'wap_01715';
@@ -2432,12 +2432,12 @@ class company_model extends model{
             if($return['id']){
 
 
-                $return['msg']      =  $data['utype'] == 'user' ? yun_at('wap_user_00147') : yun_auto_t('企业产品(ID:').pylode(',', $id).')删除成功';
+                $return['msg']      =  $data['utype'] == 'user' ? yun_at('wap_user_00147') : yun_at('model_00151').pylode(',', $id).yun_at('model_00112');
 
                 $return['errcode']  =  '9';
 
             } else{
-                $return['msg']      =  $data['utype'] == 'user' ? yun_at('wap_user_00146') : yun_auto_t('企业产品(ID:').pylode(',', $id).')删除失败';
+                $return['msg']      =  $data['utype'] == 'user' ? yun_at('wap_user_00146') : yun_at('model_00151').pylode(',', $id).yun_at('model_00137');
 
                 $return['errcode']  =  '8';
             }
@@ -2736,11 +2736,11 @@ class company_model extends model{
                 $logContent         =   'common_06388'.pylode(',', $id).'）';
                 $this->addMemberLog($data['uid'], $data['usertype'], $logContent, 16, 3);
 
-                $return['msg']      =  $data['utype'] == 'user' ? yun_at('wap_user_00147') : yun_auto_t('企业新闻(ID:').pylode(',', $id).')删除成功';
+                $return['msg']      =  $data['utype'] == 'user' ? yun_at('wap_user_00147') : yun_at('model_00152').pylode(',', $id).yun_at('model_00112');
                 $return['errcode']  =  '9';
             } else{
 
-                $return['msg']      =  $data['utype'] == 'user' ? yun_at('wap_user_00146') : yun_auto_t('企业新闻(ID:').pylode(',', $id).')删除失败';
+                $return['msg']      =  $data['utype'] == 'user' ? yun_at('wap_user_00146') : yun_at('model_00152').pylode(',', $id).yun_at('model_00137');
                 $return['errcode']  =  '8';
             }
         } else {
@@ -3559,7 +3559,7 @@ class company_model extends model{
                         $return['map_i']    =   ($com['x'] != '' && $com['y']!='') ? 1 : 0;
                         $return['msg']      =   yun_at('common_06407');
                     }else{
-                        $return['msg']      =   yun_auto_t('企业会员(ID:').$whereData['uid'].')基本资料修改成功';
+                        $return['msg']      =   yun_at('model_00153').$whereData['uid'].yun_at('model_00130').yun_at('model_00154');
                     }
 
                     $return['errcode']      =    9;
@@ -3568,7 +3568,7 @@ class company_model extends model{
                     if ($data['utype'] == 'user'){
                         $return['msg']		=  yun_at('common_06321');
                     }else{
-                        $return['msg']		=  yun_auto_t('企业会员(ID:').$whereData['uid'].')基本资料修改失败';
+                        $return['msg']		=  yun_at('model_00153').$whereData['uid'].yun_at('model_00130').yun_at('model_00155');
                     }
                     $return['errcode']	=  8;
                 }
@@ -3653,7 +3653,7 @@ class company_model extends model{
                         $this->addMemberLog($whereData['uid'], 2, 'common_00703', 7, 2);
                         
                     }else{
-                        $return['msg']      =   yun_auto_t('企业会员(ID:').$whereData['uid'].'common_00831';
+                        $return['msg']      =   yun_at('model_00153').$whereData['uid'].yun_at('model_00130').yun_at('common_00831');
                     }
 
                     $return['errcode']      =    9;
@@ -3663,7 +3663,7 @@ class company_model extends model{
                         $return['msg']      =  yun_at('common_01298');
                     }else{
 
-                        $return['msg']      =  yun_auto_t('企业会员(ID:').$whereData['uid'].'common_01088';
+                        $return['msg']      =  yun_at('model_00153').$whereData['uid'].yun_at('model_00130').yun_at('common_01088');
                     }
                     $return['errcode']  =  8;
                 }
@@ -4069,7 +4069,7 @@ class company_model extends model{
                     }
                 }else{
 
-                    $return['msg']      =  yun_auto_t('企业LOGO(ID:').$uid.')修改成功';
+                    $return['msg']      =  yun_at('model_00156').$uid.yun_at('model_00143');
                     $return['errcode']  =  '9';
                 }
                 // pc会员中心预览即上传，处理预览图
@@ -4078,7 +4078,7 @@ class company_model extends model{
                 }
             }else{
 
-                $return['msg']      =  yun_auto_t('企业LOGO(ID:').$uid.')修改失败';
+                $return['msg']      =  yun_at('model_00156').$uid.yun_at('model_00144');
                 $return['errcode']  =  '8';
             }
         }else{
@@ -4143,11 +4143,11 @@ class company_model extends model{
                     $return['picurl']  =  checkpic($logo);
                 }
 
-                $return['msg']      =  $data['utype'] == 'user' ? yun_at('admin_user_company_00208') : yun_auto_t('企业二维码(ID:').$uid.')修改成功';
+                $return['msg']      =  $data['utype'] == 'user' ? yun_at('admin_user_company_00208') : yun_at('model_00157').$uid.yun_at('model_00143');
                 $return['errcode']  =  '9';
             }else{
 
-                $return['msg']      =  $data['utype'] == 'user' ? yun_at('admin_00187') : yun_auto_t('企业二维码(ID:').$uid.')修改失败';
+                $return['msg']      =  $data['utype'] == 'user' ? yun_at('admin_00187') : yun_at('model_00157').$uid.yun_at('model_00144');
                 $return['errcode']  =  '8';
             }
         }else{
@@ -4536,10 +4536,10 @@ class company_model extends model{
                     $this -> update_once('question',array('pic'=>array('CASE','uid',$newlogo)),array('uid'=>array('in',$uidstr)));
                 }
 
-                $return['msg']      =  yun_auto_t('LOGO审核(ID:').$uidstr.')设置成功';
+                $return['msg']      =  yun_at('model_00158').$uidstr.yun_at('model_00127');
                 $return['errcode']  =  '9';
             }else{
-                $return['msg']      =  yun_auto_t('LOGO审核(ID:').$uidstr.')设置失败';
+                $return['msg']      =  yun_at('model_00158').$uidstr.yun_at('model_00128');
                 $return['errcode']  =  '8';
             }
         }else{
@@ -4617,10 +4617,10 @@ class company_model extends model{
 
 	            }
 
-	            $return['msg']      =  yun_auto_t('企业环境审核(ID:').$idstr.')设置成功';
+	            $return['msg']      =  yun_at('model_00159').$idstr.yun_at('model_00127');
 	            $return['errcode']  =  '9';
 	        }else{
-	            $return['msg']      =  yun_auto_t('企业环境审核(ID:').$idstr.')设置失败';
+	            $return['msg']      =  yun_at('model_00159').$idstr.yun_at('model_00128');
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
@@ -4695,10 +4695,10 @@ class company_model extends model{
 
 	            }
 
-	            $return['msg']      =  yun_auto_t('企业横幅审核(ID:').$idstr.')设置成功';
+	            $return['msg']      =  yun_at('model_00160').$idstr.yun_at('model_00127');
 	            $return['errcode']  =  '9';
 	        }else{
-	            $return['msg']      =  yun_auto_t('企业横幅审核(ID:').$idstr.')设置失败';
+	            $return['msg']      =  yun_at('model_00160').$idstr.yun_at('model_00128');
 	            $return['errcode']  =  '8';
 	        }
 	    }else{

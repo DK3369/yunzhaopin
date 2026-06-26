@@ -3373,7 +3373,7 @@ class resume_model extends model{
 
                 }
 	        }else{
-	            $return['msg']      =  yun_auto_t('审核简历设置失败(ID:').$idstr.')';
+	            $return['msg']      =  yun_at('model_00125').$idstr.yun_at('model_00130');
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
@@ -3440,11 +3440,11 @@ class resume_model extends model{
                 $logM       =   new log_model($this->db, $this->def);
                 $logM->addResumeSxLogS($logSxData);
 
-                $return['msg']      =   yun_auto_t('刷新简历(ID:') . $idstr . ')设置成功';
+                $return['msg']      =   yun_at('model_00126') . $idstr . yun_at('model_00127');
                 $return['errcode']  =   '9';
             } else {
 
-                $return['msg']      =   yun_auto_t('刷新简历(ID:') . $idstr . ')设置失败';
+                $return['msg']      =   yun_at('model_00126') . $idstr . yun_at('model_00128');
                 $return['errcode']  =   '8';
             }
         } else {
@@ -3506,14 +3506,14 @@ class resume_model extends model{
 	            $sysmsgM -> addInfo(array('uid'=>$uids,'usertype'=>1, 'content'=>$msg));
 
                 if ($rec == 1) {
-                    $return['msg'] = yun_auto_t('推荐简历(ID:') . $idstr . ')设置成功';
+                    $return['msg'] = yun_at('model_00129') . $idstr . yun_at('model_00127');
                     $return['errcode'] = '9';
                 }elseif ($rec == 0){
-                    $return['msg'] = yun_auto_t('取消推荐简历(ID:') . $idstr . ')设置成功';
+                    $return['msg'] = yun_at('model_00131') . $idstr . yun_at('model_00127');
                     $return['errcode'] = '9';
                 }
 	        }else{
-	            $return['msg']      =  yun_auto_t('推荐简历(ID:').$idstr.')设置失败';
+	            $return['msg']      =  yun_at('model_00129').$idstr.yun_at('model_00128');
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
@@ -3572,14 +3572,14 @@ class resume_model extends model{
 	            $sysmsgM -> addInfo(array('uid'=>$uids,'usertype'=>1, 'content'=>$msg));
 
                 if ($post['top'] == 1) {
-                    $return['msg'] = yun_auto_t('置顶简历(ID:') . $idstr . ')设置成功';
+                    $return['msg'] = yun_at('model_00132') . $idstr . yun_at('model_00127');
                     $return['errcode'] = '9';
                 }elseif ($post['top'] == 0){
-                    $return['msg'] = yun_auto_t('取消置顶简历(ID:') . $idstr . ')设置成功';
+                    $return['msg'] = yun_at('model_00133') . $idstr . yun_at('model_00127');
                     $return['errcode'] = '9';
                 }
 	        }else{
-	            $return['msg']      =  yun_auto_t('置顶简历(ID:').$idstr.')设置失败';
+	            $return['msg']      =  yun_at('model_00132').$idstr.yun_at('model_00128');
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
@@ -3596,7 +3596,7 @@ class resume_model extends model{
             $return1 = $this->update_once('resume', $post, array('uid' => $uid));
             $return2 = $this->update_once('resume_expect', $post, array('uid' => $uid));
 
-            $return['msg']      =   yun_auto_t('简历状态(UID:').$uid.')';
+            $return['msg']      =   yun_at('model_00134').$uid.yun_at('model_00130');
             $return['msg']      =   $return1 && $return2 ? $return['msg'].'model_00011' : $return['msg'].'wap_01715';
             //操作状态 9：成功 8:失败 配合原有提示函数
             $return['errcode']  =   $return1 && $return2 ? '9' :'8';
@@ -3615,7 +3615,7 @@ class resume_model extends model{
         if (!empty($data['id'])){
             $result = $this->update_once('resume_expect', array('label' => $data['label'], 'content' => $data['content']), array('id' => $data['id']));
             
-            $return['msg']  =	yun_auto_t('简历备注(ID:').$data['id'].')';
+            $return['msg']  =	yun_at('model_00135').$data['id'].yun_at('model_00130');
         }
         $return['msg']		=	$result ? $return['msg'].'model_00011' : $return['msg'].'wap_01715';
         //操作状态 9：成功 8:失败 配合原有提示函数
@@ -3742,11 +3742,11 @@ class resume_model extends model{
                 }
 
                 $return['id']       =  $nid;
-                $return['msg']      =  yun_auto_t('简历(ID:').$id.')删除成功';
+                $return['msg']      =  yun_at('model_00136').$id.yun_at('model_00112');
                 $return['errcode']  =  '9';
 
             }else{
-                $return['msg']      =  yun_auto_t('简历(ID:').$id.')删除失败';
+                $return['msg']      =  yun_at('model_00136').$id.yun_at('model_00137');
                 $return['errcode']  =  '8';
 
             }
@@ -3933,10 +3933,10 @@ class resume_model extends model{
 	                }
 	            }
 
-	            $return['msg']      =  yun_auto_t('个人认证审核(ID:').$uidstr.')设置成功';
+	            $return['msg']      =  yun_at('model_00138').$uidstr.yun_at('model_00127');
 	            $return['errcode']  =  '9';
 	        }else{
-	            $return['msg']      =  yun_auto_t('个人认证审核(ID:').$uidstr.')设置失败';
+	            $return['msg']      =  yun_at('model_00138').$uidstr.yun_at('model_00128');
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
@@ -3970,10 +3970,10 @@ class resume_model extends model{
 
 	        $nid      =  $this -> update_once('resume',$cdata,array('uid'=>array('in',$uid)));
 	        if ($nid){
-	            $return['msg']      =  yun_auto_t('个人身份认证(ID:').$uid.')删除成功';
+	            $return['msg']      =  yun_at('model_00139').$uid.yun_at('model_00112');
 	            $return['errcode']  =  '9';
 	        }else{
-	            $return['msg']      =  yun_auto_t('个人身份认证(ID:').$uid.')删除失败';
+	            $return['msg']      =  yun_at('model_00139').$uid.yun_at('model_00137');
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
@@ -4052,10 +4052,10 @@ class resume_model extends model{
 	                $this -> update_once('answer',array('pic'=>array('CASE','uid',$newphoto)),array('uid'=>array('in',$uidstr)));
 	                $this -> update_once('question',array('pic'=>array('CASE','uid',$newphoto)),array('uid'=>array('in',$uidstr)));
 	            }
-	            $return['msg']      =  yun_auto_t('头像审核(ID:').$uidstr.')设置成功';
+	            $return['msg']      =  yun_at('model_00140').$uidstr.yun_at('model_00127');
 	            $return['errcode']  =  '9';
 	        }else{
-	            $return['msg']      =  yun_auto_t('头像审核(ID:').$uidstr.')设置失败';
+	            $return['msg']      =  yun_at('model_00140').$uidstr.yun_at('model_00128');
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
@@ -4139,10 +4139,10 @@ class resume_model extends model{
 
 	            }
 
-	            $return['msg']      =  yun_auto_t('作品案例审核(ID:').$idstr.')设置成功';
+	            $return['msg']      =  yun_at('model_00141').$idstr.yun_at('model_00127');
 	            $return['errcode']  =  '9';
 	        }else{
-	            $return['msg']      =  yun_auto_t('作品案例审核(ID:').$idstr.')设置失败';
+	            $return['msg']      =  yun_at('model_00141').$idstr.yun_at('model_00128');
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
@@ -4239,13 +4239,13 @@ class resume_model extends model{
 	                    $return['picurl']  =  checkpic($photo);
 	                }
 	            }else{
-	                $return['msg']      =  yun_auto_t('个人头像(ID:').$uid.')修改成功';
+	                $return['msg']      =  yun_at('model_00142').$uid.yun_at('model_00143');
 	                $return['errcode']  =  '9';
 
 	            }
 	        }else{
 
-	            $return['msg']      =  yun_auto_t('个人头像(ID:').$uid.')修改失败';
+	            $return['msg']      =  yun_at('model_00142').$uid.yun_at('model_00144');
 	            $return['errcode']  =  '8';
 
 	        }
@@ -4358,11 +4358,11 @@ class resume_model extends model{
 
 	            $this -> update_once('question',array('pic'=>''),array('uid'=>array('in',$uid)));
 
-	            $return['msg']      =  yun_auto_t('个人头像(ID:').$uid.')删除成功';
+	            $return['msg']      =  yun_at('model_00142').$uid.yun_at('model_00112');
 	            $return['errcode']  =  '9';
 	        }else{
 
-	            $return['msg']      =  yun_auto_t('个人头像(ID:').$uid.')删除失败';
+	            $return['msg']      =  yun_at('model_00142').$uid.yun_at('model_00137');
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
@@ -4499,10 +4499,10 @@ class resume_model extends model{
             }
             $nid  =  $this -> update_once('resume_show',$post,$updateWhere);
 			if ($nid) {
-				$return['msg']      =  yun_auto_t('个人作品(ID:').$data['id'].')修改成功';
+				$return['msg']      =  yun_at('model_00145').$data['id'].yun_at('model_00143');
 				$return['errcode']  =  '9';
 			}else{
-				$return['msg']      =  yun_auto_t('个人作品(ID:').$data['id'].')修改失败';
+				$return['msg']      =  yun_at('model_00145').$data['id'].yun_at('model_00144');
 				$return['errcode']  =  '8';
 			}
 			return $return;
@@ -4553,11 +4553,11 @@ class resume_model extends model{
 
 	        if ($return['id']){
 	            $this -> addMemberLog($data['uid'],$data['usertype'],'common_06343',16,3);
-	            $return['msg']      =  yun_auto_t('个人作品(ID:').$id.')删除成功';
+	            $return['msg']      =  yun_at('model_00145').$id.yun_at('model_00112');
 	            $return['errcode']  =  '9';
 	        }else{
 
-	            $return['msg']      =  yun_auto_t('个人作品(ID:').$id.')删除失败';
+	            $return['msg']      =  yun_at('model_00145').$id.yun_at('model_00137');
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
@@ -5197,7 +5197,7 @@ class resume_model extends model{
 
 			$this -> addMemberLog($data['uid'],$data['usertype'],'common_00719',5,3);
 
-            $return['msg']		=	yun_auto_t('简历被收藏记录(ID:').$id.')';
+            $return['msg']		=	yun_at('model_00146').$id.yun_at('model_00130');
 
 	        $return['errcode']	=	$return['id'] ? '9' :'8';
 	        $return['msg']		=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
