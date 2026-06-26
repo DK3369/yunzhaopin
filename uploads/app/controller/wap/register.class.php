@@ -12,7 +12,7 @@ class register_controller extends common
             $this->yunset('wxnickname', $_COOKIE['wxnickname']);
             $this->yunset('wxpic', $_COOKIE['wxpic']);
         }
-        if ($this->config['reg_user_stop'] != 1) {//关闭会员注册
+        if ($this->config['reg_user_stop'] != 1) {// registration disabled
 
             $this->ACT_msg_wap('index.php', yun_auto_t('网站已关闭注册！'), 2, 5);
 
@@ -63,7 +63,7 @@ class register_controller extends common
         if ($this->uid != '' && $this->username != '') {
             $this->logout(false);
         }
-        if ((int)$_GET['uid']) {//邀请注册生成
+        if ((int)$_GET['uid']) {// invite register
             $time = time() + 3600;
             $this->cookie->setcookie('regcode', (int)$_GET['uid'], $time);
         }
@@ -291,9 +291,8 @@ class register_controller extends common
     }
 
     /**
-     *users:王旭
-     *Data:2023/2/13
-     *Time:16:07
+     * @author legacy
+     * @date 2023-02-13
      */
     function jobregsave_action()
     {

@@ -1,9 +1,7 @@
 <?php
 
 class article_controller extends common{
-    /**
-     * 职场资讯
-     */
+    
 	function index_action(){
 		$this->get_moblie();
 		
@@ -18,9 +16,7 @@ class article_controller extends common{
 		$this->yuntpl(array('wap/article'));
 	}
 
-    /**
-     * 职场资讯-详情
-     */
+    
 	function show_action(){
 		$this->get_moblie();
         $articleM	=	$this->MODEL('article');
@@ -67,7 +63,7 @@ class article_controller extends common{
 				$where['PHPYUNBTWEND_D']	=	'' ;
 				$where['limit']				=	6;
 				
-				$aboutlist	=	$articleM->getList($where);//相关文章
+				$aboutlist	=	$articleM->getList($where);// related articles
 				$about		=	$aboutlist['list'];
 				
 				if(is_array($about)){
@@ -85,11 +81,11 @@ class article_controller extends common{
 		}
 		$this->yunset("about",$about);
 		
-		$data['news_class']		=	$class['name'];//新闻类别
-		$data['news_title']		=	$info['title'];//新闻名称
-		$data['news_keyword']	=	$info['keyword'];//描述  
+		$data['news_class']		=	$class['name'];// news category
+		$data['news_title']		=	$info['title'];// news title
+		$data['news_keyword']	=	$info['keyword'];// description  
 		$description			=	$info['description']?$info['description']:$info['content'];
-		$data['news_desc']		=	$this->GET_content_desc($description);//描述 
+		$data['news_desc']		=	$this->GET_content_desc($description);// description 
 		$this->data				=	$data; 
 		$this->seo("news_article");
 		
@@ -98,9 +94,7 @@ class article_controller extends common{
 		$this->yuntpl(array('wap/article_show'));
 	}
 
-    /**
-     * 职场资讯-频道管理
-     */
+    
 	function channels_action(){
 	    if ($_COOKIE['newc'] && $_COOKIE['oldc']){
 		    $newc	=	explode(',', $_COOKIE['newc']);
@@ -115,9 +109,7 @@ class article_controller extends common{
 	    $this->yuntpl(array('wap/article_channels'));
 	}
 
-    /**
-     * 职场资讯-频道管理-编辑频道
-     */
+    
 	function editchannels_action(){
 	    if ($_POST['newc']){
 	        $oldc	=	@pylode(',', $_POST['oldc']);
@@ -130,9 +122,7 @@ class article_controller extends common{
 	    }
 	}
 
-    /**
-     * 职场资讯-详情-获取点击量
-     */
+    
 	function GetHits_action() {
 	    if($_GET['id']){
 	        $articleM	=	$this->MODEL('article');

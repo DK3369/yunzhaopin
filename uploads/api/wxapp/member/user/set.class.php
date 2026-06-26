@@ -114,7 +114,7 @@ class set_controller extends user_controller
 		$moblie  =	trim($_POST['moblie']);
 		$noticeM =	$this -> MODEL('notice');
 		
-		$port	 =	$this->plat == 'mini' ? '3' : '4';	// 短信发送端口$port : 3-小程序  4-APP
+		$port	 =	$this->plat == 'mini' ? '3' : '4';	// SMS port: 3=mini 4=app
 		$result  =	$noticeM->sendCode($moblie, 'cert', $port, $user);
 		if ($result['error'] == 1){
 

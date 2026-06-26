@@ -26,11 +26,7 @@ class ajax_controller extends common{
 	    }
 	    echo $data;
 	}
-	/**
-	 * 简历详情
-	 * 面试邀请
-	 * 2019-06-22
-	 */
+	
 	function sava_ajaxresume_action(){
 		
 		$jobM		=	$this -> MODEL('job');
@@ -47,10 +43,7 @@ class ajax_controller extends common{
 		echo yun_json_encode($res);
 		die;
 	}
-	/**
-	 * 下载简历（查看联系方式）
-	 * 2019-06-24
-	 */
+	
 	function forlink_action(){
 		$downReM		=	$this -> MODEL('downresume');
 		$data			=	array(
@@ -253,12 +246,12 @@ class ajax_controller extends common{
 	}
 	// ，，TODO:wap
     function regcode_action(){
-        $this->regcode(2); // PC发送短信
+        $this->regcode(2); // PC SMS
     }
 
     // ，WAP
     function regcodeks_action(){
-        $this->regcode(8); // WAP快速投递
+        $this->regcode(8); // WAP quick apply SMS
     }
 
 	function regcode($port = 2){
@@ -434,9 +427,7 @@ class ajax_controller extends common{
 		echo $data;
 	}	
 	 
-	/**
-	 * 企业报名招聘会
-	 */
+	
 	function ajaxzphjob_action(){
 		$data	=	array(
 			'usertype'	=>	$this->usertype,
@@ -822,9 +813,6 @@ class ajax_controller extends common{
 			);
     	}
     }
-	/*
-	 * 数据展示
-	 */
     function dataShowIndex_action(){
 		$year = date("Y")-1;
         $this->yunset('year', $year);
@@ -844,107 +832,71 @@ class ajax_controller extends common{
         $this->yuntpl(array('wap/data_show_index'));
     }
 
-    /*
-     * 地区分布
-     */
     function cityData_action(){
 		$tjM = $this->MODEL('tongji');
 		$data = $tjM->cityDataShow();
 		echo yun_json_encode(array('data' => $data));
 	}
 
-    /*
-     * 年龄分布
-     */
     function ageData_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->ageDataShow();
         echo yun_json_encode(array('data' => $data));
     }
 
-    /*
-     * 经验分布
-     */
     function expData_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->expDataShow();
         echo yun_json_encode(array('data' => $data));
     }
 
-    /*
-     * 性别分布
-     */
     function sexData_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->sexDataShow();
         echo yun_json_encode(array('data' => $data));
     }
 
-    /*
-     * 学历分布
-     */
     function eduData_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->eduDataShow();
         echo yun_json_encode(array('data' => $data));
     }
 
-    /*
-     * 用户活跃趋势
-     */
     function userHyChart_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->userHyChart();
         echo yun_json_encode(array('data' => $data));
     }
 
-    /*
-     * 用户注册趋势
-     */
     function userRegChart_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->userRegChart();
         echo yun_json_encode(array('data' => $data));
     }
 
-    /*
-     * 公司地区分布
-     */
     function comcityData_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->comcityDataShow();
         echo yun_json_encode(array('data' => $data));
     }
 
-    /*
-     * 公司规模分布
-     */
     function comgmData_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->comgmDataShow();
         echo yun_json_encode(array('data' => $data));
     }
-    /*
-     * 公司性质分布
-     */
     function comxzData_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->comxzDataShow();
         echo yun_json_encode(array('data' => $data));
     }
 
-    /*
-     * 企业登陆趋势
-     */
     function comLogChart_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->comLogChart();
         echo yun_json_encode(array('data' => $data));
     }
 
-    /*
-     * 企业岗位趋势
-     */
     function comJobChart_action(){
         $tjM = $this->MODEL('tongji');
         $data = $tjM->comJobChart();

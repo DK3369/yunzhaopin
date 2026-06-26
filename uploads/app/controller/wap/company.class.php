@@ -3,9 +3,7 @@
 
 class company_controller extends common
 {
-    /**
-     * 企业列表
-     */
+    
     function index_action()
     {
         $this->toLoginPage();
@@ -76,9 +74,7 @@ class company_controller extends common
         $this -> yuntpl(array('wap/company'));
     }
 
-    /**
-     * 企业详情
-     */
+    
     function show_action()
     {
         
@@ -200,7 +196,7 @@ class company_controller extends common
                 $this->yunset('hbids', $hbids);
             }
         }
-        if (strpos($_SERVER['HTTP_REFERER'], 'company') === false) { // 不是从企业列表过来的才会直接赋值返回URL
+        if (strpos($_SERVER['HTTP_REFERER'], 'company') === false) { // back URL when not from list
             $backurl    =   Url('wap', array('c' => 'company'));
 
             $this->yunset('backurl', $backurl);
@@ -299,9 +295,7 @@ class company_controller extends common
         $this->yunset('headertitle', yun_auto_t('企业微海报生成'));
         $this->yuntpl(array('wap/hb/whb'));
     }
-	/**
-	 * 微信内上拉加载
-	 */
+	
 	function ajaxLoad_action(){
 	    
 	    $param = array();
@@ -324,19 +318,19 @@ class company_controller extends common
 	    $mun				=	(int)$param['mun'];
 	    $rec				=	(int)$param['rec'];
 	    
-	    if($hy){//类别ID
+	    if($hy){// category id
 	        $where['hy']			=	$hy;
 	    }
-	    if($provinceid){//类别ID
+	    if($provinceid){// category id
 	        $where['provinceid']	=	$provinceid;
 	    }
-	    if($cityid){//类别ID
+	    if($cityid){// category id
 	        $where['cityid']		=	$cityid;
 	    }
-	    if($three_cityid){//类别ID
+	    if($three_cityid){// category id
 	        $where['three_cityid']	=	$three_cityid;
 	    }
-	    if($keyword){//关键字
+	    if($keyword){// keyword
 	        $where['name']			=	array('like',$keyword);
 	    }
 	    if($rec==1){//名企
@@ -365,13 +359,13 @@ class company_controller extends common
 	            $where['hy']  =  $this->config['hyclass'];
 	        }
 	    }
-	    if($order){//排序
+	    if($order){// sort
 	        $where['orderby']		=	$order;
 	    }else{
 	        $where['orderby']		=	'`lastupdate`,desc';
 	    }
 	    $limit = 20;
-	    if($page){//分页
+	    if($page){// paginate
 	        $pagenav				=	($page-1)*$limit;
 	        $where['limit']			=	array($pagenav,$limit);
 	    }else{

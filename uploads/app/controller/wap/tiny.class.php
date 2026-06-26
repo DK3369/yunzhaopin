@@ -21,7 +21,7 @@ class tiny_controller extends common{
 		$ip		=	fun_ip_get();
 		$this->yunset("ip",$ip);
 		
-		$s_time	=	strtotime(date('Y-m-d 00:00:00')); //今天开始时间
+		$s_time	=	strtotime(date('Y-m-d 00:00:00')); // today start
         $m_tiny_total=	$tinyM->getResumeTinyNum(array('time'=>array('>',$s_time)));
 		$m_tiny	=	$tinyM->getResumeTinyNum(array('login_ip'=>$ip,'time'=>array('>',$s_time)));
         if($this->config['sy_tiny_totalnum'] == 0 || ($this->config['sy_tiny_totalnum'] > $m_tiny_total)){

@@ -5,8 +5,7 @@ class resume_controller extends common{
 	public $userInfo	=	array();
 
 	/**
-	 * @desc 简历列表
-	 * 2019-06-24
+	 * @desc	 * 2019-06-24
 	 */
 	function index_action()
 	{
@@ -141,10 +140,7 @@ class resume_controller extends common{
 		$this -> index_action();
 	}
 
-	/**
-	 * 简历详情
-	 * 2019-06-21
-	 */
+	
 	function show_action(){
 		$this -> get_moblie();
 		
@@ -279,9 +275,9 @@ class resume_controller extends common{
 		/* masked fields */
 		$this ->yunset('tj',$resume_expect['tj']);
 
-		$data['resume_username']	=	$resume_expect['username_n'];//简历人姓名
-		$data['resume_city']		=	$resume_expect['cityname'];//城市
-		$data['resume_job']			=	$resume_expect['customjob'];//行业
+		$data['resume_username']	=	$resume_expect['username_n'];// resume name
+		$data['resume_city']		=	$resume_expect['cityname'];// city
+		$data['resume_job']			=	$resume_expect['customjob'];// job
 		$this -> data				=	$data;
 		$this -> seo('resume');
 		
@@ -306,11 +302,7 @@ class resume_controller extends common{
 	}
 
 
-	/**
-	 * 简历详情
-	 * 分享简历
-	 * 2019-06-21
-	 */
+	
 	function share_action(){
 		$this -> get_moblie();
 		
@@ -334,11 +326,7 @@ class resume_controller extends common{
 		$this -> yuntpl(array('wap/resume/index'));
 	}
 	
-	/**
-	 * 简历详情
-	 * 面试邀请
-	 * 2019-06-21
-	 */
+	
 	function invite_action(){
 		$this -> get_moblie();
 		$uid					=	intval($_GET['uid']);
@@ -434,9 +422,7 @@ class resume_controller extends common{
 		$this -> yuntpl(array('wap/invite'));
 	}
 
-    /**
-     * 浏览历史记录
-     */
+    
 	function history_action(){
 	    
 	    if ($_POST['eid'] && $this->usertype == 2) {
@@ -450,9 +436,7 @@ class resume_controller extends common{
             $lookM->browseResume(array('euid' => $resume_expect['uid'], 'uid' => $this->uid, 'usertype' => $this->usertype, 'did' => $this->config['did'], 'eid' => $eid));
 	    }
 	}
-	/**
-	 * 举报简历检查
-	 */
+	
 	function report_action(){
 	    $eid  =  intval($_POST['eid']);
 	    if(!empty($eid)){
@@ -476,9 +460,7 @@ class resume_controller extends common{
 	        }
 	    }
 	}
-	/**
-	 * 微信内上拉加载
-	 */
+	
 	function ajaxLoad_action(){
 	    
 	    $param = array();

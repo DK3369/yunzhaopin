@@ -220,12 +220,12 @@ opacity: 1
 .addquestion_list_tj_s{ padding-top:50px; display:block; position:relative}
 .addquestion_list_tj_s:after{width:2px;height:28px; display:inline-block; background:#ddd; background-size:100%; position:absolute;left:50%; margin-left:-1px;top:10px;content:"";}
 .addquestion_list_tj_s:before{width:28px;height:2px; display:inline-block; background:#ddd; background-size:100%; position:absolute;left:50%; margin-left:-14px;top:22px;content:"";}
-.addquestion_list_bth{width:100%;text-align:center;border:none;height:45px;line-height:45px;color:#fff;font:15px 微软雅黑; background:-webkit-gradient(linear,0 0,0 100%,from(#f60),to(#f60)); border-radius:0px;}
+.addquestion_list_bth{width:100%;text-align:center;border:none;height:45px;line-height:45px;color:#fff;font:15px Microsoft YaHei; background:-webkit-gradient(linear,0 0,0 100%,from(#f60),to(#f60)); border-radius:0px;}
 .ask_selectOption{display:inline-block;height:30px;background:-webkit-gradient(linear,left top, left bottom, from(#fff),to(#fff));vertical-align:middle;position:relative;border-radius:2px;overflow:hidden;box-shadow: 2px 2px 2px #fff inset;width:100%;
 }
 .ask_selectOption button{ padding:0; margin:0; text-align:left; font-size:14px;border:none;height:30px; line-height:30px;color:#999}
 .ask_selectOption button:after{content: ' ';position: absolute;top: 50%;right: 10px;width: 8px;height:8px;border: #AAAAAA solid;-webkit-transform: rotate(135deg);border-width: 2px 2px 0 0;color: #434343; margin-top:-6px;}
-.ask_selectOption select{float:left;position:absolute;top:0;right:0;z-index:2;padding:0;border:0;-webkit-appearance:none;width:100%;background:transparent;height:30px;font-size:14px;font-family:微软雅黑;color: #454545;}
+.ask_selectOption select{float:left;position:absolute;top:0;right:0;z-index:2;padding:0;border:0;-webkit-appearance:none;width:100%;background:transparent;height:30px;font-size:14px;font-family:Microsoft YaHei;color: #454545;}
 .ask_selectOption select option{font-size:12px;}
 .addquestion_list_text{width:100%;height:20px; line-height:20px;border:none;}
 

@@ -92,7 +92,7 @@ class resume_controller extends user_controller{
 	    $return		=	$resumeM	->	addResumeRequireCheck(array('uid'=>$this->member['uid']), 'wxapp');
 		$this->render_json($return['err'],$return['msg']);
 	}
-	/*wxapp意向职位修改页面显示*/
+	/* wxapp: expect job edit */
 
 	function expectedit_action()
 	{
@@ -125,7 +125,7 @@ class resume_controller extends user_controller{
 		$this->render_json(1,'',$list);
 	}
 	
-	/*wxapp工作经历、培训经历。。。修改页面*/
+	/* wxapp: resume section edit */
 	function addresumeson_action()
 	{
 		if(!in_array($_POST['table'],array('expect','desc','cert','doc','edu','other','project','show','skill','training','work'))){
@@ -192,7 +192,7 @@ class resume_controller extends user_controller{
 		}
 		$this->render_json(1,'',$data);
 	}
-    /*wxapp保创建简历保存*/
+    /* wxapp: create resume save */
     function saveaddresume_action()
     {
 
@@ -236,7 +236,7 @@ class resume_controller extends user_controller{
             'source'         =>  $_POST['source'],
         );
 
-        /**************************简历是否必填工作经历*************************************************/
+        /* resume: work exp required check */
         foreach ($_POST as $pk => $pv) {
             if (strpos($pk, '_') != false) {
 
@@ -252,10 +252,10 @@ class resume_controller extends user_controller{
             if (isset($_POST['presave']) && empty($_POST['eid'])){
                 // 
                 $eData['content']   =   yun_auto_t('简历创建未完成，中途退出，信息不完整');     // 简历备注为未完善
-                $eData['state']     =   0;              // 简历状态为未审核
+                $eData['state']     =   0;              // resume pending review
             } else {
 
-                $eData['content']   =   '';             // 取消 简历未备注
+                $eData['content']   =   '';             // clear resume note
             }
         }
 
@@ -274,7 +274,7 @@ class resume_controller extends user_controller{
             }
         }
 
-        /**************************简历是否必填教育经历*************************************************/
+        /* resume: edu exp required check */
         $eduData    =   array();
         if ($this->config['resume_create_edu'] == '1' && $_POST['iscreateedu'] != '2') {
             for ($i = 0; $i < count($_POST['eduname']); $i++) {
@@ -290,7 +290,7 @@ class resume_controller extends user_controller{
             }
         }
 
-        /**************************简历是否必填项目经历*************************************************/
+        /* resume: project exp required check */
         $proData    =   array();
         if ($this->config['resume_create_project'] == '1' && $_POST['iscreatepro'] != '2') {
             for ($i = 0; $i < count($_POST['projectname']); $i++) {
@@ -635,7 +635,7 @@ class resume_controller extends user_controller{
 		}
 		$this->render_json($data['error'],$data['msg']);
 	}
-	/*wxapp简历管理页面刷新*/
+	/* wxapp: refresh resume */
 	function refresh_resume_action()
 	{
 		$id						=	(int)$_POST['id'];
@@ -651,7 +651,7 @@ class resume_controller extends user_controller{
 		$data['msg']			=	$nid ? yun_auto_t('刷新成功！') : yun_auto_t('刷新失败！');
 		$this->render_json($data['error'],$data['msg']);
 	}
-	/*wxapp简历管理页面设置默认*/
+	/* wxapp: set default resume */
 	function default_resume_action()
 	{
 		$id				=	(int)$_POST['id'];
@@ -663,7 +663,7 @@ class resume_controller extends user_controller{
 		$data['msg']	=	$return['msg'];
 		$this->render_json($data['error'],$data['msg']);
 	}
-	/*wxapp简历管理页面设置是否公开*/
+	/* wxapp: resume privacy */
 	function status_resume_action()
 	{
         $status =   $_POST['status'];
@@ -683,7 +683,7 @@ class resume_controller extends user_controller{
         $data['msg']    =   $return['errcode'] == 9 ? yun_auto_t('设置成功！') : yun_auto_t('设置失败！');
         $this->render_json($data['error'], $data['msg']);
 	}
-	/*wxapp简历管理页面删除*/
+	/* wxapp: delete resume */
 	// del_resume，wap，delResumeFb
 	function del_resume_action()
 	{
@@ -711,8 +711,8 @@ class resume_controller extends user_controller{
 		$error	  =  $return['errcode']==9 ? 1 : 2;
 		$this->render_json($error,$return['msg']);
 	}
-	/*wxapp谁看过我记录*/
-	function look_resume_action()//简历浏览记录
+	/* wxapp: who viewed me */
+	function look_resume_action()
 	{
 		$LookResumeM		=	$this->MODEL('lookresume');
 		$page				=	$_POST['page'];
@@ -739,8 +739,8 @@ class resume_controller extends user_controller{
 		}
 		$this -> render_json($error,'',$data,$total);
 	}
-	/*wxapp谁看过我记录删除*/
-	function look_resume_del_action()//删除简历浏览记录
+	/* wxapp: delete who viewed me */
+	function look_resume_del_action()
 	{
 		$del	      	=  $_POST['ids'];
 
@@ -922,8 +922,7 @@ class resume_controller extends user_controller{
 		$this->render_json($data['error'],$data['msg']);
 	}
     /**
-     * 处理单个图片上传
-     * @param file/需上传文件; dir/上传目录; type/上传图片类型; base/需上传base64; preview/pc预览即上传
+     * @param array $data file, dir, type, base, preview
      */
     private function upload($data = array('file'=>null,'dir'=>null,'type'=>null,'base'=>null,'preview'=>null)){
 

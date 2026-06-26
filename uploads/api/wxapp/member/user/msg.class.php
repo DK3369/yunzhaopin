@@ -1,9 +1,7 @@
 <?php
 
 class msg_controller extends user_controller{
-    /**
-     * 消息
-     */
+    
 	function sysnews_action()
 	{
 
@@ -63,9 +61,7 @@ class msg_controller extends user_controller{
 		}
 		$this->render_json($error,'',$list,$total);
 	}
-	/**
-	 * 删除系统消息
-	 */
+	
 	function delsxnews_action()
 	{
 

@@ -15,9 +15,7 @@ class zpdata_controller extends com_controller
         return $text === '' || $text === '-' ? $text : yun_auto_t($text);
     }
 
-    /**
-     * 查询剩余权益使用量
-     */
+    
     function getTcData_action()
     {
         $this->checkOpen();
@@ -157,15 +155,15 @@ class zpdata_controller extends com_controller
         foreach ($list as $key => &$val) {
             // 
             if ($val['tc_num'] === '-') {
-                $val['width'] = '100'; // 不限量
+                $val['width'] = '100'; // unlimited
             } else {
                 if ($val['tc_num'] == 0) {
-                    $val['width'] = '0'; // 套餐数量不足
+                    $val['width'] = '0'; // quota insufficient
                 } else {
                     if ($val['num'] > 0) {
-                        $val['width'] = bcmul(bcdiv($val['num'], $val['tc_num'], 2), 100); // 100-(可用数量/套餐数量*100) 计算剩余宽度
+                        $val['width'] = bcmul(bcdiv($val['num'], $val['tc_num'], 2), 100);
                     } else {
-                        $val['width'] = '0'; // 套餐已被使用完
+                        $val['width'] = '0'; // quota exhausted
                     }
                 }
             }
@@ -174,9 +172,7 @@ class zpdata_controller extends com_controller
         $this->render_json(0, '', compact('list'));
     }
 
-    /**
-     * 获取今日数据
-     */
+    
     function getTodayData_action()
     {
         $this->checkOpen();
@@ -238,9 +234,8 @@ class zpdata_controller extends com_controller
     }
 
     /**
-     * 较昨日百分比计算
-     * @param $tData 今日数据
-     * @param $yData 昨日数据
+     * @param mixed $tData today count
+     * @param mixed $yData yesterday count
      */
     function jzrPercentage($tData, $yData)
     {
@@ -256,12 +251,10 @@ class zpdata_controller extends com_controller
         //
         // return $ratio;
 
-        return $tData - $yData; // 计算差集
+        return $tData - $yData; // delta
     }
 
-    /**
-     * 获取周数据
-     */
+    
     function getWeekData_action()
     {
         $this->checkOpen();
@@ -269,12 +262,12 @@ class zpdata_controller extends com_controller
 
         $times = !empty($_POST['times']) ? intval($_POST['times']) : 1;
         if ($times == 4) {
-            $start = strtotime('-1 month', $today); // 近一月
+            $start = strtotime('-1 month', $today); // last month
         } else {
-            $days  = $times * 7 - 1; // 减少1天，包含上当天
-            $start = strtotime('-' . $days . ' day', $today); // 包含今天，共七天
+            $days  = $times * 7 - 1; // include today
+            $start = strtotime('-' . $days . ' day', $today); // seven days incl. today
         }
-        $dates = date('Y.m.d', $start) . '-' . date('Y.m.d', $today); // 前台用来展示时间段
+        $dates = date('Y.m.d', $start) . '-' . date('Y.m.d', $today); // display date range
 
         $where = array(
             array('>=', $start),

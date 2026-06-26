@@ -3,9 +3,7 @@
 
 class job_controller extends common
 {
-    /**
-     * 职位列表
-     */
+    
     function index_action()
     {
 
@@ -119,10 +117,7 @@ class job_controller extends common
         $this->index_action();
     }
 
-    /**
-     * 职位详情
-     * 2019-06-20
-     */
+    
     function comapply_action()
     {
         include CONFIG_PATH.'db.data.php';
@@ -252,12 +247,12 @@ class job_controller extends common
             $this->yunset('backurl', $backurl);
         }
         // seo
-        $data['job_name']       =   $job['jobname']; // 职位名称
-        $data['company_name']   =   $job['com_name']; // 公司名称
-        $data['industry_class'] =   $job['hy_n']; // 所属行业
-        $data['job_class']      =   $job['job_one'] . ',' . $job['job_two'] . ',' . $job['job_three']; // 职位名称
-        $data['job_salary']     =   $job['job_salary']; // 职位薪资
-        $job_desc       =   $this->GET_content_desc($job['description']); // 描述
+        $data['job_name']       =   $job['jobname'];
+        $data['company_name']   =   $job['com_name'];
+        $data['industry_class'] =   $job['hy_n'];
+        $data['job_class']      =   $job['job_one'] . ',' . $job['job_two'] . ',' . $job['job_three'];
+        $data['job_salary']     =   $job['job_salary'];
+        $job_desc       =   $this->GET_content_desc($job['description']); // description
         $data['job_desc'] = preg_replace("/(\s|\&nbsp\;|　|\xc2\xa0)/", "", $job_desc);
         
         $this->data = $data;
@@ -335,9 +330,7 @@ class job_controller extends common
         die();
     }
 
-    /**
-     * 职位举报
-     */
+    
     function report_action()
     {
         session_start();
@@ -396,9 +389,7 @@ class job_controller extends common
         }
     }
 
-    /**
-     * 快速申请
-     */
+    
     function applyjobuid_action()
     {
         include CONFIG_PATH.'db.data.php';
@@ -410,10 +401,10 @@ class job_controller extends common
         $jobClassId =   !empty($job['job_post']) ? $job['job_post'] : $job['job1_son'];
         $this->yunset(array('job' => $job, 'jobClassId' => $jobClassId));
 
-        $data['job_name']       =   $job['name']; // 职位名称
-        $data['company_name']   =   $job['com_name']; // 公司名称
-        $data['job_desc']       =   $this->GET_content_desc($job['description']); // 描述
-        $data['industry_class'] =   $job['job_hy']; // 所属行业
+        $data['job_name']       =   $job['name'];
+        $data['company_name']   =   $job['com_name'];
+        $data['job_desc']       =   $this->GET_content_desc($job['description']); // description
+        $data['industry_class'] =   $job['job_hy'];
         $data['job_class']      =   $job['job_one'] . "," . $job['job_two'] . "," . $job['job_three'];
         $data['job_salary']     =   $job['job_salary'];
         $this->data = $data;
@@ -423,11 +414,7 @@ class job_controller extends common
         $this->yuntpl(array('wap/applyjobuid'));
     }
 
-    /**
-     * 职位详情
-     * 分享数量
-     * 2019-06-21
-     */
+    
     function share_action()
     {
         $id     =   intval($_GET['id']);
@@ -449,11 +436,11 @@ class job_controller extends common
 
         $this->yunset($CacheArr);
         
-        $data['job_name']       =   $job['jobname']; // 职位名称
-        $data['company_name']   =   $job['com_name']; // 公司名称
-        $data['industry_class'] =   $job['job_hy']; // 所属行业
-        $data['job_class']      =   $job['job_one'] . ',' . $job['job_two'] . ',' . $job['job_three']; // 职位名称
-        $data['job_desc']       =   $this->GET_content_desc($job['description']); // 描述
+        $data['job_name']       =   $job['jobname'];
+        $data['company_name']   =   $job['com_name'];
+        $data['industry_class'] =   $job['job_hy'];
+        $data['job_class']      =   $job['job_one'] . ',' . $job['job_two'] . ',' . $job['job_three'];
+        $data['job_desc']       =   $this->GET_content_desc($job['description']); // description
         $data['job_salary']     =   $job['job_salary'];
         $this->data = $data;
         $this->seo('comapply');
@@ -464,11 +451,7 @@ class job_controller extends common
         $this->yuntpl(array('wap/job/index'));
     }
 
-    /**
-     * 职位详情
-     * 浏览数量
-     * 2019-06-21
-     */
+    
     function GetHits_action()
     {
         $id     =   intval($_GET['id']);
@@ -482,11 +465,7 @@ class job_controller extends common
         echo 'document.write(' . $hits['jobhits'] . ')';
     }
 
-    /**
-     * 职位详情
-     * 求职咨询
-     * 2019-06-12
-     */
+    
     function msg_action()
     {
         $_POST  =   $this->post_trim($_POST);
@@ -503,9 +482,7 @@ class job_controller extends common
         die();
     }
 
-    /**
-     * 企业位置
-     */
+    
     function jobmap_action()
     {
         $this->get_moblie();
@@ -546,9 +523,7 @@ class job_controller extends common
         $this->yuntpl(array('wap/job_map'));
     }
 
-    /**
-     * 浏览历史记录
-     */
+    
     function history_action()
     {
 
@@ -559,9 +534,7 @@ class job_controller extends common
         }
     }
 
-    /**
-     * 微信内上拉加载
-     */
+    
     function ajaxLoad_action()
     {
 
@@ -589,10 +562,10 @@ class job_controller extends common
 
         if (!empty($param['depower'])) {
 
-            trim($param['depower']) != 'all' && $where['is_depower'] = (int)$param['depower']; // all为降权和非降权均查询
+            trim($param['depower']) != 'all' && $where['is_depower'] = (int)$param['depower']; // depower filter all
         } else {
 
-            $where['is_depower'] = 2; // 默认查询未降权的职位
+            $where['is_depower'] = 2; // default non-depowered jobs
         }
 
         $provinceid     =   (int)$param['provinceid'];
@@ -795,7 +768,7 @@ class job_controller extends common
             'field' =>  $jfield,
             'utype' =>  'wxapp',
             'video' =>  1,
-            'top'   =>  $page ? intval($page) > 1 ? 2 : 1 : 1 // 第一页的数据才置顶，>1页需要排除id
+            'top'   =>  $page ? intval($page) > 1 ? 2 : 1 : 1
         ));
 
         $jobList    =   $jobRows['list'];
@@ -895,9 +868,8 @@ class job_controller extends common
         }
     }
 	/**
-     *users:王旭
-     *Data:2023/2/13
-     *Time:14:04
+     * @author legacy
+     * @date 2023-02-13
      */
     function getJobLink_action()
     {

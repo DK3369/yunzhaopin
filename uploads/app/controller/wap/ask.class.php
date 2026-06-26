@@ -301,10 +301,10 @@ class ask_controller extends common{
 		if($id){
 			$AskM	=	$this -> MODEL('ask');
 			// 、、
-			if($_GET['type']==1){//删除回答
+			if($_GET['type']==1){// delete answer
 			
 				$result	=	$AskM -> delAnswer(array("id"=>$id,"uid"=>$this->uid));
-			}else{//删除问题
+			}else{// delete question
 			
 				$result	=	$AskM -> delquestion($id,array('uid'=>$this -> uid));
 			}

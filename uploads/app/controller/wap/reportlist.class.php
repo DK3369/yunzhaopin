@@ -1,11 +1,7 @@
 <?php
 
 class reportlist_controller extends common{
-    /**
-     * 简历详情
-     * 举报简历
-     * 2019-06-24
-     */
+    
     function index_action(){
         
         $cacheM     =   $this->MODEL('cache');

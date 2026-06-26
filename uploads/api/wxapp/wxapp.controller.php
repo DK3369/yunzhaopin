@@ -25,11 +25,10 @@ class wxapp_controller extends common
         }
     }
     /**
-     * @desc    将接口返回数据以统一格式的JSON输出
-     *
-     * @param string $error 执行结果标识码
-     * @param string $msg   执行结果描述信息
-     * @param array $data   执行结果输出的数据
+     * @desc Render unified JSON response
+     * @param string $error result code
+     * @param string $msg result message
+     * @param array $data payload
      * @param int $total
      */
     public function render_json($error = '', $msg = '', $data = array(), $total = 0)
@@ -65,8 +64,7 @@ class wxapp_controller extends common
     }
     
     /**
-     * 验证登录状态,需要会员登录后才能操作的都需要验证
-     * @param $uid
+     * @param string $uid
      * @param string $token
      * @return array
      */
@@ -280,9 +278,8 @@ class wxapp_controller extends common
 	    return $return;
 	}
 	/**
-	 * 将undefined字段值转为空
 	 * @param array $arr
-	 * @return string
+	 * @return array
 	 */
 	function undefinedToEnpty($arr = array()){
 	    
@@ -303,9 +300,8 @@ class wxapp_controller extends common
 	    return $arr;
 	}
 	/**
-	 * 将null字段值转为空
 	 * @param array $arr
-	 * @return string
+	 * @return array
 	 */
 	function nullToEnpty($arr = array()){
 	    
@@ -326,8 +322,7 @@ class wxapp_controller extends common
 	    return $arr;
 	}
 	/**
-	 * 处理分站参数
-	 * @param unknown $did
+	 * @param mixed $did
 	 */
 	function getDomain($did, $needCache = FALSE){
 	    
@@ -429,9 +424,6 @@ class wxapp_controller extends common
 	    
 	    return $return;
 	}
-	/**
-	 * 前台职位、简历、企业列表区域默认查询,按后台设置处理（后台-页面设置-列表页区域默认设置）
-	 */
 	function listCity($search_cityid = '', $search_threecityid = ''){
 	    
 	    $return = array();
@@ -467,7 +459,7 @@ class wxapp_controller extends common
 	            // 
 	            $provinceid        =  $this->config['sy_web_city_one'];
 	            $citytwo[0][]      =  array('value'=>0,'label'=>yun_auto_t('全部'));// Column 2: all
-	            $citythreetwoArr[$provinceid][]	=  array(array());//用做 一级-全部-''
+	            $citythreetwoArr[$provinceid][]	=  array(array());// level-1 all placeholder
 	            foreach ($city_type[$provinceid] as $v){
 	                
 	                $citytwo[0][]  =  array('value'=>$v,'label'=>$city_name[$v]);
@@ -511,9 +503,6 @@ class wxapp_controller extends common
 	    }
 	    return $return;
 	}
-	/**
-	 * 发送注册验证码接口防护验证
-	 */
 	function checkMcsdk($moblie = '')
 	{
 	    if(empty($moblie)){
@@ -550,9 +539,6 @@ class wxapp_controller extends common
 	        }
 	    }
 	}
-	/**
-	 * 随机取一条数据
-	 */
 	public function randomArr($data, $random){
 	    if ($random && count($data) > $random) {
 	        $temp = [];
@@ -620,9 +606,6 @@ class wxapp_controller extends common
 	    }
 	    return $adpics;
 	}
-	/**
-	 * 6.1版开始对注册、登录传的相关参数进行加密，这里需要解密
-	 */
 	function decryptRequest($str = '')
 	{
 	    $res = '';
@@ -659,9 +642,6 @@ class wxapp_controller extends common
 	    
 	    return yunEncrypt("{$type}|{$uid}|{$password}", $this->tokenSalt);
 	}
-	/**
-	 * 按客户端时区计算，获取当前时间
-	 */
 	function bytimezone($lcoaloffset){
 	    // ，，。jstimeoffset，。
 	    // jstimeoffset（php）。

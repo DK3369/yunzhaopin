@@ -690,7 +690,7 @@
 .ask_nav_bgn ul li a {
     color: #fff;
     font-size: .48rem;
-    font-family: 微软雅黑;
+    font-family: Microsoft YaHei;
 }
 
 .ask_nav_bgn_ht {
@@ -2298,7 +2298,7 @@
     height: 3.733333rem;
     padding: .266667rem 0;
     border: none;
-    font: .373333rem 微软雅黑;
+    font: .373333rem Microsoft YaHei;
     border-radius: 0;
 }
 
@@ -2324,7 +2324,7 @@
     height: 1.28rem;
     line-height: 1.28rem;
     color: #fff;
-    font: .4rem 微软雅黑;
+    font: .4rem Microsoft YaHei;
     background: -webkit-gradient(linear, 0 0, 0 100%, from(#f60), to(#f60));
     border-radius: 0;
 }
@@ -2987,7 +2987,7 @@
     display: inline-block;
     position: relative;
     font-size: .373333rem;
-    font-family: 微软雅黑;
+    font-family: Microsoft YaHei;
 }
 
 .ask_content_boxs:after {
@@ -3262,7 +3262,7 @@
     height: 1.2rem;
     line-height: 1.2rem;
     color: #fff;
-    font: .4rem 微软雅黑;
+    font: .4rem Microsoft YaHei;
     background: -webkit-gradient(linear, 0 0, 0 100%, from(#f60), to(#f60));
     border-radius: 0;
 }
@@ -3318,7 +3318,7 @@
     background: transparent;
     height: .8rem;
     font-size: .373333rem;
-    font-family: 微软雅黑;
+    font-family: Microsoft YaHei;
     color: #454545;
 }
 

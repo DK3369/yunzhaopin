@@ -19,11 +19,17 @@ function classifyHit($line, $file, $enumFile) {
     if (strpos($file, $enumFile) !== false) {
         return 'enum_hub';
     }
-    if (preg_match('/^\s*\/\//', $t) || preg_match('/^\s*\/\*/', $t) || preg_match('/<!--/', $t)) {
+    if (preg_match('/^\s*\/\//', $t) || preg_match('/^\s*\/\*/', $t) || preg_match('/^\s+\*[\s\/@]/', $line) || preg_match('/<!--/', $t)) {
         return 'comment';
     }
     if (preg_match('/微软雅黑|Microsoft YaHei/i', $t)) {
         return 'font';
+    }
+    if (preg_match('/zpdataTitle\s*\(|zpdataUnit\s*\(/', $t)) {
+        return 'i18n_wrapped';
+    }
+    if (preg_match('/\/\/.*[\x{4e00}-\x{9fff}]/u', $t) && !preg_match('/yun_auto_t|WapDbEnum/', $t)) {
+        return 'comment';
     }
     if (preg_match('/code_web|strstr\s*\(\s*\$config\.code_web|strpos\s*\(\s*\$config\.code_web/i', $t)) {
         return 'config';

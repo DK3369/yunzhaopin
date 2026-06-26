@@ -1,9 +1,7 @@
 <?php
 
 class advice_controller extends common{
-    /**
-     * 意见反馈
-     */
+    
 	function index_action(){
 		if($this->uid){
 			$userinfoM 	= $this->MODEL('userinfo');
@@ -24,9 +22,7 @@ class advice_controller extends common{
 		$this->yuntpl(array('wap/advice'));
 	}
 
-    /**
-     * 意见反馈-提交
-     */
+    
 	function saveadd_action(){
 		$data		=	array(
 			'username'	=>	$_POST['username'],
@@ -42,9 +38,7 @@ class advice_controller extends common{
 		
 		echo yun_json_encode($return);die;
 	}
-    /**
-     * 意见反馈-发送动态码
-     */
+    
 	function sendmsg_action(){
 		$noticeM	=	$this->MODEL('notice');
 		$result		=	$noticeM->jycheck($_POST['authcode'], WapDbEnum::CODE_WEB_FEEDBACK);

@@ -64,7 +64,7 @@ class finance_controller extends user_controller{
 		$StatisM	=	$this		->	MODEL('statis');
 		$orderM		=	$this		->	MODEL('companyorder');
         $integralM		                =	$this->MODEL('integral');
-		$statis		=	$StatisM	->	getInfo($this->member['uid'],array('usertype'=>'1'));//查询会员信息
+		$statis		=	$StatisM	->	getInfo($this->member['uid'],array('usertype'=>'1'));// member statis
         $orders		=	$orderM->getPayList(array('com_id'=>$this->member['uid'], 'usertype' =>1, 'type'=>'1'),array('field'=>'`order_price`'));
         $allprice   =   0;
         foreach($orders as $key=>$val){
@@ -112,7 +112,7 @@ class finance_controller extends user_controller{
 		$where['orderby']	=	'pay_time,desc';
 	    $page				=	$_POST['page'];
 		$limit				=	$_POST['limit'] ? $_POST['limit'] : 10;
-		if($page){//分页
+		if($page){// paginate
 			$pagenav		=	($page-1)*$limit;
 			$where['limit']	=	array($pagenav,$limit);
 		}else{
@@ -149,7 +149,7 @@ class finance_controller extends user_controller{
 		$where['orderby']		=	array('order_time,desc','order_state,asc');
 	    $page					=	$_POST['page'];
 		$limit					=	$_POST['limit'] ? $_POST['limit'] : 10;
-		if($page){//分页
+		if($page){// paginate
 			$pagenav			=	($page-1)*$limit;
 			$where['limit']		=	array($pagenav,$limit);
 		}else{
@@ -204,7 +204,7 @@ class finance_controller extends user_controller{
 		    
 		    $id  =  (int)$_POST['id'];
 		    
-			if($id){//订单
+			if($id){// order
 			    
 			    $orderM		=	$this->MODEL('companyorder');
 				$order		=	$orderM->getInfo(array('id'=>$id));
@@ -267,9 +267,7 @@ class finance_controller extends user_controller{
 	    }
 	    $this->render_json(0,$msg,$result);
   	}
-  	/**
-  	 * 充值页面
-  	 */
+  	
 	function fkclass_action()
 	{
 		

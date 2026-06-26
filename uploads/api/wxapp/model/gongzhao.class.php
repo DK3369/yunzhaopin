@@ -5,9 +5,7 @@
 class gongzhao_controller extends wxapp_controller
 {
 
-    /**
-     * 公招列表
-     */
+    
     function getgongzhao_action()
     {
         $gongzhaoM = $this->MODEL('gongzhao');
@@ -55,9 +53,7 @@ class gongzhao_controller extends wxapp_controller
     }
 
 
-    /**
-     * 公告详情
-     */
+    
     function gongzhaoshow_action()
     {
         $id = (int)$_POST['id'];

@@ -2,7 +2,7 @@
 
 class upload_controller extends common{
 	
-	private $tokenSalt = 'phpyun';//加密的salt
+	private $tokenSalt = 'phpyun';// token salt
 
 	// （）
 	private function generateToken($type, $uid){
@@ -76,7 +76,7 @@ class upload_controller extends common{
 		$this->yunset('token', $token);
 		$this->yunset('type', $arr['type']);
 		
-		if($arr['type'] == 3 || $arr['type'] == 4 || $arr['type'] == 5 || $arr['type'] == 6){//上传头像
+		if($arr['type'] == 3 || $arr['type'] == 4 || $arr['type'] == 5 || $arr['type'] == 6){// avatar upload
 			$pic	=	$icon	=	'';
 		    if ($arr['type']==3){
 				
@@ -147,7 +147,7 @@ class upload_controller extends common{
 		$uid 		= 	addslashes($uid);
 
 		switch($type){
-			case 1://上传企业营业执照		
+			case 1:// business license		
 				// $pic 		= 	$this->upload();
 				// $path 		= 	$pic;
 				
@@ -189,7 +189,7 @@ class upload_controller extends common{
 				return $return;
 
 				break;
-			case 2://个人上传身份证
+			case 2:// id card
 			
 				$pic 	= $this->upload();
 				$path 	= $pic;
@@ -207,7 +207,7 @@ class upload_controller extends common{
 				}
 				return $return;
 			break;
-			case 3://个人上传头像
+			case 3:// user avatar
 				$return   =  $resumeM -> upPhoto(array('uid'=>$uid),array('utype'=>'user','base'=>$_POST['uimage']));
 				return $return;
 			break;
@@ -246,8 +246,7 @@ class upload_controller extends common{
 		}
 	}
 	/**
-      * @desc 处理单个图片上传
-      * @param file/需上传文件; dir/上传目录; type/上传图片类型; base/需上传base64; preview/pc预览即上传
+      * @desc Upload helper: file, dir, type, base, preview
      */
     private function newupload($data = array('file'=>null,'dir'=>null,'type'=>null,'base'=>null,'preview'=>null)){
           

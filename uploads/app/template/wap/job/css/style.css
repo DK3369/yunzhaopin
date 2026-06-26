@@ -2,7 +2,7 @@
 /* CSS Document */
 * { margin: 0; padding: 0; outline: none;}
 *:not(input,textarea) { -webkit-touch-callout: inherit; -webkit-user-select: auto;}
-body { width: 100%; font-family:"微软雅黑"; font-size:14px; color:#878787; -webkit-touch-callout:inherit; -webkit-user-select:auto; background-color: #fff;}
+body { width: 100%; font-family:"Microsoft YaHei"; font-size:14px; color:#878787; -webkit-touch-callout:inherit; -webkit-user-select:auto; background-color: #fff;}
 a { color: #878787; text-decoration: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);}
 a:hover {  text-decoration: none;}
 button,input,select,textarea { font-size: 100%; margin: 0; padding: 0; outline: none;}

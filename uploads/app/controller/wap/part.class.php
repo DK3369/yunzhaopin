@@ -62,7 +62,7 @@ class part_controller extends common
             if ($job['id']) {
 
                 $job['com_name']    =   $info['com']['name'];
-                $partM->upInfo(array('hits' => array('+', 1)), array('id' => $id)); // 更新浏览次数
+                $partM->upInfo(array('hits' => array('+', 1)), array('id' => $id)); // bump hits
 
                 if ($this->usertype == 1) {
 
@@ -89,8 +89,7 @@ class part_controller extends common
     }
 
     /**
-     * @desc 收藏兼职
-     */
+ */
     function collect_action()
     {
 
@@ -108,8 +107,7 @@ class part_controller extends common
     }
 
     /**
-     * @desc   报名兼职
-     */
+ */
     function apply_action()
     {
 
@@ -126,9 +124,7 @@ class part_controller extends common
         die();
     }
 
-    /**
-     * 微信扫码查看联系方式
-     */
+    
     function telQrcode_action()
     {
 

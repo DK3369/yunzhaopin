@@ -29,7 +29,7 @@ class public_controller extends wxapp_controller{
 	    	    
 	    	    if(!empty($job_index)){
 					$jobtwoArr[$v][] 	   =  array('value'=>0,'label'=>yun_auto_t('全部'));// Column 2: all
-					$jobthreetwoArr[$v][]  =  array(array());//用做 一级-全部-''
+					$jobthreetwoArr[$v][]  =  array(array());// level-1 all placeholder
 					
 		    		if (is_array($job_type[$v])){
 						
@@ -92,7 +92,7 @@ class public_controller extends wxapp_controller{
 	    	foreach($city_index as $k=>$v){
 	    		if(!empty($city_type)){
 					$citytwoArr[$v][]       =  array('value'=>0,'label'=>yun_auto_t('全部'));// Column 2: all
-		    		$citythreetwoArr[$v][]	=  array(array());//用做 一级-全部-''
+		    		$citythreetwoArr[$v][]	=  array(array());// level-1 all placeholder
 		    		if (is_array($city_type[$v])){
 
 	    				foreach ($city_type[$v] as $ka=>$va){
@@ -894,11 +894,11 @@ class public_controller extends wxapp_controller{
 	}
 
 
-	function keyword_action(){  //关键字展示
+	function keyword_action(){  // hot keywords
         include PLUS_PATH."keyword.cache.php";
         if(is_array($keyword)){
             foreach($keyword as $k=>$v){
-                if($v['type']==$_POST['type']&&$v['tuijian']=='1' && count($key_name) < 12){// 热搜关键词最多展示12个
+                if($v['type']==$_POST['type']&&$v['tuijian']=='1' && count($key_name) < 12){// max 12 hot keywords
                     $key_name[]	=	$v['key_name'];
                 }
             }
@@ -906,15 +906,13 @@ class public_controller extends wxapp_controller{
         $data['keyword']    = $key_name;
         $this->render_json(0,'ok',$data['keyword']);
 	}
-	function group_action(){  //关键字类别
+	function group_action(){  // keyword groups
 	    include(PLUS_PATH.'group.cache.php');
 		$data['group_index']	=	$group_index;
 	    $data['group_name']		=	$group_name;
 	    $this->render_json(0,'ok',$data);
 	}
-	/**
-	 * 查询分站数据
-	 */
+	
 	function site_action(){
 	    
 	    include(PLUS_PATH."domain_cache.php");
@@ -987,9 +985,7 @@ class public_controller extends wxapp_controller{
 	    
 	    $this->render_json(0, 'ok', $data);
 	}
-	/**
-	 * 获取举报简历原因
-	 */
+	
 	function getReportReason_action(){
 	    
 	    $cacheM  =  $this->MODEL('cache');
@@ -1005,9 +1001,7 @@ class public_controller extends wxapp_controller{
 	    $data['reason'] = $reason;
 	    $this->render_json(0, 'ok', $data);
 	}
-    /**
-     * 获取举报职位原因
-     */
+    
     function getjobReportReason_action(){
 
         $cacheM  =  $this->MODEL('cache');
@@ -1024,9 +1018,7 @@ class public_controller extends wxapp_controller{
         $this->render_json(0, 'ok', $data);
     }
 
-	/**
-     * 获取邀请注册模板列表
-     */
+	
     function getInviteRegHbList_action()
     {
         $whbM   =   $this->MODEL('whb');

@@ -98,7 +98,7 @@ class index_controller extends com_controller{
         $return['paused']   =   $this->comInfo['r_status'] == '4' ? 1 : 2;
         $comM = $this -> MODEL('company');
         $ratinginfo = $comM->getRatingInfo(array('rating' => $statis['rating'], 'field' => 'service_price'));
-        $sjtip = 1;// 展示升级套餐提醒
+        $sjtip = 1;// show upgrade tip
         if ($statis['rating'] > 0){
             $comM = $this -> MODEL('company');
             $ratinginfo = $comM->getRatingInfo(array('rating' => $statis['rating'], 'field' => 'service_price'));
@@ -150,9 +150,7 @@ class index_controller extends com_controller{
 		}
 		$this->render_json($data['error'],$data['msg'],$data);
 	}
-	/**
-	 * 检测职位发布数量
-	 */
+	
 	function addCheck_action()
 	{
 

@@ -5,9 +5,7 @@
 class part_controller extends user_controller
 {
 
-    /**
-     * wxapp个人会员兼职收藏列表
-     */
+    
     function partCollect_action()
     {
 
@@ -59,9 +57,7 @@ class part_controller extends user_controller
         $this->render_json($error, '', $list, $total);
     }
 
-    /**
-     * 删除兼职收藏列表
-     */
+    
     function delfavpart_action()
     {
 
@@ -79,9 +75,7 @@ class part_controller extends user_controller
         $this->render_json($error, $msg);
     }
 
-    /**
-     * 删除兼职报名
-     */
+    
     function delapply_action()
     {
 
@@ -99,9 +93,7 @@ class part_controller extends user_controller
         $this->render_json($error, $msg);
     }
 
-    /**
-     * 个人兼职报名管理
-     */
+    
     function applylist_action()
     {
 

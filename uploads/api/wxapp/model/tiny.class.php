@@ -1,7 +1,7 @@
 <?php
 
 class tiny_controller extends wxapp_controller{
-	function list_action(){//微简历列表
+	function list_action(){// tiny resume list
 		$tinyM		=	$this->MODEL('tiny');
 		$where['status']	=	'1';
 		$keyword	=	$this->stringfilter($_POST['keyword']);
@@ -15,13 +15,13 @@ class tiny_controller extends wxapp_controller{
 		$order		=	$_POST['order'];
 		$nodata		=	$_POST['nodata'];
 		$limit		=	!$limit?10:$limit;
-		if($sex){//类别ID
+		if($sex){// category id
 			$where['sex']	=	$sex;
 		}
-		if($edu){//类别ID
+		if($edu){// category id
 			$where['edu']	=	$edu;
 		}
-		if($keyword){//关键字
+		if($keyword){// keyword
 			
 			$where['PHPYUNBTWSTART_A']	=	'';
             $where['username']	=	array('like',$keyword);
@@ -31,19 +31,19 @@ class tiny_controller extends wxapp_controller{
 		}
 
 		
-		if($nodata){//排除没有值的字段
+		if($nodata){// skip empty fields
 			$nodataarr	=	explode(",",$nodata);
 			foreach($nodataarr as $v){
 				$where[$v]	=	array('<>','');
 			}
 		}
-		if($provinceid){//类别ID
+		if($provinceid){// category id
 			$where['provinceid']=	$provinceid;
 		}
-		if($cityid){//类别ID
+		if($cityid){// category id
 			$where['cityid']	=	$cityid;
 		}
-		if($three_cityid){//类别ID
+		if($three_cityid){// category id
 			$where['three_cityid']	=	$three_cityid;
 		}
 		// 
@@ -113,12 +113,12 @@ class tiny_controller extends wxapp_controller{
 		        }
 		    }
 		}
-		if($order){//排序
+		if($order){// sort
 			$where['orderby']	=	$order.',desc';
 		}else{
 			$where['orderby']	=	'lastupdate,desc';
 		}
-		if($page){//分页
+		if($page){// paginate
 			$pagenav	=	($page-1)*$limit;
 			$where['limit']		=	array($pagenav,$limit);
 		}else{
@@ -135,7 +135,7 @@ class tiny_controller extends wxapp_controller{
 		}
 		$this->render_json($error,'',$data);
 	}
-	function show_action(){//微简历内容
+	function show_action(){// tiny resume detail
 		$id		=	(int)$_POST['id'];
 		if(!$id){
 			$data['error']	=	3;
@@ -167,7 +167,7 @@ class tiny_controller extends wxapp_controller{
 
         $noticeM 		= 		$this->MODEL('notice');
 
-        $port	=	$this->plat == 'mini' ? '3' : '4';	// 短信发送端口$port : 3-小程序  4-APP
+        $port	=	$this->plat == 'mini' ? '3' : '4';	// SMS port: 3=mini 4=app
         $result	=	$noticeM->sendCode($moblie, 'code', $port, array(), 6, 120, 'msg');
         if($result['error']==1){
             $errcode	=	1;

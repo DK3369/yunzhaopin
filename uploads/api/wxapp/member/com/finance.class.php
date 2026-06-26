@@ -48,7 +48,7 @@ class finance_controller extends com_controller
     	$fktype  =  $this->fktype();
     	
     	if(!empty($fktype)){
-			if($id){//订单
+			if($id){// order
 			    $orderM		=	$this->MODEL('companyorder');
 				$order		=	$orderM	->	getInfo(array('uid'=>$this->member['uid'],'id'=>$id));
 
@@ -182,11 +182,11 @@ class finance_controller extends com_controller
       $_POST['days']      =   intval($_POST['rdays']);
       if($_POST['num']>=$_POST['days']){
           
-          if($_POST['serverid']==1){//置顶
+          if($_POST['serverid']==1){// top service
               $_POST['type']    = 'top';
-          }else if($_POST['serverid']==2){//推荐
+          }else if($_POST['serverid']==2){// recommend service
               $_POST['type']    = 'rec';
-          }else if($_POST['serverid']==3){//紧急招聘
+          }else if($_POST['serverid']==3){// urgent service
               $_POST['type']    = 'urgent';
           }
           $return = $jobM->setJobPromote(intval($_POST['id']), $_POST);
@@ -258,9 +258,7 @@ class finance_controller extends com_controller
 	    $return['config']  		=   $config;
 	    $this->render_json(0, 'ok', $return);
 	}
-	/**
-	 * 查询会员套餐名称
-	 */
+	
 	function getRating_action(){
 	    
 	    
@@ -372,7 +370,7 @@ class finance_controller extends com_controller
 	{
 		$StatisM	=	$this -> MODEL("statis");
 		$orderM		=	$this -> MODEL('companyorder');
-		$statis		=	$StatisM -> getInfo($this->member['uid'],array('usertype'=>'2'));//查询会员信息
+		$statis		=	$StatisM -> getInfo($this->member['uid'],array('usertype'=>'2'));// member statis
 		$where		=	array(
 			'com_id'		=>	$this->member['uid'],
 			'usertype'		=>	2,

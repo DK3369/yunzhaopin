@@ -193,7 +193,7 @@ class resume_controller extends wxapp_controller
                 $msg    =   yun_auto_t('账户正在审核中，无法查看！');
             }
 		}
-        if($_POST['rewardid']){//来自企业会员中心-应聘悬赏简历-查看简历
+        if($_POST['rewardid']){// from reward resume view
 
 			$packM      =   $this->MODEL('pack');
 
@@ -326,7 +326,7 @@ class resume_controller extends wxapp_controller
             $cData['usertype']  =   $usertype;
             $cData['eid']       =   $id;
             $cData['ruid']      =   $expect['uid'];
-            $cData['from']      =   !empty($reward) ?   'reward' : '';//是否来自企业应聘悬赏简历的查看简历
+            $cData['from']      =   !empty($reward) ?   'reward' : '';// reward resume source flag
             $resumeCkeck        =   $resumeM->openResumeCheck($cData);
 
             $expect['resumeCkeck']  =  $resumeCkeck;
@@ -546,9 +546,7 @@ class resume_controller extends wxapp_controller
 		$this->render_json($return['status'], strip_tags($return['msg']), $return);
     }
 
-    /**
-     * 下载简历
-     */
+    
     function down_action(){
 
         $member     =   $this->yzToken($_POST['cuid'],$_POST['token']);
@@ -567,9 +565,7 @@ class resume_controller extends wxapp_controller
         }
         $this->render_json($downRes['status'],strip_tags($downRes['msg']), $downRes);
     }
-    /**
-     * 加入人才库
-     */
+    
     function talentpool_action()
     {
         $member  =  $this->yzToken($_POST['cuid'],$_POST['token']);
@@ -588,9 +584,7 @@ class resume_controller extends wxapp_controller
 
     }
 
-    /**
-     * 举报信息保存
-     */
+    
 	function savereport_action(){
         $member  	=  	$this->yzToken($_POST['uid'],$_POST['token']);
 		$reportM	=	$this->MODEL('report');
@@ -615,9 +609,7 @@ class resume_controller extends wxapp_controller
 		$this->render_json($errcode, $return['msg']);
 
 	}
-	/**
-	 * 举报简历前判断
-	 */
+	
 	function repostlist_action(){
 		$member  	=  	$this->yzToken($_POST['uid'],$_POST['token']);
 

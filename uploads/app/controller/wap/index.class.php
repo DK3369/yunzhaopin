@@ -4,9 +4,7 @@
 
 class index_controller extends common
 {
-    /**
-     * 首页
-     */
+    
     function index_action()
     {
         
@@ -66,18 +64,14 @@ class index_controller extends common
          
     }
 
-    /**
-     * 退出登录
-     */
+    
     function loginout_action()
     {
         $this->cookie->unset_cookie();
         $this->wapheader('');
     }
 
-    /**
-     * 前端语言包（yun-i18n.js 使用）
-     */
+    
     function langpack_action()
     {
         $keys = null;

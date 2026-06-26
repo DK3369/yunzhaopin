@@ -56,9 +56,9 @@ class map_controller extends common
         }
 
         if (!empty($_POST['depower'])) {
-            trim($_POST['depower']) != 'all' && $where['is_depower'] = (int)$_POST['depower']; // all为降权和非降权均查询
+            trim($_POST['depower']) != 'all' && $where['is_depower'] = (int)$_POST['depower']; // depower filter all
         } else {
-            $where['is_depower'] = 2; // 默认查询未降权的职位
+            $where['is_depower'] = 2; // default non-depowered jobs
         }
 
         if ($this->config['did'] > 0) {

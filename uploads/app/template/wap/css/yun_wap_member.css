@@ -130,7 +130,7 @@
 .relative {position: relative;}
 .selectOption{display:inline-block;height:30px;background:-webkit-gradient(linear,left top, left bottom, from(#f8f8f8),to(#f8f8f8));vertical-align:middle;position:relative;overflow:hidden;}
 .selectOption:after{content:' ';position:absolute;top:50%;margin-top:-6px;right:10px;width:6px;height:6px;border:#AAAAAA solid;-webkit-transform: rotate(135deg);border-width: 1px 1px 0 0;color:#434343;}
-.selectOption select{float:left;position:absolute;top:0;left:0;z-index:2;padding:0;border:0;-webkit-appearance:none;width:70%;background:transparent;height:30px;font-size:13px;color:#666; font-family:"微软雅黑";}
+.selectOption select{float:left;position:absolute;top:0;left:0;z-index:2;padding:0;border:0;-webkit-appearance:none;width:70%;background:transparent;height:30px;font-size:13px;color:#666; font-family:"Microsoft YaHei";}
 .selectOption select option{font-size:12px;}
 .resume_xg{ background:#F60}
 .resume_tj{ background:#06F}
@@ -557,7 +557,7 @@
 .job_box_inp {color: #666;float: left;line-height: 28px;padding-top:10px;width:100%;text-align: center;}
 .resume_ask_qr{}
 .resume_ask{width:30px;height:29px;display:inline-block;background:url(../images/xubox_ico0.png) no-repeat -163px -75px; float:left}
-.resume_ask_qr em{ display:inline-block; line-height:27px; font-size:16px; font-family:microsoft yahei,宋体; float:left; padding-left:10px;}
+.resume_ask_qr em{ display:inline-block; line-height:27px; font-size:16px; font-family:Microsoft YaHei,sans-serif; float:left; padding-left:10px;}
 .job_box_botton a{color:#333;display: inline-block;font-size:14px;font-weight: bold;overflow: hidden;text-align: center;text-decoration: none;}
 .job_box_botton a:hover {color: #ffffff;text-decoration: none;}
 .job_box_botton .job_box_botton2 {background-position: -5px -114px;height: 29px;line-height: 29px;width: 71px;}
@@ -1708,7 +1708,7 @@ content:''; position:absolute;right:0px;bottom:0px; display:inline-block}
 .user_center_text {height: 45px;border: 1px solid #D6CFCF;color: #666;padding-left: 5px;line-height: 45px;font-size: 16px;}
 .user_center_info_yx{height: 100px;border: 1px solid #D6CFCF;color: #666;font-size: 14px;line-height: 23px;padding: 5px;}
 .user_center_texts{width: 150px;height: 45px;border: 1px solid #D6CFCF;color: #666;padding-left: 5px;line-height: 45px;font-size: 16px;vertical-align: middle;}
-.user_center_bth {width: 100px;height: 40px;background: #E45C00;color: white;font-size: 16px;font-family: 微软雅黑;border: none;margin-top: 10px;cursor: pointer;text-align:center; }
+.user_center_bth {width: 100px;height: 40px;background: #E45C00;color: white;font-size: 16px;font-family: Microsoft YaHei;border: none;margin-top: 10px;cursor: pointer;text-align:center; }
 .black_text_box .black_sumit{width:25%;
 height:40px;
 background: -webkit-gradient(linear, 0% 0%, 0% 100%,from(hsl(24, 100%, 50%)), to(hsl(24, 100%, 50%)));

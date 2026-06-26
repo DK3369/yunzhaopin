@@ -39,7 +39,7 @@ class job_controller extends com_controller
 
             $limit      =   $_POST['limit'];
 
-            if ($page) {//分页
+            if ($page) {// paginate
 
                 $pagenav        =   ($page - 1) * $limit;
                 $where['limit'] =   array($pagenav, $limit);
@@ -121,9 +121,7 @@ class job_controller extends com_controller
         $this->render_json(1, 'ok', $data);
     }
 
-    /**
-     * 职位列表tab数量统计
-     */
+    
     function jobnum_action()
     {
         $where['uid']   =   $this->member['uid'];
@@ -178,7 +176,7 @@ class job_controller extends com_controller
 			            $data['jobLink']  =  Url('wap', array('c' => 'job', 'a' => 'share', 'id' => $_POST['id']));
 			        }
 			        $data['shareTitle']  =  $jobsharedata['jobname'];
-			        $data['shareDesc']   =  $this->GET_content_desc($jobsharedata['description']); // 描述
+			        $data['shareDesc']   =  $this->GET_content_desc($jobsharedata['description']); // description
 			        $data['shareLogo']   =  checkpic($job['com_logo'], $this->config['sy_unit_icon']);
                 }
             }
@@ -207,9 +205,7 @@ class job_controller extends com_controller
 		$data['config']  =  $config;
 		$this->render_json(0, 'ok', $data);
 	}
-	/**
-	 * 发布职位
-	 */
+	
 	function jobadd_action()
 	{
 		$provider = isset($_POST['provider'])?$_POST['provider']:'';
@@ -354,10 +350,10 @@ class job_controller extends com_controller
 		        }
 			}
         }else{
-            $row['hy']        = $this->comInfo['hy']; // 添加职位，行业默认是企业行业
+            $row['hy']        = $this->comInfo['hy']; // default industry from company
             $row['zp_minage'] = '';
             $row['zp_maxage'] = '';
-            $row['welfare']   = $this->comInfo['welfare']; // 添加职位，带企业添加的福利待遇
+            $row['welfare']   = $this->comInfo['welfare']; // default welfare from company
         }
 		$cacheM		=  $this -> MODEL('cache');
 		$cache		=  $cacheM -> GetCache(array('com','user'));
@@ -482,9 +478,7 @@ class job_controller extends com_controller
         $this->render_json(0, 'ok', $row);      
 	}
 
-    /**
-     * 工作地址
-     */
+    
     function getJobAddress_action()
     {
 
@@ -679,7 +673,7 @@ class job_controller extends com_controller
         $data['job'] = $job;
         $this->render_json(9,'', $data);
     }
-	/* 删除职位 */
+	/* delete job */
 	function deljob_action()
 	{
     
@@ -701,7 +695,7 @@ class job_controller extends com_controller
 				$newest = $jobM -> getInfo(array('uid'=>$this->member['uid'],'orderby'=>'lastupdate'),array('field'=>'`lastupdate`'));
 				$comM -> upInfo($this->member['uid'],'',array('jobtime'=>!empty($newest['lastupdate']) ? $newest['lastupdate'] : 0));
 				
-                $data['error']	=	1;//删除成功
+                $data['error']	=	1;// deleted
 			}else{
 				$data['error']	=	2;
 			}
@@ -722,9 +716,7 @@ class job_controller extends com_controller
         $this->render_json(0,'',$return);
     }
 
-    /**
-     * 权益预警通知
-     */
+    
     function sendRatingNotice_action()
     {
         $_POST  =   $this->post_trim($_POST);
@@ -747,7 +739,7 @@ class job_controller extends com_controller
         $statisM->sendRatingNotice($data);
     }
 
-    /* 职位推广（置顶、推荐、紧急招聘） */
+    /* job promotion */
     function setJobPromote_action() 
     {
         $_POST  =   $this->post_trim($_POST);
@@ -772,7 +764,7 @@ class job_controller extends com_controller
         $this->render_json($error,$msg);
     }
 
-    /* 取消职位推广（置顶、推荐、紧急招聘） */
+    /* cancel job promotion */
     function setJobPromoteClose_action()
     {
         $_POST  =   $this->post_trim($_POST);
@@ -796,9 +788,7 @@ class job_controller extends com_controller
 
         $this->render_json($error,$msg);
     }
-	/**
-	 * 刷新职位
-	 */
+	
 	function refresh_action()
 	{
 		
@@ -810,7 +800,7 @@ class job_controller extends com_controller
 	        
 	        $jobM  =  $this -> MODEL('job');
 	        
-	        $jobs  =  $jobM -> getList(array('uid'=>$this->member['uid'],'state'=>1,'r_status'=>array('<>',2),'status'=>array('<>',1)),array('field'=>'id'));//招聘中职位
+	        $jobs  =  $jobM -> getList(array('uid'=>$this->member['uid'],'state'=>1,'r_status'=>array('<>',2),'status'=>array('<>',1)),array('field'=>'id'));// active jobs
 	        if(!empty($jobs['list'])){
 	            foreach($jobs['list'] as $key=>$v){
 	                $ids[]	=  $v['id'];
@@ -855,7 +845,7 @@ class job_controller extends com_controller
 	        $this->render_json(4, $return['msg']);
 	    }
 	}
-	/*wxapp职位管理页面上架下架*/
+	/* wxapp: job shelf toggle */
 	function ztjob_action()
 	{
 		
@@ -976,9 +966,7 @@ class job_controller extends com_controller
 		$this->render_json(1,'',$row['content']);
 	}
 
-    /**
-     * 预约刷新
-     */
+    
     function reserveUp_action()
     {
 

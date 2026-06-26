@@ -5,9 +5,7 @@
 class part_controller extends com_controller
 {
 
-    /**
-     * 兼职报名列表
-     */
+    
     function applylist_action()
     {
 
@@ -34,9 +32,7 @@ class part_controller extends com_controller
         }
     }
 
-    /**
-     * 删除兼职报名
-     */
+    
     function delapply_action()
     {
 
@@ -51,9 +47,7 @@ class part_controller extends com_controller
         $this->render_json($error, $return['msg']);
     }
 
-    /**
-     * 简历列表
-     */
+    
     function partlist_action()
     {
 
@@ -147,9 +141,7 @@ class part_controller extends com_controller
         $this->render_json(0, 'ok', $data);
     }
 
-    /**
-     * 兼职列表tab数量统计
-     */
+    
     function partnum_action()
     {
 
@@ -343,9 +335,7 @@ class part_controller extends com_controller
         $this->render_json($error, $msg);
     }
 
-    /**
-     * 刷新兼职职位
-     */
+    
     function refresh_action()
     {
 
@@ -407,9 +397,7 @@ class part_controller extends com_controller
         }
     }
 
-    /**
-     * 职位管理页面上架下架
-     */
+    
     function ztjob_action()
     {
         if (!$_POST['id']) {

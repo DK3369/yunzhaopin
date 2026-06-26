@@ -20,8 +20,8 @@ class gongzhao_controller extends common
             $row           = $gongzhaoM->getInfo(array('id' => $id));
             $this->yunset("row", $row);
             
-            $data['gz_title'] = $row['title'];//公招名称
-            $data['gz_desc']  = $this->GET_content_desc($row['description']);//描述
+            $data['gz_title'] = $row['title'];// title
+            $data['gz_desc']  = $this->GET_content_desc($row['description']);// description
             $this->data       = $data;
             $this->seo("gongzhao");
             

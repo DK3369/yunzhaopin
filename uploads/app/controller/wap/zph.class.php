@@ -76,7 +76,7 @@ class zph_controller extends common{
 		$rows	=	$zphM->getZphPicList(array("zid"=>$id));
 		$this->yunset("Image_info",$rows);
 		
-		$space	=	$zphM->getZphSpaceInfo(array("id"=>$row['sid']),array('pic'=>1,'field'=>'`pic`,`content`'));//查询场地
+		$space	=	$zphM->getZphSpaceInfo(array("id"=>$row['sid']),array('pic'=>1,'field'=>'`pic`,`content`'));// venue
 		$this->yunset("space",$space);
 		
 		$spacelist	=	$zphM->getZphSpaceList(array("keyid"=>$row['sid'],"orderby"=>"sort,asc"),array("id"=>$id,'utype'=>'index'));
@@ -89,7 +89,7 @@ class zph_controller extends common{
 		$this->yunset("statis",$statis);
 		
 		$data['zph_title']	=	$row['title'];
-		$data['zph_desc']	=	$this->GET_content_desc($row['body']);//描述
+		$data['zph_desc']	=	$this->GET_content_desc($row['body']);// description
 		$this->data			=	$data;
 		
 		if($_GET['zph']){

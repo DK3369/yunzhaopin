@@ -183,16 +183,16 @@ class register_controller extends wxapp_controller
 		$this -> render_json($errcode,$return['msg'],'');
 	}
 
-	/* 注册发送手机号 */
+	/* register: send mobile code */
     function regcode_action()
     {
-        $this->regcode($this->plat == 'mini' ? '3' : '4');	// 短信发送端口$port : 3-小程序  4-APP
+        $this->regcode($this->plat == 'mini' ? '3' : '4');	// SMS port: 3=mini 4=app
     }
 
-    /* 注册发送手机号-快速投递 */
+    /* register: quick apply mobile code */
     function regcodeks_action()
     {
-        $this->regcode($this->plat == 'mini' ? '9' : '10');	// 短信发送端口$port : 9-小程序快速投递,10-APP快速投递
+        $this->regcode($this->plat == 'mini' ? '9' : '10');	// SMS port: 9=mini quick apply 10=app
     }
 
 	function regcode($port)

@@ -2,8 +2,7 @@
 
 class fk_controller extends com_controller{
     /**
-     * @desc 会员套餐、增值服务、单项购买页面
-     */
+ */
     function server_action(){
         
         include(CONFIG_PATH.'db.data.php');
@@ -89,10 +88,10 @@ class fk_controller extends com_controller{
             }
         }
         if (isset($this->comInfo['noPermission']) && $this->comInfo['noPermission'] == 1 && !empty($this->config['com_package_open'])){
-            $data['noPermission']   =   1;  //  无可浏览会员
+            $data['noPermission']   =   1;  // no viewable members
         }
         if ($this->comInfo['r_status'] == 4){
-            $data['isPaused']       =   1;  //  已暂停
+            $data['isPaused']       =   1;  // paused
         }
         if ((int)$this->comInfo['crm_uid'] > 0){
 
@@ -100,8 +99,8 @@ class fk_controller extends com_controller{
             $data['consultant'] =   array('name' => $crmInfo['name'], 'mobile' => $crmInfo['moblie'], 'wechat' => !empty($crmInfo['ewm']) ? checkpic($crmInfo['ewm']): '');
         }
 
-        $data['rating_1']	=	array_values($rating_1);//套餐会员
-        $data['rating_2']	=	array_values($rating_2);//时间会员
+        $data['rating_1']	=	array_values($rating_1);// package members
+        $data['rating_2']	=	array_values($rating_2);// time-based members
         
         $comStatis     		=   $this->company_statis($this->member['uid']);
 
@@ -123,7 +122,7 @@ class fk_controller extends com_controller{
             $statis['rating_name']  =  $comStatis['rating_name'];
             $statis['integral']     =  $comStatis['integral'];
             
-            $data['statis']		=	$statis;//当前已有的服务信息
+            $data['statis']		=	$statis;// current services
         }
 
         if ($this->member['usertype'] == 2) {
@@ -161,7 +160,7 @@ class fk_controller extends com_controller{
                 }
             }
         }
-        $data['add']  =  $add;//增值列表
+        $data['add']  =  $add;// addon list
         
         $server  =  trim($_POST['server']);
         $com_single_can = explode(',', $this->config['com_single_can']);
@@ -264,7 +263,7 @@ class fk_controller extends com_controller{
 			'sy_only_price'         =>  $this->config['sy_only_price']
         );
         
-        $config['fktype']	      =	 $this->fktype();//支付方式
+        $config['fktype']	      =	 $this->fktype();// payment types
         $data['config']			  =	 $config;
         $data['single_price']	  =	 $single_price;
         $data['single_integral']  =	 $single_integral;
@@ -290,9 +289,7 @@ class fk_controller extends com_controller{
         
     }
      
-    /**
-     * 生成订单
-     */
+    
     function getOrder_action()
     {
         $_POST  =  $this -> post_trim($_POST);

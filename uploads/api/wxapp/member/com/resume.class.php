@@ -1,9 +1,7 @@
 <?php
 
 class resume_controller extends com_controller{
-    /**
-     * 申请职位的人才
-     */
+    
     function hrlist_action()
     {
     	$uid		=	$this->member['uid'];
@@ -31,7 +29,7 @@ class resume_controller extends com_controller{
         $where['orderby']		=	array('datetime,desc', 'is_browse,asc');
 
 		$limit					=	$_POST['limit'] ? $_POST['limit'] : 10;
-		if($page){//分页
+		if($page){// paginate
 			$pagenav			=	($page-1)*$limit;
 			$where['limit']		=	array($pagenav,$limit);
 		}else{
@@ -115,9 +113,7 @@ class resume_controller extends com_controller{
         $this->render_json($data['error'],$return['msg']);
         
     }
-	/**
-	 * 已下载简历的人才
-	 */
+	
 	function downlist_action()
 	{
 		$downM  	=	$this -> MODEL('downresume');
@@ -130,14 +126,14 @@ class resume_controller extends com_controller{
 		
 		$data['total']          =   $downM->getDownNum($where);
 		
-		if($order){//排序
+		if($order){// sort
 			$where['orderby']	=	$order.',desc';
 		}else{
 			$where['orderby']	=	'id,desc';
 		}
 
 		$limit					=	$_POST['limit'] ? $_POST['limit'] : 10;
-		if($page){//分页
+		if($page){// paginate
 			$pagenav			=	($page-1)*$limit;
 			$where['limit']		=	array($pagenav,$limit);
 		}else{
@@ -205,7 +201,7 @@ class resume_controller extends com_controller{
     {
         $page  = $_POST['page'];
         $limit = $_POST['limit'] ? $_POST['limit'] : 10;
-        if ($page) { // 分页
+        if ($page) { // paginate
             $pagenav = ($page - 1) * $limit;
             $where['limit'] = array(
                 $pagenav,
@@ -264,9 +260,7 @@ class resume_controller extends com_controller{
 
         $this->render_json($data['error'],$return['msg']);
     }
-	/**
-	 * 已邀请人才
-	 */
+	
 	function invitelist_action()
 	{
 		$JobM		=   $this -> MODEL('job');
@@ -280,13 +274,13 @@ class resume_controller extends com_controller{
 		$where['isdel']	=  	9;
 		$data['total']  =   $JobM->getYqmsNum($where);
 		
-		if($order){//排序
+		if($order){// sort
 			$where['orderby']	=	$order.',desc';
 		}else{
 			$where['orderby']	=	'id,desc';
 		}
 
-        if($page){//分页
+        if($page){// paginate
             $pagenav			=	($page-1)*$limit;
             $where['limit']		=	array($pagenav,$limit);
         }else{
@@ -300,7 +294,7 @@ class resume_controller extends com_controller{
 		$this->render_json(0,'',$data);
 		
 	}
-    /*wxapp面试邀请页面-面试通知详情页*/
+    /* wxapp: interview invite detail */
     function inviteshow_action()
     {
         $id	   =  (int)$_POST['id'];
@@ -335,7 +329,7 @@ class resume_controller extends com_controller{
 			echo json_encode($data);die;
 		}
 	}
-	/* wxapp浏览简历记录 */
+	/* wxapp: resume browse log */
 	function look_resume_action()
 	{
 		$lookresumeM  			=   $this -> MODEL('lookresume');
@@ -345,7 +339,7 @@ class resume_controller extends com_controller{
 		$where['orderby']		=	'datetime,desc';
 		$page					=	$_POST['page'];
 		$limit					=	$_POST['limit'] ? $_POST['limit'] : 10;
-		if($page){//分页
+		if($page){// paginate
 			$pagenav			=	($page-1)*$limit;
 			$where['limit']		=	array($pagenav,$limit);
 		}else{
@@ -363,7 +357,7 @@ class resume_controller extends com_controller{
 		$this->render_json(0,'',$data);
 		
 	}
-	/* wxapp删除浏览简历记录 */
+	/* wxapp: delete resume browse log */
 	function look_resume_del_action()
 	{
 		if(!$_POST['ids']){
@@ -381,7 +375,7 @@ class resume_controller extends com_controller{
 		}
 		echo json_encode($data);die;
 	}
-	/* wxapp谁看过我记录 */
+	/* wxapp: who viewed company */
 	function look_job_action()
 	{
 		$JobM					=	$this -> MODEL("job");
@@ -393,7 +387,7 @@ class resume_controller extends com_controller{
 		$where['orderby']		=	'datetime,desc';
 		$page					=	$_POST['page'];
 		$limit					=	$_POST['limit'] ? $_POST['limit'] : 10;
-		if($page){//分页
+		if($page){// paginate
 			$pagenav			=	($page-1)*$limit;
 			$where['limit']		=	array($pagenav,$limit);
 		}else{
@@ -409,7 +403,7 @@ class resume_controller extends com_controller{
 		$this->render_json(0,'',$data);
 		
 	}
-	/* wxapp删除谁看过我记录 */
+	/* wxapp: delete who viewed company */
 	function look_job_del_action()
 	{
 		if(!$_POST['ids']){
@@ -493,7 +487,7 @@ class resume_controller extends com_controller{
 		$where['orderby']	=	'id';
         $page				=	$_POST['page'];
 		$limit				=	$_POST['limit'] ? $_POST['limit'] : 10;
-		if($page){//分页
+		if($page){// paginate
 			$pagenav		=	($page-1)*$limit;
 			$where['limit']	=	array($pagenav,$limit);
 		}else{

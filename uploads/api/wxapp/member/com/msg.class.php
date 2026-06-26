@@ -2,7 +2,7 @@
 
 class msg_controller extends com_controller{
     
-	/* 求职咨询 */
+	/* job inquiry */
 	function msglist_action(){
         $MsgM			   =  $this -> MODEL('msg');
 		$where['job_uid']  =  $this->member['uid'];
@@ -15,7 +15,7 @@ class msg_controller extends com_controller{
 
 			 $limit				 =  $_POST['limit'];
 			 
-			if($page){//分页
+			if($page){// paginate
 				
 				$pagenav		 =  ($page-1)*$limit;
 				
@@ -41,9 +41,7 @@ class msg_controller extends com_controller{
 
   		$this->render_json(0,'',$data,$total);
 	}
-  	/**
-	 * 企业咨询消息删除
-	 */
+  	
 	function delsmsglist_action(){
 
         if(!$_POST['id']){
@@ -155,7 +153,7 @@ class msg_controller extends com_controller{
 	}
 	
 	/**
-	 *系统消息查询
+	 * System messages list
 	*/
 	function sysmsgnews_action(){
 		$SysmsgM	=	$this -> MODEL('sysmsg');
@@ -177,7 +175,7 @@ class msg_controller extends com_controller{
     	$page					 =  $_POST['page'];
       	if ($_POST['limit']){
         	$limit				 =  $_POST['limit'];
-        	if($page){//分页
+        	if($page){// paginate
            		$pagenav		 =  ($page-1)*$limit;
             	$where['limit']  =  array($pagenav,$limit);
         	}else{
@@ -192,9 +190,7 @@ class msg_controller extends com_controller{
 		
     	$this->render_json(0,'',$data,$total);
   	}
-	/**
-	 * 系统消息删除
-	 */
+	
 	function delsysmsgnews_action(){
         $SysmsgM	=	$this -> MODEL('sysmsg');
         if(!$_POST['id']){

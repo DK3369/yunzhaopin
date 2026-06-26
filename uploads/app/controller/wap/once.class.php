@@ -21,8 +21,8 @@ class once_controller extends common{
 		$onceM		=	$this->MODEL('once');
 		
 		$ip			=	fun_ip_get();
-		$start_time	=	strtotime(date('Y-m-d 00:00:00')); //开始时间
-        $totalMessNum = $onceM->getOnceNum(array('ctime'=>array('>',$start_time)));//当天总的已发布量
+		$start_time	=	strtotime(date('Y-m-d 00:00:00')); // day start
+        $totalMessNum = $onceM->getOnceNum(array('ctime'=>array('>',$start_time)));// today publish count
 		$mess		=	$onceM->getOnceNum(array('login_ip'=>$ip,'ctime'=>array('>',$start_time)));
         if($this->config['sy_once_totalnum'] == 0 || ($this->config['sy_once_totalnum'] > $totalMessNum)){
             $isFb = true;

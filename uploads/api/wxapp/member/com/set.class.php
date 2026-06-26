@@ -410,7 +410,7 @@ class set_controller extends com_controller
 	        $uni = 'wxapp';
 	        if ($_POST['type'] == 'weixin'){
 	            
-	            $up  =  array('wxid'=>'','wxopenid'=>'',,'unionid'=>'', 'subscribe' => 2);
+	            $up  =  array('wxid'=>'','wxopenid'=>'','unionid'=>'', 'subscribe' => 2);
 	            
 	        }elseif ($_POST['type'] == 'qq'){
 	            
@@ -495,9 +495,7 @@ class set_controller extends com_controller
 
         $this->render_json(0,'',$data);
     }
-	/**
-	 * 邀请模板列表
-	 */
+	
 	function yqmb_action(){
 	    
 	    
@@ -511,7 +509,7 @@ class set_controller extends com_controller
 
 		$limit				=	$_POST['limit'] ? $_POST['limit'] : 10;
 
-		if($page){//分页
+		if($page){// paginate
 			$pagenav		=	($page-1)*$limit;
 			$where['limit']	=	array($pagenav,$limit);
 		}else{
@@ -533,9 +531,7 @@ class set_controller extends com_controller
 		$this->render_json(0,'',$data);
 	}
 	
-	/**
-     * 删除模板
-     */
+	
     public function delYqmb_action()
     {
         $_POST  =   $this -> post_trim($_POST);
@@ -611,9 +607,7 @@ class set_controller extends com_controller
 
         $this->render_json($error,$msg);
 	}
-    /**
-     * 工作地址列表
-     */
+    
     function address_action()
     {
 

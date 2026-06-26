@@ -90,7 +90,7 @@ class login_controller extends common{
             $lData['age'] = intval($_POST['age']);
             $lData['realname'] = trim($_POST['realname']);
             $lData['from'] = 2;
-            $lData['source'] = 26;// 预留信息
+            $lData['source'] = 26;// lead source
             $lData['sex'] = intval($_POST['sex']);
             $lData['jobid'] = intval($_POST['jid']);
             $lData['is_yuliu'] = 1;
@@ -205,9 +205,7 @@ class login_controller extends common{
 			header("Location:".Url('wap'));
 		}
 	}
-	/**
-	 * 绑定微信、关注公众号二维码（主要是已登录用户未绑定微信，宣讲会预约需要发微信通知，需要用户关注公众号并绑定微信）
-	 */
+	
 	function wxlogin_action(){
 	    
 	    $WxM=$this->MODEL('weixin');
@@ -218,9 +216,7 @@ class login_controller extends common{
 	        echo $qrcode;
 	    }
 	}
-	/**
-	 * 查询微信二维码扫码绑定情况（主要是已登录用户未绑定微信，宣讲会预约需要发微信通知，需要用户关注公众号并绑定微信）
-	 */
+	
 	function getwxloginstatus_action(){
 	    
 	    if($_COOKIE['wxloginid']){
@@ -240,9 +236,7 @@ class login_controller extends common{
 	    }
 	}
 	 
-	/**
-	 * 第三方登录后，绑定已有账号，登录验证并绑定
-	 */
+	
 	function baloginsave_action(){
 
 		$userinfoM			=  $this->MODEL('userinfo');

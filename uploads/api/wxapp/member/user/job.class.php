@@ -2,7 +2,7 @@
 
 class job_controller extends user_controller{
     
-/*wxapp申请记录*/
+/* wxapp: applications */
 	function sqjoblist_action()
 	{
 		$JobM				=	$this -> MODEL('job');
@@ -42,8 +42,8 @@ class job_controller extends user_controller{
 		}
 		$this->render_json($error,'',$list,$total);
 	}
-	/*wxapp申请记录删除*/
-	function delsqjob_action()//删除申请的职位
+	/* wxapp: delete application */
+	function delsqjob_action()
 	{
 		$JobM	=	$this -> MODEL('job');
 		$id		=	intval($_POST['ids']);
@@ -52,7 +52,7 @@ class job_controller extends user_controller{
 		$this->render_json($error,$arr['msg']);
 	}
 
-    /*wxapp取消申请*/
+    /* wxapp: cancel application */
     function qxSqJob_action()
     {
         $JobM	=	$this -> MODEL('job');
@@ -62,7 +62,7 @@ class job_controller extends user_controller{
         $this->render_json($error,$arr['msg']);
     }
 	
-	/*wxapp收藏记录*/
+	/* wxapp: favorites */
 	function favlist_action()
 	{	
 		$JobM				=	$this -> MODEL('job');
@@ -94,8 +94,8 @@ class job_controller extends user_controller{
 		$this->render_json(0,'',$list,$total);
 	}
 	
-	/*wxapp收藏记录删除*/
-	function delfavjob_action()//删除收藏的职位
+	/* wxapp: delete favorite */
+	function delfavjob_action()
 	{
 		$id		 		=	$_POST['ids'];
             
@@ -106,7 +106,7 @@ class job_controller extends user_controller{
         $data['msg']	=	$return['msg'];
 		$this->render_json($data['error'],$return['msg'],'');
 	}
-	/*wxapp面试通知记录*/
+	/* wxapp: interview notices */
 	function invitelist_action()
 	{
         $JobM				=	$this -> MODEL('job');
@@ -138,7 +138,7 @@ class job_controller extends user_controller{
 		$this->render_json(1,'',$data);
 	}
 	
-	/*wxapp面试邀请页面-面试通知详情页*/
+	/* wxapp: interview invite detail */
 	function inviteshow_action()
 	{
 		$id	   =  (int)$_POST['id'];
@@ -155,7 +155,7 @@ class job_controller extends user_controller{
         $data['list']		=	$info;
 		$this->render_json(1,'',$data['list']);
 	}
-	/*wxapp面试通知记录删除*/
+	/* wxapp: delete interview notice */
 	function invitedel_action()
 	{
 		$id				=	(int)$_POST['id'];
@@ -170,9 +170,7 @@ class job_controller extends user_controller{
 		$error	=	$return['errcode']==9 ? 1 : 2;
 		$this->render_json($error,$return['msg']);
 	}
-	/**
-     * wxapp 面试通知-同意、拒绝
-     */
+	
     function inviteset_action()
     {
         $id         =   (int)$_POST['id'];
@@ -192,7 +190,7 @@ class job_controller extends user_controller{
         $this->render_json($data['error'], $return['msg'], '');
     }
 
-	/*wxapp浏览记录*/
+	/* wxapp: browse history */
 	function look_job_action()
 	{
 		$JobM				=   $this -> MODEL('job');
@@ -221,8 +219,8 @@ class job_controller extends user_controller{
 		}
 		$this -> render_json($error,'',$data,$total);
 	}
-	/*wxapp浏览记录删除*/
-	function look_job_del_action()//删除职位浏览记录
+	/* wxapp: delete browse history */
+	function look_job_del_action()
 	{
 		$JobM   		=   $this -> MODEL('job');
 		$id 			=	(int)$_POST['ids'];
@@ -231,7 +229,7 @@ class job_controller extends user_controller{
 		$data['msg']	=	$return['msg'];
 		$this -> render_json($data['error'],$return['msg'],'');
 	}
-	/*wxapp相似职位*/
+	/* wxapp: similar jobs */
 	function like_job_action()
 	{
 		$data			=	array(
@@ -244,9 +242,7 @@ class job_controller extends user_controller{
 		$data			=	count($list) ? $list : array();
 		$this -> render_json(1,'',$data);
 	}
-	/**
-	 * 职位管理
-	 */
+	
 	function jobcolumn_action()
 	{
 	    

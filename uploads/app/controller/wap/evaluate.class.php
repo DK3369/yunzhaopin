@@ -167,7 +167,7 @@ class evaluate_controller extends common{
 		$this->yunset("headertitle",yun_auto_t('职业测评'));
 		$this->yuntpl(array('wap/evaluategradeshow'));
 	}
-	function create_uuid($prefix = "yun"){    //可以指定前缀
+	function create_uuid($prefix = "yun"){    // optional prefix
 		$str 	= 	md5(uniqid(mt_rand(), true));   
 		$uuid  	= 	substr($str,0,12);   
 		return $prefix.$uuid; 
