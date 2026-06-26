@@ -15,7 +15,7 @@ class weixin_model extends model{
 		
 		if($userBind['bindtype']=='1')
 		{
-			$Return['centerStr'] = yun_auto_t('<Content><![CDATA[您最新没有新的消息！]]></Content>');
+			$Return['centerStr'] = yun_at('weixin_00011');
 			
 		}else{
 
@@ -202,7 +202,7 @@ class weixin_model extends model{
 
 			}else{
 
-				$Return['centerStr'] =yun_auto_t('<Content><![CDATA[最近暂无报名]]></Content>');
+				$Return['centerStr'] = yun_at('weixin_00012');
 				$Return['MsgType']   = 'text';
 			}
 			
@@ -250,12 +250,12 @@ class weixin_model extends model{
 					$Return['centerStr'] = $this->Handle($List,$Msg);
 					$Return['MsgType']   = 'news';
 				}else{
-					$Return['centerStr']=yun_auto_t('<Content><![CDATA[已经很久没公司查看您的简历了！]]></Content>');
+					$Return['centerStr']=yun_at('weixin_00013');
 					$Return['MsgType']   = 'text';
 				}
 			}else{
 
-				$Return['centerStr']=yun_auto_t('<Content><![CDATA[已经很久没公司查看您的简历了！]]></Content>');
+				$Return['centerStr']=yun_at('weixin_00013');
 				$Return['MsgType']   = 'text';
 			}
 			return $Return;
@@ -279,11 +279,11 @@ class weixin_model extends model{
 			if($Resume>0)
 			{
 				$this->update_once('resume_expect', array('lastupdate' => time()), array('uid' => $userBind['uid']));
-				$Return['centerStr']=yun_auto_t('<Content><![CDATA[简历刷新成功\n刷新时间:').date('Y-m-d H:i:s')."]]></Content>";
+				$Return['centerStr']=yun_at('weixin_00014').date('Y-m-d H:i:s').yun_at('weixin_00015');
 
 			}else{
 
-				$Return['centerStr']=yun_auto_t('<Content><![CDATA[请先完善您的简历！]]></Content>');
+				$Return['centerStr']=yun_at('weixin_00016');
 				
 			}
 		}else{
@@ -521,7 +521,7 @@ class weixin_model extends model{
 				$Info['url'] = Url("wap",array('c'=>'job','a'=>'comapply','id'=>$value['id']));
 				$List[]     = $Info;
 			}
-			$Msg['title'] = yun_at('common_01792').$keyword. 'common_01438';
+			$Msg['title'] = yun_at('common_01792').$keyword. yun_at('common_01438');
 			$Msg['pic']	= checkpic($value['com_logo'],$this->config['sy_wx_logo']);
 			$Msg['url'] = Url('wap',array('c'=>'job','keyword'=>urlencode($keyword)));
 			$Return['centerStr'] = $this->Handle($List,$Msg);
@@ -531,7 +531,7 @@ class weixin_model extends model{
 		        $Return['centerStr'] = '<Content><![CDATA['.$this->config['wx_search_no'].']]></Content>';
 		    }else{
 		        
-		        $Return['centerStr'] = yun_auto_t('<Content><![CDATA[未找到合适的职位！]]></Content>');
+		        $Return['centerStr'] = yun_at('weixin_00017');
 		    }
 			$Return['MsgType']   = 'text';
 		}
@@ -547,7 +547,7 @@ class weixin_model extends model{
 			$jobInfo = $this -> select_once("company_job",array('id'=>$jobid));
 			if(is_array($jobInfo) && !empty($jobInfo)){
 			
-				$Msg['title'] = yun_auto_t('招聘:').$jobInfo['name']." - ".$jobInfo['com_name'];
+				$Msg['title'] = yun_at('weixin_00018').$jobInfo['name']." - ".$jobInfo['com_name'];
 				$Msg['desc']  = strip_tags($jobInfo['description']);
 				$Msg['pic']	  = checkpic($jobInfo['com_logo'],$this->config['sy_wx_sharelogo']);
 				$Msg['url']   = Url('wap',array('c'=>'job','a'=>'comapply','id'=>$jobInfo['id']));
@@ -579,7 +579,7 @@ class weixin_model extends model{
 				$expect		=   $expectM -> getExpect(array('id'=>$resInfo['id']),array('needCache'=>1));
 				$sex		=	$expect['sex'] == '1' ? yun_at('common_02092') : yun_at('common_02069');
 				$Msg['title'] = yun_at('resume_00006').$resInfo['name'];
-				$Msg['desc']  = yun_auto_t('性别:').$sex."，学历:".$expect['edu_n']."，工作经验:".$expect['exp_n'].'common_06655'.$expect['salary'].'common_01318'.$expect['city_classname'];
+				$Msg['desc']  = yun_at('weixin_00019').$sex.yun_at('weixin_00020').$expect['edu_n'].yun_at('weixin_00021').$expect['exp_n'].yun_at('common_06655').$expect['salary'].yun_at('common_01318').$expect['city_classname'];
 				$Msg['pic']	  = checkpic($resInfo['photo'],$this->config['sy_wx_logo']);
 				$Msg['url']   = Url('wap',array('c'=>'resume','a'=>'show','id'=>$resInfo['id']));
 				
@@ -641,7 +641,7 @@ class weixin_model extends model{
             if (!empty($tel) || !empty($address)) {
                 $comurl = Url('wap', array('c' => 'company', 'a' => 'show', 'id' => $job['uid']));
                 $joburl = Url('wap', array('c' => 'job', 'a' => 'comapply', 'id' => $jobid));
-                $Return['centerStr'] = '<Content><![CDATA[' . yun_auto_t('企业：') . '<a href="' . $comurl . '">' . $com['name'] . "</a>\n" . yun_auto_t('职位：') . '<a href="' . $joburl . '">' . $job['name'] . '</a>';
+                $Return['centerStr'] = '<Content><![CDATA[' . yun_at('weixin_00022') . '<a href="' . $comurl . '">' . $com['name'] . "</a>\n" . yun_at('weixin_00023') . '<a href="' . $joburl . '">' . $job['name'] . '</a>';
                 if (!empty($linkman)) {
                     $Return['centerStr'] .= "\n" . yun_at('member_com_00310') . $linkman;
                 }
@@ -654,7 +654,7 @@ class weixin_model extends model{
 
                 $Return['centerStr'] .= ']]></Content>';
             } else {
-                $Return['centerStr'] = yun_auto_t('<Content><![CDATA[联系方式获取失败]]></Content>');
+                $Return['centerStr'] = yun_at('weixin_00024');
             }
             $Return['MsgType'] = 'text';
             return $Return;
@@ -669,20 +669,20 @@ class weixin_model extends model{
             if (!empty($tel) || !empty($address)) {
                 $comurl = Url('wap', array('c' => 'company', 'a' => 'show', 'id' => $part['uid']));
                 $joburl = Url('wap', array('c' => 'part', 'a' => 'show', 'id' => $partid));
-                $Return['centerStr'] = '<Content><![CDATA[' . yun_auto_t('企业：') . '<a href="' . $comurl . '">' . $part['com_name'] . "</a>\n" . yun_auto_t('兼职：') . '<a href="' . $joburl . '">' . $part['name'] . '</a>';
+                $Return['centerStr'] = '<Content><![CDATA[' . yun_at('weixin_00022') . '<a href="' . $comurl . '">' . $part['com_name'] . "</a>\n" . yun_at('weixin_00025') . '<a href="' . $joburl . '">' . $part['name'] . '</a>';
                 if (!empty($linkman)) {
-                    $Return['centerStr'] .= 'member_com_00310' . $linkman;
+                    $Return['centerStr'] .= "\n" . yun_at('member_com_00310') . $linkman;
                 }
                 if (!empty($tel)) {
-                    $Return['centerStr'] .= 'wap_00361' . $tel;
+                    $Return['centerStr'] .= "\n" . yun_at('wap_00361') . $tel;
                 }
                 if (!empty($address)) {
-                    $Return['centerStr'] .= 'common_01899' . $address;
+                    $Return['centerStr'] .= "\n" . yun_at('common_01899') . $address;
                 }
 
                 $Return['centerStr'] .= ']]></Content>';
             } else {
-                $Return['centerStr'] = yun_auto_t('<Content><![CDATA[联系方式获取失败]]></Content>');
+                $Return['centerStr'] = yun_at('weixin_00024');
             }
             $Return['MsgType']   = 'text';
             return $Return;
@@ -693,20 +693,20 @@ class weixin_model extends model{
 		    
 		    if (!empty($com['linkphone']) || !empty($com['linktel'])){
 		        $tel = !empty($com['linkphone']) ? $com['linkphone'] : $com['linktel'];
-		        $Return['centerStr'] = yun_auto_t('<Content><![CDATA[企业：').$com['name'];
+		        $Return['centerStr'] = yun_at('weixin_00026').$com['name'];
 		        if (!empty($com['linkman'])){
-		            $Return['centerStr'] .= 'member_com_00310' . $com['linkman'];
+		            $Return['centerStr'] .= "\n" . yun_at('member_com_00310') . $com['linkman'];
 		        }
 		        if (!empty($com['linkphone']) || !empty($com['linktel'])){
-		            $Return['centerStr'] .= 'wap_00361' . $tel;
+		            $Return['centerStr'] .= "\n" . yun_at('wap_00361') . $tel;
 		        }
 		        if (!empty($com['address'])){
-		            $Return['centerStr'] .= 'common_01899' . $com['address'];
+		            $Return['centerStr'] .= "\n" . yun_at('common_01899') . $com['address'];
 		        }
 		        
-		        $Return['centerStr'] .=']]></Content>';
+		        $Return['centerStr'] .=yun_at('weixin_00015');
 		    }else{
-		        $Return['centerStr'] = yun_auto_t('<Content><![CDATA[联系方式获取失败]]></Content>');
+		        $Return['centerStr'] = yun_at('weixin_00024');
 		    }
 		    $Return['MsgType']   = 'text';
 		    return $Return;
@@ -717,7 +717,7 @@ class weixin_model extends model{
 		    $part = $this -> select_once('partjob',array('id'=>$partid),'id,uid,name,com_name,content');
 		    if(is_array($part) && !empty($part)){
 		        $com = $this -> select_once('company',array('uid'=>$part['uid']),'id,uid,name,com_name,content');
-		        $Msg['title'] = yun_auto_t('招聘:').$part['name']." - ".$part['com_name'];
+		        $Msg['title'] = yun_at('weixin_00018').$part['name']." - ".$part['com_name'];
 		        $Msg['desc']  = strip_tags($part['content']);
 		        $Msg['url']   = Url('wap',array('c'=>'part','a'=>'show','id'=>$part['id']));
 		        // 判断logo
@@ -770,7 +770,7 @@ class weixin_model extends model{
 			$Return['centerStr'] = $this->Handle(array(),$Msg);
 			$Return['MsgType']   = 'news';
 		}else{
-			$Return['centerStr'] = yun_auto_t('<Content><![CDATA[二维码已失效！]]></Content>');
+			$Return['centerStr'] = yun_at('weixin_00027');
 			$Return['MsgType']   = 'text';
 		}
 		return $Return;
@@ -942,17 +942,17 @@ class weixin_model extends model{
 			{
 				switch($usertype){
 					case '1':
-						$User['cenetrTpl'] = yun_auto_t('<Content><![CDATA[您的').$this->config['sy_webname'].'common_01909'.$User['username']."为企业帐号，请登录您的个人帐号进行绑定！ \n\n\n 您也可以<a href=\"".$urlLogin."\">点击这里</a>进行绑定其他帐号]]></Content>";
+						$User['cenetrTpl'] = yun_at('weixin_00029', array($this->config['sy_webname'], yun_at('common_01909'), $User['username'], $urlLogin));
 					break;
 					case '2':
-						$User['cenetrTpl'] = yun_auto_t('<Content><![CDATA[您的').$this->config['sy_webname'].'common_01909'.$User['username']."为个人帐号，请登录您的企业帐号进行绑定！ \n\n\n 您可以<a href=\"".$urlLogin."\">点击这里</a>进行解绑定其他帐号]]></Content>";
+						$User['cenetrTpl'] = yun_at('weixin_00030', array($this->config['sy_webname'], yun_at('common_01909'), $User['username'], $urlLogin));
 					break;
 
 				}
 				
 			}else{
 				$User['bindtype'] = '1';
-				$User['cenetrTpl'] = yun_auto_t('<Content><![CDATA[您的').$this->config['sy_webname'].'common_01909'.$User['username']."已成功绑定！ \n\n\n 您也可以<a href=\"".$urlLogin."\">点击这里</a>进行解绑或绑定其他帐号]]></Content>";
+				$User['cenetrTpl'] = yun_at('weixin_00031', array($this->config['sy_webname'], yun_at('common_01909'), $User['username'], $urlLogin));
 			}
 			
 		}else{
@@ -989,7 +989,7 @@ class weixin_model extends model{
 			$Return['MsgType']   = 'news';
 			
 		}else{
-			$Return['centerStr'] =yun_auto_t('<Content><![CDATA[没有合适的职位！]]></Content>');
+			$Return['centerStr'] =yun_at('weixin_00028');
 			$Return['MsgType']   = 'text';
 		}
 		
