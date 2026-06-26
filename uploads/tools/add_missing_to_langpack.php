@@ -1,12 +1,20 @@
 <?php
 /**
  * Add missing i18n entries to zh_cn.php / en_us.php
- * Usage: php tools/add_missing_to_langpack.php [--dry-run]
+ * Usage: php tools/add_missing_to_langpack.php [--dry-run] [--allow-full]
+ *
+ * Full batch write disabled unless --allow-full is passed.
  */
 define('ROOT', dirname(__DIR__) . '/');
 define('DATA_PATH', ROOT . 'data/');
 
 $dryRun = in_array('--dry-run', $argv ?? array(), true);
+$allowFull = in_array('--allow-full', $argv ?? array(), true);
+
+if (!$dryRun && !$allowFull) {
+    fwrite(STDERR, "ERROR: Full batch add disabled. Use --dry-run to preview or --allow-full to override.\n");
+    exit(1);
+}
 
 $zhFile = DATA_PATH . 'lang/auto/zh_cn.php';
 $enFile = DATA_PATH . 'lang/auto/en_us.php';

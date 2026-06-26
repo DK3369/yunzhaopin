@@ -203,7 +203,7 @@ class com_controller extends wap_controller
 			$data['url']	=	$_SERVER['HTTP_REFERER'];
 			$this	->	yunset("layer",$data);
 		}
-		$this	->	yunset('header_title',yun_auto_t('订单确认'));
+		$this	->	yunset('header_title',yun_at('wap_com_00430'));
 		$this	->	waptpl('payment');
 	}
 
@@ -364,7 +364,7 @@ class com_controller extends wap_controller
             $backurl = Url('wap',array('c'=>'ident'),'member');
             $this->yunset('backurl',$backurl);
         }
-		$this->yunset('header_title',yun_auto_t('社交账号绑定'));
+		$this->yunset('header_title',yun_at('wap_user_00379'));
 		$this->waptpl('binding');
 	}
 
@@ -377,7 +377,7 @@ class com_controller extends wap_controller
 	        $backurl = Url('wap', array('c' => 'ident'), 'member');
 	        $this->yunset('backurl', $backurl);
 	    }
-        $this->yunset('header_title', yun_auto_t('账户绑定'));
+        $this->yunset('header_title', yun_at('wap_com_00431'));
         $this->waptpl('bindingbox');
     }
 
@@ -590,7 +590,7 @@ class com_controller extends wap_controller
      */
     function server_action(){
 
-        $this->yunset('header_title', yun_auto_t('优选服务'));
+        $this->yunset('header_title', yun_at('wap_com_00432'));
         $this->waptpl('server');
     }
 
@@ -601,7 +601,7 @@ class com_controller extends wap_controller
 
 		$backurl	=   Url('wap',array('c'=>'set'), 'member');
 		$this -> yunset('backurl', $backurl);
-		$this -> yunset('header_title', yun_auto_t('管理邀请模板'));
+		$this -> yunset('header_title', yun_at('wap_com_00433'));
 		$this -> waptpl('yqmb');
 	}
 
@@ -612,7 +612,7 @@ class com_controller extends wap_controller
 
 		$backurl	=   Url('wap',array('c' => 'yqmb'), 'member');
 		$this -> yunset('backurl', $backurl);
-		$this -> yunset('header_title', yun_auto_t('创建修改模板'));
+		$this -> yunset('header_title', yun_at('wap_com_00434'));
 		$this -> waptpl('yqmbedit');
 	}
 

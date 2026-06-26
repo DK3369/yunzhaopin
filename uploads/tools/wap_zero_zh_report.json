@@ -1,8 +1,8 @@
 {
-    "generated": "2026-06-26T22:47:37+08:00",
+    "generated": "2026-06-26T22:54:36+08:00",
     "summary": {
         "enum_hub": 25,
-        "i18n_wrapped": 58,
+        "i18n_wrapped": 43,
         "comment": 6
     },
     "files": {
@@ -24,10 +24,7 @@
         "app\/controller\/wap\/qqconnect.class.php": 4,
         "app\/controller\/wap\/register.class.php": 1,
         "app\/controller\/wap\/upload.class.php": 1,
-        "app\/controller\/wap\/wxconnect.class.php": 3,
-        "wap\/member\/model\/com.class.php": 6,
-        "wap\/member\/model\/index.class.php": 7,
-        "wap\/member\/wap.controller.php": 2
+        "app\/controller\/wap\/wxconnect.class.php": 3
     },
     "hits": [
         {
@@ -473,96 +470,6 @@
             "line": 175,
             "category": "i18n_wrapped",
             "text": "                                $logDetail  =   yun_auto_t('H5微信绑定');"
-        },
-        {
-            "file": "wap\/member\/model\/com.class.php",
-            "line": 206,
-            "category": "i18n_wrapped",
-            "text": "\t\t$this\t->\tyunset('header_title',yun_auto_t('订单确认'));"
-        },
-        {
-            "file": "wap\/member\/model\/com.class.php",
-            "line": 367,
-            "category": "i18n_wrapped",
-            "text": "\t\t$this->yunset('header_title',yun_auto_t('社交账号绑定'));"
-        },
-        {
-            "file": "wap\/member\/model\/com.class.php",
-            "line": 380,
-            "category": "i18n_wrapped",
-            "text": "        $this->yunset('header_title', yun_auto_t('账户绑定'));"
-        },
-        {
-            "file": "wap\/member\/model\/com.class.php",
-            "line": 593,
-            "category": "i18n_wrapped",
-            "text": "        $this->yunset('header_title', yun_auto_t('优选服务'));"
-        },
-        {
-            "file": "wap\/member\/model\/com.class.php",
-            "line": 604,
-            "category": "i18n_wrapped",
-            "text": "\t\t$this -> yunset('header_title', yun_auto_t('管理邀请模板'));"
-        },
-        {
-            "file": "wap\/member\/model\/com.class.php",
-            "line": 615,
-            "category": "i18n_wrapped",
-            "text": "\t\t$this -> yunset('header_title', yun_auto_t('创建修改模板'));"
-        },
-        {
-            "file": "wap\/member\/model\/index.class.php",
-            "line": 17,
-            "category": "i18n_wrapped",
-            "text": "\t\t    $this->ACT_msg_wap(Url('wap', array('c' => 'info'), 'member'), yun_auto_t('请先完善个人资料'), 2, 3);"
-        },
-        {
-            "file": "wap\/member\/model\/index.class.php",
-            "line": 126,
-            "category": "i18n_wrapped",
-            "text": "\t\t$this -> yunset('headertitle',yun_auto_t('面试详情'));"
-        },
-        {
-            "file": "wap\/member\/model\/index.class.php",
-            "line": 186,
-            "category": "i18n_wrapped",
-            "text": "\t\t$this->yunset('headertitle',yun_auto_t('意向职位修改'));"
-        },
-        {
-            "file": "wap\/member\/model\/index.class.php",
-            "line": 190,
-            "category": "i18n_wrapped",
-            "text": "\t\t$this->yunset('headertitle',yun_auto_t('发布成功'));"
-        },
-        {
-            "file": "wap\/member\/model\/index.class.php",
-            "line": 204,
-            "category": "i18n_wrapped",
-            "text": "        $this->yunset('headertitle',yun_auto_t('优化简历'));"
-        },
-        {
-            "file": "wap\/member\/model\/index.class.php",
-            "line": 221,
-            "category": "i18n_wrapped",
-            "text": "\t\t$this->yunset('headertitle',yun_auto_t('社交账号绑定'));"
-        },
-        {
-            "file": "wap\/member\/model\/index.class.php",
-            "line": 226,
-            "category": "i18n_wrapped",
-            "text": "\t\t$this->yunset('headertitle',yun_auto_t('身份证认证'));"
-        },
-        {
-            "file": "wap\/member\/wap.controller.php",
-            "line": 30,
-            "category": "i18n_wrapped",
-            "text": "                        $this->yunset(\"remind\", array('info' => yun_at('member_user_00615'), 'url' => 'index.php?c=addresume', 'btn' => yun_auto_t('立即创建')));"
-        },
-        {
-            "file": "wap\/member\/wap.controller.php",
-            "line": 58,
-            "category": "i18n_wrapped",
-            "text": "                        $this->yunset(\"remind\", array('info' => yun_auto_t('请先完善信息！'), 'url' => 'index.php?c=info', 'btn' => yun_at('wap_user_00117')));"
         }
     ]
 }

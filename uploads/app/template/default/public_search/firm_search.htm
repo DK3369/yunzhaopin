@@ -1,6 +1,6 @@
 <div class="firm_search_box">
 	<div class="firm_search_boxbor">
-		<form method="get" name="myform" onsubmit="return search_keyword(this,'请输入关键字');" action="{yun:}if !$config.sy_companydir{/yun}index.php{yun:}else{/yun}{yun:}url m=company{/yun}{yun:}/if{/yun}"> 
+		<form method="get" name="myform" onsubmit="return search_keyword(this,'{yun:}t key='admin_system_00198'{/yun}');" action="{yun:}if !$config.sy_companydir{/yun}index.php{yun:}else{/yun}{yun:}url m=company{/yun}{yun:}/if{/yun}"> 
 			<input class="firm_search_text" id="ipt" type="text" placeholder='{yun:}t key='admin_system_00198'{/yun}' value="{yun:}if $getinfo.keyword!=" ="{/yun}{yun:}$getinfo.keyword{/yun}{yun:}else{/yun}{yun:}t key='admin_system_00198'{/yun}{yun:}/if{/yun}" name="keyword" onclick="if(this.value=='{yun:}t key='admin_system_00198'{/yun}'){this.value=''}" onblur="if(this.value==''){this.value='{yun:}t key='admin_system_00198'{/yun}'}" />
 			<input type="hidden" name="cityid" id="cityid" value="{yun:}if $smarty.get.cityid{/yun}{yun:}$smarty.get.cityid{/yun}{yun:}/if{/yun}"/>
 			<input class="firm_search_submit yun_bg_color" type="submit" value="{yun:}t key='common.search'{/yun} " />

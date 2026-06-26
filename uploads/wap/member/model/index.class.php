@@ -14,7 +14,7 @@ class index_controller extends wap_controller{
 
 		if (! $isresume['name']) {
 
-		    $this->ACT_msg_wap(Url('wap', array('c' => 'info'), 'member'), yun_auto_t('请先完善个人资料'), 2, 3);
+		    $this->ACT_msg_wap(Url('wap', array('c' => 'info'), 'member'), yun_at('wap_user_00374'), 2, 3);
 		}
 	}
 
@@ -123,7 +123,7 @@ class index_controller extends wap_controller{
 	}
 	function invitecont_action(){
 
-		$this -> yunset('headertitle',yun_auto_t('面试详情'));
+		$this -> yunset('headertitle',yun_at('wap_user_00375'));
 		$this -> waptpl('invitecont');
 	}
 
@@ -183,11 +183,11 @@ class index_controller extends wap_controller{
         
         $this -> yunset($cache);
         
-		$this->yunset('headertitle',yun_auto_t('意向职位修改'));
+		$this->yunset('headertitle',yun_at('wap_user_00376'));
 		$this->waptpl('addexpect');
 	}
 	function rcomplete_action(){
-		$this->yunset('headertitle',yun_auto_t('发布成功'));
+		$this->yunset('headertitle',yun_at('wap_user_00377'));
 		$backurl	=	Url('wap',array(),'member');
 		$this->yunset('backurl',$backurl);
         $this->yunset('url',Url('wap',array('c'=>'resume','a'=>'show','id'=>$_GET['id'])));
@@ -201,7 +201,7 @@ class index_controller extends wap_controller{
 		$this->waptpl('resume');
 	}
 	function optimize_action(){
-        $this->yunset('headertitle',yun_auto_t('优化简历'));
+        $this->yunset('headertitle',yun_at('wap_user_00378'));
         
         if (isset($_GET['add'])){
             $backurl  =  Url('wap',array(),'member');
@@ -218,12 +218,12 @@ class index_controller extends wap_controller{
 	function binding_action()
 	{
 
-		$this->yunset('headertitle',yun_auto_t('社交账号绑定'));
+		$this->yunset('headertitle',yun_at('wap_user_00379'));
 		$this->yunset("backurl",Url('wap',array('c'=>'ident'),'member'));
 		$this->waptpl('binding');
 	}
 	function idcard_action(){
-		$this->yunset('headertitle',yun_auto_t('身份证认证'));
+		$this->yunset('headertitle',yun_at('wap_user_00380'));
 
 		$backurl	=	Url('wap',array('c'=>'ident'),'member');
 		$this->yunset('backurl',$backurl);

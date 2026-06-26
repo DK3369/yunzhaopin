@@ -147,6 +147,29 @@ function fixLine($line)
     return $line;
 }
 
+function shouldSkipPath($rel)
+{
+    $skipPrefixes = array(
+        'app/include/libs/',
+        'app/include/tecentcode/',
+        'js/ueditor/',
+        'js/mui/',
+        'data/lang/',
+    );
+    foreach ($skipPrefixes as $prefix) {
+        if (strpos($rel, $prefix) === 0) {
+            return true;
+        }
+    }
+    if (preg_match('/\.min\.(js|php)$/i', $rel)) {
+        return true;
+    }
+    if (preg_match('/vendor|PHPExcel|aliyun|install|smarty/i', $rel)) {
+        return true;
+    }
+    return false;
+}
+
 function fixBareZhDirs(array $dirs, array $skipFiles = array())
 {
     $changed = 0;
@@ -164,7 +187,7 @@ function fixBareZhDirs(array $dirs, array $skipFiles = array())
             if (in_array($rel, $skipFiles, true)) {
                 continue;
             }
-            if (preg_match('/vendor|PHPExcel|aliyun|install/i', $rel)) {
+            if (shouldSkipPath($rel)) {
                 continue;
             }
             $lines = file($f->getPathname());

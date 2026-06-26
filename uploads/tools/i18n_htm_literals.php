@@ -4,13 +4,23 @@
  * using existing language packs (data/lang/auto + data/lang/zh_cn.php).
  *
  * Usage:
- *   php tools/i18n_htm_literals.php [--dry-run] [--file=path]
+ *   php tools/i18n_htm_literals.php [--dry-run] --file=path
+ *
+ * Full-site batch disabled without --file=.
  */
 define('ROOT', dirname(__DIR__) . '/');
 $dryRun = in_array('--dry-run', $argv ?? array(), true);
 $singleFile = '';
 foreach ($argv ?? array() as $arg) {
-    if (preg_match('/^--file=(.+)$/', $arg, $m)) $singleFile = $m[1];
+    if (preg_match('/^--file=(.+)$/', $arg, $m)) {
+        $singleFile = $m[1];
+    }
+}
+
+if ($singleFile === '') {
+    fwrite(STDERR, "ERROR: --file= is required (full-site batch disabled).\n");
+    fwrite(STDERR, "Example: php tools/i18n_htm_literals.php --file=app/template/default/login/index.htm\n");
+    exit(1);
 }
 
 $zhAuto = include ROOT . 'data/lang/auto/zh_cn.php';

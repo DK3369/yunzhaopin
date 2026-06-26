@@ -27,7 +27,7 @@ class wap_controller extends common
                     if ($expectnum < 1) {
 
                         $this->yunset('header_title', yun_at('wap_user_00197'));
-                        $this->yunset("remind", array('info' => yun_at('member_user_00615'), 'url' => 'index.php?c=addresume', 'btn' => yun_auto_t('立即创建')));
+                        $this->yunset("remind", array('info' => yun_at('member_user_00615'), 'url' => 'index.php?c=addresume', 'btn' => yun_at('wap_user_00372')));
                         $this->yuntpl(array('wap/member/user/addresume'));
                     }
                 }
@@ -55,7 +55,7 @@ class wap_controller extends common
                     if (!$this->comInfo['info']['name'] || !$this->comInfo['info']['provinceid'] || !$this->comInfo['info']['linktel']) {
 
                         $this->yunset('header_title', yun_at('wap_00456'));
-                        $this->yunset("remind", array('info' => yun_auto_t('请先完善信息！'), 'url' => 'index.php?c=info', 'btn' => yun_at('wap_user_00117')));
+                        $this->yunset("remind", array('info' => yun_at('wap_user_00373'), 'url' => 'index.php?c=info', 'btn' => yun_at('wap_user_00117')));
                         $this->yuntpl(array('wap/member/com/info'));
                     }
                 } elseif (!$this->comInfo['info']['uid']) {

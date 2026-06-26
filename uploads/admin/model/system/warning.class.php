@@ -1,6 +1,4 @@
 <?php
-/**
-
 
 class warning_controller extends adminCommon
 {

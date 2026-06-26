@@ -1,10 +1,26 @@
 <?php
 /**
  * Replace Chinese string literals with lang pack keys in PHP source.
- * Usage: php tools/replace_chinese_literals.php [--dry-run]
+ * Usage: php tools/replace_chinese_literals.php [--dry-run] --dir=path
+ *
+ * Full-site batch disabled without --dir=.
  */
 define('ROOT', dirname(__DIR__) . '/');
 $dryRun = in_array('--dry-run', $argv ?? array(), true);
+$dirArg = '';
+foreach ($argv ?? array() as $arg) {
+    if (preg_match('/^--dir=(.+)$/', $arg, $m)) {
+        $dirArg = trim($m[1], '/');
+    }
+}
+
+if ($dirArg === '') {
+    fwrite(STDERR, "ERROR: --dir= is required (full-site batch disabled).\n");
+    fwrite(STDERR, "Example: php tools/replace_chinese_literals.php --dir=wap/member\n");
+    exit(1);
+}
+
+require_once __DIR__ . '/fix_bare_zh_core.php';
 
 $zh = include ROOT . 'data/lang/auto/zh_cn.php';
 $valueToKeys = array();
@@ -141,20 +157,25 @@ function transformFile($rel, $content, &$replaced, &$missing)
     return $out;
 }
 
-$dirs = array('app', 'admin', 'member', 'api/wxapp', 'wap');
-$skipPattern = '/vendor|PHPExcel|install\/|data\/lang|tools\/|dbbackup|function\.queryinfo\.php|function\.querytime\.php|aliyun|webscan|umeditor|wangeditor|PHPWord|tcpdf|ueditor|lib_splitword|mysql\.class|mysqli\.class/i';
+$dirs = array($dirArg);
+$skipPattern = '/vendor|PHPExcel|install\/|data\/lang|tools\/|dbbackup|function\.queryinfo\.php|function\.querytime\.php|aliyun|webscan|umeditor|wangeditor|PHPWord|tcpdf|ueditor|lib_splitword|mysql\.class|mysqli\.class|app\/include\/libs|tecentcode/i';
 $replaced = 0;
 $missing = array();
 $filesChanged = 0;
 
 foreach ($dirs as $dir) {
     $path = ROOT . $dir;
-    if (!is_dir($path)) continue;
+    if (!is_dir($path)) {
+        fwrite(STDERR, "Directory not found: $dir\n");
+        exit(1);
+    }
     $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
     foreach ($it as $f) {
         if (!$f->isFile() || $f->getExtension() !== 'php') continue;
         $rel = str_replace(ROOT, '', $f->getPathname());
-        if (preg_match($skipPattern, $rel)) continue;
+        if (preg_match($skipPattern, $rel) || shouldSkipPath($rel)) {
+            continue;
+        }
         $orig = file_get_contents($f->getPathname());
         if (!preg_match('/[\x{4e00}-\x{9fff}]/u', $orig)) continue;
         $new = transformFile($rel, $orig, $replaced, $missing);
