@@ -252,7 +252,7 @@ class info_controller extends com_controller{
             $oid	=	$companyM->delCompanyShow(is_array($_POST['id']) ? $_POST['id'] : explode(',', $_POST['id']),array('uid'=>$this->member['uid']));
 
             if($oid){
-                $logM->member_log("删除企业环境展示",16,3, $this->member['uid'], $this->member['usertype']);//会员日志
+                $logM->member_log(yun_auto_t('删除企业环境展示'),16,3, $this->member['uid'], $this->member['usertype']);//会员日志
 
                 $error	=	1;
                 $msg	=	yun_auto_t('删除成功');

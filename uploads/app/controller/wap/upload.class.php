@@ -264,22 +264,14 @@ class upload_controller extends common{
         return $return;
     }
 	/**
-	1.统计已经上传图片地方、上传文件地方， （搜索Upload_pic）
-	有哪些操作，验证了什么，保存了什么信息（文件路径），
-
-	前台：企业上传logo、上传企业执照照片、，个人上传简历照片，
-
-	2.把共用的验证逻辑写到上传类中，
-	
-	4.写一个手机端拍照/相册上传的页面
-
-	5.写一个生产二维码扫码上传的接口
-
-	6.pc端需要上传的地方，添加扫码上传的二维码展示
-
-	7. to do : 手机端上传成功，让pc端页面触发刷新（参考微信二维码付款，订单页面触发刷新）
-	
-	*/
+	 * Upload refactor notes (internal):
+	 * 1. Audit Upload_pic usages and saved file paths
+	 * 2. Move shared validation into upload model
+	 * 4. Mobile camera/album upload page
+	 * 5. QR scan upload API
+	 * 6. PC upload areas with QR helper
+	 * 7. TODO: refresh PC page after mobile upload completes
+	 */
 	function upCertPic_action(){
 		$UploadM		=	$this	->	MODEL('upload');
 

@@ -2,7 +2,7 @@
 
 class special_controller extends common{
 	function index_action(){
-		$this->yunset("headertitle","专题招聘");
+		$this->yunset("headertitle",yun_auto_t('专题招聘'));
 		$this->seo("spe_index");
 		$this->yuntpl(array('wap/spe_index'));
 	}
@@ -26,7 +26,7 @@ class special_controller extends common{
 		$this->data	=	array('spename'=>$info['title']);
 		$this->seo("spe_show");
 
-		$this->yunset("headertitle","专题详情页");
+		$this->yunset("headertitle",yun_auto_t('专题详情页'));
 
         if ($info['tpl'] == 'gl.htm'){
             // uid，

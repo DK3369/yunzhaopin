@@ -47,7 +47,7 @@ class advice_controller extends common{
      */
 	function sendmsg_action(){
 		$noticeM	=	$this->MODEL('notice');
-		$result		=	$noticeM->jycheck($_POST['authcode'],'意见反馈');
+		$result		=	$noticeM->jycheck($_POST['authcode'], WapDbEnum::CODE_WEB_FEEDBACK);
 		if(!empty($result)){
 			$this->layer_msg($result['msg'], 9, 0, '', 2, $result['error']);
 		}

@@ -14,17 +14,17 @@ class qqconnect_controller extends common
 
             if ($this->uid != "" && $this->username != "" && empty($code)) {
 
-                $this->ACT_msg_wap($this->config['sy_wapdomain'], $msg = "您已经登录了！");
+                $this->ACT_msg_wap($this->config['sy_wapdomain'], yun_auto_t('您已经登录了！'));
             }
         }
         if ($this->config['sy_qqlogin'] != "1") {
 
             if ((int)$_GET['login'] == "1") {
 
-                $this->ACT_msg_wap($this->config['sy_wapdomain'], $msg = "对不起，QQ绑定已关闭！", 2, 5);
+                $this->ACT_msg_wap($this->config['sy_wapdomain'], yun_auto_t('对不起，QQ绑定已关闭！'), 2, 5);
             } else {
 
-                $this->ACT_msg_wap($this->config['sy_wapdomain'], $msg = "对不起，QQ登录已关闭！", 2, 5);
+                $this->ACT_msg_wap($this->config['sy_wapdomain'], yun_auto_t('对不起，QQ登录已关闭！'), 2, 5);
             }
         }
         $this->seo('qqlogin');
@@ -138,7 +138,7 @@ class qqconnect_controller extends common
 
                         if ($logtime != $nowtime) {
 
-                            $this->MODEL('integral')->invtalCheck($userinfo['uid'], $userinfo['usertype'], "integral_login", "会员登录", 22);
+                            $this->MODEL('integral')->invtalCheck($userinfo['uid'], $userinfo['usertype'], "integral_login", WapDbEnum::INTEGRAL_LOGIN, 22);
                             // 
                             $logdata['uid']         =   $userinfo['uid'];
                             $logdata['usertype']    =   $userinfo['usertype'];
@@ -174,7 +174,7 @@ class qqconnect_controller extends common
                     $_SESSION['qq']["openid"]       =   $user->openid;
                     $_SESSION['qq']["unionid"]      =   $user->unionid;
                     $_SESSION['qq']["tooken"]       =   $params['access_token'];
-                    $_SESSION['qq']["logininfo"]    =   "您已登录QQ，请绑定您的帐户！";
+                    $_SESSION['qq']["logininfo"]    =   yun_auto_t('您已登录QQ，请绑定您的帐户！');
 
                     if ($this->uid) {
 
@@ -208,7 +208,7 @@ class qqconnect_controller extends common
                             $_SESSION['qq']['pic']      =   $user['figureurl_qq_2'];
                         } else {
 
-                            $this->ACT_msg_wap(Url("wap"), "用户信息获取失败，请重新登录QQ！", 2, 5);
+                            $this->ACT_msg_wap(Url("wap"), yun_auto_t('用户信息获取失败，请重新登录QQ！'), 2, 5);
                         }
 
                         $urlarr =   array('c' => 'qqconnect', 'a' => 'qqbind');
@@ -255,7 +255,7 @@ class qqconnect_controller extends common
             echo yun_json_encode($result);
         } else {
             $this->yunset('backurl', Url('wap'));
-            $this->yunset("headertitle", "QQ登录绑定");
+            $this->yunset("headertitle", yun_auto_t('QQ登录绑定'));
             $this->yunset('qqlogin');
             $this->yuntpl(array('wap/qqbind'));
         }
@@ -265,7 +265,7 @@ class qqconnect_controller extends common
     {
 
         $noticeM    =   $this->MODEL('notice');
-        $result     =   $noticeM->jycheck($_POST['authcode'], '前台登录');
+        $result     =   $noticeM->jycheck($_POST['authcode'], WapDbEnum::CODE_WEB_FRONT_LOGIN);
         if (!empty($result)) {
             $this->layer_msg($result['msg'], 9, 0, '', 2, $result['error']);
         }

@@ -12,7 +12,7 @@ class article_controller extends common{
 		    $this->yunset('newc',$newc);
 		    $this->yunset($this->MODEL('cache')->GetCache(array('group')));
 		}
-		$this->yunset("headertitle","职场资讯");
+		$this->yunset("headertitle",yun_auto_t('职场资讯'));
 		$this->yunset('backurl','index.php');
 		$this->seo("news");
 		$this->yuntpl(array('wap/article'));
@@ -34,7 +34,7 @@ class article_controller extends common{
 		}
         $info		= 	$articleM->getInfo($nwhere,array('iscon'=>1));
 		if($info['id']==''){
-			$this->ACT_msg_wap(Url("wap",array('c'=>"article")),"没有找到该文章！");
+			$this->ACT_msg_wap(Url("wap",array('c'=>"article")),yun_auto_t('没有找到该文章！'));
 		}
 		$this->yunset("Info",$info);
 		$class		=	$articleM->getGroup(array("id"=>$info['nid']));
@@ -93,7 +93,7 @@ class article_controller extends common{
 		$this->data				=	$data; 
 		$this->seo("news_article");
 		
-		$this->yunset("headertitle","职场资讯");
+		$this->yunset("headertitle",yun_auto_t('职场资讯'));
 		
 		$this->yuntpl(array('wap/article_show'));
 	}
@@ -111,7 +111,7 @@ class article_controller extends common{
 		}
 	    $this->seo("news");
 		
-	    $this->yunset("headertitle","频道管理");
+	    $this->yunset("headertitle",yun_auto_t('频道管理'));
 	    $this->yuntpl(array('wap/article_channels'));
 	}
 

@@ -3,10 +3,10 @@
 class site_controller extends common{
     function index_action(){
         if($this->config["sy_web_site"]!="1"){
-            $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], $msg = "暂未开启多站点模式！",2,5);
+            $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('暂未开启多站点模式！'),2,5);
         }
 
-        $this->yunset("headertitle","分站");
+        $this->yunset("headertitle",yun_auto_t('分站'));
         $this->seo("index");
         $this->yuntpl(array('wap/site'));
     }

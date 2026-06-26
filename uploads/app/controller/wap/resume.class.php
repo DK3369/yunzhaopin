@@ -132,8 +132,8 @@ class resume_controller extends common{
 		$recnum = $resumeM->getExpectNum(array('rec_resume'=>1,'defaults'=>1,'state'=>1,'r_status'=>1,'status'=>1));
 		$this->yunset("recnum", $recnum);
 
-		$this -> yunset('headertitle', '找人才');
-		$this -> yunset('topplaceholder', '请输入简历关键字,如：服务员...');
+		$this -> yunset('headertitle', yun_auto_t('找人才'));
+		$this -> yunset('topplaceholder', yun_auto_t('请输入简历关键字,如：服务员...'));
 		$this -> yuntpl(array('wap/resume'));
 	}
 
@@ -276,7 +276,7 @@ class resume_controller extends common{
 		$resumeCkeck		=	$resumeM->openResumeCheck($cData);
 		$this ->yunset('resumeCkeck',$resumeCkeck);
 		
-		/* 模糊字段 */
+		/* masked fields */
 		$this ->yunset('tj',$resume_expect['tj']);
 
 		$data['resume_username']	=	$resume_expect['username_n'];//简历人姓名
@@ -296,7 +296,7 @@ class resume_controller extends common{
         }
 		$this -> yunset('uid', $this->uid);
  		$this -> yunset('Info', $resume_expect);
-  		$this -> yunset('headertitle', '个人简历');
+  		$this -> yunset('headertitle', yun_auto_t('个人简历'));
 		if($this->config['sy_h5_share']==1){
 			$this -> yunset('shareurl', Url('wap',array('c'=>'resume','a'=>'share', 'id' => $id)));
 		}else{
@@ -324,7 +324,7 @@ class resume_controller extends common{
 		$cData['ruid']		=	$user['uid'];
 		$resumeCkeck		=	$ResumeM->openResumeCheck($cData);
 		$this ->yunset('resumeCkeck',$resumeCkeck);
-		/* 模糊字段 */
+		/* masked fields */
 		$this ->yunset('tj',$user['tj']);
 		$data['resume_username']	=	$user['username_n'];
 		$data['resume_city']		=	$user['city_one'].','.$user['city_two'];
@@ -430,7 +430,7 @@ class resume_controller extends common{
 		
 		    $this->yunset('backurl', Url('wap',array('c' => 'look_resume'),'member'));
 		}
-		$this -> yunset('headertitle', '面试邀请');
+		$this -> yunset('headertitle', yun_auto_t('面试邀请'));
 		$this -> yuntpl(array('wap/invite'));
 	}
 

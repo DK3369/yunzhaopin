@@ -21,7 +21,7 @@ class ask_controller extends common{
 		
 		$this->yunset('recom',$recom['recUser']);
 		
-		$this->yunset("headertitle","职场问答");
+		$this->yunset("headertitle",yun_auto_t('职场问答'));
 		
 		$this->seo('ask_index');
         $this->yunset("backurl",Url('wap'));
@@ -51,7 +51,7 @@ class ask_controller extends common{
 		}
 		$this->yunset("getinfo",$_GET);
 		
-		$this->yunset("headertitle","问答列表"); 
+		$this->yunset("headertitle",yun_auto_t('问答列表')); 
 		if($_GET['cid']){
 
 			$qclass = $M->getQclassInfo($_GET['cid'],array('field'=>"`pid`"));
@@ -167,7 +167,7 @@ class ask_controller extends common{
  		$this->yunset("userinfo",$Userinfo);
  		$this->yunset("myinfo",$myinfo); 
         $this->yunset(array("reason"=>$reason,"show"=>$show,"uid"=>$this->uid,"answer"=>$answer,"ask_title"=>$show['title'].' - '.$this->config['sy_webname'],"c"=>"index"));							
-		$this->yunset("headertitle","问题详细");
+		$this->yunset("headertitle",yun_auto_t('问题详细'));
 		$this->seo("ask_content");
 		//$this->yunset("backurl",Url('wap',array("c"=>'ask')));
 		$this->yuntpl(array('wap/askcontent'));
@@ -211,7 +211,7 @@ class ask_controller extends common{
 			
 			$this->yunset("my_atten",$my_atten);			
 		} 
-		$this->yunset("headertitle","职场话题");
+		$this->yunset("headertitle",yun_auto_t('职场话题'));
 
 		$data['ask_class_name'] = '';
 		
@@ -293,7 +293,7 @@ class ask_controller extends common{
 		$this->yunset("myuid",$uid);
 		// $this->yunset("backurl",Url('wap',array("c"=>'ask'))); // ，
 		$this->seo("myquestio");
-		$this->yunset("headertitle","个人主页");
+		$this->yunset("headertitle",yun_auto_t('个人主页'));
 		$this->yuntpl(array('wap/question'));
 	}
 	function delask_action(){
@@ -308,7 +308,7 @@ class ask_controller extends common{
 			
 				$result	=	$AskM -> delquestion($id,array('uid'=>$this -> uid));
 			}
-			$result?$this->layer_msg('操作成功！',9,0,$_SERVER['HTTP_REFERER']):$this->layer_msg('操作失败！',8,0,$_SERVER['HTTP_REFERER']);
+			$result?$this->layer_msg(yun_auto_t('操作成功！'),9,0,$_SERVER['HTTP_REFERER']):$this->layer_msg(yun_auto_t('操作失败！'),8,0,$_SERVER['HTTP_REFERER']);
 		}
 	}
 	function attention_action(){			
@@ -441,7 +441,7 @@ class ask_controller extends common{
 		
 		$this->yunset("backurl",Url('wap',array("c"=>'ask')));
 		
-		$this->yunset("headertitle","个人主页");
+		$this->yunset("headertitle",yun_auto_t('个人主页'));
 		
 		$this->yuntpl(array('wap/answer'));
 	}
@@ -531,7 +531,7 @@ class ask_controller extends common{
  		
  		
  		
-		$this->yunset("headertitle","个人主页");
+		$this->yunset("headertitle",yun_auto_t('个人主页'));
 		
 		$info=$M->getInfo(array('uid'=>(int)$_GET['uid']),array('field'=>'nickname'));
 		
@@ -567,7 +567,7 @@ class ask_controller extends common{
 			
 			$this->yunset("my_atten",$my_atten);			
 		} 		
-		$this->yunset("headertitle","一周热点");
+		$this->yunset("headertitle",yun_auto_t('一周热点'));
 		
 		$this->seo("ask_hot_week");
 		
@@ -583,7 +583,7 @@ class ask_controller extends common{
 		
 		$this->yunset($CacheList);
 		
-		$this->yunset("headertitle","发布问答");
+		$this->yunset("headertitle",yun_auto_t('发布问答'));
 		
 		$this->seo("ask_add_question");
 		

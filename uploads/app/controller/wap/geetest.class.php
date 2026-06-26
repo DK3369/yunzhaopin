@@ -19,9 +19,9 @@ class geetest_controller extends common{
 		$user_id = $str;
 
 		$data = array(
-				"user_id" => $user_id, # 网站用户id
-				"client_type" => "h5", #web:电脑上的浏览器；h5:手机上的浏览器
-				"ip_address" => "127.0.0.1" # 请在此处传输用户请求验证时所携带的IP
+				"user_id" => $user_id, // site user id
+				"client_type" => "h5", // web: desktop browser; h5: mobile browser
+				"ip_address" => "127.0.0.1" // client IP for captcha validation
 		);
 
 		$status = $GtSdk->pre_process($data, 1);

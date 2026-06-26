@@ -71,8 +71,8 @@ class company_controller extends common
 
         
         $this -> yunset('backurl', Url('wap'));
-        $this -> yunset('topplaceholder', '请输入企业关键字,如：有限公司...');
-        $this -> yunset('headertitle', '公司搜索');
+        $this -> yunset('topplaceholder', yun_auto_t('请输入企业关键字,如：有限公司...'));
+        $this -> yunset('headertitle', yun_auto_t('公司搜索'));
         $this -> yuntpl(array('wap/company'));
     }
 
@@ -173,7 +173,7 @@ class company_controller extends common
         $this -> data   =   $data;
         $this -> seo('company_index');
         
-        $this -> yunset('headertitle', '公司详情');
+        $this -> yunset('headertitle', yun_auto_t('公司详情'));
         if($this->config['sy_h5_share']==1){
 			$this -> yunset("shareurl", Url('wap', array('c' => 'company','a' => 'share','id' => $cuid)));
 		}else{

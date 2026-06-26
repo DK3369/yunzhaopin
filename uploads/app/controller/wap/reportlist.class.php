@@ -12,7 +12,7 @@ class reportlist_controller extends common{
         $cache      =   $cacheM -> GetCache(array('user'));
         $this       ->  yunset($cache);
         
-        $this -> yunset('headertitle', '举报');
+        $this -> yunset('headertitle', yun_auto_t('举报'));
         $this -> seo('report');
         $this -> yuntpl(array('wap/reportlist'));
     }
@@ -34,7 +34,7 @@ class reportlist_controller extends common{
             
             $this->layer_msg($result['msg'], $result['errcode']);
         }else{
-            $this->layer_msg('请先登录', 8);
+            $this->layer_msg(yun_auto_t('请先登录'), 8);
         }
     }
 }

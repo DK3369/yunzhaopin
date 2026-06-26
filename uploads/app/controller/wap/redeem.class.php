@@ -77,7 +77,7 @@ class redeem_controller extends common{
 		}
 		$row		=	$redeemM->getInfo(array("id"=>(int)$_GET['id']));
 		if($row['id']==''){
-			$this->ACT_msg_wap(Url('redeem'),"没有找到相关商品！",2,5);
+			$this->ACT_msg_wap(Url('redeem'),yun_auto_t('没有找到相关商品！'),2,5);
 		}
 		$this->yunset("row",$row);
 		
@@ -92,7 +92,7 @@ class redeem_controller extends common{
 	}
 	function dh_action(){
 		if(!$this->uid && !$this->username){
-		     $this->ACT_layer_msg('您还没有登录，请先登录！',8,$_SERVER['HTTP_REFERER']);
+		     $this->ACT_layer_msg(yun_auto_t('您还没有登录，请先登录！'),8,$_SERVER['HTTP_REFERER']);
 		}
 		$userinfoM		=	$this->MODEL("userinfo");
 		$redeemM	=	$this->MODEL("redeem");
@@ -133,16 +133,16 @@ class redeem_controller extends common{
 		
 		if(count($body)>2){
 			
-			$change['province']		=	str_replace("收货地址：",'', $body['0']);
+			$change['province']		=	str_replace(WapDbEnum::ADDR_PREFIX,'', $body['0']);
 			$change['city']			=	$body['1'];
 			$change['threecity']	=	$body['2'];
 			$change['address']		=	$body['3'];
-			$change['cityname']		=	str_replace("收货地址：",'', $body['0']).' '.$body['1'].' '.$body['2'];
+			$change['cityname']		=	str_replace(WapDbEnum::ADDR_PREFIX,'', $body['0']).' '.$body['1'].' '.$body['2'];
 			$change['body']			=	$change['cityname'].' '.$body['3'];
 			$this->yunset('change',$change);
 		}
 		
-		/*显示实付款*/
+		/* show actual payment */
 		$integral	=	$row['integral']*(int)$_GET['num'];
 		$this->yunset('integral',$integral);
 		

@@ -78,6 +78,7 @@ $db = new mysql($db_config['dbhost'], $db_config['dbuser'], $db_config['dbpass']
 
 include_once(LIB_PATH.'public.function.php');
 include_once(LIB_PATH.'i18n.class.php');
+include_once(LIB_PATH.'wap.enum.php');
 include_once(LIB_PATH.'public.domain.php');
 include(LIB_PATH.'public.url.php');
 

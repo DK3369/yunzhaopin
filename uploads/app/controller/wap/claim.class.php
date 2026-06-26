@@ -26,7 +26,7 @@ class claim_controller extends common
             } 
         }
 	
-		$this->yunset("headertitle","认领会员");
+		$this->yunset("headertitle",yun_auto_t('认领会员'));
 		
         $this -> seo('claim');
         $this -> yuntpl(array('wap/claim'));
@@ -69,7 +69,7 @@ class claim_controller extends common
 			$return	=	array(
 				
 				'errcode'	=>	$result ? 9 : 8,
-				'msg'		=>	$result	? '认领成功！' : '认领失败！',
+				'msg'		=>	$result	? yun_auto_t('认领成功！') : yun_auto_t('认领失败！'),
 			);
 			
 			echo yun_json_encode($return);die;

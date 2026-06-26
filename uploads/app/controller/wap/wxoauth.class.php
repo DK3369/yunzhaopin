@@ -60,13 +60,13 @@ class wxoauth_controller extends common{
                             // ，
                             $LogM       =   $this->MODEL('log');
                             $logDetail  =   yun_auto_t('授权登录：微信oauth登录成功');
-                            $LogM->addMemberLog($userinfo['uid'], $userinfo['usertype'], '账号登录：授权登录', 32, 1, $logDetail);
+                            $LogM->addMemberLog($userinfo['uid'], $userinfo['usertype'], yun_auto_t('账号登录：授权登录'), 32, 1, $logDetail);
 					        
 					        $logtime	=	date("Ymd",$userinfo['login_date']);
 					        $nowtime	=	date("Ymd",time());
 					        
 					        if($logtime!=$nowtime){
-					            $this->MODEL('integral')->invtalCheck($userinfo['uid'],$userinfo['usertype'],"integral_login","会员登录",22);
+					            $this->MODEL('integral')->invtalCheck($userinfo['uid'],$userinfo['usertype'],"integral_login", WapDbEnum::INTEGRAL_LOGIN,22);
 					            // 
 					            $logdata['uid']		  =	 $userinfo['uid'];
 					            $logdata['usertype']  =	 $userinfo['usertype'];

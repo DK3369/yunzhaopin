@@ -19,10 +19,10 @@ class announcement_controller extends common{
 			$this->data			=	$data;
 			$this->seo("announcement");
 
-			$this->yunset("headertitle","网站公告");
+			$this->yunset("headertitle",yun_auto_t('网站公告'));
 			$this->yuntpl(array('wap/announcements'));
 		}else{
-			$this->yunset("headertitle","网站公告");
+			$this->yunset("headertitle",yun_auto_t('网站公告'));
 	        $this->seo("announcement_index");
 			$this->yuntpl(array('wap/announcement'));
 		}

@@ -609,7 +609,7 @@ class job_controller extends com_controller
                     $job['reserve_status']     =   $rv['status'];
                     $job['reserve_interval']   =   $rv['interval'];
                     $job['reserve_start']      =   date('Y-m-d H:i:s', $rv['start_time']);
-                    $job['reserve_end']        =   $rv['end_time'] > 0 ? date('Y-m-d', $rv['end_time']) : '不限';
+                    $job['reserve_end']        =   $rv['end_time'] > 0 ? date('Y-m-d', $rv['end_time']) : WapDbEnum::UNLIMITED;
 
                     $job['s_time']             =   $rv['s_time'];
                     $job['e_time']             =   $rv['e_time'];

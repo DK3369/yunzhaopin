@@ -450,7 +450,7 @@ class resume_controller extends user_controller{
 			$return	=	$ResumeM->upResumeInfo(array('uid'=>$this->member['uid']),array('rData'=>$rData,'utype'=>'user','source'=>$_POST['source']));
 			
 			$data['error']	=	$return['errcode']==9 ? 1 : 2;
-			$data['msg']	=	$return['errcode']==9 ?"保存成功！":"保存失败！";
+			$data['msg']	=	$return['errcode']==9 ? yun_auto_t('保存成功！') : yun_auto_t('保存失败！');
 			$this->render_json($data['error'],$data['msg']);
 		}
 
@@ -459,7 +459,7 @@ class resume_controller extends user_controller{
 			if(!in_array($_POST['table'],array('expect','edu','exp','other','project','skill','training','work'))){
 				
 				$data['error']	=	2;
-				$data['msg']	=	"参数错误";
+				$data['msg']	=	yun_auto_t('参数错误');
 				$this->render_json($data['error'],$data['msg']);
 			} 
 			$table	=	"resume_".$_POST['table'];
@@ -648,7 +648,7 @@ class resume_controller extends user_controller{
 		$ResumeM				=	$this->MODEL('resume');
 		$nid					=   $ResumeM->upInfo($upexpectWhere, array('eData' => $upexpectData, 'port' => $this->port, 'sxlog' => 1));
 		$data['error']			=	$nid? 1 : 2;
-		$data['msg']			=	$nid? '刷新成功！' : '刷新失败！';
+		$data['msg']			=	$nid ? yun_auto_t('刷新成功！') : yun_auto_t('刷新失败！');
 		$this->render_json($data['error'],$data['msg']);
 	}
 	/*wxapp简历管理页面设置默认*/
@@ -680,7 +680,7 @@ class resume_controller extends user_controller{
             $logM->addMemberLog($this->member['uid'], 1, $logContent, 2, 2, $logDetail);
         }
         $data['error']  =   $return['errcode'] == 9 ? 1 : 2;
-        $data['msg']    =   $return['errcode'] == 9 ? '设置成功！' : '设置失败！';
+        $data['msg']    =   $return['errcode'] == 9 ? yun_auto_t('设置成功！') : yun_auto_t('设置失败！');
         $this->render_json($data['error'], $data['msg']);
 	}
 	/*wxapp简历管理页面删除*/

@@ -183,7 +183,7 @@ class set_controller extends com_controller
 			if($error==1){
                 $msg    =   yun_auto_t('更新成功！');
 			}else{
-			    $msg    =   !empty($err['msg']) ? $err['msg'] : '更新失败！';
+			    $msg    =   !empty($err['msg']) ? $err['msg'] : yun_auto_t('更新失败！');
 			}
 		}
 		$this->render_json($error,$msg);
@@ -728,14 +728,14 @@ class set_controller extends com_controller
 
             $linkData['id'] =   $_POST['id'];
             $linkData['uid']=   $this->member['uid'];
-            $msg            =   $result ? '工作地址更新成功' : '工作地址更新失败';
+            $msg            =   $result ? yun_auto_t('工作地址更新成功') : yun_auto_t('工作地址更新失败');
         }else{
 
             $linkData['uid']=   $this->member['uid'];
             $result         =   $addressM->saveAddress($linkData, array('uid' => $this->member['uid']));
 
             $linkData['id'] =   $result;
-            $msg            =   $result ? '工作地址添加成功' : '工作地址添加失败';
+            $msg            =   $result ? yun_auto_t('工作地址添加成功') : yun_auto_t('工作地址添加失败');
         }
 
         if ($result){

@@ -37,7 +37,7 @@ class part_controller extends common
         $this->yunset('backurl', Url('wap'));
         $this->seo('part_index');
         $this->yunset('topplaceholder', yun_auto_t('请输入关键字'));
-        $this->yunset('headertitle', "兼职");
+        $this->yunset('headertitle', yun_auto_t('兼职'));
         $this->yuntpl(array('wap/part'));
     }
 

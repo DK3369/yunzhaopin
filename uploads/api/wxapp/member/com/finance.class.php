@@ -376,7 +376,7 @@ class finance_controller extends com_controller
 		$where		=	array(
 			'com_id'		=>	$this->member['uid'],
 			'usertype'		=>	2,
-			'pay_remark'	=>	array('like','转换'.$this->config['integral_pricename'])
+			'pay_remark'	=>	array('like',yun_auto_t('转换').$this->config['integral_pricename'])
 		);
 		$where['pay_time'][] = array('>',strtotime('today'));
 		$where['pay_time'][] = array('<',strtotime('tomorrow'));

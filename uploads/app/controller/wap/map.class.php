@@ -280,7 +280,7 @@ class map_controller extends common
     function jobmap_action()
     {
         $this -> get_moblie();
-        $this -> yunset('headertitle', '企业位置');
+        $this -> yunset('headertitle', yun_auto_t('企业位置'));
         
         $comid  =   intval($_GET['id']);
         

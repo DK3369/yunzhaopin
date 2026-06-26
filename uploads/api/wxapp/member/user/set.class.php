@@ -228,7 +228,7 @@ class set_controller extends user_controller
 
                 $result = $noticeM->jycheck($_POST['code'], '');
                 if (!empty($result)) {
-                    $this->render_json($result['error'], "图片验证码错误");
+                    $this->render_json($result['error'], yun_auto_t('图片验证码错误'));
                 }
             }
           	if($Info){

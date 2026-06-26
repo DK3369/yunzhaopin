@@ -37,11 +37,19 @@ class tiny_controller extends common{
         }
         $this->yunset("isFb",$isFb);
         $this->yunset("num",$num);
-		$adtime	=	array("0"=>"不限","7"=>"一周以内","15"=>"半个月","30"=>"一个月","60"=>"两个月","180"=>"半年","365"=>"一年");
+		$adtime	=	array(
+			"0" => yun_auto_t(WapDbEnum::UNLIMITED),
+			"7" => yun_auto_t('一周以内'),
+			"15" => yun_auto_t('半个月'),
+			"30" => yun_auto_t('一个月'),
+			"60" => yun_auto_t('两个月'),
+			"180" => yun_auto_t('半年'),
+			"365" => yun_auto_t('一年')
+		);
 		$this->yunset("adtime",$adtime);
 		$this->seo("tiny");
-		$this->yunset("topplaceholder","请输入关键字如：普工");
-		$this->yunset("headertitle","普工专区");
+		$this->yunset("topplaceholder",yun_auto_t('请输入关键字如：普工'));
+		$this->yunset("headertitle",yun_auto_t('普工专区'));
 		$this->yuntpl(array('wap/tiny'));
 	}
 	function ajax_action(){
@@ -62,7 +70,7 @@ class tiny_controller extends common{
     // 
     function sendmsg_action(){
         $noticeM	=	$this->MODEL('notice');
-        $result		=	$noticeM->jycheck($_POST['authcode'],'普工简历');
+        $result		=	$noticeM->jycheck($_POST['authcode'], WapDbEnum::CODE_WEB_TINY_RESUME);
         if(!empty($result)){
             echo yun_json_encode(array('msg'=>$result['msg'],'error'=>$result['error']));
             return;
@@ -135,8 +143,8 @@ class tiny_controller extends common{
 		} 
 		$this->yunset($this->MODEL('cache')->GetCache(array('user')));
 		
-		$this->yunset("headertitle","普工专区");
-		$this->yunset("title","添加普工简历");
+		$this->yunset("headertitle",yun_auto_t('普工专区'));
+		$this->yunset("title",yun_auto_t('添加普工简历'));
 		$this->yuntpl(array('wap/tiny_add'));
 	}
 	function show_action(){
@@ -159,7 +167,7 @@ class tiny_controller extends common{
 		$this->seo('tiny_cont');
 		
 		$this->get_moblie();
-		$this->yunset("headertitle","普工专区");
+		$this->yunset("headertitle",yun_auto_t('普工专区'));
 		$this->yuntpl(array('wap/tiny_show'));
 	}
 }

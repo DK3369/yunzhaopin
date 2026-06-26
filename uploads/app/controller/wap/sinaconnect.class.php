@@ -42,7 +42,7 @@ class sinaconnect_controller extends common
         if ($this->config['sy_sinalogin'] != "1") {
             if ((int)$_GET['login'] == "1") {
 
-                $this->actMsg($msgUrl, "对不起，新浪登录已关闭！");
+                $this->actMsg($msgUrl, yun_auto_t('对不起，新浪登录已关闭！'));
             }
         }
         include_once(APP_PATH . 'api/weibo/saetv2.ex.class.php');
@@ -104,7 +104,7 @@ class sinaconnect_controller extends common
 
                             if ($logtime != $nowtime) {
 
-                                $this->MODEL('integral')->invtalCheck($userinfo['uid'], $userinfo['usertype'], "integral_login", "会员登录", 22);
+                                $this->MODEL('integral')->invtalCheck($userinfo['uid'], $userinfo['usertype'], "integral_login", WapDbEnum::INTEGRAL_LOGIN, 22);
                                 // 
                                 $logdata['uid']         =   $userinfo['uid'];
                                 $logdata['usertype']    =   $userinfo['usertype'];
@@ -139,7 +139,7 @@ class sinaconnect_controller extends common
 
                         $_SESSION['sina']["openid"]     =   $tokenuid;
                         $_SESSION['sina']["tooken"]     =   $token['access_token'];
-                        $_SESSION['sina']["logininfo"]  =   "您已登录新浪微博，请绑定您的帐户！";
+                        $_SESSION['sina']["logininfo"]  =   yun_auto_t('您已登录新浪微博，请绑定您的帐户！');
 
 
                         $GetUrl =   "https://api.weibo.com/2/users/show.json?uid=" . $tokenuid . "&access_token=" . $token['access_token'];
@@ -158,7 +158,7 @@ class sinaconnect_controller extends common
                             $_SESSION['sina']['pic'] = $user['avatar_hd'];
                         } else {
 
-                            $this->actMsg($msgUrl, "用户信息获取失败，请重新登录新浪微博！");
+                            $this->actMsg($msgUrl, yun_auto_t('用户信息获取失败，请重新登录新浪微博！'));
                         }
 
                         $urlarr =   array('c' => 'sinaconnect', 'a' => 'sinabind');
@@ -171,7 +171,7 @@ class sinaconnect_controller extends common
                     }
                 } else {
 
-                    $this->actMsg($msgUrl, "新浪微博授权失败，请重新授权！");
+                    $this->actMsg($msgUrl, yun_auto_t('新浪微博授权失败，请重新授权！'));
                 }
             }
         } else {
@@ -213,7 +213,7 @@ class sinaconnect_controller extends common
             echo yun_json_encode($result);
         } else {
 
-            $this->yunset("headertitle", "微博登录绑定");
+            $this->yunset("headertitle", yun_auto_t('微博登录绑定'));
             $this->yunset('sinalogin');
             $this->yuntpl(array('wap/sinabind'));
         }
@@ -223,7 +223,7 @@ class sinaconnect_controller extends common
     {
 
         $noticeM    =   $this->MODEL('notice');
-        $result     =   $noticeM->jycheck($_POST['authcode'], '前台登录');
+        $result     =   $noticeM->jycheck($_POST['authcode'], WapDbEnum::CODE_WEB_FRONT_LOGIN);
         if (!empty($result)) {
             $this->layer_msg($result['msg'], 9, 0, '', 2, $result['error']);
         }

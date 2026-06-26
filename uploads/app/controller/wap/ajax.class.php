@@ -5,7 +5,7 @@ class ajax_controller extends common{
 	function wap_job_action(){
 		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
 		
-		$data	=	"<option value=''>--请选择--</option>";
+		$data	=	"<option value=''>".yun_auto_t('--请选择--')."</option>";
 		
 		if(is_array($job_type[$_POST['id']])){
 			foreach($job_type[$_POST['id']] as $v){
@@ -19,7 +19,7 @@ class ajax_controller extends common{
 	    include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
 	    
 	    if(is_array($city_type[$_POST['id']])){
-	        $data	=	"<option value=''>--请选择--</option>";
+	        $data	=	"<option value=''>".yun_auto_t('--请选择--')."</option>";
 	        foreach($city_type[$_POST['id']] as $v){
 	            $data	.=	"<option value='$v'>".$city_name[$v]."</option>";
 	        }
@@ -212,7 +212,7 @@ class ajax_controller extends common{
 
         $errCode    =   $ComapnyM->sendCertEmail(array( 'uid' => $this->uid, 'type' => '1'), $data);
 
-        echo yun_json_encode(array('error' => $errCode ? 0 : 2, 'msg' => $errCode ? '' : '发送失败'));
+        echo yun_json_encode(array('error' => $errCode ? 0 : 2, 'msg' => $errCode ? '' : yun_auto_t('发送失败')));
         die();
     }
 	
@@ -228,11 +228,11 @@ class ajax_controller extends common{
 		}
 	  
 	    if(!$this->uid || !$this->username){
-	        $this->layer_msg('请先登录', 9, 0, '', 2, 110);
+	        $this->layer_msg(yun_auto_t('请先登录'), 9, 0, '', 2, 110);
 	    }else{
 	        $shell=$this->GET_user_shell($this->uid,$_COOKIE['shell']);
 	        if(!is_array($shell)){
-	            $this->layer_msg('登录有误', 9, 0, '', 2, 111);
+	            $this->layer_msg(yun_auto_t('登录有误'), 9, 0, '', 2, 111);
 	        }
 	        $moblie = $_POST['str'];
 	        $user 	= array(
@@ -263,7 +263,7 @@ class ajax_controller extends common{
 
 	function regcode($port = 2){
 		$noticeM 	= 	$this->MODEL('notice');
-		$result		=	$noticeM->jycheck($_POST['code'],'注册会员');
+		$result		=	$noticeM->jycheck($_POST['code'], WapDbEnum::CODE_WEB_REGISTER);
 		if(!empty($result)){
 			$this->layer_msg($result['msg'], 9, 0, '', 2, $result['error']);
 		}
@@ -673,15 +673,15 @@ class ajax_controller extends common{
 	        
 	        if($comrow['status']==0){
 	            
-	            $data['msg']	= "您已报名,请等待审核！";
+	            $data['msg']	= yun_auto_t('您已报名,请等待审核！');
 	            
 	        }else if($comrow['status']==1){
 	            
-	            $data['msg']	= "您已报名了，请不要重复报名！";
+	            $data['msg']	= yun_auto_t('您已报名了，请不要重复报名！');
 	            
 	        }else if($comrow['status']==2){
 	            
-	            $data['msg']	= "您已报名,且审核未通过！";
+	            $data['msg']	= yun_auto_t('您已报名,且审核未通过！');
 	        }
 	        
 	    }else{
@@ -709,7 +709,7 @@ class ajax_controller extends common{
 	            
 	            $data['status']	= 2;
 	            
-	            $data['msg']	= "您还没有发布职位，请先发布职位！";
+	            $data['msg']	= yun_auto_t('您还没有发布职位，请先发布职位！');
 	        }
 	    }
 		
@@ -830,7 +830,7 @@ class ajax_controller extends common{
         $this->yunset('year', $year);
     	$this->yunset('webname', $this->config['sy_webname']);
     	$this->yunset('datashowtitle', $this->config['sy_datashow_title']);
-        $this->yunset("headertitle","数据展示");
+        $this->yunset("headertitle",yun_auto_t('数据展示'));
 
         $title = $this->config['sy_datashow_title'] ? $this->config['sy_datashow_title'] . yun_auto_t('招聘大数据') : '年度数据 - '.$this->config['sy_webname'];
         $desc = yun_auto_t('年度数据 - ').$this->config['sy_webname'];

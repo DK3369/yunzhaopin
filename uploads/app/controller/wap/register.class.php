@@ -57,7 +57,7 @@ class register_controller extends common
         $xieyi = $descM->getDes(array('id' => '5'), array('field' => 'content'));
         $this->yunset('xieyi', $xieyi);
 
-        $yinsi = $descM->getDes(array('name' => array('like', '隐私政策')), array('field' => 'content'));
+        $yinsi = $descM->getDes(array('name' => array('like', WapDbEnum::CONFIG_PRIVACY)), array('field' => 'content'));
         $this->yunset('yinsi', $yinsi);
 
         if ($this->uid != '' && $this->username != '') {

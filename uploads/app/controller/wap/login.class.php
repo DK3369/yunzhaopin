@@ -45,12 +45,12 @@ class login_controller extends common{
         $descM  =  $this->MODEL('description');
         $xieyi  =  $descM -> getDes(array('id'=>'5'),array('field'=>'content'));
         $this->yunset('xieyi',$xieyi);
-        $yinsi  =  $descM -> getDes(array('name'=>array('like','隐私政策')),array('field'=>'content'));
+        $yinsi  =  $descM -> getDes(array('name'=>array('like', WapDbEnum::CONFIG_PRIVACY)),array('field'=>'content'));
         $this->yunset('yinsi',$yinsi);
 		$checkurl=$_COOKIE['checkurl'];
        	$this->yunset("checkurl",$checkurl);
         unset($checkurl);
-		$this->yunset('headertitle',"会员登录");
+		$this->yunset('headertitle',yun_auto_t('会员登录'));
 		$this->seo('login');	
 		if(strpos($_SERVER['HTTP_REFERER'],'applyjobuid')){
 			if($this->config['sy_seo_rewrite']){
@@ -117,7 +117,7 @@ class login_controller extends common{
     function sendmsg_action()
     {
         $noticeM    =   $this->MODEL('notice');
-        $result     =   $noticeM->jycheck($_POST['authcode'], '前台登录');
+        $result     =   $noticeM->jycheck($_POST['authcode'], WapDbEnum::CODE_WEB_FRONT_LOGIN);
         if (!empty($result)) {
             $this->layer_msg($result['msg'], 9, 0, '', 2, $result['error']);
         }
@@ -186,7 +186,7 @@ class login_controller extends common{
 					$Member->InsertReg($table2,$data2);
 					
 					if(($usertype == '2' && $this->config['com_status']!='1') || ($usertype == '3' && $this->config['lt_status']!='1')){
-						$this->ACT_msg_wap(Url('wap',array('c'=>'login')),'请等待账户审核！', 1, 3);
+						$this->ACT_msg_wap(Url('wap',array('c'=>'login')),yun_auto_t('请等待账户审核！'), 1, 3);
 						$this->yuntpl(array('wap/utype'));
 					}else{
 						$this->cookie->add_cookie($userid,$user['username'],$user['salt'],$user['email'],$user['password'],$usertype,$this->config['sy_logintime'],$user['did']);
@@ -229,7 +229,7 @@ class login_controller extends common{
 	        $result  =  $WxM->getWxLoginStatus($_COOKIE['wxloginid'], $this->uid);
 	        if($result['status'] == 1 && !empty($result['member'])){
 	            
-	            $this->layer_msg('扫码成功',9);
+	            $this->layer_msg(yun_auto_t('扫码成功'),9);
 	            
 	        }else{
 	            

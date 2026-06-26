@@ -1,11 +1,11 @@
 {
-    "generated": "2026-06-26T21:59:20+08:00",
+    "generated": "2026-06-26T22:09:00+08:00",
     "summary": {
         "font": 32,
-        "ui": 526,
         "enum_hub": 51,
-        "i18n_wrapped": 418,
-        "comment": 43
+        "ui": 330,
+        "i18n_wrapped": 588,
+        "comment": 39
     },
     "files": {
         "app\/template\/wap\/css\/ask\/ask.css": 6,
@@ -17,7 +17,6 @@
         "app\/template\/wap\/css\/wap_tck.css": 1,
         "app\/template\/wap\/css\/yun_wap_member.css": 3,
         "app\/template\/wap\/css\/zt_wap.css": 2,
-        "app\/template\/wap\/js\/flexible.js": 1,
         "app\/template\/wap\/resume\/css\/rusume.css": 1,
         "app\/template\/wap\/publichtm\/wap_api_enum.htm": 51,
         "app\/template\/wap\/job\/css\/style.css": 1,
@@ -38,7 +37,7 @@
         "api\/wxapp\/member\/com\/fk.class.php": 27,
         "api\/wxapp\/member\/com\/index.class.php": 11,
         "api\/wxapp\/member\/com\/info.class.php": 11,
-        "api\/wxapp\/member\/com\/job.class.php": 41,
+        "api\/wxapp\/member\/com\/job.class.php": 40,
         "api\/wxapp\/member\/com\/msg.class.php": 19,
         "api\/wxapp\/member\/com\/part.class.php": 25,
         "api\/wxapp\/member\/com\/resume.class.php": 28,
@@ -52,37 +51,35 @@
         "api\/wxapp\/model\/resume.class.php": 18,
         "api\/wxapp\/model\/tiny.class.php": 16,
         "api\/wxapp\/wxapp.controller.php": 31,
-        "api\/wxapp\/wap.enum.php": 4,
-        "app\/controller\/wap\/geetest.class.php": 3,
-        "app\/controller\/wap\/advice.class.php": 5,
-        "app\/controller\/wap\/ajax.class.php": 48,
+        "app\/controller\/wap\/advice.class.php": 4,
+        "app\/controller\/wap\/ajax.class.php": 47,
         "app\/controller\/wap\/announcement.class.php": 6,
         "app\/controller\/wap\/article.class.php": 14,
         "app\/controller\/wap\/ask.class.php": 15,
         "app\/controller\/wap\/claim.class.php": 7,
         "app\/controller\/wap\/company.class.php": 22,
-        "app\/controller\/wap\/evaluate.class.php": 9,
-        "app\/controller\/wap\/forgetpw.class.php": 13,
+        "app\/controller\/wap\/evaluate.class.php": 8,
+        "app\/controller\/wap\/forgetpw.class.php": 12,
         "app\/controller\/wap\/gongzhao.class.php": 4,
         "app\/controller\/wap\/index.class.php": 16,
         "app\/controller\/wap\/job.class.php": 50,
-        "app\/controller\/wap\/login.class.php": 25,
+        "app\/controller\/wap\/login.class.php": 23,
         "app\/controller\/wap\/map.class.php": 5,
-        "app\/controller\/wap\/once.class.php": 23,
+        "app\/controller\/wap\/once.class.php": 27,
         "app\/controller\/wap\/part.class.php": 10,
-        "app\/controller\/wap\/qqconnect.class.php": 15,
-        "app\/controller\/wap\/redeem.class.php": 8,
-        "app\/controller\/wap\/register.class.php": 13,
+        "app\/controller\/wap\/qqconnect.class.php": 13,
+        "app\/controller\/wap\/redeem.class.php": 5,
+        "app\/controller\/wap\/register.class.php": 12,
         "app\/controller\/wap\/reportlist.class.php": 4,
-        "app\/controller\/wap\/resume.class.php": 31,
+        "app\/controller\/wap\/resume.class.php": 29,
         "app\/controller\/wap\/services.class.php": 1,
-        "app\/controller\/wap\/sinaconnect.class.php": 12,
+        "app\/controller\/wap\/sinaconnect.class.php": 10,
         "app\/controller\/wap\/site.class.php": 2,
         "app\/controller\/wap\/special.class.php": 3,
-        "app\/controller\/wap\/tiny.class.php": 11,
-        "app\/controller\/wap\/upload.class.php": 24,
-        "app\/controller\/wap\/wxconnect.class.php": 19,
-        "app\/controller\/wap\/wxoauth.class.php": 4,
+        "app\/controller\/wap\/tiny.class.php": 15,
+        "app\/controller\/wap\/upload.class.php": 16,
+        "app\/controller\/wap\/wxconnect.class.php": 15,
+        "app\/controller\/wap\/wxoauth.class.php": 3,
         "app\/controller\/wap\/zph.class.php": 8
     },
     "hits": [
@@ -259,12 +256,6 @@
             "line": 6,
             "category": "font",
             "text": "input,textarea{font-family:\"microsoft yahei\",\"宋体\";font-size:.27857142rem;color:#666666;}"
-        },
-        {
-            "file": "app\/template\/wap\/js\/flexible.js",
-            "line": 1,
-            "category": "ui",
-            "text": "!function(a,b){function c(){var b=f.getBoundingClientRect().width;b\/i>540&&(b=540*i);var c=b\/10;f.style.fontSize=c+\"px\",k.rem=a.rem=c}var d,e=a.document,f=e.documentElement,g=e.querySelector('meta[name=\"viewport\"]'),h=e.querySelector('meta[name=\"flexible\"]'),i=0,j=0,k=b.flexible||(b.flexible={});if(g){console.warn(\"将根据已有的meta标签来设置缩放比例\");var l=g.getAttribute(\"content\").match(\/initial\\-scale=([\\d\\.]+)\/);l&&(j=parseFloat(l[1]),i=parseInt(1\/j))}else if(h){var m=h.getAttribute(\"content\");if(m){var n=m.match(\/initial\\-dpr=([\\d\\.]+)\/),o=m.match(\/maximum\\-dpr=([\\d\\.]+)\/);n&&(i=parseFloat(n[1]),j=parseFloat((1\/i).toFixed(2))),o&&(i=parseFloat(o[1]),j=parseFloat((1\/i).toFixed(2)))}}if(!i&&!j){var p=(a.navigator.appVersion.match(\/android\/gi),a.navigator.appVersion.match(\/iphone\/gi)),q=a.devicePixelRatio;i=p?q>=3&&(!i||i>=3)?3:q>=2&&(!i||i>=2)?2:1:1,j=1\/i}if(f.setAttribute(\"data-dpr\",i),!g)if(g=e.createElement(\"meta\"),g.setAttribute(\"name\",\"viewport\"),g.setAttribute(\"content\",\"initial-scale=\"+j+\", maximum-scale=\"+j+\", minimum-scale=\"+j+\", user-scalable=no\"),f.firstElementChild)f.firstElementChild.appendChild(g);else{var r=e.createElement(\"div\");r.appendChild(g),e.write(r.innerHTML)}a.addEventListener(\"resize\",function(){clearTimeout(d),d=setTimeout(c,300)},!1),a.addEventListener(\"pageshow\",function(a){a.persisted&&(clearTimeout(d),d=setTimeout(c,300))},!1),\"complete\"===e.readyState?e.body.style.fontSize=12*i+\"px\":e.addEventListener(\"DOMContentLoaded\",function(){e.body.style.fontSize=12*i+\"px\"},!1),c(),k.dpr=a.dpr=i,k.refreshRem=c,k.rem2px=function(a){var b=parseFloat(a)*this.rem;return\"string\"==typeof a&&a.match(\/rem$\/)&&(b+=\"px\"),b},k.px2rem=function(a){var b=parseFloat(a)\/this.rem;return\"string\"==typeof a&&a.match(\/px$\/)&&(b+=\"rem\"),b}}(window,window.lib||(window.lib={}));"
         },
         {
             "file": "app\/template\/wap\/resume\/css\/rusume.css",
@@ -1265,14 +1256,14 @@
         {
             "file": "api\/wxapp\/member\/user\/resume.class.php",
             "line": 453,
-            "category": "ui",
-            "text": "\t\t\t$data['msg']\t=\t$return['errcode']==9 ?\"保存成功！\":\"保存失败！\";"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$data['msg']\t=\t$return['errcode']==9 ? yun_auto_t('保存成功！') : yun_auto_t('保存失败！');"
         },
         {
             "file": "api\/wxapp\/member\/user\/resume.class.php",
             "line": 462,
-            "category": "ui",
-            "text": "\t\t\t\t$data['msg']\t=\t\"参数错误\";"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\t$data['msg']\t=\tyun_auto_t('参数错误');"
         },
         {
             "file": "api\/wxapp\/member\/user\/resume.class.php",
@@ -1289,8 +1280,8 @@
         {
             "file": "api\/wxapp\/member\/user\/resume.class.php",
             "line": 651,
-            "category": "ui",
-            "text": "\t\t$data['msg']\t\t\t=\t$nid? '刷新成功！' : '刷新失败！';"
+            "category": "i18n_wrapped",
+            "text": "\t\t$data['msg']\t\t\t=\t$nid ? yun_auto_t('刷新成功！') : yun_auto_t('刷新失败！');"
         },
         {
             "file": "api\/wxapp\/member\/user\/resume.class.php",
@@ -1319,8 +1310,8 @@
         {
             "file": "api\/wxapp\/member\/user\/resume.class.php",
             "line": 683,
-            "category": "ui",
-            "text": "        $data['msg']    =   $return['errcode'] == 9 ? '设置成功！' : '设置失败！';"
+            "category": "i18n_wrapped",
+            "text": "        $data['msg']    =   $return['errcode'] == 9 ? yun_auto_t('设置成功！') : yun_auto_t('设置失败！');"
         },
         {
             "file": "api\/wxapp\/member\/user\/resume.class.php",
@@ -1445,8 +1436,8 @@
         {
             "file": "api\/wxapp\/member\/user\/set.class.php",
             "line": 231,
-            "category": "ui",
-            "text": "                    $this->render_json($result['error'], \"图片验证码错误\");"
+            "category": "i18n_wrapped",
+            "text": "                    $this->render_json($result['error'], yun_auto_t('图片验证码错误'));"
         },
         {
             "file": "api\/wxapp\/member\/user\/set.class.php",
@@ -1685,8 +1676,8 @@
         {
             "file": "api\/wxapp\/member\/com\/finance.class.php",
             "line": 379,
-            "category": "ui",
-            "text": "\t\t\t'pay_remark'\t=>\tarray('like','转换'.$this->config['integral_pricename'])"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t'pay_remark'\t=>\tarray('like',yun_auto_t('转换').$this->config['integral_pricename'])"
         },
         {
             "file": "api\/wxapp\/member\/com\/finance.class.php",
@@ -1985,8 +1976,8 @@
         {
             "file": "api\/wxapp\/member\/com\/info.class.php",
             "line": 255,
-            "category": "ui",
-            "text": "                $logM->member_log(\"删除企业环境展示\",16,3, $this->member['uid'], $this->member['usertype']);\/\/会员日志"
+            "category": "i18n_wrapped",
+            "text": "                $logM->member_log(yun_auto_t('删除企业环境展示'),16,3, $this->member['uid'], $this->member['usertype']);\/\/会员日志"
         },
         {
             "file": "api\/wxapp\/member\/com\/info.class.php",
@@ -2119,12 +2110,6 @@
             "line": 486,
             "category": "ui",
             "text": "     * 工作地址"
-        },
-        {
-            "file": "api\/wxapp\/member\/com\/job.class.php",
-            "line": 612,
-            "category": "ui",
-            "text": "                    $job['reserve_end']        =   $rv['end_time'] > 0 ? date('Y-m-d', $rv['end_time']) : '不限';"
         },
         {
             "file": "api\/wxapp\/member\/com\/job.class.php",
@@ -2735,8 +2720,8 @@
         {
             "file": "api\/wxapp\/member\/com\/set.class.php",
             "line": 186,
-            "category": "ui",
-            "text": "\t\t\t    $msg    =   !empty($err['msg']) ? $err['msg'] : '更新失败！';"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t    $msg    =   !empty($err['msg']) ? $err['msg'] : yun_auto_t('更新失败！');"
         },
         {
             "file": "api\/wxapp\/member\/com\/set.class.php",
@@ -2885,14 +2870,14 @@
         {
             "file": "api\/wxapp\/member\/com\/set.class.php",
             "line": 731,
-            "category": "ui",
-            "text": "            $msg            =   $result ? '工作地址更新成功' : '工作地址更新失败';"
+            "category": "i18n_wrapped",
+            "text": "            $msg            =   $result ? yun_auto_t('工作地址更新成功') : yun_auto_t('工作地址更新失败');"
         },
         {
             "file": "api\/wxapp\/member\/com\/set.class.php",
             "line": 738,
-            "category": "ui",
-            "text": "            $msg            =   $result ? '工作地址添加成功' : '工作地址添加失败';"
+            "category": "i18n_wrapped",
+            "text": "            $msg            =   $result ? yun_auto_t('工作地址添加成功') : yun_auto_t('工作地址添加失败');"
         },
         {
             "file": "api\/wxapp\/member\/com\/zpdata.class.php",
@@ -3903,48 +3888,6 @@
             "text": "\t * 按客户端时区计算，获取当前时间"
         },
         {
-            "file": "api\/wxapp\/wap.enum.php",
-            "line": 8,
-            "category": "ui",
-            "text": "    const SEX_MALE = '男';"
-        },
-        {
-            "file": "api\/wxapp\/wap.enum.php",
-            "line": 9,
-            "category": "ui",
-            "text": "    const SEX_FEMALE = '女';"
-        },
-        {
-            "file": "api\/wxapp\/wap.enum.php",
-            "line": 10,
-            "category": "ui",
-            "text": "    const UNLIMITED = '不限';"
-        },
-        {
-            "file": "api\/wxapp\/wap.enum.php",
-            "line": 11,
-            "category": "ui",
-            "text": "    const PRESENT = '至今';"
-        },
-        {
-            "file": "app\/controller\/wap\/geetest.class.php",
-            "line": 22,
-            "category": "ui",
-            "text": "\t\t\t\t\"user_id\" => $user_id, # 网站用户id"
-        },
-        {
-            "file": "app\/controller\/wap\/geetest.class.php",
-            "line": 23,
-            "category": "ui",
-            "text": "\t\t\t\t\"client_type\" => \"h5\", #web:电脑上的浏览器；h5:手机上的浏览器"
-        },
-        {
-            "file": "app\/controller\/wap\/geetest.class.php",
-            "line": 24,
-            "category": "ui",
-            "text": "\t\t\t\t\"ip_address\" => \"127.0.0.1\" # 请在此处传输用户请求验证时所携带的IP"
-        },
-        {
             "file": "app\/controller\/wap\/advice.class.php",
             "line": 5,
             "category": "ui",
@@ -3969,22 +3912,16 @@
             "text": "     * 意见反馈-发送动态码"
         },
         {
-            "file": "app\/controller\/wap\/advice.class.php",
-            "line": 50,
-            "category": "ui",
-            "text": "\t\t$result\t\t=\t$noticeM->jycheck($_POST['authcode'],'意见反馈');"
-        },
-        {
             "file": "app\/controller\/wap\/ajax.class.php",
             "line": 8,
-            "category": "ui",
-            "text": "\t\t$data\t=\t\"<option value=''>--请选择--<\/option>\";"
+            "category": "i18n_wrapped",
+            "text": "\t\t$data\t=\t\"<option value=''>\".yun_auto_t('--请选择--').\"<\/option>\";"
         },
         {
             "file": "app\/controller\/wap\/ajax.class.php",
             "line": 22,
-            "category": "ui",
-            "text": "\t        $data\t=\t\"<option value=''>--请选择--<\/option>\";"
+            "category": "i18n_wrapped",
+            "text": "\t        $data\t=\t\"<option value=''>\".yun_auto_t('--请选择--').\"<\/option>\";"
         },
         {
             "file": "app\/controller\/wap\/ajax.class.php",
@@ -4025,20 +3962,20 @@
         {
             "file": "app\/controller\/wap\/ajax.class.php",
             "line": 215,
-            "category": "ui",
-            "text": "        echo yun_json_encode(array('error' => $errCode ? 0 : 2, 'msg' => $errCode ? '' : '发送失败'));"
+            "category": "i18n_wrapped",
+            "text": "        echo yun_json_encode(array('error' => $errCode ? 0 : 2, 'msg' => $errCode ? '' : yun_auto_t('发送失败')));"
         },
         {
             "file": "app\/controller\/wap\/ajax.class.php",
             "line": 231,
-            "category": "ui",
-            "text": "\t        $this->layer_msg('请先登录', 9, 0, '', 2, 110);"
+            "category": "i18n_wrapped",
+            "text": "\t        $this->layer_msg(yun_auto_t('请先登录'), 9, 0, '', 2, 110);"
         },
         {
             "file": "app\/controller\/wap\/ajax.class.php",
             "line": 235,
-            "category": "ui",
-            "text": "\t            $this->layer_msg('登录有误', 9, 0, '', 2, 111);"
+            "category": "i18n_wrapped",
+            "text": "\t            $this->layer_msg(yun_auto_t('登录有误'), 9, 0, '', 2, 111);"
         },
         {
             "file": "app\/controller\/wap\/ajax.class.php",
@@ -4063,12 +4000,6 @@
             "line": 261,
             "category": "ui",
             "text": "        $this->regcode(8); \/\/ WAP快速投递"
-        },
-        {
-            "file": "app\/controller\/wap\/ajax.class.php",
-            "line": 266,
-            "category": "ui",
-            "text": "\t\t$result\t\t=\t$noticeM->jycheck($_POST['code'],'注册会员');"
         },
         {
             "file": "app\/controller\/wap\/ajax.class.php",
@@ -4145,26 +4076,26 @@
         {
             "file": "app\/controller\/wap\/ajax.class.php",
             "line": 676,
-            "category": "ui",
-            "text": "\t            $data['msg']\t= \"您已报名,请等待审核！\";"
+            "category": "i18n_wrapped",
+            "text": "\t            $data['msg']\t= yun_auto_t('您已报名,请等待审核！');"
         },
         {
             "file": "app\/controller\/wap\/ajax.class.php",
             "line": 680,
-            "category": "ui",
-            "text": "\t            $data['msg']\t= \"您已报名了，请不要重复报名！\";"
+            "category": "i18n_wrapped",
+            "text": "\t            $data['msg']\t= yun_auto_t('您已报名了，请不要重复报名！');"
         },
         {
             "file": "app\/controller\/wap\/ajax.class.php",
             "line": 684,
-            "category": "ui",
-            "text": "\t            $data['msg']\t= \"您已报名,且审核未通过！\";"
+            "category": "i18n_wrapped",
+            "text": "\t            $data['msg']\t= yun_auto_t('您已报名,且审核未通过！');"
         },
         {
             "file": "app\/controller\/wap\/ajax.class.php",
             "line": 712,
-            "category": "ui",
-            "text": "\t            $data['msg']\t= \"您还没有发布职位，请先发布职位！\";"
+            "category": "i18n_wrapped",
+            "text": "\t            $data['msg']\t= yun_auto_t('您还没有发布职位，请先发布职位！');"
         },
         {
             "file": "app\/controller\/wap\/ajax.class.php",
@@ -4175,8 +4106,8 @@
         {
             "file": "app\/controller\/wap\/ajax.class.php",
             "line": 833,
-            "category": "ui",
-            "text": "        $this->yunset(\"headertitle\",\"数据展示\");"
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset(\"headertitle\",yun_auto_t('数据展示'));"
         },
         {
             "file": "app\/controller\/wap\/ajax.class.php",
@@ -4289,14 +4220,14 @@
         {
             "file": "app\/controller\/wap\/announcement.class.php",
             "line": 22,
-            "category": "ui",
-            "text": "\t\t\t$this->yunset(\"headertitle\",\"网站公告\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$this->yunset(\"headertitle\",yun_auto_t('网站公告'));"
         },
         {
             "file": "app\/controller\/wap\/announcement.class.php",
             "line": 25,
-            "category": "ui",
-            "text": "\t\t\t$this->yunset(\"headertitle\",\"网站公告\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$this->yunset(\"headertitle\",yun_auto_t('网站公告'));"
         },
         {
             "file": "app\/controller\/wap\/article.class.php",
@@ -4307,8 +4238,8 @@
         {
             "file": "app\/controller\/wap\/article.class.php",
             "line": 15,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"职场资讯\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('职场资讯'));"
         },
         {
             "file": "app\/controller\/wap\/article.class.php",
@@ -4319,8 +4250,8 @@
         {
             "file": "app\/controller\/wap\/article.class.php",
             "line": 37,
-            "category": "ui",
-            "text": "\t\t\t$this->ACT_msg_wap(Url(\"wap\",array('c'=>\"article\")),\"没有找到该文章！\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$this->ACT_msg_wap(Url(\"wap\",array('c'=>\"article\")),yun_auto_t('没有找到该文章！'));"
         },
         {
             "file": "app\/controller\/wap\/article.class.php",
@@ -4355,8 +4286,8 @@
         {
             "file": "app\/controller\/wap\/article.class.php",
             "line": 96,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"职场资讯\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('职场资讯'));"
         },
         {
             "file": "app\/controller\/wap\/article.class.php",
@@ -4367,8 +4298,8 @@
         {
             "file": "app\/controller\/wap\/article.class.php",
             "line": 114,
-            "category": "ui",
-            "text": "\t    $this->yunset(\"headertitle\",\"频道管理\");"
+            "category": "i18n_wrapped",
+            "text": "\t    $this->yunset(\"headertitle\",yun_auto_t('频道管理'));"
         },
         {
             "file": "app\/controller\/wap\/article.class.php",
@@ -4385,32 +4316,32 @@
         {
             "file": "app\/controller\/wap\/ask.class.php",
             "line": 24,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"职场问答\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('职场问答'));"
         },
         {
             "file": "app\/controller\/wap\/ask.class.php",
             "line": 54,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"问答列表\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('问答列表'));"
         },
         {
             "file": "app\/controller\/wap\/ask.class.php",
             "line": 170,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"问题详细\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('问题详细'));"
         },
         {
             "file": "app\/controller\/wap\/ask.class.php",
             "line": 214,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"职场话题\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('职场话题'));"
         },
         {
             "file": "app\/controller\/wap\/ask.class.php",
             "line": 296,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"个人主页\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('个人主页'));"
         },
         {
             "file": "app\/controller\/wap\/ask.class.php",
@@ -4427,38 +4358,38 @@
         {
             "file": "app\/controller\/wap\/ask.class.php",
             "line": 311,
-            "category": "ui",
-            "text": "\t\t\t$result?$this->layer_msg('操作成功！',9,0,$_SERVER['HTTP_REFERER']):$this->layer_msg('操作失败！',8,0,$_SERVER['HTTP_REFERER']);"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$result?$this->layer_msg(yun_auto_t('操作成功！'),9,0,$_SERVER['HTTP_REFERER']):$this->layer_msg(yun_auto_t('操作失败！'),8,0,$_SERVER['HTTP_REFERER']);"
         },
         {
             "file": "app\/controller\/wap\/ask.class.php",
             "line": 444,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"个人主页\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('个人主页'));"
         },
         {
             "file": "app\/controller\/wap\/ask.class.php",
             "line": 534,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"个人主页\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('个人主页'));"
         },
         {
             "file": "app\/controller\/wap\/ask.class.php",
             "line": 570,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"一周热点\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('一周热点'));"
         },
         {
             "file": "app\/controller\/wap\/ask.class.php",
             "line": 578,
-            "category": "ui",
-            "text": "\t\t\t$this->ACT_msg_wap($this->config['sy_weburl'].'\/wap\/index.php?c=login','请先登录！', 1, 3);"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$this->ACT_msg_wap($this->config['sy_weburl'].'\/wap\/index.php?c=login',yun_auto_t('请先登录！'), 1, 3);"
         },
         {
             "file": "app\/controller\/wap\/ask.class.php",
             "line": 586,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"发布问答\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('发布问答'));"
         },
         {
             "file": "app\/controller\/wap\/ask.class.php",
@@ -4475,44 +4406,44 @@
         {
             "file": "app\/controller\/wap\/claim.class.php",
             "line": 19,
-            "category": "ui",
-            "text": "                $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], '该用户已经被认领！');"
+            "category": "i18n_wrapped",
+            "text": "                $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('该用户已经被认领！'));"
         },
         {
             "file": "app\/controller\/wap\/claim.class.php",
             "line": 25,
-            "category": "ui",
-            "text": "                $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], '参数不正确！');"
+            "category": "i18n_wrapped",
+            "text": "                $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('参数不正确！'));"
         },
         {
             "file": "app\/controller\/wap\/claim.class.php",
             "line": 29,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"认领会员\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('认领会员'));"
         },
         {
             "file": "app\/controller\/wap\/claim.class.php",
             "line": 42,
-            "category": "ui",
-            "text": "                $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], '该用户已经被认领！');"
+            "category": "i18n_wrapped",
+            "text": "                $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('该用户已经被认领！'));"
         },
         {
             "file": "app\/controller\/wap\/claim.class.php",
             "line": 49,
-            "category": "ui",
-            "text": "                $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], '参数不正确！');"
+            "category": "i18n_wrapped",
+            "text": "                $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('参数不正确！'));"
         },
         {
             "file": "app\/controller\/wap\/claim.class.php",
             "line": 54,
-            "category": "ui",
-            "text": "                $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], '用户名已存在，请重新输入！');"
+            "category": "i18n_wrapped",
+            "text": "                $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('用户名已存在，请重新输入！'));"
         },
         {
             "file": "app\/controller\/wap\/claim.class.php",
             "line": 72,
-            "category": "ui",
-            "text": "\t\t\t\t'msg'\t\t=>\t$result\t? '认领成功！' : '认领失败！',"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\t'msg'\t\t=>\t$result\t? yun_auto_t('认领成功！') : yun_auto_t('认领失败！'),"
         },
         {
             "file": "app\/controller\/wap\/company.class.php",
@@ -4523,14 +4454,14 @@
         {
             "file": "app\/controller\/wap\/company.class.php",
             "line": 74,
-            "category": "ui",
-            "text": "        $this -> yunset('topplaceholder', '请输入企业关键字,如：有限公司...');"
+            "category": "i18n_wrapped",
+            "text": "        $this -> yunset('topplaceholder', yun_auto_t('请输入企业关键字,如：有限公司...'));"
         },
         {
             "file": "app\/controller\/wap\/company.class.php",
             "line": 75,
-            "category": "ui",
-            "text": "        $this -> yunset('headertitle', '公司搜索');"
+            "category": "i18n_wrapped",
+            "text": "        $this -> yunset('headertitle', yun_auto_t('公司搜索'));"
         },
         {
             "file": "app\/controller\/wap\/company.class.php",
@@ -4541,32 +4472,32 @@
         {
             "file": "app\/controller\/wap\/company.class.php",
             "line": 107,
-            "category": "ui",
-            "text": "            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], '没有找到该企业！');"
+            "category": "i18n_wrapped",
+            "text": "            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('没有找到该企业！'));"
         },
         {
             "file": "app\/controller\/wap\/company.class.php",
             "line": 111,
-            "category": "ui",
-            "text": "            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], '该企业正在审核中，请稍后查看！');"
+            "category": "i18n_wrapped",
+            "text": "            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('该企业正在审核中，请稍后查看！'));"
         },
         {
             "file": "app\/controller\/wap\/company.class.php",
             "line": 115,
-            "category": "ui",
-            "text": "            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], '该企业未通过审核！');"
+            "category": "i18n_wrapped",
+            "text": "            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('该企业未通过审核！'));"
         },
         {
             "file": "app\/controller\/wap\/company.class.php",
             "line": 119,
-            "category": "ui",
-            "text": "            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], '该企业暂被锁定，请稍后查看！');"
+            "category": "i18n_wrapped",
+            "text": "            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('该企业暂被锁定，请稍后查看！'));"
         },
         {
             "file": "app\/controller\/wap\/company.class.php",
             "line": 176,
-            "category": "ui",
-            "text": "        $this -> yunset('headertitle', '公司详情');"
+            "category": "i18n_wrapped",
+            "text": "        $this -> yunset('headertitle', yun_auto_t('公司详情'));"
         },
         {
             "file": "app\/controller\/wap\/company.class.php",
@@ -4649,50 +4580,44 @@
         {
             "file": "app\/controller\/wap\/evaluate.class.php",
             "line": 30,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"职业测评\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('职业测评'));"
         },
         {
             "file": "app\/controller\/wap\/evaluate.class.php",
             "line": 41,
-            "category": "ui",
-            "text": "\t\t\t$this->ACT_msg_wap(Url(\"wap\",array('c'=>\"evaluate\")),\"没有找到相关测评哦！\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$this->ACT_msg_wap(Url(\"wap\",array('c'=>\"evaluate\")),yun_auto_t('没有找到相关测评哦！'));"
         },
         {
             "file": "app\/controller\/wap\/evaluate.class.php",
             "line": 53,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"职业测评\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('职业测评'));"
         },
         {
             "file": "app\/controller\/wap\/evaluate.class.php",
             "line": 63,
-            "category": "ui",
-            "text": "\t\t\t$this->ACT_msg_wap(Url(\"wap\",array('c'=>\"evaluate\")),\"没有找到相关测评哦！\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$this->ACT_msg_wap(Url(\"wap\",array('c'=>\"evaluate\")),yun_auto_t('没有找到相关测评哦！'));"
         },
         {
             "file": "app\/controller\/wap\/evaluate.class.php",
             "line": 74,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"职业测评\");"
-        },
-        {
-            "file": "app\/controller\/wap\/evaluate.class.php",
-            "line": 77,
-            "category": "comment",
-            "text": "\t\/*展现得分*\/"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('职业测评'));"
         },
         {
             "file": "app\/controller\/wap\/evaluate.class.php",
             "line": 139,
-            "category": "ui",
-            "text": "\t\t\t$this->ACT_msg_wap(Url(\"wap\",array('c'=>\"evaluate\")),\"试卷不存在哦！\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$this->ACT_msg_wap(Url(\"wap\",array('c'=>\"evaluate\")),yun_auto_t('试卷不存在哦！'));"
         },
         {
             "file": "app\/controller\/wap\/evaluate.class.php",
             "line": 167,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"职业测评\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('职业测评'));"
         },
         {
             "file": "app\/controller\/wap\/evaluate.class.php",
@@ -4703,62 +4628,56 @@
         {
             "file": "app\/controller\/wap\/forgetpw.class.php",
             "line": 6,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"找回密码\");"
-        },
-        {
-            "file": "app\/controller\/wap\/forgetpw.class.php",
-            "line": 13,
-            "category": "ui",
-            "text": "        $result\t\t=\t$noticeM->jycheck($_POST['authcode'],'找回密码');"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('找回密码'));"
         },
         {
             "file": "app\/controller\/wap\/forgetpw.class.php",
             "line": 48,
-            "category": "ui",
-            "text": "\t\t    $res['msg']\t\t=\t\"短信验证码验证超时，请重新验证！\";"
+            "category": "i18n_wrapped",
+            "text": "\t\t    $res['msg']\t\t=\tyun_auto_t('短信验证码验证超时，请重新验证！');"
         },
         {
             "file": "app\/controller\/wap\/forgetpw.class.php",
             "line": 53,
-            "category": "ui",
-            "text": "\t\t    $res['msg']\t\t=\t\"验证码错误\";"
+            "category": "i18n_wrapped",
+            "text": "\t\t    $res['msg']\t\t=\tyun_auto_t('验证码错误');"
         },
         {
             "file": "app\/controller\/wap\/forgetpw.class.php",
             "line": 57,
-            "category": "ui",
-            "text": "\t\t$res['msg']\t\t=\t\"验证码正确！\";"
+            "category": "i18n_wrapped",
+            "text": "\t\t$res['msg']\t\t=\tyun_auto_t('验证码正确！');"
         },
         {
             "file": "app\/controller\/wap\/forgetpw.class.php",
             "line": 71,
-            "category": "ui",
-            "text": "\t\t\t$res['msg']\t\t=\t\"用户名不存在！\";"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$res['msg']\t\t=\tyun_auto_t('用户名不存在！');"
         },
         {
             "file": "app\/controller\/wap\/forgetpw.class.php",
             "line": 76,
-            "category": "ui",
-            "text": "\t        $res['msg']\t\t=\t\"用户名包含特殊字符！\";"
+            "category": "i18n_wrapped",
+            "text": "\t        $res['msg']\t\t=\tyun_auto_t('用户名包含特殊字符！');"
         },
         {
             "file": "app\/controller\/wap\/forgetpw.class.php",
             "line": 119,
-            "category": "ui",
-            "text": "\t\t\t\t$res['msg']\t\t=\t\"参数错误，请重试！\";"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\t$res['msg']\t\t=\tyun_auto_t('参数错误，请重试！');"
         },
         {
             "file": "app\/controller\/wap\/forgetpw.class.php",
             "line": 125,
-            "category": "ui",
-            "text": "\t\t\t    $res['msg']\t\t=\t\"短信验证码验证超时，请重新验证！\";"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t    $res['msg']\t\t=\tyun_auto_t('短信验证码验证超时，请重新验证！');"
         },
         {
             "file": "app\/controller\/wap\/forgetpw.class.php",
             "line": 130,
-            "category": "ui",
-            "text": "\t\t\t\t$res['msg']\t\t=\t\"验证码错误\";"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\t$res['msg']\t\t=\tyun_auto_t('验证码错误');"
         },
         {
             "file": "app\/controller\/wap\/forgetpw.class.php",
@@ -4781,8 +4700,8 @@
         {
             "file": "app\/controller\/wap\/gongzhao.class.php",
             "line": 10,
-            "category": "ui",
-            "text": "        $this->yunset(\"headertitle\", \"公招\");"
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset(\"headertitle\", yun_auto_t('公招'));"
         },
         {
             "file": "app\/controller\/wap\/gongzhao.class.php",
@@ -4799,8 +4718,8 @@
         {
             "file": "app\/controller\/wap\/gongzhao.class.php",
             "line": 29,
-            "category": "ui",
-            "text": "            $this->yunset(\"headertitle\", \"公招\");"
+            "category": "i18n_wrapped",
+            "text": "            $this->yunset(\"headertitle\", yun_auto_t('公招'));"
         },
         {
             "file": "app\/controller\/wap\/index.class.php",
@@ -4913,8 +4832,8 @@
         {
             "file": "app\/controller\/wap\/job.class.php",
             "line": 109,
-            "category": "ui",
-            "text": "        $this->yunset('topplaceholder', '请输入职位关键字,如：会计...');"
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('topplaceholder', yun_auto_t('请输入职位关键字,如：会计...'));"
         },
         {
             "file": "app\/controller\/wap\/job.class.php",
@@ -4925,38 +4844,38 @@
         {
             "file": "app\/controller\/wap\/job.class.php",
             "line": 133,
-            "category": "ui",
-            "text": "            $this->ACT_msg_wap(1, '参数错误！', 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "            $this->ACT_msg_wap(1, yun_auto_t('参数错误！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/job.class.php",
             "line": 156,
-            "category": "ui",
-            "text": "            $this->ACT_msg_wap(1, '职位不存在！', 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "            $this->ACT_msg_wap(1, yun_auto_t('职位不存在！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/job.class.php",
             "line": 175,
-            "category": "ui",
-            "text": "                $this->ACT_msg_wap(1, '企业暂未通过审核！');"
+            "category": "i18n_wrapped",
+            "text": "                $this->ACT_msg_wap(1, yun_auto_t('企业暂未通过审核！'));"
         },
         {
             "file": "app\/controller\/wap\/job.class.php",
             "line": 177,
-            "category": "ui",
-            "text": "                $this->ACT_msg_wap(1, '企业已被锁定！');"
+            "category": "i18n_wrapped",
+            "text": "                $this->ACT_msg_wap(1, yun_auto_t('企业已被锁定！'));"
         },
         {
             "file": "app\/controller\/wap\/job.class.php",
             "line": 181,
-            "category": "ui",
-            "text": "                $this->ACT_msg_wap(1, '职位审核中！', 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "                $this->ACT_msg_wap(1, yun_auto_t('职位审核中！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/job.class.php",
             "line": 185,
-            "category": "ui",
-            "text": "                $this->ACT_msg_wap(1, '该职位未通过审核！', 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "                $this->ACT_msg_wap(1, yun_auto_t('该职位未通过审核！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/job.class.php",
@@ -5206,27 +5125,15 @@
         },
         {
             "file": "app\/controller\/wap\/login.class.php",
-            "line": 48,
-            "category": "ui",
-            "text": "        $yinsi  =  $descM -> getDes(array('name'=>array('like','隐私政策')),array('field'=>'content'));"
-        },
-        {
-            "file": "app\/controller\/wap\/login.class.php",
             "line": 53,
-            "category": "ui",
-            "text": "\t\t$this->yunset('headertitle',\"会员登录\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('会员登录'));"
         },
         {
             "file": "app\/controller\/wap\/login.class.php",
             "line": 93,
             "category": "ui",
             "text": "            $lData['source'] = 26;\/\/ 预留信息"
-        },
-        {
-            "file": "app\/controller\/wap\/login.class.php",
-            "line": 120,
-            "category": "ui",
-            "text": "        $result     =   $noticeM->jycheck($_POST['authcode'], '前台登录');"
         },
         {
             "file": "app\/controller\/wap\/login.class.php",
@@ -5237,8 +5144,8 @@
         {
             "file": "app\/controller\/wap\/login.class.php",
             "line": 189,
-            "category": "ui",
-            "text": "\t\t\t\t\t\t$this->ACT_msg_wap(Url('wap',array('c'=>'login')),'请等待账户审核！', 1, 3);"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\t\t\t$this->ACT_msg_wap(Url('wap',array('c'=>'login')),yun_auto_t('请等待账户审核！'), 1, 3);"
         },
         {
             "file": "app\/controller\/wap\/login.class.php",
@@ -5267,8 +5174,8 @@
         {
             "file": "app\/controller\/wap\/login.class.php",
             "line": 232,
-            "category": "ui",
-            "text": "\t            $this->layer_msg('扫码成功',9);"
+            "category": "i18n_wrapped",
+            "text": "\t            $this->layer_msg(yun_auto_t('扫码成功'),9);"
         },
         {
             "file": "app\/controller\/wap\/login.class.php",
@@ -5375,14 +5282,14 @@
         {
             "file": "app\/controller\/wap\/map.class.php",
             "line": 283,
-            "category": "ui",
-            "text": "        $this -> yunset('headertitle', '企业位置');"
+            "category": "i18n_wrapped",
+            "text": "        $this -> yunset('headertitle', yun_auto_t('企业位置'));"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
             "line": 6,
-            "category": "ui",
-            "text": "\t\t\t$this->ACT_msg_wap('index.php','很抱歉！该模块已关闭！', 1, 3);"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
@@ -5398,147 +5305,171 @@
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
-            "line": 39,
-            "category": "ui",
-            "text": "\t\t$adtime\t=\tarray(\"0\"=>\"不限\",\"7\"=>\"一周以内\",\"15\"=>\"半个月\",\"30\"=>\"一个月\",\"60\"=>\"两个月\",\"180\"=>\"半年\",\"365\"=>\"一年\");"
+            "line": 41,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\"7\" => yun_auto_t('一周以内'),"
+        },
+        {
+            "file": "app\/controller\/wap\/once.class.php",
+            "line": 42,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\"15\" => yun_auto_t('半个月'),"
+        },
+        {
+            "file": "app\/controller\/wap\/once.class.php",
+            "line": 43,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\"30\" => yun_auto_t('一个月'),"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
             "line": 44,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"topplaceholder\",\"请输入招聘关键字,如：服务员...\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\"60\" => yun_auto_t('两个月'),"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
             "line": 45,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"店铺招聘\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\"180\" => yun_auto_t('半年'),"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
-            "line": 51,
-            "category": "ui",
-            "text": "        $result\t\t=\t$noticeM->jycheck($_POST['authcode'],'店铺招聘');"
+            "line": 46,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\"365\" => yun_auto_t('一年')"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
-            "line": 64,
-            "category": "ui",
-            "text": "\t\t\t$this->ACT_msg_wap('index.php','很抱歉！该模块已关闭！', 1, 3);"
+            "line": 52,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"topplaceholder\",yun_auto_t('请输入招聘关键字,如：服务员...'));"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
-            "line": 147,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"店铺招聘\");"
+            "line": 53,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('店铺招聘'));"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
-            "line": 148,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"title\",\"添加店铺招聘\");"
+            "line": 72,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
-            "line": 153,
-            "category": "ui",
-            "text": "\t\t\t$this->ACT_msg_wap('index.php','很抱歉！该模块已关闭！', 1, 3);"
+            "line": 155,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('店铺招聘'));"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
-            "line": 163,
-            "category": "ui",
-            "text": "\t\t\t$this->ACT_msg_wap(Url('wap',array('c'=>'once')),'店铺正在审核！', 1, 3);"
+            "line": 156,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"title\",yun_auto_t('添加店铺招聘'));"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
-            "line": 166,
-            "category": "ui",
-            "text": "\t\t\t$this->ACT_msg_wap(Url('wap',array('c'=>'once')),'店铺招聘付费中！', 1, 3);"
+            "line": 161,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
-            "line": 180,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"店铺招聘\");"
+            "line": 171,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$this->ACT_msg_wap(Url('wap',array('c'=>'once')),yun_auto_t('店铺正在审核！'), 1, 3);"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
-            "line": 186,
-            "category": "ui",
-            "text": "\t\t\t$this->ACT_msg_wap('index.php','很抱歉！该模块已关闭！', 1, 3);"
+            "line": 174,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$this->ACT_msg_wap(Url('wap',array('c'=>'once')),yun_auto_t('店铺招聘付费中！'), 1, 3);"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
-            "line": 192,
-            "category": "ui",
-            "text": "                $this->ACT_msg_wap(Url('wap',array('c'=>'once')),'数据异常！', 1, 3);"
+            "line": 188,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('店铺招聘'));"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
-            "line": 196,
-            "category": "ui",
-            "text": "\t\t\t\t$this->ACT_msg_wap(Url('wap',array('c'=>'once')),'店铺信息不存在！', 1, 3);"
+            "line": 194,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
-            "line": 221,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"店铺招聘\");"
+            "line": 200,
+            "category": "i18n_wrapped",
+            "text": "                $this->ACT_msg_wap(Url('wap',array('c'=>'once')),yun_auto_t('数据异常！'), 1, 3);"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
-            "line": 242,
+            "line": 204,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\t$this->ACT_msg_wap(Url('wap',array('c'=>'once')),yun_auto_t('店铺信息不存在！'), 1, 3);"
+        },
+        {
+            "file": "app\/controller\/wap\/once.class.php",
+            "line": 229,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('店铺招聘'));"
+        },
+        {
+            "file": "app\/controller\/wap\/once.class.php",
+            "line": 250,
             "category": "i18n_wrapped",
             "text": "                    $data['msg']\t=\tyun_auto_t('支付成功');"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
-            "line": 256,
+            "line": 264,
             "category": "i18n_wrapped",
             "text": "\t\t\t\t$data['msg']\t=\tyun_auto_t('提交失败！！');"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
-            "line": 271,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"待付款店铺\");"
+            "line": 279,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('待付款店铺'));"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
-            "line": 280,
+            "line": 288,
             "category": "i18n_wrapped",
             "text": "\t\t\t$return['msg']=yun_auto_t('取消订单成功！');"
         },
         {
             "file": "app\/controller\/wap\/once.class.php",
-            "line": 282,
+            "line": 290,
             "category": "i18n_wrapped",
             "text": "\t\t\t$return['msg']=yun_auto_t('取消订单失败！');"
         },
         {
             "file": "app\/controller\/wap\/part.class.php",
             "line": 17,
-            "category": "ui",
-            "text": "            $this->ACT_msg_wap('index.php', '很抱歉！该模块已关闭！', 1, 3);"
+            "category": "i18n_wrapped",
+            "text": "            $this->ACT_msg_wap('index.php', yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);"
         },
         {
             "file": "app\/controller\/wap\/part.class.php",
             "line": 39,
-            "category": "ui",
-            "text": "        $this->yunset('topplaceholder', '请输入关键字');"
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('topplaceholder', yun_auto_t('请输入关键字'));"
         },
         {
             "file": "app\/controller\/wap\/part.class.php",
             "line": 40,
-            "category": "ui",
-            "text": "        $this->yunset('headertitle', \"兼职\");"
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('headertitle', yun_auto_t('兼职'));"
         },
         {
             "file": "app\/controller\/wap\/part.class.php",
             "line": 48,
-            "category": "ui",
-            "text": "            $this->ACT_msg_wap('index.php', '很抱歉！该模块已关闭！', 1, 3);"
+            "category": "i18n_wrapped",
+            "text": "            $this->ACT_msg_wap('index.php', yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);"
         },
         {
             "file": "app\/controller\/wap\/part.class.php",
@@ -5549,8 +5480,8 @@
         {
             "file": "app\/controller\/wap\/part.class.php",
             "line": 79,
-            "category": "ui",
-            "text": "                $this->ACT_msg_wap('index.php', '该兼职暂无法展示！', 1, 3);"
+            "category": "i18n_wrapped",
+            "text": "                $this->ACT_msg_wap('index.php', yun_auto_t('该兼职暂无法展示！'), 1, 3);"
         },
         {
             "file": "app\/controller\/wap\/part.class.php",
@@ -5579,20 +5510,20 @@
         {
             "file": "app\/controller\/wap\/qqconnect.class.php",
             "line": 17,
-            "category": "ui",
-            "text": "                $this->ACT_msg_wap($this->config['sy_wapdomain'], $msg = \"您已经登录了！\");"
+            "category": "i18n_wrapped",
+            "text": "                $this->ACT_msg_wap($this->config['sy_wapdomain'], yun_auto_t('您已经登录了！'));"
         },
         {
             "file": "app\/controller\/wap\/qqconnect.class.php",
             "line": 24,
-            "category": "ui",
-            "text": "                $this->ACT_msg_wap($this->config['sy_wapdomain'], $msg = \"对不起，QQ绑定已关闭！\", 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "                $this->ACT_msg_wap($this->config['sy_wapdomain'], yun_auto_t('对不起，QQ绑定已关闭！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/qqconnect.class.php",
             "line": 27,
-            "category": "ui",
-            "text": "                $this->ACT_msg_wap($this->config['sy_wapdomain'], $msg = \"对不起，QQ登录已关闭！\", 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "                $this->ACT_msg_wap($this->config['sy_wapdomain'], yun_auto_t('对不起，QQ登录已关闭！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/qqconnect.class.php",
@@ -5614,12 +5545,6 @@
         },
         {
             "file": "app\/controller\/wap\/qqconnect.class.php",
-            "line": 141,
-            "category": "ui",
-            "text": "                            $this->MODEL('integral')->invtalCheck($userinfo['uid'], $userinfo['usertype'], \"integral_login\", \"会员登录\", 22);"
-        },
-        {
-            "file": "app\/controller\/wap\/qqconnect.class.php",
             "line": 146,
             "category": "i18n_wrapped",
             "text": "                            $logdata['content']     =   yun_auto_t('WAPQQ登录');"
@@ -5633,14 +5558,14 @@
         {
             "file": "app\/controller\/wap\/qqconnect.class.php",
             "line": 177,
-            "category": "ui",
-            "text": "                    $_SESSION['qq'][\"logininfo\"]    =   \"您已登录QQ，请绑定您的帐户！\";"
+            "category": "i18n_wrapped",
+            "text": "                    $_SESSION['qq'][\"logininfo\"]    =   yun_auto_t('您已登录QQ，请绑定您的帐户！');"
         },
         {
             "file": "app\/controller\/wap\/qqconnect.class.php",
             "line": 211,
-            "category": "ui",
-            "text": "                            $this->ACT_msg_wap(Url(\"wap\"), \"用户信息获取失败，请重新登录QQ！\", 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "                            $this->ACT_msg_wap(Url(\"wap\"), yun_auto_t('用户信息获取失败，请重新登录QQ！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/qqconnect.class.php",
@@ -5651,14 +5576,8 @@
         {
             "file": "app\/controller\/wap\/qqconnect.class.php",
             "line": 258,
-            "category": "ui",
-            "text": "            $this->yunset(\"headertitle\", \"QQ登录绑定\");"
-        },
-        {
-            "file": "app\/controller\/wap\/qqconnect.class.php",
-            "line": 268,
-            "category": "ui",
-            "text": "        $result     =   $noticeM->jycheck($_POST['authcode'], '前台登录');"
+            "category": "i18n_wrapped",
+            "text": "            $this->yunset(\"headertitle\", yun_auto_t('QQ登录绑定'));"
         },
         {
             "file": "app\/controller\/wap\/qqconnect.class.php",
@@ -5681,32 +5600,14 @@
         {
             "file": "app\/controller\/wap\/redeem.class.php",
             "line": 80,
-            "category": "ui",
-            "text": "\t\t\t$this->ACT_msg_wap(Url('redeem'),\"没有找到相关商品！\",2,5);"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$this->ACT_msg_wap(Url('redeem'),yun_auto_t('没有找到相关商品！'),2,5);"
         },
         {
             "file": "app\/controller\/wap\/redeem.class.php",
             "line": 95,
-            "category": "ui",
-            "text": "\t\t     $this->ACT_layer_msg('您还没有登录，请先登录！',8,$_SERVER['HTTP_REFERER']);"
-        },
-        {
-            "file": "app\/controller\/wap\/redeem.class.php",
-            "line": 136,
-            "category": "ui",
-            "text": "\t\t\t$change['province']\t\t=\tstr_replace(\"收货地址：\",'', $body['0']);"
-        },
-        {
-            "file": "app\/controller\/wap\/redeem.class.php",
-            "line": 140,
-            "category": "ui",
-            "text": "\t\t\t$change['cityname']\t\t=\tstr_replace(\"收货地址：\",'', $body['0']).' '.$body['1'].' '.$body['2'];"
-        },
-        {
-            "file": "app\/controller\/wap\/redeem.class.php",
-            "line": 145,
-            "category": "comment",
-            "text": "\t\t\/*显示实付款*\/"
+            "category": "i18n_wrapped",
+            "text": "\t\t     $this->ACT_layer_msg(yun_auto_t('您还没有登录，请先登录！'),8,$_SERVER['HTTP_REFERER']);"
         },
         {
             "file": "app\/controller\/wap\/redeem.class.php",
@@ -5723,38 +5624,32 @@
         {
             "file": "app\/controller\/wap\/register.class.php",
             "line": 17,
-            "category": "ui",
-            "text": "            $this->ACT_msg_wap('index.php', '网站已关闭注册！', 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "            $this->ACT_msg_wap('index.php', yun_auto_t('网站已关闭注册！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/register.class.php",
             "line": 21,
-            "category": "ui",
-            "text": "                $this->ACT_msg_wap('index.php', '您已经登录了！', 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "                $this->ACT_msg_wap('index.php', yun_auto_t('您已经登录了！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/register.class.php",
             "line": 28,
-            "category": "ui",
-            "text": "                            $this->ACT_msg_wap('index.php', '用户名注册已关闭！', 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "                            $this->ACT_msg_wap('index.php', yun_auto_t('用户名注册已关闭！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/register.class.php",
             "line": 33,
-            "category": "ui",
-            "text": "                            $this->ACT_msg_wap('index.php', '手机号注册已关闭！', 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "                            $this->ACT_msg_wap('index.php', yun_auto_t('手机号注册已关闭！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/register.class.php",
             "line": 38,
-            "category": "ui",
-            "text": "                            $this->ACT_msg_wap('index.php', 'email注册已关闭！', 2, 5);"
-        },
-        {
-            "file": "app\/controller\/wap\/register.class.php",
-            "line": 60,
-            "category": "ui",
-            "text": "        $yinsi = $descM->getDes(array('name' => array('like', '隐私政策')), array('field' => 'content'));"
+            "category": "i18n_wrapped",
+            "text": "                            $this->ACT_msg_wap('index.php', yun_auto_t('email注册已关闭！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/register.class.php",
@@ -5807,14 +5702,14 @@
         {
             "file": "app\/controller\/wap\/reportlist.class.php",
             "line": 15,
-            "category": "ui",
-            "text": "        $this -> yunset('headertitle', '举报');"
+            "category": "i18n_wrapped",
+            "text": "        $this -> yunset('headertitle', yun_auto_t('举报'));"
         },
         {
             "file": "app\/controller\/wap\/reportlist.class.php",
             "line": 37,
-            "category": "ui",
-            "text": "            $this->layer_msg('请先登录', 8);"
+            "category": "i18n_wrapped",
+            "text": "            $this->layer_msg(yun_auto_t('请先登录'), 8);"
         },
         {
             "file": "app\/controller\/wap\/resume.class.php",
@@ -5831,14 +5726,14 @@
         {
             "file": "app\/controller\/wap\/resume.class.php",
             "line": 135,
-            "category": "ui",
-            "text": "\t\t$this -> yunset('headertitle', '找人才');"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this -> yunset('headertitle', yun_auto_t('找人才'));"
         },
         {
             "file": "app\/controller\/wap\/resume.class.php",
             "line": 136,
-            "category": "ui",
-            "text": "\t\t$this -> yunset('topplaceholder', '请输入简历关键字,如：服务员...');"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this -> yunset('topplaceholder', yun_auto_t('请输入简历关键字,如：服务员...'));"
         },
         {
             "file": "app\/controller\/wap\/resume.class.php",
@@ -5849,80 +5744,74 @@
         {
             "file": "app\/controller\/wap\/resume.class.php",
             "line": 161,
-            "category": "ui",
-            "text": "                $this->ACT_msg_wap(1, '账户正在审核中，无法查看！', 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "                $this->ACT_msg_wap(1, yun_auto_t('账户正在审核中，无法查看！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/resume.class.php",
             "line": 169,
             "category": "i18n_wrapped",
-            "text": "\t\t\t    $this->ACT_msg_wap($returnUrl,'游客用户，每天只能访问'.$this->config['sy_resume_visitors']. yun_auto_t('份简历，请登录后继续访问！'), 2, 5);"
+            "text": "\t\t\t    $this->ACT_msg_wap($returnUrl,yun_auto_t('游客用户，每天只能访问').$this->config['sy_resume_visitors']. yun_auto_t('份简历，请登录后继续访问！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/resume.class.php",
             "line": 189,
-            "category": "ui",
-            "text": "\t\t\t    $this->ACT_msg_wap(1,'没有找到该人才！', 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t    $this->ACT_msg_wap(1,yun_auto_t('没有找到该人才！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/resume.class.php",
             "line": 193,
-            "category": "ui",
-            "text": "\t\t\t    $this->ACT_msg_wap(1,'还没有创建简历！', 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t    $this->ACT_msg_wap(1,yun_auto_t('还没有创建简历！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/resume.class.php",
             "line": 208,
-            "category": "ui",
-            "text": "\t\t    $this->ACT_msg_wap(1,'没有找到该人才！', 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "\t\t    $this->ACT_msg_wap(1,yun_auto_t('没有找到该人才！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/resume.class.php",
             "line": 214,
-            "category": "ui",
-            "text": "\t\t    $this->ACT_msg_wap(1,'简历正在审核中！', 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "\t\t    $this->ACT_msg_wap(1,yun_auto_t('简历正在审核中！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/resume.class.php",
             "line": 218,
-            "category": "ui",
-            "text": "\t\t    $this->ACT_msg_wap(1,'简历暂被锁定，请稍后查看！', 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "\t\t    $this->ACT_msg_wap(1,yun_auto_t('简历暂被锁定，请稍后查看！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/resume.class.php",
             "line": 222,
-            "category": "ui",
-            "text": "\t\t    $this->ACT_msg_wap(1,'简历审核暂未通过！', 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "\t\t    $this->ACT_msg_wap(1,yun_auto_t('简历审核暂未通过！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/resume.class.php",
             "line": 225,
-            "category": "ui",
-            "text": "            $this->ACT_msg_wap($returnUrl, '请先登录', 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "            $this->ACT_msg_wap($returnUrl, yun_auto_t('请先登录'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/resume.class.php",
             "line": 230,
-            "category": "ui",
-            "text": "\t\t    $this->ACT_msg_wap($returnUrl,'个人用户无权限查看！', 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "\t\t    $this->ACT_msg_wap($returnUrl,yun_auto_t('个人用户无权限查看！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/resume.class.php",
             "line": 248,
-            "category": "ui",
-            "text": "                $this->ACT_msg_wap(1,'简历已设置不对外开放', 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "                $this->ACT_msg_wap(1,yun_auto_t('简历已设置不对外开放'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/resume.class.php",
             "line": 258,
-            "category": "ui",
-            "text": "            $this->ACT_msg_wap(1, '该用户已关闭简历!', 2, 5);"
-        },
-        {
-            "file": "app\/controller\/wap\/resume.class.php",
-            "line": 279,
-            "category": "comment",
-            "text": "\t\t\/* 模糊字段 *\/"
+            "category": "i18n_wrapped",
+            "text": "            $this->ACT_msg_wap(1, yun_auto_t('该用户已关闭简历!'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/resume.class.php",
@@ -5945,8 +5834,8 @@
         {
             "file": "app\/controller\/wap\/resume.class.php",
             "line": 299,
-            "category": "ui",
-            "text": "  \t\t$this -> yunset('headertitle', '个人简历');"
+            "category": "i18n_wrapped",
+            "text": "  \t\t$this -> yunset('headertitle', yun_auto_t('个人简历'));"
         },
         {
             "file": "app\/controller\/wap\/resume.class.php",
@@ -5959,12 +5848,6 @@
             "line": 311,
             "category": "ui",
             "text": "\t * 分享简历"
-        },
-        {
-            "file": "app\/controller\/wap\/resume.class.php",
-            "line": 327,
-            "category": "comment",
-            "text": "\t\t\/* 模糊字段 *\/"
         },
         {
             "file": "app\/controller\/wap\/resume.class.php",
@@ -5981,8 +5864,8 @@
         {
             "file": "app\/controller\/wap\/resume.class.php",
             "line": 433,
-            "category": "ui",
-            "text": "\t\t$this -> yunset('headertitle', '面试邀请');"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this -> yunset('headertitle', yun_auto_t('面试邀请'));"
         },
         {
             "file": "app\/controller\/wap\/resume.class.php",
@@ -6005,14 +5888,14 @@
         {
             "file": "app\/controller\/wap\/services.class.php",
             "line": 9,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"服务协议\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('服务协议'));"
         },
         {
             "file": "app\/controller\/wap\/sinaconnect.class.php",
             "line": 45,
-            "category": "ui",
-            "text": "                $this->actMsg($msgUrl, \"对不起，新浪登录已关闭！\");"
+            "category": "i18n_wrapped",
+            "text": "                $this->actMsg($msgUrl, yun_auto_t('对不起，新浪登录已关闭！'));"
         },
         {
             "file": "app\/controller\/wap\/sinaconnect.class.php",
@@ -6028,12 +5911,6 @@
         },
         {
             "file": "app\/controller\/wap\/sinaconnect.class.php",
-            "line": 107,
-            "category": "ui",
-            "text": "                                $this->MODEL('integral')->invtalCheck($userinfo['uid'], $userinfo['usertype'], \"integral_login\", \"会员登录\", 22);"
-        },
-        {
-            "file": "app\/controller\/wap\/sinaconnect.class.php",
             "line": 112,
             "category": "i18n_wrapped",
             "text": "                                $logdata['content']     =   yun_auto_t('WAP微博登录');"
@@ -6041,20 +5918,20 @@
         {
             "file": "app\/controller\/wap\/sinaconnect.class.php",
             "line": 142,
-            "category": "ui",
-            "text": "                        $_SESSION['sina'][\"logininfo\"]  =   \"您已登录新浪微博，请绑定您的帐户！\";"
+            "category": "i18n_wrapped",
+            "text": "                        $_SESSION['sina'][\"logininfo\"]  =   yun_auto_t('您已登录新浪微博，请绑定您的帐户！');"
         },
         {
             "file": "app\/controller\/wap\/sinaconnect.class.php",
             "line": 161,
-            "category": "ui",
-            "text": "                            $this->actMsg($msgUrl, \"用户信息获取失败，请重新登录新浪微博！\");"
+            "category": "i18n_wrapped",
+            "text": "                            $this->actMsg($msgUrl, yun_auto_t('用户信息获取失败，请重新登录新浪微博！'));"
         },
         {
             "file": "app\/controller\/wap\/sinaconnect.class.php",
             "line": 174,
-            "category": "ui",
-            "text": "                    $this->actMsg($msgUrl, \"新浪微博授权失败，请重新授权！\");"
+            "category": "i18n_wrapped",
+            "text": "                    $this->actMsg($msgUrl, yun_auto_t('新浪微博授权失败，请重新授权！'));"
         },
         {
             "file": "app\/controller\/wap\/sinaconnect.class.php",
@@ -6065,14 +5942,8 @@
         {
             "file": "app\/controller\/wap\/sinaconnect.class.php",
             "line": 216,
-            "category": "ui",
-            "text": "            $this->yunset(\"headertitle\", \"微博登录绑定\");"
-        },
-        {
-            "file": "app\/controller\/wap\/sinaconnect.class.php",
-            "line": 226,
-            "category": "ui",
-            "text": "        $result     =   $noticeM->jycheck($_POST['authcode'], '前台登录');"
+            "category": "i18n_wrapped",
+            "text": "            $this->yunset(\"headertitle\", yun_auto_t('微博登录绑定'));"
         },
         {
             "file": "app\/controller\/wap\/sinaconnect.class.php",
@@ -6083,38 +5954,38 @@
         {
             "file": "app\/controller\/wap\/site.class.php",
             "line": 6,
-            "category": "ui",
-            "text": "            $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], $msg = \"暂未开启多站点模式！\",2,5);"
+            "category": "i18n_wrapped",
+            "text": "            $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('暂未开启多站点模式！'),2,5);"
         },
         {
             "file": "app\/controller\/wap\/site.class.php",
             "line": 9,
-            "category": "ui",
-            "text": "        $this->yunset(\"headertitle\",\"分站\");"
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset(\"headertitle\",yun_auto_t('分站'));"
         },
         {
             "file": "app\/controller\/wap\/special.class.php",
             "line": 5,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"专题招聘\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('专题招聘'));"
         },
         {
             "file": "app\/controller\/wap\/special.class.php",
             "line": 13,
-            "category": "ui",
-            "text": "            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], '没有找到该专题招聘');"
+            "category": "i18n_wrapped",
+            "text": "            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('没有找到该专题招聘'));"
         },
         {
             "file": "app\/controller\/wap\/special.class.php",
             "line": 29,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"专题详情页\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('专题详情页'));"
         },
         {
             "file": "app\/controller\/wap\/tiny.class.php",
             "line": 6,
-            "category": "ui",
-            "text": "\t\t\t$this->ACT_msg_wap('index.php','很抱歉！该模块已关闭！', 1, 3);"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);"
         },
         {
             "file": "app\/controller\/wap\/tiny.class.php",
@@ -6124,57 +5995,81 @@
         },
         {
             "file": "app\/controller\/wap\/tiny.class.php",
-            "line": 40,
-            "category": "ui",
-            "text": "\t\t$adtime\t=\tarray(\"0\"=>\"不限\",\"7\"=>\"一周以内\",\"15\"=>\"半个月\",\"30\"=>\"一个月\",\"60\"=>\"两个月\",\"180\"=>\"半年\",\"365\"=>\"一年\");"
+            "line": 42,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\"7\" => yun_auto_t('一周以内'),"
         },
         {
             "file": "app\/controller\/wap\/tiny.class.php",
             "line": 43,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"topplaceholder\",\"请输入关键字如：普工\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\"15\" => yun_auto_t('半个月'),"
         },
         {
             "file": "app\/controller\/wap\/tiny.class.php",
             "line": 44,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"普工专区\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\"30\" => yun_auto_t('一个月'),"
         },
         {
             "file": "app\/controller\/wap\/tiny.class.php",
-            "line": 65,
-            "category": "ui",
-            "text": "        $result\t\t=\t$noticeM->jycheck($_POST['authcode'],'普工简历');"
+            "line": 45,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\"60\" => yun_auto_t('两个月'),"
         },
         {
             "file": "app\/controller\/wap\/tiny.class.php",
-            "line": 78,
-            "category": "ui",
-            "text": "\t\t\t$this->ACT_msg_wap('index.php','很抱歉！该模块已关闭！', 1, 3);"
+            "line": 46,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\"180\" => yun_auto_t('半年'),"
         },
         {
             "file": "app\/controller\/wap\/tiny.class.php",
-            "line": 138,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"普工专区\");"
+            "line": 47,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\"365\" => yun_auto_t('一年')"
         },
         {
             "file": "app\/controller\/wap\/tiny.class.php",
-            "line": 139,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"title\",\"添加普工简历\");"
+            "line": 51,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"topplaceholder\",yun_auto_t('请输入关键字如：普工'));"
         },
         {
             "file": "app\/controller\/wap\/tiny.class.php",
-            "line": 144,
-            "category": "ui",
-            "text": "\t\t\t$this->ACT_msg_wap('index.php','很抱歉！该模块已关闭！', 1, 3);"
+            "line": 52,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('普工专区'));"
         },
         {
             "file": "app\/controller\/wap\/tiny.class.php",
-            "line": 162,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"普工专区\");"
+            "line": 86,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);"
+        },
+        {
+            "file": "app\/controller\/wap\/tiny.class.php",
+            "line": 146,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('普工专区'));"
+        },
+        {
+            "file": "app\/controller\/wap\/tiny.class.php",
+            "line": 147,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"title\",yun_auto_t('添加普工简历'));"
+        },
+        {
+            "file": "app\/controller\/wap\/tiny.class.php",
+            "line": 152,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);"
+        },
+        {
+            "file": "app\/controller\/wap\/tiny.class.php",
+            "line": 170,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('普工专区'));"
         },
         {
             "file": "app\/controller\/wap\/upload.class.php",
@@ -6268,75 +6163,21 @@
         },
         {
             "file": "app\/controller\/wap\/upload.class.php",
-            "line": 267,
-            "category": "ui",
-            "text": "\t1.统计已经上传图片地方、上传文件地方， （搜索Upload_pic）"
-        },
-        {
-            "file": "app\/controller\/wap\/upload.class.php",
-            "line": 268,
-            "category": "ui",
-            "text": "\t有哪些操作，验证了什么，保存了什么信息（文件路径），"
-        },
-        {
-            "file": "app\/controller\/wap\/upload.class.php",
-            "line": 270,
-            "category": "ui",
-            "text": "\t前台：企业上传logo、上传企业执照照片、，个人上传简历照片，"
-        },
-        {
-            "file": "app\/controller\/wap\/upload.class.php",
-            "line": 272,
-            "category": "ui",
-            "text": "\t2.把共用的验证逻辑写到上传类中，"
-        },
-        {
-            "file": "app\/controller\/wap\/upload.class.php",
-            "line": 274,
-            "category": "ui",
-            "text": "\t4.写一个手机端拍照\/相册上传的页面"
-        },
-        {
-            "file": "app\/controller\/wap\/upload.class.php",
-            "line": 276,
-            "category": "ui",
-            "text": "\t5.写一个生产二维码扫码上传的接口"
-        },
-        {
-            "file": "app\/controller\/wap\/upload.class.php",
-            "line": 278,
-            "category": "ui",
-            "text": "\t6.pc端需要上传的地方，添加扫码上传的二维码展示"
-        },
-        {
-            "file": "app\/controller\/wap\/upload.class.php",
-            "line": 280,
-            "category": "ui",
-            "text": "\t7. to do : 手机端上传成功，让pc端页面触发刷新（参考微信二维码付款，订单页面触发刷新）"
-        },
-        {
-            "file": "app\/controller\/wap\/upload.class.php",
-            "line": 310,
+            "line": 302,
             "category": "i18n_wrapped",
             "text": "\t\t    $msg \t= \tyun_auto_t('请选择图片');"
         },
         {
             "file": "app\/controller\/wap\/wxconnect.class.php",
             "line": 14,
-            "category": "ui",
-            "text": "                $this->ACT_msg_wap(Url(\"wap\") . 'member\/', $msg = \"对不起，微信绑定已关闭！\", 2, 5);"
+            "category": "i18n_wrapped",
+            "text": "                $this->ACT_msg_wap(Url(\"wap\") . 'member\/', yun_auto_t('对不起，微信绑定已关闭！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/wxconnect.class.php",
             "line": 17,
-            "category": "ui",
-            "text": "                $this->ACT_msg_wap(Url(\"wap\"), $msg = \"对不起，微信登录已关闭！\", 2, 5);"
-        },
-        {
-            "file": "app\/controller\/wap\/wxconnect.class.php",
-            "line": 76,
-            "category": "ui",
-            "text": "\t\t\t\t\t\t\t\t$this->MODEL('integral')->invtalCheck($userinfo['uid'], $userinfo['usertype'], \"integral_bind_wx\", \"微信扫码绑定\", 28);"
+            "category": "i18n_wrapped",
+            "text": "                $this->ACT_msg_wap(Url(\"wap\"), yun_auto_t('对不起，微信登录已关闭！'), 2, 5);"
         },
         {
             "file": "app\/controller\/wap\/wxconnect.class.php",
@@ -6364,12 +6205,6 @@
         },
         {
             "file": "app\/controller\/wap\/wxconnect.class.php",
-            "line": 115,
-            "category": "ui",
-            "text": "                                    $this->MODEL('integral')->invtalCheck($userinfo['uid'], $userinfo['usertype'], \"integral_login\", \"会员登录\", 22);"
-        },
-        {
-            "file": "app\/controller\/wap\/wxconnect.class.php",
             "line": 120,
             "category": "i18n_wrapped",
             "text": "                                    $logdata['content']     =   yun_auto_t('WAP微信登录');"
@@ -6383,14 +6218,8 @@
         {
             "file": "app\/controller\/wap\/wxconnect.class.php",
             "line": 154,
-            "category": "ui",
-            "text": "                        $_SESSION['wx'][\"logininfo\"]    =   \"您已登录微信，请绑定您的帐户！\";"
-        },
-        {
-            "file": "app\/controller\/wap\/wxconnect.class.php",
-            "line": 171,
-            "category": "ui",
-            "text": "\t\t\t\t\t\t\t\t$this->MODEL('integral')->invtalCheck($this->uid, $this->usertype, \"integral_bind_wx\", \"微信扫码绑定\", 28);"
+            "category": "i18n_wrapped",
+            "text": "                        $_SESSION['wx'][\"logininfo\"]    =   yun_auto_t('您已登录微信，请绑定您的帐户！');"
         },
         {
             "file": "app\/controller\/wap\/wxconnect.class.php",
@@ -6407,8 +6236,8 @@
         {
             "file": "app\/controller\/wap\/wxconnect.class.php",
             "line": 208,
-            "category": "ui",
-            "text": "                                $this->ACT_msg(Url(\"wap\"), \"用户信息获取失败，请重新登录！\", 8);"
+            "category": "i18n_wrapped",
+            "text": "                                $this->ACT_msg(Url(\"wap\"), yun_auto_t('用户信息获取失败，请重新登录！'), 8);"
         },
         {
             "file": "app\/controller\/wap\/wxconnect.class.php",
@@ -6421,12 +6250,6 @@
             "line": 254,
             "category": "i18n_wrapped",
             "text": "            $this->yunset('headertitle', yun_auto_t('微信登录绑定'));"
-        },
-        {
-            "file": "app\/controller\/wap\/wxconnect.class.php",
-            "line": 265,
-            "category": "ui",
-            "text": "        $result     =   $noticeM->jycheck($_POST['authcode'], '前台登录');"
         },
         {
             "file": "app\/controller\/wap\/wxconnect.class.php",
@@ -6443,14 +6266,8 @@
         {
             "file": "app\/controller\/wap\/wxoauth.class.php",
             "line": 63,
-            "category": "ui",
-            "text": "                            $LogM->addMemberLog($userinfo['uid'], $userinfo['usertype'], '账号登录：授权登录', 32, 1, $logDetail);"
-        },
-        {
-            "file": "app\/controller\/wap\/wxoauth.class.php",
-            "line": 69,
-            "category": "ui",
-            "text": "\t\t\t\t\t            $this->MODEL('integral')->invtalCheck($userinfo['uid'],$userinfo['usertype'],\"integral_login\",\"会员登录\",22);"
+            "category": "i18n_wrapped",
+            "text": "                            $LogM->addMemberLog($userinfo['uid'], $userinfo['usertype'], yun_auto_t('账号登录：授权登录'), 32, 1, $logDetail);"
         },
         {
             "file": "app\/controller\/wap\/wxoauth.class.php",
@@ -6461,20 +6278,20 @@
         {
             "file": "app\/controller\/wap\/zph.class.php",
             "line": 10,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"招聘会\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('招聘会'));"
         },
         {
             "file": "app\/controller\/wap\/zph.class.php",
             "line": 28,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"招聘会详情\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('招聘会详情'));"
         },
         {
             "file": "app\/controller\/wap\/zph.class.php",
             "line": 65,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"参会企业\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('参会企业'));"
         },
         {
             "file": "app\/controller\/wap\/zph.class.php",
@@ -6485,8 +6302,8 @@
         {
             "file": "app\/controller\/wap\/zph.class.php",
             "line": 85,
-            "category": "ui",
-            "text": "\t\t$this->yunset(\"headertitle\",\"在线预订\");"
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"headertitle\",yun_auto_t('在线预订'));"
         },
         {
             "file": "app\/controller\/wap\/zph.class.php",
