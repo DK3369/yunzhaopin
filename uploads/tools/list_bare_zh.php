@@ -1,6 +1,6 @@
 <?php
 define('ROOT', dirname(__DIR__) . '/');
-$dirs = array('api/wxapp', 'app/controller/wap');
+$dirs = array('api/wxapp', 'app/controller/wap', 'wap/member');
 foreach ($dirs as $dir) {
     $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(ROOT . $dir));
     foreach ($it as $f) {

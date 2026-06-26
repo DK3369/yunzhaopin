@@ -1,8 +1,8 @@
 {
-    "generated": "2026-06-26T22:30:43+08:00",
+    "generated": "2026-06-26T22:36:58+08:00",
     "summary": {
         "enum_hub": 51,
-        "i18n_wrapped": 608,
+        "i18n_wrapped": 717,
         "comment": 5
     },
     "files": {
@@ -57,7 +57,10 @@
         "app\/controller\/wap\/upload.class.php": 9,
         "app\/controller\/wap\/wxconnect.class.php": 15,
         "app\/controller\/wap\/wxoauth.class.php": 3,
-        "app\/controller\/wap\/zph.class.php": 6
+        "app\/controller\/wap\/zph.class.php": 6,
+        "wap\/member\/model\/com.class.php": 51,
+        "wap\/member\/model\/index.class.php": 54,
+        "wap\/member\/wap.controller.php": 4
     },
     "hits": [
         {
@@ -4043,6 +4046,660 @@
             "line": 201,
             "category": "i18n_wrapped",
             "text": "            $return['msg']      =   yun_auto_t('参数错误请重试');"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 92,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this -> yunset('header_title', yun_auto_t('我的服务'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 100,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('header_title',yun_auto_t('举报简历'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 106,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this -> yunset('header_title',yun_auto_t('基本信息'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 115,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this -> yunset('header_title',yun_auto_t('发布职位'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 121,
+            "category": "i18n_wrapped",
+            "text": "        $this -> yunset('header_title', yun_auto_t('职位发布成功'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 129,
+            "category": "i18n_wrapped",
+            "text": "        $this -> yunset('header_title', yun_auto_t('职位管理'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 140,
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('header_title', yun_auto_t('兼职报名'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 146,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('header_title',yun_auto_t('应聘简历'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 154,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('header_title',yun_auto_t('修改密码'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 170,
+            "category": "i18n_wrapped",
+            "text": "\t        $data['msg']\t=\tyun_auto_t('暂未开通手机支付，请移步至电脑端充值！');"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 178,
+            "category": "i18n_wrapped",
+            "text": "\t    $this\t\t->\tyunset('header_title',yun_auto_t('充值').$this->config['integral_pricename']);"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 192,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\t\t$this->ACT_msg_wap($_SERVER['HTTP_REFERER'],yun_auto_t('订单不存在！'),2,5);"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 202,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$data['msg']\t=\tyun_auto_t('暂未开通手机支付，请移步至电脑端充值！');"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 206,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this\t->\tyunset('header_title',yun_auto_t('订单确认'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 235,
+            "category": "i18n_wrapped",
+            "text": "\t        echo json_encode(array('error' => 1, 'msg' => yun_auto_t('参数错误，请重试！')));die();"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 260,
+            "category": "i18n_wrapped",
+            "text": "\t            'msg'   =>  yun_auto_t('下单成功，请付款！')"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 300,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this -> yunset('headertitle',yun_auto_t('订单'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 307,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('header_title',yun_auto_t('谁看过我'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 313,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('header_title',yun_auto_t('面试邀请'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 324,
+            "category": "i18n_wrapped",
+            "text": "        $this -> yunset('header_title', yun_auto_t('兼职管理'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 331,
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('header_title', yun_auto_t('发布兼职'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 346,
+            "category": "i18n_wrapped",
+            "text": "\t    $this->yunset('header_title',yun_auto_t('企业LOGO'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 357,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('header_title', yun_auto_t('企业资质'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 367,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('header_title',yun_auto_t('社交账号绑定'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 380,
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('header_title', yun_auto_t('账户绑定'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 388,
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('header_title', yun_auto_t('修改用户名'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 397,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this\t\t->\tyunset('header_title',yun_auto_t('兑换记录'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 421,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this\t->\tyunset('header_title',yun_auto_t('明细'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 433,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"header_title\",yun_auto_t('专题招聘'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 441,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset(\"header_title\",yun_auto_t('招聘会记录'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 450,
+            "category": "i18n_wrapped",
+            "text": "\t    $this->yunset('header_title', yun_auto_t('账户设置'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 456,
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('header_title',yun_auto_t('消息'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 464,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('header_title',yun_auto_t('求职咨询'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 472,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('header_title',yun_auto_t('系统消息'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 481,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('header_title',yun_auto_t('对我感兴趣'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 492,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('header_title',yun_auto_t('财务管理'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 506,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('header_title',yun_auto_t('全部任务'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 516,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('header_title',yun_auto_t('简历管理'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 525,
+            "category": "i18n_wrapped",
+            "text": " \t\t$this->yunset(\"header_title\",yun_auto_t('其他服务'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 532,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this\t\t->\tyunset('header_title',yun_auto_t('消费规则'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 576,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('header_title',yun_auto_t('企业横幅'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 584,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('header_title',yun_auto_t('企业环境'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 593,
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('header_title', yun_auto_t('优选服务'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 604,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this -> yunset('header_title', yun_auto_t('管理邀请模板'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 615,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this -> yunset('header_title', yun_auto_t('创建修改模板'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 643,
+            "category": "i18n_wrapped",
+            "text": "            echo json_encode(array('error' => 0, 'msg' => yun_auto_t('参数错误')));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 654,
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('header_title',yun_auto_t('账号注销'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 666,
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('header_title', yun_auto_t('地址管理'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 678,
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('header_title', yun_auto_t('新建工作地址'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 688,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('header_title',yun_auto_t('认证与绑定'));"
+        },
+        {
+            "file": "wap\/member\/model\/com.class.php",
+            "line": 697,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('header_title',yun_auto_t('账号与安全'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 17,
+            "category": "i18n_wrapped",
+            "text": "\t\t    $this->ACT_msg_wap(Url('wap', array('c' => 'info'), 'member'), yun_auto_t('请先完善个人资料'), 2, 3);"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 79,
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('headertitle',yun_auto_t('其他服务'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 88,
+            "category": "i18n_wrapped",
+            "text": "\t    $this->yunset('headertitle',yun_auto_t('上传形象照'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 96,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('申请的职位'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 105,
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('headertitle', yun_auto_t('兼职管理'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 113,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('收藏\/关注'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 121,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('密码设置'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 126,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this -> yunset('headertitle',yun_auto_t('面试详情'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 134,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('面试通知'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 142,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('记录'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 160,
+            "category": "i18n_wrapped",
+            "text": "\t\t\tcase 'work':\t\t$headertitle=yun_auto_t('工作经历');  break;"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 161,
+            "category": "i18n_wrapped",
+            "text": "\t\t\tcase 'edu':\t\t\t$headertitle=yun_auto_t('教育经历');  break;"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 162,
+            "category": "i18n_wrapped",
+            "text": "\t\t\tcase 'project':\t\t$headertitle=yun_auto_t('项目经历');  break;"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 163,
+            "category": "i18n_wrapped",
+            "text": "\t\t\tcase 'training':\t$headertitle=yun_auto_t('培训经历');  break;"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 164,
+            "category": "i18n_wrapped",
+            "text": "\t\t\tcase 'skill':\t\t$headertitle=yun_auto_t('职业技能');  break;"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 165,
+            "category": "i18n_wrapped",
+            "text": "\t\t\tcase 'other':\t\t$headertitle=yun_auto_t('其他信息');  break;"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 166,
+            "category": "i18n_wrapped",
+            "text": "\t\t\tcase 'desc':\t\t$headertitle=yun_auto_t('自我评价');  break;"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 167,
+            "category": "i18n_wrapped",
+            "text": "\t\t\tcase 'show':\t\t$headertitle=yun_auto_t('作品案例');  break;"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 168,
+            "category": "i18n_wrapped",
+            "text": "\t\t\tcase 'doc':\t        $headertitle=yun_auto_t('粘贴简历');  break;"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 175,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('基本信息'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 186,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('意向职位修改'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 190,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('发布成功'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 200,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('我的简历'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 204,
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('headertitle',yun_auto_t('优化简历'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 221,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('社交账号绑定'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 226,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('身份证认证'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 234,
+            "category": "i18n_wrapped",
+            "text": "\t\t\tcase 'moblie':$headertitle=yun_auto_t('手机认证');"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 236,
+            "category": "i18n_wrapped",
+            "text": "\t\t\tcase 'email':$headertitle=yun_auto_t('邮箱认证');"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 250,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('修改用户名'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 254,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('兑换记录'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 265,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('隐私设置'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 293,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\t$data['msg']\t\t\t=\tyun_auto_t('下单成功，请付款！');"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 302,
+            "category": "i18n_wrapped",
+            "text": " \t\t\t\t    'msg'   =>  yun_auto_t('下单成功，请付款！')"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 307,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t        'msg' => yun_auto_t('提交失败，请重新提交订单！')"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 313,
+            "category": "i18n_wrapped",
+            "text": " \t\t        'msg' => yun_auto_t('参数错误，请重试！')"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 319,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('充值'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 335,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t\t\t$this->ACT_msg_wap($_SERVER['HTTP_REFERER'],yun_auto_t('订单不存在！'),2,5);"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 346,
+            "category": "i18n_wrapped",
+            "text": "\t\t\t$data['msg']\t=\tyun_auto_t('暂未开通手机支付，请移步至电脑端充值！');"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 352,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('收银台'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 382,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('订单'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 388,
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('headertitle',yun_auto_t('明细'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 395,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this\t\t->\tyunset('headertitle',yun_auto_t('职位速配'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 401,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('账户设置'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 410,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('消息'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 416,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('系统消息'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 424,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('求职咨询'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 432,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('财务管理'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 441,
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('headertitle',yun_auto_t('全部任务'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 453,
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('headertitle', yun_auto_t('屏蔽企业'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 458,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('添加屏蔽'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 496,
+            "category": "i18n_wrapped",
+            "text": "\t\t$this->yunset('headertitle',yun_auto_t('账户分离'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 507,
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('headertitle',yun_auto_t('账号注销'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 517,
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('header_title',yun_auto_t('认证与绑定'));"
+        },
+        {
+            "file": "wap\/member\/model\/index.class.php",
+            "line": 526,
+            "category": "i18n_wrapped",
+            "text": "        $this->yunset('header_title',yun_auto_t('账号与安全'));"
+        },
+        {
+            "file": "wap\/member\/wap.controller.php",
+            "line": 29,
+            "category": "i18n_wrapped",
+            "text": "                        $this->yunset('header_title', yun_auto_t('创建简历'));"
+        },
+        {
+            "file": "wap\/member\/wap.controller.php",
+            "line": 30,
+            "category": "i18n_wrapped",
+            "text": "                        $this->yunset(\"remind\", array('info' => yun_auto_t('请先创建一份简历！'), 'url' => 'index.php?c=addresume', 'btn' => yun_auto_t('立即创建')));"
+        },
+        {
+            "file": "wap\/member\/wap.controller.php",
+            "line": 57,
+            "category": "i18n_wrapped",
+            "text": "                        $this->yunset('header_title', yun_auto_t('基本信息'));"
+        },
+        {
+            "file": "wap\/member\/wap.controller.php",
+            "line": 58,
+            "category": "i18n_wrapped",
+            "text": "                        $this->yunset(\"remind\", array('info' => yun_auto_t('请先完善信息！'), 'url' => 'index.php?c=info', 'btn' => yun_auto_t('立即完善')));"
         }
     ]
 }

@@ -16,7 +16,7 @@ class wap_controller extends common
 
         if ($this->usertype == 1) {
 
-            //判断是否强制创建简历(等同于企业强制完善基本资料)
+
             $resumeM    =   $this->MODEL('resume');
 
             if ($this->config['user_resume_status'] == '1') {
@@ -26,8 +26,8 @@ class wap_controller extends common
 
                     if ($expectnum < 1) {
 
-                        $this->yunset('header_title', '创建简历');
-                        $this->yunset("remind", array('info' => '请先创建一份简历！', 'url' => 'index.php?c=addresume', 'btn' => '立即创建'));
+                        $this->yunset('header_title', yun_auto_t('创建简历'));
+                        $this->yunset("remind", array('info' => yun_auto_t('请先创建一份简历！'), 'url' => 'index.php?c=addresume', 'btn' => yun_auto_t('立即创建')));
                         $this->yuntpl(array('wap/member/user/addresume'));
                     }
                 }
@@ -50,12 +50,12 @@ class wap_controller extends common
 
             if (!in_array($_GET['c'], array('photo', 'info', 'userLog', 'ajaxCheckInfo', 'poi'))) {
 
-                // 强制完善基本资料
+
                 if ($this->config['com_enforce_info'] == 1) {
                     if (!$this->comInfo['info']['name'] || !$this->comInfo['info']['provinceid'] || !$this->comInfo['info']['linktel']) {
 
-                        $this->yunset('header_title', '基本信息');
-                        $this->yunset("remind", array('info' => '请先完善信息！', 'url' => 'index.php?c=info', 'btn' => '立即完善'));
+                        $this->yunset('header_title', yun_auto_t('基本信息'));
+                        $this->yunset("remind", array('info' => yun_auto_t('请先完善信息！'), 'url' => 'index.php?c=info', 'btn' => yun_auto_t('立即完善')));
                         $this->yuntpl(array('wap/member/com/info'));
                     }
                 } elseif (!$this->comInfo['info']['uid']) {
@@ -66,7 +66,7 @@ class wap_controller extends common
             }
         }
 
-        //容错机制，前期强制完善资料，后期开放，防止部分数据无uid 又可以直接操作会员中心
+
         if ($isActivUser == 1) {
 
             $userinfoM  =   $this->MODEL("userinfo");

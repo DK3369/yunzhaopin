@@ -1,6 +1,6 @@
 <?php
 /**
- * Wrap remaining bare Chinese in app/controller/wap and api/wxapp PHP.
+ * Wrap remaining bare Chinese in app/controller/wap, api/wxapp, and wap/member PHP.
  */
 define('ROOT', dirname(__DIR__) . '/');
 
@@ -9,7 +9,7 @@ $skipFiles = array(
     'app/include/wap.enum.php',
 );
 
-$dirs = array('app/controller/wap', 'api/wxapp');
+$dirs = array('app/controller/wap', 'api/wxapp', 'wap/member');
 
 function shouldSkipLine($line)
 {
@@ -43,7 +43,32 @@ function fixLine($line)
 
     $orig = $line;
 
-    // yunset with optional spaces around ->
+    // 'info' => '中文' / 'btn' => '中文' in arrays
+    $line = preg_replace_callback(
+        '/([\'"]info[\'"]\s*=>\s*)(?!yun_auto_t\s*\()([\'"])([^\'"]*[\x{4e00}-\x{9fff}][^\'"]*)\2/u',
+        function ($m) {
+            return $m[1] . wrapChineseString($m[3]);
+        },
+        $line
+    );
+    $line = preg_replace_callback(
+        "/(['\"]btn['\"]\s*=>\s*)(?!yun_auto_t\s*\()(['\"])([^'\"]*[\x{4e00}-\x{9fff}][^'\"]*)\2/u",
+        function ($m) {
+            return $m[1] . wrapChineseString($m[3]);
+        },
+        $line
+    );
+
+    // 'title' => '中文' in arrays
+    $line = preg_replace_callback(
+        "/(['\"]title['\"]\s*=>\s*)(?!yun_auto_t\s*\()(['\"])([^'\"]*[\x{4e00}-\x{9fff}][^'\"]*)\2/u",
+        function ($m) {
+            return $m[1] . wrapChineseString($m[3]);
+        },
+        $line
+    );
+
+    // headertitle / header_title in yunset
     $line = preg_replace_callback(
         '/(->\s*yunset\s*\(\s*["\'][^"\']+["\']\s*,\s*)(?!yun_auto_t\s*\()(["\'])([^"\']*[\x{4e00}-\x{9fff}][^"\']*)\2(\s*\))/u',
         function ($m) {

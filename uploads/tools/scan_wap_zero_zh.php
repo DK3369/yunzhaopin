@@ -1,17 +1,19 @@
 <?php
 /**
- * Scan WAP zero-Chinese scope: app/template/wap, api/wxapp, app/controller/wap
+ * Scan WAP zero-Chinese scope: app/template/wap, api/wxapp, app/controller/wap, wap/member, wap/js/vant
  * Output: tools/wap_zero_zh_report.json
  */
 define('ROOT', dirname(__DIR__) . '/');
 
-$vendorSkip = '#(/js/mui/|/js/umeditor/|/mobiscroll/|echarts\.min\.js|\.min\.js|/vendor/)#i';
+$vendorSkip = '#(/js/mui/|/js/umeditor/|/mobiscroll/|echarts\.min\.js|vant\.min\.js|vant/lib/|\.min\.js|/vendor/)#i';
 $enumFile = 'app/template/wap/publichtm/wap_api_enum.htm';
 
 $dirs = array(
     'app/template/wap' => array('htm', 'html', 'js', 'css'),
     'api/wxapp' => array('php'),
     'app/controller/wap' => array('php'),
+    'wap/member' => array('php'),
+    'wap/js/vant' => array('js'),
 );
 
 function classifyHit($line, $file, $enumFile) {
@@ -34,7 +36,7 @@ function classifyHit($line, $file, $enumFile) {
     if (preg_match('/code_web|strstr\s*\(\s*\$config\.code_web|strpos\s*\(\s*\$config\.code_web/i', $t)) {
         return 'config';
     }
-    if (preg_match('/yun_auto_t\s*\(|yun_t\s*\(|yun_at\s*\(|yun:}t\s+key=|WAP_API_ENUM|WAP_CODE_WEB|WAP_JS_I18N|PICKER_I18N|CMC_I18N|PRESENT_API_VALUE|WapDbEnum/i', $t)) {
+    if (preg_match('/yun_auto_t\s*\(|yun_t\s*\(|yun_at\s*\(|yun:}t\s+key=|WAP_API_ENUM|WAP_CODE_WEB|WAP_JS_I18N|WAP_PUBLIC_I18N|PICKER_I18N|CMC_I18N|PRESENT_API_VALUE|WapDbEnum/i', $t)) {
         return 'i18n_wrapped';
     }
     if (preg_match("/yun_auto_t\s*\(\s*'[^']*[\x{4e00}-\x{9fff}]/u", $line)) {

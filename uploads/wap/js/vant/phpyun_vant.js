@@ -1,14 +1,14 @@
 
 $(function(){
-	//图片预览
-	
 	imgPreview();
-}) 
+})
+
+function wapJsI18n(key) {
+	return (typeof WAP_JS_I18N !== 'undefined' && WAP_JS_I18N[key]) ? WAP_JS_I18N[key] : '';
+}
+
 function imgPreview(){
-	
-	//图片预览
 	$(".imgPreview").click(function() {
-		console.log(123);
 		var group = $(this).attr('data-group');
 	    var thissrc = $(this).attr('data-src');
 	    var imgarr = [];
@@ -28,20 +28,27 @@ function imgPreview(){
 	    });
 	});
 }
-// 加载框
-function showLoading(msg = '加载中') {
+// Loading overlay
+function showLoading(msg) {
+	msg = msg || wapJsI18n('loading');
 	vant.Toast.loading({
 		message: msg,
 		duration: 0,
-		forbidClick: true // 是否禁止背景点击
+		forbidClick: true
 	});
 }
-// 关闭加载框
+// Hide loading overlay
 function hideLoading() {
 	vant.Toast.clear();
 }
-// 轻提示
-function showToast(msg = '', duration = 2, func) {
+// Toast notification
+function showToast(msg, duration, func) {
+	if (msg === undefined || msg === null) {
+		msg = '';
+	}
+	if (duration === undefined || duration === null) {
+		duration = 2;
+	}
 	vant.Toast({
 		message: msg,
 		duration: duration * 1000,
@@ -51,32 +58,36 @@ function showToast(msg = '', duration = 2, func) {
 		}
 	});
 }
-// 待确定按钮的提示框
-function showModal(msg = '', func, confirmText = '确定') {
+// Alert dialog with confirm button
+function showModal(msg, func, confirmText) {
+	msg = msg || '';
+	confirmText = confirmText || wapJsI18n('confirm');
 	vant.Dialog.alert({
-		title: '温馨提示',
-		message: msg, // 提示内容
+		title: wapJsI18n('warmTip'),
+		message: msg,
 		theme: 'round',
-		confirmButtonText: confirmText // 确定按钮文本
+		confirmButtonText: confirmText
 	}).then(function(){
 		typeof func === 'function' && func();
 	})
 }
-// 询问框
-function showConfirm(msg, success, cancelText = '取消', confirmText = '确定', cancel) {
+// Confirm dialog
+function showConfirm(msg, success, cancelText, confirmText, cancel) {
+	cancelText = cancelText || wapJsI18n('cancel');
+	confirmText = confirmText || wapJsI18n('confirm');
 	vant.Dialog.confirm({
-		title: '温馨提示',
-		message: msg, // 提示内容
+		title: wapJsI18n('warmTip'),
+		message: msg,
 		theme: 'round',
-		confirmButtonText: confirmText, // 确定按钮文本
-		cancelButtonText: cancelText // 取消按钮文本
+		confirmButtonText: confirmText,
+		cancelButtonText: cancelText
 	}).then(function(){
 		typeof success === 'function' && success();
 	}).catch(function(){
 		typeof cancel === 'function' && cancel();
 	})
 }
-// 获取参数
+// Read URL query parameter
 function getUrlKey(name){
 	return decodeURIComponent((new RegExp('[?|&]'+name+'='+'([^&;]+?)(&|#|;|$)').exec(location.href)||[,""])[1].replace(/\+/g,'%20'))||null;
 }

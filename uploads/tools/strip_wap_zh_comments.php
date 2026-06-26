@@ -4,7 +4,7 @@
  */
 define('ROOT', dirname(__DIR__) . '/');
 
-$dirs = array('api/wxapp', 'app/controller/wap');
+$dirs = array('api/wxapp', 'app/controller/wap', 'wap/member');
 $skip = array('wap.enum.php', 'app/include/wap.enum.php');
 
 $blockMap = array(
