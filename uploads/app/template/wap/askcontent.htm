@@ -1,7 +1,7 @@
 {yun:}include file="$wapstyle/header_cont.htm"{/yun}
 <link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/ask/ask.css?v={yun:}$config.cachecode{/yun}" type="text/css" />
 <div class="askct_iss" id="app">
-	<!-- 举报弹出 -->
+	<!-- Report popup -->
 	<van-popup v-show="reportShow" v-model="reportShow" position="bottom"/>
 	    <van-picker 
 		    show-toolbar  
@@ -77,7 +77,7 @@
 	
 </div>        
 
-<!--评论内容-->
+<!-- Comment content -->
 <div class="ask_c_pl mt10">
 	<div class="ask_c_pl_titbox">
 		<span class="ask_c_pl_titbox_all">{yun:}t key='wap_00163'{/yun}</span>
@@ -111,7 +111,7 @@
 				<div class="askct_com_rs_y_tm"></div>
 
 			</div>
-			<!--评论弹出框-->
+			<!-- Comment popup -->
 			<div class="pl_menu none review{yun:}$list.id{/yun} pl_menu" style=" display: none;">
 				<div class="menu_con">
 					<div class=" ask_c_pl">

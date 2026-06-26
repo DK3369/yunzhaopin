@@ -54,7 +54,7 @@
         compage++;
         var searchurl = document.getElementById('searchurl').value;
 
-        // 缓存处理开始
+        // Cache handling start
         let storageDetail = sessionStorage.getItem("storageDetail"),
             storageCacheType = sessionStorage.getItem("storageCacheType"),
             storageSearchurl = sessionStorage.getItem("storageSearchurl"),
@@ -62,26 +62,26 @@
             storageListStr = sessionStorage.getItem("storageList"),
             storageList = storageListStr ? JSON.parse(storageListStr) : [];
 
-        // 存在缓存内容 - 从详情返回才处理
+        // Use cache when returning from detail
         if (storageCacheType && storageCacheType == 'company' &&
-            storageDetail && storageList.length > 0 && compage <= storagePage) {// 分页小于或等于缓存页数时，直接使用缓存
-            sessionStorage.removeItem("storageDetail"); // 清除掉详情返回的标识
+            storageDetail && storageList.length > 0 && compage <= storagePage) {// Use cache when page <= cached page
+            sessionStorage.removeItem("storageDetail"); // Clear detail-return flag
             storagePage = storagePage ? parseInt(storagePage) : 1;
-            compage = storagePage; // 直接修改分页为缓存对应页数
+            compage = storagePage; // Restore page from cache
             if (storageSearchurl) {
-                document.getElementById('searchurl').value = storageSearchurl; // 搜索条件赋值
+                document.getElementById('searchurl').value = storageSearchurl; // Restore search
             }
-            app.$data.comlist = storageList; // 列表赋值
+            app.$data.comlist = storageList; // Restore list
             app.$nextTick(function(){
                 document.getElementById('listdiv').insertAdjacentHTML('beforeend',$("#company_wx_vue").html());
             })
-            return; // 走缓存不执行后续
+            return; // Skip fetch when using cache
         } else {
             if (compage == 1) {
-                storageList = []; // 如果是重新加载，重新定义缓存数据列表
+                storageList = []; // Reset cache on reload
             }
         }
-        // 缓存处理结束
+        // Cache handling end
 
         $.post(wapurl + 'index.php?c=company&a=ajaxLoad', {searchurl: searchurl,page: compage}, function(res){
 			document.getElementById('pageLoading').classList.add('none');

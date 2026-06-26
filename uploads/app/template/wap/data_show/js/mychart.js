@@ -27,7 +27,7 @@ function echart1() {
             $('#city2rate').text(data[1].rate)
             $('#city3').text(data[2].city_name)
             $('#city3rate').text(data[2].rate)
-            // 初始化插件
+            // Init plugins
             $('.city_counter').countUp({
                 delay: 10,
                 time: 2000
@@ -131,7 +131,7 @@ function echart2() {
             $('#age3rate').text(data[2].rate)
             $('#age4').text(data[3].name)
             $('#age4rate').text(data[3].rate)
-            // 初始化插件
+            // Init plugins
             $('.age_counter').countUp({
                 delay: 10,
                 time: 2000
@@ -361,7 +361,7 @@ function echart4() {
             $('#edu2rate').text(data[1].rate)
             $('#edu3').text(data[2].edu_n)
             $('#edu3rate').text(data[2].rate)
-            // 初始化插件
+            // Init plugins
             $('.edu_counter').countUp({
                 delay: 10,
                 time: 2000
@@ -644,7 +644,7 @@ function echart7() {
         $('#comcity2rate').text(data[1].rate)
         $('#comcity3').text(data[2].city_name)
         $('#comcity3rate').text(data[2].rate)
-        // 初始化插件
+        // Init plugins
         $('.comcity_counter').countUp({
             delay: 10,
             time: 2000
@@ -744,7 +744,7 @@ function echart8() {
         $('#comgm3rate').text(data[2].rate)
         $('#comgm4').text(data[3].mun_n)
         $('#comgm4rate').text(data[3].rate)
-        // 初始化插件
+        // Init plugins
         $('.comgm_counter').countUp({
             delay: 10,
             time: 2000

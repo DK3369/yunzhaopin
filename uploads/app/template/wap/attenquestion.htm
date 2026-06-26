@@ -1,7 +1,7 @@
 {yun:}include file="$wapstyle/header_cont.htm"{/yun}
 {yun:}include file="$wapstyle/nav.htm"{/yun} 
 
-<!--关注页面-->
+<!-- Follow page -->
 {yun:}foreach from=$rows item=qlist{/yun}
 <div class="home_question">
   <div class="home_question_name"><a href="{yun:}url m=wap c=ask a=content id='`$qlist.id`'{/yun}">{yun:}$qlist.title{/yun}</a></div>
@@ -31,7 +31,7 @@
 
 </div>
 {yun:}/foreach{/yun} 
-<!--回答结束-->
+<!-- Answer end -->
 <div class="clear"></div>
 <div class="pages">{yun:}$pagenav{/yun}</div>
 {yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}

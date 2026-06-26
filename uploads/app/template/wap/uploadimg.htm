@@ -187,7 +187,7 @@
 		<script src="{yun:}$wap_style{/yun}/js/exif.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
 		<script type="text/javascript">
 		    function checkIdcard(num) {
-		        //身份证号码为15位或者18位，15位时全为数字，18位前17位为数字，最后一位是校验位，可能为数字或字符X。
+		        // ID card: 15 or 18 digits; last char may be X.
 		        var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
 		        if(reg.test(num) === false) {
 		            return false;

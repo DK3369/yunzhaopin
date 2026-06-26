@@ -19,7 +19,7 @@
 	</head>
 
 	<body>
-		<!--wxapp 引用{yun:}t key='common_02103'{/yun}面控制，不需{yun:}t key='common_02099'{/yun}{yun:}t key='wap_user_00103'{/yun}栏-->
+		<!-- wxapp embeds page without header bar -->
 		{yun:}if !$wxapp{/yun}
 		<div class="header header_count">
 			<div class="header_fixed">
@@ -36,7 +36,7 @@
 		{yun:}/if{/yun}
 
 		{yun:}if $smarty.get.c == 'miniContact'{/yun}
-		<!--{yun:}t key='admin_tool_00658'{/yun}浮{yun:}t key='wap_01542'{/yun}客服-->
+		<!-- Floating contact support -->
 		<div class="telkf_box_c"><div class="telkf_box"></div></div>
 		<div class="telkf">
 			<div class="telkf_c">

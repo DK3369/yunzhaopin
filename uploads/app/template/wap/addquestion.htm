@@ -11,7 +11,7 @@
 </button>
 		<input type="hidden" id="cid" name="cid" :value="cid">
 	</div>
-	<!-- 问题种类 -->
+	<!-- Question category -->
 	<van-popup  v-model="questionShow" position="bottom"/>
 	    <van-picker 
 		    show-toolbar  
@@ -123,7 +123,7 @@ function checkform(img){
 	});	
 }
 
-	//问答类别（不能和城市同时使用）
+	// Q&A category (mutually exclusive with city)
 	var showAskPickerButton = document.getElementById('showAskPicker');
 	if(showAskPickerButton) {
 		var askData = [];
@@ -149,7 +149,7 @@ function checkform(img){
 	var vm = new Vue({
         el: '#questionSelect',
         data: {
-			//举报
+			// Report
 	        questionShow:false,
 	        askData:askData,
 	        questionIndex:0,

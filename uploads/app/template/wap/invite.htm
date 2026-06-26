@@ -37,7 +37,7 @@
                         <img src="{yun:}$wap_style{/yun}/images/icon_more.png" alt="" width="100%" height="100%">
                     </div>
                 </div>
-                <!--面试时间选择器-->
+                <!-- Interview time picker -->
                 <van-popup v-model="dateShow" round position="bottom">
                     <van-datetime-picker
                             v-model="currentDate"
@@ -55,7 +55,7 @@
                         <img src="{yun:}$wap_style{/yun}/images/icon_more.png" alt="" width="100%" height="100%">
                     </div>
                 </div>
-                <!--面试职位选择器-->
+                <!-- Interview job picker -->
                 <van-popup v-model="jobShow" round position="bottom">
                     <van-picker
                             show-toolbar
@@ -74,7 +74,7 @@
                         <img src="{yun:}$wap_style{/yun}/images/icon_more.png" alt="" width="100%" height="100%">
                     </div>
                 </div>
-                <!--邀请模板选择器-->
+                <!-- Invite template picker -->
                 <van-popup v-model="openYqmbShow" round position="bottom">
                     <van-picker
                             show-toolbar
@@ -103,7 +103,7 @@
                     <div class="job_resume_right">
                         <input name="address" type="text" v-model="inviteV.address" placeholder="{yun:}t key='wap_01434'{/yun}">
                     </div>
-                    <!--<div class="job_resume_right_two">江苏省南京市雨花台区小心路12栋 501室</div>-->
+                    <!--<div class="job_resume_right_two">Sample address line</div>-->
                     <!--<div class="job_resume_nav">-->
                     <!--    <img src="{yun:}$wap_style{/yun}/images/icon_more.png" alt="" width="100%" height="100%">-->
                     <!--</div>-->
@@ -129,7 +129,7 @@
                 </div>
 
             </div>
-            <!-- 保存按钮 -->
+            <!-- Save button -->
             <input type="submit" value="{yun:}t key='wap_01438'{/yun}" class="Save_button"/>
         </form>
     </div>
@@ -268,7 +268,7 @@
         }
     });
 
-    //邀请面试保存
+    // Save interview invite
     function invitesave(e) {
         let yd = yunvue.$data;
         try {

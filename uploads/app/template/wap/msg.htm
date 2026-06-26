@@ -52,11 +52,11 @@
         }
     }
 	
-	// 将浏览记录设为将跳转的地址，防止返回到本页面，造成重复跳转
+	// Set history to target URL to avoid redirect loop
 	if(url != '' && url != '1'){
 		window.history.replaceState({}, "", url);
 	}
-	// url = 1，浏览器直接后退
+	// url=1: browser back
 	function navigateTo(url){
 		if(url == '1'){
 			if(window.history.length > 1){

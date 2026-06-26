@@ -227,7 +227,7 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 				}, false);
 			}
 		}
-		//问答类别（不能和城市同时使用）
+		// Q&A category (mutually exclusive with city)
 		var showAskPickerButton = doc.getElementById('showAskPicker');
 		if(showAskPickerButton) {
 			var askData = [];
