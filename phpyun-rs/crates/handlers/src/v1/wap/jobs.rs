@@ -5,7 +5,7 @@ use axum::{
     Router,
     routing::post,
 };
-use phpyun_core::{json, ApiJson, AppResult, AppState, ClientIp, MaybeUser, Paged, Pagination, ValidatedJson};
+use phpyun_core::{json, i18n::{current_lang, t, t_args}, ApiJson, AppResult, AppState, ClientIp, MaybeUser, Paged, Pagination, ValidatedJson};
 use validator::Validate;
 use phpyun_services::hot_search_service;
 use phpyun_services::job_service::{self, JobSearch};
@@ -673,12 +673,20 @@ pub async fn share_text(
     let prov_id = job.provinceid;
 
     let dicts = phpyun_services::dict_service::get(&state).await?;
+    let lang = current_lang();
     // Salary: derive from the explicit numeric range. PHPYun's legacy `salary`
     // bucket column was dropped from the schema we observe today.
     let salary = if minsalary > 0 && maxsalary > 0 && maxsalary != minsalary {
-        format!("{minsalary}-{maxsalary}元")
+        t_args(
+            "ui.job.salary_range",
+            lang,
+            &[
+                ("min", &minsalary.to_string()),
+                ("max", &maxsalary.to_string()),
+            ],
+        )
     } else if minsalary > 0 {
-        format!("{minsalary}元以上")
+        t_args("ui.job.salary_min_plus", lang, &[("min", &minsalary.to_string())])
     } else {
         String::new()
     };
@@ -705,9 +713,9 @@ pub async fn share_text(
         com_name,
         job_name,
         if summary.is_empty() {
-            "查看详情"
+            t("ui.job.view_detail", lang)
         } else {
-            summary.as_str()
+            summary.clone()
         },
         share_url
     );

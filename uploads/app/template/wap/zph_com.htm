@@ -8,9 +8,9 @@
                 <div class="particulars_title_text">	
                 {yun:}$row.title{/yun}
         {yun:}if $Info.stime<'0'&&$Info.etime>'0'{/yun}
-        <span class="particulars_title_icon">进行中</span>
+        <span class="particulars_title_icon">{yun:}t key='wap_00604'{/yun}</span>
         {yun:}elseif $Info.stime>'0'{/yun}
-        <span class=" particulars_title_icon">预定中</span>
+        <span class=" particulars_title_icon">{yun:}t key='wap_00605'{/yun}</span>
          {yun:}/if{/yun}
             </div>      </div>
             <div class="card_top_word_time">
@@ -44,7 +44,7 @@
             <div class="zph_show_comname_box">
                 <a href="{yun:}url m=wap c=company a=show id='`$zph.uid`'{/yun}">{yun:}$zph.comname{/yun} </a>
             </div>
-            <span class="zph_show_comzwh">展位号：{yun:}$zph.sidname{/yun} - {yun:}$zph.cidname{/yun} - {yun:}$zph.bidname{/yun}</span>
+            <span class="zph_show_comzwh">{yun:}t key='wap_00607'{/yun}{yun:}$zph.sidname{/yun} - {yun:}$zph.cidname{/yun} - {yun:}$zph.bidname{/yun}</span>
         </div>
 		{yun:}if $zph.job{/yun}
         <div class="zph_show_com_box">

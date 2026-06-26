@@ -23,7 +23,7 @@
 //! All side effects are **best-effort**: a failure on the counter / log / sysmsg
 //! does NOT undo the primary INSERT/DELETE. PHP behaves the same (no transaction).
 
-use phpyun_core::{clock, background, AppResult, AppState, AuthenticatedUser, Pagination};
+use phpyun_core::{clock, background, i18n::{t_args, Lang}, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::collect::entity::{Collect, KIND_JOB};
 use phpyun_models::collect::repo as collect_repo;
 use phpyun_models::message::repo as message_repo;
@@ -38,6 +38,10 @@ use crate::domain_errors::CollectError;
 const MEMBER_LOG_OPERA_FAV: i32 = 5; // PHP `collectJob` passes opera=5 (collection ops)
 const MEMBER_LOG_TYPE_ADD: i32 = 1;  // PHP type=1 = add
 const MEMBER_LOG_TYPE_DEL: i32 = 3;  // PHP type=3 = delete
+
+/// Persisted log / sysmsg copy uses the system default language until recipient
+/// language preferences are stored (see `notification_consumers::NOTIF_LANG`).
+const NOTIF_LANG: Lang = Lang::ZhCN;
 
 async fn bump_fav_jobnum(state: &AppState, uid: u64, did: u32, delta: i32) {
     let _ = phpyun_models::member_statis::repo::bump_fav_jobnum(state.db.pool(), uid, delta).await;
@@ -122,7 +126,11 @@ pub async fn toggle(
         let ip_owned = ip.to_owned();
         background::spawn_best_effort("collect.cancel.side_effects", async move {
             bump_fav_jobnum(&st, uid, did, -1).await;
-            let content = format!("收藏管理：取消收藏职位：{target_id}");
+            let content = t_args(
+                "notifications.collect.unfavorited_log",
+                NOTIF_LANG,
+                &[("id", &target_id.to_string())],
+            );
             add_member_log(&st, uid, usertype, did, &ip_owned, &content, MEMBER_LOG_TYPE_DEL).await;
         });
         return Ok(false);
@@ -161,10 +169,18 @@ pub async fn toggle(
         // 1. counter
         bump_fav_jobnum(&st, uid, did, 1).await;
         // 2. member operation log
-        let content = format!("职位收藏：收藏了职位：{}", job_name);
+        let content = t_args(
+            "notifications.collect.favorited_log",
+            NOTIF_LANG,
+            &[("job_name", &job_name)],
+        );
         add_member_log(&st, uid, usertype, did, &ip_owned, &content, MEMBER_LOG_TYPE_ADD).await;
         // 3. notify the company that owns the job (PHP `addSystem` to job.uid usertype=2)
-        let sysmsg_content = format!("有用户收藏了您的职位：{}", job_name);
+        let sysmsg_content = t_args(
+            "notifications.collect.favorited_sysmsg",
+            NOTIF_LANG,
+            &[("job_name", &job_name)],
+        );
         let _ = message_repo::insert_simple(st.db.pool(), com_uid, 2, &sysmsg_content, clock::now_ts()).await;
     });
 
@@ -190,7 +206,11 @@ pub async fn remove(
         let ip_owned = ip.to_owned();
         background::spawn_best_effort("collect.remove.side_effects", async move {
             bump_fav_jobnum(&st, uid, did, -1).await;
-            let content = format!("收藏管理：取消收藏职位：{target_id}");
+            let content = t_args(
+                "notifications.collect.unfavorited_log",
+                NOTIF_LANG,
+                &[("id", &target_id.to_string())],
+            );
             add_member_log(&st, uid, usertype, did, &ip_owned, &content, MEMBER_LOG_TYPE_DEL).await;
         });
     }

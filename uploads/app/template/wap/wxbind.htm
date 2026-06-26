@@ -7,9 +7,9 @@
     <div class="qqconnect_box">
         <div class="qqconnect_box_pic"><img width="100px;" height="100px;" src="{yun:}$smarty.session.wx.pic{/yun}"></div>
         <div class="qqconnect_box_p">{yun:}$smarty.session.wx.nickname{/yun}</div>
-        <div class="qqconnect_box_p" style="padding-top:5px;">尊敬的微信用户</div>
+        <div class="qqconnect_box_p" style="padding-top:5px;">{yun:}t key='wap_00645'{/yun}</div>
     </div>
-	<!--非实名并且是先注册的，有快速创建账号-->
+	<!-- Quick account creation for non-real-name first-time registrants -->
     <div class="qqconnect_box_p">{yun:}t key='default_00333'{/yun}{yun:}if $config.reg_real_name_check != 1 && $config.sy_reg_type==1{/yun}，{yun:}t key='common_01917'{/yun}<a href="javascript:void(0);" onclick="creatacount();" style="color: #276bf2">{yun:}t key='wap_00388'{/yun}</a>{yun:}else{/yun}，<a href="{yun:}url m=wap c=register bind=1{/yun}" style="color: #276bf2">{yun:}t key='wap_00386'{/yun}</a>{yun:}/if{/yun}</div>
 
     <form method="post" action="{yun:}$config_wapdomain{/yun}/index.php?c=wxconnect&a=wxbind" onsubmit="return checkwxbind(this);">
@@ -23,7 +23,7 @@
             </div>
             <div>
                 <div class="wxbind_text">
-                    <input name="password" type="password" id="password" class="wxbind_text_input" placeholder="输入密码"/>
+                    <input name="password" type="password" id="password" class="wxbind_text_input" placeholder="{yun:}t key='wap_js_00139'{/yun}"/>
                 </div>
             </div>
         </div>
@@ -67,7 +67,7 @@
             <div class="wxbind_text wxbind_textpd">
                 <input name="moblie_code" type="text" maxlength="6" class="wxbind_text_input" id="moblie_code" value="" placeholder="{yun:}t key='wap_com_00036'{/yun}">
                 <div class="logoin_msg none" id="show_dynamiccode">
-                    <div class="logoin_msg_tx">请填写发送的验证码</div>
+                    <div class="logoin_msg_tx">{yun:}t key='wap_00647'{/yun}</div>
                     <div class="logoin_msg_icon"></div>
                 </div>
                 <a href="javascript:void(0);" class="wxbind_text_send" id="send_msg_tip" onclick="send_msg('{yun:}$config_wapdomain{/yun}/index.php?c=wxconnect&a=sendmsg');"><span id="time">{yun:}t key='wap_user_00144'{/yun}</span></a>
@@ -82,10 +82,10 @@
 
     </form>
 
-    <!-- {yun:}t key='wap_00110'{/yun} -->
+    <!-- Captcha -->
     <div class="login_otherfs">
         {yun:}if $config.sy_msg_isopen==1 && $config.sy_msg_login==1{/yun}
-        <div class="verification_code_word" id="mobile_login">短信登录</div>
+        <div class="verification_code_word" id="mobile_login">{yun:}t key='wap_00648'{/yun}</div>
         {yun:}/if{/yun}
         <div class="verification_code_word" id="acount_login" style="display: none"> {yun:}t key='wap_00308'{/yun}</div>
     </div>
@@ -108,7 +108,7 @@
         code_kind = '{yun:}$config.code_kind{/yun}";
 
     $(document).ready(function () {
-        //账号登录和手机登录tab{yun:}t key='wap_js_00067'{/yun}
+        // Account login vs SMS login tabs
         $("#acount_login').click(function (data) {
             $('#acount_login').css("display", "none");
             $('#mobile_login').css("display", "block");
@@ -134,9 +134,9 @@
     });
 
     var Timer;
-    var smsTimer_time = 90; //倒数 90
-    var smsTimer_flag = 90; //倒数 90
-    var smsTime_speed = 1000; //速度 1秒钟
+    var smsTimer_time = 90; // Countdown seconds
+    var smsTimer_flag = 90; // Countdown seconds
+    var smsTime_speed = 1000; // Interval: 1 second
 
     // SendmobileSMS
     function send_msg(url) {
@@ -240,9 +240,9 @@
         $('#bind-captcha').attr('data-type', 'click");
     }
 
-    // 判断安卓物理返回键,从wxoauth来的,{yun:}t key='member_user_00119'{/yun};其他的正常返回
+    // Android back button: from wxoauth go home; otherwise normal back
     var u = navigator.userAgent;
-    var isAndroid = u.indexOf("Android') > -1 || u.indexOf('Adr') > -1; //android终端
+    var isAndroid = u.indexOf("Android') > -1 || u.indexOf('Adr') > -1; // Android device
     if (isAndroid) {
         $(function () {
             var wxoauth = $('#wxoauth').val();

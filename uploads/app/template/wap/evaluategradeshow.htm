@@ -2,17 +2,17 @@
 <style type="text/css">body{font-size: 14px !important;}</style>
 <link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/job.css?v={yun:}$config.cachecode{/yun}" type="text/css" />
 
-<!--结果-->
+<!-- Test result -->
 <div class="evaluate_cjcont">
-<div class="evaluate_cjtit">测试结果分析</div>
+<div class="evaluate_cjtit">{yun:}t key='wap_00637'{/yun}</div>
 <div class="evaluate_cjzf"><span class="evaluate_cjzf_n">{yun:}$info.grade{/yun}</span> {yun:}t key='common_02058'{/yun}</div>
-<div class="evaluate_cjzf_c">您的测评得分</div>
+<div class="evaluate_cjzf_c">{yun:}t key='wap_00638'{/yun}</div>
 <div class="evaluate_cjzf_p">{yun:}$info.comment_n{/yun}</div>
 </div>
 <div class="evaluate_cjalltit">{yun:}t key='wap_00199'{/yun}</div>
  {yun:}foreach from=$exambase.result item=v key=key{/yun}
 <div class="evaluate_cjlist">
-<div class="">成绩：<font color="#FF3300">{yun:}$v.fromscore{/yun}-{yun:}$v.toscore{/yun}</font> {yun:}t key='common_02058'{/yun}</div>
+<div class=""> {yun:}t key='wap_00639'{/yun}<font color="#FF3300">{yun:}$v.fromscore{/yun}-{yun:}$v.toscore{/yun}</font> {yun:}t key='common_02058'{/yun}</div>
 <div class="">{yun:}t key='wap_00065'{/yun}：{yun:}$v.comment{/yun}</div>
 </div>
 {yun:}/foreach{/yun} 
@@ -46,7 +46,7 @@
         	<div class="pages">{yun:}$pagenav{/yun}</div>
         </div>
 </div>
-<div class="evaluate_cs_more_box"><a href="{yun:}url m=wap c=evaluate{/yun}">更多职业测评</a></div>
+<div class="evaluate_cs_more_box"><a href="{yun:}url m=wap c=evaluate{/yun}">{yun:}t key='wap_00640'{/yun}</a></div>
 <div class="evaluate_cs_fx_box">
 <a href="javascript:void(0);" id="shareClick"class="evaluate_cs_fx"> <i class="evaluate_cs_fx_icon"></i>  <span class="yun_job_footer_s">{yun:}t key='wap_00195'{/yun}</span></a>
 </div>
@@ -63,7 +63,7 @@
 
 	function gradely(){
         if($("#message").val()==''){
-            showToast("回复内容不能为空！");return false;
+            showToast("{yun:}t key='wap_00641'{/yun}");return false;
         }
 
         var gradeurl = "{yun:}url m=wap c=evaluate a=messages{/yun}";

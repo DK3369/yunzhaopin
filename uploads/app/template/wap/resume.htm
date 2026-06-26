@@ -69,14 +69,13 @@
         </div>
 
         <div class="yun_newedition_resume" style="padding-top: 2.4rem;">
-            <!--{yun:}t key='common_01981'{/yun}-->
+            <!-- Banner ad -->
             {yun:}adlist classid=505 item="lunbo" key=key random=1{/yun}
             <div class="resumezd_banner">{yun:}$lunbo.html{/yun}</div>
             {yun:}/adlist{/yun}
-            <!--{yun:}t key='common_01981'{/yun}-->
+            <!-- Banner ad end -->
 
-            <!-- {yun:}t key='admin_tool_00631'{/yun} -->
-            <!-- 判断后台配置是否公开简历 -->
+            <!-- Show resume list when com_search allows public access -->
             {yun:}if $config.com_search == 1{/yun}
                 {yun:}if !$uid{/yun}
                     {yun:}include file="$wapstyle/resume_topthree.htm"{/yun}
@@ -93,7 +92,7 @@
                                 <a href="{yun:}url m=wap c=login{/yun}" class="nologin_bth_a">{yun:}t key='common.login'{/yun}</a>
                                 <a href="{yun:}url m=wap c=register{/yun}" class="nologin_bth_a">{yun:}t key='common.register'{/yun}</a>
                             </div>
-                            <div class="nologin_tel">如有需要任何贴心的服务：{yun:}$config.sy_comwebtel{/yun}</div>
+                            <div class="nologin_tel">{yun:}t key='wap_00435'{/yun}{yun:}$config.sy_comwebtel{/yun}</div>
                         </div>
                     </div>
                 {yun:}else{/yun}
@@ -114,12 +113,12 @@
                                     <div class="nologin_bth">
                                         <a href="javascript:void(0);" onclick="logoutAsk('{yun:}url m=wap c=loginout{/yun}')" class="nologin_bth_a">{yun:}t key='wap_00437'{/yun}</a>
                                     </div>
-                                    <div class="nologin_tel">如有需要任何贴心的服务：{yun:}$config.sy_comwebtel{/yun}</div>
+                                    <div class="nologin_tel">{yun:}t key='wap_00435'{/yun}{yun:}$config.sy_comwebtel{/yun}</div>
                                 </div>
                             </div>
                         {yun:}/if{/yun}
                     {yun:}else{/yun}
-                        <!-- 判断后台配置是否已审核会员查看简历 -->
+                        <!-- Require approved company account to browse resumes -->
                         {yun:}if $config.com_status_search == 1 && $userInfo.r_status != 1{/yun}
                             {yun:}include file="$wapstyle/resume_topthree.htm"{/yun}
                             <div class="nologintip">

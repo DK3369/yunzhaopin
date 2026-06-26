@@ -13,7 +13,7 @@
                     {yun:}elseif $city_name[$smarty.get.three_cityid]{/yun}
                         {yun:}$city_name[$smarty.get.three_cityid]{/yun}
                     {yun:}else{/yun}
-                        兼职区域
+                        {yun:}t key='wap_00581'{/yun}
                     {yun:}/if{/yun}
                 {yun:}/if{/yun}
                 <i class="searchOptions_icon"></i>
@@ -47,7 +47,7 @@
                             
                             <div class="part_box_jobname">
                             <!--<span class="part_new">{yun:}t key='common.latest'{/yun}</span>-->
-                            {yun:}if $partlist.rec_time gt 0{/yun} <span class="part_hot">优选</span>{yun:}/if{/yun}
+                            {yun:}if $partlist.rec_time gt 0{/yun} <span class="part_hot">{yun:}t key='wap_00582'{/yun}</span>{yun:}/if{/yun}
                             	{yun:}$partlist.name{/yun}<span class="part_box_jobxz">
                             	{yun:}$partlist.salary{/yun}
                             	<i class="part_box_jobxz_fh">{yun:}$partlist.job_salary_type{/yun}</i></span>  </div>
@@ -57,13 +57,9 @@
                             	{yun:}if $partlist.job_billing_cycle{/yun}
                                 	<div class="Part_jsfs">{yun:}$partlist.job_billing_cycle{/yun}</div>
                                 {yun:}/if{/yun}
-                                 <span class="part_box_ztt">{yun:}if $partlist.edate{/yun}短期{yun:}else{/yun}{yun:}t key='wap_com_00341'{/yun}{yun:}/if{/yun}</span>
+                                 <span class="part_box_ztt">{yun:}if $partlist.edate{/yun}{yun:}t key='wap_00583'{/yun}{yun:}else{/yun}{yun:}t key='wap_com_00341'{/yun}{yun:}/if{/yun}</span>
                                  <span class="part_box_jobdate">
-                                    {yun:}if $partlist.time=='今天' || $partlist.time=='昨天'{/yun}
-                                        {yun:}$partlist.time{/yun}
-                                    {yun:}else{/yun}
-                                        {yun:}$partlist.time{/yun}
-                                    {yun:}/if{/yun}
+                                    {yun:}$partlist.time{/yun}
                                 </span>
                             </div>
 								{yun:}if $partlist.job_city_three{/yun}
@@ -92,13 +88,13 @@
             
             {yun:}if $total <=0{/yun} 
             	{yun:}if $smarty.get.keyword!="" {/yun} 
-	            	<div class="wap_member_no">没有搜索到兼职
+	            	<div class="wap_member_no">{yun:}t key='wap_00584'{/yun}
 		                <div>
 		                    <a class="wap_mb_no_sr" href="{yun:}url m=wap c='part'{/yun}">{yun:}t key='wap_00130'{/yun}</a>
 		                </div>
 		        	</div>
 		        {yun:}else{/yun}
-			        <div class="wap_member_no">暂无兼职
+			        <div class="wap_member_no">{yun:}t key='wap_00585'{/yun}
 			            <div>
 			                <a class="wap_mb_no_sr" href="{yun:}url m=wap c='part'{/yun}">{yun:}t key='wap_00130'{/yun}</a>
 			            </div>
@@ -135,7 +131,7 @@
         var vm =  new Vue({
             el: '#app',
             data: {
-                //分页相关
+                // Pagination
                 currentPage:currentPage?currentPage:1,
                 total:total,
                 perpage:20,

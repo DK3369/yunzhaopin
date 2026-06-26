@@ -1,0 +1,15 @@
+{
+    "Memcache连接失败或您的服务器不支持Memcache,请在后台关闭！": [
+        "app\/public\/action.class.php"
+    ],
+    "模版不能为空！": [
+        "app\/public\/common.php",
+        "app\/public\/common.php"
+    ],
+    "文件上传失败，请检查DATA目录权限！": [
+        "app\/model\/upload.model.php"
+    ],
+    "报名失败,请稍候重试！": [
+        "app\/model\/zph.model.php"
+    ]
+}

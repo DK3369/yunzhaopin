@@ -1,6 +1,6 @@
 {yun:}include file="$wapstyle/header_cont.htm"{/yun}
-<!-- 页面头部部分 -->
-<!--有招聘会状态-->
+<!-- Page header -->
+<!-- Job fair status badges -->
 <div class="newzph_img">
 	{yun:}if $newZph{/yun}
     <a href="{yun:}$newZph.url_wap{/yun}">
@@ -29,7 +29,7 @@
                     </div>
                     <div class="newzph_sj">
                         <div class="newzph_sj_n_b">
-                            <span class="newzph_sj_n">{yun:}$zph.comnum{/yun}</span>家
+                            <span class="newzph_sj_n">{yun:}$zph.comnum{/yun}</span>{yun:}t key='wap_00599'{/yun}
                         </div>{yun:}t key='wap_00559'{/yun}
                     </div>
                     <div class="newzph_sj">
@@ -44,12 +44,12 @@
                     </div>
                     {yun:}if $zph.stime<'0'&&$zph.etime>'0'{/yun}
                         <span  class="newzph_sj_bth">{yun:}t key='wap_00561'{/yun}</span>
-                        <div class="newzph_jxz">正在进行中...</div>
+                        <div class="newzph_jxz">{yun:}t key='wap_00600'{/yun}</div>
                         {yun:}elseif $zph.stime>'0'{/yun}
                         <span class="newzph_sj_bth">{yun:}t key='wap_00561'{/yun}</span>
-                        <div class="newzph_bmz">火爆报名中...</div>
+                        <div class="newzph_bmz">{yun:}t key='wap_00601'{/yun}</div>
                         {yun:}else{/yun}
-                        <span class="newzph_sj_bthwq">往期回顾</span>
+                        <span class="newzph_sj_bthwq">{yun:}t key='wap_00602'{/yun}</span>
                         {yun:}/if{/yun}
                 </li>
                 </a>
@@ -58,7 +58,7 @@
             
             {yun:}if $total<=0 {/yun} 
 			<div class="newzph_notip">
-                <div class="wap_member_no">暂无招聘会信息 </div>
+                <div class="wap_member_no">{yun:}t key='wap_00603'{/yun}</div>
 			</div>
 			{yun:}else{/yun}
 			<div v-if="total>perpage">
@@ -78,7 +78,7 @@ var type = '{yun:}$smarty.get.type{/yun}';
 var yunvue = new Vue({
     el: "#app",
     data: {
-        //分页相关
+        // Pagination
         currentPage: currentPage ? currentPage : 1,
         total: total,
         perpage: 5,

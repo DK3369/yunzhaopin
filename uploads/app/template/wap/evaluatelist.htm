@@ -2,7 +2,7 @@
 <!-- <link rel="stylesheet" href="{yun:}$config_wapdomain{/yun}/js/mui/css/mui.min.css?v={yun:}$config.cachecode{/yun}" type="text/css" /> -->
 <link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/style.css?v={yun:}$config.cachecode{/yun}" type="text/css"/>
 <div class="evaluate_box" id="app">
-    <!--{yun:}t key='wap_00316'{/yun}-->
+    <!-- Evaluation list -->
     {yun:}if $rows{/yun}
         {yun:}foreach from=$rows item=v{/yun}
         <div class="evaluate_list">
@@ -10,7 +10,7 @@
                 <div class="evaluate_pic"><img src="{yun:}$v.pic_n{/yun}" width="90"/></div>
                 <div class="evaluate_name">{yun:}$v.name{/yun}</div>
                 <div class="evaluate_p">{yun:}$v.description{/yun}</div>
-                <div class="evaluate_cs">{yun:}$v.visits{/yun}人访问过<span class="evaluate_p_bth">开始测试 ></span></div>
+                <div class="evaluate_cs">{yun:}$v.visits{/yun}{yun:}t key='wap_00612'{/yun}<span class="evaluate_p_bth">{yun:}t key='wap_00613'{/yun}</span></div>
             </a>
         </div>
         {yun:}/foreach{/yun}
@@ -19,7 +19,7 @@
         {yun:}/if{/yun}
     {yun:}else{/yun}
     <div class="wap_member_nosearch">
-        <div class="wap_member_no_tip"> {yun:}t key='common_01912'{/yun},这个星球没有测评试卷呢！</div>
+        <div class="wap_member_no_tip">{yun:}t key='wap_00614'{/yun}</div>
     </div>
     {yun:}/if{/yun}
 </div>
@@ -32,7 +32,7 @@
     var vm = new Vue({
         el: '#app',
         data: {
-            //分页相关
+            // Pagination
             currentPage: currentPage ? currentPage : 1,
             total: total,
             perpage: 20,

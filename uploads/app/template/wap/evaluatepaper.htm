@@ -22,8 +22,8 @@
 <div class="evaluate_show_bthbox">
 <div class="evaluate_show_bthcont">
 {yun:}if $questions|@count>1{/yun}
-<a href="javascript:void(0)" onclick="nextquestion('2')" id="nextq"class="evaluate_show_bthcont_a evaluate_show_bthcont_a_next">下一题</a>
-<a  href="javascript:void(0)" onclick="nextquestion('1')" id="upq" class="evaluate_show_bthcont_a none">上一题</a>
+<a href="javascript:void(0)" onclick="nextquestion('2')" id="nextq"class="evaluate_show_bthcont_a evaluate_show_bthcont_a_next">{yun:}t key='wap_00631'{/yun}</a>
+<a  href="javascript:void(0)" onclick="nextquestion('1')" id="upq" class="evaluate_show_bthcont_a none">{yun:}t key='wap_00632'{/yun}</a>
 
 {yun:}/if{/yun}
 <span class=" {yun:}if $questions|@count>1{/yun}none{yun:}/if{/yun}" id="submitpaper">
@@ -32,14 +32,14 @@
 
 </span>
 </div>
-<div class="evaluate_show_bthcont_n"><span id="qnum">1</span>/{yun:}$questions|@count{/yun} 题</div>
+<div class="evaluate_show_bthcont_n"><span id="qnum">1</span>/{yun:}$questions|@count{/yun}{yun:}t key='wap_00633'{/yun}</div>
 <input type="hidden" id="questionid" value="1">
 <input type="hidden" id="allnum" value="{yun:}$questions|@count{/yun}">
  </div>
   </form>
   {yun:}else{/yun}
   <div class="wap_member_nosearch">
-	<div class="wap_member_no_tip"> 这个星球还没有测试题目哦<br>去看看其他测试吧！</div>
+	<div class="wap_member_no_tip">{yun:}t key='wap_00634'{/yun}<br>{yun:}t key='wap_00635'{/yun}</div>
 </div>
   {yun:}/if{/yun}
 </div>
@@ -48,7 +48,7 @@
 
 $(document).ready(function () {
 
-	/*点击选项，更改class*/
+	/* Update selected option style on click */
 	$(".evaluate_show_chlose").click(function(){ 
 		$(this).parent().children().find('i').removeClass("evaluate_show_chlose_icon_cur");
 		$(this).parent().children().find("input[type='radio']").removeAttr("checked");
@@ -65,7 +65,7 @@ function check_evaluate(){
 		var val=$("input:radio[name='q"+tid+"']:checked").val();
 		if(isNaN(val)){
 			error+=1;
-			showToast("必须全部答完才能交卷！");return false;		
+			showToast("{yun:}t key='wap_00636'{/yun}");return false;		
 		} 
 	});
 

@@ -7,11 +7,11 @@
     </div>
     <div class="redeem_header_info">
         {yun:}if $uid{/yun}
-        <div class="redeem_header_info_name">Hi , {yun:}$username{/yun} 你好 !</div>
+        <div class="redeem_header_info_name">{yun:}t key='wap_00708'{/yun} {yun:}$username{/yun} {yun:}t key='wap_00709'{/yun}</div>
 		 <em class="redeem_header_info_f">{yun:}t key='wap_js_00157'{/yun}{yun:}$config.integral_pricename{/yun}</em> <span class="redeem_header_info_n">{yun:}$statis.integral{/yun}</span> 
 		{yun:}else{/yun}
-        <div class="redeem_header_info_name">Hi , 你好 !</div>
-        <div class="redeem_header_info_login">请
+        <div class="redeem_header_info_name">{yun:}t key='wap_00708'{/yun} {yun:}t key='wap_00709'{/yun}</div>
+        <div class="redeem_header_info_login">{yun:}t key='wap_00710'{/yun}
             <a href="{yun:}url m=wap c=login{/yun}" class="redeem_header_info_login_c">{yun:}t key='common.login'{/yun}</a><span class="redeem_header_info_login_line">|</span>
             <a href="{yun:}url m=wap c=register{/yun}" class="redeem_header_info_login_c">{yun:}t key='common.register'{/yun}</a>
         </div>
@@ -23,23 +23,23 @@
             <ul class="redeem_header_nav_list">
                 {yun:}if !$uid{/yun}
                 <li>
-                    <a href="{yun:}url m=wap c=login{/yun}" class="redeem_header_nav_icon redeem_header_nav_icon_all">我能兑换</a>
+                    <a href="{yun:}url m=wap c=login{/yun}" class="redeem_header_nav_icon redeem_header_nav_icon_all">{yun:}t key='wap_00711'{/yun}</a>
                 </li>
                 <li>
                     <a href="{yun:}url m=wap c=login{/yun}" class="redeem_header_nav_icon redeem_header_nav_icon_jl">{yun:}t key='wap_user_00170'{/yun}</a>
                 </li>
                 <li>
-                    <a href="{yun:}url m=wap c=login{/yun}" class="redeem_header_nav_icon redeem_header_nav_icon_zjf">赚{yun:}$config.integral_pricename{/yun}</a>
+                    <a href="{yun:}url m=wap c=login{/yun}" class="redeem_header_nav_icon redeem_header_nav_icon_zjf">{yun:}t key='wap_00712'{/yun}{yun:}$config.integral_pricename{/yun}</a>
                 </li>
                 {yun:}else{/yun}
                 <li>
-                    <a href="{yun:}url m=wap c=redeem a=list intinfo=$statis.integral{/yun}" class="redeem_header_nav_icon redeem_header_nav_icon_all">我能兑换</a>
+                    <a href="{yun:}url m=wap c=redeem a=list intinfo=$statis.integral{/yun}" class="redeem_header_nav_icon redeem_header_nav_icon_all">{yun:}t key='wap_00711'{/yun}</a>
                 </li>
                 <li>
                     <a href="{yun:}url m=wap{/yun}member/index.php?c=reward_list&back=1" class="redeem_header_nav_icon redeem_header_nav_icon_jl">{yun:}t key='wap_user_00170'{/yun}</a>
                 </li>
                 <li>
-                    <a href="{yun:}url m=wap{/yun}member/index.php?c=integral&back=1" class="redeem_header_nav_icon redeem_header_nav_icon_zjf">赚{yun:}$config.integral_pricename{/yun}</a>
+                    <a href="{yun:}url m=wap{/yun}member/index.php?c=integral&back=1" class="redeem_header_nav_icon redeem_header_nav_icon_zjf">{yun:}t key='wap_00712'{/yun}{yun:}$config.integral_pricename{/yun}</a>
                 </li>
                 {yun:}/if{/yun}
             </ul>
@@ -63,7 +63,7 @@
 
 <div class="redeem_hot">
     <div class="redeem_hot_h1"><span class="redeem_hot_s">{yun:}t key='wap_00397'{/yun}</span>
-        <a href="{yun:}url m=wap c=redeem a=list   hot=1{/yun}" class="redeem_hot_more">更多礼品 ></a>
+        <a href="{yun:}url m=wap c=redeem a=list   hot=1{/yun}" class="redeem_hot_more">{yun:}t key='wap_00713'{/yun}</a>
     </div>
     <div class="redeem_hotlist_box">
         <ul class="redeem_hotlist">
@@ -84,8 +84,8 @@
     </div>
 </div>
 <div class="redeem_jx_box mt10">
-    <div class="redeem_jx_h1 "><span class="redeem_jx_s">精选好货</span>
-        <a href="{yun:}url m=wap c=redeem a=list  rec=1{/yun}" class="redeem_hot_more">更多礼品 ></a>
+    <div class="redeem_jx_h1 "><span class="redeem_jx_s">{yun:}t key='wap_00714'{/yun}</span>
+        <a href="{yun:}url m=wap c=redeem a=list  rec=1{/yun}" class="redeem_hot_more">{yun:}t key='wap_00713'{/yun}</a>
     </div>
 
     <ul class="redeem_list">
@@ -117,8 +117,8 @@
                 <ul class="sxlist">
                     {yun:}foreach item=v key=j from=$lipin{/yun}
                     <li>
-                        <div>{yun:}$v.username{/yun} {yun:}t key='common_01944'{/yun} 花了 <b style="color:#093">{yun:}$v.integral{/yun}</b> {yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}</div>
-                        <div> 兑换了<i><a href="{yun:}url m=wap c=redeem a=show id='`$v.gid`'{/yun}" style="color:#f60">{yun:}$v.name{/yun}</a></i> </div>
+                        <div>{yun:}$v.username{/yun} {yun:}t key='common_01944'{/yun} {yun:}t key='wap_00715'{/yun} <b style="color:#093">{yun:}$v.integral{/yun}</b> {yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}</div>
+                        <div> {yun:}t key='wap_00716'{/yun}<i><a href="{yun:}url m=wap c=redeem a=show id='`$v.gid`'{/yun}" style="color:#f60">{yun:}$v.name{/yun}</a></i> </div>
                     </li>
                     {yun:}/foreach{/yun}
                 </ul>
@@ -130,8 +130,8 @@
 <div class="clear"></div>
 
 <div class="redeem_jx_box mt10">
-    <div class="redeem_jx_h1 "><span class="redeem_new_s">最新礼品</span>
-        <a href="{yun:}url m=wap c=redeem a=list order=sdate sort=desc {/yun}" class="redeem_hot_more">更多礼品 ></a>
+    <div class="redeem_jx_h1 "><span class="redeem_new_s">{yun:}t key='wap_00717'{/yun}</span>
+        <a href="{yun:}url m=wap c=redeem a=list order=sdate sort=desc {/yun}" class="redeem_hot_more">{yun:}t key='wap_00713'{/yun}</a>
     </div>
     <ul class="redeem_list">
 

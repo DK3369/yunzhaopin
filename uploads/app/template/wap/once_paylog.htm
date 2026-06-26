@@ -1,7 +1,7 @@
 {yun:}include file="$wapstyle/header_cont.htm"{/yun}
 <link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/style.css?v={yun:}$config.cachecode{/yun}" type="text/css" />
 
-{yun:}if $config.com_fast_status == '0'{/yun}<div class="once_tip_cz">管理员审核后，即可展示招聘信息，请耐心等待哦~</div>{yun:}/if{/yun}
+{yun:}if $config.com_fast_status == '0'{/yun}<div class="once_tip_cz">{yun:}t key='wap_00625'{/yun}</div>{yun:}/if{/yun}
 <section class="main_member_cot_box">
     <div class="wap_member_post_list">
         {yun:}foreach item=log from=$rows{/yun}
@@ -10,7 +10,7 @@
                 <div class="once_paylog_p"><span class="member_c9">{yun:}t key='wap_user_00311'{/yun}：</span>{yun:}$log.order_id{/yun}</div>
                 <div class="once_paylog_p"><span class="member_c9">{yun:}t key='wap_user_00318'{/yun}：</span> {yun:}t key='wap_js_00130'{/yun} </div>
                 <div class="once_paylog_p">
-                    <span class="member_c9">支付形式：</span> {yun:}if $log.order_type=='alipay'{/yun}支付宝支付{yun:}else{/yun}{yun:}t key='wap_user_00316'{/yun}{yun:}/if{/yun}</div>
+                    <span class="member_c9">{yun:}t key='wap_00626'{/yun}</span> {yun:}if $log.order_type=='alipay'{/yun}{yun:}t key='wap_00627'{/yun}{yun:}else{/yun}{yun:}t key='wap_user_00316'{/yun}{yun:}/if{/yun}</div>
                 <div class="once_paylog_p"><span class="member_c9">{yun:}t key='wap_user_00312'{/yun}：</span>{yun:}$log.order_price{/yun}</div>
                 <div class="once_paylog_p"><span class="member_c9">{yun:}t key='member_com_00319'{/yun}：</span>{yun:}t key='wap_00359'{/yun}</div>
                 <div class="once_paylog_p"><span class="member_c9">{yun:}t key='wap_js_00088'{/yun}：</span>{yun:}$log.order_time|date_format:"%Y-%m-%d %H:%M:%S"{/yun}</div>
@@ -22,12 +22,12 @@
             <div class="once_paylog_cz">
                 <a href="{yun:}url m=wap{/yun}index.php?c=once&a=show&id={yun:}$log.once_id{/yun}&pay=1" class="once_paylog_czbth">{yun:}t key='wap_00358'{/yun}</a>
                
-                <a href="javascript:void(0)" onclick="vant_del('确定要取消该订单吗？','{yun:}url m=wap{/yun}index.php?c=once&a=delpaylog&id={yun:}$log.id{/yun}')" class="once_paylog_czbth">取消充值</a> <a href="index.php?c=once&a=pay&id={yun:}$log.once_id{/yun}&price={yun:}$log.order_price{/yun}" class="once_paylog_czbth once_paylog_czbthcur">{yun:}t key='wap_user_00308'{/yun}</a>
+                <a href="javascript:void(0)" onclick="vant_del('{yun:}t key='wap_00628'{/yun}','{yun:}url m=wap{/yun}index.php?c=once&a=delpaylog&id={yun:}$log.id{/yun}')" class="once_paylog_czbth">{yun:}t key='wap_00629'{/yun}</a> <a href="index.php?c=once&a=pay&id={yun:}$log.once_id{/yun}&price={yun:}$log.order_price{/yun}" class="once_paylog_czbth once_paylog_czbthcur">{yun:}t key='wap_user_00308'{/yun}</a>
             </div>{yun:}/if{/yun}
         </div>
 
         {yun:}foreachelse{/yun}
-        <div class="wap_member_no">暂无相关信息</div>
+        <div class="wap_member_no">{yun:}t key='wap_00630'{/yun}</div>
         {yun:}/foreach{/yun}
     </div>
 </section>

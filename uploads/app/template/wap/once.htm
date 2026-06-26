@@ -42,7 +42,7 @@
                 </a>
             </li>
             {yun:}/if{/yun}
-            <li class="Sortadtime popup" data-pop="Sortadtime"><a href="javascript:void(0);"  class="once_search_list_a"><span class="job_ov">{yun:}if $adtime[$smarty.get.add_time]{/yun}{yun:}$adtime[$smarty.get.add_time]{/yun}{yun:}else{/yun}时间范围{yun:}/if{/yun}</span></a></li>
+            <li class="Sortadtime popup" data-pop="Sortadtime"><a href="javascript:void(0);"  class="once_search_list_a"><span class="job_ov">{yun:}if $adtime[$smarty.get.add_time]{/yun}{yun:}$adtime[$smarty.get.add_time]{/yun}{yun:}else{/yun}{yun:}t key='wap_00591'{/yun}{yun:}/if{/yun}</span></a></li>
             <input type="hidden" id="searchurl" value="{yun:}$searchurl{/yun}" />
             <input type="hidden" id="waptype" value="1" />
             
@@ -66,7 +66,7 @@
                     <a href='{yun:}url m=wap c=login usertype=2{/yun}'>
                        <div class="newly_login">
                          
-                          <font color='#2778F8'>登录后查看联系电话</font>
+                          <font color='#2778F8'>{yun:}t key='wap_00595'{/yun}</font>
                           <div class="newly_login_btn">{yun:}t key='wap_00285'{/yun}</div>
                        </div>
                     </a>
@@ -79,18 +79,18 @@
                     <div class="list_once_touch_add">{yun:}t key='wap_js_00082'{/yun}：{yun:}$once.address{/yun}</div>
                     {yun:}/if{/yun} {yun:}/if{/yun}
 
-                    <div class="list_once_gxtime"> 更新于： {yun:}if $once.redtime==1 || $once.ctime
+                    <div class="list_once_gxtime"> {yun:}t key='wap_00596'{/yun} {yun:}if $once.redtime==1 || $once.ctime
                         <60{/yun} <span style="color:red;">{yun:}$once.ctime{/yun}</span> {yun:}else{/yun} {yun:}$once.ctime{/yun} {yun:}/if{/yun} </div>
                 </div>
         </div>
         {yun:}/fast{/yun} {yun:}if $total
-        <=0{/yun} {yun:}if $smarty.get.keyword!="" {/yun} <div class="wap_member_no">没有搜索到店铺招聘
+        <=0{/yun} {yun:}if $smarty.get.keyword!="" {/yun} <div class="wap_member_no">{yun:}t key='wap_00597'{/yun}
             <div>
                 <a class="wap_mb_no_sr" href="{yun:}url m=wap c='once'{/yun}">{yun:}t key='wap_00130'{/yun}</a>
             </div>
     </div>
     {yun:}else{/yun}
-    <div class="wap_member_no">暂无店铺招聘
+    <div class="wap_member_no">{yun:}t key='wap_00598'{/yun}
         <div>
             <a class="wap_mb_no_sr" href="{yun:}url m=wap c='once'{/yun}">{yun:}t key='wap_00130'{/yun}</a>
         </div>
@@ -99,7 +99,7 @@
     <div class="pages">{yun:}$pagenav{/yun}</div>
     {yun:}/if{/yun} </div>
 </section>
-<!--功能条-->
+<!-- Action bar -->
       <div class="clear"></div>
         <div class="once_search_list_fb_box_c">
 			<div class="once_search_list_fb_box">
@@ -107,7 +107,7 @@
 				{yun:}if $config.sy_once == 0{/yun}
 				<a href="{yun:}url m=wap c=once a=add{/yun}"  class="once_search_list_fb">{yun:}t key='wap_00340'{/yun}</a>
 				{yun:}else if $num > 0{/yun}
-				<a href="javascript:void(0);" onclick="onceadd('{yun:}t key='common_02178'{/yun}{yun:}$config.sy_once{/yun}{yun:}t key='common_02089'{/yun}，剩余可发布{yun:}$num{/yun}{yun:}t key='common_02089'{/yun}','{yun:}url m=wap c=once a=add{/yun}')"  class="once_search_list_fb">{yun:}t key='wap_00340'{/yun}</a>
+				<a href="javascript:void(0);" onclick="onceadd('{yun:}t key='common_02178'{/yun}{yun:}$config.sy_once{/yun}{yun:}t key='common_02089'{/yun}{yun:}t key='wap_00593'{/yun}{yun:}$num{/yun}{yun:}t key='common_02089'{/yun}','{yun:}url m=wap c=once a=add{/yun}')"  class="once_search_list_fb">{yun:}t key='wap_00340'{/yun}</a>
 				{yun:}else{/yun}
 				<a href="javascript:void(0);" onclick="showToast('{yun:}t key='common_02178'{/yun}{yun:}$config.sy_once{/yun}{yun:}t key='common_02089'{/yun}！')"  class="once_search_list_fb">{yun:}t key='wap_00340'{/yun}</a>
 				{yun:}/if{/yun}

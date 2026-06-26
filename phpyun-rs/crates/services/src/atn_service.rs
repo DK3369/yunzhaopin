@@ -12,12 +12,16 @@
 //! Side effects are **best-effort**: failure on the counter / sysmsg does NOT
 //! roll back the primary INSERT/DELETE — same as PHP (no transaction).
 
-use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser, Pagination};
+use phpyun_core::{clock, i18n::{t, t_args, Lang}, AppError, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::atn::entity::{Atn, KIND_COMPANY, KIND_USER};
 use phpyun_models::atn::repo as atn_repo;
 use phpyun_models::message::repo as message_repo;
 
 use crate::user_service;
+
+/// Persisted notification copy uses the system default language until recipient
+/// language preferences are stored (see `notification_consumers::NOTIF_LANG`).
+const NOTIF_LANG: Lang = Lang::ZhCN;
 
 pub struct FollowResult {
     /// New state after the toggle: true = now following, false = now unfollowed.
@@ -80,14 +84,24 @@ async fn best_effort_notify(
     is_follow: bool,
 ) {
     let usertype = if target_kind == KIND_COMPANY { 2 } else { 1 };
-    let action = if is_follow { "关注了你" } else { "取消了对您的关注" };
+    let action_key = if is_follow {
+        "notifications.follow.followed"
+    } else {
+        "notifications.follow.unfollowed"
+    };
+    let action = t(action_key, NOTIF_LANG);
     let username = match user_service::get_profile(state, follower.uid).await {
         Ok(p) => p.username.clone(),
         Err(_) => String::new(),
     };
-    let content = format!(
-        "用户 <a href=\"usertpl,{uid}\">{username}</a> {action}",
-        uid = follower.uid,
+    let content = t_args(
+        "notifications.follow.user_action",
+        NOTIF_LANG,
+        &[
+            ("uid", &follower.uid.to_string()),
+            ("username", &username),
+            ("action", &action),
+        ],
     );
     let _ = message_repo::insert_simple(
         state.db.pool(),

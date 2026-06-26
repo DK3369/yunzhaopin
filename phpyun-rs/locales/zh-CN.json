@@ -146,7 +146,8 @@
     "zph_not_found": "招聘会不存在",
     "zph_unavailable": "招聘会不可用",
     "comment_empty": "评论内容不能为空",
-    "comment_too_long": "评论内容过长（最多 2000 字）"
+    "comment_too_long": "评论内容过长（最多 2000 字）",
+    "self_follow_forbidden": "自己不能关注自己"
   },
   "validation": {
     "username": {
@@ -180,7 +181,32 @@
     "collect_removed": "已取消收藏",
     "session_revoked": "已踢下线该设备",
     "sessions_revoked": "已踢下线其他所有设备",
-    "entrust_unbound": "已解除委托"
+    "entrust_unbound": "已解除委托",
+    "deleted": "已删除",
+    "updated": "已更新",
+    "revoked": "已撤销",
+    "removed": "已移除",
+    "sent": "已发送",
+    "submitted": "已提交",
+    "cancelled": "已取消",
+    "approved": "已通过",
+    "rejected": "已拒绝",
+    "purged": "已永久删除",
+    "reloaded": "已重新加载",
+    "email_verified": "邮箱已验证"
+  },
+  "recommend": {
+    "disabled": "推荐功能已关闭",
+    "day_cap": "每天最多推荐 %{cap} 次职位/简历",
+    "interval_wait": "推荐职位/简历间隔不得少于 %{interval} 秒，请 %{remaining} 秒后操作",
+    "email": {
+      "job_subject": "【职位推荐】%{job} - %{company}",
+      "job_summary": "%{company} 正在招聘 %{job}",
+      "job_subject_fallback": "职位推荐",
+      "resume_subject": "【简历推荐】(uid=%{uid})",
+      "resume_summary": "有一份简历 (uid=%{uid}) 推荐给您",
+      "resume_subject_fallback": "简历推荐"
+    }
   },
   "notifications": {
     "invite": {
@@ -205,6 +231,16 @@
     "vip": {
       "activated_title": "VIP 已开通",
       "activated_body": "您开通了 %{package} 套餐，有效期 %{duration_days} 天。"
+    },
+    "follow": {
+      "followed": "关注了你",
+      "unfollowed": "取消了对您的关注",
+      "user_action": "用户 <a href=\"usertpl,%{uid}\">%{username}</a> %{action}"
+    },
+    "collect": {
+      "favorited_log": "职位收藏：收藏了职位：%{job_name}",
+      "unfavorited_log": "收藏管理：取消收藏职位：%{id}",
+      "favorited_sysmsg": "有用户收藏了您的职位：%{job_name}"
     }
   },
   "wechat": {
@@ -214,6 +250,11 @@
   "ui": {
     "resume": {
       "anonymous": "匿名"
+    },
+    "job": {
+      "view_detail": "查看详情",
+      "salary_range": "%{min}-%{max}元",
+      "salary_min_plus": "%{min}元以上"
     }
   },
   "dict": {

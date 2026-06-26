@@ -165,7 +165,7 @@
 		})
 	}
 </script>
-<!-- Category职位类别 -->
+<!-- Category job types -->
 <div class="Category-eject pubtwo">
 	<ul class="Category-w" id="jobone">
 		{yun:}foreach item=v from=$job_index{/yun}
@@ -179,7 +179,7 @@
 </div>
 <!-- End Category -->
 
-<!-- grade 城市类别-->
+<!-- City picker -->
 <div class="grade-eject pubtwo">
 	<input type="hidden" id="kzq" value="{yun:}$smarty.get.c{/yun}"/>
 	<ul class="grade-w" id="provinceid">
@@ -245,7 +245,7 @@
 
 <!-- End Sortexp -->
 
-<!-- gengduos 找人才更多-->
+<!-- Talent search filters -->
 <div class="Gengduos-eject pubtwo">
 	<form action="{yun:}$config_wapdomain{/yun}/index.php" method="get" id="resume">
 		<input type="hidden" name="c" value="{yun:}if $smarty.get.c{/yun}{yun:}$smarty.get.c{/yun}{yun:}else{/yun}resume{yun:}/if{/yun}" />
@@ -365,7 +365,7 @@
 </div>
 <!-- End gengduos -->
 
-<!-- Sort 找工作经验-->
+<!-- Job experience filter -->
 <div class="Sort-eject Sort-height pubtwo">
 <div  id="Sort-Sort">
 <div class="conditional_screening_box">
@@ -376,7 +376,7 @@
 </div>
 <!-- End Sort -->
 
-<!-- Gengduoj 找工作更多-->
+<!-- Job search filters -->
 <div class="Gengduoj-eject pubtwo">
 	<form action="{yun:}$config_wapdomain{/yun}/index.php" method="get" id="job">
 		<input type="hidden" name="c" value="{yun:}if $smarty.get.c{/yun}{yun:}$smarty.get.c{/yun}{yun:}else{/yun}job{yun:}/if{/yun}" />
@@ -386,7 +386,7 @@
         <div class="conditional_screening_pv">
         <div class="conditional_screening_all">
 		<div class="conditional_screening_cont">
-			<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">薪资范围</span></div>
+			<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_00741'{/yun}</span></div>
 			<ul class="conditional_screening_list">
 			<li {yun:}if $smarty.get.minsalary==''&&$smarty.get.maxsalary==''{/yun}class="conditional_screening_salary_cur"{yun:}/if{/yun}><a href="{yun:}$config_wapdomain{/yun}/index.php?c=job">{yun:}t key='common.all'{/yun}</a></li>
 			<li {yun:}if $smarty.get.minsalary=='2000'&&$smarty.get.maxsalary=='4000'{/yun}class="conditional_screening_salary_cur"{yun:}/if{/yun}><a href="{yun:}$config_wapdomain{/yun}/index.php?c=job&minsalary=2000&maxsalary=4000">2000-4000</a></li>
@@ -510,7 +510,7 @@
 </div>
 <!-- End Gengduoj -->
 
-<!-- Sorthy 行业弹出框-->
+<!-- Industry picker -->
 <div class="Sorthy-eject Sorthy-height pubtwo">
 	<ul class="Sorthy-Sorthy" id="Sorthy-Sorthy">
 		{yun:}foreach from=$industry_index item=v{/yun}
@@ -526,7 +526,7 @@
 </div>
 <!-- End Sorthy -->
 
-<!-- Sortpr 企业性质弹出框-->
+<!-- Company type picker -->
 <div class="Sortpr-eject Sortpr-height pubtwo">
 	<ul class="Sortpr-Sortpr" id="Sortpr-Sortpr">
 		{yun:}foreach from=$comdata.job_pr item=v{/yun}
@@ -544,7 +544,7 @@
 </div>
 <!-- End Sortpr -->
 
-<!-- Sortmun 企业规模弹出框-->
+<!-- Company size picker -->
 <div class="Sortmun-eject Sortmun-height pubtwo">
 	<ul class="Sortmun-Sortmun" id="Sortmun-Sortmun">
 		{yun:}foreach from=$comdata.job_mun item=v{/yun}
@@ -562,7 +562,7 @@
 </div>
 <!-- End Sortmun -->
 
-<!-- Sorttype 兼职类型弹出框-->
+<!-- Part-time type picker -->
 <div class="Sorttype-eject Sorttype-height pubtwo">
 	<ul class="Sorttype-Sorttype" id="Sorttype-Sorttype">
 		{yun:}foreach from=$partdata.part_type item=v{/yun}
@@ -573,7 +573,7 @@
 	</ul>
 </div>
 <!-- End Sorttype -->
-<!-- Sortcycle 结算周期弹出框-->
+<!-- Billing cycle picker -->
 <div class="Sortcycle-eject Sortcycle-height pubtwo">
 	<ul class="Sortcycle-Sortcycle" id="Sortcycle-Sortcycle">
 		{yun:}foreach from=$partdata.part_billing_cycle item=v{/yun}
@@ -585,7 +585,7 @@
 </div>
 <!-- End Sortcycle -->
 
-<!-- wap商城商品类别 -->
+<!-- Redeem category picker -->
 <div class="redeem-eject pubtwo">
 	<ul class="redeem-w" id="nid">
 		{yun:}foreach from=$redeem_index item=v{/yun}

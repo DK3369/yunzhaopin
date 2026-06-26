@@ -2,14 +2,14 @@
 				
 <div class="yun_newedition_resumelist">
 	<a href="{yun:}url m=wap c=resume a=show id=$zduser.id{/yun}">
-		{yun:}if $zduser.newtime==1{/yun}<i class="yunjoblist_newicon" title="新简历"> </i>{yun:}/if{/yun}
+		{yun:}if $zduser.newtime==1{/yun}<i class="yunjoblist_newicon" title="{yun:}t key='wap_00587'{/yun}"> </i>{yun:}/if{/yun}
 		<div class="yun_newedition_resumepic">
 			{yun:}if $zduser.photo!=""{/yun}
 				<img src="{yun:}$zduser.photo{/yun}"> 
 			{yun:}else{/yun}
 				<img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_icon{/yun}"> 
 			{yun:}/if{/yun}
-			<span class="{yun:}if $zduser.sex=='女'{/yun}user_xbn{yun:}elseif $zduser.sex=='男'{/yun}user_xb{yun:}/if{/yun}"></span>
+			<span class="{yun:}if $zduser.sex=='{yun:}t key='common_02069'{/yun}'{/yun}user_xbn{yun:}elseif $zduser.sex=='{yun:}t key='common_02092'{/yun}'{/yun}user_xb{yun:}/if{/yun}"></span>
 		</div>
 		<div class="yun_newedition_resume_wantjob"><span class="yun_newedition_resume_wantjob_n">{yun:}if in_array($zduser.id,$eid){/yun}
 				{yun:}$zduser.uname{/yun}
@@ -19,7 +19,7 @@
 		</div>
 		<div class="new_userlist_info">{yun:}$zduser.exp_n{/yun}{yun:}t key='home.experience_suffix'{/yun} · {yun:}$zduser.edu_n{/yun} ·
 			{yun:}if $zduser.age == 0{/yun}{yun:}t key='wap_user_00333'{/yun}{yun:}else{/yun}{yun:}$zduser.age{/yun}{yun:}t key='home.age_suffix'{/yun}{yun:}/if{/yun}</div>
-		<div class="new_userlist_p">求职期望 {yun:}$zduser.name{/yun}，{yun:}$zduser.salary_n{/yun} 	
+		<div class="new_userlist_p">{yun:}t key='wap_00586'{/yun} {yun:}$zduser.name{/yun}，{yun:}$zduser.salary_n{/yun} 	
 		<span class="yun_newedition_resume_zd" >{yun:}t key='wap_user_00335'{/yun}</span></div>
 		
 		{yun:}if $zduser.work_content || $zduser.edu_content{/yun}
@@ -41,7 +41,7 @@
 			</div>
 		{yun:}/if{/yun}
 	
-		<!--	{yun:}if in_array($zduser.id, $lookResumeIds){/yun}<div class="yun_ljl" >. 浏览过的简历</div>{yun:}/if{/yun}-->
+		<!-- {yun:}if in_array($zduser.id, $lookResumeIds){/yun}<div class="yun_ljl">Viewed resume</div>{yun:}/if{/yun} -->
 	</a>
 
 
@@ -54,14 +54,14 @@
 		{yun:}if $usertype == 1{/yun}
 
 			<a href="{yun:}url m=wap c=resume a=show id=$mouser.id{/yun}">
-	{yun:}if $mouser.newtime==1{/yun}<i class="yunjoblist_newicon" title="新简历"> </i>{yun:}/if{/yun}
+	{yun:}if $mouser.newtime==1{/yun}<i class="yunjoblist_newicon" title="{yun:}t key='wap_00587'{/yun}"> </i>{yun:}/if{/yun}
 			<div class="yun_newedition_resumepic">
 				{yun:}if $mouser.photo!=""{/yun}
 					<img src="{yun:}$mouser.photo{/yun}"> 
 				{yun:}else{/yun}
 					<img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_icon{/yun}"> 
 				{yun:}/if{/yun}
-				<span class="{yun:}if $mouser.sex=='女'{/yun}user_tj_xb{yun:}elseif $mouser.sex=='男'{/yun}user_tj_xg{yun:}/if{/yun}"></span>
+				<span class="{yun:}if $mouser.sex=='{yun:}t key='common_02069'{/yun}'{/yun}user_tj_xb{yun:}elseif $mouser.sex=='{yun:}t key='common_02092'{/yun}'{/yun}user_tj_xg{yun:}/if{/yun}"></span>
 			</div>
 			<div class="yun_newedition_resume_wantjob"><span class="yun_newedition_resume_wantjob_n">{yun:}if in_array($mouser.id,$eid){/yun}
 						{yun:}$mouser.uname{/yun}
@@ -73,7 +73,7 @@
 			
 			<div class="new_userlist_info">{yun:}$mouser.exp_n{/yun}{yun:}t key='home.experience_suffix'{/yun} · {yun:}$mouser.edu_n{/yun}{yun:}t key='home.education_suffix'{/yun} ·
 						{yun:}if $mouser.age == 0{/yun}{yun:}t key='wap_user_00333'{/yun}{yun:}else{/yun}{yun:}$mouser.age{/yun}{yun:}t key='home.age_suffix'{/yun}{yun:}/if{/yun}</div>
-						<div class="new_userlist_p">求职期望 {yun:}$mouser.name{/yun}，{yun:}$mouser.salary_n{/yun} 	
+						<div class="new_userlist_p">{yun:}t key='wap_00586'{/yun} {yun:}$mouser.name{/yun}，{yun:}$mouser.salary_n{/yun} 	
 								<span class="yun_newedition_resume_zd">{yun:}$mouser.time{/yun}</span></div>
 			{yun:}if $mouser.work_content || $mouser.edu_content{/yun}
 			<div class="user_undergo_box">
@@ -96,14 +96,14 @@
 			</a>
 		{yun:}else{/yun} 
 			<a href="{yun:}url m=wap c=resume a=show id=$mouser.id{/yun}">
-				{yun:}if $mouser.newtime==1{/yun}<i class="yunjoblist_newicon" title="新简历"> </i>{yun:}/if{/yun}
+				{yun:}if $mouser.newtime==1{/yun}<i class="yunjoblist_newicon" title="{yun:}t key='wap_00587'{/yun}"> </i>{yun:}/if{/yun}
 				<div class="yun_newedition_resumepic">
 					{yun:}if $mouser.photo!=""{/yun}
 						<img src="{yun:}$mouser.photo{/yun}"> 
 					{yun:}else{/yun}
 						<img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_icon{/yun}"> 
 					{yun:}/if{/yun}
-					<span class="{yun:}if $mouser.sex=='女'{/yun}user_tj_xb{yun:}elseif $mouser.sex=='男'{/yun}user_tj_xg{yun:}/if{/yun}"></span>
+					<span class="{yun:}if $mouser.sex=='{yun:}t key='common_02069'{/yun}'{/yun}user_tj_xb{yun:}elseif $mouser.sex=='{yun:}t key='common_02092'{/yun}'{/yun}user_tj_xg{yun:}/if{/yun}"></span>
 				</div>
 				
 				<div class="yun_newedition_resume_wantjob"><span class="yun_newedition_resume_wantjob_n">{yun:}if in_array($mouser.id,$eid){/yun}
@@ -117,11 +117,7 @@
 				<div class="new_userlist_info">{yun:}$mouser.exp_n{/yun}{yun:}t key='home.experience_suffix'{/yun} · {yun:}$mouser.edu_n{/yun} · 	{yun:}if $mouser.age == 0{/yun}{yun:}t key='wap_user_00333'{/yun}{yun:}else{/yun}{yun:}$mouser.age{/yun}{yun:}t key='home.age_suffix'{/yun}{yun:}/if{/yun}</div>
 				
 				
-				<div class="new_userlist_p">求职期望 {yun:}$mouser.name{/yun}，{yun:}$mouser.salary_n{/yun} <span class="yun_newedition_resume_zd">{yun:}if $mouser.redtime==1 || $mouser.time=='昨天'{/yun}
-						<span>{yun:}$mouser.time{/yun}</span> 
-					{yun:}else{/yun} 
-						{yun:}$mouser.time{/yun} 
-					{yun:}/if{/yun}</span></div>
+				<div class="new_userlist_p">{yun:}t key='wap_00586'{/yun} {yun:}$mouser.name{/yun}，{yun:}$mouser.salary_n{/yun} <span class="yun_newedition_resume_zd">{yun:}$mouser.time{/yun}</span></div>
 				
 					{yun:}if $mouser.work_content || $mouser.edu_content{/yun}
 			<div class="user_undergo_box">

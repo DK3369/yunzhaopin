@@ -10,11 +10,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<!-- UC默认竖屏` UC强制全屏 -->
+<!-- UC: portrait orientation, fullscreen -->
 <meta name="screen-orientation" content="portrait">
 <meta name="full-screen" content="yes"/>
 <meta name="browsermode" content="application"/>
-<!-- QQ强制竖屏` QQ强制全屏 -->
+<!-- QQ: portrait orientation, fullscreen -->
 <meta name="x5-orientation" content="portrait"/>
 <meta name="x5-fullscreen" content="true"/>
 <meta name="x5-page-mode" content="app"/>
@@ -55,7 +55,7 @@
     <div class="zt_search_inpb">
       <input name="type" type="hidden" id="search_type" value="zw">
       <input type="text" id="search_key" class="zt_search_inp fs24" placeholder="{yun:}t key='wap_00510'{/yun}">
-      <input name="" type="button" class="fs24 zt_search_but" value="搜 索">
+      <input name="" type="button" class="fs24 zt_search_but" value="{yun:}t key='wap_00668'{/yun}">
     </div>
     <div class="clear"></div>
   </div>
@@ -67,11 +67,11 @@
 	  </div>
       <a href=" " class="search_czbth">{yun:}t key='wap_00327'{/yun}</a>
    </div>
-  <!--{yun:}t key='wap_00513'{/yun}-->
+  <!-- {yun:}t key='wap_00513'{/yun} -->
   <div id="Recommend" class="Recommend_con"> <img src="{yun:}$config.sy_weburl{/yun}/app/template/wap/images/spe_gl/Recommend.png" class="zt_timg" alt="{yun:}t key='wap_00513'{/yun}">
     <div class="zt_tit">{yun:}t key='wap_00513'{/yun}</div>
     <p class="zt_t_des fs32">——<br>
-      在这里，和一众好公司并肩</p>
+      {yun:}t key='wap_00666'{/yun}</p>
     <div class="Recommend_box">
       <div class="main_visual">
         <div class="main_image">
@@ -105,11 +105,11 @@
     <div class="clear"></div>
   </div>
   
-  <!--{yun:}t key='wap_00512'{/yun}-->
+  <!-- {yun:}t key='wap_00512'{/yun} -->
   <div class="Enterprises_con" id="Enterprises"> <img src="{yun:}$config.sy_weburl{/yun}/app/template/wap/images/spe_gl/Enterprises.png" class="zt_timg" alt="{yun:}t key='wap_00512'{/yun}">
     <div class="zt_tit cfff">{yun:}t key='wap_00512'{/yun}</div>
     <p class="zt_t_des fs32 cfff">——<br>
-      在这里，和一众好公司并肩</p>
+      {yun:}t key='wap_00666'{/yun}</p>
     <div class="wite_box fs24">
       <div class="zt_class Enterprises">
         <div class="wrapper" id="Enterprises_teb">
@@ -135,11 +135,11 @@
         <a class="gengduo yes Enterprises_down"  data-box="Enterprises">{yun:}t key='common.view_more'{/yun}</a> </div>
     </div>
   </div>
-  <!--{yun:}t key='wap_00517'{/yun}-->
+  <!-- {yun:}t key='wap_00517'{/yun} -->
   <div class="Position_con" id="Position"> <img src="{yun:}$config.sy_weburl{/yun}/app/template/wap/images/spe_gl/Position.png" class="zt_timg" alt="{yun:}t key='wap_00517'{/yun}">
     <div class="zt_tit cfff">{yun:}t key='wap_00517'{/yun}</div>
     <p class="zt_t_des fs32 cfff">——<br>
-      好职位尽在{yun:}$config.sy_webname{/yun}</p>
+      {yun:}t key='wap_00667'{/yun}{yun:}$config.sy_webname{/yun}</p>
     <div class="wite_box fs24">
       <div class="zt_class Position">
         <div class="wrapper" id="Position_teb">
@@ -171,7 +171,7 @@
 		<div class="special_seniorpd_box">
 			<div class="special_seniorpd_cont">
 				<div class="special_box_bth_c special_box_bth_cw2" >
-					<input type='button' value="我是企业，{yun:}t key='wap_00375'{/yun}" onclick="{yun:}if $uid{/yun}{yun:}if $usertype!='2'{/yun} showToast('只有企业用户才能参加报名');{yun:}else{/yun}comapply('{yun:}$info.id{/yun}','{yun:}$info.integral{/yun}','{yun:}url m=wap c=special a=apply{/yun}'){yun:}/if{/yun}{yun:}else{/yun}pleaselogin("{yun:}t key='wap_00150'{/yun}",'{yun:}url m=wap c=login{/yun}'){yun:}/if{/yun}" class="special_box_bth"/>
+					<input type='button' value="{yun:}t key='wap_00650'{/yun}{yun:}t key='wap_00375'{/yun}" onclick="{yun:}if $uid{/yun}{yun:}if $usertype!='2'{/yun} showToast('{yun:}t key='wap_00651'{/yun}');{yun:}else{/yun}comapply('{yun:}$info.id{/yun}','{yun:}$info.integral{/yun}','{yun:}url m=wap c=special a=apply{/yun}'){yun:}/if{/yun}{yun:}else{/yun}pleaselogin("{yun:}t key='wap_00150'{/yun}",'{yun:}url m=wap c=login{/yun}'){yun:}/if{/yun}" class="special_box_bth"/>
 				</div>
 			</div>
 		</div>
@@ -208,7 +208,7 @@
 	  var wapurl = "{yun:}url m=wap{/yun}";
 	function comapply(id,integral,url){
 		if(integral>0&&integral){
-			let msg = "参加专题招聘，将扣除您"+integral+pricename+"，审核不通过将退还，{yun:}t key='common_01784'{/yun}？";
+			let msg = "{yun:}t key='wap_00652'{/yun}"+integral+pricename+"{yun:}t key='wap_00653'{/yun}{yun:}t key='common_01784'{/yun}？";
 			showConfirm(msg,function(){			
 				showLoading();
 				$.post(url,{id:id},function(data){
@@ -233,7 +233,7 @@
 <script type="text/javascript">
 var sid = '{yun:}$info.id{/yun}';
 $(document).ready(function(){
-	 //搜索类型选择
+	 // Search type selection
 	  $(".search_s").click(function () {
 		  var searchname = $(this).text()
 		  $(".search_select li").each(function () {
@@ -400,7 +400,7 @@ $(document).ready(function(){
 });
 
 
-//sid专题招聘id hy 行业id,page 页码
+// sid=special id, hy=industry id, page=page number
 function Enterprisestab(hy, page, numb) {
 	$.post(wapurl+"index.php?c=special&a=getComList", {sid: sid, hy: hy, page: page, numb: numb}, function (data) {
 		if (data) {
@@ -512,13 +512,13 @@ function searchJob(keyword, type) {
 			}
 			$("#searchlist").html(jobhtml)
 		}else {
-			$("searchlist").html('<div class="no_inforxx"><img src="' + nodataimg + '"/><p>抱歉，未搜索到相关信息！<p></div>')
+			$("searchlist").html('<div class="no_inforxx"><img src="' + nodataimg + '"/><p>{yun:}t key='wap_00669'{/yun}<p></div>')
 		}
 	});
 }
 /**
- * 返回前一页（或关闭本页面）
- * <li>如果没有前一页历史，则直接返回首页</li>
+ * Go back one page (or close this page).
+ * If there is no history, return to the home page.
  */
 function goBack(){
 	if (navigator.userAgent.indexOf('Firefox') >= 0 ||

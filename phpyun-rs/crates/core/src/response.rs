@@ -87,9 +87,11 @@ impl<T: Serialize> IntoResponse for ApiJson<T> {
 pub struct ApiOk(pub &'static str);
 impl IntoResponse for ApiOk {
     fn into_response(self) -> Response {
+        let lang = crate::i18n::current_lang();
+        let msg = resolve_msg_key(self.0, lang);
         Json(ApiBody::<()> {
             code: CODE_OK,
-            msg: self.0.into(),
+            msg,
             data: None,
         })
         .into_response()
@@ -158,18 +160,18 @@ impl<T: Serialize> IntoResponse for ApiMsgData<T> {
 fn resolve_msg_key(key: &'static str, lang: crate::i18n::Lang) -> String {
     let translated = crate::i18n::t(key, lang);
     if translated != key {
-        translated
-    } else if !key.contains('.') {
-        let prefixed = format!("messages.{key}");
-        let t2 = crate::i18n::t(&prefixed, lang);
-        if t2 != prefixed {
-            t2
-        } else {
-            key.to_string()
-        }
-    } else {
-        key.to_string()
+        return translated;
     }
+    if !key.contains('.') {
+        for prefix in ["messages.", "common."] {
+            let prefixed = format!("{prefix}{key}");
+            let t2 = crate::i18n::t(&prefixed, lang);
+            if t2 != prefixed {
+                return t2;
+            }
+        }
+    }
+    key.to_string()
 }
 
 /// Paged response body.

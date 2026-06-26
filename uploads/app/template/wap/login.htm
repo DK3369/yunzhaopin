@@ -4,17 +4,17 @@
         background: #fff
     }
 </style>
-<!-- 页面头部返回按钮 -->
+<!-- Page header back button -->
 <div class="Back_to_the_previous_level">
     <div class="login_back" onclick="goBack()">
         <img src="{yun:}$wap_style{/yun}/images/return.png" alt="" width="100%" height="100%">
     </div>
 </div>
 <div class="login_cont">
-	<div class="bottom_nav_bom" style="padding-top: 0px; text-align: right;"><i class="bottom_nav_bom_word">还没有账号，</i> <a href="{yun:}url m=wap c=register{/yun}" class="register_1">马上注册</a></div>
+	<div class="bottom_nav_bom" style="padding-top: 0px; text-align: right;"><i class="bottom_nav_bom_word">{yun:}t key='wap_00672'{/yun}</i> <a href="{yun:}url m=wap c=register{/yun}" class="register_1">{yun:}t key='wap_00673'{/yun}</a></div>
 	<div class="login_welcome">
-		<div>您好，</div>
-		<div>欢迎登录</div>
+		<div>{yun:}t key='wap_00674'{/yun}</div>
+		<div>{yun:}t key='wap_00675'{/yun}</div>
 	</div>
     {yun:}if $wxid && ($wxnickname || $wxpic){/yun}
         <div class="login_titlebox">
@@ -22,12 +22,12 @@
                 <img src="{yun:}$wxpic{/yun}" alt="" width="100%" height="100%">
             </div>
             <div class="login_title_info">
-                {yun:}t key='wap_00407'{/yun}，<i>登录绑定已有账户</i>
+                {yun:}t key='wap_00407'{/yun}{yun:}t key='wap_00624'{/yun}<i>{yun:}t key='wap_00676'{/yun}</i>
             </div>
         </div>
     {yun:}/if{/yun}
 
-    <!-- form表单区域 -->
+    <!-- Login form -->
     <form id="login_form">
         <input id="qfyuid" name="qfyuid" type="hidden" value=""/>
         <input type="hidden" name="backurl" id="backurl" value="{yun:}$backurl{/yun}"/>
@@ -49,7 +49,7 @@
                     <div class="close_open"><img src="{yun:}$wap_style{/yun}/images/conceal.png" alt="" width="100%" height="100%" id="close"></div>
                 </div>
             </div>
-            <!--手机动态码登录-->
+            <!-- SMS login -->
             {yun:}if $config.sy_msg_login==1{/yun}
             <div id="login_sj_box" class="login_textbox" style="display:none;">
                 <input type="tel" value="" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" placeholder="{yun:}t key='wap_js_00119'{/yun}" name="moblie" id="usermoblie" class="account_number">
@@ -70,7 +70,7 @@
                     </div>
                     {yun:}else{/yun}
                     <div class="login_textbox">
-                        <input class="inputitemtxt" placeholder="图片验证码" name="authcode" id="checkcode" type="text"
+                        <input class="inputitemtxt" placeholder="{yun:}t key='wap_00262'{/yun}" name="authcode" id="checkcode" type="text"
                                maxlength="6"/>
                         <img id="vcode_img" class="authcode" src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php"
                              onclick="checkCode('vcode_img');"/>
@@ -83,7 +83,7 @@
             {yun:}if $config.sy_msg_login==1{/yun}
                 <div class="passwords" id="login_sjyz_box" style="display:none;">
                     <div class="login_textbox">
-                        <input name="dynamiccode" type="text" maxlength='6' class="inputitemtxt" value="" placeholder="输入短信验证码" onblur="changeCaptcha()"/>
+                        <input name="dynamiccode" type="text" maxlength='6' class="inputitemtxt" value="" placeholder="{yun:}t key='wap_00677'{/yun}" onblur="changeCaptcha()"/>
                         <input type="password" id="login_code" style="display: none"/>
                         <div class="dx_yz_hq" id="send_msg_tip" onclick="send_msg('{yun:}$config_wapdomain{/yun}/index.php?c=login&a=sendmsg');"> {yun:}t key='wap_user_00144'{/yun}</div>
                     </div>
@@ -95,8 +95,8 @@
                 </div>
                 <div>
                     <i class="policy">{yun:}t key='wap_00309'{/yun}</i>
-                    <a href="{yun:}url m=wap c=protocol{/yun}" class="Privacy">《用户协议》</a>
-                    <i class="policy">和</i>
+                    <a href="{yun:}url m=wap c=protocol{/yun}" class="Privacy">{yun:}t key='wap_00678'{/yun}</a>
+                    <i class="policy">{yun:}t key='wap_00679'{/yun}</i>
                     <a href="{yun:}url m=wap c=privacy{/yun}" class="Privacy">《{yun:}t key='wap_00313'{/yun}》</a>
                 </div>
             </div>
@@ -110,16 +110,16 @@
     <!-- {yun:}t key='wap_00110'{/yun} -->
     <div class="login_otherfs">
         {yun:}if $config.sy_msg_isopen==1 && $config.sy_msg_login==1{/yun}
-        <div class="verification_code_word" id="mobile_login">短信登录</div>
+        <div class="verification_code_word" id="mobile_login">{yun:}t key='wap_00648'{/yun}</div>
         {yun:}/if{/yun}
         <div class="verification_code_word" id="acount_login" style="display: none"> {yun:}t key='wap_00308'{/yun}</div>
-        <a href="{yun:}url m=wap c=forgetpw{/yun}" class="login_wjmm">忘记密码</a>
+        <a href="{yun:}url m=wap c=forgetpw{/yun}" class="login_wjmm">{yun:}t key='wap_00680'{/yun}</a>
     </div>
 </div>
-<!-- 另外的登录方式 -->
+<!-- Other login methods -->
 {yun:}if $config.sy_qqlogin==1 || $config.sy_sinalogin==1 || ($config.wx_rz==1 && !$wxid){/yun}
 <div class="bottom_nav">
-    <div class="bottom_nav_top">或通过以下方式登录</div>
+    <div class="bottom_nav_top">{yun:}t key='wap_00681'{/yun}</div>
     <div class="bottom_nav_center">
         {yun:}if $config.wx_rz==1 && !$wxid{/yun}
         <a class="bottom_nav_center_logo" href="{yun:}url m=wap c=wxconnect{/yun}">
@@ -177,7 +177,7 @@
         }).blur(function () {
             var txAreaVal = $(this).val();
             if (txAreaVal == this.defaultValue || $(this).val() == "") {
-                $(this).attr("placeholder", "请输入您的密码");
+                $(this).attr("placeholder", "{yun:}t key='wap_00682'{/yun}");
             }
         })
         $("#usermoblie").focus(function () {
@@ -199,10 +199,10 @@
         }).blur(function () {
             var txAreaVal = $(this).val();
             if (txAreaVal == this.defaultValue || $(this).val() == "") {
-                $(this).attr("placeholder", "请输入短信验证码");
+                $(this).attr("placeholder", "{yun:}t key='wap_00690'{/yun}");
             }
         })
-        //账号登录和手机登录tab选择
+        // Account login and SMS login tab switch
         $('#acount_login').click(function (data) {
             $('#acount_login').css("display", "none");
             $('#mobile_login').css("display", "block");
@@ -229,9 +229,9 @@
         }
     });
     var Timer;
-    var smsTimer_time = 90; //倒数 90
-    var smsTimer_flag = 90; //倒数 90
-    var smsTime_speed = 1000; //速度 1秒钟
+    var smsTimer_time = 90; // Countdown seconds
+    var smsTimer_flag = 90; // Countdown seconds
+    var smsTime_speed = 1000; // Interval 1 second
 
     // SendmobileSMS
     function send_msg(url) {

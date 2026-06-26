@@ -1,12 +1,12 @@
 <div id="resumelist_vue">
-	<!--简历列表-->
+	<!-- Resume list -->
 	{yun:}if !$isweixin || $config.sy_wxwap_list!=2{/yun}
 		<div id="listdiv" class=" ">
 			{yun:}if $smarty.get.page < 2{/yun}
 				{yun:}userlist limit=5 topdate=1 edu='auto.edu' exp='auto.exp' sex='auto.sex' uptime='auto.uptime' keyword='auto.keyword' hy='auto.hy' minsalary='auto.minsalary' maxsalary='auto.maxsalary' report='auto.report' threecityid='auto.threecityid' provinceid='auto.provinceid' cityid='auto.cityid'  job1='auto.job1' job1son='auto.job1son' jobpost='auto.jobpost' type='auto.type' tag='auto.tag' order='auto.order' post_len=14 city_len=14 ispage=1 islt=4  recg='auto.recg' integrity='auto.integrity' workexp=1 item=zduser{/yun}
 				<div class="yun_newedition_resumelist">
 					<a href="{yun:}url m=wap c=resume a=show id=$zduser.id{/yun}">
-						{yun:}if $zduser.newtime==1{/yun}<i class="yunjoblist_newicon" title="新简历"></i>{yun:}/if{/yun}
+						{yun:}if $zduser.newtime==1{/yun}<i class="yunjoblist_newicon" title="{yun:}t key='wap_00587'{/yun}"></i>{yun:}/if{/yun}
 
 						<div class="yun_newedition_resumepic">
 							{yun:}if $zduser.photo!=""{/yun}
@@ -14,7 +14,7 @@
 							{yun:}else{/yun}
 								<img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_icon{/yun}">
 							{yun:}/if{/yun}
-							<span class="{yun:}if $zduser.sex=='女'{/yun}user_xbn{yun:}elseif $zduser.sex=='男'{/yun}user_xb{yun:}/if{/yun}"></span>
+							<span class="{yun:}if $zduser.sex=='{yun:}t key='common_02069'{/yun}'{/yun}user_xbn{yun:}elseif $zduser.sex=='{yun:}t key='common_02092'{/yun}'{/yun}user_xb{yun:}/if{/yun}"></span>
 						</div>
 
 						<div class="yun_newedition_resume_wantjob"><span class="yun_newedition_resume_wantjob_n">{yun:}if in_array($zduser.id,$eid){/yun}
@@ -25,7 +25,7 @@
 						</div>
 						<div class="new_userlist_info">{yun:}$zduser.exp_n{/yun}{yun:}t key='home.experience_suffix'{/yun} · {yun:}$zduser.edu_n{/yun}{yun:}t key='home.education_suffix'{/yun} ·
 							{yun:}if $zduser.age == 0{/yun}{yun:}t key='wap_user_00333'{/yun}{yun:}else{/yun}{yun:}$zduser.age{/yun}{yun:}t key='home.age_suffix'{/yun}{yun:}/if{/yun}</div>
-						<div class="new_userlist_p">求职期望 {yun:}$zduser.name{/yun}，{yun:}$zduser.salary_n{/yun}
+						<div class="new_userlist_p">{yun:}t key='wap_00586'{/yun} {yun:}$zduser.name{/yun}，{yun:}$zduser.salary_n{/yun}
 						<span class="yun_newedition_resume_zd" >{yun:}t key='wap_user_00335'{/yun}</span></div>
 						{yun:}if $zduser.work_content || $zduser.edu_content{/yun}
 						<div class="user_undergo_box">
@@ -54,14 +54,14 @@
 			{yun:}userlist limit=20 noid=1 edu='auto.edu' exp='auto.exp' sex='auto.sex' uptime='auto.uptime' keyword='auto.keyword' hy='auto.hy' minsalary='auto.minsalary' maxsalary='auto.maxsalary' report='auto.report' threecityid='auto.threecityid' provinceid='auto.provinceid' cityid='auto.cityid'  job1='auto.job1' job1son='auto.job1son' jobpost='auto.jobpost'  type='auto.type' tag='auto.tag' integrity='auto.integrity' order='auto.order' post_len=14 city_len=14 ispage=1 islt=4 workexp=1 recg='auto.recg' item=user{/yun}
 			<div class="yun_newedition_resumelist">
 				<a href="{yun:}url m=wap c=resume a=show id=$user.id{/yun}">
-					{yun:}if $user.newtime==1{/yun}<i class="yunjoblist_newicon" title="新简历"> </i>{yun:}/if{/yun}
+					{yun:}if $user.newtime==1{/yun}<i class="yunjoblist_newicon" title="{yun:}t key='wap_00587'{/yun}"> </i>{yun:}/if{/yun}
 					<div class="yun_newedition_resumepic">
 						{yun:}if $user.photo!=""{/yun}
 							<img src="{yun:}$user.photo{/yun}">
 						{yun:}else{/yun}
 							<img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_icon{/yun}">
 						{yun:}/if{/yun}
-						<span class="{yun:}if $user.sex=='女'{/yun}user_xbn{yun:}elseif $user.sex=='男'{/yun}user_xb{yun:}/if{/yun}"></span>
+						<span class="{yun:}if $user.sex=='{yun:}t key='common_02069'{/yun}'{/yun}user_xbn{yun:}elseif $user.sex=='{yun:}t key='common_02092'{/yun}'{/yun}user_xb{yun:}/if{/yun}"></span>
 					</div>
 					<div class="yun_newedition_resume_wantjob"><span class="yun_newedition_resume_wantjob_n">{yun:}if in_array($user.id,$eid){/yun}
 							{yun:}$user.uname{/yun}
@@ -71,7 +71,7 @@
 					</div>
 
 					<div class="new_userlist_info">{yun:}$user.exp_n{/yun}{yun:}t key='home.experience_suffix'{/yun} · {yun:}$user.edu_n{/yun}{yun:}t key='home.education_suffix'{/yun} · {yun:}if $user.age == 0{/yun}{yun:}t key='wap_user_00333'{/yun}{yun:}else{/yun}{yun:}$user.age{/yun}{yun:}t key='home.age_suffix'{/yun}{yun:}/if{/yun}</div>
-					<div class="new_userlist_p">求职期望 {yun:}$user.name{/yun}，{yun:}$user.salary_n{/yun} <span class="yun_newedition_resume_zd">{yun:}$user.time{/yun}</span></div>
+					<div class="new_userlist_p">{yun:}t key='wap_00586'{/yun} {yun:}$user.name{/yun}，{yun:}$user.salary_n{/yun} <span class="yun_newedition_resume_zd">{yun:}$user.time{/yun}</span></div>
 
 
 					{yun:}if $user.work_content || $user.edu_content{/yun}
@@ -98,12 +98,12 @@
 			{yun:}/userlist{/yun}
 		</div>
 
-		<!--{yun:}t key='admin_tool_00631'{/yun} end-->
+		<!-- Resume list end -->
 
-		<!--没有搜索到人才-->
+		<!-- No search results -->
 		{yun:}if $total <= 0{/yun}
 			{yun:}if $smarty.get.keyword!="" {/yun}
-			<div class="wap_member_no">没有搜索到人才</div>
+			<div class="wap_member_no">{yun:}t key='wap_00588'{/yun}</div>
 			{yun:}else{/yun}
 			<div class="wap_member_no">{yun:}t key='wap_00497'{/yun}</div>
 			{yun:}/if{/yun}
@@ -152,8 +152,8 @@
 		{yun:}/if{/yun}
 	{yun:}else{/yun}
 		<div id="listdiv"></div>
-		<!--微信端上拉加载样式-->
-		<div id="pageLoading" class="lodbox none"><span class="lodbox_p"><i class="lodbox_iocn"></i>正在加载...</span></div>
+		<!-- WeChat pull-to-load indicator -->
+		<div id="pageLoading" class="lodbox none"><span class="lodbox_p"><i class="lodbox_iocn"></i>{yun:}t key='wap_00577'{/yun}</span></div>
 		<div id="pageNoMore" class="lodbox none"> -{yun:}t key='admin_user_00283'{/yun}-</div>
 	{yun:}/if{/yun}
 </div>
@@ -168,7 +168,7 @@
   var resumelist_vue =  new Vue({
       el: '#resumelist_vue',
       data: {
-        //分页相关
+        // Pagination
         currentPage:currentPage?currentPage:1,
             total:total,
             perpage:20,

@@ -5,10 +5,10 @@
 	[v-cloak] {display: none;}
 </style>
 
-<!--页面主结构结束-->
-<!--单页面开始-->
+<!-- Main layout end -->
+<!-- Single page start -->
 <div id="main" style="display:none">
-	<!--页面主内容区开始-->
+	<!-- Main content start -->
 	<ul class="yun_newwap_box mt15">
 		<li class="yun_newwap_text">
 			<span class="yun_newwap_text_name"> <i>*</i>{yun:}t key='wap_00529'{/yun}</span >
@@ -22,13 +22,13 @@
 		<input type="hidden" id="sex" name="sex"  v-bind:value="sex">
 		</span></li>
 		<li><span class="yun_newwap_text_name"><i>*</i>{yun:}t key='wap_00526'{/yun}</span><span class="yun_newwap_text_box">
-		<button id='expPicker' type='button' placeholder="{yun:}t key='wap_user_00100'{/yun}" data-exp="{yun:}$row.exp{/yun}" @click="expShow=true" v-cloak>{{expTex ? expTex : '请选择工作年限'}}</button>
+		<button id='expPicker' type='button' placeholder="{yun:}t key='wap_user_00100'{/yun}" data-exp="{yun:}$row.exp{/yun}" @click="expShow=true" v-cloak>{{expTex ? expTex : '{yun:}t key='wap_00657'{/yun}'}}</button>
 		<input type="hidden" id="exp" name="exp" :value="expValue">
 		</span></li>
 		<li>
 			<span class="yun_newwap_text_name"><i>*</i>{yun:}t key='wap_00349'{/yun}</span>
 			<span class="yun_newwap_text_box" @click="showArea=true">
-				<button id='cityPicker' type='button' v-cloak>{{city  ? city : '请填写工作地区'}}</button>
+				<button id='cityPicker' type='button' v-cloak>{{city  ? city : '{yun:}t key='wap_00658'{/yun}'}}</button>
 				<input type="hidden" id="provinceid" name="provinceid" v-model="provinceid">
                 <input type="hidden" id="cityid" name="cityid" v-model="cityid">
                 <input type="hidden" id="three_cityid" name="three_cityid" v-model="three_cityid">
@@ -42,11 +42,11 @@
 		</li>
 	</ul>
 	<ul class="yun_newwap_box mt15">
-		<li class="yun_newwap_text"><span class="yun_newwap_text_name">理想工作</span><span class="yun_newwap_text_box">
-			<input type="text" name="job"  id="job" value="{yun:}$row.job{/yun}" placeholder="填写工作名称，如：服装厂操作工">
+		<li class="yun_newwap_text"><span class="yun_newwap_text_name">{yun:}t key='wap_00659'{/yun}</span><span class="yun_newwap_text_box">
+			<input type="text" name="job"  id="job" value="{yun:}$row.job{/yun}" placeholder="{yun:}t key='wap_00660'{/yun}">
 		</span></li>
 		<li class="yun_newwap_text"><span class="yun_newwap_text_name"><i>*</i>{yun:}t key='wap_00109'{/yun}</span><span class="yun_newwap_text_box">
-		<input type="text" name="mobile" id="mobile" value="{yun:}$row.mobile{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" class="" placeholder="请填写联系手机" >
+		<input type="text" name="mobile" id="mobile" value="{yun:}$row.mobile{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" class="" placeholder="{yun:}t key='wap_00661'{/yun}" >
 		</span></li>
 		{yun:}if strpos($config.code_web,"普工简历")!==false{/yun}
 			{yun:}if $config.code_kind == 1{/yun}
@@ -63,7 +63,7 @@
 		{yun:}if $config.sy_msg_isopen==1{/yun}
         <li class="yun_newwap_text"><span class="yun_newwap_text_name"><i>*</i>{yun:}t key='wap_com_00036'{/yun}</span>
             <div class="yun_newwap_text_box yun_newwap_text_sjyz" style="padding-right:120px;">
-       			<input type="text" style="background: none !important;" id="moblie_code" class="inputitem_w input" name="moblie_code" placeholder="填写验证码"><a href="javascript:;" id="send_msg_tip" onclick="send_msg('{yun:}url m=wap c=tiny a=sendmsg{/yun}')" class="yun_newwap_text_sjyz_send" style="width:">{yun:}t key='wap_user_00144'{/yun}</a>
+       			<input type="text" style="background: none !important;" id="moblie_code" class="inputitem_w input" name="moblie_code" placeholder="{yun:}t key='wap_00662'{/yun}"><a href="javascript:;" id="send_msg_tip" onclick="send_msg('{yun:}url m=wap c=tiny a=sendmsg{/yun}')" class="yun_newwap_text_sjyz_send" style="width:">{yun:}t key='wap_user_00144'{/yun}</a>
             </div>
         </li>
 		{yun:}/if{/yun}
@@ -78,7 +78,7 @@
 		<input type="password" name="password" id="password" value="" onkeyup="this.value=this.value.replace(/^ +| +$/g,'')" class=" "placeholder="{yun:}t key='wap_js_00139'{/yun}">
 		</span></li>
 		{yun:}/if{/yun}			
-		<div class="yun_newwap_box_ts">{yun:}t key='wap_js_00125'{/yun}：密码用于刷新/{yun:}t key='wap_js_00073'{/yun}/删除此信息</div>		
+		<div class="yun_newwap_box_ts">{yun:}t key='wap_js_00125'{/yun}{yun:}t key='wap_00624'{/yun}{yun:}t key='wap_00664'{/yun}{yun:}t key='wap_js_00073'{/yun}{yun:}t key='wap_00665'{/yun}</div>		
 	</ul>
 	<div class="yun_newwap_bth">
 		<button id="oncesubmit" class="mui-btn mui-btn-block mui-btn-primary" onclick="oncesubmit()">{yun:}t key='wap_com_00017'{/yun}</button>
@@ -128,7 +128,7 @@
 	{yun:}/if{/yun}
 
 
-	<!--单页面结束-->
+	<!-- Single page end -->
 	<van-popup v-model="productionhtml" position="right" :style="{ height: '100%',width:'100%'}">
 		<header>
 	    <div class="header">
@@ -148,7 +148,7 @@
 			<div class="yun_wap_info_brief">
               	
 				<div class="yun_wap_info_brief_tit"> {yun:}t key='wap_00527'{/yun} </div>
-					<div class="yun_wap_info_brief_c"><textarea class="  tip contenttext" name="production" placeholder="请填写自我介绍" v-model="production"></textarea>
+					<div class="yun_wap_info_brief_c"><textarea class="  tip contenttext" name="production" placeholder="{yun:}t key='wap_00663'{/yun}" v-model="production"></textarea>
 				</div>
 			    <div class="yunset_bth_box" @click="cancelProduc">
 			     	<a class="yun_wap_info_brief_tit_bc mui-action-back" >{yun:}t key='common.save'{/yun}</a>
@@ -169,9 +169,9 @@
 	var code_kind = "{yun:}$config.code_kind{/yun}";
 	var code_web = "{yun:}$config.code_web{/yun}";
 	var Timer;
-	var smsTimer_time = 120; //倒数 120
-	var smsTimer_flag = 120; //倒数 120
-	var smsTime_speed = 1000; //速度 1秒钟
+	var smsTimer_time = 120; // Countdown seconds
+	var smsTimer_flag = 120; // Countdown seconds
+	var smsTime_speed = 1000; // Interval: 1 second
 
 	// SendmobileSMS
 	function send_msg(url) {

@@ -146,7 +146,8 @@
     "zph_not_found": "Job fair does not exist",
     "zph_unavailable": "Job fair unavailable",
     "comment_empty": "Comment cannot be empty",
-    "comment_too_long": "Comment too long (max 2000 characters)"
+    "comment_too_long": "Comment too long (max 2000 characters)",
+    "self_follow_forbidden": "You cannot follow yourself"
   },
   "validation": {
     "username": {
@@ -180,7 +181,32 @@
     "collect_removed": "Removed from favorites",
     "session_revoked": "Device signed out",
     "sessions_revoked": "All other devices signed out",
-    "entrust_unbound": "Headhunter unbound"
+    "entrust_unbound": "Headhunter unbound",
+    "deleted": "Deleted",
+    "updated": "Updated",
+    "revoked": "Revoked",
+    "removed": "Removed",
+    "sent": "Sent",
+    "submitted": "Submitted",
+    "cancelled": "Cancelled",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "purged": "Permanently deleted",
+    "reloaded": "Reloaded",
+    "email_verified": "Email verified"
+  },
+  "recommend": {
+    "disabled": "Recommendations are disabled",
+    "day_cap": "You can recommend at most %{cap} jobs/resumes per day",
+    "interval_wait": "Please wait %{remaining} seconds (minimum interval %{interval} seconds)",
+    "email": {
+      "job_subject": "[Job recommendation] %{job} - %{company}",
+      "job_summary": "%{company} is hiring for %{job}",
+      "job_subject_fallback": "Job recommendation",
+      "resume_subject": "[Resume recommendation] (uid=%{uid})",
+      "resume_summary": "A resume (uid=%{uid}) is recommended to you",
+      "resume_subject_fallback": "Resume recommendation"
+    }
   },
   "notifications": {
     "invite": {
@@ -205,6 +231,16 @@
     "vip": {
       "activated_title": "VIP activated",
       "activated_body": "You have activated the %{package} package, valid for %{duration_days} days."
+    },
+    "follow": {
+      "followed": "followed you",
+      "unfollowed": "unfollowed you",
+      "user_action": "User <a href=\"usertpl,%{uid}\">%{username}</a> %{action}"
+    },
+    "collect": {
+      "favorited_log": "Favorites: favorited job %{job_name}",
+      "unfavorited_log": "Favorites: removed job %{id}",
+      "favorited_sysmsg": "A user favorited your job: %{job_name}"
     }
   },
   "wechat": {
@@ -214,6 +250,11 @@
   "ui": {
     "resume": {
       "anonymous": "Anonymous"
+    },
+    "job": {
+      "view_detail": "View details",
+      "salary_range": "%{min}-%{max}",
+      "salary_min_plus": "%{min}+"
     }
   },
   "dict": {

@@ -4,10 +4,10 @@
 <div class="redeemshow_spinfo">
   <div class="redeemshow_spinfo_box">  
     <div class="redeemshow_spinfo_list">
-      <span class="redeemshow_spinfo_list_s">{yun:}t key='wap_00405'{/yun}</span> {yun:}$row.stock{/yun} 件 
+      <span class="redeemshow_spinfo_list_s">{yun:}t key='wap_00405'{/yun}</span> {yun:}$row.stock{/yun}{yun:}t key='wap_00620'{/yun} 
     </div>
     <div class="redeemshow_spinfo_list">
-      <span class="redeemshow_spinfo_list_s">{yun:}t key='wap_00406'{/yun}</span>  {yun:}if $row.restriction=="0"{/yun}{yun:}t key='common_01936'{/yun}{yun:}else{/yun}{yun:}$row.restriction{/yun} 件{yun:}/if{/yun}
+      <span class="redeemshow_spinfo_list_s">{yun:}t key='wap_00406'{/yun}</span>  {yun:}if $row.restriction=="0"{/yun}{yun:}t key='common_01936'{/yun}{yun:}else{/yun}{yun:}$row.restriction{/yun}{yun:}t key='wap_00620'{/yun}{yun:}/if{/yun}
     </div>
     <span class="redeemshow_jf">{yun:}$row.integral{/yun} {yun:}$config.integral_pricename{/yun}</span>
   </div>
@@ -28,11 +28,11 @@
           <input type="hidden" id="num" name="num" :value="num">
           <van-stepper v-model="num" integer min="1" {yun:}if $row.restriction!="0"{/yun}max='{yun:}$row.restriction{/yun}' {yun:}/if{/yun}/>   
         </div>
-        <input class="intro_but_dh" style="border:none" type="button" value="我要兑换" onclick="checkform_redeem_show();" />
+        <input class="intro_but_dh" style="border:none" type="button" value="{yun:}t key='wap_00621'{/yun}" onclick="checkform_redeem_show();" />
         <input type="hidden" id="memberintegral" value="{yun:}$statis.integral{/yun}" />
         <input type="hidden" id="redeemintegral" value="{yun:}$row.integral{/yun}" />
         {yun:}if $uid{/yun}
-          <div style="padding-top:10px; text-align:center">您当前总{yun:}$config.integral_pricename{/yun}：
+          <div style="padding-top:10px; text-align:center">{yun:}t key='wap_00622'{/yun}{yun:}$config.integral_pricename{/yun}{yun:}t key='wap_00624'{/yun}
             <i style="color:#e30000;">{yun:}$statis.integral{/yun}</i> {yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}
           </div>
         {yun:}/if{/yun}
@@ -44,7 +44,7 @@
 </div>
 
 <div class="pr_scr">
-  <div class="pr_scr_tit">礼品详情</div>
+  <div class="pr_scr_tit">{yun:}t key='wap_00623'{/yun}</div>
   <div class="pr_src_ct">
     {yun:}if $row.content{/yun}
       <div class="rem_show_c">{yun:}$row.content{/yun}</div>

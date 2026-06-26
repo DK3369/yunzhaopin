@@ -5,8 +5,8 @@
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
         <meta http-equiv="Cache-Control" content="no-cache" />
         <title>{yun:}$config.sy_webname{/yun}</title>
-        <meta name="keywords" content="人才招聘,网络招聘,wap" />
-        <meta name="description" content="人才招聘网wap{yun:}t key='common_02023'{/yun}" />
+        <meta name="keywords" content="{yun:}t key='wap_00319'{/yun}" />
+        <meta name="description" content="{yun:}t key='wap_00670'{/yun}{yun:}t key='common_02023'{/yun}" />
         <meta content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport" />
         <meta name="MobileOptimized" content="240" />
         <meta http-equiv="Expires" content="0" />
@@ -43,7 +43,7 @@
 								<div class="photo_xz">
 									<input id="image" type="file" accept="image/*" />{yun:}t key='wap_user_00233'{/yun}
 								</div>
-								<div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>选择上传头像点击提交按钮即可上传</div>
+								<div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>{yun:}t key='wap_00655'{/yun}</div>
 							</div>
 							
 							<input type="hidden" value=""  id="preview">
@@ -123,7 +123,7 @@
 		function photo() {
 			var uimage = $("#uimage").val();
 			if(uimage == '') {
-				showToast('头像未改变，无需修改');
+				showToast("{yun:}t key='wap_00656'{/yun}");
 				return false;
 			}else{
 				var token = '{yun:}$token{/yun}';

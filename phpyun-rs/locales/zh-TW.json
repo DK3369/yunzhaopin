@@ -146,7 +146,8 @@
     "zph_not_found": "招聘會不存在",
     "zph_unavailable": "招聘會不可用",
     "comment_empty": "留言內容不能為空",
-    "comment_too_long": "留言內容過長（最多 2000 字）"
+    "comment_too_long": "留言內容過長（最多 2000 字）",
+    "self_follow_forbidden": "自己不能關注自己"
   },
   "validation": {
     "username": {
@@ -180,7 +181,32 @@
     "collect_removed": "已取消收藏",
     "session_revoked": "已踢下線該裝置",
     "sessions_revoked": "已踢下線其他所有裝置",
-    "entrust_unbound": "已解除委託"
+    "entrust_unbound": "已解除委託",
+    "deleted": "已刪除",
+    "updated": "已更新",
+    "revoked": "已撤銷",
+    "removed": "已移除",
+    "sent": "已發送",
+    "submitted": "已提交",
+    "cancelled": "已取消",
+    "approved": "已通過",
+    "rejected": "已拒絕",
+    "purged": "已永久刪除",
+    "reloaded": "已重新載入",
+    "email_verified": "信箱已驗證"
+  },
+  "recommend": {
+    "disabled": "推薦功能已關閉",
+    "day_cap": "每天最多推薦 %{cap} 次職缺/履歷",
+    "interval_wait": "推薦職缺/履歷間隔不得少於 %{interval} 秒，請 %{remaining} 秒後操作",
+    "email": {
+      "job_subject": "【職缺推薦】%{job} - %{company}",
+      "job_summary": "%{company} 正在招聘 %{job}",
+      "job_subject_fallback": "職缺推薦",
+      "resume_subject": "【履歷推薦】(uid=%{uid})",
+      "resume_summary": "有一份履歷 (uid=%{uid}) 推薦給您",
+      "resume_subject_fallback": "履歷推薦"
+    }
   },
   "notifications": {
     "invite": {
@@ -205,6 +231,16 @@
     "vip": {
       "activated_title": "VIP 已開通",
       "activated_body": "您開通了 %{package} 套餐，有效期 %{duration_days} 天。"
+    },
+    "follow": {
+      "followed": "關注了你",
+      "unfollowed": "取消了對您的關注",
+      "user_action": "用戶 <a href=\"usertpl,%{uid}\">%{username}</a> %{action}"
+    },
+    "collect": {
+      "favorited_log": "職缺收藏：收藏了職缺：%{job_name}",
+      "unfavorited_log": "收藏管理：取消收藏職缺：%{id}",
+      "favorited_sysmsg": "有用戶收藏了您的職缺：%{job_name}"
     }
   },
   "wechat": {
@@ -214,6 +250,11 @@
   "ui": {
     "resume": {
       "anonymous": "匿名"
+    },
+    "job": {
+      "view_detail": "查看詳情",
+      "salary_range": "%{min}-%{max}元",
+      "salary_min_plus": "%{min}元以上"
     }
   },
   "dict": {

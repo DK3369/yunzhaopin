@@ -8,9 +8,9 @@ body{ background:#fff}
 <!--
 	<div class="passport-progress">
 		<ul>
-			<li id="path1" class="currents"><span>1</span>填写账号</li>
-			<li id="path2" class="currents_er"><span>2</span>设置新密码<em></em></li>
-			<li id="path3" class="currents_er"><span>3</span>完成<em></em></li>
+			<li id="path1" class="currents"><span>1</span>{yun:}t key='wap_00212'{/yun}</li>
+			<li id="path2" class="currents_er"><span>2</span>{yun:}t key='wap_00762'{/yun}<em></em></li>
+			<li id="path3" class="currents_er"><span>3</span>{yun:}t key='wap_user_00298'{/yun}<em></em></li>
 		</ul>
 	</div>
 -->
@@ -53,7 +53,7 @@ body{ background:#fff}
 			{yun:}/if{/yun}
 			<div class="account_td1">
 				<div class="password_textbox">
-					<input name="moblie_vcode" id="moblie_vcode" maxlength="6" type="text" class="input_295_35" placeholder="请输入短信验证码">
+					<input name="moblie_vcode" id="moblie_vcode" maxlength="6" type="text" class="input_295_35" placeholder="{yun:}t key='wap_00690'{/yun}">
 					<button class="password_tex_hq" id="send_msg_tip" onclick="send_msg()">{yun:}t key='wap_user_00144'{/yun}</button>
 				</div>
 			</div>
@@ -64,14 +64,14 @@ body{ background:#fff}
 	</div>
 
 	<div id="emailshow" v-show="emailshow" class="J_listitme_group">
-		<div class="selecttip">系统将发送验证码发到您的邮箱中，请注意查收</div>
+		<div class="selecttip">{yun:}t key='wap_00752'{/yun}</div>
 		<div class="J_validate_group">
 			<div class="password_textbox">
 				<input class="input_295_34" name="email" id="email" type="text" placeholder="{yun:}t key='wap_00206'{/yun}">
 			</div>
 			<div class="account_td1">
 				<div class="password_textbox">
-					<input name="email_vcode" id="email_vcode" maxlength="6" type="text" class="input_295_35" placeholder="请输入邮箱验证码">
+					<input name="email_vcode" id="email_vcode" maxlength="6" type="text" class="input_295_35" placeholder="{yun:}t key='wap_00753'{/yun}">
 					<button class="password_tex_hq" id="send_email_tip" onclick="send_email()">{yun:}t key='wap_user_00144'{/yun}</button>
 				</div>
 			</div>
@@ -82,7 +82,7 @@ body{ background:#fff}
 	</div>
 
 	<div id="shensushow" v-show="shensushow" class="J_listitme_group">
-		<div class="selecttip">信息提交后 , 客服人员会电话回访 , 确认身份！</div>
+		<div class="selecttip">{yun:}t key='wap_00754'{/yun}</div>
 		<div class="J_validate_group">
 				<div class="password_textbox"><input class="reset_chong_zhi" type="text" name="username" id="username" autocomplete="off" maxlength="20" placeholder="{yun:}t key='wap_00208'{/yun}" value="">		</div>
 				<div class="password_textbox"><input class="reset_chong_zhi" type="text" name="linkman" id="linkman" autocomplete="off" maxlength="20" placeholder="{yun:}t key='wap_com_00013'{/yun}" value="">		</div>
@@ -101,7 +101,7 @@ body{ background:#fff}
 				<input class="input_295_34" name="password" id="password" type="password" placeholder="{yun:}t key='wap_00207'{/yun}">
 						</div>
 				{yun:}if $config.reg_pw_sp=='1' || $config.reg_pw_num=='1' || $config.reg_pw_zm=='1'{/yun}<div class="mmts">{yun:}t key='default_00345'{/yun}{yun:}if $config.reg_pw_num=='1'{/yun}{yun:}t key='common_01997'{/yun} {yun:}/if{/yun}{yun:}if $config.reg_pw_zm=='1'{/yun}{yun:}t key='common_01973'{/yun} {yun:}/if{/yun}{yun:}if $config.reg_pw_sp=='1'{/yun}{yun:}t key='common_01697'{/yun}@!#.$-_{yun:}/if{/yun}</div>{yun:}/if{/yun}
-				<div class="password_textbox">	<input class="input_295_34" name="passwordconfirm" id="passwordconfirm" type="password" placeholder="请确认新密码">
+				<div class="password_textbox">	<input class="input_295_34" name="passwordconfirm" id="passwordconfirm" type="password" placeholder="{yun:}t key='wap_00755'{/yun}">
 			</div>
 			
 			<div class="password_bthbox">
@@ -119,7 +119,7 @@ body{ background:#fff}
 		<div class="password_cont_success " >
 			<div class="password_icon"></div>
 			
-			<div class="password_succ">恭喜您！密码重置成功！</div> 
+			<div class="password_succ">{yun:}t key='wap_00756'{/yun}</div> 
 				<div class="password_contm-row"  >
 				<a href="{yun:}url m=wap c=login{/yun}"   class="password_input_btn">{yun:}t key='wap_00285'{/yun}</a>
 			</div>
@@ -131,13 +131,13 @@ body{ background:#fff}
 	<div class="password_cont none" id="finish">
 	 <div class="password_icon"></div>
 
-	<div class="password_succ">提交成功！</div>
-		<div class="password_cgd">请耐心等待，稍后客服人员会联系您！</div>
+	<div class="password_succ">{yun:}t key='wap_00757'{/yun}</div>
+		<div class="password_cgd">{yun:}t key='wap_00758'{/yun}</div>
 	</div>
 	<div class="password_tip">
 		<div class="password_tip_t">{yun:}t key='wap_user_00205'{/yun}：</div>
-		<div>如手机号码已丢失且未绑定邮箱</div>
-		<div>拨打全国统一服务热线</div>
+		<div>{yun:}t key='wap_00759'{/yun}</div>
+		<div>{yun:}t key='wap_00760'{/yun}</div>
 		<div class="password_tip_tel">{yun:}$config.sy_freewebtel{/yun} </div>
 		<div class="password_tip_tel_link">
 			<a href="tel:{yun:}$config.sy_freewebtel{/yun}"><i class="password_tip_tel_link_tel"></i>{yun:}t key='wap_00297'{/yun}</a>
@@ -146,6 +146,7 @@ body{ background:#fff}
 </div>
 {yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
 <script src="{yun:}$wap_style{/yun}/js/prefixfree.min.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+{yun:}include file="$wapstyle/publichtm/forgetpw_i18n.htm"{/yun}
 <script src="{yun:}$config.sy_weburl{/yun}/app/template/wap/js/forgetpw.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
 {yun:}include file="$wapstyle/verify_js.htm"{/yun}
 <script type="text/javascript">
@@ -160,7 +161,7 @@ body{ background:#fff}
         	succeed:false,
         	showPicker:false,
         	sendtypeData:sendtypeData,
-        	pickerText:'通过手机找回密码',
+        	pickerText:'{yun:}t key='wap_00761'{/yun}',
         	sendtype:'moblie',
         },
         created(){

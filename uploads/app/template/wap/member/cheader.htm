@@ -7,8 +7,8 @@
 	<meta http-equiv="Cache-Control" content="no-transform">
 	<meta http-equiv="Cache-Control" content="no-siteapp" />
 	<title>{yun:}$config.sy_webname{/yun}</title>
-	<meta name="keywords" content="人才招聘,网络招聘,wap" />
-	<meta name="description" content="人才招聘网wap{yun:}t key='common_02023'{/yun}" />
+	<meta name="keywords" content="{yun:}t key='wap_00319'{/yun}" />
+	<meta name="description" content="{yun:}t key='wap_00670'{/yun}{yun:}t key='common_02023'{/yun}" />
 	<script src="{yun:}$wap_style{/yun}/js/flexible.js?v={yun:}$config.cachecode{/yun}"></script>
 	<link href="{yun:}$wap_style{/yun}/css/base.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet">
 	<link href="{yun:}$wap_style{/yun}/css/member/memberwap.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet">
@@ -25,9 +25,9 @@
 <style type="text/css">
 	body{font-size: 14px !important;}
 </style>
-<!--企业头部-->
+<!-- Company header -->
 <body>
-<!-- 发布职位-->
+<!-- Post job -->
 {yun:}if $smarty.get.c=='job' || $smarty.get.c=='part'{/yun}
 <div class="more_position_header">
 	<div class="position_header_back">
@@ -77,7 +77,7 @@
 
 </style>
 
-<!-- 页面头部部分 -->
+<!-- Page header -->
 
 <div class="m_header">
 				<div class="m_header_c">
@@ -110,7 +110,7 @@
 
 		<div class="comheader_tit">{yun:}$header_title{/yun}</div>
 		
-		<!-- 创建邀请模板-->
+		<!-- Create invite template -->
 		{yun:}if $smarty.get.c=='yqmb'{/yun}
 		<div class="header_fa_add">
 			<a  href="javascript:;" onclick="addYqmb();" class="header_fa_add_p">{yun:}t key='wap_js_00091'{/yun}</a>

@@ -1,38 +1,29 @@
-var sendtypeData = [{
-	type: 'moblie',
-	text: '通过手机找回密码'
-}, {
-	type: 'email',
-	text: '通过邮箱找回密码'
-}, {
-	type: 'shensu',
-	text: '账号申诉'
-}];
-
 var Timer;
-var smsTimer_time = 90; //倒数 90
-var smsTimer_flag = 90; //倒数 90
-var smsTime_speed = 1000; //速度 1秒钟
-//发送手机短信
+var smsTimer_time = 90; // Countdown seconds
+var smsTimer_flag = 90; // Countdown seconds
+var smsTime_speed = 1000; // Interval 1 second
+var _fpw = window.FPW_I18N || {};
+
+// Send SMS verification code
 function send_msg() {
 	var moblie = $('#moblie').val();
 	var code;
 	var verify_token,verify_str;
 	if(moblie == "") {
-		return showToast('请输入手机号');
+		return showToast(_fpw.enterMobile || '');
 	} else if(isjsMobile(moblie) == false) {
-		return showToast('手机号格式错误');
+		return showToast(_fpw.mobileFormatError || '');
 	}
 	var codesear = new RegExp('找回密码');
 	if (codesear.test(code_web)) {
 		if (code_kind == 1) {
 			code = $.trim($("#authcode").val());
 			if (!code) {
-				showToast('请填写图片验证码！');
+				showToast(_fpw.enterImageCode || '');
 				return false;
 			}
 		} else if (code_kind > 2) {
-			// 验证类型改成短信
+			// Change verification type to SMS
 			$('#bind-captcha').attr('data-id', 'send_msg_tip');
 			$('#bind-captcha').attr('data-type', 'click');
 			verify_token = $('input[name="verify_token"]').val();
@@ -63,14 +54,14 @@ function send_msg() {
 				if(data.error != 1){
 					if(code_kind == 1) {
 						checkCode('vcode_img');
-					} else if(code_kind >2) {
+					} else if(code_kind > 2) {
 						$("#popup-submit").trigger("click");
 					}
 				}
 			});
 		}, 'json');
 	} else {
-		return showToast('请勿重复发送！');
+		return showToast(_fpw.doNotResend || '');
 	}
 }
 
@@ -78,9 +69,9 @@ function send_email() {
 	var email = $('#email').val();
 	var myreg = /^([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9\-]+@([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
 	if(email == "") {
-		return showToast('请输入邮箱');
+		return showToast(_fpw.enterEmail || '');
 	} else if(!myreg.test(email)) {
-		return showToast('邮箱格式错误');
+		return showToast(_fpw.emailFormatError || '');
 	}
 	if(smsTimer_time == smsTimer_flag) {
 		Timer = setInterval("smsTimer($('#send_email_tip'))", smsTime_speed);
@@ -94,7 +85,7 @@ function send_email() {
 			}
 		}, 'json');
 	} else {
-		return showToast('请勿重复发送！');
+		return showToast(_fpw.doNotResend || '');
 	}
 }
 
@@ -105,16 +96,16 @@ function exitsid(id) {
 		return false;
 	}
 }
-//倒计时
+// Countdown
 function smsTimer(obj) {
 	if(smsTimer_flag > 0) {
-		$(obj).html('重新发送(' + smsTimer_flag + 's)');
+		$(obj).html((_fpw.resendPrefix || '') + smsTimer_flag + 's)');
 		$(obj).attr({
 			'style': 'background:#909394;'
 		});
 		smsTimer_flag--;
 	} else {
-		$(obj).html('重新发送');
+		$(obj).html(_fpw.resend || '');
 		$(obj).removeAttr('style');
 		smsTimer_flag = smsTimer_time;
 		clearInterval(Timer);
@@ -129,27 +120,27 @@ function forgetPwNext() {
 		email_vcode = $("#email_vcode").val(),
 		code = '';
 	if(sendtype != "email" && sendtype != "moblie" && sendtype != "shensu") {
-		return showToast("请选择找回密码方式");
+		return showToast(_fpw.selectRecoverMethod || '');
 	}
 	if(sendtype == 'moblie') {
 		if(moblie == "") {
-			return showToast('请输入手机号');
+			return showToast(_fpw.enterMobile || '');
 		} else if(isjsMobile(moblie) == false) {
-			return showToast('手机号格式错误');
+			return showToast(_fpw.mobileFormatError || '');
 		}
 		if(moblie_vcode == "") {
-			return showToast('请输入短信验证码');
+			return showToast(_fpw.enterSmsCode || '');
 		}
 		code = moblie_vcode;
 	} else if(sendtype == 'email') {
 		var myreg = /^([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9\-]+@([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
 		if(email == "") {
-			return showToast('请输入邮箱');
+			return showToast(_fpw.enterEmail || '');
 		} else if(!myreg.test(email)) {
-			return showToast('邮箱格式错误');
+			return showToast(_fpw.emailFormatError || '');
 		}
 		if(email_vcode == "") {
-			return showToast('请输入邮箱验证码');
+			return showToast(_fpw.enterEmailCode || '');
 		}
 		code = email_vcode;
 	}
@@ -189,14 +180,14 @@ function editpw() {
 		pwd = $.trim($("#password").val()),
 		pwdconfirm = $.trim($("#passwordconfirm").val());
 	if($.trim(uid) == "" || $.trim(username) == "") {
-		showToast('请先验证后再修改密码', '提示', '确定', function() {
+		showToast(_fpw.verifyBeforeChange || '', _fpw.tip || '', _fpw.confirm || '', function() {
 			location.reload(true);
 		});
 		return false;
 	} else if(pwd.length < 6) {
-		return showToast('密码长度必须大于等于6');
+		return showToast(_fpw.passwordMinLength || '');
 	} else if(pwd != pwdconfirm) {
-		return showToast('两次输入密码不一致');
+		return showToast(_fpw.passwordMismatch || '');
 	} else {
 		showLoading()
 		$.post(wapurl + "?c=forgetpw&a=editpw", {
@@ -227,18 +218,18 @@ function checklink(img) {
 	var linkphone = $("#linkphone").val();
 	var linkemail = $("#linkemail").val();
 	if(linkman == '') {
-		return showToast("请填写联系人！");
+		return showToast(_fpw.enterContactName || '');
 	}
 	if(linkphone == '') {
-		return showToast("请填写联系电话！");
+		return showToast(_fpw.enterContactPhone || '');
 	} else if(isjsMobile(linkphone) == false && isjsTell(linkphone) == false) {
-		return showToast("联系电话格式错误！");
+		return showToast(_fpw.contactPhoneFormatError || '');
 	}
 	var myreg = /^([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9\-]+@([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
 	if(linkemail == '') {
-		return showToast("请填写联系邮箱！");
+		return showToast(_fpw.enterContactEmail || '');
 	} else if(!myreg.test(linkemail)) {
-		return showToast("邮箱格式错误！");
+		return showToast(_fpw.emailFormatErrorEx || '');
 	}
 	showLoading()
 	$.post(wapurl + "?c=forgetpw&a=checklink", {
@@ -258,7 +249,7 @@ function checklink(img) {
       showToast(data.msg, 2);
       return false;
     } else {
-			showToast("系统正忙", 2, function() {
+			showToast(_fpw.systemBusy || '', 2, function() {
 				location.reload(true);
 			})
 		}

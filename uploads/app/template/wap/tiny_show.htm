@@ -22,7 +22,7 @@
         <li class="com_show_li"><span class="user_contnet_info_n">{yun:}t key='wap_00526'{/yun}：</span>{yun:}$row.exp_n{/yun}</li>
         <li class="com_show_li"><span class="user_contnet_info_n">{yun:}t key='wap_00349'{/yun}：</span>{yun:}$row.city_n{/yun}</li>
         
-        <li class="com_show_li"><span class="user_contnet_info_n">{yun:}t key='wap_user_00265'{/yun}：</span>{yun:}if $config.user_wjl_link=='1' && !$smarty.cookies.uid{/yun} <a href='{yun:}url m=wap c=login usertype=2{/yun}'><font color='red'>登录后查看联系电话</font></a> {yun:}else{/yun}{yun:}$row.mobile{/yun}{yun:}/if{/yun}</li>
+        <li class="com_show_li"><span class="user_contnet_info_n">{yun:}t key='wap_user_00265'{/yun}：</span>{yun:}if $config.user_wjl_link=='1' && !$smarty.cookies.uid{/yun} <a href='{yun:}url m=wap c=login usertype=2{/yun}'><font color='red'>{yun:}t key='wap_00595'{/yun}</font></a> {yun:}else{/yun}{yun:}$row.mobile{/yun}{yun:}/if{/yun}</li>
       </ul>
     </div>
   </div>
@@ -40,7 +40,7 @@
     <div class="com_new_contnet_box ">
     
     <div class="wap_title">{yun:}t key='wap_00363'{/yun}</div>
-      <div class="tiny_tag">只有发布者本人才可以操作</div>
+      <div class="tiny_tag">{yun:}t key='wap_00642'{/yun}</div>
       <div style="width:100%; text-align:center">
 	      <a href="javascript:;" onclick="checkshowjob('tiny','{yun:}$row.id{/yun}', 1);" class="tiny_cz_sx">{yun:}t key='wap_user_00334'{/yun}</a>
 	      <a href="javascript:;" onclick="checkshowjob('tiny','{yun:}$row.id{/yun}', 2);" class="tiny_cz_sx">{yun:}t key='wap_js_00073'{/yun}</a>
@@ -49,16 +49,16 @@
     </div>
   </div>
 </section>
-<!--修改填写密码-->
+<!-- Edit password dialog -->
 <div id="yunvue">
     <van-popup v-model="jobBox" position="center" round>
 <div id="tinylist" class="tiny_show_tckbox" style="left:50%;bottom:220px; margin-left:10px;height: 320px; z-index:10000;width:312px;">
   <div class="tiny_show_tckbox_cont" style="width:312px;">
       <h3 style="font-size: 16px;margin: 10px 0 10px 0;">{yun:}t key='wap_00360'{/yun}</h3>
 
-    <div class="tiny_show_tckbox_cont_p">求职密码</div>
+    <div class="tiny_show_tckbox_cont_p">{yun:}t key='wap_00643'{/yun}</div>
     <div class="tiny_show_tckbox_p">
-      <input type="password" value="" id="tiny_password" class="tiny_show_tckbox_text" placeholder="请输入添加时的密码">
+      <input type="password" value="" id="tiny_password" class="tiny_show_tckbox_text" placeholder="{yun:}t key='wap_00644'{/yun}">
     </div>
 	<div class="tiny_show_tckbox_cont_p">{yun:}t key='wap_00110'{/yun}</div>
     <div class="tiny_show_tckbox_p">

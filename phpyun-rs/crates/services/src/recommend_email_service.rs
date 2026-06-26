@@ -15,7 +15,8 @@
 //! the same downstream worker that handles forgot-password emails picks it up.
 
 use phpyun_core::{
-    audit, clock, AppError, AppResult, AppState, AuthenticatedUser, InfraError,
+    audit, clock, i18n::{current_lang, t, t_args, Lang}, AppError, AppResult, AppState,
+    AuthenticatedUser, InfraError,
 };
 use phpyun_models::recommend::{
     entity::{REC_TYPE_JOB, REC_TYPE_RESUME},
@@ -91,7 +92,7 @@ async fn common(
 
     // 3) Resolve display fields for the email body. Cheap probe — failures
     //    fall back to the id (the worker can still render a usable email).
-    let (subject, summary_line) = preview_subject(state, rec_type, rec_id).await;
+    let (subject, summary_line) = preview_subject(state, rec_type, rec_id, current_lang()).await;
 
     let log_id = rec_repo::insert(pool, user.uid, rec_type, rec_id, email, now).await?;
 
@@ -127,6 +128,7 @@ async fn preview_subject(
     state: &AppState,
     rec_type: i32,
     rec_id: u64,
+    lang: Lang,
 ) -> (String, String) {
     if rec_type == REC_TYPE_JOB {
         let job = phpyun_models::job::repo::find_by_id(state.db.reader(), rec_id)
@@ -137,11 +139,22 @@ async fn preview_subject(
             Some(j) if !j.name.is_empty() => {
                 let com = j.com_name.unwrap_or_default();
                 (
-                    format!("【职位推荐】{} - {com}", j.name),
-                    format!("{com} 正在招聘 {}", j.name),
+                    t_args(
+                        "recommend.email.job_subject",
+                        lang,
+                        &[("job", &j.name), ("company", &com)],
+                    ),
+                    t_args(
+                        "recommend.email.job_summary",
+                        lang,
+                        &[("company", &com), ("job", &j.name)],
+                    ),
                 )
             }
-            _ => ("职位推荐".to_string(), String::new()),
+            _ => (
+                t("recommend.email.job_subject_fallback", lang),
+                String::new(),
+            ),
         }
     } else {
         let expect = phpyun_models::resume::expect::find_by_id(state.db.reader(), rec_id)
@@ -149,11 +162,17 @@ async fn preview_subject(
             .ok()
             .flatten();
         match expect {
-            Some(e) => (
-                format!("【简历推荐】(uid={})", e.uid),
-                format!("有一份简历 (uid={}) 推荐给您", e.uid),
+            Some(e) => {
+                let uid = e.uid.to_string();
+                (
+                    t_args("recommend.email.resume_subject", lang, &[("uid", &uid)]),
+                    t_args("recommend.email.resume_summary", lang, &[("uid", &uid)]),
+                )
+            }
+            None => (
+                t("recommend.email.resume_subject_fallback", lang),
+                String::new(),
             ),
-            None => ("简历推荐".to_string(), String::new()),
         }
     }
 }
@@ -189,11 +208,13 @@ pub async fn check_quota(
     let used_today =
         phpyun_models::recommend::repo::count_today_by_user(reader, user.uid, day_start).await?;
 
+    let lang = current_lang();
+
     if day_cap == 0 {
         // PHP returns "推荐功能已关闭！" — the feature itself is disabled.
         return Ok(QuotaStatus {
             status: 1,
-            msg: "推荐功能已关闭".into(),
+            msg: t("recommend.disabled", lang),
             used_today,
             day_cap: 0,
             interval_secs,
@@ -204,7 +225,7 @@ pub async fn check_quota(
     if used_today >= day_cap as u64 {
         return Ok(QuotaStatus {
             status: 1,
-            msg: format!("每天最多推荐 {} 次职位/简历", day_cap),
+            msg: t_args("recommend.day_cap", lang, &[("cap", &day_cap.to_string())]),
             used_today,
             day_cap: day_cap as u64,
             interval_secs,
@@ -221,9 +242,13 @@ pub async fn check_quota(
                 let remaining = interval_secs - elapsed;
                 return Ok(QuotaStatus {
                     status: 2,
-                    msg: format!(
-                        "推荐职位/简历间隔不得少于 {} 秒，请 {} 秒后操作",
-                        interval_secs, remaining
+                    msg: t_args(
+                        "recommend.interval_wait",
+                        lang,
+                        &[
+                            ("interval", &interval_secs.to_string()),
+                            ("remaining", &remaining.to_string()),
+                        ],
                     ),
                     used_today,
                     day_cap: day_cap as u64,

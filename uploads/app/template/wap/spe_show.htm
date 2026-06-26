@@ -17,7 +17,7 @@
             </div>
         </div>
         <div class="special_rules_c">{yun:}$info.intro{/yun}</div>
-        <div class="special_rules_time">{yun:}t key='common_02182'{/yun}：{yun:}$info.ctime|date_format: "%Y年%m月%d日"{/yun} ~{yun:}$info.etime|date_format: "%Y年%m月%d日"{/yun} </div>
+        <div class="special_rules_time">{yun:}t key='common_02182'{/yun}{yun:}t key='wap_00624'{/yun}{yun:}$info.ctime|date_format: "%Y年%m月%d日"{/yun} ~{yun:}$info.etime|date_format: "%Y年%m月%d日"{/yun} </div>
     </div>
 </div>
 <div class="special_rules_combox">
@@ -27,7 +27,7 @@
             <div class="title-bd">
                 <i class="blue md start" style="margin-right: 20px;"></i>
                 <i class="yellow sm end" style="margin-right: 20px;"></i>
-                <h1>精选企业</h1>
+                <h1>{yun:}t key='wap_00649'{/yun}</h1>
                 <i class="orange md end" style="margin-left: 20px;"></i>
                 <i class="green sm start" style="margin-left: 20px;"></i>
             </div>
@@ -53,7 +53,7 @@
 </div>
 {yun:}/if{/yun}
 {yun:}specialcomelse{/yun}
-<!--<div class="" style="color:#fff; text-align:center">我们期待您的参与~</div> -->
+<!--<div class="" style="color:#fff; text-align:center">We look forward to your participation</div> -->
 {yun:}/specialcom{/yun}
 {yun:}if $info.com_bm==1{/yun}
 {yun:}if !$isapply{/yun}
@@ -61,7 +61,7 @@
 <div class="special_seniorpd_box">
     <div class="special_seniorpd_cont">
         <div class="special_box_bth_c">
-            <input type='button' value="我是企业，{yun:}t key='wap_00375'{/yun}" onclick="{yun:}if $uid{/yun}{yun:}if $usertype!='2'{/yun} showToast('只有企业用户才能参加报名');{yun:}else{/yun}comapply('{yun:}$info.id{/yun}','{yun:}$info.integral{/yun}','{yun:}url m=wap c=special a=apply{/yun}');{yun:}/if{/yun}{yun:}else{/yun}pleaselogin("{yun:}t key='wap_00150'{/yun}",'{yun:}url m=wap c=login{/yun}'){yun:}/if{/yun}" class="special_box_bth" />
+            <input type='button' value="{yun:}t key='wap_00650'{/yun}{yun:}t key='wap_00375'{/yun}" onclick="{yun:}if $uid{/yun}{yun:}if $usertype!='2'{/yun} showToast('{yun:}t key='wap_00651'{/yun}');{yun:}else{/yun}comapply('{yun:}$info.id{/yun}','{yun:}$info.integral{/yun}','{yun:}url m=wap c=special a=apply{/yun}');{yun:}/if{/yun}{yun:}else{/yun}pleaselogin("{yun:}t key='wap_00150'{/yun}",'{yun:}url m=wap c=login{/yun}'){yun:}/if{/yun}" class="special_box_bth" />
         </div>
     </div>
 </div>
@@ -95,7 +95,7 @@ var isstop = '{yun:}$info.com_bm{/yun}';
 
 function comapply(id, integral, url) {
     if (integral > 0 && integral) {
-        let msg = "参加专题招聘，将扣除您" + integral + pricename + "，审核不通过将退还，{yun:}t key='common_01784'{/yun}？";
+        let msg = "{yun:}t key='wap_00652'{/yun}" + integral + pricename + "{yun:}t key='wap_00653'{/yun}{yun:}t key='common_01784'{/yun}？";
         showConfirm(msg, function() {
             showLoading();
             $.post(url, { id: id }, function(data) {

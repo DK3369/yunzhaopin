@@ -4,7 +4,7 @@
     
     <div class="yun_newedition_resumelist"  v-for="(item, rkey) in userlist" :key="item.id">
         <a :data-href="item.wapurl" href="javascript:void(0)" onclick="toPage(this)">
-            <i v-if="item.newtime == 1" class="yunjoblist_newicon" title="新简历"> </i>
+            <i v-if="item.newtime == 1" class="yunjoblist_newicon" title="{yun:}t key='wap_00587'{/yun}"> </i>
             <div class="yun_newedition_resumepic">
                 <img v-bind:src="item.photo">
                 <span v-bind:class="item.sex==1?'user_xb':'user_xbn'"></span>
@@ -14,9 +14,9 @@
                 <span v-if="item.rec_resume==1" class="usertj"> </span>
             </div>
 
-            <div class="new_userlist_info">{{item.exp_n?item.exp_n+'经验':''}} · {{item.edu_n}}学历 · {{item.age_n>0?item.age_n + '岁':'保密'}}</div>
-            <div class="new_userlist_p">求职期望 {{item.name}}，{{item.salary}}
-                <span v-if="item.top_day > 0 && rkey < 5" class="yun_newedition_resume_zd" >置顶</span>
+            <div class="new_userlist_info">{{item.exp_n?item.exp_n+'{yun:}t key='home.experience_suffix'{/yun}':''}} · {{item.edu_n}}{yun:}t key='home.education_suffix'{/yun} · {{item.age_n>0?item.age_n + '{yun:}t key='home.age_suffix'{/yun}':'{yun:}t key='wap_user_00333'{/yun}'}}</div>
+            <div class="new_userlist_p">{yun:}t key='wap_00586'{/yun} {{item.name}}，{{item.salary}}
+                <span v-if="item.top_day > 0 && rkey < 5" class="yun_newedition_resume_zd" >{yun:}t key='wap_user_00335'{/yun}</span>
                 <span v-else class="yun_newedition_resume_zd">{{item.lastupdate_n}}</span>
             </div>
 
@@ -49,7 +49,7 @@
         resumepage++;
         var searchurl = document.getElementById('searchurl').value;
 
-        // 缓存处理开始
+        // Session cache: start
         let storageDetail = sessionStorage.getItem("storageDetail"),
             storageCacheType = sessionStorage.getItem("storageCacheType"),
             storageSearchurl = sessionStorage.getItem("storageSearchurl"),
@@ -57,25 +57,25 @@
             storageListStr = sessionStorage.getItem("storageList"),
             storageList = storageListStr ? JSON.parse(storageListStr) : [];
 
-        // 存在缓存内容 - 从详情返回才处理
-        if (storageCacheType && storageCacheType == 'resume' && storageDetail && storageList.length > 0 && resumepage <= storagePage) {// 分页小于或等于缓存页数时，直接使用缓存
-            sessionStorage.removeItem("storageDetail"); // 清除掉详情返回的标识
+        // Restore list from cache when returning from detail page
+        if (storageCacheType && storageCacheType == 'resume' && storageDetail && storageList.length > 0 && resumepage <= storagePage) {// Use cache when page is within cached range
+            sessionStorage.removeItem("storageDetail"); // Clear detail-return flag
             storagePage = storagePage ? parseInt(storagePage) : 1;
-            resumepage = storagePage; // 直接修改分页为缓存对应页数
+            resumepage = storagePage; // Sync page counter with cache
             if (storageSearchurl) {
-                document.getElementById('searchurl').value = storageSearchurl; // 搜索条件赋值
+                document.getElementById('searchurl').value = storageSearchurl; // Restore search params
             }
-            app.$data.userlist = storageList; // 列表赋值
+            app.$data.userlist = storageList; // Restore list data
             app.$nextTick(function(){
                 document.getElementById('listdiv').insertAdjacentHTML('beforeend',$("#resumelist_wx_vue").html());
             })
-            return; // 走缓存不执行后续
+            return; // Skip fetch when cache is used
         } else {
             if (resumepage == 1) {
-                storageList = []; // 如果是重新加载，重新定义缓存数据列表
+                storageList = []; // Reset cache on first-page reload
             }
         }
-        // 缓存处理结束
+        // Session cache: end
 
         $.post(wapurl + 'index.php?c=resume&a=ajaxLoad', {searchurl: searchurl,page: resumepage}, function(res){
 			document.getElementById('pageLoading').classList.add('none');
