@@ -231,13 +231,13 @@ class msg_model extends model{
 					}
                 }
                 
-                $return['msg']      =   yun_auto_t('求职咨询(ID:').$idstr.')审核成功!';
+                $return['msg']      =   yun_at('model_00108').$idstr.yun_at('model_00109');
                     
 				$return['errcode']  =  9;
                 
 			}else{
 
-                $return['msg']      =  yun_auto_t('审核咨询(ID:').$idstr.')设置失败';
+                $return['msg']      =  yun_at('model_00110').$idstr.yun_at('model_00111');
                 $return['errcode']  =  8;
             }
 
@@ -402,14 +402,14 @@ class msg_model extends model{
 	        if ($nid){
                 if ($data['uid']) {
 
-                    $this->addMemberLog($data['uid'], $data['usertype'], '消息处理：删除求职咨询（ID：'.$id.'）', 18, 3);
+                    $this->addMemberLog($data['uid'], $data['usertype'], yun_at('api_wxapp_00001').$id.yun_at('api_wxapp_00030'), 18, 3);
                 }
 
-                $return['msg']      =   yun_auto_t('求职咨询(ID:').$id.')删除成功';
+                $return['msg']      =   yun_at('model_00108').$id.yun_at('model_00112');
                 $return['errcode']  =   9;
             } else {
 
-                $return['msg']      =   yun_auto_t('求职咨询(ID:').$id.')删除成功';
+                $return['msg']      =   yun_at('model_00108').$id.yun_at('model_00112');
                 $return['errcode']  =   8;
             }
         } else {
@@ -428,7 +428,7 @@ class msg_model extends model{
             $data['status'] = 1;
             $nid = $this -> update_once('msg',$data,array('id'=>$id));
             if($nid){
-                $return['msg'] = yun_auto_t('职咨询回复(ID:') . $id . ')修改成功！';
+                $return['msg'] = yun_at('model_00113') . $id . yun_at('model_00114');
                 $return['errcode'] = 9;
             }else{
                 $return['msg'] = yun_at('common_06540');

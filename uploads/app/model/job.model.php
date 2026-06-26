@@ -2042,7 +2042,7 @@ class job_model extends model{
                 $return['errcode']  =   9;
             }else{
 
-                $return['msg']      =   yun_auto_t('审核职位设置失败(ID:').$idstr.')';
+                $return['msg']      =   yun_at('model_00115').$idstr.yun_at('model_00130');
                 $return['errcode']  =   8;
             }
         }else {
@@ -2722,7 +2722,7 @@ class job_model extends model{
 
                         $return['id']           =   $this -> upInfo($jobData, array('id' => array('in', pylode(',', $ids))));
 
-                        $return['msg']		    =	yun_auto_t('取消职位置顶(ID:').pylode(',', $ids).')';
+                        $return['msg']		    =	yun_at('model_00116').pylode(',', $ids).yun_at('model_00130');
 
                         $return['msg']		    =	$return['id'] ? $return['msg'].'wap_js_00104' : $return['msg'].'wap_js_00103';
 
@@ -2759,7 +2759,7 @@ class job_model extends model{
 
                         }
 
-                        $return['msg']		    =	yun_auto_t('职位置顶(ID:').pylode(',', $id).')';
+                        $return['msg']		    =	yun_at('model_00117').pylode(',', $id).yun_at('model_00130');
                         $return['msg']		    =	$return['id'] ? $return['msg'].'model_00011' : $return['msg'].'wap_01715';
 
                     }else {
@@ -2835,7 +2835,7 @@ class job_model extends model{
 
                         $return['id']           =   $this -> upInfo($jobData, array('id' => array('in', pylode(',', $ids))));
 
-                        $return['msg']		    =	yun_auto_t('取消职位推荐(ID:').pylode(',', $ids).')';
+                        $return['msg']		    =	yun_at('model_00118').pylode(',', $ids).yun_at('model_00130');
 
                         $return['msg']		    =	$return['id'] ? $return['msg'].'wap_js_00104' : $return['msg'].'wap_js_00103';
 
@@ -2874,7 +2874,7 @@ class job_model extends model{
 
                         }
 
-                        $return['msg']		    =	yun_auto_t('职位推荐(ID:').pylode(',', $id).')';
+                        $return['msg']		    =	yun_at('model_00119').pylode(',', $id).yun_at('model_00130');
                         $return['msg']		    =	$return['id'] ? $return['msg'].'model_00011' : $return['msg'].'wap_01715';
 
                     }else {
@@ -2948,7 +2948,7 @@ class job_model extends model{
 
                         $return['id']           =   $this -> upInfo($jobData, array('id' => array('in', pylode(',', $ids))));
 
-                        $return['msg']		    =	yun_auto_t('取消职位紧急招聘(ID:').pylode(',', $ids).')';
+                        $return['msg']		    =	yun_at('model_00120').pylode(',', $ids).yun_at('model_00130');
 
                         $return['msg']		    =	$return['id'] ? $return['msg'].'wap_js_00104' : $return['msg'].'wap_js_00103';
 
@@ -2987,7 +2987,7 @@ class job_model extends model{
 
                         }
 
-                        $return['msg']		    =	yun_auto_t('职位紧急招聘(ID:').pylode(',', $id).')';
+                        $return['msg']		    =	yun_at('model_00121').pylode(',', $id).yun_at('model_00130');
                         $return['msg']		    =	$return['id'] ? $return['msg'].'model_00011' : $return['msg'].'wap_01715';
 
                     }else {
@@ -3496,7 +3496,7 @@ class job_model extends model{
                     $this->addMemberLog($data['uid'], $data['usertype'], '职位申请：删除申请记录(ID:' . pylode(',', $ids) . ')', 6, 3);
                 }
                 if ($data['utype'] != 'lietou') {
-                    $return['msg'] = yun_auto_t('职位申请记录(ID:') . pylode(',', $id) . ')';
+                    $return['msg'] = yun_at('model_00122') . pylode(',', $id) . yun_at('model_00130');
                 }
                 $return['errcode']	=	9;
                 $return['msg']		=	$return['msg'].'admin_user_00187';
@@ -4859,7 +4859,7 @@ class job_model extends model{
 
             $this -> addMemberLog($data['uid'],$data['usertype'],'common_06295',4,3);
 
-            $return['msg']		=	yun_auto_t('邀请面试记录(ID:').pylode(',', $id).')';
+            $return['msg']		=	yun_at('model_00123').pylode(',', $id).yun_at('model_00130');
 
             $return['errcode']	=	$return['id'] ? '9' :'8';
             $return['msg']		=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
@@ -5174,7 +5174,7 @@ class job_model extends model{
                 $where['uid']    =  intval($data['uid']);
                 $return['id']		=	$this -> update_once('look_job',array('status' => 1), $where);
                 $this -> addMemberLog($data['uid'],$data['usertype'],"浏览记录：删除职位浏览记录（ID:".pylode(',', $id)."）",26,3);
-                $return['msg']		=	yun_auto_t('职位浏览记录(ID:').pylode(',', $id).')';
+                $return['msg']		=	yun_at('model_00124').pylode(',', $id).yun_at('model_00130');
             }else{
                 if($data['norecycle'] == '1'){	//	数据库清理，不插入回收站
 
@@ -5183,7 +5183,7 @@ class job_model extends model{
 
                     $return['id']	=	$this -> delete_all('look_job', $where, '');
                 }
-                $return['msg']		=	yun_auto_t('职位浏览记录(ID:').pylode(',', $id).')';
+                $return['msg']		=	yun_at('model_00124').pylode(',', $id).yun_at('model_00130');
             }
 
             $return['errcode']		=	$return['id'] ? '9' :'8';
