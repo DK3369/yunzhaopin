@@ -3,9 +3,9 @@
         <div class="moduleSeachbig" v-if="cansearch">
             <div class="tableSeachInpt">
                 <el-select v-model="type" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00030'{/yun}">
-                    <el-option label="消费单号" value="1"></el-option>
-                    <el-option label="用户名" value="2"></el-option>
-                    <el-option label="备注说明" value="3"></el-option>
+                    <el-option label="{yun:}t key='admin_user_00295'{/yun}" value="1"></el-option>
+                    <el-option label="{yun:}t key='admin_user_00140'{/yun}" value="2"></el-option>
+                    <el-option label="{yun:}t key='admin_user_00290'{/yun}" value="3"></el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt">
@@ -21,21 +21,21 @@
             <el-table :data="tableData" style="width: 100%" stripe ref="multipleTable"
                       :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
                       :default-sort="{ prop: 'id', order: 'descending' }" @sort-change='sortChange' height="100%" v-loading="loading" @sort-change="shortChange" v-loading="loading" :empty-text="emptytext">>
-                <el-table-column prop="order_id" label="消费单号" width="150"></el-table-column>
-                <el-table-column prop="uname" label="金额" width="150">
+                <el-table-column prop="order_id" label="{yun:}t key='admin_user_00295'{/yun}" width="150"></el-table-column>
+                <el-table-column prop="uname" label="{yun:}t key='admin_01418'{/yun}" width="150">
                     <template slot-scope="scope">
                         {{ scope.row.type == 1 ? scope.row.order_price + integral_pricename : lc("admin_currency_yuan", [scope.row.order_price]) }}
                     </template>
                 </el-table-column>
-                <el-table-column prop="pay_remark" label="备注说明">
+                <el-table-column prop="pay_remark" label="{yun:}t key='admin_user_00290'{/yun}">
                 </el-table-column>
-                <el-table-column prop="pay_time_n" label="消费时间" width="150"></el-table-column>
-                <el-table-column prop="pay_state_n" label="状态" width="150">
+                <el-table-column prop="pay_time_n" label="{yun:}t key='wap_com_00344'{/yun}" width="150"></el-table-column>
+                <el-table-column prop="pay_state_n" label="{yun:}t key='member_user_00181'{/yun}" width="150">
 					<template slot-scope="scope">
 						<div v-html="scope.row.pay_state_n"></div>
 					</template>
                 </el-table-column>
-                <el-table-column label="操作" width="80" fixed="right">
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button type="danger" size="small " @click="del(scope.row.id)">{yun:}t key='common.delete'{/yun}</el-button>

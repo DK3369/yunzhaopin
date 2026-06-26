@@ -4,8 +4,8 @@
             <div class="tableSeachInpt tableSeachInptsmall tableSeacFromer" style="padding: 2px 0;">
                 <el-input v-model="search_params.keyword" @keyup.enter.native="search" placeholder="{yun:}t key='admin_00340'{/yun}" size="small" clearable>
                 	<el-select v-model="search_params.type" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00140'{/yun}">
-                	    <el-option label="公司名称" value="1"></el-option>
-                	    <el-option label="职位名称" value="2"></el-option>
+                	    <el-option label="{yun:}t key='wap_user_00080'{/yun}" value="1"></el-option>
+                	    <el-option label="{yun:}t key='wap_com_00288'{/yun}" value="2"></el-option>
                 	</el-select>
                 </el-input>
             </div>
@@ -24,8 +24,8 @@
                       :default-sort="{ prop: 'id', order: 'descending' }"
                       @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="职位编号" width="110" sortable="custom"></el-table-column>
-                <el-table-column prop="jobname" label="职位">
+                <el-table-column prop="id" label="{yun:}t key='admin_00492'{/yun}" width="110" sortable="custom"></el-table-column>
+                <el-table-column prop="jobname" label="{yun:}t key='wap_user_00154'{/yun}">
                     <template slot-scope="props">
                         <div class="moduleProps">
                             <div class=" ">
@@ -34,7 +34,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="name" label="企业">
+                <el-table-column prop="name" label="{yun:}t key='wap_user_00153'{/yun}">
                     <template slot-scope="props">
                         <div class="moduleProps">
                             <div class=" ">
@@ -43,15 +43,15 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="sxtime" label="时间间隔">
+                <el-table-column prop="sxtime" label="{yun:}t key='admin_00777'{/yun}">
                     <template slot-scope="props">
                         {{ lc("admin_reserve_interval_minutes", [props.row.reserve_interval]) }}
                     </template>
                 </el-table-column>
-                <el-table-column prop="reserve_start" label="开始时间"></el-table-column>
-                <el-table-column prop="reserve_end" label="结束时间"></el-table-column>
-                <el-table-column prop="sx_time_n" label="刷新周期"></el-table-column>
-                <el-table-column label="操作" width="200" fixed="right">
+                <el-table-column prop="reserve_start" label="{yun:}t key='admin_company_00005'{/yun}"></el-table-column>
+                <el-table-column prop="reserve_end" label="{yun:}t key='admin_company_00006'{/yun}"></el-table-column>
+                <el-table-column prop="sx_time_n" label="{yun:}t key='admin_user_company_00397'{/yun}"></el-table-column>
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="200" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
 
@@ -155,7 +155,7 @@
                     }
                 },
                 jg_data: [
-                    {label: '每隔1小时', value: '60'},
+                    {label: "{yun:}t key='admin_00757'{/yun}", value: '60'},
                     {label: "{yun:}t key='admin_00758'{/yun}", value: '120'},
                     {label: "{yun:}t key='admin_00759'{/yun}", value: '180'},
                     {label: "{yun:}t key='admin_00760'{/yun}", value: '240'},
@@ -213,7 +213,7 @@
                         return false;
                     }
                     if (that.curr_data.reserve_interval == 1 && that.userinterval == '') {
-                        message.error('请填写自定义刷新间隔');
+                        message.error("{yun:}t key='admin_company_00018'{/yun}");
                         return false;
                     }
                     if (that.curr_data.s_time.length > 0 && that.curr_data.e_time.length > 0) {
@@ -266,7 +266,7 @@
                     params.ids = ids
                 } else {// 批量操作
                     if (that.selectedItem.length == 0) {
-                        message.error("请选择要关闭的职位！");
+                        message.error("{yun:}t key='admin_company_00008'{/yun}");
                         return false;
                     } else {
                         params.ids = that.selectedItem.join(',')
@@ -274,7 +274,7 @@
                 }
                 httpPost('m=user&c=company_job&a=closeReserve', params).then(function (response) {
                     if (response.data.error == 0) {
-                        message.success('关闭成功', function(){
+                        message.success("{yun:}t key='admin_company_00017'{/yun}", function(){
                             that.$refs.multipleTable.clearSelection();
                             that.getList();
                         });

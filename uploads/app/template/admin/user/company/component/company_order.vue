@@ -3,9 +3,9 @@
         <div class="moduleSeachbig" v-if="cansearch">
             <div class="tableSeachInpt">
                 <el-select v-model="type" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00030'{/yun}">
-                    <el-option label="消费单号" value="1"></el-option>
-                    <el-option label="用户名" value="2"></el-option>
-                    <el-option label="企业名称/姓名" value="3"></el-option>
+                    <el-option label="{yun:}t key='admin_user_00295'{/yun}" value="1"></el-option>
+                    <el-option label="{yun:}t key='admin_user_00140'{/yun}" value="2"></el-option>
+                    <el-option label="{yun:}t key='admin_user_company_00041'{/yun}" value="3"></el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt">
@@ -22,33 +22,33 @@
                       :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
                       :default-sort="{ prop: 'id', order: 'descending' }" @selection-change="handleSelectionChange"  @sort-change='sortChange' height="100%" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="order_id" label="消费单号" width="150"></el-table-column>
-                <el-table-column prop="order_type_n" label="支付类型" width="150"></el-table-column>
-                <el-table-column prop="order_type_n" label="订单类型" width="150">
+                <el-table-column prop="order_id" label="{yun:}t key='admin_user_00295'{/yun}" width="150"></el-table-column>
+                <el-table-column prop="order_type_n" label="{yun:}t key='member_user_00240'{/yun}" width="150"></el-table-column>
+                <el-table-column prop="order_type_n" label="{yun:}t key='wap_user_00318'{/yun}" width="150">
                     <template slot-scope="scope">
                         {{scope.row.type_n}}{{scope.row.rating_name}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="order_price" label="付款金额" width="150" sortable="custom">
+                <el-table-column prop="order_price" label="{yun:}t key='admin_user_company_00044'{/yun}" width="150" sortable="custom">
                     <template slot-scope="scope">
                         {{scope.row.order_price}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="order_remark" label="备注说明">
+                <el-table-column prop="order_remark" label="{yun:}t key='admin_user_00290'{/yun}">
                 </el-table-column>
-                <el-table-column prop="order_time_n" label="充值时间" width="150" sortable="custom"></el-table-column>
-                <el-table-column prop="order_state_n" label="状态" width="150">
+                <el-table-column prop="order_time_n" label="{yun:}t key='admin_00619'{/yun}" width="150" sortable="custom"></el-table-column>
+                <el-table-column prop="order_state_n" label="{yun:}t key='member_user_00181'{/yun}" width="150">
                     <template slot-scope="scope">
                         <span v-html="scope.row.order_state_n"></span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="order_state_n" label="业务员" width="150">
+                <el-table-column prop="order_state_n" label="{yun:}t key='admin_user_company_00049'{/yun}" width="150">
                     <template slot-scope="scope">
                         <span v-if="scope.row.crm_name">{{scope.row.crm_name}}</span>
                         <span v-else style="color: red;">{yun:}t key='wap_user_00181'{/yun}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="200" fixed="right">
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="200" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="small " @click="showdtl(scope.row.id)">{yun:}t key='wap_com_00427'{/yun}</el-button>

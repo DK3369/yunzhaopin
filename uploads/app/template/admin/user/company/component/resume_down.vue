@@ -4,7 +4,7 @@
         <div class="moduleElTable" style="border: 1px solid #ebeef5; width: calc(100% - 2px); height: calc(100% - 50px) !important;">
             <el-table :data="tableData" style="width: 100%" stripe
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" ref="multipleTable" @sort-change="shortChange" v-loading="loading" :empty-text="emptytext">
-                <el-table-column label="姓名" width="230">
+                <el-table-column label="{yun:}t key='wap_00529'{/yun}" width="230">
                     <template slot-scope="scope">
                         <div class=" ">
                             <div class="username">
@@ -13,22 +13,22 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="手机号">
+                <el-table-column label="{yun:}t key='wap_user_00180'{/yun}">
                     <template slot-scope="scope">
                         <div class=" ">
                             <div class=" ">{{ scope.row.telMob }}</div>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="resume" label="被下载简历">
+                <el-table-column prop="resume" label="{yun:}t key='admin_user_00263'{/yun}">
                     <template slot-scope="scope">
                         <el-button type="text" @click="handlePreview(scope)" style="padding: 0">{{ scope.row.resume }}</el-button>
                     </template>
                 </el-table-column>
-                <el-table-column prop="downtime" label="下载时间" sortable="custom">
+                <el-table-column prop="downtime" label="{yun:}t key='wap_com_00352'{/yun}" sortable="custom">
                     <template slot-scope="scope">{{ scope.row.downtime_n }}</template>
                 </el-table-column>
-                <el-table-column prop="isdel_n" label="状态" width="110"></el-table-column>
+                <el-table-column prop="isdel_n" label="{yun:}t key='member_user_00181'{/yun}" width="110"></el-table-column>
             </el-table>
         </div>
         <div class="modulePaging">

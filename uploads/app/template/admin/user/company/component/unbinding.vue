@@ -5,13 +5,13 @@
 				<div class="moduleInptList moduleInptWidt">
 					<el-input placeholder="{yun:}t key='admin_user_weipin_00003'{/yun}" size="small" @keyup.enter.native="search" v-model="searchForm.keyword" class="input-with-select" clearable>
 						<el-select v-model="searchForm.type" slot="prepend" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-							<el-option label="用户名" :value="1"></el-option>
-							<el-option label="内容" :value="2"></el-option>
+							<el-option label="{yun:}t key='admin_user_00140'{/yun}" :value="1"></el-option>
+							<el-option label="{yun:}t key='wap_user_00102'{/yun}" :value="2"></el-option>
 						</el-select>
 					</el-input>
 				</div>
 				<div class="moduleInptList">
-					<el-date-picker size="small" v-model="daterange" type="daterange" range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" style="width: 280px;" @change="search"></el-date-picker>
+					<el-date-picker size="small" v-model="daterange" type="daterange" range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" style="width: 280px;" @change="search"></el-date-picker>
 				</div>
 				<div class="moduleInptList">
 					<el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
@@ -24,17 +24,17 @@
 					  :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" v-loading="loading" :empty-text="emptytext">
 				<el-table-column type="selection" width="55">
 				</el-table-column>
-				<el-table-column prop="id" label="编号" width="120" sortable="custom">
+				<el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="120" sortable="custom">
 				</el-table-column>
-				<el-table-column prop="username" label="用户名">
+				<el-table-column prop="username" label="{yun:}t key='admin_user_00140'{/yun}">
 				</el-table-column>
-				<el-table-column prop="content" label="内容" min-width="220">
+				<el-table-column prop="content" label="{yun:}t key='wap_user_00102'{/yun}" min-width="220">
 				</el-table-column>
 				<el-table-column prop="ip" label="IP">
 				</el-table-column>
-				<el-table-column prop="ctime_n" label="时间">
+				<el-table-column prop="ctime_n" label="{yun:}t key='wap_js_00088'{/yun}">
 				</el-table-column>
-				<el-table-column fixed="right" label="操作" width="90">
+				<el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="90">
 					<template slot-scope="scope">
 						<div class="moduleElTaCaoz">
 							<el-button type="danger" size="mini" @click="del(scope.$index)">{yun:}t key='common.delete'{/yun}</el-button>
@@ -243,10 +243,10 @@
 
                 if (typeof idx == 'undefined") { // {yun:}t key='member_com_00055'{/yun}
                     params.del = this.idArr;
-                    msg = "你确定要删除选中项吗？';
+                    msg = "{yun:}t key='common_00853'{/yun}";
                 } else if (idx == 'all") { // {yun:}t key='admin_user_00260'{/yun}
                     params.del = "all';
-                    msg = '确定要清空用户解绑日志？';
+                    msg = "{yun:}t key='admin_company_00007'{/yun}";
                 } else {// 单个删除
                     params.del = that.list[idx].id;
                     msg = "{yun:}t key='admin_00333'{/yun}";

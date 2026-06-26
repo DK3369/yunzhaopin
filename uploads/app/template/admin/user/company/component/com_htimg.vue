@@ -11,9 +11,9 @@
             <div class="moduleElTable">
                 <el-table :data="tableData" border style="width: 100%;" ref="multipleTable"
                           :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" v-loading="loading" :empty-text="emptytext">
-                    <el-table-column prop="id" label="用户ID" width="150">
+                    <el-table-column prop="id" label="{yun:}t key='admin_user_00130'{/yun}" width="150">
                     </el-table-column>
-                    <el-table-column prop="wenjian" label="图片">
+                    <el-table-column prop="wenjian" label="{yun:}t key='wap_js_00081'{/yun}">
                         <template slot-scope="scope">
                             <div class="demo-image__preview">
                                 <el-image style="width: 100px; height: 60px" :src="scope.row.pic_n"
@@ -22,7 +22,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column fixed="right" label="操作" width="120">
+                    <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="120">
                         <template slot-scope="scope">
                             <div class="moduleElTaCaoz">
                                 <el-button type="text" size="small" @click="delrow(scope.row.id)">{yun:}t key='common.delete'{/yun}</el-button>
@@ -175,12 +175,12 @@
                 }
             },
             exceedFun(files, fileList){
-                this.$message.error('超过上传图片最大限制!');
+                this.$message.error("{yun:}t key='admin_company_00015'{/yun}");
             },
             saveImg: function () {
                 let that = this;
                 if (that.picurl.length == 0) {
-                    message.error('请上传合同图片');
+                    message.error("{yun:}t key='admin_company_00016'{/yun}");
                     return false;
                 }
                 let sendData = {

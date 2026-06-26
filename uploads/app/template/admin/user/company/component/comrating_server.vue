@@ -15,8 +15,8 @@
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%"
                 ref="multipleTable" @selection-change="handleSelectionChange" @sort-change="shortChange" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="编号" width="80" sortable="custom"></el-table-column>
-                <el-table-column prop="name" label="增值类型名称" width="240">
+                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="80" sortable="custom"></el-table-column>
+                <el-table-column prop="name" label="{yun:}t key='admin_user_company_00206'{/yun}" width="240">
                     <template slot-scope="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']"
                             :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -27,13 +27,13 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="tcsl" label="状态">
+                <el-table-column prop="tcsl" label="{yun:}t key='member_user_00181'{/yun}">
                     <template slot-scope="scope">
-                        <el-switch v-model="scope.row.display_n" active-text="已启用" inactive-text="已下架" @change="handleStatus(scope)"></el-switch>
+                        <el-switch v-model="scope.row.display_n" active-text="{yun:}t key='admin_user_company_00171'{/yun}" inactive-text="{yun:}t key='wap_com_00242'{/yun}" @change="handleStatus(scope)"></el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column prop="sort" label="排序"></el-table-column>
-                <el-table-column label="操作" width="210" fixed="right">
+                <el-table-column prop="sort" label="{yun:}t key='member_com_00022'{/yun}"></el-table-column>
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="210" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="mini" plain @click="editRow(scope)">{yun:}t key='wap_js_00073'{/yun}</el-button>
@@ -147,7 +147,7 @@ module.exports = {
             submitLoading: false,
             detailAddVisible: false,//{yun:}t key='admin_00697'{/yun}
             detailVisible: false,
-            titleDetail: "详情',
+            titleDetail: "{yun:}t key='member_com_00380'{/yun}",
         }
     },
     created() {
@@ -226,7 +226,7 @@ module.exports = {
             this.addVisible = false;
         },
         editRow(scope) {
-            this.titleAddEdit = '修改增值套餐';
+            this.titleAddEdit = "{yun:}t key='admin_company_00010'{/yun}";
             this.info = scope.row;
             this.ruleForm.id = scope.row.id;
             this.ruleForm.name = scope.row.name;
@@ -345,7 +345,7 @@ module.exports = {
                 delete params.display;
             }
             if (params.name == '') {
-                message.error('增值类型名称不能为空');
+                message.error("{yun:}t key='admin_company_00014'{/yun}");
                 return false;
             }
             _this.submitLoading = true;

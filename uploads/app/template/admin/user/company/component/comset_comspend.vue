@@ -293,7 +293,7 @@ module.exports = {
         },
         handleDelete(index) {
             if (this.data.length <= 1) {
-                message.error('再删就没有啦！');
+                message.error("{yun:}t key='admin_company_00002'{/yun}");
                 return false;
             }
             this.data.splice(index, 1);

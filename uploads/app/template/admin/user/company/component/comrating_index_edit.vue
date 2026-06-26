@@ -26,7 +26,7 @@
                 </div>
                 <div class="drawerModInpt">
                     <el-input v-model="ruleForm.name" style="margin-right: 8px"></el-input>
-                    <el-checkbox v-model="ruleForm.youhuiBool" label="优惠活动" border size="medium"></el-checkbox>
+                    <el-checkbox v-model="ruleForm.youhuiBool" label="{yun:}t key='admin_user_company_00190'{/yun}" border size="medium"></el-checkbox>
                 </div>
                 <div class="drawerModTips">
                 </div>
@@ -421,11 +421,11 @@ module.exports = {
             
             
             if (params.name == '') {
-                message.error('会员名称不能为空！');
+                message.error("{yun:}t key='admin_company_00011'{/yun}");
                 return false;
             }
             if (parseFloat(params.service_price) < 0) {
-                message.error('请填写服务金额！');
+                message.error("{yun:}t key='admin_company_00012'{/yun}");
                 return false;
             }
             if (params.youhuiBool) {

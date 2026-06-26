@@ -15,12 +15,12 @@
                       :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
                       @selection-change="handleSelectionChange" height="100%" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="type_n" label="套餐类目" width="150"></el-table-column>
-                <el-table-column prop="num" label="消耗数量" width="150"></el-table-column>
-                <el-table-column prop="detail" label="描述"></el-table-column>
+                <el-table-column prop="type_n" label="{yun:}t key='admin_user_company_00051'{/yun}" width="150"></el-table-column>
+                <el-table-column prop="num" label="{yun:}t key='admin_00623'{/yun}" width="150"></el-table-column>
+                <el-table-column prop="detail" label="{yun:}t key='admin_user_00231'{/yun}"></el-table-column>
                 <el-table-column prop="ip" label="IP" width="150"></el-table-column>
-                <el-table-column prop="time_n" label="时间" width="150"></el-table-column>
-                <el-table-column label="操作" width="200" fixed="right">
+                <el-table-column prop="time_n" label="{yun:}t key='wap_js_00088'{/yun}" width="150"></el-table-column>
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="200" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="small " type="danger" @click="deleteRow(scope)">{yun:}t key='common.delete'{/yun}</el-button>

@@ -188,7 +188,7 @@ module.exports = {
                     atype: atype
                 };
                 if (that.info.c_status == 2) {
-                    message.error("锁定操作异常")
+                    message.error("{yun:}t key='admin_company_00001'{/yun}")
                     return false;
                 } else {
                     params.lock_status = 1;

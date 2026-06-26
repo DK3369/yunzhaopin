@@ -13,36 +13,36 @@
                     :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%"
                     ref="multipleTable" @selection-change="handleSelectionChange" @sort-change="shortChange" v-loading="loading" :empty-text="emptytext">
                     <el-table-column type="selection" width="55"></el-table-column>
-                    <el-table-column prop="id" label="编号" width="80"></el-table-column>
-                    <el-table-column prop="service_price" label="服务价格">
+                    <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="80"></el-table-column>
+                    <el-table-column prop="service_price" label="{yun:}t key='admin_user_company_00021'{/yun}">
                         <template slot-scope="scope">{{ lc("admin_currency_yuan", [scope.row.service_price]) }}</template>
                     </el-table-column>
-                    <el-table-column prop="resume" label="下载简历">
+                    <el-table-column prop="resume" label="{yun:}t key='wap_00451'{/yun}">
                         <template slot-scope="scope">{{ lc("admin_piece_count", [scope.row.resume]) }}</template>
                     </el-table-column>
-                    <el-table-column prop="interview" label="邀请面试">
+                    <el-table-column prop="interview" label="{yun:}t key='resume_00029'{/yun}">
                         <template slot-scope="scope">{{ lc("admin_piece_count", [scope.row.interview]) }}</template>
                     </el-table-column>
-                    <el-table-column prop="job_num" label="上架职位">
+                    <el-table-column prop="job_num" label="{yun:}t key='wap_com_00028'{/yun}">
                         <template slot-scope="scope">{{ lc("admin_piece_count", [scope.row.job_num]) }}</template>
                     </el-table-column>
-                    <el-table-column prop="breakjob_num" label="刷新职位">
+                    <el-table-column prop="breakjob_num" label="{yun:}t key='wap_com_00029'{/yun}">
                         <template slot-scope="scope">{{ lc("admin_piece_count", [scope.row.breakjob_num]) }}</template>
                     </el-table-column>
-                    <el-table-column prop="top_num" label="职位置顶">
+                    <el-table-column prop="top_num" label="{yun:}t key='wap_com_00238'{/yun}">
                         <template slot-scope="scope">{{ lc("admin_day_count", [scope.row.top_num]) }}</template>
                     </el-table-column>
-                    <el-table-column prop="rec_num" label="职位推荐">
+                    <el-table-column prop="rec_num" label="{yun:}t key='wap_com_00237'{/yun}">
                         <template slot-scope="scope">{{ lc("admin_day_count", [scope.row.rec_num]) }}</template>
                     </el-table-column>
-                    <el-table-column prop="urgent_num" label="职位紧急">
+                    <el-table-column prop="urgent_num" label="{yun:}t key='member_com_00247'{/yun}">
                         <template slot-scope="scope">{{ lc("admin_day_count", [scope.row.urgent_num]) }}</template>
                     </el-table-column>
-                    <el-table-column prop="zph_num" label="报名招聘会" width="100">
+                    <el-table-column prop="zph_num" label="{yun:}t key='admin_user_company_00210'{/yun}" width="100">
                         <template slot-scope="scope">{{ lc("admin_times_count", [scope.row.zph_num]) }}</template>
                     </el-table-column>
-                    <el-table-column prop="sort" label="排序" width="80"></el-table-column>
-                    <el-table-column label="操作" width="140" fixed="right">
+                    <el-table-column prop="sort" label="{yun:}t key='member_com_00022'{/yun}" width="80"></el-table-column>
+                    <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140" fixed="right">
                         <template slot-scope="scope">
                             <div class="cz_button">
                                 <el-button size="small" plain @click="editRow(scope)">{yun:}t key='wap_js_00073'{/yun}</el-button>

@@ -183,11 +183,11 @@ module.exports = {
             let params = JSON.parse(JSON.stringify(this.ruleForm));
             params.tid = this.tid;
             if (!params.type) {
-                message.error('请选择增值类型！');
+                message.error("{yun:}t key='member_com_00523'{/yun}");
                 return false;
             }
             if (parseFloat(params.service_price) < 0) {
-                message.error('请填写服务价格！');
+                message.error("{yun:}t key='admin_company_00013'{/yun}");
                 return false;
             }
             _this.submitLoading = true;

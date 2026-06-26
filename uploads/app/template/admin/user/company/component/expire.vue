@@ -4,8 +4,8 @@
             <div class="tableSeachInpt tableSeachInptsmall tableSeacFromer">
 				<el-input v-model="search_params.keyword" @keyup.enter.native="search" placeholder="{yun:}t key='admin_00340'{/yun}" size="small" clearable>
 					<el-select v-model="search_params.type" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00157'{/yun}">
-					    <el-option label="企业名称" value="1"></el-option>
-					    <el-option label="用户名" value="2"></el-option>
+					    <el-option label="{yun:}t key='wap_com_00157'{/yun}" value="1"></el-option>
+					    <el-option label="{yun:}t key='admin_user_00140'{/yun}" value="2"></el-option>
 					</el-select>
 				</el-input>
             </div>
@@ -28,17 +28,17 @@
                       :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
                       @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="uid" label="用户ID" width="120" sortable="custom"></el-table-column>
-                <el-table-column prop="name" label="企业名称"></el-table-column>
-                <el-table-column prop="username" label="用户名"></el-table-column>
-                <el-table-column prop="rating_name" label="会员等级"></el-table-column>
-                <el-table-column prop="vip_etime_n" label="过期时间"></el-table-column>
-                <el-table-column prop="ywy" label="业务员">
+                <el-table-column prop="uid" label="{yun:}t key='admin_user_00130'{/yun}" width="120" sortable="custom"></el-table-column>
+                <el-table-column prop="name" label="{yun:}t key='wap_com_00157'{/yun}"></el-table-column>
+                <el-table-column prop="username" label="{yun:}t key='admin_user_00140'{/yun}"></el-table-column>
+                <el-table-column prop="rating_name" label="{yun:}t key='admin_user_company_00018'{/yun}"></el-table-column>
+                <el-table-column prop="vip_etime_n" label="{yun:}t key='admin_00733'{/yun}"></el-table-column>
+                <el-table-column prop="ywy" label="{yun:}t key='admin_user_company_00049'{/yun}">
                     <template slot-scope="props">
                         {yun:}t key='admin_00732'{/yun}
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="80" fixed="right">
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button type="danger" size="mini" @click="delrow(scope.row.uid)">{yun:}t key='common.delete'{/yun}</el-button>

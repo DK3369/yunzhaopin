@@ -51,13 +51,13 @@
                     <td>
                         <div class="TableShuom">
                             <div class="tc_checktip el-icon-info">
-                                {yun:}t key='admin_user_company_00322'{/yun}：{yun:}t key='common_02033'{/yun}{{ config.integral_pricename }}抵扣部分或者全部金额操作！在会员套餐使用完的情况下，会员可以通过{{ config.integral_pricename }}{yun:}t key='wap_com_00383'{/yun}，或者购买会员的方式进行消费的模式
+                                {{ lc("admin_company_00003", [lc("admin_user_company_00322"), lc("common_02033"), config.integral_pricename, lc("wap_com_00383")]) }}
                             </div>
                             <div class="tc_checktip el-icon-info">
                                 {yun:}t key='admin_00719'{/yun}
                             </div>
                             <div class="tc_checktip el-icon-info">
-                                {{ config.integral_pricename }}{yun:}t key='member_com_00031'{/yun}：在会员套餐使用完的情况下，会员通过购买消费账户{{ config.integral_pricename }}，或者购买会员的方式进行套餐相关的操作
+                                {{ lc("admin_company_00004", [config.integral_pricename]) }}
                             </div>
                             <div class="tc_checktip el-icon-info">{yun:}t key='admin_00720'{/yun}</div>
                         </div>
@@ -218,7 +218,7 @@
                     <td>
                         <div class="TableButn w_500">
                             <el-select v-model="ruleForm.com_package_open" multiple placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                                <el-option label="过期会员" value="0"></el-option>
+                                <el-option label="{yun:}t key='admin_user_company_00297'{/yun}" value="0"></el-option>
                                 <el-option v-for="item in qy_rows" :key="item.id" :label="item.name" :value="item.id"></el-option>
                             </el-select>
                         </div>
@@ -266,7 +266,7 @@
                         <div class="TableSelect">
                             <template v-if="qy_rows.length">
                                 <el-select v-model="ruleForm.com_vip_done" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                                    <el-option label="过期会员" value="0"></el-option>
+                                    <el-option label="{yun:}t key='admin_user_company_00297'{/yun}" value="0"></el-option>
                                     <el-option v-for="(item, index) in qy_rows" :key="index" :label="item.name"
                                         :value="item.id">
                                     </el-option>
@@ -332,7 +332,7 @@ module.exports = {
                 com_vip_done: null,
             },
             submitLoading: false,
-            titleAddEdit: "设置会员套餐',
+            titleAddEdit: "{yun:}t key='admin_00689'{/yun}",
             addVisible: false,
         }
     },
@@ -389,7 +389,7 @@ module.exports = {
             // this.$refs[formName].validate((valid) => {if (valid) {}});
             let _this = this;
             let params = JSON.parse(JSON.stringify(this.ruleForm));
-            params.config = "提交';
+            params.config = "{yun:}t key='common.submit'{/yun}";
             params.isDayActionAllCheck = 0;
             params.isDayActionZeroCostCheck = 0;
             params.com_single_can = params.com_single_can.length > 0 ? params.com_single_can : '';
