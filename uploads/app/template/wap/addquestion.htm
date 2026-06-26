@@ -1,9 +1,9 @@
 {yun:}include file="$wapstyle/header_cont.htm"{/yun}
 
 <link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/ask/ask.css?v={yun:}$config.cachecode{/yun}" type="text/css" />
-<div class="addquestion_list"><input class="addquestion_list_text" type="text" name="title" id="title" placeholder="请输入问题标题" style="border:none;"></div>
+<div class="addquestion_list"><input class="addquestion_list_text" type="text" name="title" id="title" placeholder="{yun:}t key='wap_01325'{/yun}" style="border:none;"></div>
 <div class="addquestion_list mt10">
-	<textarea class="addquestion_textarea" placeholder="您可以详细描述你的问题" name="content" id='content'></textarea>
+	<textarea class="addquestion_textarea" placeholder="{yun:}t key='wap_01326'{/yun}" name="content" id='content'></textarea>
 </div>
 <div class="addquestion_list mt10" id="questionSelect">
 	<div class="ask_selectOption"   @click="questionShow=true">
@@ -37,7 +37,7 @@
 {yun:}else{/yun}
 <div class="addquestion_list mt10">
 	<div class="addquestion_list_textbox">
-		<input class="tw_bx_tit" id="ask_CheckCode" type="text" placeholder="请输入验证码" name="authcode" maxlength="6" style="border:none" />
+		<input class="tw_bx_tit" id="ask_CheckCode" type="text" placeholder="{yun:}t key='wap_01327'{/yun}" name="authcode" maxlength="6" style="border:none" />
 		<div class="addquestion_list_textboximg"> <img id="vcode_img" class=" " src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php" onclick="checkCode('vcode_img');" />
 		</div>
 	</div>
@@ -45,7 +45,7 @@
 {yun:}/if{/yun} 
 {yun:}/if{/yun}
 <div class="ask_button mt15">
-	<button type="button" class="mui-btn mui-btn-warning mui-btn-block" id="subask" onclick="checkform('vcode_img');">提交问题</button>
+	<button type="button" class="mui-btn mui-btn-warning mui-btn-block" id="subask" onclick="checkform('vcode_img');">{yun:}t key='wap_00104'{/yun}</button>
 </div>
 </div>
 {yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
@@ -66,11 +66,11 @@ function checkform(img){
 	var cid=$("#cid").val();
 	var content=$.trim($("textarea[name='content']").val());
 	if(title==''){
-		showToast('请填写标题！'); return false;
+		showToast('{yun:}t key='wap_01328'{/yun}'); return false;
 	}else if(cid==''){
-		showToast('请选择类别！'); return false;
+		showToast('{yun:}t key='wap_01329'{/yun}'); return false;
 	}else if(content==''){
-		showToast('请填写内容！'); return false;
+		showToast('{yun:}t key='wap_01330'{/yun}'); return false;
 	}
 	var authcode;
 	
@@ -81,7 +81,7 @@ function checkform(img){
 		if(code_kind==1){
 			authcode=$.trim($("#ask_CheckCode").val());  
 			if(!authcode){
-				showToast('请填写验证码！');return false;
+				showToast('{yun:}t key='wap_01331'{/yun}');return false;
 			}	
 		}else if(code_kind > 2){
 			verify_token = $('input[name="verify_token"]').val();
@@ -153,7 +153,7 @@ function checkform(img){
 	        questionShow:false,
 	        askData:askData,
 	        questionIndex:0,
-	        message:'请选择问题种类',
+	        message:'{yun:}t key='wap_01332'{/yun}',
 	        cid:0,
         },
         methods: {

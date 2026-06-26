@@ -1,20 +1,20 @@
 {yun:}include file="$wapstyle/member/header.htm"{/yun}
 <div id="yunvue" class="none">
     
-<!--有简历的情况-->
+<!-- Resume published -->
     <div class="issue_post_body">
         <div class="Resume_success_card">
             <div class="issue_card_box">
                 <div class="issue_box_logo">
                     <img src="{yun:}$wap_style{/yun}/images/issue_hint.png" alt="" width="100%" height="100%">
                 </div>
-                <div class="issue_box_hint">恭喜！简历发布成功</div>
+                <div class="issue_box_hint">{yun:}t key='wap_01131'{/yun}</div>
                 <div class="issue_box_btns">
-                   <div class="box_btns_preview" onclick="navigateTo('{yun:}$url{/yun}')">预览简历</div>
-                   <div class="box_btns_seek" onclick="navigateTo('{yun:}url m=wap c=job{/yun}')">去找工作</div>
+                   <div class="box_btns_preview" onclick="navigateTo('{yun:}$url{/yun}')">{yun:}t key='wap_user_00217'{/yun}</div>
+                   <div class="box_btns_seek" onclick="navigateTo('{yun:}url m=wap c=job{/yun}')">{yun:}t key='wap_user_00322'{/yun}</div>
                 </div>
             </div>
-            <div class="issue_card_matchingrate" v-if="joblist && joblist.length > 0">以下职位与你匹配度很高，投递试试吧</div>
+            <div class="issue_card_matchingrate" v-if="joblist && joblist.length > 0">{yun:}t key='wap_01132'{/yun}</div>
             <div class="issue_card_recommendbox">
                 <div class="issue_card_recommend" v-for="(job,jkey) in joblist" :key="jkey" @click="pageTo(job.wapjob_url)">
                     <div class="Posted_card_top">
@@ -24,8 +24,8 @@
                     <div class="Posted_card_cen">
                         <ul>
                             <li v-if="job.citystr">{{job.citystr}}</li>
-                            <li v-if="job.job_edu">{{job.job_edu}}学历</li>
-                            <li v-if="job.job_exp">{{job.job_exp}}经验</li>
+                            <li v-if="job.job_edu">{{job.job_edu}}{yun:}t key='home.education_suffix'{/yun}</li>
+                            <li v-if="job.job_exp">{{job.job_exp}}{yun:}t key='home.experience_suffix'{/yun}</li>
                         </ul>
                     </div>
                     <div class="Posted_card_bom">

@@ -13,22 +13,22 @@
       	<div class="m_taballbox">
           <ul>
                 <li @click="tabChange(1)" :class="stype==1 ? 'm_taballactive' : ''">
-                    招聘中
+{yun:}t key='wap_com_00243'{/yun}
                     <span v-if="zp_num > 0 && zp_num < 100" class="zp_num">{{zp_num}}</span>
                     <span v-else-if="zp_num > 99" class="zp_num">99+ </span>
                 </li>
                 <li @click="tabChange(2)" :class="stype==2 ? 'm_taballactive' : ''">
-                    待审核
+{yun:}t key='wap_user_00006'{/yun}
                     <span v-if="ds_num > 0 && ds_num < 100" class="zp_num">{{ds_num}}</span>
                     <span v-else-if="ds_num >99" class="zp_num">99+</span>
                 </li>
                 <li @click="tabChange(4)" :class="stype==4 ? 'm_taballactive' : ''">
-                  已下架
+{yun:}t key='wap_com_00242'{/yun}
                   <span v-if="xj_num > 0 && xj_num < 100" class="zp_num">{{xj_num}}</span>
                   <span v-else-if="xj_num >99" class="zp_num">99+</span>
                 </li>
                 <li @click="tabChange(3)" :class="stype==3 ? 'm_taballactive' : ''">
-                    已到期
+{yun:}t key='wap_com_00319'{/yun}
                     <span v-if="dq_num > 0 && dq_num < 100" class="zp_num">{{dq_num}}</span>
                     <span v-else-if="dq_num >99" class="zp_num">99+</span>
                 </li>
@@ -54,23 +54,23 @@
                             <div class="body_card_center_left">
                                 <div class="more_position_quantity">
                                     <div class="position_quantity_exposure">
-                                        <div class="quantity_exposure_q">兼职报名：</div>
+                                        <div class="quantity_exposure_q">{yun:}t key='wap_01166'{/yun}</div>
                                         <div class="quantity_exposure_a">{{item.applynum}}</div>
                                     </div>
                                     <div class="position_quantity_exposure">
-                                        <div class="quantity_exposure_q">浏览量：</div>
+                                        <div class="quantity_exposure_q">{yun:}t key='wap_00848'{/yun}</div>
                                         <div class="quantity_exposure_a">{{item.hits}}</div>
                                     </div>
                                 </div>
                                 <div class="more_position_new_time">
-                                    <div class="quantity_exposure_q">有限期至：</div>
+                                    <div class="quantity_exposure_q">{yun:}t key='wap_01167'{/yun}</div>
                                     <div class="quantity_exposure_a">{{item.end_n}}</div>
                                 </div>
                             </div>
                             <div class="body_card_center_right"
                                  @click="navigateTo('index.php?c=partapply&partid=' + item.id)">
                                 <div class="more_position_deliver_number">{{item.applynum}}</div>
-                                <div class="more_position_deliver">查看报名</div>
+                                <div class="more_position_deliver">{yun:}t key='wap_com_00317'{/yun}</div>
                             </div>
                         </div>
                         <div class="position_body_card_moonlight">
@@ -79,7 +79,7 @@
                                     <div class="body_card_bom_icon">
                                         <img src="{yun:}$wap_style{/yun}/images/moonlight_recommend.png" alt="">
                                     </div>
-                                    <div class="body_card_bom_name">取消</div>
+                                    <div class="body_card_bom_name">{yun:}t key='wap_01172'{/yun}</div>
                                     <div class="body_card_bom_hot">
                                         <img src="{yun:}$wap_style{/yun}/images/job_hot.png" alt="">
                                     </div>
@@ -88,7 +88,7 @@
                                     <div class="body_card_bom_icon">
                                         <img src="{yun:}$wap_style{/yun}/images/moonlight_recommend.png" alt="">
                                     </div>
-                                    <div class="body_card_bom_name">推荐</div>
+                                    <div class="body_card_bom_name">{yun:}t key='wap_com_00251'{/yun}</div>
                                     <div class="body_card_bom_hot">
                                         <img src="{yun:}$wap_style{/yun}/images/job_hot.png" alt="">
                                     </div>
@@ -98,25 +98,25 @@
                                     <div class="body_card_bom_icon">
                                         <img src="{yun:}$wap_style{/yun}/images/job_refresh.png" alt="">
                                     </div>
-                                    <div class="body_card_bom_name">刷新</div>
+                                    <div class="body_card_bom_name">{yun:}t key='wap_user_00334'{/yun}</div>
                                 </li>
                                 <li @click="statusChange(item.id, 1, infokey)">
                                     <div class="body_card_bom_icon">
                                         <img src="{yun:}$wap_style{/yun}/images/job_up_down.png" alt="">
                                     </div>
-                                    <div class="body_card_bom_name">下架</div>
+                                    <div class="body_card_bom_name">{yun:}t key='wap_com_00245'{/yun}</div>
                                 </li>
                                 <li @click="navigateTo('index.php?c=partadd&id=' + item.id)">
                                     <div class="body_card_bom_icon">
                                         <img src="{yun:}$wap_style{/yun}/images/job_modification.png" alt="">
                                     </div>
-                                    <div class="body_card_bom_name">修改</div>
+                                    <div class="body_card_bom_name">{yun:}t key='wap_js_00073'{/yun}</div>
                                 </li>
                                 <li @click="del" :data-id="item.id" :data-key="infokey">
                                     <div class="body_card_bom_icon">
                                         <img src="{yun:}$wap_style{/yun}/images/delete.png" alt="">
                                     </div>
-                                    <div class="body_card_bom_name">删除</div>
+                                    <div class="body_card_bom_name">{yun:}t key='wap_js_00077'{/yun}</div>
                                 </li>
                             </ul>
                         </div>
@@ -132,8 +132,8 @@
                     <div class="none_position_body_img">
                         <img src="{yun:}$wap_style{/yun}/images/none_position.png" alt="">
                     </div>
-                    <div class="none_position_body_text">您还没有招聘中职位哦~</div>
-                    <div class="none_position_body_btn" @click="partadd">立即发布</div>
+                    <div class="none_position_body_text">{yun:}t key='wap_com_00211'{/yun}</div>
+                    <div class="none_position_body_btn" @click="partadd">{yun:}t key='wap_com_00184'{/yun}</div>
                 </div>
 
             </div>
@@ -155,22 +155,22 @@
                             <div class="body_card_center_left">
                                 <div class="more_position_quantity">
                                     <div class="position_quantity_exposure">
-                                        <div class="quantity_exposure_q">兼职报名：</div>
+                                        <div class="quantity_exposure_q">{yun:}t key='wap_01166'{/yun}</div>
                                         <div class="quantity_exposure_a">{{item.applynum}}</div>
                                     </div>
                                     <div class="position_quantity_exposure">
-                                        <div class="quantity_exposure_q">浏览量：</div>
+                                        <div class="quantity_exposure_q">{yun:}t key='wap_00848'{/yun}</div>
                                         <div class="quantity_exposure_a">{{item.hits}}</div>
                                     </div>
                                 </div>
                                 <div class="more_position_new_time">
-                                    <div class="quantity_exposure_q">有限期至：</div>
+                                    <div class="quantity_exposure_q">{yun:}t key='wap_01167'{/yun}</div>
                                     <div class="quantity_exposure_a">{{item.end_n}}</div>
                                 </div>
                                 <div class="more_position_new_time" v-if="item.state==3"
                                      @click.stop="showReason(infokey)">
-                                    <div class="quantity_exposure_q">状态：</div>
-                                    <div class="quantity_exposure_a" style="color:#fe2f3a;">未通过</div>
+                                    <div class="quantity_exposure_q">{yun:}t key='wap_com_00320'{/yun}</div>
+                                    <div class="quantity_exposure_a" style="color:#fe2f3a;">{yun:}t key='wap_user_00167'{/yun}</div>
                                 </div>
                             </div>
                         </div>
@@ -180,13 +180,13 @@
                                     <div class="body_card_bom_icon">
                                         <img src="{yun:}$wap_style{/yun}/images/job_modification.png" alt="">
                                     </div>
-                                    <div class="body_card_bom_name">修改</div>
+                                    <div class="body_card_bom_name">{yun:}t key='wap_js_00073'{/yun}</div>
                                 </li>
                                 <li @click="del" :data-id="item.id" :data-key="infokey">
                                     <div class="body_card_bom_icon">
                                         <img src="{yun:}$wap_style{/yun}/images/delete.png" alt="">
                                     </div>
-                                    <div class="body_card_bom_name">删除</div>
+                                    <div class="body_card_bom_name">{yun:}t key='wap_js_00077'{/yun}</div>
                                 </li>
                             </ul>
                         </div>
@@ -202,8 +202,8 @@
                     <div class="none_position_body_img">
                         <img src="{yun:}$wap_style{/yun}/images/none_position.png" alt="">
                     </div>
-                    <div class="none_position_body_text">您还没有待审核兼职哦~</div>
-                    <div class="none_position_body_btn" @click="partadd">立即发布</div>
+                    <div class="none_position_body_text">{yun:}t key='wap_01169'{/yun}</div>
+                    <div class="none_position_body_btn" @click="partadd">{yun:}t key='wap_com_00184'{/yun}</div>
                 </div>
 
             </div>
@@ -225,16 +225,16 @@
                             <div class="body_card_center_left">
                                 <div class="more_position_quantity">
                                     <div class="position_quantity_exposure">
-                                        <div class="quantity_exposure_q">兼职报名：</div>
+                                        <div class="quantity_exposure_q">{yun:}t key='wap_01166'{/yun}</div>
                                         <div class="quantity_exposure_a">{{item.applynum}}</div>
                                     </div>
                                     <div class="position_quantity_exposure">
-                                        <div class="quantity_exposure_q">浏览量：</div>
+                                        <div class="quantity_exposure_q">{yun:}t key='wap_00848'{/yun}</div>
                                         <div class="quantity_exposure_a">{{item.hits}}</div>
                                     </div>
                                 </div>
                                 <div class="more_position_new_time">
-                                    <div class="quantity_exposure_q">到期时间：</div>
+                                    <div class="quantity_exposure_q">{yun:}t key='wap_01168'{/yun}</div>
                                     <div class="quantity_exposure_a">{{item.edate_n}}</div>
                                 </div>
                             </div>
@@ -245,13 +245,13 @@
                                     <div class="body_card_bom_icon">
                                         <img src="{yun:}$wap_style{/yun}/images/job_modification.png" alt="">
                                     </div>
-                                    <div class="body_card_bom_name">修改</div>
+                                    <div class="body_card_bom_name">{yun:}t key='wap_js_00073'{/yun}</div>
                                 </li>
                                 <li @click="del" :data-id="item.id" :data-key="infokey">
                                     <div class="body_card_bom_icon">
                                         <img src="{yun:}$wap_style{/yun}/images/delete.png" alt="">
                                     </div>
-                                    <div class="body_card_bom_name">删除</div>
+                                    <div class="body_card_bom_name">{yun:}t key='wap_js_00077'{/yun}</div>
                                 </li>
                             </ul>
                         </div>
@@ -267,8 +267,8 @@
                     <div class="none_position_body_img">
                         <img src="{yun:}$wap_style{/yun}/images/none_position.png" alt="">
                     </div>
-                    <div class="none_position_body_text">您还没有已过期职位哦~</div>
-                    <div class="none_position_body_btn" @click="partadd">立即发布</div>
+                    <div class="none_position_body_text">{yun:}t key='wap_01170'{/yun}</div>
+                    <div class="none_position_body_btn" @click="partadd">{yun:}t key='wap_com_00184'{/yun}</div>
                 </div>
             </div>
 
@@ -289,22 +289,22 @@
                             <div class="body_card_center_left">
                                 <div class="more_position_quantity">
                                     <div class="position_quantity_exposure">
-                                        <div class="quantity_exposure_q">兼职报名：</div>
+                                        <div class="quantity_exposure_q">{yun:}t key='wap_01166'{/yun}</div>
                                         <div class="quantity_exposure_a">{{item.applynum}}</div>
                                     </div>
                                     <div class="position_quantity_exposure">
-                                        <div class="quantity_exposure_q">浏览量：</div>
+                                        <div class="quantity_exposure_q">{yun:}t key='wap_00848'{/yun}</div>
                                         <div class="quantity_exposure_a">{{item.hits}}</div>
                                     </div>
                                 </div>
                                 <div class="more_position_new_time">
-                                    <div class="quantity_exposure_q">有限期至：</div>
+                                    <div class="quantity_exposure_q">{yun:}t key='wap_01167'{/yun}</div>
                                     <div class="quantity_exposure_a">{{item.end_n}}</div>
                                 </div>
                                 <div class="more_position_new_time" v-if="item.state==3"
                                      @click.stop="showReason(infokey)">
-                                    <div class="quantity_exposure_q">状态：</div>
-                                    <div class="quantity_exposure_a" style="color:#fe2f3a;">未通过</div>
+                                    <div class="quantity_exposure_q">{yun:}t key='wap_com_00320'{/yun}</div>
+                                    <div class="quantity_exposure_a" style="color:#fe2f3a;">{yun:}t key='wap_user_00167'{/yun}</div>
                                 </div>
                             </div>
                         </div>
@@ -314,19 +314,19 @@
                                     <div class="body_card_bom_icon">
                                         <img src="{yun:}$wap_style{/yun}/images/job_up_down.png" alt="">
                                     </div>
-                                    <div class="body_card_bom_name">上架</div>
+                                    <div class="body_card_bom_name">{yun:}t key='wap_com_00244'{/yun}</div>
                                 </li>
                                 <li @click="navigateTo('index.php?c=partadd&id=' + item.id)">
                                     <div class="body_card_bom_icon">
                                         <img src="{yun:}$wap_style{/yun}/images/job_modification.png" alt="">
                                     </div>
-                                    <div class="body_card_bom_name">修改</div>
+                                    <div class="body_card_bom_name">{yun:}t key='wap_js_00073'{/yun}</div>
                                 </li>
                                 <li @click="del" :data-id="item.id" :data-key="infokey">
                                     <div class="body_card_bom_icon">
                                         <img src="{yun:}$wap_style{/yun}/images/delete.png" alt="">
                                     </div>
-                                    <div class="body_card_bom_name">删除</div>
+                                    <div class="body_card_bom_name">{yun:}t key='wap_js_00077'{/yun}</div>
                                 </li>
                             </ul>
                         </div>
@@ -342,18 +342,18 @@
                     <div class="none_position_body_img">
                         <img src="{yun:}$wap_style{/yun}/images/none_position.png" alt="">
                     </div>
-                    <div class="none_position_body_text">您还没有已下架兼职哦~</div>
-                    <div class="none_position_body_btn" @click="partadd">立即发布</div>
+                    <div class="none_position_body_text">{yun:}t key='wap_01171'{/yun}</div>
+                    <div class="none_position_body_btn" @click="partadd">{yun:}t key='wap_com_00184'{/yun}</div>
                 </div>
 
             </div>
         </div>
 
-        <!--职位推广设置弹出-->
+        <!-- Job promotion popup -->
         <van-popup v-model="tc_server" position="bottom">
             <div class="top_set_box" style="position: unset; display: block">
                 <div class="top_set_box_title">
-                    <div class="box_title_left">职位推荐</div>
+                    <div class="box_title_left">{yun:}t key='wap_com_00237'{/yun}</div>
                     <div class="box_title_right" @click="closeTc">
                         <img src="{yun:}$wap_style{/yun}/images/job.dell.png" alt="">
                     </div>
@@ -362,20 +362,20 @@
                     <span @click="topage('index.php?c=server')"><img src="{yun:}$wap_style{/yun}/images/job_bnner.png"
                                                                      alt=""></span>
                 </div>
-                <div class="top_set_box_day" v-if="tgPrice==0">限时福利：职位推荐金额 0 元</div>
+                <div class="top_set_box_day" v-if="tgPrice==0">{yun:}t key='wap_com_00200'{/yun}</div>
                 <div class="top_set_box_day" v-else>
-                    <div class="set_box_day_left">您的职位推荐套餐剩余</div>
-                    <div class="set_box_day_right">{{statis.rec_num}}天</div>
+                    <div class="set_box_day_left">{yun:}t key='wap_00885'{/yun}</div>
+                    <div class="set_box_day_right">{{statis.rec_num}}{yun:}t key='common_02067'{/yun}</div>
                 </div>
                 <div class="top_set_box_setday">
-                    <div class="box_setday_left">推荐天数</div>
+                    <div class="box_setday_left">{yun:}t key='wap_com_00041'{/yun}</div>
                     <div class="box_setday_right">
-                        <input type="number" v-model='promote_day' @input="dayCheck" oninput="value=value.replace(/^0|[\^d]/g,'')" maxlength='3' placeholder="请设置天数" autocomplete="off" />
+                        <input type="number" v-model='promote_day' @input="dayCheck" oninput="value=value.replace(/^0|[\^d]/g,'')" maxlength='3' :placeholder="i18n.setDaysPlaceholder" autocomplete="off" />
                     </div>
                 </div>
                 <input type="hidden" v-model="promote_jobid"/>
                 <input type="hidden" v-model="promote_type"/>
-                <div class="top_set_box_btn" @click="setJobPromote">确定</div>
+                <div class="top_set_box_btn" @click="setJobPromote">{yun:}t key='common_02016'{/yun}</div>
             </div>
         </van-popup>
 
@@ -391,17 +391,17 @@
                     <span @click="topage('index.php?c=server')"><img src="{yun:}$wap_style{/yun}/images/job_bnner.png" alt=""></span>
                 </div>
                 <div class="top_set_box_setday">
-                    <div class="box_setday_left">{{server.name}}天数</div>
+                    <div class="box_setday_left">{{server.name}}{{i18n.daysLabelSuffix}}</div>
                     <div class="box_setday_right">
-                        <input type="number" v-model='server.days' @input="checkDay" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请设置天数" autocomplete="off" />
+                        <input type="number" v-model='server.days' @input="checkDay" oninput="value=value.replace(/^0|[\^d]/g,'')" :placeholder="i18n.setDaysPlaceholder" autocomplete="off" />
                     </div>
                 </div>
   
 
                 <div class="top_set_box_discounts" v-if="dkShow">
                     <div class="select_discounts_text">
-                        <div class="discounts_text_top">{{config.integral_name}}抵扣</div>
-                        <div class="discounts_text_bom">你当前有<i class="text_bom_integral">{{statis.integral}}</i>{{config.integral_name}}（1元={{config.integral_proportion}}{{config.integral_name}}）
+                        <div class="discounts_text_top">{{config.integral_name}}{yun:}t key='wap_00928'{/yun}</div>
+                        <div class="discounts_text_bom">{{i18n.integralBalancePrefix}}<i class="text_bom_integral">{{statis.integral}}</i>{{config.integral_name}}{{i18n.integralRatePrefix}}{{config.integral_proportion}}{{config.integral_name}}{{i18n.integralRateSuffix}}
                         </div>
                     </div>
                     <div class="select_discounts_icon">
@@ -410,9 +410,9 @@
                     </div>
                 </div>
                 <div class="top_set_box_discounts" v-if="isDk">
-                    <div class="box_setday_left">抵扣数量</div>
+                    <div class="box_setday_left">{yun:}t key='wap_00864'{/yun}</div>
                     <div class="box_setday_right">
-                        <input type="number" v-model='server.dkNum' @input="dkCheck" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请输入抵扣数量" autocomplete="off" />
+                        <input type="number" v-model='server.dkNum' @input="dkCheck" oninput="value=value.replace(/^0|[\^d]/g,'')" :placeholder="i18n.deductPlaceholder" autocomplete="off" />
                     </div>
                 </div>
 
@@ -423,7 +423,7 @@
                             <div class="pay_box_left_icon">
                                 <img src="{yun:}$wap_style{/yun}/images/yun_wap_zfb.png" alt="">
                             </div>
-                            <div class="pay_box_left_name">支付宝支付</div>
+                            <div class="pay_box_left_name">{yun:}t key='wap_00627'{/yun}</div>
                         </div>
                         <div class="card_pay_box_icon">
                             <img :src="src_alipay" alt="">
@@ -433,20 +433,20 @@
 
                 <div class="deficiency_box_btn" v-if="payStyle == 'price'">
                     <div class="deficiency_box_btn_left">
-                        <div class="box_btn_left_pay">应付金额：</div>
+                        <div class="box_btn_left_pay">{yun:}t key='wap_com_00221'{/yun}</div>
                         <div class="box_btn_left_center">￥</div>
                         <div class="box_btn_left_monye">{{order_price}}</div>
                     </div>
-                    <div class="deficiency_box_btn_right" @click="buyByPrice">立即购买</div>
+                    <div class="deficiency_box_btn_right" @click="buyByPrice">{yun:}t key='wap_user_00206'{/yun}</div>
                 </div>
 
                 <div class="deficiency_box_btn" v-if="payStyle == 'integral'">
                     <div class="deficiency_box_btn_left">
-                        <div class="box_btn_left_pay">支付{{config.integral_name}}：</div>
+                        <div class="box_btn_left_pay">{{i18n.payPrefix}}{{config.integral_name}}：</div>
                         <div class="box_btn_left_center"></div>
                         <div class="box_btn_left_monye">{{order_integral}}</div>
                     </div>
-                    <div class="deficiency_box_btn_right" @click="buyByIntegral">立即购买</div>
+                    <div class="deficiency_box_btn_right" @click="buyByIntegral">{yun:}t key='wap_user_00206'{/yun}</div>
                 </div>
 
 
@@ -464,7 +464,7 @@
         data() {
             return {
 
-                stype: 1, //tab栏
+                stype: 1, // Tab bar
 
                 info: [],
 
@@ -491,8 +491,8 @@
 
                 searchKeyword: '',
 
-                tc_server: false,           //  推广套餐设置弹出
-                single_server: false,       //  推广消费设置弹出
+                tc_server: false,           // Promotion package popup
+                single_server: false,       // Promotion pay popup
 
                 server: {
                     dkNum: ''
@@ -509,8 +509,8 @@
 
 
                
-                dkShow: false,      //  抵扣
-                isDk: false,        //  填写积分抵扣
+                dkShow: false,      // Points deduction
+                isDk: false,        // Enter points deduction
 
                 payTypeShow: false,
                 payStyle: 'price',
@@ -528,13 +528,48 @@
 
                 closeArr: {},
 
-                // tab数量显示
+                // Tab count display
                 zp_num: 0,
                 ds_num: 0,
                 dq_num: 0,
                 xj_num: 0,
 
-                isweixin : isweixin ? isweixin : 2
+                isweixin : isweixin ? isweixin : 2,
+                i18n: {
+                    setDaysPlaceholder: '{yun:}t key='wap_com_00223'{/yun}',
+                    daysLabelSuffix: '{yun:}t key='wap_00870'{/yun}',
+                    integralBalancePrefix: '{yun:}t key='wap_00866'{/yun}',
+                    integralRatePrefix: '{yun:}t key='wap_00867'{/yun}',
+                    integralRateSuffix: '{yun:}t key='wap_00868'{/yun}',
+                    deductPlaceholder: '{yun:}t key='wap_00865'{/yun}',
+                    payPrefix: '{yun:}t key='wap_00869'{/yun}',
+                    notNeeded: '{yun:}t key='wap_com_00107'{/yun}',
+                    goBuy: '{yun:}t key='wap_com_00048'{/yun}',
+                    cancel: '{yun:}t key='wap_js_00080'{/yun}',
+                    goPublish: '{yun:}t key='wap_com_00047'{/yun}',
+                    confirm: '{yun:}t key='common_02016'{/yun}',
+                    offlineConfirm: '{yun:}t key='wap_com_00194'{/yun}',
+                    onlineConfirmPrefix: '{yun:}t key='wap_00873'{/yun}',
+                    onlineConfirmSuffix: '{yun:}t key='wap_00874'{/yun}',
+                    onlineConfirmOnly: '{yun:}t key='wap_01179'{/yun}',
+                    setting: '{yun:}t key='wap_user_00321'{/yun}',
+                    setSuccess: '{yun:}t key='wap_com_00240'{/yun}',
+                    jobRec: '{yun:}t key='wap_com_00237'{/yun}',
+                    promoteFreeRec: '{yun:}t key='wap_com_00200'{/yun}',
+                    packageRec: '{yun:}t key='wap_00885'{/yun}',
+                    recDays: '{yun:}t key='wap_com_00041'{/yun}',
+                    promoteDaysRequired: '{yun:}t key='wap_00882'{/yun}',
+                    packageUsedUp: '{yun:}t key='wap_com_00205'{/yun}',
+                    paymentClosed: '{yun:}t key='wap_user_00183'{/yun}',
+                    confirmDelete: '{yun:}t key='wap_00812'{/yun}',
+                    deleting: '{yun:}t key='wap_com_00241'{/yun}',
+                    deleteSuccess: '{yun:}t key='wap_user_00147'{/yun}',
+                    deleteFail: '{yun:}t key='wap_user_00146'{/yun}',
+                    loading: '{yun:}t key='wap_com_00318'{/yun}',
+                    cancelRecRemainPrefix: '{yun:}t key='wap_00878'{/yun}',
+                    cancelRecDaySuffix: '{yun:}t key='wap_00876'{/yun}',
+                    cancelRecConfirm: '{yun:}t key='wap_00879'{/yun}',
+                },
             };
         },
         created() {
@@ -543,26 +578,27 @@
         },
         methods: {
 
-            //  发布职位
+            // Post job
             partadd: function () {
+                var that = this;
                 var url = "{yun:}url d=wxapp h=com m=index c=addCheck{/yun}";
                 comjobAdd(url, {job: 'part'}, function (res) {
                     if (res.error==1) {
-                        // 套餐不足
+                        // Package insufficient
                         modalVue.$data.mb_content = res.msg;
-                        modalVue.$data.cancelText = '不用了';
-                        modalVue.$data.confirmText = '去购买';
+                        modalVue.$data.cancelText = that.i18n.notNeeded;
+                        modalVue.$data.confirmText = that.i18n.goBuy;
                         modalVue.$data.yunModal = true;
                         modalType = 'job';
                     } else if(res.error==2){
                         modalVue.$data.mb_content = res.msg;
-                        modalVue.$data.cancelText = '取消';
-                        modalVue.$data.confirmText = '去发布';
+                        modalVue.$data.cancelText = that.i18n.cancel;
+                        modalVue.$data.confirmText = that.i18n.goPublish;
                         modalVue.$data.tourl = res.tourl;
                         modalVue.$data.yunModal = true;
                         modalType = 'toaddjob';
                     }else {
-                        // 强制操作
+                        // Forced action
                         certVue.$data.checked = res;
                         certVue.$data.yunCert = true;
                     }
@@ -570,18 +606,19 @@
             },
 
             partRefresh(id) {
+                var that = this;
                 var url = "{yun:}url d=wxapp h=com m=part c=refresh{/yun}";
                 comjobRefresh(url, {partid: id}, function (res) {
                     modalVue.$data.singleid = id;
                     modalVue.$data.mb_content = res.msg;
-                    modalVue.$data.cancelText = '不用了';
-                    modalVue.$data.confirmText = '去购买';
+                    modalVue.$data.cancelText = that.i18n.notNeeded;
+                    modalVue.$data.confirmText = that.i18n.goBuy;
                     modalVue.$data.yunModal = true;
                     modalType = 'partrefresh';
                 });
             },
 
-            /** 上下架 Start */
+            /** List/delist Start */
             statusChange(id, status, key) {
                 var that = this,
                     paramer = {
@@ -589,37 +626,37 @@
                         status: status,
                     };
                 if (status == 1) {
-                    var msg = '下架后重新上架将消耗上架职位数量，确认下架？';
+                    var msg = that.i18n.offlineConfirm;
                     showConfirm(msg, function () {
                         that.statusSave(paramer, key);
-                    }, '取消', '确定');
+                    }, that.i18n.cancel, that.i18n.confirm);
                 } else {
                     if (this.statis.rating_type == 1) {
-                        var msg = '您可上架职位' + this.statis.job_num + '个，确认上架？';
+                        var msg = that.i18n.onlineConfirmPrefix + this.statis.job_num + that.i18n.onlineConfirmSuffix;
                     } else if (this.statis.rating_type == 2) {
-                        var msg = '确认上架？';
+                        var msg = that.i18n.onlineConfirmOnly;
                     } else {
                         that.statusSave(paramer, key);
                         return;
                     }
                     showConfirm(msg, function () {
                         that.statusSave(paramer, key);
-                    }, '取消', '确定');
+                    }, that.i18n.cancel, that.i18n.confirm);
                 }
             },
             statusSave(paramer, key) {
                 var that = this;
-                showLoading('设置中');
+                showLoading(that.i18n.setting);
                 $.post('{yun:}url d=wxapp h=com m=part c=ztjob{/yun}', paramer, function (data) {
                     hideLoading();
                     if (data.error == 0) {
                         that.getpartNum();
                         that.getpart('refresh');
-                        showToast('设置成功');
+                        showToast(that.i18n.setSuccess);
                     } else if(data.error == 8){
                         modalVue.$data.mb_content = data.msg;
-                        modalVue.$data.cancelText = '不用了';
-                        modalVue.$data.confirmText = '去购买';
+                        modalVue.$data.cancelText = that.i18n.notNeeded;
+                        modalVue.$data.confirmText = that.i18n.goBuy;
                         modalVue.$data.yunModal = true;
                         modalType = 'job';
                     } else {
@@ -627,7 +664,7 @@
                     }
                 }, 'json');
             },
-            /** 上下架 End */
+            /** List/delist End */
 
             tabChange: function (e) {
                 this.stype = e;
@@ -647,7 +684,7 @@
                     stype: that.stype,
                 };
 
-                showLoading('加载中');
+                showLoading(that.i18n.loading);
                 $.post('{yun:}url d=wxapp h=com m=part c=partlist{/yun}', paramer, function (data) {
                     hideLoading();
                     $("#yunvue").removeClass('none');
@@ -715,7 +752,7 @@
 
                     }else{
 
-                        return showToast('网站已关闭支付接口，请联系管理员');
+                        return showToast(that.i18n.paymentClosed);
                     }
                 }
             },
@@ -755,7 +792,7 @@
             setJobPromote() {
                 var that = this;
                 if (that.promote_day === '' || that.promote_day === 'undefined') {
-                    return showToast('请填写职位推广天数！');
+                    return showToast(that.i18n.promoteDaysRequired);
                 }
                 var formData = {
                     days: that.promote_day,
@@ -802,7 +839,7 @@
                     self.toServer();
                     self.single_server = false;
                 } else {
-                    self.server.name = '职位推荐';
+                    self.server.name = self.i18n.jobRec;
                     self.only = self.config.onlyRec;
                     self.promote_type = 'partrec';
                     self.single_server = true;
@@ -850,7 +887,7 @@
 
                 var price = accMul(that.server.days, that.tgPrice);
 
-                if (that.config.online == 3 && that.only == 2) {     //  积分消费模式 && 不强制金额消费
+                if (that.config.online == 3 && that.only == 2) {     // Points-only mode && amount not forced
 
 
                     that.dkShow = false;
@@ -861,7 +898,7 @@
 
                     that.order_integral = integral_need;
 
-                    if (parseInt(integral_sub) <= 0) {  //  积分充足
+                    if (parseInt(integral_sub) <= 0) {  // Sufficient points
 
                         that.payStyle = 'integral';
                         that.payTypeShow = false;
@@ -880,7 +917,7 @@
                     that.payStyle = 'price';
                     that.payTypeShow = true;
 
-                    if (that.config.online == 1 && that.only == 2) { //  抵扣消费模式 && 不强制金额消费
+                    if (that.config.online == 1 && that.only == 2) { // Deduction mode && amount not forced
 
                         that.dkShow = true;
                     } else {
@@ -918,7 +955,7 @@
 
                 var integral_need = parseInt(accMul(price, that.config.integral_proportion));
 
-                if (parseInt(that.statis.integral) > integral_need) {  //  积分充足
+                if (parseInt(that.statis.integral) > integral_need) {  // Sufficient points
 
                     if (parseInt(that.server.dkNum) >= integral_need) {
 
@@ -1054,9 +1091,10 @@
             },
 
             toServer: function () {
-                modalVue.$data.mb_content = '套餐已用完，购买会员更优惠';
-                modalVue.$data.cancelText = '不用了';
-                modalVue.$data.confirmText = '去购买';
+                var that = this;
+                modalVue.$data.mb_content = that.i18n.packageUsedUp;
+                modalVue.$data.cancelText = that.i18n.notNeeded;
+                modalVue.$data.confirmText = that.i18n.goBuy;
                 modalVue.$data.yunModal = true;
                 modalType = 'vip';
             },
@@ -1069,8 +1107,8 @@
                 that.closeArr.jobid = part.id;
                 that.closeArr.rec_day = part.rec_day;
 
-                var msg = that.closeArr.rec_day > 0 ? '职位推荐剩余' + that.closeArr.rec_day + '天，' : '';
-                msg = msg + '确定取消职位推荐？';
+                var msg = that.closeArr.rec_day > 0 ? that.i18n.cancelRecRemainPrefix + that.closeArr.rec_day + that.i18n.cancelRecDaySuffix : '';
+                msg = msg + that.i18n.cancelRecConfirm;
 
                 showModal(msg, function () {
                     that.setJobPromoteClose();
@@ -1106,17 +1144,17 @@
                 var paramer = {
                     id: e.currentTarget.dataset.id,
                 };
-                showConfirm('确定删除？', function () {
-                    showLoading('删除中');
+                showConfirm(that.i18n.confirmDelete, function () {
+                    showLoading(that.i18n.deleting);
                     $.post('{yun:}url d=wxapp h=com m=part c=delpart{/yun}', paramer, function (data) {
                         hideLoading();
                         if (data.error == 1) {
-                            showToast('删除成功', 2, function () {
+                            showToast(that.i18n.deleteSuccess, 2, function () {
                                 that.getpartNum();
                                 that.getpart('refresh');
                             });
                         } else {
-                            showToast('删除失败');
+                            showToast(that.i18n.deleteFail);
                         }
                     }, 'json')
                 });
@@ -1156,9 +1194,9 @@
         yunvue.partadd();
     }
 </script>
-<!-- 余额不足提示 -->
+<!-- Insufficient balance tip -->
 {yun:}include file="$wapstyle/publichtm/yun_modal.htm"{/yun}
-<!-- 强制操作提醒弹出框 -->
+<!-- Forced action reminder popup -->
 {yun:}include file="$wapstyle/publichtm/yun_cert.htm"{/yun}
 </body>
 </html>

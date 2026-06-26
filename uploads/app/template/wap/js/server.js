@@ -2,7 +2,12 @@ function myFunction(_this) {
     _this.value = _this.value.replace(/[^0-9]/g, '');
 }
 
-/* 选择不同服务操作：会员、增值服务、单项购买 */
+function serverI18n(key) {
+    var i18n = typeof COM_SERVER_JS_I18N !== 'undefined' ? COM_SERVER_JS_I18N : {};
+    return i18n[key] || '';
+}
+
+/* Select service: membership, value-added, or single purchase */
 $("ul#rating_select").on("click", "li", function() {
 
     var id			=	$(this).attr('data-id');
@@ -315,7 +320,7 @@ function checkIntegralDK(integral, pro){
     if(server_price == '' || parseFloat(server_price) == 0){
 
         $("#integral_dk").val('');
-        showToast('请先选择购买服务！', 2);
+        showToast(serverI18n('selectServiceFirst'), 2);
         return false;
     }
 
@@ -408,13 +413,13 @@ function orderBuy(){
 
         if (server == '') {
 
-            showToast('请选择购买服务！');
+            showToast(serverI18n('selectService'), 2);
             return false;
         }
 
         if (paytype == '') {
 
-            showToast('请选择支付方式！');
+            showToast(serverI18n('selectPayType'), 2);
             return false;
         }
 

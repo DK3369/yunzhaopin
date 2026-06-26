@@ -10,7 +10,7 @@
             <span class="hb_listbox" @click="showSelJob('{yun:}$v.style{/yun}', '{yun:}$v.num{/yun}');">
                 <div class="poster_pic"><img src="{yun:}$v.pic_n{/yun}"/></div>
                 <div class="hb_listbox_name">
-                    <span class="hb_listbox_sc">生成</span>
+                    <span class="hb_listbox_sc">{yun:}t key='wap_01500'{/yun}</span>
                 </div>
             </span>
         </li>
@@ -18,7 +18,7 @@
     </ul>
 
     <van-popup v-model="jobShow" round position="bottom">
-        <div style="text-align: center; width: 100%; padding: 15px 0; font-size: 20px;">选择海报展示职位信息</div>
+        <div style="text-align: center; width: 100%; padding: 15px 0; font-size: 20px;">{yun:}t key='wap_01499'{/yun}</div>
         <van-checkbox-group v-model="result" :max='max' @change="changeResult" style="overflow: auto; max-height: 300px;">
             <van-cell-group>
                 <van-cell v-for="(item, index) in list" clickable :key="item.id" :title="`${item.name}`" @click="toggle(index)" >
@@ -27,7 +27,7 @@
             </van-cell-group>
         </van-checkbox-group>
 		<div style="padding:0.533333rem;">
-        <van-button type="info" block @click="getComHb" style="border-radius:8px; font-size: 15px;">生成海报</van-button>
+        <van-button type="info" block @click="getComHb" style="border-radius:8px; font-size: 15px;">{yun:}t key='wap_01572'{/yun}</van-button>
 		</div>
     </van-popup>
 
@@ -35,7 +35,7 @@
         <div class="hb_tc">
             <img :src="hbSrc" style="max-width: 100%;">
             <div class="hb_tc_bth">
-                <div @click="hbShow=!hbShow" class="hb_btn_hyz">长按图片保存</div>
+                <div @click="hbShow=!hbShow" class="hb_btn_hyz">{yun:}t key='wap_01497'{/yun}</div>
             </div>
         </div>
     </van-popup>
@@ -100,7 +100,7 @@
                     var jobids = that.jobIds.toString();
                 }
 
-                showLoading('生成中...');
+                showLoading('{yun:}t key='wap_01498'{/yun}');
 
                 const src = wapurl + 'index.php?c=ajax&a=getComHb&uid=' + uid + '&style=' + that.style +'&jobids='+jobids;
                 that.hbSrc = src;

@@ -1,5 +1,5 @@
 {yun:}include file="$wapstyle/member/cheader.htm"{/yun}
-<!-- 页面头部部分 -->
+<!-- Page header -->
 
 <div id="yunvue">
     <div class=" none"  v-bind:class="{show: islook}">
@@ -17,33 +17,33 @@
                             </div>
                             <div class="card_name_box_synthesize">
                                 <div class="box_synthesize_name" >{{item.name}}</div>
-                                <div class="box_synthesize_require"><span v-if="item.exp">{{item.exp}}经验·</span><span v-if="item.edu">{{item.edu}}学历·</span>{{item.age}}岁
+                                <div class="box_synthesize_require"><span v-if="item.exp">{{item.exp}}{{i18n.expDot}}</span><span v-if="item.edu">{{item.edu}}{{i18n.eduDot}}</span>{{item.age}}{{i18n.ageSuffix}}
                                 </div>
                             </div>
                         </div>
-                        <div v-if="item.is_browse < 3" class="card_name_state">待接受</div>
+                        <div v-if="item.is_browse < 3" class="card_name_state">{{i18n.pendingAccept}}</div>
                         <div v-else-if="item.is_browse == 3" class="card_name_accepted">
-                            <div v-if="item.over == 1">已结束</div>
-                            <div v-else>已接受</div>
+                            <div v-if="item.over == 1">{{i18n.ended}}</div>
+                            <div v-else>{{i18n.accepted}}</div>
                         </div>
-                        <div v-else-if="item.is_browse == 4" class="card_name_refused">无法面试</div>
+                        <div v-else-if="item.is_browse == 4" class="card_name_refused">{{i18n.cannotInterview}}</div>
                     </div>
                     <div class="invitation_card_time">
-                        <div class="invitation_card_time_q">面试时间</div>
+                        <div class="invitation_card_time_q">{yun:}t key='wap_user_00255'{/yun}</div>
                         <div class="invitation_card_time_a">{{item.ms_time}}</div>
                     </div>
                     <div class="invitation_card_job">
-                        <div class="invitation_card_time_q">面试职位</div>
+                        <div class="invitation_card_time_q">{yun:}t key='wap_user_00256'{/yun}</div>
                         <div class="invitation_card_time_a">{{item.jobname}}</div>
                     </div>
                     <div class="invitation_card_contact" v-show="item.down=='1'">
                         <div class="invitation_card_contact_box">
-                            <div class="invitation_card_time_q">联系方式</div>
+                            <div class="invitation_card_time_q">{yun:}t key='wap_00462'{/yun}</div>
                             <div class="invitation_card_time_a">{{item.telphone}}</div>
                         </div>
                     </div>
                     <div class="invitation_card_job" v-show="item.remark!=''">
-                        <div class="invitation_card_time_q">拒绝原因</div>
+                        <div class="invitation_card_time_q">{yun:}t key='wap_00824'{/yun}</div>
                         <div class="invitation_card_time_a">{{item.remark}}</div>
                     </div>
 					
@@ -62,7 +62,7 @@
             </div>
 
             <div v-else>
-                <van-empty image="search" description="很抱歉,暂无邀请面试人才！"/></van-empty>
+                <van-empty image="search" description="{yun:}t key='wap_00825'{/yun}"/></van-empty>
             </div>
         </div>
     </div>
@@ -73,16 +73,33 @@
         data() {
             return {
                 info: [],
-                browse: ['', '未查看', '已查看', '已同意', '已拒绝'],
+                browse: [],
                 islook: false,
 
                 total: 0,
                 pageTotal: 0,
                 page: 1,
                 limit: 10,
+                i18n: {
+                    expDot: '{yun:}t key='wap_00830'{/yun}',
+                    eduDot: '{yun:}t key='wap_00831'{/yun}',
+                    ageSuffix: '{yun:}t key='common_02074'{/yun}',
+                    pendingAccept: '{yun:}t key='wap_00822'{/yun}',
+                    ended: '{yun:}t key='wap_user_00259'{/yun}',
+                    accepted: '{yun:}t key='wap_com_00191'{/yun}',
+                    cannotInterview: '{yun:}t key='wap_00823'{/yun}',
+                    confirmDelete: '{yun:}t key='wap_01051'{/yun}',
+                    deleting: '{yun:}t key='wap_user_00355'{/yun}',
+                    deleteSuccess: '{yun:}t key='wap_user_00147'{/yun}',
+                    notViewed: '{yun:}t key='wap_user_00260'{/yun}',
+                    viewed: '{yun:}t key='wap_user_00258'{/yun}',
+                    agreed: '{yun:}t key='wap_com_00190'{/yun}',
+                    rejected: '{yun:}t key='wap_user_00257'{/yun}',
+                },
             };
         },
         created() {
+            this.browse = ['', this.i18n.notViewed, this.i18n.viewed, this.i18n.agreed, this.i18n.rejected];
             this.getinvite('refresh');
         },
         methods: {
@@ -121,12 +138,12 @@
                 var paramer = {
                     ids: id
                 };
-                showConfirm('确定删除？', function () {
-                    showLoading('删除中');
+                showConfirm(that.i18n.confirmDelete, function () {
+                    showLoading(that.i18n.deleting);
                     $.post('{yun:}url d=wxapp h=com m=resume c=invite_del{/yun}', paramer, function (data) {
                         hideLoading();
                         if (data.error == 1) {
-                            showToast('删除成功',2, function () {
+                            showToast(that.i18n.deleteSuccess,2, function () {
                                 that.info.splice(key, 1);
                             });
                         }

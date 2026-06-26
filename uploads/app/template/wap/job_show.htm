@@ -1,14 +1,14 @@
 {yun:}include file="$wapstyle/header.htm"{/yun}
 <link href="{yun:}$wap_style{/yun}/js/swiper/swiper.min.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet" />
 <script src="{yun:}$wap_style{/yun}/js/swiper/swiper.min.js?v={yun:}$config.cachecode{/yun}"></script>
-<!-- 页面头部导航栏 -->
+<!-- Page header nav -->
 <div class="jobshwheader">
     <div class="jobshwheader_nav">
         <div class="jobshwheader_nav_left">
             <a href="{yun:}if $backurl{/yun}{yun:}$backurl{/yun}{yun:}else{/yun}javascript:goBack();{yun:}/if{/yun}" class="jobshwheader_nav_left_return">
                 <img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" style="width: 100%;">
             </a>
-            <span class="jobshwheader_p"> 职位详情</span>
+            <span class="jobshwheader_p"> {yun:}t key='wap_00287'{/yun}</span>
         </div>
         <div class="jobshwheader_nav_right">
             <ul>
@@ -22,11 +22,11 @@
         </div>
     </div>
 </div>
-<!-- 页面主体部分 -->
+<!-- Page body -->
 <div class="min_body">
-    <!-- 职位详情 -->
+    <!-- Job details -->
     <div class="job_describe">
-        <!-- 职位要求及待遇岗位 -->
+        <!-- Job requirements and benefits -->
         <div class="job_describe_top">
             <div class="new_jobshowtop">
                 {yun:}if $job.status==1{/yun}
@@ -62,31 +62,31 @@
                 {yun:}/if{/yun}
             </div>
             <div class="newjob_show_sj">
-                <span class="">更新 {yun:}$job.lastupdate{/yun}</span>
-                {yun:}if $job.jobhits>0{/yun}<span class="">浏览 {yun:}$job.jobhits{/yun}</span>{yun:}/if{/yun}
-                {yun:}if $job.snum > $config.sy_sq_job_num{/yun}<span class="">投递 {yun:}$job.snum{/yun}份</span>{yun:}/if{/yun}
+                <span class="">{yun:}t key='wap_00225'{/yun} {yun:}$job.lastupdate{/yun}</span>
+                {yun:}if $job.jobhits>0{/yun}<span class="">{yun:}t key='wap_user_00221'{/yun} {yun:}$job.jobhits{/yun}</span>{yun:}/if{/yun}
+                {yun:}if $job.snum > $config.sy_sq_job_num{/yun}<span class="">{yun:}t key='wap_01587'{/yun} {yun:}$job.snum{/yun}{yun:}t key='common_02052'{/yun}</span>{yun:}/if{/yun}
             </div>
         </div>
-        <!--平台核验-->
+        <!-- Platform verification -->
         {yun:}if $job.fact_status==1{/yun}
         <div class="yunnew_hybox" onclick="factShow()">
             <i class="yunnew_hyboxicon"></i>
             <div class="yunnew_hyzzsmbox">
-                <span class="yunnew_hyboxname">平台核验</span>
+                <span class="yunnew_hyboxname">{yun:}t key='wap_00275'{/yun}</span>
                 <div class="yunnew_hyzzsm">
-                    {yun:}if $job.yyzz_status==1{/yun}<span class="yunnew_hymini"><i class="yunnew_minicon"></i>资质核验</span>{yun:}/if{/yun}
-                    {yun:}if $job.moblie_status==1{/yun}<span class="yunnew_hymini"><i class="yunnew_minicon"></i>实名核验</span>{yun:}/if{/yun}
-                    <span class="yunnew_hymini"><i class="yunnew_minicon"></i>实地核验</span>
+                    {yun:}if $job.yyzz_status==1{/yun}<span class="yunnew_hymini"><i class="yunnew_minicon"></i>{yun:}t key='wap_00288'{/yun}</span>{yun:}/if{/yun}
+                    {yun:}if $job.moblie_status==1{/yun}<span class="yunnew_hymini"><i class="yunnew_minicon"></i>{yun:}t key='wap_00273'{/yun}</span>{yun:}/if{/yun}
+                    <span class="yunnew_hymini"><i class="yunnew_minicon"></i>{yun:}t key='wap_00274'{/yun}</span>
                 </div>
             </div>
             <i class="yunnew_hyboxricon"></i>
         </div>
         {yun:}/if{/yun}
-        <!--平台核验-->
-        <!-- 职位福利 -->
+        <!-- Platform verification -->
+        <!-- Job benefits -->
         {yun:}if !empty($job.welfare){/yun}
         <div class="job_describe_bottom">
-            <div class="job_describe_cengter_header">职位福利</div>
+            <div class="job_describe_cengter_header">{yun:}t key='wap_00286'{/yun}</div>
             <div class="job_describe_bottom_welfare">
                 <ul>
                     {yun:}foreach from=$job.arraywelfare item=wlist{/yun}
@@ -96,16 +96,16 @@
             </div>
         </div>
         {yun:}/if{/yun}
-        <!-- 职位详情 -->
+        <!-- Job details -->
         <div class="job_describe_cengter">
-            <div class="job_describe_cengter_header">职位详情</div>
+            <div class="job_describe_cengter_header">{yun:}t key='wap_00287'{/yun}</div>
             <ul class="job_describe_yq">
-                {yun:}if $job.job_number{/yun}<li>招 {yun:}$job.job_number{/yun}</li>{yun:}/if{/yun}
-                {yun:}if $job.job_report{/yun}<li>{yun:}$job.job_report{/yun}到岗</li>{yun:}/if{/yun}
+                {yun:}if $job.job_number{/yun}<li>{yun:}t key='wap_01588'{/yun} {yun:}$job.job_number{/yun}</li>{yun:}/if{/yun}
+                {yun:}if $job.job_report{/yun}<li>{yun:}$job.job_report{/yun}{yun:}t key='common_01952'{/yun}</li>{yun:}/if{/yun}
                 {yun:}if $job.job_age{/yun}<li>{yun:}$job.job_age{/yun}</li>{yun:}/if{/yun}
                 {yun:}if $job.job_sex && $config.com_job_sexswitch==1{/yun}<li>{yun:}$job.job_sex{/yun}</li>{yun:}/if{/yun}
                 {yun:}if $job.job_marriage{/yun}<li>{yun:}$job.job_marriage{/yun}</li>{yun:}/if{/yun}
-                {yun:}if $job.is_graduate{/yun}<li>接受应届生</li>{yun:}/if{/yun}
+                {yun:}if $job.is_graduate{/yun}<li>{yun:}t key='member_com_00241'{/yun}</li>{yun:}/if{/yun}
                 {yun:}if $job.job_lang{/yun}
                 {yun:}foreach from=$job.job_lang item=wlists{/yun}
                 <li>{yun:}$wlists{/yun}</li>
@@ -116,14 +116,14 @@
             <div class="newjob_js"> {yun:}$job.description{/yun}</div>
         </div>
     </div>
-    <!--广告-->
+    <!-- Ad -->
     {yun:}adlist classid=512 item="lunbo" key=key random=1{/yun}
     <div class="jobshow_ad">{yun:}$lunbo.html{/yun}</div>
     {yun:}/adlist{/yun}
-    <!--广告-->
-    <!-- 公司信息 -->
+    <!-- Ad -->
+    <!-- Company info -->
     <div class="corporate_information">
-        <div class="corporate_information_header">公司信息</div>
+        <div class="corporate_information_header">{yun:}t key='wap_00270'{/yun}</div>
         <a href="{yun:}url m=wap c=company a=show id=$job.uid{/yun}" title="{yun:}$job.name{/yun}">
             <div class="corporate_information_message">
                 <div class="corporate_information_message_logo">
@@ -144,7 +144,7 @@
         </a>
         {yun:}if $link.linkData.address{/yun}
         {yun:}if $job.x && $job.y&&$config.map_key{/yun}
-        <!-- 预留地图部分 -->
+        <!-- Map placeholder -->
         <a href="{yun:}url m=wap c=job a=jobmap id=$job.id{/yun}">
             <div class="corporate_information_map">
                 <div class="corporate_information_map_c">
@@ -154,27 +154,27 @@
             </div>
         </a>
         {yun:}else{/yun}
-        <!-- 地址 -->
+        <!-- Address -->
         <div class=" corporate_information_map_p">{yun:}$link.linkData.address{/yun}</div>
         {yun:}/if{/yun}
         {yun:}/if{/yun}
         <div class="wxtipbox">
             <div class="wxtip">
-                <div class="wxtip_tit">{yun:}$config.sy_webname{/yun}温馨提示 </div>
+                <div class="wxtip_tit">{yun:}$config.sy_webname{/yun}{yun:}t key='wap_user_00205'{/yun} </div>
             </div>
             <div class=""> {yun:}$config.sy_shenming{/yun}
-                <span onclick="toReportCom()" class="wxtip_bth">立即举报</span>
+                <span onclick="toReportCom()" class="wxtip_bth">{yun:}t key='wap_00283'{/yun}</span>
             </div>
         </div>
     </div>
     {yun:}if $config.com_message == 1{/yun}
-    <!-- 公司问答 -->
+    <!-- Company Q&A -->
     <div class="company_questions">
         <div class="company_questions_header">
-            <div class="company_questions_header_left">公司问答</div>
+            <div class="company_questions_header_left">{yun:}t key='wap_00271'{/yun}</div>
             <div onclick="zixun()" class="company_questions_header_right">
                 <div class="company_questions_header_right_icon"><img src="{yun:}$wap_style{/yun}/images/icon_question.png" alt="" width="100%"></div>
-                <i class="company_questions_header_right_word">我要提问</i>
+                <i class="company_questions_header_right_word">{yun:}t key='wap_00278'{/yun}</i>
             </div>
         </div>
         {yun:}if $msgList{/yun}
@@ -186,39 +186,39 @@
             </div>
             <div class="company_questions_body_top">
                 <div class="company_questions_body_top_icon"><img src="{yun:}$wap_style{/yun}/images/icon_answer .png" alt="" width="100%"></div>
-                <i class="company_questions_body_top_answer">{yun:}if $msglist.reply{/yun}{yun:}$msglist.reply{/yun}{yun:}else{/yun}企业尚未回复{yun:}/if{/yun}</i>
+                <i class="company_questions_body_top_answer">{yun:}if $msglist.reply{/yun}{yun:}$msglist.reply{/yun}{yun:}else{/yun}{yun:}t key='wap_01589'{/yun}{yun:}/if{/yun}</i>
             </div>
         </div>
         {yun:}/foreach{/yun}
         <!--
             <div class="company_questions_box">
-                <div class="company_questions_box_btn"> 查看全部回答 </div>
+                <div class="company_questions_box_btn"> {yun:}t key='wap_01554'{/yun} </div>
             </div>
             -->
         {yun:}else{/yun}
         <div class="jobshow_tw_box">
-            <i class="jobshow_tw_boximg"></i> 对此职位有疑问？快来问问吧 !
+            <i class="jobshow_tw_boximg"></i> {yun:}t key='wap_01555'{/yun}
             <div class="jobshow_tw_bth">
                 {yun:}if $uid{/yun}
                 {yun:}if $usertype == 1{/yun}
-                <a href="javascript:void(0)" onclick="zixun('{yun:}$uid{/yun}','{yun:}$usertype{/yun}');" class="">我要提问</a>
+                <a href="javascript:void(0)" onclick="zixun('{yun:}$uid{/yun}','{yun:}$usertype{/yun}');" class="">{yun:}t key='wap_00278'{/yun}</a>
                 {yun:}else{/yun}
-                <a href="javascript:void(0)" onclick="showToast('只有个人用户才能提问');" class="">我要提问</a>
+                <a href="javascript:void(0)" onclick="showToast('{yun:}t key='wap_00256'{/yun}');" class="">{yun:}t key='wap_00278'{/yun}</a>
                 {yun:}/if{/yun}
                 {yun:}else{/yun}
-                <a href="javascript:void(0)" onclick="pleaselogin('您还未登录个人账号，是否登录？','{yun:}url m=wap c=login{/yun}')" class="">我要提问</a>
+                <a href="javascript:void(0)" onclick="pleaselogin('{yun:}t key='wap_00026'{/yun}','{yun:}url m=wap c=login{/yun}')" class="">{yun:}t key='wap_00278'{/yun}</a>
                 {yun:}/if{/yun}
             </div>
         </div>
         {yun:}/if{/yun}
     </div>
     {yun:}/if{/yun}
-    <!-- 推荐岗位 -->
+    <!-- Similar jobs -->
     {yun:}if !$usertype || $usertype == '1'{/yun}
     <div class="recommend_post" style="margin-top: 0px;;">
-        <div class="recommend_post_header" style="margin:0.4rem 0;">相似职位</div>
+        <div class="recommend_post_header" style="margin:0.4rem 0;">{yun:}t key='wap_00282'{/yun}</div>
         <div class="recommend_post_card_box">
-            <!-- 卡片视图主体部分 -->
+            <!-- Card list -->
             {yun:}joblist limit=4 noid='@job.id' nouid='@job.uid' jobids='@job.job1' namelen=15 item=job_jia key=key{/yun}
             <div class="recommend_post_card">
                 <a href="{yun:}url m=wap c=job a=comapply id=$job_jia.id{/yun}" title="{yun:}$job_jia.name{/yun}">
@@ -228,10 +228,10 @@
                     </div>
                     <div class="newjob_info"><span>{yun:}$job_jia.job_city_one{/yun}-{yun:}$job_jia.job_city_two{/yun}</span>
                         {yun:}if $job_jia.job_edu{/yun}
-                        <i class="newjob_info_line"></i><span>{yun:}$job_jia.job_edu{/yun}学历</span>
+                        <i class="newjob_info_line"></i><span>{yun:}$job_jia.job_edu{/yun}{yun:}t key='home.education_suffix'{/yun}</span>
                         {yun:}/if{/yun}
                         {yun:}if $job_jia.job_exp{/yun}
-                        <i class="newjob_info_line"></i> <span>{yun:}$job_jia.job_exp{/yun}经验</span>
+                        <i class="newjob_info_line"></i> <span>{yun:}$job_jia.job_exp{/yun}{yun:}t key='home.experience_suffix'{/yun}</span>
                         {yun:}/if{/yun}
                     </div>
                     {yun:}if $job_jia.welfarename{/yun}
@@ -258,7 +258,7 @@
             </div>
             {yun:}joblistelse{/yun}
             <div class="company_questions">
-                <div class="wap_member_no">很抱歉,暂无相似职位！</div>
+                <div class="wap_member_no">{yun:}t key='wap_00253'{/yun}</div>
             </div>
             {yun:}/joblist{/yun}
         </div>
@@ -266,156 +266,156 @@
     {yun:}/if{/yun}
 </div>
 <div id="app" style="display: none;">
-    <!-- 固定的手机尾部 new---------------------->
+    <!-- Fixed mobile footer -->
     {yun:}if $job.status=='0'{/yun}
     <div class="yun_czfoot">
         <div class="yun_czfootfixed">
             <div class="yun_czfoot_c">
                 <div class="yun_czfoot_l">
                     <div class="yun_czfoot_s">
-                        <div class="yun_czfoot_s_p yun_czfoot_hmicon" @click="goHome">首页</div>
+                        <div class="yun_czfoot_s_p yun_czfoot_hmicon" @click="goHome">{{i18n.home}}</div>
                     </div>
                     <div class="yun_czfoot_s">
-                        <div class="yun_czfoot_s_p yun_czfoot_scicon" @click="footShare">分享</div>
+                        <div class="yun_czfoot_s_p yun_czfoot_scicon" @click="footShare">{{i18n.share}}</div>
                     </div>
                     {yun:}if $usertype!=1 && $uid!=''{/yun}
                     {yun:}if $config.sy_user_change==1{/yun}
                     <div class="yun_czfoot_s">
-                        <div onclick="showToast('请先申请个人账户');" class="yun_czfoot_s_p yun_czfoot_jlicon">投简历</div>
+                        <div onclick="showToast(i18n.applyPersonalFirst);" class="yun_czfoot_s_p yun_czfoot_jlicon">{{i18n.applyResume}}</div>
                     </div>
                     {yun:}else{/yun}
                     <div class="yun_czfoot_s">
-                        <div onclick="showToast('只有个人用户才能投递');" class="yun_czfoot_s_p yun_czfoot_jlicon">投简历</div>
+                        <div onclick="showToast(i18n.personalOnlyApply);" class="yun_czfoot_s_p yun_czfoot_jlicon">{{i18n.applyResume}}</div>
                     </div>
                     {yun:}/if{/yun}
                     {yun:}elseif $job.userid_job{/yun}
                     <div class="yun_czfoot_s">
-                        <div class="yun_czfoot_s_p yun_czfoot_ytdicon">已投递</div>
+                        <div class="yun_czfoot_s_p yun_czfoot_ytdicon">{{i18n.applied}}</div>
                     </div>
                     {yun:}elseif $job.invite_job{/yun}
                     <div class="yun_czfoot_s">
-                        <div class="yun_czfoot_s_p yun_czfoot_ytdicon">已邀请</div>
+                        <div class="yun_czfoot_s_p yun_czfoot_ytdicon">{{i18n.invited}}</div>
                     </div>
                     {yun:}elseif $uid==''{/yun}
                     {yun:}if $config.resume_kstd != 2{/yun}
                     <div class="yun_czfoot_s">
-                        <a href="{yun:}url m=wap c=job a=applyjobuid jobid=$job.id{/yun}" class="yun_czfoot_s_p yun_czfoot_jlicon">投简历</a>
+                        <a href="{yun:}url m=wap c=job a=applyjobuid jobid=$job.id{/yun}" class="yun_czfoot_s_p yun_czfoot_jlicon">{{i18n.applyResume}}</a>
                     </div>
                     {yun:}else{/yun}
                     <div class="yun_czfoot_s">
-                        <a onclick="loginboxOpen()" class="yun_czfoot_s_p yun_czfoot_jlicon">投简历</a>
+                        <a onclick="loginboxOpen()" class="yun_czfoot_s_p yun_czfoot_jlicon">{{i18n.applyResume}}</a>
                     </div>
                     {yun:}/if{/yun}
                     {yun:}else{/yun}
                     <div class="yun_czfoot_s">
-                        <div @click="jobapply()" class="yun_czfoot_s_p yun_czfoot_jlicon">投简历</div>
+                        <div @click="jobapply()" class="yun_czfoot_s_p yun_czfoot_jlicon">{{i18n.applyResume}}</div>
                     </div>
                     {yun:}/if{/yun}
                 </div>
                 <div class="yun_czfoot_r">
                     {yun:}if $job.linkopen>1{/yun}
-                    <div class="yun_czfoot_lt yun_czfoot_lt_td" @click="rgetTel('{yun:}$job.id{/yun}')">拨打电话</div>
+                    <div class="yun_czfoot_lt yun_czfoot_lt_td" @click="rgetTel('{yun:}$job.id{/yun}')">{{i18n.callPhone}}</div>
                     {yun:}else if $link.linkCode == 8{/yun}
-                    <div class="yun_czfoot_lt yun_czfoot_lt_td" @click="jobapply(1)">拨打电话</div>
+                    <div class="yun_czfoot_lt yun_czfoot_lt_td" @click="jobapply(1)">{{i18n.callPhone}}</div>
                     {yun:}else{/yun}
-                    <div class="yun_czfoot_lt yun_czfoot_lt_td" @click="openLinkTip">拨打电话</div>
+                    <div class="yun_czfoot_lt yun_czfoot_lt_td" @click="openLinkTip">{{i18n.callPhone}}</div>
                     {yun:}/if{/yun}
                 </div>
             </div>
         </div>
     </div>
     {yun:}/if{/yun}
-    <!-- 固定的手机尾部  new---------------------->
-    <!--以下是查看联系方式弹出框----------------------------------------------------------------------------------->
+    <!-- Fixed mobile footer -->
+    <!-- Contact info dialog -->
     <van-dialog v-model="linkShow" :show-confirm-button="false" width="300" close-on-click-overlay>
         <template v-if="linkCode == 1">
             <div class="new_jobshow_telbox">
-                <div class="new_jobshow_leftname"><span class="">联系方式</span></div>
+                <div class="new_jobshow_leftname"><span class="">{{i18n.contactInfo}}</span></div>
                 <div class="">
                     {yun:}if $link.linkData.linkman{/yun}
                     <div class=""><span class="">{yun:}$link.linkData.linkman{/yun}</span> {yun:}if $job.linkjob{/yun}（{yun:}$job.linkjob{/yun}）{yun:}/if{/yun}</div>
                     {yun:}/if{/yun}
                     {yun:}if $link.linkData.linktel{/yun}
-                    <div class="new_jobshow_tellist new_jobshow_tellistpd"><a href="tel:{yun:}$link.linkData.linktel{/yun}" onclick="addtellog();" class="">手机 {yun:}$link.linkData.linktel{/yun}<span class="bd">拨打</span></a></div>
+                    <div class="new_jobshow_tellist new_jobshow_tellistpd"><a href="tel:{yun:}$link.linkData.linktel{/yun}" onclick="addtellog();" class="">{{i18n.mobile}} {yun:}$link.linkData.linktel{/yun}<span class="bd">{{i18n.dial}}</span></a></div>
                     {yun:}/if{/yun}
                     {yun:}if $link.linkData.linkphone{/yun}
-                    <div class="new_jobshow_tellist"><a href="tel:{yun:}$link.linkData.linkphone{/yun}" onclick="addtellog();" class="new_jobshow_tellist_n">固话 {yun:}$link.linkData.linkphone{/yun}<span class="bd">拨打</span></a></div>
+                    <div class="new_jobshow_tellist"><a href="tel:{yun:}$link.linkData.linkphone{/yun}" onclick="addtellog();" class="new_jobshow_tellist_n">{{i18n.landline}} {yun:}$link.linkData.linkphone{/yun}<span class="bd">{{i18n.dial}}</span></a></div>
                     {yun:}/if{/yun}
-                    <div class="new_jobshow_teltip">联系我时，请说是在{yun:}$config.sy_webname{/yun}上看到的</div>
+                    <div class="new_jobshow_teltip">{{i18n.contactTipPrefix}}{yun:}$config.sy_webname{/yun}{{i18n.contactTipSuffix}}</div>
                 </div>
             </div>
         </template>
         <template v-else-if="linkCode > 1 && linkCode < 6">
-            <!--未开放联系方式，提示投递简历-->
-            <div class="new_jobshow_name">温馨提示</div>
+            <!-- Contact hidden, prompt to apply -->
+            <div class="new_jobshow_name">{{i18n.warmTip}}</div>
             <div class="new_jobshow_telnewbox">
-                <div class="new_jobshow_tel">{yun:}$link.linkMsg{/yun}{yun:}if !$job.userid_job{/yun}，请直接投递简历{yun:}/if{/yun}</div>
+                <div class="new_jobshow_tel">{yun:}$link.linkMsg{/yun}{yun:}if !$job.userid_job{/yun}{{i18n.applyResumeDirect}}{yun:}/if{/yun}</div>
                 {yun:}if !$job.userid_job{/yun}
-                <div class="new_jobshow_telbth" @click="jobapply()"><span class="new_jobshow_telbth_a">投递简历</span></div>
+                <div class="new_jobshow_telbth" @click="jobapply()"><span class="new_jobshow_telbth_a">{{i18n.submitResume}}</span></div>
                 {yun:}/if{/yun}
             </div>
         </template>
         <template v-else-if="linkCode == 6">
             <div class="newOobshoName">
-                <div class="new_jobshow_name">温馨提示</div>
-                <div class="new_jobshow_tel">{yun:}$link.linkMsg{/yun}，查看联系方式</div>
+                <div class="new_jobshow_name">{{i18n.warmTip}}</div>
+                <div class="new_jobshow_tel">{yun:}$link.linkMsg{/yun}{{i18n.viewContact}}</div>
                 <div class="new_jobshow_telbth">
-                    <a href="{yun:}url m=wap c=register{/yun}" v-if="!uid">立即注册</a>
-                    <a href="{yun:}url m=wap c=login{/yun}" class="newOobshow" v-if="!uid">立即登录</a>
+                    <a href="{yun:}url m=wap c=register{/yun}" v-if="!uid">{{i18n.registerNow}}</a>
+                    <a href="{yun:}url m=wap c=login{/yun}" class="newOobshow" v-if="!uid">{{i18n.loginNow}}</a>
                 </div>
             </div>
         </template>
         <template v-else-if="linkCode == 7">
-            <div class="new_jobshow_name">温馨提示</div>
+            <div class="new_jobshow_name">{{i18n.warmTip}}</div>
             <div class="new_jobshow_tel">{yun:}$link.linkMsg{/yun}</div>
-            <div class="new_jobshow_telbth" v-if="linkSub != 1"><a href="{yun:}url m=wap{/yun}member/index.php?c=addresume" class="new_jobshow_telbth_a">创建简历</a></div>
-            <div class="new_jobshow_telbth" v-else><a href="{yun:}url m=wap{/yun}member/index.php?c=resume" class="new_jobshow_telbth_a">修改简历</a></div>
+            <div class="new_jobshow_telbth" v-if="linkSub != 1"><a href="{yun:}url m=wap{/yun}member/index.php?c=addresume" class="new_jobshow_telbth_a">{{i18n.createResume}}</a></div>
+            <div class="new_jobshow_telbth" v-else><a href="{yun:}url m=wap{/yun}member/index.php?c=resume" class="new_jobshow_telbth_a">{{i18n.editResume}}</a></div>
         </template>
         <template v-else-if="linkCode == 8">
-            <!--设置投递简历查看联系方式-->
-            <div class="new_jobshow_name">温馨提示</div>
+            <!-- Apply to view contact info -->
+            <div class="new_jobshow_name">{{i18n.warmTip}}</div>
             <div class="new_jobshow_tel">{yun:}$link.linkMsg{/yun}</div>
-            <div class="new_jobshow_telbth"><a href="javascript:void(0);" @click="jobapply()" class="new_jobshow_telbth_a">投递简历</a></div>
+            <div class="new_jobshow_telbth"><a href="javascript:void(0);" @click="jobapply()" class="new_jobshow_telbth_a">{{i18n.submitResume}}</a></div>
         </template>
     </van-dialog>
     <input id="companyname" type="hidden" value="{yun:}$job.com_name{/yun}" />
     <input id="jobname" type="hidden" value="{yun:}$job.jobname{/yun}" />
     <input id="companyuid" type="hidden" value="{yun:}$job.uid{/yun}" />
     <input id="jobid" type="hidden" value="{yun:}$job.id{/yun}" />
-    <!-- 投递简历弹出框 -->
-    <van-dialog v-model="telQrcodeBoxShow" title="联系方式" :show-confirm-button="false" close-on-click-overlay>
+    <!-- Resume apply dialog -->
+    <van-dialog v-model="telQrcodeBoxShow" :title="i18n.contactInfo" :show-confirm-button="false" close-on-click-overlay>
         <div class="tel_wxqrcodebox">
             <div id="tel_wxqrcode" class="tel_wxqrcodebox_ewm" v-html="telQrcode"></div>
-            <div class="tel_wxqrcodebox_p">长按识别二维码查看联系方式</div>
+            <div class="tel_wxqrcodebox_p">{{i18n.scanQrcodeTip}}</div>
         </div>
     </van-dialog>
-    <!-- 举报弹出 -->
+    <!-- Report popup -->
     <van-popup v-model="reportShow" position="bottom" round closeable>
         <div class="job_tckpd">
-            <div class="job_tcktit">举报此职位</div>
-            <div class="job_tcktip">请选择您的举报理由！</div>
+            <div class="job_tcktit">{{i18n.reportJob}}</div>
+            <div class="job_tcktip">{{i18n.chooseReportReason}}</div>
             <div class="">
                 <span v-for="(reason,index) in report_reasons" :key="index">
                     <span class="job_tckxz" :class="report_result.indexOf(reason) > -1 ? 'job_tckxz_cur' : ''" @click="chooseReason(reason)">{{reason}}</span>
                 </span>
             </div>
             <div class="job_tcktextarea">
-                <textarea placeholder="请简明扼要的阐述你的理由，以便工作人员更好的判断" id="r_reason" class=""></textarea>
+                <textarea :placeholder="i18n.reportReasonPlaceholder" id="r_reason" class=""></textarea>
             </div>
             <div class="job_tckyzmbox">
                 <div class="job_tckyzm">
-                    <input type="text" class="" id="authcode" maxlength="6" placeholder="输入图片验证码" autocomplete="off">
+                    <input type="text" class="" id="authcode" maxlength="6" :placeholder="i18n.imageCaptchaPlaceholder" autocomplete="off">
                 </div>
                 <a onclick="checkCode('vcode_img');"> <img id="vcode_img" src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php" class="job_tckyzmimg" /> </a>
             </div>
             <div class="job_tckbth">
-                <input class="" type="button" value="举 报" @click="reportSub" />
+                <input class="" type="button" :value="i18n.reportBtn" @click="reportSub" />
             </div>
         </div>
     </van-popup>
-    <!--分享面板-->
-    <van-share-sheet v-model="shareShow" title="分享到" :options="shareoptions" @select="shareSelect"></van-share-sheet>
-    <!--海报-->
+    <!-- Share sheet -->
+    <van-share-sheet v-model="shareShow" :title="i18n.shareTo" :options="shareoptions" @select="shareSelect"></van-share-sheet>
+    <!-- Poster -->
     <van-popup v-model="jobHbShow" round :style="{height:'100%',width:'100%',background:'none'}">
         <div class="boisuyeAll">
             <img id="bighb" :src="hbSrc" style="max-width: 100%;">
@@ -441,7 +441,7 @@
                 </van-swipe>
             </template>
             <div class="directionOptyte">
-                <p>点击海报查看大图，长按保存后进行分享</p>
+                <p>{{i18n.posterTip}}</p>
                 <div class="directionAll" @click="hbShow = !hbShow">
                     <div class="directiTou" v-if="hbShow">
                         <van-icon name="arrow-up" />
@@ -453,13 +453,13 @@
             </div>
         </div>
     </van-popup>
-    <!--复制文本弹出-->
+    <!-- Copy text popup -->
     <van-dialog v-model="copyBoxShow" :show-confirm-button="false" close-on-click-overlay>
         <div class="job_tckpd">
-            <div class="job_tcktit">复制文本</div>
+            <div class="job_tcktit">{{i18n.copyText}}</div>
             <div class="">
                 <div class="job_tckwb" id="copyBoxText" v-html="wxpubtemp_html" style="white-space: pre-wrap;"></div>
-                <div class="job_tckbth"><a href="javascript:;" class="fzwb" data-clipboard-action="copy" data-clipboard-target="#copyBoxText">复制文本</a></div>
+                <div class="job_tckbth"><a href="javascript:;" class="fzwb" data-clipboard-action="copy" data-clipboard-target="#copyBoxText">{{i18n.copyText}}</a></div>
             </div>
         </div>
     </van-dialog>
@@ -470,41 +470,41 @@
     <div class="none" id="shareClick"></div>
     {yun:}/if{/yun}
     {yun:}if $config.com_message == 1{/yun}
-    <!--问企业弹出-->
+    <!-- Ask company popup -->
     <van-popup v-model="zixunShow" position="bottom" round closeable>
         <div class="job_tckpd">
-            <div class="job_tcktit">问企业</div>
-            <div class="job_tcktip">您的问题会在企业回答后展示在职位详情页！</div>
+            <div class="job_tcktit">{{i18n.askCompany}}</div>
+            <div class="job_tcktip">{{i18n.askCompanyTip}}</div>
             <div class="job_tcktextarea">
-                <textarea class=" mt10" id="reasons" placeholder="请输入你要咨询的问题">{{question}}</textarea>
+                <textarea class=" mt10" id="reasons" :placeholder="i18n.askPlaceholder">{{question}}</textarea>
                 <input type="hidden" name="jobid" value="{yun:}$job.id{/yun}" />
             </div>
             <div class="job_tckyzmbox">
                 <div class="job_tckyzm">
-                    <input type="text" class="" placeholder="请输入验证码" id="authcodes" maxlength="6">
+                    <input type="text" class="" :placeholder="i18n.captchaPlaceholder" id="authcodes" maxlength="6">
                 </div>
                 <a onclick="checkCode('vcode_imgs');"> <img id="vcode_imgs" src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php" class="job_tckyzmimg" /> </a>
             </div>
             <div class="ask_between">
-                <div class="ask_between_l" v-if="hot_issues.length > 0">热门问题</div>
+                <div class="ask_between_l" v-if="hot_issues.length > 0">{{i18n.hotQuestions}}</div>
                 <div class="ask_between_l" v-else></div>
-                <div class="ask_between_r">默认为匿名提问</div>
+                <div class="ask_between_r">{{i18n.anonymousAsk}}</div>
             </div>
             <div class="ask_question" v-for="(item, asq_key) in hot_issues" :key="asq_key" :id="'asq_' + asq_key" @click="checkQuestion(asq_key)">{{asq_key+1}}.{{item}}</div>
             <div class="job_tckbth">
-                <input class="" type="button" value="提交咨询" onclick="zixunSubs();" />
+                <input class="" type="button" :value="i18n.submitConsult" onclick="zixunSubs();" />
             </div>
         </div>
     </van-popup>
     {yun:}/if{/yun}
-    <!-- 登录弹窗 -->
+    <!-- Login popup -->
     <van-popup v-model="loginbox" position="center" round :style="{ width:'300px',background:'#fff'}">
         <div class="newOobshoName">
-            <div class="new_jobshow_name">温馨提示</div>
-            <div class="new_jobshow_tel">{yun:}$link.linkMsg{/yun}，查看联系方式</div>
+            <div class="new_jobshow_name">{{i18n.warmTip}}</div>
+            <div class="new_jobshow_tel">{yun:}$link.linkMsg{/yun}{{i18n.viewContact}}</div>
             <div class="new_jobshow_telbth">
-                <a href="{yun:}url m=wap c=register{/yun}" v-if="!uid">立即注册</a>
-                <a href="{yun:}url m=wap c=login{/yun}" class="newOobshow" v-if="!uid">立即登录</a>
+                <a href="{yun:}url m=wap c=register{/yun}" v-if="!uid">{{i18n.registerNow}}</a>
+                <a href="{yun:}url m=wap c=login{/yun}" class="newOobshow" v-if="!uid">{{i18n.loginNow}}</a>
             </div>
         </div>
     </van-popup>
@@ -512,7 +512,7 @@
         <div class="new_jobshow_telbox newObshowAlls" :style="{width: linkopenwidth}">
             <div class="newObshowTop">
                 <div class="newHowTopTite">
-                    <span>联系方式</span>
+                    <span>{{i18n.contactInfo}}</span>
                 </div>
                 <div class="newHowTopData">
                     <div class="newHowTopImgs">
@@ -523,43 +523,43 @@
                         <b>（{{linkman}}）</b>
                     </div>
                     <div class="newHowTopTells">
-                        <a :href="'tel:' + linktel" onclick="addtellog();" class="">拨打电话</a>
+                        <a :href="'tel:' + linktel" onclick="addtellog();" class="">{{i18n.callPhone}}</a>
                     </div>
                 </div>
-                <div class="new_jobshow_teltip">联系我时，请说是在{yun:}$config.sy_webname{/yun}上看到的</div>
+                <div class="new_jobshow_teltip">{{i18n.contactTipPrefix}}{yun:}$config.sy_webname{/yun}{{i18n.contactTipSuffix}}</div>
             </div>
             <div class="trainPopCon" v-if="joblinkopen > 1 && !uid && msgopen == 1 && msglogincode == 1">
                 <div class="trainPopTitle">
-                    <span>填写预留信息，方便企业与您联系</span>
+                    <span>{{i18n.reserveInfoTip}}</span>
                 </div>
                 <div class="trainPopFrom">
                     <form method="post" action="" onsubmit="return false;">
                         <div class="trainPopFromInt">
-                            <span><i>*</i>手机号:</span>
-                            <input type="text" id="rtel" name="rtel" autocomplete="off" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" placeholder="请输入手机号">
+                            <span><i>*</i>{{i18n.mobileLabel}}</span>
+                            <input type="text" id="rtel" name="rtel" autocomplete="off" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" :placeholder="i18n.mobilePlaceholder">
                         </div>
                         {yun:}if strpos($config.code_web,"前台登录")!==false{/yun}
                         {yun:}if $config.code_kind==1{/yun}
                         <div class="trainPopFromInt">
-                            <span><i>*</i>验证码:</span>
-                            <input class="formyanzhem" placeholder="请输入图片验证码" name="checkcode" id="checkcode" type="text" maxlength="6" />
+                            <span><i>*</i>{{i18n.captchaLabel}}</span>
+                            <input class="formyanzhem" :placeholder="i18n.imageCaptchaInput" name="checkcode" id="checkcode" type="text" maxlength="6" />
                             <img id="vcode_img" class="authcode" src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php" onclick="checkCode('vcode_img');" />
                         </div>
                         {yun:}/if{/yun}
                         {yun:}/if{/yun}
                         {yun:}if $config.sy_msg_login=="1"{/yun}
                         <div class="trainPopFromInt">
-                            <span><i>*</i>短信验证:</span>
-                            <input type="text" value="" autocomplete="off" class="formyanzhem" placeholder="请输入验证码" name="moblie_code" id="rmoblie_code" />
-                            <div class="linksudiv" id="send_msg_tips" onclick="rsendmsg('vcode_img');"><span id="rtime">获取验证码</span></div>
+                            <span><i>*</i>{{i18n.smsVerifyLabel}}</span>
+                            <input type="text" value="" autocomplete="off" class="formyanzhem" :placeholder="i18n.captchaPlaceholder" name="moblie_code" id="rmoblie_code" />
+                            <div class="linksudiv" id="send_msg_tips" onclick="rsendmsg('vcode_img');"><span id="rtime">{{i18n.getCaptcha}}</span></div>
                         </div>
                         {yun:}/if{/yun}
                         <div class="trainPopFromInt">
-                            <span><i>*</i>姓 名:</span>
-                            <input type="text" id="rname" name="rname" autocomplete="off" placeholder="请输入姓名">
+                            <span><i>*</i>{{i18n.nameLabel}}</span>
+                            <input type="text" id="rname" name="rname" autocomplete="off" :placeholder="i18n.namePlaceholder">
                         </div>
                         <div class="trainPopFromInt " @click="sexShow = true">
-                            <span><i>*</i>性 别:</span>
+                            <span><i>*</i>{{i18n.sexLabel}}</span>
                             <div class="xb_box" style="color:#cecccc;">
                                 {{info.sex_n}}
                                 <img src="{yun:}$wap_style{/yun}/images/lx_right.png" alt="" width="10" height="19">
@@ -567,12 +567,12 @@
                             <input type="hidden" name="sex" :value="info.sex">
                         </div>
                         <div class="trainPopFromInt">
-                            <span><i>*</i>年 龄:</span>
-                            <input type="text" id="rage" name="rage" autocomplete="off" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" placeholder="请输入年龄">
+                            <span><i>*</i>{{i18n.ageLabel}}</span>
+                            <input type="text" id="rage" name="rage" autocomplete="off" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" :placeholder="i18n.agePlaceholder">
                         </div>
                         <div class="trainPopFromBut">
                             <input type="hidden" id="rsend" name="rsend" value="0" />
-                            <button @click="rsub">提交</button>
+                            <button @click="rsub">{{i18n.submit}}</button>
                         </div>
                     </form>
                 </div>
@@ -582,32 +582,32 @@
     <van-popup v-model="sexShow" round position="bottom">
         <van-picker show-toolbar :columns="sex" :default-index="sexIndex" @cancel="sexShow = false" @confirm="sexConfirm" />
     </van-popup>
-    <!--实地核验-->
+    <!-- On-site verification -->
     <van-popup v-model="fact_show" position="bottom" round :style="{ background: 'none', overflow: 'initial'}">
-        <!--平台核验弹出框-->
+        <!-- Platform verification popup -->
         <div class="yunNewhyFlexs">
             <div class=" yun_newhy_box">
-                <div class="yun_newhy_h1"><i class="yun_newhy_icon"></i>{yun:}$config.sy_webname{/yun}平台核验</div>
+                <div class="yun_newhy_h1"><i class="yun_newhy_icon"></i>{yun:}$config.sy_webname{/yun}{yun:}t key='wap_00275'{/yun}</div>
                 <div class="yunNewhyConts">
                     <div class="yun_newhy_ztbox">
                         {yun:}if $job.yyzz_status==1{/yun}
                         <div class="yun_newhy_zt">
                             <i class="yun_newhy_zticon yun_newhy_zticon1"></i>
-                            <div class="yun_newhy_zttit">资质核验</div>
-                            <div class="yun_newhy_zt_p">招聘方的营业执照已通过认证</div>
+                            <div class="yun_newhy_zttit">{yun:}t key='wap_00288'{/yun}</div>
+                            <div class="yun_newhy_zt_p">{yun:}t key='wap_00251'{/yun}</div>
                         </div>
                         {yun:}/if{/yun}
                         {yun:}if $job.moblie_status==1{/yun}
                         <div class="yun_newhy_zt ">
                             <i class="yun_newhy_zticon yun_newhy_zticon2"></i>
-                            <div class="yun_newhy_zttit">实名核验</div>
-                            <div class="yun_newhy_zt_p">招聘人员已通过实名信息验证</div>
+                            <div class="yun_newhy_zttit">{yun:}t key='wap_00273'{/yun}</div>
+                            <div class="yun_newhy_zt_p">{yun:}t key='wap_00250'{/yun}</div>
                         </div>
                         {yun:}/if{/yun}
                         <div class="yun_newhy_zt">
                             <i class="yun_newhy_zticon yun_newhy_zticon3"></i>
-                            <div class="yun_newhy_zttit">实地核验</div>
-                            <div class="yun_newhy_zt_p">平台已实地走访用人单位核实企业地址信息</div>
+                            <div class="yun_newhy_zttit">{yun:}t key='wap_00274'{/yun}</div>
+                            <div class="yun_newhy_zt_p">{yun:}t key='wap_00247'{/yun}</div>
                         </div>
                     </div>
                     <div class="yun_newhy_hj">
@@ -622,16 +622,16 @@
                         </div>
                     </div>
                     <div class="yun_newhy_tip ">
-                        <div class="yun_newhy_tip_h1"><i class="yun_newhy_tip_h1icon"></i>{yun:}$config.sy_webname{/yun}平台核验服务</div>
-                        <div class="yun_newhy_tip_p">我们会对职位信息进行全面考察，竭尽全力为您打造安全的求职环境</div>
+                        <div class="yun_newhy_tip_h1"><i class="yun_newhy_tip_h1icon"></i>{yun:}$config.sy_webname{/yun}{yun:}t key='wap_01556'{/yun}</div>
+                        <div class="yun_newhy_tip_p">{yun:}t key='wap_00244'{/yun}</div>
                     </div>
                     <div class="yun_newhy_bthbox">
-                        <button @click="fact_show=false" class="yun_newhy_bth">我知道了</button>
+                        <button @click="fact_show=false" class="yun_newhy_bth">{yun:}t key='wap_00095'{/yun}</button>
                     </div>
                 </div>
             </div>
         </div>
-        <!--平台核验-->
+        <!-- Platform verification -->
     </van-popup>
     {yun:}if strpos($config.code_web,"前台登录")!==false{/yun}
     {yun:}if $config.code_kind>2{/yun}
@@ -665,18 +665,106 @@ var linkCode = '{yun:}$link.linkCode{/yun}',
 
 var hbNum = '{yun:}$hbNum{/yun}';
 
+var JOB_SHOW_I18N = {
+    home: '{yun:}t key='wap_00191'{/yun}',
+    share: '{yun:}t key='wap_com_00246'{/yun}',
+    applyPersonalFirst: '{yun:}t key='wap_00032'{/yun}',
+    personalOnlyApply: '{yun:}t key='wap_00255'{/yun}',
+    applyResume: '{yun:}t key='wap_00292'{/yun}',
+    applied: '{yun:}t key='wap_user_00357'{/yun}',
+    invited: '{yun:}t key='wap_00291'{/yun}',
+    callPhone: '{yun:}t key='wap_00279'{/yun}',
+    contactInfo: '{yun:}t key='wap_00462'{/yun}',
+    mobile: '{yun:}t key='wap_01557'{/yun}',
+    landline: '{yun:}t key='wap_01558'{/yun}',
+    dial: '{yun:}t key='wap_00297'{/yun}',
+    contactTipPrefix: '{yun:}t key='wap_01559'{/yun}',
+    contactTipSuffix: '{yun:}t key='wap_00240'{/yun}',
+    warmTip: '{yun:}t key='wap_user_00205'{/yun}',
+    applyResumeDirect: '{yun:}t key='wap_01560'{/yun}',
+    submitResume: '{yun:}t key='wap_com_00235'{/yun}',
+    viewContact: '{yun:}t key='wap_01561'{/yun}',
+    registerNow: '{yun:}t key='wap_00284'{/yun}',
+    loginNow: '{yun:}t key='wap_00285'{/yun}',
+    createResume: '{yun:}t key='wap_user_00197'{/yun}',
+    editResume: '{yun:}t key='wap_00269'{/yun}',
+    scanQrcodeTip: '{yun:}t key='wap_00029'{/yun}',
+    reportJob: '{yun:}t key='wap_00266'{/yun}',
+    chooseReportReason: '{yun:}t key='wap_01562'{/yun}',
+    reportReasonPlaceholder: '{yun:}t key='wap_00245'{/yun}',
+    imageCaptchaPlaceholder: '{yun:}t key='wap_00262'{/yun}',
+    reportBtn: '{yun:}t key='wap_00290'{/yun}',
+    shareTo: '{yun:}t key='wap_js_00040'{/yun}',
+    posterTip: '{yun:}t key='wap_com_00196'{/yun}',
+    copyText: '{yun:}t key='wap_com_00232'{/yun}',
+    askCompany: '{yun:}t key='wap_00295'{/yun}',
+    askCompanyTip: '{yun:}t key='wap_00246'{/yun}',
+    askPlaceholder: '{yun:}t key='wap_00260'{/yun}',
+    captchaPlaceholder: '{yun:}t key='wap_js_00129'{/yun}',
+    hotQuestions: '{yun:}t key='wap_00281'{/yun}',
+    anonymousAsk: '{yun:}t key='wap_00263'{/yun}',
+    submitConsult: '{yun:}t key='wap_00280'{/yun}',
+    reserveInfoTip: '{yun:}t key='wap_00249'{/yun}',
+    mobileLabel: '{yun:}t key='wap_01563'{/yun}',
+    mobilePlaceholder: '{yun:}t key='wap_js_00119'{/yun}',
+    captchaLabel: '{yun:}t key='wap_00289'{/yun}',
+    imageCaptchaInput: '{yun:}t key='wap_00262'{/yun}',
+    smsVerifyLabel: '{yun:}t key='wap_01564'{/yun}',
+    getCaptcha: '{yun:}t key='wap_user_00144'{/yun}',
+    nameLabel: '{yun:}t key='wap_00272'{/yun}',
+    namePlaceholder: '{yun:}t key='wap_user_00054'{/yun}',
+    sexLabel: '{yun:}t key='wap_00277'{/yun}',
+    ageLabel: '{yun:}t key='wap_00276'{/yun}',
+    agePlaceholder: '{yun:}t key='wap_00268'{/yun}',
+    submit: '{yun:}t key='wap_user_00176'{/yun}',
+    selectSex: '{yun:}t key='wap_js_00134'{/yun}',
+    loadingQrcode: '{yun:}t key='wap_00031'{/yun}',
+    pleaseLoginPersonal: '{yun:}t key='wap_00261'{/yun}',
+    notLoggedInPersonal: '{yun:}t key='wap_00026'{/yun}',
+    openWechatContact: '{yun:}t key='wap_00252'{/yun}',
+    personalOnlyFav: '{yun:}t key='wap_00257'{/yun}',
+    personalOnlyReport: '{yun:}t key='wap_00254'{/yun}',
+    personalOnlyAsk: '{yun:}t key='wap_00256'{/yun}',
+    personalOnlyView: '{yun:}t key='wap_00258'{/yun}',
+    pleaseWait: '{yun:}t key='wap_00265'{/yun}',
+    favoriting: '{yun:}t key='wap_00259'{/yun}',
+    generating: '{yun:}t key='wap_00073'{/yun}',
+    copySuccess: '{yun:}t key='wap_com_00254'{/yun}',
+    reasonPrefix: '{yun:}t key='wap_00294'{/yun}',
+    chooseReportReasonToast: '{yun:}t key='resume_00042'{/yun}',
+    fillCaptcha: '{yun:}t key='wap_js_00129'{/yun}',
+    fillConsultContent: '{yun:}t key='wap_01565'{/yun}',
+    mobileRequired: '{yun:}t key='wap_01566'{/yun}',
+    smsRequired: '{yun:}t key='wap_01567'{/yun}',
+    ageRequired: '{yun:}t key='wap_01568'{/yun}',
+    ageRange: '{yun:}t key='wap_00248'{/yun}',
+    selectSexToast: '{yun:}t key='wap_js_00134'{/yun}',
+    nameRequired: '{yun:}t key='wap_01267'{/yun}',
+    goImprove: '{yun:}t key='wap_01569'{/yun}',
+    cancel: '{yun:}t key='wap_js_00080'{/yun}',
+    fillMobile: '{yun:}t key='wap_01117'{/yun}',
+    mobileFormatError: '{yun:}t key='wap_00306'{/yun}',
+    noFrequentSend: '{yun:}t key='wap_js_00052'{/yun}',
+    fillImageCaptcha: '{yun:}t key='wap_js_00116'{/yun}',
+    resendCaptcha: '{yun:}t key='wap_js_00110'{/yun}',
+    secondUnit: '{yun:}t key='common_02094'{/yun}',
+    wechat: '{yun:}t key='wap_com_00249'{/yun}',
+    sharePoster: '{yun:}t key='wap_00872'{/yun}',
+    copyLink: '{yun:}t key='wap_com_00233'{/yun}',
+};
+
 var shareoptions = [{
-        name: '微信',
+        name: JOB_SHOW_I18N.wechat,
         icon: '{yun:}$wap_style{/yun}/images/fx_wx.png',
         className: 'wechat'
     },
     {
-        name: '复制文本',
+        name: JOB_SHOW_I18N.copyText,
         icon: '{yun:}$wap_style{/yun}/images/fx_wb.png',
         className: 'copytxt'
     },
     {
-        name: '复制链接',
+        name: JOB_SHOW_I18N.copyLink,
         icon: '{yun:}$wap_style{/yun}/images/fx_lj.png',
         className: 'link'
     }
@@ -684,7 +772,7 @@ var shareoptions = [{
 
 '{yun:}if $hbNum > 0{/yun}'
 shareoptions.splice(1, 0, {
-    name: '分享海报',
+    name: JOB_SHOW_I18N.sharePoster,
     icon: '{yun:}$wap_style{/yun}/images/fx_hb.png',
     className: 'poster'
 });
@@ -721,23 +809,23 @@ var joblistvue = new Vue({
         uid: '{yun:}$uid{/yun}',
         usertype: '{yun:}$usertype{/yun}',
         zixunShow: false,
-        fav_job: '{yun:}$job.fav_job{/yun}', //是否已收藏该职位
+        fav_job: '{yun:}$job.fav_job{/yun}', // Whether this job is favorited
 
-        //联系方式
+        // Contact info
         linkCode: linkCode ? parseInt(linkCode) : '',
         linkSub: linkSub ? parseInt(linkSub) : '',
         linkShow: false,
         telQrcodeBoxShow: false,
-        telQrcode: '正在获取二维码...',
-        //举报
+        telQrcode: JOB_SHOW_I18N.loadingQrcode,
+        // Report
         reportShow: false,
         report_reasons: [],
         report_result: [],
-        //分享
+        // Share
         shareShow: false,
         shareoptions: shareoptions,
 
-        //海报
+        // Poster
         jobHbShow: false,
         hbList: [],
         hb: 0,
@@ -745,9 +833,9 @@ var joblistvue = new Vue({
 
         hbShow: true,
 
-        //复制文本
+        // Copy text
         copyBoxShow: false,
-        // 热门问题
+        // Hot questions
         hot_issues: [],
         question: '',
         prvBox: false,
@@ -758,7 +846,7 @@ var joblistvue = new Vue({
 
         linktel: '',
         linkman: '',
-        // 登录弹框
+        // Login dialog
         loginbox: false,
         linkopenBox: false,
         linkopen: '{yun:}$job.linkopen{/yun}',
@@ -770,15 +858,16 @@ var joblistvue = new Vue({
         sexIndex: 0,
         info: {
             sex: null,
-            sex_n: '请选择性别'
+            sex_n: JOB_SHOW_I18N.selectSex
         },
         linkopenwidth: '9.5rem',
 
         fact_show: false,
+        i18n: JOB_SHOW_I18N,
     },
     created() {
         $('#app').css('display', 'block');
-        // 点拨打电话，直接投递简历，页面刷新后，弹出联系方式
+        // After apply-and-call flow, reopen contact info on refresh
         var applyForTel = sessionStorage.getItem("applyForTel");
         if (applyForTel) {
             this.openLinkTip();
@@ -829,27 +918,27 @@ var joblistvue = new Vue({
             var rmoblie_code = $("#rmoblie_code").val();
             var rage = $("#rage").val();
             if (!rmoblie) {
-                showToast('手机号不能为空！');
+                showToast(JOB_SHOW_I18N.mobileRequired);
                 return false;
             }
             if (rmoblie_code == '') {
-                showToast('短信验证不能为空！');
+                showToast(JOB_SHOW_I18N.smsRequired);
                 return false;
             }
             if (!rage) {
-                showToast('年龄不能为空！');
+                showToast(JOB_SHOW_I18N.ageRequired);
                 return false;
             }
             if (rage < 16 || rage > 100) {
-                showToast('年龄不能低于16且不能大于100！');
+                showToast(JOB_SHOW_I18N.ageRange);
                 return false;
             }
             if (!that.info.sex) {
-                showToast('请选择性别！');
+                showToast(JOB_SHOW_I18N.selectSexToast);
                 return false;
             }
             if (!rname) {
-                showToast('姓名不能为空！');
+                showToast(JOB_SHOW_I18N.nameRequired);
                 return false;
             }
             var param = {
@@ -887,9 +976,9 @@ var joblistvue = new Vue({
             } else if (that.linkCode < 9) {
                 if (that.linkCode == 6) {
                     if(that.uid){
-                        showToast('请先登录个人账号');
+                        showToast(JOB_SHOW_I18N.pleaseLoginPersonal);
                     }else {
-                        pleaselogin('您还未登录个人账号，是否登录？', '{yun:}url m=wap c=login{/yun}')
+                        pleaselogin(JOB_SHOW_I18N.notLoggedInPersonal, '{yun:}url m=wap c=login{/yun}')
                     }
                 } else {
                     that.linkShow = true;
@@ -901,15 +990,15 @@ var joblistvue = new Vue({
                 this.telQrcodeBoxShow = true;
             } else {
 
-                showToast('请打开微信查看那联系方式！');
+                showToast(JOB_SHOW_I18N.openWechatContact);
             }
         },
         toJobfav: function() {
             var that = this;
             if (that.usertype != '1' && that.uid != '') {
-                showToast('只有个人用户才能收藏');
+                showToast(JOB_SHOW_I18N.personalOnlyFav);
             } else if (that.uid == '') {
-                pleaselogin('您还未登录个人账号，是否登录？', '{yun:}url m=wap c=login{/yun}')
+                pleaselogin(JOB_SHOW_I18N.notLoggedInPersonal, '{yun:}url m=wap c=login{/yun}')
                 return false;
             } else {
                 jobfav('{yun:}$job.id{/yun}');
@@ -940,15 +1029,15 @@ var joblistvue = new Vue({
                             that.openLinkTip();
                         } else {
                             if (data.state == 1) {
-                                pleaselogin('您还未登录个人账号，是否登录？', '{yun:}url m=wap c=login{/yun}')
+                                pleaselogin(JOB_SHOW_I18N.notLoggedInPersonal, '{yun:}url m=wap c=login{/yun}')
                             } else if (data.state == 2) {
-                                showToast('只有个人用户才能投递');
+                                showToast(JOB_SHOW_I18N.personalOnlyApply);
                                 return false;
                             } else if (data.state == 7 || data.state == 101 || data.state == 102) {
 
                                 showConfirm(data.msg, function() {
                                     location.href = wapurl + data.url;
-                                }, '取消', '前往完善');
+                                }, JOB_SHOW_I18N.cancel, JOB_SHOW_I18N.goImprove);
 
                             } else if (data.url) {
                                 if (data.url == '1') {
@@ -978,19 +1067,19 @@ var joblistvue = new Vue({
         },
         reportSub: function() {
             var authcode = $("#authcode").val();
-            var reason = "理由：";
+            var reason = JOB_SHOW_I18N.reasonPrefix;
 
             if (this.report_result.length > 0) {
                 reason += this.report_result.join('，') + '；';
             } else {
-                showToast('请选择举报理由！');
+                showToast(JOB_SHOW_I18N.chooseReportReasonToast);
                 return false;
             }
 
             var r6 = $("#r_reason").val();
             var reason = reason + r6;
             if (authcode == '') {
-                showToast('请填写验证码！');
+                showToast(JOB_SHOW_I18N.fillCaptcha);
                 return false;
             }
 
@@ -1043,7 +1132,7 @@ var joblistvue = new Vue({
                     that.jobHbShow = true;
                     setTimeout(function() {
                         if (document.getElementById("bighb")) {
-                            showLoading('生成中...');
+                            showLoading(JOB_SHOW_I18N.generating);
                             document.getElementById("bighb").onload = function() {
                                 hideLoading();
                             }
@@ -1062,7 +1151,7 @@ var joblistvue = new Vue({
                 that.hb = hb;
                 that.hbSrc = wapurl + '?c=ajax&a=getJobHb&id=' + that.jobid + '&hb=' + hb;
                 if (document.getElementById("bighb")) {
-                    showLoading('生成中...');
+                    showLoading(JOB_SHOW_I18N.generating);
                     document.getElementById("bighb").onload = function() {
                         hideLoading();
                     }
@@ -1097,7 +1186,7 @@ var joblistvue = new Vue({
                     showToast(data.linkMsg);
                 } else {
                     if (that.linkCode == 6) {
-                        showToast('请先登录个人账号');
+                        showToast(JOB_SHOW_I18N.pleaseLoginPersonal);
                     } else {
                         that.linkShow = true;
                     }
@@ -1146,7 +1235,7 @@ var joblistvue = new Vue({
 $(function() {
     var clipboard = new ClipboardJS(".copyUrl");
     clipboard.on('success', function(e) {
-        showToast('复制成功！');
+        showToast(JOB_SHOW_I18N.copySuccess);
         joblistvue.closetip();
         e.clearSelection();
     });
@@ -1154,7 +1243,7 @@ $(function() {
 
     var clipboard2 = new ClipboardJS(".fzwb");
     clipboard2.on('success', function(e) {
-        showToast('复制成功！');
+        showToast(JOB_SHOW_I18N.copySuccess);
         joblistvue.closetip();
         e.clearSelection();
     });
@@ -1166,11 +1255,11 @@ function zixunSubs() {
     var reason = $("#reasons").val();
     var jobid = $.trim($("input[name='jobid']").val());
     if (reason == '') {
-        showToast('请填写咨询内容！');
+        showToast(JOB_SHOW_I18N.fillConsultContent);
         return false;
     }
     if (authcode == '') {
-        showToast('请填写验证码！');
+        showToast(JOB_SHOW_I18N.fillCaptcha);
         return false;
     }
 
@@ -1208,7 +1297,7 @@ function toJobfav() {
 
 function cancelFavJob(id) {
 
-    showLoading('请稍候...');
+    showLoading(JOB_SHOW_I18N.favoriting);
 
     $.post(wapurl + "?c=job&a=cancelJobFav", { id, id }, function(data) {
         hideLoading();
@@ -1227,14 +1316,14 @@ function cancelFavJob(id) {
 }
 
 function jobfav(jobid) {
-    showLoading('收藏中，请稍等...');
+    showLoading(JOB_SHOW_I18N.favoriting);
     $.get(wapurl + "?c=job&a=comapply&type=fav&id={yun:}$job.id{/yun}", function(data) {
         hideLoading();
         var data = eval('(' + data + ')');
         if (data.state == 0) {
-            pleaselogin('您还未登录个人账号，是否登录？', '{yun:}url m=wap c=login{/yun}')
+            pleaselogin(JOB_SHOW_I18N.notLoggedInPersonal, '{yun:}url m=wap c=login{/yun}')
         } else if (data.state == 4) {
-            showToast('只有个人用户才能收藏');
+            showToast(JOB_SHOW_I18N.personalOnlyFav);
             return false;
         } else if (data.url) {
             if (data.url == '1') {
@@ -1264,9 +1353,9 @@ function toReportCom() {
         checkCode('vcode_img');
         joblistvue.$data.reportShow = true;
     } else if (uid != '') {
-        showToast('只有个人用户才能举报');
+        showToast(JOB_SHOW_I18N.personalOnlyReport);
     } else {
-        pleaselogin('您还未登录个人账号，是否登录？', '{yun:}url m=wap c=login{/yun}');
+        pleaselogin(JOB_SHOW_I18N.notLoggedInPersonal, '{yun:}url m=wap c=login{/yun}');
     }
 }
 
@@ -1275,10 +1364,10 @@ function pmLook() {
         if (joblistvue.$data.usertype == '1') {
             window.location.href = '{yun:}url m=wap c=job a=compete id=$job.id{/yun}';
         } else {
-            showToast('只有个人用户才能查看');
+            showToast(JOB_SHOW_I18N.personalOnlyView);
         }
     } else {
-        showConfirm('您还未登录个人账号，是否登录？', function() {
+        showConfirm(JOB_SHOW_I18N.notLoggedInPersonal, function() {
             window.location.href = '{yun:}url m=wap c=login{/yun}';
         })
     }
@@ -1295,10 +1384,10 @@ function zixun() {
             }, 'json')
             joblistvue.$data.zixunShow = true;
         } else {
-            showToast('只有个人用户才能提问');
+            showToast(JOB_SHOW_I18N.personalOnlyAsk);
         }
     } else {
-        showConfirm('您还未登录个人账号，是否登录？', function() {
+        showConfirm(JOB_SHOW_I18N.notLoggedInPersonal, function() {
             window.location.href = '{yun:}url m=wap c=login{/yun}';
         })
     }
@@ -1320,14 +1409,14 @@ function rsendmsg(img) {
     var rsend = $("#rsend").val();
     var rmoblie = $("#rtel").val();
     if (rmoblie == "") {
-        showToast("请填写手机号！");
+        showToast(JOB_SHOW_I18N.fillMobile);
         return false;
     } else if (!isjsMobile(rmoblie)) {
-        showToast("手机格式不正确！");
+        showToast(JOB_SHOW_I18N.mobileFormatError);
         return false;
     }
     if (rsend > 0) {
-        showToast('请不要频繁重复发送！');
+        showToast(JOB_SHOW_I18N.noFrequentSend);
         return false;
     }
     var code;
@@ -1339,7 +1428,7 @@ function rsendmsg(img) {
         if (code_kind == 1) {
             code = $.trim($("#checkcode").val());
             if (!code) {
-                showToast('请填写图片验证码！');
+                showToast(JOB_SHOW_I18N.fillImageCaptcha);
                 return false;
             }
         } else if (code_kind > 2) {
@@ -1390,11 +1479,11 @@ function rsendmsg(img) {
 function rsendtime(i) {
     i--;
     if (i == -1) {
-        $("#rtime").html("重新获取");
+        $("#rtime").html(JOB_SHOW_I18N.resendCaptcha);
         $("#rsend").val(0)
     } else {
         $("#rsend").val(1)
-        $("#rtime").html(i + "秒");
+        $("#rtime").html(i + JOB_SHOW_I18N.secondUnit);
         setTimeout("rsendtime(" + i + ");", 1000);
     }
 }

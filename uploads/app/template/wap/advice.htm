@@ -8,7 +8,7 @@
 		<span class="advice_list_fs" data-code="3">{yun:}t key='wap_00113'{/yun}</span> 
 		<span class="advice_list_fs" data-code="4">{yun:}t key='wap_00112'{/yun}</span> 
 		<input type="hidden" name="infotype" />
-    <div class="fk_textarea"><textarea class="advice_list_textarea" id="content" name="content" data-id="{yun:}$id{/yun}" placeholder="留下您的意见或反馈，我们会不断改进~"></textarea></div>
+    <div class="fk_textarea"><textarea class="advice_list_textarea" id="content" name="content" data-id="{yun:}$id{/yun}" placeholder="{yun:}t key='wap_01455'{/yun}"></textarea></div>
     	</div>
 	<div class="advice_list_c">
 	<div class="advice_list">
@@ -44,9 +44,9 @@
     {yun:}if $config.sy_msg_isopen==1 && $config.sy_msg_cert==1 && $config.sy_advice_mobilecode==1{/yun}
 	    <!--手机验证码输入框-->
 		<div class="advice_list advice_list_hq">
-			<span class="advice_list_s">短信验证</span>
+			<span class="advice_list_s">{yun:}t key='wap_01456'{/yun}</span>
 			<div class="advice_list_yz">
-				<input class="zx_yx_input" name="advice_code" id="advice_code" type="text" maxlength='6'  placeholder="输入短信验证码">
+				<input class="zx_yx_input" name="advice_code" id="advice_code" type="text" maxlength='6'  placeholder="{yun:}t key='wap_01457'{/yun}">
 			</div>
 			<div class="advice_list_hqbth" id="send_msg_tip" onclick="send_advice_msg('{yun:}$config_wapdomain{/yun}/index.php?c=advice&a=sendmsg');"> {yun:}t key='wap_com_00036'{/yun}
 			</div>
@@ -63,7 +63,7 @@
 </div>
 
 <div class="advice_list_p">
-	{yun:}t key='common_02173'{/yun}!<br>我们将在第一时间及时回复您的反馈，如您的问题比较紧急，请致电服务热线!
+	{yun:}t key='common_02173'{/yun}!<br>{yun:}t key='wap_01589'{/yun}
 	<div>{yun:}t key='wap_00108'{/yun}：{yun:}$config.sy_freewebtel{/yun}</div>
 </div>
 {yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
@@ -191,25 +191,25 @@
 		var advice_code = '';
 		
 		if (infotype == '') {
-			showToast("请选择意见类型", 2);
+			showToast("{yun:}t key='wap_01458'{/yun}", 2);
 			return false;
 		}
 		
 		if (username == "") {
-			showToast('联系人不能空!', 2);
+			showToast('{yun:}t key=\'wap_01459\'{/yun}', 2);
 			return false;
 		}
 
 		if (moblie == "") {
-			showToast('联系手机不能为空!', 2);
+			showToast('{yun:}t key=\'wap_01460\'{/yun}', 2);
 			return false;
 		} else if (!isjsMobile(moblie)) {
-			showToast('手机格式错误!', 2);
+			showToast('{yun:}t key=\'wap_01461\'{/yun}', 2);
 			return false
 		}
 
 		if (content == "") {
-			showToast('反馈内容不能为空!', 2);
+			showToast('{yun:}t key=\'wap_01462\'{/yun}', 2);
 			return false;
 		}
 		

@@ -5,8 +5,8 @@
 	<div class="m_tab">
 		<div class="m_tabbox category">
 			<ul>
-				<li :class="type == 'job' ? 'm_tabactive' : ''" @click="pageTo('index.php?c=collect&type=job')">职位</li>
-				<li :class="type == 'company' ? 'm_tabactive' : ''" @click="pageTo('index.php?c=collect&type=company')"> 企业</li>			</ul>
+				<li :class="type == 'job' ? 'm_tabactive' : ''" @click="pageTo('index.php?c=collect&type=job')">{{i18n.tabJob}}</li>
+				<li :class="type == 'company' ? 'm_tabactive' : ''" @click="pageTo('index.php?c=collect&type=company')"> {{i18n.tabCompany}}</li>			</ul>
 		</div>
 	</div>
 
@@ -40,8 +40,8 @@
 					@change="pageChange" />
 			</div>
 			<div class="wap_member_nobg" v-show="islook&&count==0">
-				<div class="wap_member_no">没有收藏过职位
-					<a class="wap_member_no_submit" href="{yun:}url m=wap c=job{/yun}">去搜索相关职位</a>
+				<div class="wap_member_no">{{i18n.noSavedJobs}}
+					<a class="wap_member_no_submit" href="{yun:}url m=wap c=job{/yun}">{{i18n.searchRelatedJobs}}</a>
 				</div>
 			</div>
 		</div>
@@ -63,7 +63,7 @@
 							<div class="Posted_box_logo">
 								<img :src="item.logo" alt="" width="100%" height="100%">
 							</div>
-							<div class="Posted_box_name">{{item.jobnum}}个职位在招</div>
+							<div class="Posted_box_name">{{item.jobnum}}{{i18n.jobsHiring}}</div>
 						</div>
 						<div class="Posted_bom_time">{{item.time_n}}</div>
 					</div>
@@ -74,7 +74,7 @@
 			</div>
 			<div class="wap_member_nobg" v-show="islook&&count==0">
 				<div class="wap_member_no">
-					暂无记录！
+					{i18n.noRecords}
 				</div>
 			</div>
 		</div>
@@ -98,7 +98,20 @@
 			total: 0,
 			page: currentPage ? currentPage : 1,
 			islook: false,
-			utype: 'company'
+			utype: 'company',
+			i18n: {
+				tabJob: '{yun:}t key='wap_user_00154'{/yun}',
+				tabCompany: '{yun:}t key='wap_user_00153'{/yun}',
+				noSavedJobs: '{yun:}t key='wap_01065'{/yun}',
+				searchRelatedJobs: '{yun:}t key='wap_00829'{/yun}',
+				jobsHiring: '{yun:}t key='wap_01066'{/yun}',
+				noRecords: '{yun:}t key='wap_00827'{/yun}',
+				confirmUnsave: '{yun:}t key='wap_01067'{/yun}',
+				confirmUnfollow: '{yun:}t key='wap_01068'{/yun}',
+				cancelling: '{yun:}t key='wap_user_00152'{/yun}',
+				cancelSuccess: '{yun:}t key='wap_00985'{/yun}',
+				cancelFailed: '{yun:}t key='wap_00986'{/yun}',
+			},
 		},
 		computed: {
 			count() {
@@ -171,7 +184,6 @@
 			touchin(key, type) {
 				loopType = type;
 				if(loopVal){
-					 //再次清空定时器，防止重复注册定时器
 					clearInterval(loopVal);
 				}
 				var self = this;
@@ -186,21 +198,18 @@
 			},
 			cleartime(key) {
 				if(loop == 0){
-					// click
 					if(loopType == 'job'){
 						this.pageTo(this.list[key].wapjob_url);
 					}else{
 						this.pageTo(this.list[key].wapcom_url);
 					}
 				}
-				// 这个方法主要是用来将每次手指移出之后将计时器清零
 				if(loopVal){
 					clearInterval(loopVal);
 					loopVal = null;
 				}
 				loop = 0;
 			},
-			// 滑动时清除定时器
 			cleartouch(){
 			    if(loopVal){
 					clearInterval(loopVal);
@@ -208,25 +217,24 @@
 					loop = 1;
 				}
 			},
-			// 取消职位收藏
 			collectCancel(key){
 				var self = this;
-				showConfirm('确定要取消收藏？', function() {
-				    showLoading('取消中');
+				showConfirm(this.i18n.confirmUnsave, function() {
+				    showLoading(self.i18n.cancelling);
 					$.post('{yun:}url d=wxapp h=user m=job c=delfavjob{/yun}', {ids: self.list[key].id}, function(data){
 						if (data.error == 1) {
 							self.list.splice(key, 1);
-							showToast('取消成功');
+							showToast(self.i18n.cancelSuccess);
 						} else {
-							showToast('取消失败');
+							showToast(self.i18n.cancelFailed);
 						}
 					})
 				});
 			},
 			atnCancel(key){
 				var self = this;
-				showConfirm('确定要取消关注？', function() {
-				    showLoading('取消中');
+				showConfirm(this.i18n.confirmUnfollow, function() {
+				    showLoading(self.i18n.cancelling);
 					var param = {
 						id: self.list[key].id,
 						cuid: self.list[key].sc_uid,
@@ -235,9 +243,9 @@
 					$.post('{yun:}url d=wxapp h=user m=atn c=delatncom{/yun}', param, function(data){
 						if (data.error == 9) {
 							self.list.splice(key, 1);
-							showToast('取消成功');
+							showToast(self.i18n.cancelSuccess);
 						} else {
-							showToast('取消失败');
+							showToast(self.i18n.cancelFailed);
 						}
 					})
 				});

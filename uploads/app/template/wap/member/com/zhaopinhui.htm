@@ -28,9 +28,9 @@
 		    <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange" /> 
 		</div>
 		<span v-show="islook&&count==0">
-			<div class="wap_member_no">目前您还没有参加的招聘会信息</div>
+			<div class="wap_member_no">{{i18n.noZphRecords}}</div>
 			<span class="wap_memberjob_fabu ">
-				<a href="{yun:}url m=wap c=zph{/yun}" style="width:100%;height:43px; line-height:43px; font-size:16px; margin-top:10px; background:#F90;color:#fff; display:inline-block; text-align:center">查看招聘会信息</a>
+				<a href="{yun:}url m=wap c=zph{/yun}" style="width:100%;height:43px; line-height:43px; font-size:16px; margin-top:10px; background:#F90;color:#fff; display:inline-block; text-align:center">{{i18n.viewZphInfo}}</a>
 			</span>
 		</span>
 	</div>
@@ -43,7 +43,13 @@
 				limit: 10,
 				total: 0,
 				page: currentPage,
-				islook: false
+				islook: false,
+				i18n: {
+					noZphRecords: '{yun:}t key='wap_01211'{/yun}',
+					viewZphInfo: '{yun:}t key='wap_01212'{/yun}',
+					confirmCancel: '{yun:}t key='wap_01213'{/yun}',
+					cancelSuccess: '{yun:}t key='wap_00985'{/yun}',
+				},
 			},
 			computed: {
 				count() {
@@ -81,12 +87,12 @@
 					var that = this;
 					var paramer = {ids: id};
 					var url = '{yun:}url d=wxapp h=com m=zph c=delzph{/yun}';
-					showConfirm('确定取消报名？', function() {
+					showConfirm(that.i18n.confirmCancel, function() {
 						showLoading("{yun:}t key='wap_user_00152'{/yun}");
 						$.post(url , paramer, function(data){
 							if (data.error == 1) {
 								that.list.splice(key, 1);
-								showToast('取消成功');
+								showToast(that.i18n.cancelSuccess);
 							}
 						},'json')
 					});

@@ -1,4 +1,4 @@
-// 头部导航栏保存
+// Header save handler
 function headSave(type){
 	if(type == 'info'){
 		saveInfo();
@@ -8,33 +8,33 @@ function headSave(type){
 }
 function saveExpect(){
 	var field = getFormValue('addexpectForm');
-	let that = this;
-				
+	var i18n = typeof USER_EXPECT_I18N !== 'undefined' ? USER_EXPECT_I18N : {};
+
 	if (field.name == '') {
-		return showToast('请填写期望职位');
+		return showToast(i18n.fillExpectJob);
 	}else if(field.name.length > field.sy_rname_num){
-		return showToast('期望职位最多填写'+field.sy_rname_num+'个字');
+		return showToast(i18n.expectJobMaxPrefix + field.sy_rname_num + i18n.charSuffix);
 	}
 	if (field.jobclassid == '') {
-		return showToast('请选择期望职位');
+		return showToast(i18n.selectExpectJob);
 	}
 	if (field.city_classid == '') {
-		return showToast('请选择期望城市');
+		return showToast(i18n.selectExpectCity);
 	}
 
 	if (field.type == '') {
-		return showToast('请选择工作性质');
+		return showToast(i18n.selectWorkType);
 	}
 	if (field.report.length == 0) {
-		return showToast('请选择到岗时间');
+		return showToast(i18n.selectReportTime);
 	}
 	if (field.jobstatus == '') {
-		return showToast('请选择求职状态');
+		return showToast(i18n.selectJobStatus);
 	}
 	if (field.minsalary.length == 0 ||field.minsalary.length == 0) {
-		return showToast('请填写期望薪资');		
+		return showToast(i18n.fillExpectSalary);		
 	} else if (parseInt(field.minsalary) > parseInt(field.maxsalary) && field.maxsalary.length > 0) {
-		return showToast('请正确填写期望薪资范围');		
+		return showToast(i18n.salaryRangeInvalid);		
 	}
 	let formData = {		
 		eid: field.eid,
@@ -49,7 +49,7 @@ function saveExpect(){
 		jobstatus: field.jobstatus,
 		provider: 'wap'
 	};
-	showLoading('保存中...');
+	showLoading(i18n.saving);
 	$.post(field.url, formData, function(data){
 		hideLoading();	
 		if (data.error == 1) {
@@ -67,8 +67,9 @@ function headDelete(type,eid,id,url){
 	formData.table = type;
 	formData.eid = eid;
 	formData.id = id;
-	showConfirm('确定删除？', function(){
-		showLoading('删除中...');
+	var i18n = typeof USER_COMMON_I18N !== 'undefined' ? USER_COMMON_I18N : {};
+	showConfirm(i18n.confirmDelete, function(){
+		showLoading(i18n.deleting);
 		$.post(url, formData, function(data){
 			hideLoading();	
 			if (data.error == 1) {
@@ -85,39 +86,40 @@ function headDelete(type,eid,id,url){
 function saveInfo(){
 	var field = getFormValue('infoForm');
 	var idcard_status = $("#idcard_status").val() ? $("#idcard_status").val() : 0;
+	var i18n = typeof USER_INFO_I18N !== 'undefined' ? USER_INFO_I18N : {};
 	
 	if(!field.name) {
-		return showToast('请输入姓名！');
+		return showToast(i18n.fillName);
 	} else {
 		if(idcard_status!=1 && parseInt(resumename) && parseInt(resumename) > 0 && !isChinaName(field.name)){
-			return showToast('姓名请输入2-6位汉字');
+			return showToast(i18n.nameFormatInvalid);
 		}
 	}
 	if(!field.sex) {
-		return showToast('请选择性别！');
+		return showToast(i18n.selectGender);
 	}
 	if(!field.birthday) {
-		return showToast('请选择出生年月！');
+		return showToast(i18n.selectBirthday);
 	}
 	if(!field.edu || field.edu == 0) {
-		return showToast('请选择最高学历！');
+		return showToast(i18n.selectEducation);
 	}
 	if(!field.exp || field.exp == 0) {
-		return showToast('请选择工作经验！');
+		return showToast(i18n.selectExperience);
 	}
 	if(!field.living) {
-		return showToast('请输入现居住地！');
+		return showToast(i18n.fillLiving);
 	}
 	if(!field.telphone) {
-		return showToast('请输入手机！');
+		return showToast(i18n.fillMobile);
 	}else if (!isjsMobile(field.telphone)) {
-		return showToast('请输入正确的手机号！');
+		return showToast(i18n.mobileInvalid);
 	}
 	if(field.email != "" && !check_email(field.email)) {
-		return showToast('邮箱格式错误！');
+		return showToast(i18n.emailInvalid);
 	}
 	field.provider = 'wap';
-	showLoading('保存中...');
+	showLoading(i18n.saving);
 	$.post(field.url, field, function(res) {
 		hideLoading();
 		if (res.error == 1) {

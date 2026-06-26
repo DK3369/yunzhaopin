@@ -1,22 +1,22 @@
-<!-- 公共多职位、多城市弹窗-->
+<!-- Shared multi-job and multi-city picker -->
 <div id="cityjobVue" style="display: none;">
     <input type="hidden" value="5" id="jobnum" />
-    <!--工作职能-->
+    <!-- Job category -->
     <van-popup v-model="jobShow" position="right" :style="{ height: '100%',width:'100%',backgroundColor:'#f2f6f9'}">
         <div class="yzxz_header">
-            <!-- 页面头部 -->
+            <!-- Page header -->
             <div class="workplace_header">
                 <div class="workplace_header_left" @click="jobShow = false">
                     <img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
                 </div>
-                <div class="workplace_header_center">{{jobheader?jobheader:'意向岗位选择'}}</div>
+                <div class="workplace_header_center">{{jobheader?jobheader:i18n.jobCategorySelect}}</div>
                 <div class="workplace_header_right"></div>
             </div>
             <div id="jobClassBox">
                 <div class="zn_search">
                     <div class="zn_search_text_c">
                         <div class="zn_search_text">
-                            <input id="jclass_svalue" type="text" value="" data-type='jobclass' placeholder="搜索意向岗位" class="zn_search_t inputListener">
+                            <input id="jclass_svalue" type="text" value="" data-type='jobclass' :placeholder="i18n.searchJobPlaceholder" class="zn_search_t inputListener">
                         </div>
                     </div>
                 </div>
@@ -102,15 +102,15 @@
             </div>
         </div>
     </van-popup>
-    <!--城市类别-->
+    <!-- City category -->
     <van-popup v-model="cityShow" position="right" :style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
         <div class="yzxz_header">
-            <!-- 页面头部 -->
+            <!-- Page header -->
             <div class="workplace_header">
                 <div class="workplace_header_left" @click="cityShow = false">
                     <img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
                 </div>
-                <div class="workplace_header_center">工作城市选择</div>
+                <div class="workplace_header_center">{{i18n.workCitySelect}}</div>
                 <div class="workplace_header_right"></div>
             </div>
             <div id="cityClassBox">
@@ -125,7 +125,7 @@
                     <div id="cityclass_searhtml" class="mui-input-row s_checkbox classTap">
                     </div>
                 </div>
-                <div class="grade_tit">选择工作城市(可多选)</div>
+                <div class="grade_tit">{{i18n.selectWorkCityMulti}}</div>
                 {yun:}if empty($city_type){/yun}
                 <div class="grade-eject grade-w-roll">
                     <ul class="grade-w" id="cityone">
@@ -212,7 +212,12 @@ var cityjobVue = new Vue({
     data: {
         jobShow: false,
         cityShow: false,
-
+        i18n: {
+            jobCategorySelect: '{yun:}t key='wap_01239'{/yun}',
+            searchJobPlaceholder: '{yun:}t key='wap_01240'{/yun}',
+            workCitySelect: '{yun:}t key='wap_01241'{/yun}',
+            selectWorkCityMulti: '{yun:}t key='wap_01242'{/yun}',
+        },
         citynameArr: [],
         jobnameArr: [],
         jobheader:''

@@ -23,22 +23,22 @@
 	</head>
 
 	<body>
-		<!-- 头部 -->
+		<!-- Header -->
 
 		<div class="fast_box_header">
 			<div class="fast_box_headericon" onclick="goBack()">
 				<img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
 			</div>
-			<div class="fast_box_r">已有账号，直接 <a href="{yun:}url m=wap c=login{/yun}">登录</a></div>
+			<div class="fast_box_r">{yun:}t key='wap_00691'{/yun}{yun:}t key='wap_01618'{/yun}<a href="{yun:}url m=wap c=login{/yun}">{yun:}t key='wap_js_00145'{/yun}</a></div>
 		</div>
 		<div class="fast_box">
 
-			<div class="fast_tit">创建我的简历</div>
-			<div class="fast_p">完成以下信息可生成简历</div>
+			<div class="fast_tit">{yun:}t key='wap_00932'{/yun}</div>
+			<div class="fast_p">{yun:}t key='wap_00135'{/yun}</div>
 			<div class="fast_picbox"><img src="{yun:}$wap_style{/yun}/images/resume_title.png" alt="" width="100%" height="100%"></div>
 		</div>
 
-		<!-- 主体部分 -->
+		<!-- Main content -->
 		<div id="yunvue" class="none">
 
 
@@ -48,41 +48,41 @@
 					<form id="firstSubmit">
 
 						<div class="fast_text">
-							<div class="fast_name"><span class="fast_bt">*</span>姓<span class="jm_nbsp">名</span></div>
+							<div class="fast_name"><span class="fast_bt">*</span>{yun:}t key='common_02070'{/yun}<span class="jm_nbsp">{yun:}t key='common_02061'{/yun}</span></div>
 							<div class="fast_input">
-								<input type="text" name="uname" v-model="info.uname" placeholder="请输入姓名" />
+								<input type="text" name="uname" v-model="info.uname" :placeholder="i18n.namePlaceholder" />
 							</div>
 						</div>
 						<div class="fast_text fast_select" @click="sexShow = true">
-							<div class="fast_name"><span class="fast_bt">*</span>性<span class="jm_nbsp">别</span></div>
+							<div class="fast_name"><span class="fast_bt">*</span>{yun:}t key='wap_com_00303'{/yun}</div>
 							<div class="fast_selectbox" v-if="info.sex_n">{{info.sex_n}}</div>
-							<div class="fast_selectbox" style="color:#cecccc;" v-else>请选择性别</div>
+							<div class="fast_selectbox" style="color:#cecccc;" v-else>{{i18n.selectSex}}</div>
 							<input type="hidden" name="sex" :value="info.sex">
 						</div>
 						<div class="fast_text fast_select" onclick="birthdayPicker()">
 
-							<div class="fast_name"><span class="fast_bt">*</span>出生年月</div>
+							<div class="fast_name"><span class="fast_bt">*</span>{yun:}t key='wap_user_00236'{/yun}</div>
 							<div class="fast_selectbox"  v-if="info.birthYear">{{info.birthYear}}</div>
-							<div class="fast_selectbox" style="color:#cecccc;" v-else>请选择出生年月</div>
+							<div class="fast_selectbox" style="color:#cecccc;" v-else>{{i18n.selectBirthday}}</div>
 							<input type="hidden"name="birthday" :value="info.birthday" />
 						</div>
 						<div class="fast_text fast_select" @click="eduPicker">
-							<div class="fast_name"><span class="fast_bt">*</span>最高学历</div>
+							<div class="fast_name"><span class="fast_bt">*</span>{yun:}t key='wap_user_00092'{/yun}</div>
 							<div class="fast_selectbox" v-if="info.edu_n">{{info.edu_n}}</div>
-							<div class="fast_selectbox" style="color:#cecccc;" v-else>请选择最高学历</div>
+							<div class="fast_selectbox" style="color:#cecccc;" v-else>{{i18n.selectTopEdu}}</div>
 							<input type="hidden" id="edu"name="edu" :value="info.edu" />
 						</div>
 						<div class="fast_text fast_select" @click="expPicker">
-							<div class="fast_name"><span class="fast_bt">*</span>工作经验</div>
+							<div class="fast_name"><span class="fast_bt">*</span>{yun:}t key='wap_user_00240'{/yun}</div>
 							<div class="fast_selectbox" v-if="info.exp_n">{{info.exp_n}}</div>
-							<div class="fast_selectbox" style="color:#cecccc;" v-else>请选择工作经验</div>
+							<div class="fast_selectbox" style="color:#cecccc;" v-else>{{i18n.selectWorkExp}}</div>
 							<input type="hidden" id="exp"name="exp" :value="info.exp" />
 						</div>
 
 						<div class="fast_text">
-							<div class="fast_name"><span class="fast_bt">*</span>手机号</div>
+							<div class="fast_name"><span class="fast_bt">*</span>{yun:}t key='wap_01619'{/yun}</div>
 							<div class="fast_input">
-								<input type="number" name="telphone" v-model="info.telphone" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请输入手机号" />
+								<input type="number" name="telphone" v-model="info.telphone" oninput="value=value.replace(/^0|[\^d]/g,'')" :placeholder="i18n.mobilePlaceholder" />
 							</div>
 						</div>
 
@@ -100,9 +100,9 @@
 
 						{yun:}else{/yun}
 						<div class="fast_text fast_text_tpyz">
-							<div class="fast_name"><span class="fast_bt">*</span>验证码</div>
+							<div class="fast_name"><span class="fast_bt">*</span>{yun:}t key='wap_00110'{/yun}</div>
 							<div class="fast_input">
-								<input type="text" name="authcode" v-model="info.authcode" placeholder="请输入验证码" />
+								<input type="text" name="authcode" v-model="info.authcode" :placeholder="i18n.authcodePlaceholder" />
 								<div class="">
 									<img id="vcode_img" class="authcode" src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php" onclick="checkCode('vcode_img');" />
 								</div>
@@ -115,10 +115,10 @@
 						{yun:}if $config.sy_msg_isopen==1 && $config.reg_real_name_check==1 &&
 						$config.sy_msg_regcode==1{/yun}
 						<div class="fast_text">
-							<div class="fast_name"><span class="fast_bt">*</span>短信验证</div>
+							<div class="fast_name"><span class="fast_bt">*</span>{yun:}t key='wap_01456'{/yun}</div>
 							<div class="fast_input fast_input_dx">
-								<input type="number" name="checkcode" oninput="value=value.replace(/^0|[\^d]/g,'')" v-model="info.checkcode" placeholder="请输入短信验证码" />
-								<div id="send_msg_tip" class="fast_input_dx_bth" @click="getcode" v-if="codeview">获取验证码</div>
+								<input type="number" name="checkcode" oninput="value=value.replace(/^0|[\^d]/g,'')" v-model="info.checkcode" :placeholder="i18n.smsCodePlaceholder" />
+								<div id="send_msg_tip" class="fast_input_dx_bth" @click="getcode" v-if="codeview">{{i18n.getCodeBtn}}</div>
 								<div class="fast_input_dx_bth" v-else>{{flag}}</div>
 							</div>
 						</div>
@@ -126,23 +126,23 @@
 
 
 						<div class="fast_text">
-							<div class="fast_name"><span class="fast_bt">*</span>登录密码</div>
+							<div class="fast_name"><span class="fast_bt">*</span>{yun:}t key='wap_00702'{/yun}</div>
 							<div class="fast_input">
-								<input type="password" name="password" v-model="info.password" placeholder="请输入登录密码" />
+								<input type="password" name="password" v-model="info.password" :placeholder="i18n.passwordPlaceholder" />
 							</div>
 						</div>
 						<div class="fast_tip">
 							{yun:}if $config.reg_pw_sp=='1' || $config.reg_pw_num=='1' ||
-							$config.reg_pw_zm=='1'{/yun}提示：密码须包含{yun:}if
-							$config.reg_pw_num=='1'{/yun}数字{yun:}/if{/yun}{yun:}if $config.reg_pw_zm=='1'{/yun},字母
-							{yun:}/if{/yun}{yun:}if $config.reg_pw_sp=='1'{/yun},字符@!#.$-_{yun:}/if{/yun}{yun:}/if{/yun}
+							$config.reg_pw_zm=='1'{/yun}{yun:}t key='wap_00693'{/yun}{yun:}if
+							$config.reg_pw_num=='1'{/yun}{yun:}t key='common_01997'{/yun}{yun:}/if{/yun}{yun:}if $config.reg_pw_zm=='1'{/yun}{yun:}t key='wap_00706'{/yun}
+							{yun:}/if{/yun}{yun:}if $config.reg_pw_sp=='1'{/yun}{yun:}t key='wap_00695'{/yun}{yun:}/if{/yun}{yun:}/if{/yun}
 						</div>
 				</div>
 				<div class="fast_bth" @click="firstSubmit">
 					{yun:}if $config.resume_kstd_req != 2 && ($config.resume_create_project==1 || $config.resume_create_exp==1 || $config.resume_create_edu==1){/yun}
-					<div id="nextadd" class="fast_bth_sub">下一步</div>
+					<div id="nextadd" class="fast_bth_sub">{{i18n.nextStep}}</div>
 					{yun:}else{/yun}
-					<div id="applybtn" class="fast_bth_sub">立即申请</div>
+					<div id="applybtn" class="fast_bth_sub">{{i18n.applyNow}}</div>
 					{yun:}/if{/yun}
 				</div>
 				</form>
@@ -166,15 +166,15 @@
 				<van-picker show-toolbar :columns="exp" :default-index="expIndex" @cancel="expShow = false"
 					@confirm="expConfirm" />
 			</van-popup>
-			<!--开始、结束时间选择器-->
+			<!-- Start/end time picker -->
 			<van-popup v-model="timeBox" round position="bottom">
 				<van-picker show-toolbar :columns="timeData" @cancel="timeBox = false" @confirm="timeConfirm"
 					@change="timeChange" />
 			</van-popup>
-			<!--描述-->
+			<!-- Description -->
 			<van-popup v-model="contentBox" position="right"
 				:style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
-				<!-- 页面头部 -->
+				<!-- Page header -->
 				<div class="fast_box_header">
 					<div class="fast_box_headericon" @click="contentSubmit">
 						<img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
@@ -183,18 +183,18 @@
 				</div>
 				<div class="fast_textarea">
 					<div class="fast_textarea_c">
-						<textarea v-model="content" placeholder="请输入描述" class="fast_textarea_text"></textarea>
+						<textarea v-model="content" :placeholder="i18n.descPlaceholder" class="fast_textarea_text"></textarea>
 					</div>
 					<div class="fast_bth" @click="contentSubmit">
-						<div class="fast_bth_sub">确认</div>
+						<div class="fast_bth_sub">{{i18n.confirmBtn}}</div>
 					</div>
 				</div>
 			</van-popup>
 			{yun:}if $config.resume_create_exp=='1'{/yun}
-			<!--工作经历-->
+			<!-- Work experience -->
 			<van-popup v-model="workBox" position="right"
 				:style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
-				<!-- 页面头部 -->
+				<!-- Page header -->
 
 				<div class="fast_box_header">
 					<div class="fast_box_header_c">
@@ -202,8 +202,8 @@
 							<img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%"
 								height="100%">
 						</div>
-						<div class="fast_box_header_p">工作经历</div>
-						<div class="fast_box_header_tg" @click="skipPage('work')" v-if="info.iscreateexpshow">跳过</div>
+						<div class="fast_box_header_p">{yun:}t key='wap_00457'{/yun}</div>
+						<div class="fast_box_header_tg" @click="skipPage('work')" v-if="info.iscreateexpshow">{{i18n.skipBtn}}</div>
 					</div>
 				</div>
 
@@ -213,40 +213,40 @@
 							<span v-for="(item, wk) in workList" :key="wk">
 								<div class="fast_card">
 									<div class="fast_text">
-										<div class="fast_name"><span class="fast_bt">*</span>公司名称</div>
+										<div class="fast_name"><span class="fast_bt">*</span>{yun:}t key='wap_user_00080'{/yun}</div>
 										<div class="fast_inputmc">
-											<input type="text" :name="'workname_' + wk" value="" placeholder="请输入公司名称">
+											<input type="text" :name="'workname_' + wk" value="" :placeholder="i18n.companyPlaceholder">
 										</div>
 									</div>
 									<div class="fast_text">
-										<div class="fast_name"><span class="fast_bt">*</span>担任职位</div>
+										<div class="fast_name"><span class="fast_bt">*</span>{yun:}t key='wap_user_00091'{/yun}</div>
 										<div class="fast_input">
-											<input type="text" :name="'worktitle_' + wk" value="" placeholder="请输入担任职位">
+											<input type="text" :name="'worktitle_' + wk" value="" :placeholder="i18n.titlePlaceholder">
 										</div>
 									</div>
 									<div class="fast_text fast_select">
-										<div class="fast_name">工作内容</div>
+										<div class="fast_name">{yun:}t key='wap_user_00086'{/yun}</div>
 										<div class="fast_inputnrbox">
 											<div class="fast_inputnr" @click="showContent('workList', wk)" v-if="item.content">{{item.content}}</div>
-											<div class="fast_inputnr" @click="showContent('workList', wk)" style="color:#cecccc;" v-else>请填写工作内容</div>
+											<div class="fast_inputnr" @click="showContent('workList', wk)" style="color:#cecccc;" v-else>{{i18n.fillWorkContent}}</div>
 										</div>
 									</div>
 									<div class="fast_card_zy">
 										<div class="fast_card_z" @click="timeShow('workList', wk, 'sdate')">
 											<ul>
-												<li class="fast_card_zyname"><span class="timefast_bt">*</span>入职时间</li>
+												<li class="fast_card_zyname"><span class="timefast_bt">*</span>{yun:}t key='wap_user_00079'{/yun}</li>
 												<li class="fast_card_time" v-if="item.sdate">{{item.sdate}}</li>
-												<li class="fast_card_time" style="color:#cecccc;" v-else>请选择</li>
+												<li class="fast_card_time" style="color:#cecccc;" v-else>{{i18n.selectPlease}}</li>
 											</ul>
 											<input type="hidden" :name="'worksdate_' + wk" :value="item.sdate">
 										</div>
-										<div class="fast_card_zy_z">至</div>
+										<div class="fast_card_zy_z">{yun:}t key='wap_01349'{/yun}</div>
 										<div class="fast_card_y" @click="timeShow('workList', wk, 'edate')">
 											<ul>
-												<li class="fast_card_zyname"><span class="timefast_bt">*</span>离职时间</li>
+												<li class="fast_card_zyname"><span class="timefast_bt">*</span>{yun:}t key='wap_user_00095'{/yun}</li>
 												 
 												<li class="fast_card_time" v-if="item.edate">{{item.edate}}</li>
-												<li class="fast_card_time" style="color:#cecccc;" v-else>请选择</li>
+												<li class="fast_card_time" style="color:#cecccc;" v-else>{{i18n.selectPlease}}</li>
 											</ul>
 											<input type="hidden" :name="'workedate_' + wk" :value="item.edate">
 											<input type="hidden" :name="'totoday_' + wk" :value="item.totoday">
@@ -257,25 +257,25 @@
 							</span>
 						</div>
 						<div id="workButton" class="fast_bth" @click="workSubmit">
-							<span v-if="info.resume_create_edu!=1 && info.resume_create_project!=1" id="applybtn" class="fast_bth_sub">立即申请</span>
-							<span v-else class="fast_bth_sub">下一步</span>
+							<span v-if="info.resume_create_edu!=1 && info.resume_create_project!=1" id="applybtn" class="fast_bth_sub">{{i18n.applyNow}}</span>
+							<span v-else class="fast_bth_sub">{{i18n.nextStep}}</span>
 						</div>
 					</form>
 				</div>
 			</van-popup>
 			{yun:}/if{/yun}
 			{yun:}if $config.resume_create_edu=='1'{/yun}
-			<!--教育经历-->
+			<!-- Education -->
 			<van-popup v-model="eduBox" position="right"
 				:style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
-				<!-- 页面头部 -->
+				<!-- Page header -->
 				<div class="fast_box_header">
 					<div class="fast_box_header_c">
 						<div class="fast_box_headericon" @click="eduBox = false">
 							<img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
 						</div>
-						<div class="fast_box_header_p">教育经历</div>
-						<div class="fast_box_header_tg" @click="skipPage('edu')" v-if="info.iscreateedushow">跳过</div>
+						<div class="fast_box_header_p">{yun:}t key='wap_00459'{/yun}</div>
+						<div class="fast_box_header_tg" @click="skipPage('edu')" v-if="info.iscreateedushow">{{i18n.skipBtn}}</div>
 					</div>
 				</div>
 				<div id="eduBox" class="fast_resumebox">
@@ -284,38 +284,38 @@
 							<span v-for="(item, ek) in eduList" :key="ek">
 								<div class="fast_card">
 									<div class="fast_text">
-										<div class="fast_name"><span class="fast_bt">*</span>学校名称</div>
+										<div class="fast_name"><span class="fast_bt">*</span>{yun:}t key='wap_user_00085'{/yun}</div>
 										<div class="fast_inputmc">
-											<input type="text" :name="'eduname_' + ek" value="" placeholder="请输入学校名称">
+											<input type="text" :name="'eduname_' + ek" value="" :placeholder="i18n.schoolPlaceholder">
 										</div>
 									</div>
 									<div class="fast_text">
-										<div class="fast_name">专业名称</div>
+										<div class="fast_name">{yun:}t key='wap_00452'{/yun}</div>
 										<div class="fast_inputmc">
-											<input type="text" :name="'specialty_' + ek" value="" placeholder="请输入专业名称">
+											<input type="text" :name="'specialty_' + ek" value="" :placeholder="i18n.specialtyPlaceholder">
 										</div>
 									</div>
 									<div class="fast_text fast_select" @click="eduPicker(ek)">
-										<div class="fast_name">毕业学历</div>
+										<div class="fast_name">{yun:}t key='wap_00140'{/yun}</div>
 										<div class="fast_selectbox" v-if="item.edu">{{item.edu}}</div>
-										<div class="fast_selectbox" style="color:#cecccc;" v-else>请选择毕业学历</div>
+										<div class="fast_selectbox" style="color:#cecccc;" v-else>{{i18n.selectGradEdu}}</div>
 										<input type="hidden" :name="'eduid_' + ek" :value="item.eduid">
 									</div>
 									<div class="fast_card_zy">
 										<div class="fast_card_z" @click="timeShow('eduList', ek, 'sdate')">
 											<ul>
-												<li class="fast_card_zyname"><span class="timefast_bt">*</span>入学时间</li>
+												<li class="fast_card_zyname"><span class="timefast_bt">*</span>{yun:}t key='wap_user_00078'{/yun}</li>
 												<li class="fast_card_time" v-if="item.sdate">{{item.sdate}}</li>
-												<li class="fast_card_time" style="color:#cecccc;" v-else>请选择</li>
+												<li class="fast_card_time" style="color:#cecccc;" v-else>{{i18n.selectPlease}}</li>
 											</ul>
 											<input type="hidden" :name="'edusdate_' + ek" :value="item.sdate">
 										</div>
-										<div class="fast_card_zy_z">至</div>
+										<div class="fast_card_zy_z">{yun:}t key='wap_01349'{/yun}</div>
 										<div class="fast_card_y" @click="timeShow('eduList', ek, 'edate')">
 											<ul>
-												<li class="fast_card_zyname"><span class="timefast_bt">*</span>离校时间</li> 
+												<li class="fast_card_zyname"><span class="timefast_bt">*</span>{yun:}t key='wap_user_00056'{/yun}</li> 
 												<li class="fast_card_time" v-if="item.edate">{{item.edate}}</li>
-												<li class="fast_card_time" style="color:#cecccc;" v-else>请选择</li>
+												<li class="fast_card_time" style="color:#cecccc;" v-else>{{i18n.selectPlease}}</li>
 											</ul>
 											<input type="hidden" :name="'eduedate_' + ek" :value="item.edate">
 										</div>
@@ -325,26 +325,26 @@
 							</span>
 						</div>
 						<div id="eduButton" class="fast_bth" @click="eduSubmit">
-							<span v-if="info.resume_create_project!=1" id="applybtn" class="fast_bth_sub">立即申请</span>
-							<span v-else class="fast_bth_sub">下一步</span>
+							<span v-if="info.resume_create_project!=1" id="applybtn" class="fast_bth_sub">{{i18n.applyNow}}</span>
+							<span v-else class="fast_bth_sub">{{i18n.nextStep}}</span>
 						</div>
 					</form>
 				</div>
 			</van-popup>
 			{yun:}/if{/yun}
 			{yun:}if $config.resume_create_project=='1'{/yun}
-			<!--项目经历-->
+			<!-- Project experience -->
 			<van-popup v-model="projectBox" position="right"
 				:style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
-				<!-- 页面头部 -->
+				<!-- Page header -->
 				<div class="fast_box_header">
 					<div class="fast_box_header_c">
 						<div class="fast_box_headericon" @click="projectBox = false">
 							<img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%"
 								height="100%">
 						</div>
-						<div class="fast_box_header_p">项目经历</div>
-						<div class="fast_box_header_tg" @click="skipPage('pro')" v-if="info.iscreateproshow">跳过</div>
+						<div class="fast_box_header_p">{yun:}t key='wap_00465'{/yun}</div>
+						<div class="fast_box_header_tg" @click="skipPage('pro')" v-if="info.iscreateproshow">{{i18n.skipBtn}}</div>
 					</div>
 				</div>
 
@@ -355,10 +355,10 @@
 							<span v-for="(item, pk) in projectList" :key="pk">
 								<div class="fast_card">
 									<div class="fast_text">
-										<div class="fast_name"><span class="fast_bt">*</span>项目名称</div>
+										<div class="fast_name"><span class="fast_bt">*</span>{yun:}t key='wap_user_00099'{/yun}</div>
 										<div class="fast_inputmc">
 											<input type="text" :name="'projectname_' + pk" value=""
-												placeholder="请输入项目名称">
+												:placeholder="i18n.projectNamePlaceholder">
 										</div>
 										<!--<div v-if="1 > pk > 0 " class="fast_tjicon" @click="addNewHtml('project')">-->
 											<!--<img src="{yun:}$wap_style{/yun}/images/addition.png" alt="" width="100%"-->
@@ -370,36 +370,36 @@
 										</div>
 									</div>
 									<div class="fast_text">
-										<div class="fast_name"><span class="fast_bt">*</span>担任职位</div>
+										<div class="fast_name"><span class="fast_bt">*</span>{yun:}t key='wap_user_00091'{/yun}</div>
 									<div class="fast_inputmc">
 											<input type="text" :name="'projecttitle_' + pk" value=""
-												placeholder="请输入担任职位">
+												:placeholder="i18n.titlePlaceholder">
 										</div>
 									</div>
 									<div class="fast_text fast_select">
-										<div class="fast_name">项目内容</div>
+										<div class="fast_name">{yun:}t key='wap_user_00098'{/yun}</div>
 										
 										<div class="fast_inputnrbox">
 											 <div class="fast_inputnr" @click="showContent('projectList', pk)" v-if="item.content">{{item.content}}</div>
-											<div class="fast_inputnr"@click="showContent('projectList', pk)"style="color:#cecccc;" v-else>请填写项目内容</div>
+											<div class="fast_inputnr"@click="showContent('projectList', pk)"style="color:#cecccc;" v-else>{{i18n.fillProjectContent}}</div>
 									</div></div>
 									<div class="fast_card_zy">
 										<div class="fast_card_z" @click="timeShow('projectList', pk, 'sdate')">
 											<ul>
-												<li class="fast_card_zyname"><span class="timefast_bt">*</span>开始时间</li>
+												<li class="fast_card_zyname"><span class="timefast_bt">*</span>{yun:}t key='wap_user_00087'{/yun}</li>
 												 
 												<li class="fast_card_time" v-if="item.sdate">{{item.sdate}}</li>
-												<li class="fast_card_time" style="color:#cecccc;" v-else>请选择</li>
+												<li class="fast_card_time" style="color:#cecccc;" v-else>{{i18n.selectPlease}}</li>
 											</ul>
 											<input type="hidden" :name="'projectsdate_' + pk" :value="item.sdate">
 										</div>
-										<div class="fast_card_zy_z">至</div>
+										<div class="fast_card_zy_z">{yun:}t key='wap_01349'{/yun}</div>
 										<div class="fast_card_y" @click="timeShow('projectList', pk, 'edate')">
 											<ul>
-												<li class="fast_card_zyname"><span class="timefast_bt">*</span>结束时间</li>
+												<li class="fast_card_zyname"><span class="timefast_bt">*</span>{yun:}t key='wap_user_00096'{/yun}</li>
 												 
 												<li class="fast_card_time" v-if="item.edate">{{item.edate}}</li>
-												<li class="fast_card_time" style="color:#cecccc;" v-else>请选择</li>
+												<li class="fast_card_time" style="color:#cecccc;" v-else>{{i18n.selectPlease}}</li>
 											</ul>
 											<input type="hidden" :name="'projectedate_' + pk" :value="item.edate">
 										</div>
@@ -410,7 +410,7 @@
 						</div>
 
 						<div id="projectButton" class="fast_bth" @click="projectSubmit">
-							<span id="applybtn" class="fast_bth_sub">立即申请</span>
+							<span id="applybtn" class="fast_bth_sub">{{i18n.applyNow}}</span>
 						</div>
 					</form>
 				</div>
@@ -418,9 +418,9 @@
 			{yun:}/if{/yun}
 			<van-popup v-model="yzmBox" position="center" round closeable :style="{  width:'65%' }">
 				<div class="yzm_box">
-					<div class="yzm_tit">验证码</div>
+					<div class="yzm_tit">{yun:}t key='wap_00110'{/yun}</div>
 					<div class="yzm_input">
-						<input type="text" @input="yzmInput" placeholder="请输入下方验证码" />
+						<input type="text" @input="yzmInput" :placeholder="i18n.captchaBelowPlaceholder" />
 					</div>
 					<div class="yzm_input_img">
 						<img id="vcode_imgs" src="" onclick="checkCode('vcode_imgs');" />
@@ -493,6 +493,39 @@
 				edate: ''
 			};
 			var formDisabled = false;
+			var APPLYJOBUID_I18N = {
+				fillImageCaptcha: '{yun:}t key='wap_js_00116'{/yun}',
+				enterMobile: '{yun:}t key='wap_js_00119'{/yun}',
+				fillCorrectMobile: '{yun:}t key='wap_user_00140'{/yun}',
+				mobileRegistered: '{yun:}t key='wap_00134'{/yun}',
+				fillName: '{yun:}t key='wap_user_00054'{/yun}',
+				nameFormat: '{yun:}t key='wap_js_00160'{/yun}',
+				selectSex: '{yun:}t key='wap_js_00134'{/yun}',
+				selectBirthday: '{yun:}t key='wap_00138'{/yun}',
+				selectEdu: '{yun:}t key='wap_js_00114'{/yun}',
+				selectWorkExp: '{yun:}t key='wap_00937'{/yun}',
+				fillMobile: '{yun:}t key='wap_user_00274'{/yun}',
+				mobileFormatError: '{yun:}t key='wap_user_00039'{/yun}',
+				fillPassword: '{yun:}t key='wap_00703'{/yun}',
+				fillPrefix: '{yun:}t key='wap_user_00057'{/yun}',
+				selectPrefix: '{yun:}t key='wap_user_00058'{/yun}',
+				ordinalPrefix: '{yun:}t key='common_02095'{/yun}',
+				workCompanySuffix: '{yun:}t key='wap_user_00027'{/yun}',
+				workTitleSuffix: '{yun:}t key='wap_user_00028'{/yun}',
+				workJoinSuffix: '{yun:}t key='wap_user_00026'{/yun}',
+				workLeaveSuffix: '{yun:}t key='wap_user_00029'{/yun}',
+				workLeaveBeforeJoinSuffix: '{yun:}t key='wap_user_00019'{/yun}',
+				eduSchoolSuffix: '{yun:}t key='wap_user_00031'{/yun}',
+				eduDegreeSuffix: '{yun:}t key='wap_user_00038'{/yun}',
+				eduEnrollSuffix: '{yun:}t key='wap_user_00030'{/yun}',
+				eduGradSuffix: '{yun:}t key='wap_user_00032'{/yun}',
+				eduGradBeforeEnrollSuffix: '{yun:}t key='wap_user_00020'{/yun}',
+				proNameSuffix: '{yun:}t key='wap_user_00036'{/yun}',
+				proTitleSuffix: '{yun:}t key='wap_user_00034'{/yun}',
+				proStartSuffix: '{yun:}t key='wap_user_00033'{/yun}',
+				proEndSuffix: '{yun:}t key='wap_user_00035'{/yun}',
+				proEndBeforeStartSuffix: '{yun:}t key='wap_user_00021'{/yun}'
+			};
 			var yunvue = new Vue({
 				el: '#yunvue',
 				data() {
@@ -537,7 +570,36 @@
 						yzmBox: false,
 						isShow: false,
 						verify_token: '',
-						varify_token: ''
+						varify_token: '',
+						i18n: {
+							namePlaceholder: '{yun:}t key='wap_user_00234'{/yun}',
+							selectSex: '{yun:}t key='wap_js_00134'{/yun}',
+							selectBirthday: '{yun:}t key='wap_00138'{/yun}',
+							selectTopEdu: '{yun:}t key='wap_user_00049'{/yun}',
+							selectWorkExp: '{yun:}t key='wap_00937'{/yun}',
+							mobilePlaceholder: '{yun:}t key='wap_js_00119'{/yun}',
+							authcodePlaceholder: '{yun:}t key='wap_01327'{/yun}',
+							smsCodePlaceholder: '{yun:}t key='wap_00690'{/yun}',
+							getCodeBtn: '{yun:}t key='wap_01373'{/yun}',
+							passwordPlaceholder: '{yun:}t key='wap_00703'{/yun}',
+							nextStep: '{yun:}t key='common_01878'{/yun}',
+							applyNow: '{yun:}t key='wap_00141'{/yun}',
+							confirmBtn: '{yun:}t key='wap_js_00094'{/yun}',
+							skipBtn: '{yun:}t key='wap_user_00299'{/yun}',
+							descPlaceholder: '{yun:}t key='wap_00936'{/yun}',
+							companyPlaceholder: '{yun:}t key='wap_user_00043'{/yun}',
+							titlePlaceholder: '{yun:}t key='wap_user_00045'{/yun}',
+							schoolPlaceholder: '{yun:}t key='wap_user_00044'{/yun}',
+							specialtyPlaceholder: '{yun:}t key='wap_user_00042'{/yun}',
+							selectGradEdu: '{yun:}t key='wap_00139'{/yun}',
+							fillWorkContent: '{yun:}t key='wap_user_00065'{/yun}',
+							fillProjectContent: '{yun:}t key='wap_user_00068'{/yun}',
+							workContentTitle: '{yun:}t key='wap_user_00086'{/yun}',
+							projectContentTitle: '{yun:}t key='wap_user_00098'{/yun}',
+							selectPlease: '{yun:}t key='wap_user_00100'{/yun}',
+							projectNamePlaceholder: '{yun:}t key='wap_user_00046'{/yun}',
+							captchaBelowPlaceholder: '{yun:}t key='wap_00136'{/yun}'
+						}
 					};
 				},
 				created() {
@@ -557,7 +619,7 @@
 					},
 					eduPicker: function(key) {
 						if (typeof(key) === 'number') {
-							// 教育经历中的picker
+							// Education picker in edu experience section
 							pickerType = 'eduList';
 							pickerKey = key;
 							eduPicker(this.eduList[key].eduid);
@@ -569,7 +631,7 @@
 					eduConfirm(e) {
 						this.eduShow = false;
 						if (pickerType == 'eduList') {
-							// 教育经历中的picker
+							// Education picker in edu experience section
 							this[pickerType][pickerKey].edu = e.text;
 							this[pickerType][pickerKey].eduid = e.value;
 						} else {
@@ -585,14 +647,14 @@
 						this.info.exp = e.value;
 						this.info.exp_n = e.text;
 					},
-					// 初始化验证码校验
+					// Initialize captcha validation
 					initYzmCheck: function(){
                         var that = this;
                         var codesear = new RegExp('注册会员');
                         if (codesear.test(code_web)) {
                             if (code_kind == 1) {
                                 if (!this.info.authcode) {
-                                    showToast('请填写图片验证码');
+                                    showToast(APPLYJOBUID_I18N.fillImageCaptcha);
                                     return false;
                                 }
                             } else if (code_kind > 2) {
@@ -612,12 +674,12 @@
 					},
 					getcode: function() {
 						if (!this.info.telphone) {
-							return showToast('请输入手机号');
+							return showToast(APPLYJOBUID_I18N.enterMobile);
 						} else if (isjsMobile(this.info.telphone) == false) {
-							return showToast('请填写正确的手机号');
+							return showToast(APPLYJOBUID_I18N.fillCorrectMobile);
 						}
 						var self = this;
-                        if (!self.initYzmCheck()) {// 防止弹出验证弹框时继续向下执行
+                        if (!self.initYzmCheck()) {// Prevent continuing while captcha popup is shown
                             return false;
                         }
 						var obj = {
@@ -631,7 +693,7 @@
 						$.post(wapurl + "?c=ajax&a=regcodeks", obj, function(res) {
 							hideLoading();
 							if (res.errcode) {
-								pleaselogin('手机号已注册账号，您可直接登录？', '{yun:}url m=wap c=login{/yun}')
+								pleaselogin(APPLYJOBUID_I18N.mobileRegistered, '{yun:}url m=wap c=login{/yun}')
 								checkCode('vcode_img');
 							} else {
 								if (res.error != 1) {
@@ -662,44 +724,44 @@
 						var that = this;
 
 						if (!evalue.uname) {
-							showToast('请填写姓名');
+							showToast(APPLYJOBUID_I18N.fillName);
 							return false;
 						} else {
 							var resumename = '{yun:}$config.sy_resumename_num{/yun}';
 							if (parseInt(resumename) && parseInt(resumename) > 0 && !isChinaName(evalue.uname)) {
-								showToast('姓名请输入2-6位汉字');
+								showToast(APPLYJOBUID_I18N.nameFormat);
 								return false;
 							}
 						}
 						if (!evalue.sex) {
-							showToast('请选择性别');
+							showToast(APPLYJOBUID_I18N.selectSex);
 							return false;
 						}
 						if (!evalue.birthday) {
-							showToast('请选择出生年月');
+							showToast(APPLYJOBUID_I18N.selectBirthday);
 							return false;
 						}
 						if (!evalue.edu) {
-							showToast('请选择学历');
+							showToast(APPLYJOBUID_I18N.selectEdu);
 							return false;
 						}
 						if (!evalue.exp) {
-							showToast('请选择工作经验');
+							showToast(APPLYJOBUID_I18N.selectWorkExp);
 							return false;
 						}
 						if (!evalue.telphone) {
-							showToast('请填写手机号码');
+							showToast(APPLYJOBUID_I18N.fillMobile);
 							return false;
 						}
 						if (isjsMobile(evalue.telphone) == false) {
-							showToast('手机号码格式错误');
+							showToast(APPLYJOBUID_I18N.mobileFormatError);
 							return false;
 						}
 						if (!evalue.password) {
-							showToast('请填写登录密码');
+							showToast(APPLYJOBUID_I18N.fillPassword);
 							return false;
 						}
-						if (!that.initYzmCheck()) {// 防止弹出验证弹框时继续向下执行
+						if (!that.initYzmCheck()) {// Prevent continuing while captcha popup is shown
                             return false;
 						}
 						formData = evalue;
@@ -708,7 +770,7 @@
 						if (this.info.resume_kstd_req == 2 || (this.info.resume_create_edu != 1 && this.info.resume_create_exp != 1 && this.info.resume_create_project != 1)) {
 							this.saveForm();
 						} else {
-							/* 新增必填项判断Start */
+							/* Required field check start */
 							ji.forEach(one => {
 								if (jobClassId == one) {
 									if (that.info.jobClassCreate.indexOf(one) > -1) {
@@ -739,11 +801,11 @@
 									});
 								}
 							});
-							/* 新增必填项判断End */
+							/* Required field check end */
 							if (this.info.resume_create_exp == 1) {
-								// 工作经历必填
+								// Work experience required
 								if (this.info.expcreate.includes(formData.exp) || this.isShow) {
-									// 工作经历可以跳过
+									// Work experience can be skipped
 									this.info.iscreateexpshow = true;
 								} else {
 									this.info.iscreateexpshow = false;
@@ -753,9 +815,9 @@
 									this.workList.push(deepClone(workObj));
 								}
 							} else if (this.info.resume_create_edu == 1) {
-								// 教育经历必填
+								// Education required
 								if (this.info.educreate.includes(formData.edu) || this.isShow) {
-									// 教育经历可以跳过
+									// Education can be skipped
 									this.info.iscreateedushow = true;
 								} else {
 									this.info.iscreateedushow = false;
@@ -765,9 +827,9 @@
 									this.eduList.push(deepClone(eduObj));
 								}
 							} else if (this.info.resume_create_project == 1) {
-								// 项目经历必填
+								// Project experience required
 								if (this.info.expcreate.includes(formData.exp) || this.isShow) {
-									// 工作经历可以跳过
+									// Project experience can be skipped
 									this.info.iscreateproshow = true;
 								} else {
 									this.info.iscreateproshow = false;
@@ -790,7 +852,7 @@
 							formData.worklist = self.workList
 							$.post(wapurl + "?c=ajax&a=temporaryresume", formData, function(data) {
 								if (data.url) {
-									// 跳转前，阻止再次提交，防止重复提交
+									// Prevent duplicate submission before redirect
 									formDisabled = true;
 									showToast(data.msg, 2, function() {
 										location.href = data.url;
@@ -798,9 +860,9 @@
 								} else {
 									showToast(data.msg, 2, function() {
 										if (data.error && data.error == 106) {
-											// 图片验证码错误
+											// Image captcha error
 											if ($config.resume_kstd_req != 2 && (self.info.resume_create_edu == 1 || self.info.resume_create_exp == 1 || self.info.resume_create_project == 1)) {
-												// 需要填工作经历等，图片验证码，不需要返回到第一步，直接在弹出框填写
+												// Show captcha popup when work/edu/project steps are required
 												self.yzmBox = true;
 												setTimeout(function() {
 													$("#vcode_imgs").attr('src',
@@ -822,10 +884,10 @@
 						pickerType = type;
 						pickerKey = key;
 						if (type == 'workList') {
-							this.contentTitle = '工作内容';
+							this.contentTitle = this.i18n.workContentTitle;
 							this.content = this.workList[key].content;
 						} else if (type == 'projectList') {
-							this.contentTitle = '项目内容';
+							this.contentTitle = this.i18n.projectContentTitle;
 							this.content = this.projectList[key].content;
 						}
 						this.contentBox = true;
@@ -835,7 +897,7 @@
 						this.contentBox = false;
 					},
 					skipPage: function(type) {
-						// 跳过
+						// Skip current step
 						if (type == 'work') {
 							this.skipOrSubmitOfWork();
 						} else if (type == 'edu') {
@@ -845,25 +907,25 @@
 						}
 					},
 					workSubmit: function() {
-						// 工作经历下一步
+						// Work experience next step
 						var field = getFormValue('workSubmit');
 						for (var i = 0; i < this.workList.length; i++) {
 							var st = Date.parse(field['worksdate_' + i]) / 1000,
 								ed = Date.parse(field['workedate_' + i]) / 1000;
 							if (!field['workname_' + i]) {
-								showModal('请填写第' + (i + 1) + '份工作经历的公司名称');
+								showModal(APPLYJOBUID_I18N.fillPrefix + (i + 1) + APPLYJOBUID_I18N.workCompanySuffix);
 								return false;
 							} else if (!field['worktitle_' + i]) {
-								showModal('请填写第' + (i + 1) + '份工作经历的担任职位');
+								showModal(APPLYJOBUID_I18N.fillPrefix + (i + 1) + APPLYJOBUID_I18N.workTitleSuffix);
 								return false;
 							} else if (!field['worksdate_' + i]) {
-								showModal('请选择第' + (i + 1) + '份工作经历的入职时间');
+								showModal(APPLYJOBUID_I18N.selectPrefix + (i + 1) + APPLYJOBUID_I18N.workJoinSuffix);
 								return false;
 							} else if (!field['workedate_' + i] && parseInt(field['totoday_' + i]) == 0) {
-								showModal('请选择第' + (i + 1) + '份工作经历的离职时间');
+								showModal(APPLYJOBUID_I18N.selectPrefix + (i + 1) + APPLYJOBUID_I18N.workLeaveSuffix);
 								return false;
 							} else if (field['worksdate_' + i] && field['workedate_' + i] && st > ed) {
-								showModal('第' + (i + 1) + '份工作经历的离职时间不能小于入职时间');
+								showModal(APPLYJOBUID_I18N.ordinalPrefix + (i + 1) + APPLYJOBUID_I18N.workLeaveBeforeJoinSuffix);
 								return false;
 							}
 							field['workcontent_' + i] = this.workList[i].content;
@@ -878,9 +940,9 @@
 							this.saveForm();
 						} else {
 							if (this.info.resume_create_edu == 1) {
-								// 教育经历必填
+								// Education required
 								if (this.info.educreate.includes(formData.edu) || this.isShow) {
-									// 教育经历可以跳过
+									// Education can be skipped
 									this.info.iscreateedushow = true;
 								} else {
 									this.info.iscreateedushow = false;
@@ -890,9 +952,9 @@
 									this.eduList.push(deepClone(eduObj));
 								}
 							} else if (this.info.resume_create_project == 1) {
-								// 项目经历必填
+								// Project experience required
 								if (this.info.expcreate.includes(formData.exp) || this.isShow) {
-									// 项目经历可以跳过
+									// Project experience can be skipped
 									this.info.iscreateproshow = true;
 								} else {
 									this.info.iscreateproshow = false;
@@ -905,25 +967,25 @@
 						}
 					},
 					eduSubmit: function() {
-						// 教育经历下一步
+						// Education next step
 						var field = getFormValue('eduSubmit');
 						for (var i = 0; i < this.eduList.length; i++) {
 							var st = Date.parse(field['edusdate_' + i]) / 1000,
 								ed = Date.parse(field['eduedate_' + i]) / 1000;
 							if (!field['eduname_' + i]) {
-								showModal('请填写第' + (i + 1) + '份教育经历的学校名称');
+								showModal(APPLYJOBUID_I18N.fillPrefix + (i + 1) + APPLYJOBUID_I18N.eduSchoolSuffix);
 								return false;
 							} else if (!field['eduid_' + i] || parseInt(field['eduid_'+i]) == 0) {
-								showModal('请填写第' + (i + 1) + '份教育经历的学历');
+								showModal(APPLYJOBUID_I18N.fillPrefix + (i + 1) + APPLYJOBUID_I18N.eduDegreeSuffix);
 								return false;
 							} else if (!field['edusdate_' + i]) {
-								showModal('请选择第' + (i + 1) + '份教育经历的入学时间');
+								showModal(APPLYJOBUID_I18N.selectPrefix + (i + 1) + APPLYJOBUID_I18N.eduEnrollSuffix);
 								return false;
 							} else if (!field['eduedate_' + i]) {
-								showModal('请选择第' + (i + 1) + '份教育经历的毕业时间');
+								showModal(APPLYJOBUID_I18N.selectPrefix + (i + 1) + APPLYJOBUID_I18N.eduGradSuffix);
 								return false;
 							} else if (field['edusdate_' + i] && field['eduedate_' + i] && st > ed) {
-								showModal('第' + (i + 1) + '份教育经历的毕业时间不能小于入学时间');
+								showModal(APPLYJOBUID_I18N.ordinalPrefix + (i + 1) + APPLYJOBUID_I18N.eduGradBeforeEnrollSuffix);
 								return false;
 							}
 						}
@@ -935,9 +997,9 @@
 						if (this.info.resume_create_project != 1) {
 							this.saveForm();
 						} else {
-							// 项目经历必填
+							// Project experience required
 							if (this.info.expcreate.includes(formData.exp) || this.isShow) {
-								// 项目经历可以跳过
+								// Project experience can be skipped
 								this.info.iscreateproshow = true;
 							} else {
 								this.info.iscreateproshow = false;
@@ -954,19 +1016,19 @@
 							var st = Date.parse(field['projectsdate_' + i]) / 1000,
 								ed = Date.parse(field['projectedate_' + i]) / 1000;
 							if (!field['projectname_' + i]) {
-								showModal('请填写第' + (i + 1) + '份项目经历的项目名称');
+								showModal(APPLYJOBUID_I18N.fillPrefix + (i + 1) + APPLYJOBUID_I18N.proNameSuffix);
 								return false;
 							} else if (!field['projecttitle_' + i]) {
-								showModal('请填写第' + (i + 1) + '份项目经历的担任职位');
+								showModal(APPLYJOBUID_I18N.fillPrefix + (i + 1) + APPLYJOBUID_I18N.proTitleSuffix);
 								return false;
 							} else if (!field['projectsdate_' + i]) {
-								showModal('请选择第' + (i + 1) + '份项目经历的开始时间');
+								showModal(APPLYJOBUID_I18N.selectPrefix + (i + 1) + APPLYJOBUID_I18N.proStartSuffix);
 								return false;
 							} else if (!field['projectedate_' + i]) {
-								showModal('请选择第' + (i + 1) + '份项目经历的结束时间');
+								showModal(APPLYJOBUID_I18N.selectPrefix + (i + 1) + APPLYJOBUID_I18N.proEndSuffix);
 								return false;
 							} else if (field['projectsdate_' + i] && field['projectedate_' + i] && st > ed) {
-								showModal('第' + (i + 1) + '份项目经历的结束时间不能小于开始时间');
+								showModal(APPLYJOBUID_I18N.ordinalPrefix + (i + 1) + APPLYJOBUID_I18N.proEndBeforeStartSuffix);
 								return false;
 							}
 							field['projectcontent_' + i] = this.projectList[i].content;
@@ -991,7 +1053,7 @@
 						c.src = "{yun:}$jobplusstyle{/yun}/job.cache.js?v={yun:}$config.cachecode{/yun}";
 						document.body.appendChild(c);
 					},
-					// 时间picker显示
+					// Show time picker
 					timeShow(type, key, time) {
 						pickerType = type;
 						pickerKey = key;
@@ -1003,7 +1065,7 @@
 							self.timeBox = true;
 						})
 					},
-					// 时间picker滚动
+					// Time picker scroll
 					timeChange: function(e) {
 						var f = e.getValues();
 						if (f[0] == '至今') {
@@ -1012,7 +1074,7 @@
 							this.timeData[1].values = workMonth;
 						}
 					},
-					// 时间picker确认
+					// Time picker confirm
 					timeConfirm: function(e) {
 						this.timeBox = false;
 						if (e[0] == '至今') {
@@ -1027,7 +1089,7 @@
 						this[pickerType][pickerKey][pickerTime] = date;
 						this.timeData = [];
 					},
-					// 验证码输入检测，达到长度就提交
+					// Submit when captcha input reaches required length
 					yzmInput(e) {
 						yzmcode += e.data;
 						if (yzmcode.length == code_strlength) {

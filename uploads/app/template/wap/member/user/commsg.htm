@@ -15,7 +15,7 @@
                     <div class="com_member_hr_p1" v-if="item.job_name"><span class="member_c9">{yun:}t key='wap_user_00163'{/yun} </span>{{item.job_name}}</div>
                     <div class="com_member_hr_p1"><span class="member_c9">{yun:}t key='wap_user_00162'{/yun} </span>{{item.content}}</div>                   
                     <div class="com_member_hr_p1" v-if="item.reply"><span class="member_c9">{yun:}t key='wap_user_00155'{/yun} </span>{{item.reply}}</div>
-                    <div class="com_member_hr_p1" v-else><span class="member_c9">{yun:}t key='wap_user_00155'{/yun}</span><font color="red">尚未回复！</font></div>
+                    <div class="com_member_hr_p1" v-else><span class="member_c9">{yun:}t key='wap_user_00155'{/yun}</span><font color="red">{yun:}t key='wap_01138'{/yun}</font></div>
                     <div class="com_member_hr_p1" v-if="item.status==2">
                                    <span class="member_c9"  > {yun:}t key='wap_user_00164'{/yun}</span>
                            <div   v-if="item.statusbody"> {{item.statusbody}}</div>
@@ -24,7 +24,7 @@
                 </div>
 
             <div class="com_member_hr_p1" style="position: relative;">
-                <span class="member_c9">咨询日期</span> {{item.datetime_n}} <div class="sx_new_icon"><a href="javascript:void(0)" @click="delmsg(item.id,msgk)"><img src="{yun:}$wap_style{/yun}/images/resume_del.png" class="    "></a></div>
+                <span class="member_c9">{yun:}t key='wap_01137'{/yun}</span> {{item.datetime_n}} <div class="sx_new_icon"><a href="javascript:void(0)" @click="delmsg(item.id,msgk)"><img src="{yun:}$wap_style{/yun}/images/resume_del.png" class="    "></a></div>
             </div>
        </div>
 	  
@@ -45,7 +45,13 @@
           list: [],
           limit:20,              
           total:0,
-          page: currentPage ? currentPage : 1,          
+          page: currentPage ? currentPage : 1,
+          i18n: {
+            confirmDelete: '{yun:}t key='wap_00812'{/yun}',
+            deleting: '{yun:}t key='wap_js_00166'{/yun}',
+            deleteSuccess: '{yun:}t key='wap_user_00147'{/yun}',
+            deleteFailed: '{yun:}t key='wap_user_00146'{/yun}',
+          },
         },
         computed: {
           count(){
@@ -83,16 +89,16 @@
             var paramer = {
                 id: id,                
             };
-            showConfirm("确定删除？",function(){
-                showLoading("{yun:}t key='wap_js_00166'{/yun}");
+            showConfirm(that.i18n.confirmDelete,function(){
+                showLoading(that.i18n.deleting);
                 $.post('{yun:}url d=wxapp h=user m=msg c=delzxmsg{/yun}',paramer,function(data){
 
                     hideLoading();      
                     if (data.error == 1) {
                         that.list.splice(key, 1);
-                        showToast("{yun:}t key='wap_user_00147'{/yun}",2);
+                        showToast(that.i18n.deleteSuccess,2);
                     } else {
-                       showToast("{yun:}t key='wap_user_00146'{/yun}");
+                       showToast(that.i18n.deleteFailed);
                     }
                 },'json');  
             })

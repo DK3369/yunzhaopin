@@ -4,9 +4,9 @@
 <script src="{yun:}$wap_style{/yun}/js/swiper/swiper.min.js?v={yun:}$config.cachecode{/yun}"></script>
 <div class="" id="app">
     
-    <!-- 页面头部部分 -->
+    <!-- Page header -->
 
-    <!--隐藏简历提示-->
+    <!-- Hidden resume notice -->
     {yun:}if $uid && $expect.status=='2'{/yun}
     <div id="privacyCtrl" class="hide_tip">
         <div class="resume_hint_eye_n">
@@ -53,11 +53,11 @@
 
     <div class="clear"></div>
 
-    <!-- 页面主体部分 -->
+    <!-- Page body -->
     <div class="index_body">
-        <!-- 轮播图部分 -->
+        <!-- Banner section -->
         <div class="banner">
-            <!-- 轮播图 -->
+            <!-- Carousel -->
             <div class="roll">
                 <div class="swiper-container" id="imgswiper" style="transform:translate3d(0,0,0);overflow:hidden;">
                     <div class="swiper-wrapper" >
@@ -73,7 +73,7 @@
             </div>
 
             <div class="job">
-                <!--金刚位 -->
+                <!-- Quick nav slots -->
                 <div class="swiper-container navbox_jgw" id="navswiper">
                     <div class="swiper-wrapper">
                         <div class="swiper-slide">
@@ -114,7 +114,7 @@
             {yun:}/if{/yun}
         </div>
 
-        <!-- 简历优化提示 -->
+        <!-- Resume optimization tip -->
         {yun:}if $resume_yhnum>0{/yun}
         <div id="resume_yh" class="optimize_tip_box none">
             <div class="optimize_tip">
@@ -126,7 +126,7 @@
             </div>
         </div>
         {yun:}/if{/yun}
-          <!-- 登陆注册 -->
+          <!-- Login / register -->
 		  {yun:}if !$username && $smarty.get.c==''{/yun}
 		   <div class="indexlogin_bth">
 			   
@@ -151,7 +151,7 @@
             {yun:}else{/yun}
              
             {yun:}/if{/yun}
-			<!--职位关键字-->
+			<!-- Hot job keywords -->
 			{yun:}if $hotclass{/yun}			
 	        <div class="new_mq"> 
 			     <i class="new_mq_name">{yun:}t key="home.hot_jobs"{/yun}</i>
@@ -163,8 +163,8 @@
     			 </div>
 		    </div>
             {yun:}/if{/yun}
-			<!--职位关键字 end-->
-		     <!-- 名企招聘 new-->
+			<!-- Hot job keywords end -->
+		     <!-- Featured companies -->
 			<div class="new_mq ">
 			     <i class="new_mq_name">{yun:}t key="home.famous_companies"{/yun}</i>
 			     <a class="new_mq_more" href="{yun:}url m=wap c=company rec=1{/yun}">{yun:}t key="common.more_arrow"{/yun}</a>
@@ -196,12 +196,12 @@
 			 		</div>
 			  	</div> 
 			  </div>
-        <!-- 广告 -->
+        <!-- Ad banner -->
         {yun:}adlist classid=503 item="lunbo" key=key{/yun}
         <div class="zd_banner">{yun:}$lunbo.html{/yun}</div>
         {yun:}/adlist{/yun}
 						
-        <!-- tab栏切换部分 -->
+        <!-- Tab section -->
         <div id="yunvue" class="tab none">
             <van-tabs color="#2778F8" @click="chooseTab">
                 <van-tab title="{yun:}t key='common.latest'{/yun}">
@@ -224,8 +224,8 @@
                                     {yun:}/if{/yun}
                                 </i>
                                 <i class="requir_area_parting_line"></i>
-                                {yun:}if $zdjob.job_edu{/yun}<i class="requir-area">{yun:}$zdjob.job_edu{/yun}学历</i>{yun:}/if{/yun}
-                                {yun:}if $zdjob.job_exp{/yun} <i class="requir_area_parting_line"></i><i class="requir-area">{yun:}$zdjob.job_exp{/yun}经验</i>{yun:}/if{/yun}
+                                {yun:}if $zdjob.job_edu{/yun}<i class="requir-area">{yun:}$zdjob.job_edu{/yun}{yun:}t key='home.education_suffix'{/yun}</i>{yun:}/if{/yun}
+                                {yun:}if $zdjob.job_exp{/yun} <i class="requir_area_parting_line"></i><i class="requir-area">{yun:}$zdjob.job_exp{/yun}{yun:}t key='home.experience_suffix'{/yun}</i>{yun:}/if{/yun}
                             </div>
                             {yun:}if $zdjob.welfarename{/yun}
                             <div class="welfare">
@@ -239,7 +239,7 @@
                                     <img src="{yun:}$zdjob.logo{/yun}" alt="" style="width: 100%;">
                                 </i>
                                 <i class="index_company-name">{yun:}$zdjob.com_name|strip_tags|mb_substr:0:20:"utf-8"{/yun}</i>
-                                <i class="index_company-status">置顶</i>
+                                <i class="index_company-status">{yun:}t key='wap_user_00335'{/yun}</i>
                             </div>
                         </div>
                     </a>
@@ -263,8 +263,8 @@
                                     {yun:}/if{/yun}
                                 </i>
                                 <i class="requir_area_parting_line"></i>
-                                {yun:}if $newjob.job_edu{/yun}<i class="requir-area">{yun:}$newjob.job_edu{/yun}学历</i>{yun:}/if{/yun}
-                                {yun:}if $newjob.job_exp{/yun} <i class="requir_area_parting_line"></i><i class="requir-area">{yun:}$newjob.job_exp{/yun}经验</i>{yun:}/if{/yun}
+                                {yun:}if $newjob.job_edu{/yun}<i class="requir-area">{yun:}$newjob.job_edu{/yun}{yun:}t key='home.education_suffix'{/yun}</i>{yun:}/if{/yun}
+                                {yun:}if $newjob.job_exp{/yun} <i class="requir_area_parting_line"></i><i class="requir-area">{yun:}$newjob.job_exp{/yun}{yun:}t key='home.experience_suffix'{/yun}</i>{yun:}/if{/yun}
                             </div>
                             {yun:}if $newjob.welfarename{/yun}
                             <div class="welfare">
@@ -285,7 +285,7 @@
                     {yun:}/joblist{/yun}
                 </van-tab>
 
-                <van-tab title="紧急">
+                <van-tab title="{yun:}t key='wap_00222'{/yun}">
                     {yun:}joblist provinceid='auto.provinceid' cityid='auto.cityid' limit=15 key=ujk item=urgjob urgent=1{/yun}
                     <a href="{yun:}url m=wap c=job a=comapply id=$urgjob.id{/yun}" title="{yun:}$urgjob.name{/yun}">
 
@@ -305,8 +305,8 @@
                                     {yun:}/if{/yun}
                                 </i>
                                 <i class="requir_area_parting_line"></i>
-                                {yun:}if $urgjob.job_edu{/yun}<i class="requir-area">{yun:}$urgjob.job_edu{/yun}学历</i>{yun:}/if{/yun}
-                                {yun:}if $urgjob.job_exp{/yun}  <i class="requir_area_parting_line"></i><i class="requir-area">{yun:}$urgjob.job_exp{/yun}经验</i>{yun:}/if{/yun}
+                                {yun:}if $urgjob.job_edu{/yun}<i class="requir-area">{yun:}$urgjob.job_edu{/yun}{yun:}t key='home.education_suffix'{/yun}</i>{yun:}/if{/yun}
+                                {yun:}if $urgjob.job_exp{/yun}  <i class="requir_area_parting_line"></i><i class="requir-area">{yun:}$urgjob.job_exp{/yun}{yun:}t key='home.experience_suffix'{/yun}</i>{yun:}/if{/yun}
                             </div>
                             {yun:}if $urgjob.welfarename{/yun}
                             <div class="welfare">
@@ -329,7 +329,7 @@
                     {yun:}/joblist{/yun}
                 </van-tab>
 
-                <van-tab title="推荐">
+                <van-tab title="{yun:}t key='wap_com_00251'{/yun}">
                     {yun:}joblist provinceid='auto.provinceid' cityid='auto.cityid' limit=15 key=rjk item=recjob rec=1{/yun}
                     <a href="{yun:}url m=wap c=job a=comapply id=$recjob.id{/yun}" title="{yun:}$recjob.name{/yun}">
 
@@ -349,8 +349,8 @@
                                     {yun:}/if{/yun}
                                 </i>
                                 <i class="requir_area_parting_line"></i>
-                                {yun:}if $recjob.job_edu{/yun}<i class="requir-area">{yun:}$recjob.job_edu{/yun}学历</i>{yun:}/if{/yun}
-                                {yun:}if $recjob.job_exp{/yun}  <i class="requir_area_parting_line"></i><i class="requir-area">{yun:}$recjob.job_exp{/yun}经验</i>{yun:}/if{/yun}
+                                {yun:}if $recjob.job_edu{/yun}<i class="requir-area">{yun:}$recjob.job_edu{/yun}{yun:}t key='home.education_suffix'{/yun}</i>{yun:}/if{/yun}
+                                {yun:}if $recjob.job_exp{/yun}  <i class="requir_area_parting_line"></i><i class="requir-area">{yun:}$recjob.job_exp{/yun}{yun:}t key='home.experience_suffix'{/yun}</i>{yun:}/if{/yun}
                             </div>
                             {yun:}if $recjob.welfarename{/yun}
                             <div class="welfare">
@@ -373,7 +373,7 @@
                     {yun:}/joblist{/yun}
                 </van-tab>
                 {yun:}if $config.map_key{/yun}
-                <van-tab title="附近">
+                <van-tab title="{yun:}t key='wap_00223'{/yun}">
                     <div v-if="skeletonLoading">
                         <div class="map_job_list" v-for="(item,skeletonKey) in skeletonLen" :key="skeletonKey">
                             <div class="map_job_list_box">
@@ -398,9 +398,9 @@
                                                 <li v-else-if="item.job_city_two">{{item.job_city_two}}</li>
                                                 <li v-else>{{item.job_city_one}}</li>
                                                 <i class="requir_area_parting_line"></i>
-                                                <li v-if="item.job_edu">{{item.job_edu}}学历</li>
+                                                <li v-if="item.job_edu">{{item.job_edu}}{yun:}t key='home.education_suffix'{/yun}</li>
                                                 <i class="requir_area_parting_line"></i>
-                                                <li v-if="item.job_exp">{{item.job_exp}}经验</li>
+                                                <li v-if="item.job_exp">{{item.job_exp}}{yun:}t key='home.experience_suffix'{/yun}</li>
                                             </ul>
                                         </div>
                                         <div v-if="item.welfare" class="welfare">
@@ -439,32 +439,32 @@
                 </van-tab>
 				{yun:}/if{/yun}
             </van-tabs>
-			<!--弹窗广告-->
+			<!-- Popup ad -->
             <van-popup v-model="adBanner" position="center" :style="{ width:'90%',background:'none'}" closeable>
 				{yun:}adlist classid=502 item="lunbo" key=key random=1{/yun}
 				<div class="zd_userbanner">{yun:}$lunbo.html{/yun}</div>
 				{yun:}/adlist{/yun}
             </van-popup>
-			<!--弹窗广告-->
+			<!-- Popup ad -->
         </div>
     </div>
-    <div class="yun_newedition_jobmore"><a href="{yun:}url m=wap c=job{/yun}">查看更多</a></div>
+    <div class="yun_newedition_jobmore"><a href="{yun:}url m=wap c=job{/yun}">{yun:}t key='home.view_more'{/yun}</a></div>
 
     <div class="yun_newedition_footer">
         <div class="">
-            <a href="{yun:}url m=wap c=contact{/yun}">联系我们</a>
+            <a href="{yun:}url m=wap c=contact{/yun}">{yun:}t key='wap_00220'{/yun}</a>
             <span class="yun_newedition_footer_line">|</span>
             {yun:}if $config.sy_app_open == 1{/yun}
-            <a href="{yun:}url m=wap c=appdown{/yun}">下载APP</a>
+            <a href="{yun:}url m=wap c=appdown{/yun}">{yun:}t key='wap_00217'{/yun}</a>
             <span class="yun_newedition_footer_line">|</span>
             {yun:}/if{/yun}
-            <a href="{yun:}url m=wap c='advice'{/yun}">意见反馈</a>
+            <a href="{yun:}url m=wap c='advice'{/yun}">{yun:}t key='wap_user_00203'{/yun}</a>
             <span class="yun_newedition_footer_line">|</span>
-            <a href="{yun:}url m=wap c=about{/yun}">关于我们</a>
+            <a href="{yun:}url m=wap c=about{/yun}">{yun:}t key='wap_00218'{/yun}</a>
         </div>
     </div>
 	{yun:}if !empty($kfurl) && $isweixin{/yun}
-	<!--企业微信浮动客服-->
+	<!-- Enterprise WeChat floating support -->
     <a href="{yun:}$kfurl{/yun}" class="zxkf"> </a>
     {yun:}/if{/yun}
 </div>
@@ -497,7 +497,7 @@
 <script type="text/javascript" src="{yun:}$config.mapurl{/yun}"></script>
 {yun:}/if{/yun}
 <script>
-    // 轮播图
+    // Carousel
     new Swiper('#imgswiper', {
         direction: 'horizontal',
         autoplay: {
@@ -513,14 +513,14 @@
         loop: true,
         speed: 2000
     });
-    // 金刚位
+    // Quick nav
     new Swiper('#navswiper', {
         direction: 'horizontal',
         pagination: {
             el: '.swiper-pagination'
         }
     });
-    // 公告
+    // Announcements
     new Swiper('#ggswiper', {
         direction: 'vertical',
         autoplay: {
@@ -530,7 +530,7 @@
 		height: 40,
         autoHeight: true
     });
-	// 名企
+	// Featured companies
 	new Swiper('#mqswiper', {
 	    direction: 'horizontal',
 	    autoplay: {
@@ -542,6 +542,16 @@
     var sy_web_site = '{yun:}$config.sy_web_site{/yun}';
     var sy_gotocity = '{yun:}$config.sy_gotocity{/yun}';
 
+    var INDEX_I18N = {
+        nearby: '{yun:}t key='wap_00223'{/yun}',
+        switchSiteConfirm: '{yun:}t key='wap_01584'{/yun}',
+        switchSiteTip: '{yun:}t key='wap_01585'{/yun}',
+        cancel: '{yun:}t key='wap_js_00080'{/yun}',
+        confirm: '{yun:}t key='common_02016'{/yun}',
+        locatingError: '{yun:}t key='wap_01586'{/yun}',
+        setting: '{yun:}t key='wap_user_00321'{/yun}',
+    };
+
     var yunvue = new Vue({
         el: '#yunvue',
         data() {
@@ -552,7 +562,10 @@
                 nearbyJobList: [],
                 x: '',
                 y: '',
-                adBanner:false,               
+                adBanner:false,
+                i18n: {
+                    nearby: INDEX_I18N.nearby,
+                },
             };
         },
         created() {
@@ -588,10 +601,10 @@
                     }
                     
                     if (data.error==1) {
-                        showConfirm(`您现在正在${data.citydomain.cityname},是否切换到该站点？`,function(){
+                        showConfirm(INDEX_I18N.switchSiteConfirm.replace('%s', data.citydomain.cityname),function(){
                             that.setsite(data.citydomain.curcityid);
-                        },'取消','确定',function(){
-                            showToast('您也可以通过点击左上角切换站点');
+                        },INDEX_I18N.cancel,INDEX_I18N.confirm,function(){
+                            showToast(INDEX_I18N.switchSiteTip);
                         });
                     }else if(data.error==2){
                         window.localStorage.removeItem('wapToDomainAuto');
@@ -601,7 +614,7 @@
             },
             chooseTab: function(name, title){
                 let that = this;
-                if (name==3 && title=='附近'){
+                if (name==3 && title==INDEX_I18N.nearby){
 
                     this.getCurrentLoaction().then(this.getNearbyJob)
                                              .catch(this.getNearbyJob);
@@ -622,7 +635,7 @@
                                 that.y = position.lat;
                                 resolve();
                             }else{
-                                console.log('获取定位异常');
+                                console.log(INDEX_I18N.locatingError);
                                 console.log(result);
                                 reject();
                             }
@@ -645,7 +658,7 @@
                     that.skeletonLoading = false;
                 }, 'json');
             },
-            adShow: function () { // 首页弹出广告
+            adShow: function () { // Homepage popup ad
 				if($('.zd_userbanner').length > 0){
 					var bannerFlag = "{yun:}$bannerFlag{/yun}";
 					if (bannerFlag) {
@@ -667,7 +680,7 @@
         var paramer = {                   
             status: 1,
         };
-        showLoading('设置中...');
+        showLoading(INDEX_I18N.setting + '...');
         $.post('{yun:}url d=wxapp h=user m=privacy c=up{/yun}', paramer, function(data){
             hideLoading();
             location.reload();

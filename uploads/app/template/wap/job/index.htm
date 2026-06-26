@@ -42,7 +42,7 @@
 					</div>
                 </li>
                 <li class="daz_a2">
-                	<div class="daz_acon2">全力助您梦想起航</div>
+                	<div class="daz_acon2">{yun:}t key='wap_01483'{/yun}</div>
                 </li>
                 <li class="daz_a3">
                 	<div class="daz_acon3">
@@ -71,7 +71,7 @@
                   	<li class="shaft_con3">
 	                  	<div class="shaft_det5">
 	                    	{yun:}if $job.salary{/yun}
-	                          	<span class="shaft_pay"> 月薪：<b> {yun:}$job.job_salary{/yun} </b></span>
+	                          	<span class="shaft_pay"> {yun:}t key='wap_01484'{/yun}<b> {yun:}$job.job_salary{/yun} </b></span>
 	                      	{yun:}/if{/yun}
 	                     	{yun:}if $job.exp{/yun}
 	                          	<span>{yun:}t key='home.experience_suffix'{/yun}：{yun:}$job.job_exp{/yun}</span>
@@ -184,7 +184,7 @@
 					{yun:}/if{/yun}
 					<li class="app_con2">
 						<div class="app_det2">
-							联系我时请说明是在<b>{yun:}$config.sy_webname{/yun}</b>{yun:}t key='wap_00240'{/yun}
+							{yun:}t key='wap_01559'{/yun}<b>{yun:}$config.sy_webname{/yun}</b>{yun:}t key='wap_00240'{/yun}
 							<i></i>
 						</div>
 					</li>
@@ -220,10 +220,10 @@
         
         <div class="slip">
         	<span>&lt;</span>
-            <span>向</span>
-            <span>左</span>
-            <span>滑</span>
-            <span>动</span>
+            <span>{yun:}t key='wap_01539'{/yun}</span>
+            <span>{yun:}t key='wap_01540'{/yun}</span>
+            <span>{yun:}t key='wap_01541'{/yun}</span>
+            <span>{yun:}t key='wap_01542'{/yun}</span>
         </div>
              
     </div>
@@ -242,7 +242,7 @@
                 {yun:}else{/yun}
                 <li class="daz_f1">
                 	<div class="daz_fcon1">
-                    	<div class="daz_fdet1">无福利待遇</div>
+                    	<div class="daz_fdet1">{yun:}t key='wap_01486'{/yun}</div>
                     </div>
                 </li>
                 {yun:}/if{/yun}
@@ -265,7 +265,7 @@
        	<div class="section_gift_t_touch"><div class="section_gift_t_touch_t">{yun:}t key='wap_00462'{/yun}</div>Contact Information</div>
 	  	<ul class="section_touch_ul">
 			<li><a href="{yun:}url m=wap c=company a=show id=$job.uid{/yun}#tel">{yun:}t key='wap_00447'{/yun}</a></li>
-			<li><a href="{yun:}url m=wap c=company a=show id=$job.uid{/yun}#job">查看该公司其他职位</a></li>
+			<li><a href="{yun:}url m=wap c=company a=show id=$job.uid{/yun}#job">{yun:}t key='wap_01487'{/yun}</a></li>
 			<li><a href="{yun:}$config.sy_wapdomain{/yun}">{yun:}t key='wap_com_00427'{/yun}{yun:}$config.sy_webname{/yun}</a></li>
 		</ul>
 	</div>

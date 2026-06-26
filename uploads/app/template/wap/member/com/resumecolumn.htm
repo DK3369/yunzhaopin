@@ -2,9 +2,9 @@
 <div id="yunvue">
     <div class="memberuser_nav">
         <ul>
-            <li :class="type == 1 ? 'memberuser_nav_cur' : ''" onclick="resumeLoad(1)"><a>下载简历</a></li>
-            <li :class="type == 2 ? 'memberuser_nav_cur' : ''" onclick="resumeLoad(2)"><a>收藏简历</a></li>
-            <li :class="type == 3 ? 'memberuser_nav_cur' : ''" onclick="resumeLoad(3)"><a>浏览简历</a></li>
+            <li :class="type == 1 ? 'memberuser_nav_cur' : ''" onclick="resumeLoad(1)"><a>{{i18n.downloadResume}}</a></li>
+            <li :class="type == 2 ? 'memberuser_nav_cur' : ''" onclick="resumeLoad(2)"><a>{{i18n.favoriteResume}}</a></li>
+            <li :class="type == 3 ? 'memberuser_nav_cur' : ''" onclick="resumeLoad(3)"><a>{{i18n.browseResume}}</a></li>
         </ul>
     </div>
     <div id="vuebox" class="memberuser_pt none">
@@ -14,11 +14,11 @@
                 <div class="hr_userlist">
                     <div class="hr_userlist_pic"><img :src="item.photo" alt=""></div>
                     <div class="hr_userlist_name">{{item.username}}</div>
-                    <div class="hr_userlist_info"><span v-if="item.exp">{{item.exp}}经验 · </span> <span>{{item.edu}} · </span> <span>{{item.age}}岁</span></div>
+                    <div class="hr_userlist_info"><span v-if="item.exp">{{item.exp}}{{i18n.expSuffix}}</span> <span>{{item.edu}}{{i18n.midDot}}</span> <span>{{item.age}}{{i18n.ageSuffix}}</span></div>
                 </div>
-                <div class="hr_userlist_p"><span class="hr_userlist_t" v-if="item.remark || item.status_n">简历备注</span> {{item.remark}}  {{item.status_n}}</div>
-                <div class="hr_userlist_p"><span class="hr_userlist_t">意向职位</span> {{item.jobname}}</div>
-                <div class="hr_userlist_p"><span class="hr_userlist_t">下载时间 </span> {{item.datetime_n}}</div>
+                <div class="hr_userlist_p"><span class="hr_userlist_t" v-if="item.remark || item.status_n">{{i18n.resumeRemark}}</span> {{item.remark}}  {{item.status_n}}</div>
+                <div class="hr_userlist_p"><span class="hr_userlist_t">{{i18n.targetJob}}</span> {{item.jobname}}</div>
+                <div class="hr_userlist_p"><span class="hr_userlist_t">{{i18n.downloadTime}}</span> {{item.datetime_n}}</div>
                 <div class="hr_userlist_cz">
                     <div class="hr_userlist_czicon" @click.stop="setRemark(item.uid, item.eid ,llk,type)"><img src="{yun:}$wap_style{/yun}/images/bz.png" alt=""></div>
                     <div class="hr_userlist_czicon" @click.stop="delResume(item.id, llk)"><img src="{yun:}$wap_style{/yun}/images/resume_del.png" alt=""></div>
@@ -38,10 +38,10 @@
 							<div class="memberuser_xb" v-else>
 								<img src="{yun:}$wap_style{/yun}/images/set_woman.png" width="100%" height="100%">
 							</div>
-							<div class="memberuser_name">{{item.username}}{{item.height_status==2 ? '.优质人才简历' : ''}}</div>
-							<div class="memberuser_info"><span v-if="item.exp">{{item.exp}}经验·</span>{{item.edu}}学历·{{item.age}}岁</div>
+							<div class="memberuser_name">{{item.username}}{{item.height_status==2 ? '.' + i18n.qualityResume : ''}}</div>
+							<div class="memberuser_info"><span v-if="item.exp">{{item.exp}}{{i18n.expDot}}</span>{{item.edu}}{{i18n.eduDot}}{{item.age}}{{i18n.ageSuffix}}</div>
 							<div class="memberuser_job">
-								意向 <span class="memberuser_jobname">{{item.jobname}}</span>
+								{{i18n.intention}} <span class="memberuser_jobname">{{item.jobname}}</span>
 							</div>
 						</a>
 						<span @click="delResume(item.id, lk)" class="memberuser_sc">
@@ -58,22 +58,22 @@
         <div class="bgboxpt" v-show="islook&&count==0">
             <div class="wap_member_bgcar">
                 <div class="wap_member_no">
-                    <div class="wap_member_no_p1">暂无记录~</div>
+                    <div class="wap_member_no_p1">{{i18n.noRecords}}</div>
                 </div>
             </div>
         </div>
 
-        <!--备注弹出-->
+        <!-- Remark popup -->
         <van-popup v-model="remarkShow" position="bottom" round closeable>
             <div class="job_tckpd">
-                <div class="job_tcktit">备注简历</div>
+                <div class="job_tcktit">{yun:}t key='wap_com_00069'{/yun}</div>
                 <div class="jobSelects jobSelectsnew"  @click.stop="select()" v-if="bzIndex">{{bz.name[bzIndex]}}</div>
-                <div class="jobSelects jobSelectsnew"  @click.stop="select()" v-else>请选择备注状态</div>
+                <div class="jobSelects jobSelectsnew"  @click.stop="select()" v-else>{yun:}t key='wap_00806'{/yun}</div>
                 <div class="job_tcktextarea mt10">
-                    <textarea class="mt10"  v-model="remark"  placeholder="请输入备注内容"></textarea>
+                    <textarea class="mt10"  v-model="remark"  :placeholder="i18n.remarkPlaceholder"></textarea>
                 </div>
                 <div class="job_tckbth">
-                    <input class="" type="button" value="提交" @click="remarkResume" />
+                    <input class="" type="button" :value="i18n.submit" @click="remarkResume" />
                 </div>
             </div>
         </van-popup>
@@ -112,7 +112,30 @@
 
             d_uid: '',
             d_key: '',
-            d_eid: ''
+            d_eid: '',
+            i18n: {
+                downloadResume: '{yun:}t key='wap_00451'{/yun}',
+                favoriteResume: '{yun:}t key='wap_com_00354'{/yun}',
+                browseResume: '{yun:}t key='wap_com_00355'{/yun}',
+                expSuffix: '{yun:}t key='wap_00815'{/yun}',
+                midDot: '{yun:}t key='wap_01192'{/yun}',
+                ageSuffix: '{yun:}t key='common_02074'{/yun}',
+                resumeRemark: '{yun:}t key='wap_com_00070'{/yun}',
+                targetJob: '{yun:}t key='wap_com_00353'{/yun}',
+                downloadTime: '{yun:}t key='wap_com_00352'{/yun}',
+                qualityResume: '{yun:}t key='wap_com_00351'{/yun}',
+                expDot: '{yun:}t key='wap_00830'{/yun}',
+                eduDot: '{yun:}t key='wap_00831'{/yun}',
+                intention: '{yun:}t key='wap_com_00021'{/yun}',
+                noRecords: '{yun:}t key='wap_01191'{/yun}',
+                remarkPlaceholder: '{yun:}t key='wap_00807'{/yun}',
+                submit: '{yun:}t key='wap_user_00176'{/yun}',
+                selectResumeStatus: '{yun:}t key='wap_00809'{/yun}',
+                setting: '{yun:}t key='wap_user_00321'{/yun}',
+                confirmDelete: '{yun:}t key='wap_00812'{/yun}',
+                deleting: '{yun:}t key='wap_user_00355'{/yun}',
+                deleteSuccess: '{yun:}t key='wap_user_00147'{/yun}',
+            },
         },
         computed: {
             count() {
@@ -128,7 +151,7 @@
         created() {
             this.bz = getremark();
             this.bz.id.unshift(0)
-            this.bz.name.unshift('请选择简历状态')
+            this.bz.name.unshift(this.i18n.selectResumeStatus)
             this.getList();
         },
         methods: {
@@ -189,7 +212,7 @@
                 }else if(that.type == 2){
                     var url = '{yun:}url d=wxapp h=com m=resume c=hrRemark{/yun}';
                 }
-                showLoading('设置中');
+                showLoading(that.i18n.setting);
                 $.post(url, paramer, function (data) {
                     hideLoading();
                     if (data.error == 1) {
@@ -215,12 +238,12 @@
                     var url = '{yun:}url d=wxapp h=com m=resume c=look_resume_del{/yun}';
                 }
 
-                showConfirm('确定删除？', function () {
-                    showLoading('删除中');
+                showConfirm(that.i18n.confirmDelete, function () {
+                    showLoading(that.i18n.deleting);
                     $.post(url, paramer, function (data) {
                         if (data.error == 1) {
                             that.list.splice(key, 1);
-                            showToast('删除成功');
+                            showToast(that.i18n.deleteSuccess);
                         }
                     }, 'json')
                 });

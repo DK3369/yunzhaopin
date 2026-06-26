@@ -4,8 +4,8 @@
     <div class="m_tab">
         <div class="m_tabbox category">
             <ul>
-                <li :class="type == 'bm' ? 'm_tabactive' : ''" @click="pageTo('index.php?c=partapply&type=bm')">兼职报名</li>
-                <li :class="type == 'sc' ? 'm_tabactive' : ''" @click="pageTo('index.php?c=partapply&type=sc')">兼职收藏</li>
+                <li :class="type == 'bm' ? 'm_tabactive' : ''" @click="pageTo('index.php?c=partapply&type=bm')">{yun:}t key='wap_user_00302'{/yun}</li>
+                <li :class="type == 'sc' ? 'm_tabactive' : ''" @click="pageTo('index.php?c=partapply&type=sc')">{yun:}t key='wap_user_00303'{/yun}</li>
             </ul>
         </div>
     </div>
@@ -22,7 +22,7 @@
                     <div class="Posted_card_companyname" @click="pageTo(item.wapcom_url)">{{item.comname}}</div>
                     <div class="Posted_card_contactway">
                         <div class="Posted_contactway">
-                            <div class="Posted_card_applytext">报名时间</div>
+                            <div class="Posted_card_applytext">{yun:}t key='wap_user_00304'{/yun}</div>
                             <div class="Posted_card_applytime">{{item.ctime_n}}</div>
                         </div>
                         <div class="Posted_contactway_icon" @click="applydel(item.id,applykey)">
@@ -35,8 +35,8 @@
                 </div>
                 <div class="wap_member_bgcar" v-show="count==0">
                     <div class="wap_member_no">
-                        暂无兼职报名记录
-                        <div><a class="wap_member_no_submit" href="{yun:}url m=wap c=part{/yun}">去搜索兼职</a></div>
+                        {yun:}t key='wap_user_00300'{/yun}
+                        <div><a class="wap_member_no_submit" href="{yun:}url m=wap c=part{/yun}">{yun:}t key='wap_01120'{/yun}</a></div>
                     </div>
                 </div>
             </div>
@@ -58,8 +58,8 @@
                 </div>
                 <div class="wap_member_bgcar" v-show="count==0">
                     <div class="wap_member_no">
-                        暂无兼职收藏记录
-                        <div><a class="wap_member_no_submit" href="{yun:}url m=wap c=part{/yun}">去搜索兼职</a></div>
+                        {yun:}t key='wap_user_00301'{/yun}
+                        <div><a class="wap_member_no_submit" href="{yun:}url m=wap c=part{/yun}">{yun:}t key='wap_01120'{/yun}</a></div>
                     </div>
                 </div>
             </div>
@@ -79,7 +79,11 @@
             page: currentPage ? currentPage : 1,
             islook: false,
             type: type,
-            searchContent: ''
+            searchContent: '',
+            i18n: {
+                confirmDelete: '{yun:}t key='wap_00812'{/yun}',
+                deleting: '{yun:}t key='wap_user_00355'{/yun}',
+            },
         },
         computed: {
             count() {
@@ -164,8 +168,8 @@
                     ids: id
                 };
 
-                showConfirm('确定删除', () => {
-                    showLoading('删除中...')
+                showConfirm(that.i18n.confirmDelete, () => {
+                    showLoading(that.i18n.deleting)
                     $.post('{yun:}url d=wxapp h=user m=part c=delapply{/yun}', param, function (data) {
                         hideLoading();
                         if (data.error == 1) {
@@ -185,8 +189,8 @@
                     ids: id
                 };
 
-                showConfirm('确定删除', () => {
-                    showLoading('删除中...')
+                showConfirm(that.i18n.confirmDelete, () => {
+                    showLoading(that.i18n.deleting)
                     $.post('{yun:}url d=wxapp h=user m=part c=delfavpart{/yun}', param, function (data) {
                         hideLoading();
                         if (data.error == 1) {

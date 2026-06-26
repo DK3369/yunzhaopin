@@ -1,5 +1,5 @@
 <div id="publictwo" class="none">
-	<!--地区筛选-->
+	<!-- Area filter -->
 	<van-popup v-model="areaShow" round position="bottom">
 	  <van-cascader
 	    v-model="areaValue"
@@ -9,7 +9,7 @@
 	    @finish="onAreaFinish"
 	  />
 	</van-popup>
-	<!--职能筛选-->
+	<!-- Function filter -->
 	<van-popup v-model="jobShow" round position="bottom">
 	  <van-cascader
 	    v-model="jobValue"
@@ -19,7 +19,7 @@
 	    @finish="onJobFinish"
 	  />
 	</van-popup>
-	<!--职位更多筛选-->
+	<!-- Job advanced filters -->
 	<van-popup v-model="jobmoreShow" closeable position="bottom" round :style="{height:'12.24rem'}">
 		<div class="Gengduoj-eject pubtwo">
 			<form action="{yun:}$config_wapdomain{/yun}/index.php" method="get" id="job">
@@ -31,7 +31,7 @@
 		        <div class="conditional_screening_all">
 				<div class="conditional_screening_cont">
 				
-					<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">薪资范围</span></div>
+					<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_00741'{/yun}</span></div>
 					<ul class="conditional_screening_list">
 						{yun:}foreach from=$salaryArr item=v{/yun}
 						<li {yun:}if $smarty.get.minsalary== $v.min || (!$smarty.get.minsalary && $v.min==0) {/yun}class="conditional_screening_cur"{yun:}/if{/yun}><a href="{yun:}$config_wapdomain{/yun}/index.php?c=job&minsalary={yun:}$v.min{/yun}">{yun:}$v.name{/yun}</a></li>
@@ -130,7 +130,7 @@
 			
 		</div>
 	</van-popup>
-	<!--简历更多筛选-->
+	<!-- Resume advanced filters -->
 	<van-popup v-model="resumemoreShow" closeable position="bottom" round :style="{height:'12.24rem'}">
 		<div class="Gengduos-eject pubtwo">
 			<form action="{yun:}$config_wapdomain{/yun}/index.php" method="get" id="resume">
@@ -234,7 +234,7 @@
 			</form>
 		</div>
 	</van-popup>
-	<!--行业选择器-->
+	<!-- Industry picker -->
 	<van-popup v-model="hyShow" round position="bottom">
 	  <van-picker
 	    show-toolbar
@@ -244,7 +244,7 @@
 	    @confirm="hyConfirm"
 	  />
 	</van-popup>
-	<!--企业性质选择器-->
+	<!-- Enterprise nature picker -->
 	<van-popup v-model="prShow" round position="bottom">
 	  <van-picker
 	    show-toolbar
@@ -254,7 +254,7 @@
 	    @confirm="prConfirm"
 	  />
 	</van-popup>
-	<!--企业规模选择器-->
+	<!-- Enterprise size picker -->
 	<van-popup v-model="munShow" round position="bottom">
 	  <van-picker
 	    show-toolbar
@@ -264,7 +264,7 @@
 	    @confirm="munConfirm"
 	  />
 	</van-popup>
-	<!--兼职类型选择器-->
+	<!-- Part-time type picker -->
 	<van-popup v-model="partTypeShow" round position="bottom">
 		<van-picker
 				show-toolbar
@@ -274,7 +274,7 @@
 				@confirm="partTypeConfirm"
 		/>
 	</van-popup>
-	<!--{yun:}t key='wap_user_00220'{/yun}-结算周期选择器-->
+	<!-- Part-time billing cycle picker -->
 	<van-popup v-model="partBillingCycleShow" round position="bottom">
 		<van-picker
 				show-toolbar
@@ -287,7 +287,7 @@
 </div>
 <script type="text/javascript">
 var cityChoosed =	parseInt('{yun:}$cityChoosed{/yun}');
-// 开启分站并选择分站
+// Enable sub-site with selected region
 {yun:}if !$cityChoosed && $config['sy_web_site'] == 1 && ($config['province'] || $config['cityid'] || $config['three_cityid']){/yun}
 	{yun:}if $config['three_cityid']{/yun}
 		cityChoosed = parseInt('{yun:}$config["three_cityid"]{/yun}');
@@ -305,7 +305,7 @@ var searchUrlObj = {};
 searchUrlObj = JSON.parse('{yun:}$searchUrlObj{/yun}');
 '{yun:}/if{/yun}'
 
-//行业数据
+// Industry data
 var hy	=	parseInt('{yun:}$smarty.get.hy{/yun}');
 var hyChoosed = 0;
 var hyData = [];
@@ -318,24 +318,24 @@ var prData = [];
 var mun	=	parseInt('{yun:}$smarty.get.mun{/yun}');
 var munChoosed = 0;
 var munData = [];
-// {yun:}t key='member_com_00307'{/yun}
+// Part-time type
 var partType = parseInt('{yun:}$smarty.get.type{/yun}');
 var partTypeChoosed = 0;
 var partTypeData = [];
-// {yun:}t key='wap_user_00220'{/yun}-{yun:}t key='member_user_00199'{/yun}
+// Part-time billing cycle
 var partBillingCycle = parseInt('{yun:}$smarty.get.cycle{/yun}');
 var partBillingCycleChoosed = 0;
 var partBillingCycleData = [];
 
 
 var publictwo_vue =  new Vue({
-		el: '#publictwo",
+		el: '#publictwo',
 		data: {
-			//城市筛选参数
+			// City filter params
 	        areaValue:cityChoosed,
 		    areaOptions:cityData,
 		    areaShow:false,
-		    //职能筛选参数
+		    // Function filter params
 	        jobValue:jobChoosed,
 		    jobOptions:jobData,
 		    jobShow:false,
@@ -347,25 +347,25 @@ var publictwo_vue =  new Vue({
 		    hyShow:false,
 		    hyData:hyData,
 		    hyChoosed:hyChoosed,
-		    //{yun:}t key='wap_com_00159'{/yun}
+		    // Enterprise nature
 		    prShow:false,
 		    prData:prData,
 		    prChoosed:prChoosed,
-		    //{yun:}t key='wap_com_00163'{/yun}
+		    // Enterprise size
 		    munShow:false,
 		    munData:munData,
 		    munChoosed:munChoosed,
-			//{yun:}t key='member_com_00307'{/yun}
+			// Part-time type
 			partTypeShow: false,
 			partTypeData: partTypeData,
 			partTypeChoosed: partTypeData,
-			//{yun:}t key='wap_user_00220'{/yun}-{yun:}t key='member_user_00199'{/yun}
+			// Part-time billing cycle
 			partBillingCycleShow: false,
 			partBillingCycleData: partBillingCycleData,
 			partBillingCycleChoosed: partBillingCycleData,
 	    },
 	    methods:{
-	    	//{yun:}t key='wap_00238'{/yun}-{yun:}t key='default_00280'{/yun}
+	    	// Filter - region
 	    	onAreaFinish({selectedOptions}) {
 
 		      	searchUrlObj.provinceid = searchUrlObj.cityid = searchUrlObj.threecityid = "";
@@ -381,10 +381,10 @@ var publictwo_vue =  new Vue({
 		      	}
 		      	this.searchUrl();
 		    },
-		    //{yun:}t key='wap_00238'{/yun}-职能
+	    	// Filter - function
 	    	onJobFinish({selectedOptions}) {
 		      	
-		      	searchUrlObj.job1 = searchUrlObj.job1son = searchUrlObj.jobpost = "';
+		      	searchUrlObj.job1 = searchUrlObj.job1son = searchUrlObj.jobpost = "";
 
 		      	if(selectedOptions[0] && selectedOptions[0].value>0){
 		      		searchUrlObj.job1 = selectedOptions[0].value;
@@ -458,7 +458,7 @@ function resumemoreShow(){
 	publictwo_vue.$data.resumemoreShow = true;
 }
 function hyshow(){
-	//行业数据
+	// Industry data
 	if(typeof hi !='undefined' && hi.length>0){
 		for(let i in hi){
 			hyData.push({text:hyname[hi[i]],val:hi[i]});
@@ -503,7 +503,7 @@ function munshow(){
 	publictwo_vue.$data.munShow = true;
 }
 function partTypeShow(){
-	//兼职类型数据
+	// Part-time type data
 	if(typeof partd!='undefined' && partd['part_type'].length>0){
 		for(let i in partd['part_type']){
 			partTypeData.push({text:partn[partd['part_type'][i]],val:partd['part_type'][i]});
@@ -518,7 +518,7 @@ function partTypeShow(){
 	publictwo_vue.$data.partTypeShow = true;
 }
 function partBillingCycleShow(){
-	//兼职类型数据
+	// Part-time billing cycle data
 	if(typeof partd!='undefined' && partd['part_billing_cycle'].length>0){
 		for(let i in partd['part_billing_cycle']){
 			partBillingCycleData.push({text:partn[partd['part_billing_cycle'][i]],val:partd['part_billing_cycle'][i]});

@@ -19,20 +19,20 @@
 					{yun:}if $order.type==1{/yun}{yun:}t key='default_00090'{/yun}
 					{yun:}elseif $order.type==2{/yun}{yun:}$config.integral_pricename{/yun}{yun:}t key='common_01946'{/yun}
 					{yun:}elseif $order.type==3{/yun}{yun:}t key='admin_system_00529'{/yun}
-					{yun:}elseif $order.type==5{/yun}购买增值包
+					{yun:}elseif $order.type==5{/yun}{yun:}t key='wap_01233'{/yun}
 					{yun:}elseif $order.type==10{/yun}{yun:}t key='wap_com_00238'{/yun} 
 					{yun:}elseif $order.type==11{/yun}{yun:}t key='member_com_00247'{/yun} 
 					{yun:}elseif $order.type==12{/yun}{yun:}t key='wap_com_00237'{/yun}
 					{yun:}elseif $order.type==13{/yun}{yun:}t key='wap_com_00239'{/yun} 
 					{yun:}elseif $order.type==16{/yun}{yun:}t key='wap_com_00029'{/yun}
-					{yun:}elseif $order.type==17{/yun}刷新兼职 
+					{yun:}elseif $order.type==17{/yun}{yun:}t key='wap_01231'{/yun}
 					{yun:}elseif $order.type==19{/yun}{yun:}t key='wap_00451'{/yun} 
 					{yun:}elseif $order.type==20{/yun}{yun:}t key='wap_com_00028'{/yun}
-					{yun:}elseif $order.type==21{/yun}上架兼职
-					{yun:}elseif $order.type==22{/yun}上架猎头职位
+					{yun:}elseif $order.type==21{/yun}{yun:}t key='wap_01234'{/yun}
+					{yun:}elseif $order.type==22{/yun}{yun:}t key='wap_01235'{/yun}
 					{yun:}elseif $order.type==23{/yun}{yun:}t key='wap_com_00046'{/yun} 
 					{yun:}elseif $order.type==24{/yun} {yun:}t key='default_00030'{/yun}
-					{yun:}elseif $order.type==28{/yun}购买招聘会报名次数
+					{yun:}elseif $order.type==28{/yun}{yun:}t key='wap_01236'{/yun}
 					{yun:}/if{/yun}
 				</em>
 			</div>
@@ -53,7 +53,7 @@
 		</div>
 		{yun:}else{/yun}
 	   <div class="pay_zfgb_tip">
-			<span>网站已关闭支付功能，{yun:}t key='wap_00509'{/yun}！</span>
+			<span>{yun:}t key='wap_01043'{/yun}{yun:}t key='wap_00509'{/yun}！</span>
 		</div>
 		{yun:}/if{/yun}
 
@@ -73,7 +73,7 @@
     function order_form() {
         var paytype = $('#paytype').val();
         if(paytype == "") {
-            showToast('请选择一种支付方式！', 2);
+            showToast('{yun:}t key='wap_01042'{/yun}', 2);
             return false;
         } else if(paytype == 'alipay') {
             $("#paymentform").attr("action", "{yun:}$config.sy_weburl{/yun}/api/wapalipay/alipayto.php?dingdan={yun:}$order.order_id{/yun}&dingdanname={yun:}$order.order_id{/yun}&alimoney={yun:}$order.order_price{/yun}");

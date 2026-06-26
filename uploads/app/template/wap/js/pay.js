@@ -1,4 +1,8 @@
 //加减乘除
+function wapPub(key) {
+	var pub = typeof WAP_PUBLIC_I18N !== 'undefined' ? WAP_PUBLIC_I18N : {};
+	return pub[key] || '';
+}
 function accAdd(arg1, arg2) {
 	var r1, r2, m;
 	try {
@@ -106,7 +110,7 @@ $("ul#integral_num").on("click", "li", function() {
 		$(this).addClass("pay_choice_cur"); // 点击li添加class
 		$(this).siblings('li').removeClass("pay_choice_cur"); // 删除兄弟li的class属性
 	}else{
-		showToast('最低充值：' + min_integral + jifen, 2);
+		showToast(wapPub('minRechargePrefix') + min_integral + jifen, 2);
 		return false;
 	}
 
@@ -315,7 +319,7 @@ function integral_add_buy() {
 	var integral_need = accMul(r_integral, pro);
 
 	if(parseInt(integral) < parseInt(integral_need)) {
-		showToast(pricename+"不足，请先充值", 2, function() {
+		showToast(pricename + wapPub('insufficientRecharge'), 2, function() {
 			location.href = wapurl + "member/index.php?c=pay";
 		});
 		return false;
@@ -353,7 +357,7 @@ function integral_rating_buy() {
 	var integral_need = accMul(r_integral, pro);
 
 	if(parseInt(integral) < parseInt(integral_need)) {
-		showToast(pricename+"不足，请先充值", 2, function() {
+		showToast(pricename + wapPub('insufficientRecharge'), 2, function() {
 			location.href = "index.php?c=pay";
 		});
 		return false;
@@ -391,7 +395,7 @@ function pay_form() {
 
 	var paytype = $('#paytype').val();
 	if(paytype == "") {
-		showToast('请选择一种支付方式！', 2);
+		showToast(wapPub('selectPaymentMethod'), 2);
 		return false;
 	}
 	showLoading();
@@ -407,7 +411,7 @@ function integral_form() {
 	var integral = $('#integral_int').val();
 
 	if(parseInt(min_integral) > parseInt(integral)) {
-		showToast('最低充值：' + min_integral + pricename, 2);
+		showToast(wapPub('minRechargePrefix') + min_integral + pricename, 2);
 		return false;
 	}
 
@@ -418,7 +422,7 @@ function integral_form() {
 
 	var paytype = $('#paytype').val();
 	if(paytype == "") {
-		showToast('请选择一种支付方式！', 2);
+		showToast(wapPub('selectPaymentMethod'), 2);
 		return false;
 	}
 
@@ -486,7 +490,7 @@ function setJobPromote(id , type){
 	
 	if (days == '') {
 		
-		showToast('请填写职位推广天数！', 2);
+		showToast(wapPub('fillPromoteDays'), 2);
 		return false;
 	}
 	

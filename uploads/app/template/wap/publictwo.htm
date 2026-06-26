@@ -164,7 +164,7 @@
 		})
 	}
 </script>
-<!-- Category职位类别 -->
+<!-- Category: job type -->
 <div class="Category-eject pubtwo none">
 	<ul class="Category-w" id="jobone">
 		{yun:}foreach item=v from=$job_index{/yun}
@@ -178,7 +178,7 @@
 </div>
 <!-- End Category -->
 
-<!-- grade 城市类别-->
+<!-- Grade: city category -->
 <div class="grade-eject pubtwo none">
 	<input type="hidden" id="kzq" value="{yun:}$smarty.get.c{/yun}"/>
 	<ul class="grade-w" id="provinceid">
@@ -245,7 +245,7 @@
 
 <!-- End Sortexp -->
 
-<!-- Sort 找工作经验-->
+<!-- Sort: work experience -->
 <div class="Sort-eject Sort-height pubtwo none">
 <div  id="Sort-Sort">
 <div class="conditional_screening_box">
@@ -256,7 +256,7 @@
 </div>
 <!-- End Sort -->
 
-<!-- Sorthy 行业弹出框-->
+<!-- Industry picker popup -->
 <div class="Sorthy-eject Sorthy-height pubtwo none">
 	<ul class="Sorthy-Sorthy" id="Sorthy-Sorthy">
 		{yun:}foreach from=$industry_index item=v{/yun}
@@ -273,7 +273,7 @@
 </div>
 <!-- End Sorthy -->
 
-<!-- Sortpr 企业性质弹出框-->
+<!-- Company nature picker popup -->
 <div class="Sortpr-eject Sortpr-height pubtwo none">
 	<ul class="Sortpr-Sortpr" id="Sortpr-Sortpr">
 		{yun:}foreach from=$comdata.job_pr item=v{/yun}
@@ -291,7 +291,7 @@
 </div>
 <!-- End Sortpr -->
 
-<!-- Sortmun 企业规模弹出框-->
+<!-- Company size picker popup -->
 <div class="Sortmun-eject Sortmun-height pubtwo none">
 	<ul class="Sortmun-Sortmun" id="Sortmun-Sortmun">
 		{yun:}foreach from=$comdata.job_mun item=v{/yun}
@@ -308,7 +308,7 @@
 </div>
 <!-- End Sortmun -->
 
-<!-- Sorttype 兼职类型弹出框-->
+<!-- Part-time type picker popup -->
 <div class="Sorttype-eject Sorttype-height pubtwo none">
 	<ul class="Sorttype-Sorttype" id="Sorttype-Sorttype">
 		{yun:}foreach from=$partdata.part_type item=v{/yun}
@@ -319,7 +319,7 @@
 	</ul>
 </div>
 <!-- End Sorttype -->
-<!-- Sortcycle 结算周期弹出框-->
+<!-- Billing cycle picker popup -->
 <div class="Sortcycle-eject Sortcycle-height pubtwo none">
 	<ul class="Sortcycle-Sortcycle" id="Sortcycle-Sortcycle">
 		{yun:}foreach from=$partdata.part_billing_cycle item=v{/yun}
@@ -347,7 +347,7 @@
 	</ul>
 </div>
 
-<!-- wap商城商品类别 -->
+<!-- WAP mall product category -->
 <div class="redeem-eject pubtwo none">
 	<ul class="redeem-w" id="nid">
 		{yun:}foreach from=$redeem_index item=v{/yun}

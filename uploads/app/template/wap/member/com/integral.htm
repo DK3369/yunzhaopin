@@ -1,7 +1,7 @@
 {yun:}include file="$wapstyle/member/cheader.htm"{/yun}
-<!-- 页面头部 -->
+<!-- Page header -->
 <div id="yunvue" class="none"> 
-<!-- 页面主体部分 -->
+<!-- Main content -->
 
     <div class="mission_body">
     <div class="mission_body_card">
@@ -18,7 +18,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="task_subject_box_btn_accomplish" v-if="tasklist.signin">已签到</div>
+                <div class="task_subject_box_btn_accomplish" v-if="tasklist.signin">{yun:}t key='wap_00989'{/yun}</div>
                 <div class="task_subject_box_btn" v-else @click="sign">{yun:}t key='wap_user_00118'{/yun}</div>                
             </li>
             <li>
@@ -123,7 +123,7 @@
                     </div>
                 </div>                
                 <div class="task_subject_box_btn" v-if="tasklist.question" onclick="navigateTo('{yun:}url m=wap c=ask a=addquestion{/yun}')">{yun:}t key='wap_com_00184'{/yun}</div> 
-                <div class="task_subject_box_btn_accomplish" v-else>今日已发布</div>               
+                <div class="task_subject_box_btn_accomplish" v-else>{yun:}t key='wap_00992'{/yun}</div>               
             </li>
             <li>
                 <div class="task_subject_box">
@@ -131,7 +131,7 @@
                         <img src="{yun:}$wap_style{/yun}/images/vip_datum.png" alt="">
                     </div>
                     <div class="task_subject_init">
-                        <div class="subject_init_top">完善基本资料</div>
+                        <div class="subject_init_top">{yun:}t key='wap_00990'{/yun}</div>
                         <div class="subject_init_bom">
                             +{{integral_userinfo}}{{integral_pricename}}
                         </div>
@@ -147,7 +147,7 @@
                         <img src="{yun:}$wap_style{/yun}/images/task_falst_logoin.png" alt="">
                     </div>
                     <div class="task_subject_init">
-                        <div class="subject_init_top">每天首次登录</div>
+                        <div class="subject_init_top">{yun:}t key='wap_00991'{/yun}</div>
                         <div class="subject_init_bom">
                             +{{integral_login}}{{integral_pricename}}
                         </div>
@@ -206,19 +206,19 @@
                         <img src="{yun:}$wap_style{/yun}/images/task_reply.png" alt="">
                     </div>
                     <div class="task_subject_init">
-                        <div class="subject_init_top">评论回复</div>
+                        <div class="subject_init_top">{yun:}t key='wap_00994'{/yun}</div>
                         <div class="subject_init_bom">
                             +{{integral_answerpl}}{{integral_pricename}}
                         </div>
                     </div>
                 </div>
-                <div class="task_subject_box_btn" v-if="tasklist.answerpl" onclick="navigateTo('{yun:}url m=wap c=ask{/yun}')">评论回复</div>
+                <div class="task_subject_box_btn" v-if="tasklist.answerpl" onclick="navigateTo('{yun:}url m=wap c=ask{/yun}')">{yun:}t key='wap_00994'{/yun}</div>
                 <div class="task_subject_box_btn_accomplish" v-else>{yun:}t key='wap_com_00187'{/yun}</div>                
             </li>
         </ul>
     </div>
 </div>
-	<!--  邀请注册海报  -->
+	<!-- Invite registration poster -->
     <van-popup v-model="inviteRegHbShow" round closeable :style="{height:'90%',width:'90%',background:'none'}">
         <div class="hb_tc">
             <img :src="inviteRegHb" style="max-width: 100%;">
@@ -342,7 +342,7 @@
                         showToast("{yun:}t key='wap_user_00105'{/yun}", 2);
                         return false;
                     }
-                    hbNum = invite_reg_hbids.length; // 重新分配海报数量
+                    hbNum = invite_reg_hbids.length;
                 }
 
                 showLoading("{yun:}t key='wap_00073'{/yun}");

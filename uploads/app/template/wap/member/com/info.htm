@@ -6,7 +6,7 @@
 <script src="{yun:}$wap_style{/yun}/js/compress.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
 <script src="{yun:}$wap_style{/yun}/js/exif.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
 
-<!-- 页面整体部分 -->
+<!-- Page layout -->
 <div id="yunvue" class="none">
 
     <div class="issue_post_body">
@@ -14,9 +14,9 @@
             <div class="yun_createbox">
          
 				<div class="yun_createlist"@click="openPhoto">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>企业logo</div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='wap_com_00149'{/yun}</div>
 					<div class="yun_create_text">
-							<div class="yun_create_tx">上传logo赢更多曝光机会</div>
+							<div class="yun_create_tx">{yun:}t key='wap_com_00123'{/yun}</div>
 					<div class="yun_create_tximg" >
 						<img :src="logo" alt="" width="100%" height="100%">
 					</div>
@@ -25,20 +25,20 @@
 				
                 <div class="yun_createlist">
                   
-                        <div class="yun_create_name"><span class="m_bt">*</span>企业名称</div>
+                        <div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_com_00157'{/yun}</div>
 						<div class="yun_create_text_p" style="color: #c9c5c5;" v-if="cominfo.yyzz_status==1"> {{cominfo.name}}
                             <input name="name" v-model="cominfo.name" type="hidden">
                         </div>
                         <div class="yun_create_text" v-if="cominfo.yyzz_status!=1">
-                            <input name="name" v-model="cominfo.name" placeholder="请输入企业全称" type="text">
+                            <input name="name" v-model="cominfo.name" :placeholder="i18n.fullNamePlaceholder" type="text">
                         </div>
                   
                 </div>
                 <div class="yun_createlist">
                   
-                        <div class="yun_create_name"><span class="m_bt">*</span>从事行业</div>
+                        <div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00010'{/yun}</div>
                         <div class="yun_create_select" @click="hyShow=true" v-if="hyIndex">{{hy.name[hyIndex]}}</div>
-						<div class="yun_create_select" @click="hyShow=true" v-else  style="color:#cecccc;">请选择从事行业</div>
+						<div class="yun_create_select" @click="hyShow=true" v-else  style="color:#cecccc;">{yun:}t key='wap_user_00009'{/yun}</div>
                         <van-popup v-model="hyShow" position="bottom"/>
                         <van-picker show-toolbar :default-index="hyIndex" @cancel="hyShow = false" :columns="hy.name" @confirm="bindhyChange"/></van-popup>
                         <input hidden="true" name="hy" :value="cominfo.hy?cominfo.hy:0"/>
@@ -49,9 +49,9 @@
                 </div>
                 <div class="yun_createlist">
                    
-                        <div class="yun_create_name"><span class="m_bt">*</span>企业性质</div>
+                        <div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_com_00159'{/yun}</div>
 						<div class="yun_create_select" @click="prShow=true" v-if="prIndex">{{pr.name[prIndex]}}</div>
-						<div class="yun_create_select" @click="prShow=true" v-else  style="color:#cecccc;">请选择企业性质</div>
+						<div class="yun_create_select" @click="prShow=true" v-else  style="color:#cecccc;">{yun:}t key='wap_com_00143'{/yun}</div>
 						<van-popup v-model="prShow" position="bottom"/>
                         <van-picker show-toolbar :default-index="prIndex" @cancel="prShow = false" :columns="pr.name" @confirm="bindprChange"/></van-popup>
                         <input hidden="true" name="pr" :value="cominfo.pr?cominfo.pr:0"/>
@@ -62,9 +62,9 @@
                 </div>
                 <div class="yun_createlist">
              
-                        <div class="yun_create_name"><span class="m_bt">*</span>企业规模</div>
+                        <div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_com_00163'{/yun}</div>
 						<div class="yun_create_select" @click="munShow=true" v-if="munIndex">{{mun.name[munIndex]}}</div>
-						<div class="yun_create_select" @click="munShow=true" v-else  style="color:#cecccc;">请选择企业规模</div>
+						<div class="yun_create_select" @click="munShow=true" v-else  style="color:#cecccc;">{yun:}t key='wap_com_00144'{/yun}</div>
 						
                         <van-popup v-model="munShow" position="bottom"/>
                         <van-picker show-toolbar :default-index="munIndex" @cancel="munShow = false" :columns="mun.name" @confirm="bindmunChange"/></van-popup>
@@ -75,10 +75,10 @@
                   </div>
                 <div class="yun_createlist">
                  
-                        <div class="yun_create_name"><span class="m_bt">*</span>企业地址</div>
+                        <div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_com_00158'{/yun}</div>
 						
 						<div class="yun_create_text_p" @click="openAddress" v-if="city">{{city}}</div>
-						<div class="yun_create_text_p" @click="openAddress"style="color:#cecccc;" v-else>{{nocity}}</div>
+						<div class="yun_create_text_p" @click="openAddress"style="color:#cecccc;" v-else>{{i18n.selectCity}}</div>
 						
                   
 					
@@ -90,37 +90,37 @@
                 </div>
                 <div class="yun_createlist">
                   
-                        <div class="yun_create_name"><span class="m_bt">*</span>联系人</div>
+                        <div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00267'{/yun}</div>
                         <div class="yun_create_text">
-                            <input name="linkman" id="linkman" placeholder="请输入联系人" v-model="cominfo.linkman" onblur="notNumber(this)"/>
+                            <input name="linkman" id="linkman" :placeholder="i18n.linkmanPlaceholder" v-model="cominfo.linkman" onblur="notNumber(this)"/>
                         </div>
                 
             
                 </div>
                 <div class="yun_createlist">
                    
-                        <div class="yun_create_name"><span class="m_bt">*</span>手机号</div>
+                        <div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00180'{/yun}</div>
 						<div class="yun_create_text_p" style="color: #c9c5c5;"v-if="cominfo.moblie_status == 1">{{cominfo.linktel}}
                             <input name="linktel" v-model="cominfo.linktel" type="hidden"/>
                         </div>
                         <div class="yun_create_text" v-if="cominfo.moblie_status != 1">
-                            <input name="linktel" placeholder="请输入联系手机" v-model="cominfo.linktel" oninput="value=value.replace(/^0|[\^d]/g,'')" type="number" maxlength="11"  />
+                            <input name="linktel" :placeholder="i18n.mobilePlaceholder" v-model="cominfo.linktel" oninput="value=value.replace(/^0|[\^d]/g,'')" type="number" maxlength="11"  />
                         </div>
                    
                 </div>
                 <div class="yun_createlist">
                     
-                        <div class="yun_create_name"><span class="m_bt">&nbsp;</span>固定电话</div>
+                        <div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='wap_com_00014'{/yun}</div>
                         <div class="yun_create_text">
-                            <input name="linkphone" placeholder="请填写固定电话" v-model="cominfo.linkphone"/>
+                            <input name="linkphone" :placeholder="i18n.landlinePlaceholder" v-model="cominfo.linkphone"/>
                         </div>
                   
                 </div>
                 <div class="yun_createlist">
-                        <div class="yun_create_name"><span class="m_bt">*</span>公司简介</div>
+                        <div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_com_00168'{/yun}</div>
                       
 						<div class="yun_create_text_p" style="overflow: hidden;text-overflow: ellipsis; white-space: nowrap;width: 5rem" @click="openDec=true" v-if="cominfo.content_t">{{cominfo.content_t}}</div>
-						<div class="yun_create_text_p" style="overflow: hidden;text-overflow: ellipsis; white-space: nowrap;width: 5rem" @click="openDec=true"style="color:#cecccc;" v-else>请对企业进行介绍~</div>
+						<div class="yun_create_text_p" style="overflow: hidden;text-overflow: ellipsis; white-space: nowrap;width: 5rem" @click="openDec=true"style="color:#cecccc;" v-else>{yun:}t key='wap_com_00130'{/yun}</div>
 						
 						
                    <div class="yun_create_fx">
@@ -128,14 +128,14 @@
                     </div>
                 </div>
                 <div class="yun_createlist" v-if="cominfo.licensecert == 1">
-                    <div class="yun_create_name"><span class="m_bt">*</span>企业资质</div>
+                    <div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_com_00075'{/yun}</div>
                     <div class="yun_create_text_p" @click="toCert">
                         <div class="yunCreatSuce">
                             <div class="yunCreatRenzs">
-                                <span style="color: #e6a23c; background: #fdf6ec;" v-if="cominfo.cert_status==-1">未认证</span>
-                                <span style="color: #409eff; background: #ecf5ff;" v-if="cominfo.cert_status==0">审核中</span>
-                                <span style="color: #67c23a; background: #f0f9eb;" v-if="cominfo.cert_status==1">已认证</span>
-                                <span style="color: #f56c6c; background: #fef0f0;" v-if="cominfo.cert_status==2">审核未通过</span>
+                                <span style="color: #e6a23c; background: #fdf6ec;" v-if="cominfo.cert_status==-1">{{i18n.notCertified}}</span>
+                                <span style="color: #409eff; background: #ecf5ff;" v-if="cominfo.cert_status==0">{{i18n.reviewing}}</span>
+                                <span style="color: #67c23a; background: #f0f9eb;" v-if="cominfo.cert_status==1">{{i18n.certified}}</span>
+                                <span style="color: #f56c6c; background: #fef0f0;" v-if="cominfo.cert_status==2">{{i18n.reviewFailed}}</span>
                             </div>
                         </div>
                     </div>
@@ -145,8 +145,8 @@
                 </div>
                 <div class="yun_createlist yun_createlistend" @click="supInfoShow=true">
                   
-                        <div class="yun_create_name"><span class="m_bt">&nbsp;</span>补充信息</div>
-                        <div class="yun_create_text_p"style="color:#cecccc;">让求职者更好的了解企业</div>
+                        <div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='wap_com_00175'{/yun}</div>
+                        <div class="yun_create_text_p"style="color:#cecccc;">{yun:}t key='wap_com_00126'{/yun}</div>
                   
                    <div class="yun_create_fx">
                    	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="">
@@ -154,7 +154,7 @@
                 </div>
             </div>
             <div class="yun_create_bthbox">
-                <button type="submit" class="yun_create_bth">保 存</button>
+                <button type="submit" class="yun_create_bth">{yun:}t key='wap_com_00017'{/yun}</button>
             </div>
         </form>
     </div>
@@ -163,7 +163,7 @@
 
         <div class="comheader">
             <a class="comheader_return" @click="photoShow = false"></a>
-            <div class="comheader_tit">企业LOGO</div>
+            <div class="comheader_tit">{yun:}t key='wap_com_00148'{/yun}</div>
         </div>
         <div class="verify">
             <div class="photo_i_box_v">
@@ -176,15 +176,15 @@
                         </div>
                         <div class="clear"></div>
                         <div class="photo_xz">
-                            <input id="image" type="file" accept="image/*" onchange="photoChange(this)"/> 选择上传logo
+                            <input id="image" type="file" accept="image/*" onchange="photoChange(this)"/> {yun:}t key='wap_com_00133'{/yun}
 
                         </div>
-                        <div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>选择上传logo点击提交按钮即可上传
+                        <div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>{yun:}t key='wap_00840'{/yun}
                             <span v-if="cominfo.logo_n">
                                 (
-                                <font v-if="cominfo.logo_status == '1'" color="red">审核中</font>
-                                <font v-else-if="cominfo.logo_status == '2'" color="red">未通过</font>
-                                <font v-else color="red">已审核</font>
+                                <font v-if="cominfo.logo_status == '1'" color="red">{{i18n.reviewing}}</font>
+                                <font v-else-if="cominfo.logo_status == '2'" color="red">{{i18n.rejected}}</font>
+                                <font v-else color="red">{{i18n.approved}}</font>
                                 )
                             </span>
                         </div>
@@ -193,7 +193,7 @@
                     <input type="hidden" value="" id="preview">
                 </div>
                 <div class="photo_tj">
-                    <input name="submit" type="button" onclick="photo()" value="提交" class="yunset_bth"/>
+                    <input name="submit" type="button" onclick="photo()" :value="i18n.submit" class="yunset_bth"/>
                 </div>
             </div>
         </div>
@@ -205,15 +205,15 @@
     			<a class="comheader_return" @click="addressShow = false">
                     <img src="{yun:}$wap_style{/yun}/images/header_back.png?v={yun:}$config.cachecode{/yun}" alt="">         
                 </a>
-    			<div class="comheader_tit">企业位置</div>
-                <span class="comheadSures" @click="jobAddress">确定</span>
+    			<div class="comheader_tit">{yun:}t key='wap_com_00156'{/yun}</div>
+                <span class="comheadSures" @click="jobAddress">{yun:}t key='common_02016'{/yun}</span>
             </div>
     		
             <div class="comWapMapSubct">
                     <div class="comWapMapOnes">
     					<div class="comWapMapTwos" v-if="map_key!=''">
                             <div class="body_card_job_box">
-                                请单击下方地图完成地址标记
+                                {yun:}t key='wap_com_00003'{/yun}
                             </div>
     						<div id="map_container"  style="width:100%;height:280px;overflow: hidden;margin:0;font-family:'微软雅黑';" v-if="map_key!=''"></div>
                         </div>
@@ -222,10 +222,10 @@
                         <div class="comWapMapShows">
                             <div class="comWapMapEatel">
                                 <div class="yun_createlist"@click="areaShow=true">
-                                    <div class="yun_create_name">所在地区</div>
+                                    <div class="yun_create_name">{yun:}t key='wap_com_00015'{/yun}</div>
                                     <div class="yun_create_text_p" >
                                         <span v-if="city">{{city}}</span>
-                                        <span v-else style="color: #d1d0db">请选择所在地区</span>
+                                        <span v-else style="color: #d1d0db">{yun:}t key='wap_com_00146'{/yun}</span>
                                     </div>
                                     <input hidden="true" name="provinceid" :value="provinceid"/>
                                     <input hidden="true" name="cityid" :value="cityid"/>
@@ -236,14 +236,14 @@
                                     </div>
                                 </div>
                                 <div class="yun_createlist">
-                                        <div class="yun_create_name">详细地址</div>
+                                        <div class="yun_create_name">{yun:}t key='wap_user_00243'{/yun}</div>
                                         <div class="yun_create_text">
-                                            <input placeholder="建议格式：XX市XX县XX路" v-model="address" id="address" name="address"/>
+                                            <input :placeholder="i18n.addressFormatHint" v-model="address" id="address" name="address"/>
                                         </div>
                                 </div>
                             </div>
                             <div class="comWapMapTishi" v-if="poi.length > 0">
-                                <span>可以选择搜索结果设置企业位置</span>
+                                <span>{yun:}t key='wap_com_00001'{/yun}</span>
                             </div>
                             <ul>
                                 <li v-for="(item,pk) in poi" :key="pk">
@@ -263,54 +263,54 @@
                :style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
         <div class="comheader">
             <a class="comheader_return" @click="openDec = false"></a>
-            <div class="comheader_tit">企业简介</div>
+            <div class="comheader_tit">{yun:}t key='wap_com_00168'{/yun}</div>
         </div>
 
         <div class="issue_post_body">
             <div class="yun_createbox">
-				<div class="yun_create_bjtip">不能填写电话，QQ，微信等联系方式及特殊符号，性别歧视等内容  </div>
+				<div class="yun_create_bjtip">{yun:}t key='wap_user_00059'{/yun}  </div>
                  <div class="yun_createtextarea">
 					  <div class="yun_createtextarea_c">
-				<textarea :class="isTextarea?'none':''" id="content" placeholder="请对企业进行介绍~" maxlength="-1"
+				<textarea :class="isTextarea?'none':''" id="content" :placeholder="i18n.introPlaceholder" maxlength="-1"
                           style="width:100%;height: 300px;" name="description" :value="cominfo.content"></textarea>
             </div>    </div>
 			 </div>
 
             <div class="yun_create_bthbox">
-                <button type="submit" class="yun_create_bth" @click="upDesc">保 存</button>
+                <button type="submit" class="yun_create_bth" @click="upDesc">{yun:}t key='wap_com_00017'{/yun}</button>
             </div>
         </div>
     </van-popup>
 
-    <!--城市选择-->
+    <!-- City picker -->
     <van-popup v-model="areaShow" round position="bottom">
-        <van-cascader v-model="areaValue" title="请选择工作区域" :options="areaOptions" @close="areaShow = false" @finish="onAreaFinish"/>
+        <van-cascader v-model="areaValue" :title="i18n.workAreaTitle" :options="areaOptions" @close="areaShow = false" @finish="onAreaFinish"/>
     </van-popup>
 
     <van-popup v-model="supInfoShow" position="right" :style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
         <div class="comheader">
             <a class="comheader_return" @click="supInfoShow = false"></a>
-            <div class="comheader_tit">补充信息</div>
+            <div class="comheader_tit">{yun:}t key='wap_com_00175'{/yun}</div>
         </div>
-        <!--补充信息弹出-->
+        <!-- Supplement info popup -->
         <div class="issue_post_body">
             <form onsubmit="return formSubmit(this)">
-                <div class="job_resume_jn_tip">完善信息可让求职者更好的了解企业</div>
+                <div class="job_resume_jn_tip">{yun:}t key='wap_com_00119'{/yun}</div>
                 <div class="yun_createbox">
                     <div class="yun_createlist">
 
-                            <div class="yun_create_name">企业简称</div>
+                            <div class="yun_create_name">{yun:}t key='wap_com_00161'{/yun}</div>
                             <div class="yun_create_text">
-                                <input name="shortname" placeholder="请输入企业简称" v-model="cominfo.shortname"/>
+                                <input name="shortname" :placeholder="i18n.shortNamePlaceholder" v-model="cominfo.shortname"/>
                             </div>
 
                     </div>
                     <div class="yun_createlist">
 
-                            <div class="yun_create_name">公司福利</div>
+                            <div class="yun_create_name">{yun:}t key='wap_com_00167'{/yun}</div>
 
 							<div class="yun_create_select"@click="gsflShow=true" v-if="welfareval">{{welfareval}}</div>
-							<div class="yun_create_select" @click="gsflShow=true"style="color:#cecccc;" v-else>请选择公司福利</div>
+							<div class="yun_create_select" @click="gsflShow=true"style="color:#cecccc;" v-else>{yun:}t key='wap_com_00145'{/yun}</div>
 
                             <input name="welfare" :value="welfareval?welfareval:''" hidden="true"/>
                         </div>
@@ -319,17 +319,17 @@
                        </div>
                     <div class="yun_createlist">
 
-                            <div class="yun_create_name">企业邮箱</div>
+                            <div class="yun_create_name">{yun:}t key='wap_com_00164'{/yun}</div>
                             <div class="yun_create_text">
-                                <input name="linkmail" placeholder="请输入企业邮箱" v-model="cominfo.linkmail" :disabled="cominfo.email_status==1" />
-                                <div class="yun_create_tip" v-if="cominfo.email_status == 1">已验证</div>
+                                <input name="linkmail" :placeholder="i18n.emailPlaceholder" v-model="cominfo.linkmail" :disabled="cominfo.email_status==1" />
+                                <div class="yun_create_tip" v-if="cominfo.email_status == 1">{yun:}t key='wap_user_00246'{/yun}</div>
                             </div>
 
                     </div>
                     <div class="yun_createlist createlisFlexy">
-                            <div class="yun_create_name">传二维码</div>
+                            <div class="yun_create_name">{yun:}t key='wap_com_00165'{/yun}</div>
                             <div class="yun_create_text_p">
-                                <div class="yun_create_tx" style="font-size: 12px;">可上传二维码</div>
+                                <div class="yun_create_tx" style="font-size: 12px;">{yun:}t key='wap_com_00152'{/yun}</div>
                                 <input type="file" id="pic" name="pic" onchange="previewImage(this,'comqcode')" accept="image/*" value="" style="opacity:0;position: relative;left: -2.9rem;"/>
                                 <input type='hidden' name='preview' value='' id='comqcode'>
                             </div>
@@ -337,18 +337,18 @@
                                 <div @click="upComqcode" class="yun_sc_erwm" id="comqcodeshow">
                                     <img id="comqcodeimg" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_ewm{/yun}',2);" :src="cominfo.comqcode" alt="">
                                 </div>
-                                <div class="qingchud" v-if="cominfo.comqcode" @click="delcomqcode">清除</div>
+                                <div class="qingchud" v-if="cominfo.comqcode" @click="delcomqcode">{yun:}t key='wap_js_00092'{/yun}</div>
                             </div>
                     </div>
                     <div class="yun_createlist">
-                            <div class="yun_create_name">企业网址</div>
+                            <div class="yun_create_name">{yun:}t key='wap_com_00162'{/yun}</div>
                             <div class="yun_create_text">
-                                <input name="website" placeholder="请输入企业网址" v-model="cominfo.website"/>
+                                <input name="website" :placeholder="i18n.websitePlaceholder" v-model="cominfo.website"/>
                             </div>
 
                     </div>
                     <div class="yun_createlist">
-                            <div class="yun_create_name">联系方式</div>
+                            <div class="yun_create_name">{yun:}t key='wap_00462'{/yun}</div>
                             <div class="yun_create_select" @click="lxfsShow=true">
                                 {{infostatus.name[infostatusIndex]}}
                             </div>
@@ -361,47 +361,47 @@
                     <div class="yun_createlist yun_time_box not_disturb" v-show="notDisturb">
                         <div class="yun_time_all">
                             <div>
-                                <div class="yun_time_name">免扰开始时间</div>
-                                <div @click="notStartDisturbShow = true">{{notStartDisturb ? notStartDisturb : '请选择时间'}}</div>
+                                <div class="yun_time_name">{yun:}t key='wap_com_00150'{/yun}</div>
+                                <div @click="notStartDisturbShow = true">{{notStartDisturb ? notStartDisturb : i18n.selectTime}}</div>
                             </div>
-                            <div class="yun_b_z">至</div>
+                            <div class="yun_b_z">{yun:}t key='common_02098'{/yun}</div>
                             <div>
-                                <div class="yun_time_name">免扰结束时间</div>
-                                <div @click="notEndDisturbShow = true">{{notEndDisturb ? notEndDisturb : '请选择时间'}}</div>
+                                <div class="yun_time_name">{yun:}t key='wap_com_00151'{/yun}</div>
+                                <div @click="notEndDisturbShow = true">{{notEndDisturb ? notEndDisturb : i18n.selectTime}}</div>
                             </div>
                         </div>
                     </div>
                     <div class="yun_createlist">
 
-                            <div class="yun_create_name">您的职位</div>
+                            <div class="yun_create_name">{yun:}t key='wap_com_00170'{/yun}</div>
                             <div class="yun_create_text">
-                                <input name="linkjob" placeholder="请输入你在公司的职位" v-model="cominfo.linkjob"/>
+                                <input name="linkjob" :placeholder="i18n.linkjobPlaceholder" v-model="cominfo.linkjob"/>
                             </div>
 
                     </div>
                     <div class="yun_createlist">
 
-                            <div class="yun_create_name">联系QQ</div>
+                            <div class="yun_create_name">{yun:}t key='wap_com_00141'{/yun}</div>
                             <div class="yun_create_text">
-                                <input name="linkqq" placeholder="请输入联系QQ" v-model="cominfo.linkqq" oninput="value=value.replace(/^0|[\^d]/g,'')" type="number" />
+                                <input name="linkqq" :placeholder="i18n.qqPlaceholder" v-model="cominfo.linkqq" oninput="value=value.replace(/^0|[\^d]/g,'')" type="number" />
                             </div>
 
                     </div>
                     <div class="yun_createlist">
 
-                            <div class="yun_create_name">公交站点</div>
+                            <div class="yun_create_name">{yun:}t key='wap_com_00166'{/yun}</div>
                             <div class="yun_create_text">
-                                <input name="busstops" v-model="cominfo.busstops" placeholder="输入公交站点"/>
+                                <input name="busstops" v-model="cominfo.busstops" :placeholder="i18n.busStopPlaceholder"/>
                             </div>
                         </div>
                     <div class="yun_createlist">
                        
-                            <div class="yun_create_name">创办时间</div>
+                            <div class="yun_create_name">{yun:}t key='wap_com_00169'{/yun}</div>
 
 
-							<div class="yun_create_select"  @click="foundedYearShow = true"style="color:#cecccc;" v-if="!dateValue&&!cominfo.sdate">请选择创办时间</div>
-							<div class="yun_create_select"  @click="foundedYearShow = true" v-else-if="dateValue">{{dateValue}}年</div>
-							<div class="yun_create_select"  @click="foundedYearShow = true"  v-else>{{cominfo.sdate}}年</div>
+							<div class="yun_create_select"  @click="foundedYearShow = true"style="color:#cecccc;" v-if="!dateValue&&!cominfo.sdate">{yun:}t key='wap_00839'{/yun}</div>
+							<div class="yun_create_select"  @click="foundedYearShow = true" v-else-if="dateValue">{{dateValue}}{{i18n.yearSuffix}}</div>
+							<div class="yun_create_select"  @click="foundedYearShow = true"  v-else>{{cominfo.sdate}}{{i18n.yearSuffix}}</div>
 
                             <input hidden="true" name="sdate" :value="dateValue?dateValue:cominfo.sdate"/>
                      
@@ -411,20 +411,20 @@
                     </div>
                     <div class="yun_createlist">
 
-                            <div class="yun_create_name">注册资金</div>
+                            <div class="yun_create_name">{yun:}t key='wap_com_00171'{/yun}</div>
                             <div class="yun_create_text">
 
                                 <input hidden="true" name="moneytype" :value="cominfo.moneytype"/>
-                                <input type="number" name="money" placeholder="请输入注册资本" v-model="cominfo.money" oninput="value=value.replace(/^0|[\^d]/g,'')" />
-                                <span class="yun_create_dw" v-if="moneytypeIndex == 1" >万美元</span>
-                                <span class="yun_create_dw" v-else>万元</span>
+                                <input type="number" name="money" :placeholder="i18n.capitalPlaceholder" v-model="cominfo.money" oninput="value=value.replace(/^0|[\^d]/g,'')" />
+                                <span class="yun_create_dw" v-if="moneytypeIndex == 1" >{yun:}t key='wap_js_00002'{/yun}</span>
+                                <span class="yun_create_dw" v-else>{yun:}t key='wap_js_00004'{/yun}</span>
                             </div>
 
 
                     </div>
 					<div class="yun_createlist yun_createlistend">
 
-					        <div class="yun_create_name">注资单位</div>
+					        <div class="yun_create_name">{yun:}t key='wap_com_00172'{/yun}</div>
 							<div class="yun_create_select">
 							    <span @click="moneyShow=true">{{moneytype.name[moneytypeIndex]}}</span>
 							 </div>	 <div class="yun_create_fx">
@@ -432,74 +432,74 @@
                         </div></div>
                 </div>
                 <div class="yun_create_bthbox">
-                    <button type="submit" class="yun_create_bth">保 存</button>
+                    <button type="submit" class="yun_create_bth">{yun:}t key='wap_com_00017'{/yun}</button>
                 </div>
             </form>
         </div>
     </van-popup>
 
-    <!--公司福利-->
+    <!-- Company benefits -->
     <van-popup v-model="gsflShow" position="bottom" :closeable="true" @close="gsflShow=false" round>
         <div class="yun_jobadd_touch">
             <div class="jstextarea_tck_c_between">
-                <div class="xztextarea_tck_tit">福利待遇</div>
+                <div class="xztextarea_tck_tit">{yun:}t key='wap_com_00173'{/yun}</div>
             </div>
             <span v-for="(item, welfarekey) in welfareall" :key="welfarekey">
                 <span :class="item.ischecked==1 ? 'flbutton_tab':''" class="flbutton_tabh" @click="bindwelfareChang" :data-index="welfarekey" :id="'w' + (welfarekey + 1)">{{item.name}}</span>
             </span>
             <div class="fl_textbox welfare_box">
                 <span class="fl_text welfare_laft">
-                    <input type="text" v-model="welfareAdd" name="addwelfare" placeholder="输入福利名称"/>
+                    <input type="text" v-model="welfareAdd" name="addwelfare" :placeholder="i18n.welfareInputPlaceholder"/>
                 </span>
                 <span class="fl_but welfare_right">
-                    <input type="button" value="添加" @click="bindwelfareAdd"/>
+                    <input type="button" :value="i18n.add" @click="bindwelfareAdd"/>
                 </span>
             </div>
             <div class="lag_text_qd">
-                <div class="lag_text_qd_bth" @click="gsflShow = false">确认</div>
+                <div class="lag_text_qd_bth" @click="gsflShow = false">{yun:}t key='wap_js_00094'{/yun}</div>
             </div>
         </div>
 
     </van-popup>
-    <!--联系方式-->
+    <!-- Contact visibility -->
     <van-popup v-model="lxfsShow" position="bottom">
         <van-picker show-toolbar :default-index="infostatusIndex" @cancel="lxfsShow = false" :columns="infostatus.name" @confirm="bindinfostatusChange"/>
     </van-popup>
-    <!--注册资金-->
+    <!-- Registered capital -->
     <van-popup v-model="moneyShow" position="bottom">
         <van-picker show-toolbar :default-index="moneytypeIndex" @cancel="moneyShow = false" :columns="moneytype.name" @confirm="bindmoneytypeChange"/>
     </van-popup>
-    <!--创办时间-->
+    <!-- Founding year -->
     <van-popup v-model="foundedYearShow" position="bottom">
         <van-picker show-toolbar :default-index="foundedYearIndex" @cancel="foundedYearShow = false" :columns="foundedYear" @confirm="bindFoundedYear"/>
     </van-popup>
-    <!--免打扰时间-->
+    <!-- Do-not-disturb hours -->
     <van-popup v-model="notStartDisturbShow" position="bottom">
-            <van-datetime-picker v-model="notStartDisturb" type="time" title="选择时间" @confirm="bindStartNotDisturb" @cancel="notStartDisturbShow = false"/>
+            <van-datetime-picker v-model="notStartDisturb" type="time" :title="i18n.selectTime" @confirm="bindStartNotDisturb" @cancel="notStartDisturbShow = false"/>
     </van-popup>
     <van-popup v-model="notEndDisturbShow" position="bottom">
-        <van-datetime-picker  v-model="notEndDisturb" type="time" title="选择时间" @confirm="bindEndNotDisturb" @cancel="notEndDisturbShow = false"/>
+        <van-datetime-picker  v-model="notEndDisturb" type="time" :title="i18n.selectTime" @confirm="bindEndNotDisturb" @cancel="notEndDisturbShow = false"/>
     </van-popup>
     <van-popup v-model="certShow" position="right" :style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
         <div class="comheader">
             <a class="comheader_return" @click="certShow = false"></a>
-            <div class="comheader_tit">企业资质</div>
+            <div class="comheader_tit">{yun:}t key='wap_com_00075'{/yun}</div>
         </div>
         <div class="wap_member_box">
 
-        <!--状态提示语句-->
-        <div v-if="status==-1" class="security">未认证，当前未上传相关企业资质</div>
-        <div v-else-if="status==0" class="security">企业资质正在审核中，如需快速审核，请拨打客服服务热线：{yun:}($config.sy_comwebtel!='')?$config.sy_comwebtel:$config.sy_freewebtel{/yun}</div>
-        <div v-else-if="status==1" class="security">企业资质已成功认证，若需修改则需要重新审核</div>
-        <div v-else-if="status==2" class="security">审核未通过，{{statusBody ? '原因：'+statusBody+'，' : ''}}请重新上传。如有疑问可拨打服务热线：{yun:}($config.sy_comwebtel!='')?$config.sy_comwebtel:$config.sy_freewebtel{/yun}</div>
+        <!-- Status tips -->
+        <div v-if="status==-1" class="security">{yun:}t key='wap_com_00053'{/yun}</div>
+        <div v-else-if="status==0" class="security">{{i18n.certReviewing}}{yun:}($config.sy_comwebtel!='')?$config.sy_comwebtel:$config.sy_freewebtel{/yun}</div>
+        <div v-else-if="status==1" class="security">{yun:}t key='wap_com_00052'{/yun}</div>
+        <div v-else-if="status==2" class="security">{{i18n.reviewFailed}}，{{statusBody ? i18n.reasonPrefix + statusBody + '，' : ''}}{{i18n.certReuploadSuffix}}{yun:}($config.sy_comwebtel!='')?$config.sy_comwebtel:$config.sy_freewebtel{/yun}</div>
 
 
         <form id="certFrom">
 
             <ul class="security">
                 <li v-if="com_social_credit == 1">
-                    <span class="security_anme">信用代码</span>
-                    <div class="security_text"><input type="text" v-model="social_credit" class="security_text_t" placeholder="输入统一社会信用代码"></div>
+                    <span class="security_anme">{yun:}t key='wap_com_00062'{/yun}</span>
+                    <div class="security_text"><input type="text" v-model="social_credit" class="security_text_t" :placeholder="i18n.socialCreditPlaceholder"></div>
                 </li>
             </ul>
 
@@ -516,8 +516,8 @@
                     </div>
 
                     <i class="yunset_identity_pic_tj"></i>
-                    <div class="yunset_identity_tip" style="padding-top:10px;">上传营业执照/组织机构代码证</div>
-                    <span class="yunset_identity_tip_a">选择上传图片</span>
+                    <div class="yunset_identity_tip" style="padding-top:10px;">{yun:}t key='wap_com_00054'{/yun}</div>
+                    <span class="yunset_identity_tip_a">{yun:}t key='wap_com_00034'{/yun}</span>
                 </div>
             </div>
 
@@ -533,8 +533,8 @@
                         <input type='hidden' name='owner_cert' value='' id='owner_cert'>
                     </div>
                     <i class="yunset_identity_pic_tj"></i>
-                    <div class="yunset_identity_tip" style="padding-top:10px;">上传经办人身份证</div>
-                    <span class="yunset_identity_tip_a">选择上传图片</span>
+                    <div class="yunset_identity_tip" style="padding-top:10px;">{yun:}t key='wap_00842'{/yun}</div>
+                    <span class="yunset_identity_tip_a">{yun:}t key='wap_com_00034'{/yun}</span>
                 </div>
             </div>
 
@@ -549,12 +549,12 @@
                         <input type='hidden' name='wt_cert' value='' id='wt_cert'>
                     </div>
                     <i class="yunset_identity_pic_tj"></i>
-                    <div class="yunset_identity_tip" style="padding-top:10px;">上传委托书/承诺函</div>
-                    <span class="yunset_identity_tip_a">选择上传图片</span>
+                    <div class="yunset_identity_tip" style="padding-top:10px;">{yun:}t key='wap_00843'{/yun}</div>
+                    <span class="yunset_identity_tip_a">{yun:}t key='wap_com_00034'{/yun}</span>
                 </div>
 
-                <div class="yunset_identity_tip_c" style="padding-top:10px;" v-if="exa_cert_wt">委托书/承诺函范本
-                    <a href="javascript:void(0);" @click="downFb" style="color:#3b7cff; text-decoration:underline">查看范本</a>
+                <div class="yunset_identity_tip_c" style="padding-top:10px;" v-if="exa_cert_wt">{yun:}t key='wap_com_00057'{/yun}
+                    <a href="javascript:void(0);" @click="downFb" style="color:#3b7cff; text-decoration:underline">{yun:}t key='wap_com_00063'{/yun}</a>
                 </div>
             </div>
 
@@ -568,17 +568,17 @@
                         <input type='hidden' name='other_cert' value='' id='other_cert'>
                     </div>
                     <i class="yunset_identity_pic_tj"></i>
-                    <div class="yunset_identity_tip" style="padding-top:10px;">上传其他证明材料（选填）</div>
-                    <span class="yunset_identity_tip_a">选择上传图片</span>
+                    <div class="yunset_identity_tip" style="padding-top:10px;">{yun:}t key='wap_com_00055'{/yun}</div>
+                    <span class="yunset_identity_tip_a">{yun:}t key='wap_com_00034'{/yun}</span>
                 </div>
 
-                <div class="yunset_identity_tip_c" style="padding-top:10px;">执照中的文字、图片、章印等需清晰可辨别，否则不能通过认证。</div>
-                <div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>格式为 {{pic_type}} 不得超过{{file_maxsize}}M</div>
+                <div class="yunset_identity_tip_c" style="padding-top:10px;">{yun:}t key='wap_com_00051'{/yun}</div>
+                <div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>{{i18n.fileFormatIntro.replace('{{pic_type}}', pic_type).replace('{{file_maxsize}}', file_maxsize)}}</div>
 
             </div>
 
             <div class="yunset_bth_box yunset_bth_zzbox">
-                <input type="button" value="保存" class="yunset_bth" @click="saveCert">
+                <input type="button" :value="i18n.save" class="yunset_bth" @click="saveCert">
             </div>
         </form>
 
@@ -603,22 +603,56 @@
 <script type="text/javascript" src="{yun:}$config.mapurl{/yun}"></script>
 {yun:}/if{/yun}
 <script>
+    var COM_INFO_I18N = {
+        linkmanNoAllDigits: '{yun:}t key='wap_com_00005'{/yun}',
+        linkmanMaxLength: '{yun:}t key='wap_com_00002'{/yun}',
+        confirm: '{yun:}t key='common_02016'{/yun}',
+        cancel: '{yun:}t key='wap_js_00080'{/yun}',
+        welfareExists: '{yun:}t key='wap_com_00120'{/yun}',
+        welfareLength: '{yun:}t key='wap_com_00124'{/yun}',
+        clearQrcode: '{yun:}t key='wap_com_00125'{/yun}',
+        fullNameRequired: '{yun:}t key='wap_00835'{/yun}',
+        socialCreditRequired: '{yun:}t key='wap_00836'{/yun}',
+        licenseRequired: '{yun:}t key='wap_com_00059'{/yun}',
+        ownerCertRequired: '{yun:}t key='wap_com_00058'{/yun}',
+        wtCertRequired: '{yun:}t key='wap_com_00056'{/yun}',
+        submitting: '{yun:}t key='wap_js_00158'{/yun}',
+        selectImageFirst: '{yun:}t key='wap_user_00229'{/yun}',
+        uploading: '{yun:}t key='wap_user_00244'{/yun}',
+        selectCity: '{yun:}t key='wap_com_00011'{/yun}',
+        cityLevelRequired: '{yun:}t key='wap_com_00004'{/yun}',
+        addressRequired: '{yun:}t key='wap_00833'{/yun}',
+        mapRequired: '{yun:}t key='wap_com_00136'{/yun}',
+        emailFormatError: '{yun:}t key='wap_com_00131'{/yun}',
+        qqFormatError: '{yun:}t key='wap_com_00147'{/yun}',
+        urlFormatError: '{yun:}t key='wap_com_00153'{/yun}',
+        dndEndRequired: '{yun:}t key='wap_com_00129'{/yun}',
+        dndStartRequired: '{yun:}t key='wap_com_00128'{/yun}',
+        nameRequired: '{yun:}t key='wap_00832'{/yun}',
+        industryRequired: '{yun:}t key='wap_user_00009'{/yun}',
+        prRequired: '{yun:}t key='wap_com_00143'{/yun}',
+        munRequired: '{yun:}t key='wap_com_00144'{/yun}',
+        linkmanRequired: '{yun:}t key='wap_com_00012'{/yun}',
+        introRequired: '{yun:}t key='wap_00834'{/yun}',
+        certRequired: '{yun:}t key='wap_com_00135'{/yun}',
+        saving: '{yun:}t key='wap_com_00018'{/yun}',
+    };
+
     function notNumber(obj){
-        obj.value = obj.value.replace(/[-_ ]/g,'');// 去掉空格
+        obj.value = obj.value.replace(/[-_ ]/g,'');// trim spaces
         if(!obj.value){
             return ;
         }
         var  test = obj.value.replace(/[0-9]/g,'');
         if (!test){
-            showToast('联系人不支持全数字', 2);
+            showToast(COM_INFO_I18N.linkmanNoAllDigits, 2);
             obj.value = ''
             $('#linkman').focus()
             return false;
         }else{
             if(/\d/.test(obj.value)){
                 if(obj.value.length>8){
-                    // obj.value = obj.value.substring(0,8);
-                    showToast('联系人填写字数不能超过8个', 2);
+                    showToast(COM_INFO_I18N.linkmanMaxLength, 2);
                     obj.value = ''
                     $('#linkman').focus()
                     return false;
@@ -661,13 +695,12 @@
                 },
                 munIndex: 0,
 
-                // 工作地点选择
+                // Work location picker
                 areaShow: false,
                 areaValue: 0,
                 areaName: '',
                 areaOptions: cityData,
 				city: '',
-				nocity: '请选择所在城市',
                 provinceid: 0,
                 cityid: 0,
                 threecityid: 0,
@@ -682,12 +715,12 @@
                 comqcode: '',
                 moneytype: {
                     id: [1, 2],
-                    name: ['人民币', '美元']
+                    name: []
                 },
                 moneytypeIndex: 0,
                 infostatus: {
                     id: [1, 2],
-                    name: ['公开', '不公开']
+                    name: []
                 },
                 infostatusIndex: 0,
                 welfare: [],
@@ -712,12 +745,12 @@
                 openDec: false,
                 gsflShow: false,
 
-                // 创办时间
+                // Founding year
                 foundedYearShow: false,
                 foundedYear: [],
                 foundedYearIndex: 0,
 
-                // 免打扰时间
+                // Do-not-disturb hours
                 notDisturb: false,
                 notStartDisturbShow: false,
                 notStartDisturb: '',
@@ -743,18 +776,60 @@
                 pic_type: '',
                 file_maxsize: '',
                 cert_status: 0,
-				poi: []
+				poi: [],
+                i18n: {
+                    fullNamePlaceholder: '{yun:}t key='wap_00838'{/yun}',
+                    selectCity: '{yun:}t key='wap_com_00011'{/yun}',
+                    linkmanPlaceholder: '{yun:}t key='wap_com_00013'{/yun}',
+                    mobilePlaceholder: '{yun:}t key='wap_com_00142'{/yun}',
+                    landlinePlaceholder: '{yun:}t key='wap_com_00134'{/yun}',
+                    notCertified: '{yun:}t key='wap_user_00175'{/yun}',
+                    reviewing: '{yun:}t key='wap_user_00174'{/yun}',
+                    certified: '{yun:}t key='wap_user_00128'{/yun}',
+                    reviewFailed: '{yun:}t key='wap_user_00325'{/yun}',
+                    rejected: '{yun:}t key='wap_user_00167'{/yun}',
+                    approved: '{yun:}t key='wap_user_00165'{/yun}',
+                    submit: '{yun:}t key='wap_user_00176'{/yun}',
+                    save: '{yun:}t key='wap_user_00101'{/yun}',
+                    addressFormatHint: '{yun:}t key='wap_com_00122'{/yun}',
+                    introPlaceholder: '{yun:}t key='wap_com_00130'{/yun}',
+                    workAreaTitle: '{yun:}t key='wap_com_00010'{/yun}',
+                    shortNamePlaceholder: '{yun:}t key='wap_com_00137'{/yun}',
+                    emailPlaceholder: '{yun:}t key='wap_com_00139'{/yun}',
+                    websitePlaceholder: '{yun:}t key='wap_com_00138'{/yun}',
+                    selectTime: '{yun:}t key='wap_com_00155'{/yun}',
+                    linkjobPlaceholder: '{yun:}t key='wap_com_00127'{/yun}',
+                    qqPlaceholder: '{yun:}t key='wap_com_00141'{/yun}',
+                    busStopPlaceholder: '{yun:}t key='wap_00846'{/yun}',
+                    yearSuffix: '{yun:}t key='wap_00841'{/yun}',
+                    capitalPlaceholder: '{yun:}t key='wap_com_00140'{/yun}',
+                    welfareInputPlaceholder: '{yun:}t key='wap_com_00154'{/yun}',
+                    add: '{yun:}t key='wap_js_00091'{/yun}',
+                    certReviewing: '{yun:}t key='wap_00844'{/yun}',
+                    certReuploadSuffix: '{yun:}t key='wap_00845'{/yun}',
+                    reasonPrefix: '{yun:}t key='admin_system_00134'{/yun}',
+                    socialCreditPlaceholder: '{yun:}t key='wap_00837'{/yun}',
+                    fileFormatIntro: '{yun:}t key='wap_com_00050'{/yun}',
+                    selectIndustry: '{yun:}t key='wap_user_00009'{/yun}',
+                    selectPr: '{yun:}t key='wap_com_00143'{/yun}',
+                    selectMun: '{yun:}t key='wap_com_00144'{/yun}',
+                    publicContact: '{yun:}t key='wap_js_00005'{/yun}',
+                    privateContact: '{yun:}t key='wap_js_00003'{/yun}',
+                    cny: '{yun:}t key='wap_com_00177'{/yun}',
+                    usd: '{yun:}t key='wap_com_00178'{/yun}',
+                },
             },
             created() {
-
-                this.hy = getHy('请选择从事行业');
-                this.pr = getPr(); // 企业性质
+                this.infostatus.name = [this.i18n.publicContact, this.i18n.privateContact];
+                this.moneytype.name = [this.i18n.cny, this.i18n.usd];
+                this.hy = getHy(this.i18n.selectIndustry);
+                this.pr = getPr(); // company type
                 this.pr.id.unshift(0)
-                this.pr.name.unshift('请选择企业性质')
-                this.mun = getMun();// 企业规模
+                this.pr.name.unshift(this.i18n.selectPr)
+                this.mun = getMun();// company size
                 this.mun.id.unshift(0)
-                this.mun.name.unshift('请选择企业规模')
-                this.foundedYear = getFoundedYear(); // 获取创办年
+                this.mun.name.unshift(this.i18n.selectMun)
+                this.foundedYear = getFoundedYear(); // founding year
 
                 this.comInfo();
             },
@@ -767,7 +842,7 @@
                 },
             },
             methods: {
-                // 工作区域选择
+                // Work area selection
                 onAreaFinish({selectedOptions}) {
                     this.provinceid = 0;
                     this.cityid = 0;
@@ -909,7 +984,7 @@
                                 }
                             }
 
-                            // 索引赋值
+                            // Set picker indexes
                             let hyIndex = that.hy.id.indexOf(res.hy ? parseInt(res.hy) : 0);
                             that.hyIndex = hyIndex < 0 ? 0 : hyIndex;
                             let prIndex = that.pr.id.indexOf(res.pr ? parseInt(res.pr) : 0);
@@ -993,19 +1068,19 @@
 						setTimeout(() => {
 							if (!map) {
 								map = new AMap.Map("map_container");
-								// 			// 解决移动端 click事件点击无效
+								// Fix mobile click handling on map
 								map.on("touchmove", function (e) {
 									map.setStatus({
 										dragEnable: true
 									});
 								});
-								//  触摸结束时触发次此事件  此时开启禁止拖动
+								// Re-disable drag after touch ends
 								map.on("touchend", function (e) {
 									map.setStatus({
 										dragEnable: false
 									});
 								});
-								// 初始化地图 禁止拖动   注：虽禁止拖动，但是可以出发拖动事件
+								// Initialize map with drag disabled
 								map.setStatus({
 									dragEnable: false
 								});
@@ -1081,9 +1156,9 @@
                     }
 
                     if ($.trim(welfareAdd)!= '' && welfareAdd.length >= 2 && welfareAdd.length <= 8) {
-                        //判断信息是否已经存在
+                        // Check duplicate welfare entry
                         if (welnameall.indexOf(welfareAdd) > -1) {
-                            showModal('相同福利信息已存在，请重新填写');
+                            showModal(COM_INFO_I18N.welfareExists);
                             return;
                         }
 
@@ -1098,7 +1173,7 @@
                         that.welfareAdd = '';
                         that.welid = 'w' + welfareall.length;
                     } else {
-                        showModal('请输入2-8个福利字符！');
+                        showModal(COM_INFO_I18N.welfareLength);
                     }
                 },
 
@@ -1134,7 +1209,7 @@
                 },
 				delcomqcode: function(){
                     var self = this;
-                    showConfirm('确定要清除企业二维码！',function(){
+                    showConfirm(COM_INFO_I18N.clearQrcode,function(){
                         showLoading();
                         
                         $.post('{yun:}url d=wxapp h=com m=info c=delcomqcode{/yun}', {rand: Math.random()}, function (res) {
@@ -1149,7 +1224,7 @@
                         }, 'json');
                     })
                 },
-                // 上传头像
+                // Upload logo
                 openPhoto: function () {
                     this.photoShow = true
                     
@@ -1203,19 +1278,19 @@
 
                     if (that.comName == ''){
 
-                        return showToast('请填写企业全称');
+                        return showToast(COM_INFO_I18N.fullNameRequired);
                     }else if (that.social_credit == '' && that.com_social_credit == 1){
 
-                        return showToast('请填写统一社会信用代码');
+                        return showToast(COM_INFO_I18N.socialCreditRequired);
                     }else if (v.check == '' && that.photo == '') {
 
-                        return showToast('请上传营业执照');
+                        return showToast(COM_INFO_I18N.licenseRequired);
                     } else if (v.owner_cert == '' && that.photo_owner_cert=='' && that.com_cert_owner == 1) {
 
-                        return showToast('请上传经办人身份证');
+                        return showToast(COM_INFO_I18N.ownerCertRequired);
                     } else if (v.wt_cert == '' && that.photo_wt_cert=='' && that.com_cert_wt == 1) {
 
-                        return showToast('请上传委托书/承诺函');
+                        return showToast(COM_INFO_I18N.wtCertRequired);
                     }else {
 
                         var formData = {
@@ -1243,7 +1318,7 @@
                             formData.other_cert         =   that.photo_other_cert;
                         }
 
-                        showLoading('提交中...');
+                        showLoading(COM_INFO_I18N.submitting);
                         $.post('{yun:}url d=wxapp h=com m=set c=saveCert{/yun}', formData, function (data) {
                             hideLoading();
                             if (data.error == 1) {
@@ -1267,7 +1342,7 @@
             }
         });
 
-    // 裁剪logo
+    // Crop logo
     function toAlloyCrop(pic) {
         let yd = yunvue.$data;
         new AlloyCrop({
@@ -1283,22 +1358,22 @@
             cancel: function () {
                 // $('#showResult').fadeIn();
             },
-            ok_text: '确定',
-            cancel_text: '取消'
+            ok_text: COM_INFO_I18N.confirm,
+            cancel_text: COM_INFO_I18N.cancel
         });
     }
 
-    // 上传logo
+    // Upload logo
     function photo() {
         let yd = yunvue.$data;
         var uimage = $("#preview").val();
         if (uimage == '') {
-            showToast('请选择图片后再提交');
+            showToast(COM_INFO_I18N.selectImageFirst);
             return false;
         } else {
             var regS = new RegExp("\\+", "gi");
             uimage = uimage.replace(regS, "#");
-            showLoading('上传中');
+            showLoading(COM_INFO_I18N.uploading);
             $.ajax({
                 type: 'POST',
                 url: '{yun:}url d=wxapp h=com m=info c=savephoto{/yun}',
@@ -1335,22 +1410,22 @@
                 latitude = yd.latitude,
                 longitude = yd.longitude;
             if (provinceid == 0) {
-                showModal('请选择所在城市');
+                showModal(COM_INFO_I18N.selectCity);
                 return false;
             }
             if (ct[provinceid]) {
                 if (cityid == 0) {
-                    showModal('所在城市请选择二级类别');
+                    showModal(COM_INFO_I18N.cityLevelRequired);
                     return false;
                 }
             }
             if (address.length == 0) {
-                showModal('请填写企业地址');
+                showModal(COM_INFO_I18N.addressRequired);
                 return false;
             }
 
             if (yd.setPosition == 1 && latitude.length == 0 && longitude.length == 0) {
-                showModal('请设置企业地图');
+                showModal(COM_INFO_I18N.mapRequired);
                 return false;
             }
 
@@ -1368,7 +1443,7 @@
     }
 
     /**
-     * 判断网址格式是否正确
+     * Validate URL format
      */
     function check_url(obj) {
         var Reg =
@@ -1389,27 +1464,27 @@
 
         if (linkmail.length > 0) {
             if (check_email(linkmail) == false) {
-                showModal('电子邮箱格式错误');
+                showModal(COM_INFO_I18N.emailFormatError);
                 return false;
             }
         }
         if (linkqq.length > 0) {
             if (isQQ(linkqq) == false) {
-                showModal('QQ格式错误');
+                showModal(COM_INFO_I18N.qqFormatError);
                 return false;
             }
         }
         if (website.length > 0) {
             if (check_url(website) == false) {
-                showModal('网址格式错误');
+                showModal(COM_INFO_I18N.urlFormatError);
                 return false;
             }
         }
         if(yd.notStartDisturb && !yd.notEndDisturb){
-            showModal('请选择免打扰结束时间');
+            showModal(COM_INFO_I18N.dndEndRequired);
             return false;
         } else if(!yd.notStartDisturb && yd.notEndDisturb){
-            showModal('请选择免打扰开始时间');
+            showModal(COM_INFO_I18N.dndStartRequired);
             return false;
         }
 
@@ -1434,7 +1509,7 @@
         } catch (e) {}
 
         yd.supInfoShow = false;
-        return false; // 阻止form提交
+        return false; // prevent form submit
     }
 
     function formSubmitinfo(e) {
@@ -1451,19 +1526,19 @@
             };
         try {
             if (obj.name.length == 0) {
-                showModal('请填写企业名称');
+                showModal(COM_INFO_I18N.nameRequired);
                 return false;
             }
             if (obj.hy == 0) {
-                showModal('请选择从事行业');
+                showModal(COM_INFO_I18N.industryRequired);
                 return false;
             }
             if (obj.pr == 0) {
-                showModal('请选择企业性质');
+                showModal(COM_INFO_I18N.prRequired);
                 return false;
             }
             if (obj.mun == 0) {
-                showModal('请选择企业规模');
+                showModal(COM_INFO_I18N.munRequired);
                 return false;
             }
             obj.provinceid = yd.provinceid
@@ -1472,75 +1547,59 @@
             obj.address = yd.cominfo.address
 
             if (obj.provinceid == 0) {
-                showModal('请选择所在城市');
+                showModal(COM_INFO_I18N.selectCity);
                 return false;
             }
             if (ct[obj.provinceid]) {
                 if (obj.cityid == 0) {
-                    showModal('所在城市请选择二级类别');
+                    showModal(COM_INFO_I18N.cityLevelRequired);
                     return false;
                 }
             }
             if (obj.address.length == 0) {
-                showModal('请填写企业地址');
+                showModal(COM_INFO_I18N.addressRequired);
                 return false;
             }
 
             if (yd.setPosition == 1 && yd.latitude.length == 0 && yd.longitude.length == 0) {
-                showModal('请设置企业地图');
+                showModal(COM_INFO_I18N.mapRequired);
                 return false;
             }
 
             if (obj.linkman.length == 0) {
-                showModal('请填写联系人');
+                showModal(COM_INFO_I18N.linkmanRequired);
                 return false;
             }else {
-                var link_man = obj.linkman.replace(/[-_ ]/g,'');// 去掉空格
+                var link_man = obj.linkman.replace(/[-_ ]/g,'');// trim spaces
                 if(!link_man){
                     return ;
                 }
                 var  test = link_man.replace(/[0-9]/g,'');
                 if (!test){
-                    showModal('联系人不支持全数字');
+                    showModal(COM_INFO_I18N.linkmanNoAllDigits);
                     return false;
                 }else{
                     if(/\d/.test(link_man)){
                         if(link_man.length>8){
-                            showModal('联系人填写字数不能超过8个');
+                            showModal(COM_INFO_I18N.linkmanMaxLength);
                             return false;
                         }
                     }
                 }
             }
 /*
-            if (obj.linktel.length == 0) {
-                showModal('请填写联系手机');
-                return false;
-            }
-
-            if (obj.linktel.length > 0) {
-                if (isjsMobile(obj.linktel) == false) {
-                    showModal('联系手机格式错误');
-                    return false;
-                }
-            }
-            if (obj.linkphone.length > 0) {
-                if (isjsTell(obj.linkphone) == false) {
-                    showModal('联系电话格式错误');
-                    return false;
-                }
-            }
+            Disabled phone validation
 */
             let content = yd.cominfo.content.replace(/<[^>]+>/g, "");
             if (content.trim() == '') {
-                showModal('请填写企业简介');
+                showModal(COM_INFO_I18N.introRequired);
                 return false;
             }
             if(yd.cominfo.licensecert == 1 && yd.cominfo.cert_status == -1){
-                showModal('请认证企业资质');
+                showModal(COM_INFO_I18N.certRequired);
                 return false;
             }
-            // 处理下一步
+            // Prepare next step
             yd.firstData = obj;
 
             let formData = {};
@@ -1555,7 +1614,7 @@
                 formData.preview = comqcode;
             }
 
-            showLoading('保存中');
+            showLoading(COM_INFO_I18N.saving);
             $.post('{yun:}url d=wxapp h=com m=info c=saveinfo{/yun}', formData, function (data) {
                 hideLoading();
                 if (data.error == 1) {

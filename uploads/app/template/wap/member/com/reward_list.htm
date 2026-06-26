@@ -4,10 +4,10 @@
 		<div class="detail_header_title"></div>        
         <div class="detail_header_nav category">
             <ul>
-                <li :class="type == 'all' ? 'pitch_up' : ''" @click="pageTo('index.php?c=reward_list&type=all')" >全部</li>
-                <li :class="type == 1 ? 'pitch_up' : ''" @click="pageTo('index.php?c=reward_list&type=1')">已兑换</li>
-                <li :class="type == 0 ? 'pitch_up' : ''" @click="pageTo('index.php?c=reward_list&type=0')">待审核</li>
-                <li :class="type == 2 ? 'pitch_up' : ''" @click="pageTo('index.php?c=reward_list&type=2')">未通过</li>
+                <li :class="type == 'all' ? 'pitch_up' : ''" @click="pageTo('index.php?c=reward_list&type=all')" >{{i18n.tabAll}}</li>
+                <li :class="type == 1 ? 'pitch_up' : ''" @click="pageTo('index.php?c=reward_list&type=1')">{{i18n.redeemed}}</li>
+                <li :class="type == 0 ? 'pitch_up' : ''" @click="pageTo('index.php?c=reward_list&type=0')">{{i18n.pendingReview}}</li>
+                <li :class="type == 2 ? 'pitch_up' : ''" @click="pageTo('index.php?c=reward_list&type=2')">{{i18n.rejected}}</li>
             </ul>
         </div>
     </div>
@@ -21,30 +21,30 @@
                     <div class="conversion_title_box">
                         <div class="conversion_title_top">
                             <div class="detail_card_add" @click="pageTo(item.wapredeem_url)">{{item.name}}</div>
-                            <div class="detail_card_state" v-if="item.status==0">待审核</div>
-                            <div class="detail_card_succeed" v-else-if="item.status==1">已兑换</div>
-                            <div class="detail_card_succeed" v-else>未通过</div>
+                            <div class="detail_card_state" v-if="item.status==0">{{i18n.pendingReview}}</div>
+                            <div class="detail_card_succeed" v-else-if="item.status==1">{{i18n.redeemed}}</div>
+                            <div class="detail_card_succeed" v-else>{{i18n.rejected}}</div>
                         </div>
-                        <div class="conversion_title_bom">共 {{item.num}} 件商品，合计<i class="conversion_title_number">{{item.integral}}</i>积分</div>
+                        <div class="conversion_title_bom">{{i18n.totalPrefix}}{{item.num}}{{i18n.totalSuffix}}<i class="conversion_title_number">{{item.integral}}</i>{{i18n.points}}</div>
                     </div>
                 </div>
                 <div class="detail_card_odd">
-                    <div class="detail_odd_q">兑换时间</div>
+                    <div class="detail_odd_q">{{i18n.redeemTime}}</div>
                     <div class="detail_odd_a">{{item.ctime_n}}</div>
                 </div>
                 <div class="detail_card_pay">
-                    <div class="detail_odd_q">联系方式</div>
+                    <div class="detail_odd_q">{{i18n.contactInfo}}</div>
                     <div class="detail_odd_a">{{item.linkman}}  {{item.linktel}}</div>
                 </div>
                 <div class="detail_card_recharge">
-                    <div class="detail_odd_q">收货地址</div>
+                    <div class="detail_odd_q">{{i18n.shippingAddress}}</div>
                     <div class="detail_odd_a">{{item.address}}</div>
                 </div>
                
                 <div class="detail_card_btns">
-                	<div class="detail_card_cancel" v-if="item.expnum" @click="look(infokey)">查看物流</div>
-                    <div class="detail_card_cancel" v-if="item.status==0" @click="del(item.id,infokey)">取消兑换</div>
-                    <div class="detail_card_cancel" v-if="item.status==2" @click="lookstatus(infokey)">查看原因</div>                    
+                	<div class="detail_card_cancel" v-if="item.expnum" @click="look(infokey)">{{i18n.trackShipment}}</div>
+                    <div class="detail_card_cancel" v-if="item.status==0" @click="del(item.id,infokey)">{{i18n.cancelRedeem}}</div>
+                    <div class="detail_card_cancel" v-if="item.status==2" @click="lookstatus(infokey)">{{i18n.viewReason}}</div>                    
                 </div>
             </div>            
         </div>        
@@ -53,11 +53,11 @@
     <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange" />
     </div> 
 	<div class="wap_member_no"  v-show="islook&&count==0">
-		您共有<span class="f60"><font color="orange">{{integral}}</font></span> {yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}
+		{{i18n.youHave}}<span class="f60"><font color="orange">{{integral}}</font></span> {yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}
 		{yun:}if $config.sy_redeem_web==1{/yun}
-    <br> 快去商城兑换礼品吧！
+    <br> {{i18n.redeemGiftTip}}
     <br>
-    <a href="{yun:}url m=wap c=redeem{/yun}" class="wap_member_no_submit">我要兑换</a>
+    <a href="{yun:}url m=wap c=redeem{/yun}" class="wap_member_no_submit">{yun:}t key='wap_00621'{/yun}</a>
     {yun:}/if{/yun}
 	</div>
 </div>
@@ -75,7 +75,26 @@
           type:type ? type : 'all',
           integral:0,
           page: currentPage ? currentPage : 1,
-          islook :false
+          islook :false,
+          i18n: {
+            tabAll: '{yun:}t key='wap_js_00075'{/yun}',
+            redeemed: '{yun:}t key='wap_user_00005'{/yun}',
+            pendingReview: '{yun:}t key='wap_user_00006'{/yun}',
+            rejected: '{yun:}t key='wap_user_00167'{/yun}',
+            totalPrefix: '{yun:}t key='wap_01081'{/yun}',
+            totalSuffix: '{yun:}t key='wap_01082'{/yun}',
+            points: '{yun:}t key='wap_user_00008'{/yun}',
+            redeemTime: '{yun:}t key='wap_user_00002'{/yun}',
+            contactInfo: '{yun:}t key='wap_00462'{/yun}',
+            shippingAddress: '{yun:}t key='wap_01079'{/yun}',
+            trackShipment: '{yun:}t key='wap_01080'{/yun}',
+            cancelRedeem: '{yun:}t key='wap_user_00003'{/yun}',
+            viewReason: '{yun:}t key='wap_user_00004'{/yun}',
+            confirmCancelRedeem: '{yun:}t key='wap_01083'{/yun}',
+            cancelling: '{yun:}t key='wap_user_00310'{/yun}',
+            youHave: '{yun:}t key='wap_01084'{/yun}',
+            redeemGiftTip: '{yun:}t key='wap_01085'{/yun}',
+          },
         },
         computed: {
           count(){
@@ -128,8 +147,8 @@
                 id: id
               };
              
-             showConfirm('确定要取消兑换', () => {
-                showLoading('取消中...')
+             showConfirm(that.i18n.confirmCancelRedeem, () => {
+                showLoading(that.i18n.cancelling)
                 $.post('{yun:}url d=wxapp h=com m=reward c=delChange{/yun}', param, function(data){
                   hideLoading();
                   if (data.error == 1) {

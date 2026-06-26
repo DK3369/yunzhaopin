@@ -8,7 +8,7 @@
     function check_company_banner() {
  
         if($.trim($("#pic").val()) == '' && $("#previewimg")[0].src == '') {
-            return showToast('请上传企业横幅！');
+            return showToast('{yun:}t key='wap_01200'{/yun}');
            
         }
 
@@ -36,7 +36,7 @@
         </div>
     </div>
    
-    <div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>格式为 {yun:}$config.pic_type{/yun}{yun:}t key='common_01663'{/yun}{yun:}$config.file_maxsize{/yun}M</div>
+    <div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>{yun:}t key='wap_01203'{/yun}{yun:}$config.pic_type{/yun}{yun:}t key='common_01663'{/yun}{yun:}$config.file_maxsize{/yun}M</div>
 
     <div class="yunset_bth_box">
         <input type="hidden" id="img" value="1">

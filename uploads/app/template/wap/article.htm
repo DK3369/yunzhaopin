@@ -8,7 +8,7 @@
                 <div id="header">
                     <div class="swiper-wrapper">
                         <div class="swiper-slide">
-                            <a href="{yun:}url m=wap c=article type=tj{/yun}" {yun:}if $smarty.get.type==tj{/yun}class="swiper-slidea" {yun:}/if{/yun}>推荐</a>
+                            <a href="{yun:}url m=wap c=article type=tj{/yun}" {yun:}if $smarty.get.type==tj{/yun}class="swiper-slidea" {yun:}/if{/yun}>{yun:}t key='wap_01465'{/yun}</a>
                         </div>
                         {yun:}if $newc{/yun}
                             {yun:}foreach from=$newc key=key item=v{/yun}
@@ -35,7 +35,7 @@
             <input name='m' value="wap" type="hidden">
             <input name='c' value="article" type="hidden">
             <div class="formFiled">
-                <input type="text" value="{yun:}$smarty.get.keyword{/yun}" id="keyword" name="keyword" class="input_search" placeholder="请输入文章关键字">
+                <input type="text" value="{yun:}$smarty.get.keyword{/yun}" id="keyword" name="keyword" class="input_search" placeholder="{yun:}t key='wap_01466'{/yun}">
                 <input type="submit" value=" " class="input_btn"> <i class="input_btn_icon iconfont"></i>
             </div>
         </form>
@@ -69,15 +69,15 @@
 
         {yun:}if $total<=0 {/yun}
             {yun:}if $smarty.get.keyword!="" {/yun}
-                <div class="wap_member_no">没有搜索到资讯
+                <div class="wap_member_no">{yun:}t key='wap_01467'{/yun}
                     <div>
-                        <a class="wap_mb_no_sr" href="{yun:}url m=wap c='article'{/yun}">重新搜索</a>
+                        <a class="wap_mb_no_sr" href="{yun:}url m=wap c='article'{/yun}">{yun:}t key='wap_01468'{/yun}</a>
                     </div>
                 </div>
             {yun:}else{/yun}
-                <div class="wap_member_no">暂无资讯
+                <div class="wap_member_no">{yun:}t key='wap_01469'{/yun}
                     <div>
-                        <a class="wap_mb_no_sr" href="{yun:}url m=wap c='article'{/yun}">重新搜索</a>
+                        <a class="wap_mb_no_sr" href="{yun:}url m=wap c='article'{/yun}">{yun:}t key='wap_01468'{/yun}</a>
                     </div>
                 </div>
             {yun:}/if{/yun}
@@ -92,10 +92,10 @@
     function zhankaiShouqi(control) {
         $(control).parent().find('.news_Category_a:gt(6)').slideToggle();
         $(control).parent().find('.news_Category_line:gt(6)').slideToggle();
-        if ($(control).html() == '更多') {
-            $(control).html('收起');
+        if ($(control).html() == '{yun:}t key='wap_01470'{/yun}') {
+            $(control).html('{yun:}t key='wap_01471'{/yun}');
         } else {
-            $(control).html('更多');
+            $(control).html('{yun:}t key='wap_01470'{/yun}');
         }
     }
 
@@ -149,7 +149,7 @@
     var vm = new Vue({
         el: '#app',
         data: {
-            //分页相关
+            //{yun:}t key='wap_js_00076'{/yun}相关
             currentPage: currentPage ? currentPage : 1,
             total: total,
             perpage: 12,

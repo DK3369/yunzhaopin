@@ -10,13 +10,13 @@
           <span>{{show.comname}}</span>
         </div>
         <div class="popular_position_bottom">
-          当前状态：
-		<span v-if="show.is_browse==1 || show.is_browse==2">待接受</span>
+          {{i18n.currentStatus}}
+		<span v-if="show.is_browse==1 || show.is_browse==2">{{i18n.pendingAccept}}</span>
 		<span v-else-if="show.is_browse==3">
 			<span v-if="show.over" style="color: #FF4200;">{yun:}t key='wap_user_00259'{/yun}</span>
 			<span v-else>{yun:}t key='wap_user_00262'{/yun}</span>
 		</span>
-		<span v-else-if="show.is_browse==4">拒绝面试</span>
+		<span v-else-if="show.is_browse==4">{{i18n.declineInterview}}</span>
 		<span v-else style="color: #FF4200;">{yun:}t key='wap_user_00266'{/yun}</span>
         </div>
       </div>
@@ -25,7 +25,7 @@
       <div class="popular_card_namebox" @click="pageTo(show.com_url)">
         <div class="popular_card_logo"> <img :src="show.com_logo_n" width="100%" height="100%"> </div>
         <div class="popular_card_name">{{show.fname}}
-          <span>您好，您的初选已通过，诚挚的邀请您前来面试。</span>
+          <span>{{i18n.inviteGreeting}}</span>
         </div>
       </div>
       <div class="popular_card_line" style="margin-bottom: 0px;"></div>
@@ -54,7 +54,7 @@
       </div>
       <div class="invitecont_list">
          
-          <div class="invitecont_list_name">面试地址</div>
+          <div class="invitecont_list_name">{{i18n.interviewAddress}}</div>
           <div class=" ">{{show.address}}</div> 
 
       </div>
@@ -73,19 +73,19 @@
 </div>
 <div class="popular_tail" v-if="show.is_browse!=3 && show.is_browse!=4 && !show.over">
 
-  <div @click="refuseSheet" class="popular_tail_refuse ">拒绝面试</div>
-  <div @click="agree" class="popular_tail_accept" >接受面试</div>
+  <div @click="refuseSheet" class="popular_tail_refuse ">{{i18n.declineInterview}}</div>
+  <div @click="agree" class="popular_tail_accept" >{{i18n.acceptInterview}}</div>
 </div>
-<van-action-sheet v-model="moreShow" :actions="actionsList" description="请选择拒绝类型" @select="onSelect" cancel-text="取消" @cancel="onCancel"></van-action-sheet>
+<van-action-sheet v-model="moreShow" :actions="actionsList" :description="i18n.selectDeclineType" @select="onSelect" :cancel-text="i18n.cancel" @cancel="onCancel"></van-action-sheet>
 
   <van-popup v-model="refuseShow" position="bottom" round closeable/>
     <div class="invite_no">
-      <div class="invite_no_tit"> 拒绝理由</div>
+      <div class="invite_no_tit"> {{i18n.declineReasonTitle}}</div>
       <div class="invite_no_textarea">
-        <textarea class="  " id="remark" v-model="remark" name="remark" placeholder="请填写拒绝理由"></textarea>
+        <textarea class="  " id="remark" v-model="remark" name="remark" :placeholder="i18n.declineReasonPlaceholder"></textarea>
       </div>
       <div class="invite_no_bth">
-        <input class="" type="button" value="{yun:}t key='wap_js_00094'{/yun}"  @click="inviteset(4)"/>
+        <input class="" type="button" :value="i18n.confirm"  @click="inviteset(4)"/>
       </div>
     </div>
   </van-popup>
@@ -102,10 +102,31 @@
           browse: 2,
           covers: [],
           moreShow:false,
-          actionsList:[{name:'拒绝面试'},{name:'屏蔽企业', subname: '该企业将看不到你的简历'}],
-
+          actionsList:[],
           refuseShow:false,
-          remark:''
+          remark:'',
+          i18n: {
+            currentStatus: '{yun:}t key='wap_01052'{/yun}',
+            pendingAccept: '{yun:}t key='wap_00822'{/yun}',
+            declineInterview: '{yun:}t key='wap_01053'{/yun}',
+            inviteGreeting: '{yun:}t key='wap_01054'{/yun}',
+            interviewAddress: '{yun:}t key='wap_01055'{/yun}',
+            acceptInterview: '{yun:}t key='wap_01056'{/yun}',
+            selectDeclineType: '{yun:}t key='wap_01057'{/yun}',
+            declineReasonTitle: '{yun:}t key='wap_01058'{/yun}',
+            declineReasonPlaceholder: '{yun:}t key='wap_01059'{/yun}',
+            blockCompany: '{yun:}t key='wap_01060'{/yun}',
+            blockCompanyTip: '{yun:}t key='wap_01061'{/yun}',
+            cancel: '{yun:}t key='wap_js_00080'{/yun}',
+            confirm: '{yun:}t key='wap_js_00094'{/yun}',
+            agreeConfirm: '{yun:}t key='wap_01062'{/yun}',
+            processing: '{yun:}t key='wap_01063'{/yun}',
+            blockConfirm: '{yun:}t key='wap_01064'{/yun}',
+            confirmDeleteInvite: '{yun:}t key='wap_01051'{/yun}',
+            deleting: '{yun:}t key='wap_js_00166'{/yun}',
+            deleteSuccess: '{yun:}t key='wap_user_00147'{/yun}',
+            deleteFailed: '{yun:}t key='wap_user_00146'{/yun}',
+          },
         },
         computed: {
           count(){
@@ -113,6 +134,10 @@
           }
         },
         created() {
+         this.actionsList = [
+           {name: this.i18n.declineInterview, value: '拒绝面试'},
+           {name: this.i18n.blockCompany, subname: this.i18n.blockCompanyTip, value: '屏蔽企业'}
+         ];
          this.inviteshow();
         },
         methods:{
@@ -120,10 +145,10 @@
             this.moreShow=false;
           },
           onSelect(item){
-            if (item.name== '拒绝面试') {
+            if (item.value == '拒绝面试') {
               this.moreShow = false;
               this.refuseShow =  true;
-            } else if (item.name == '屏蔽企业') {
+            } else if (item.value == '屏蔽企业') {
               this.black()
             }
           },
@@ -155,7 +180,7 @@
           },
 
           agree: function() {
-           showConfirm('面试前一天我们会通知您，祝您面试成功', () => {
+           showConfirm(this.i18n.agreeConfirm, () => {
               this.inviteset(3);
             })
           },
@@ -168,7 +193,7 @@
               if(browse==4){
                 param.remark = that.remark;
               }
-              showLoading('处理中...');
+              showLoading(that.i18n.processing);
               $.post('{yun:}url d=wxapp h=user m=job c=inviteset{/yun}',param,function(data){
                 hideLoading();
               that.refuseShow = false;
@@ -184,13 +209,13 @@
             },'json');
           },
           black: function() {
-            showConfirm('您确定要屏蔽该公司并删除该邀请？', () => {
+            showConfirm(this.i18n.blockConfirm, () => {
               this.delfuc('black');
             })
           },
           delInvite:function(e){
 
-             showConfirm('您确定要删除该邀请？', () => {
+             showConfirm(this.i18n.confirmDeleteInvite, () => {
               this.delfuc('del');
             })
 
@@ -201,17 +226,17 @@
                 id: that.id,
                 type: type
               };
-             showLoading("{yun:}t key='wap_js_00166'{/yun}")
+             showLoading(that.i18n.deleting)
 
             $.post('{yun:}url d=wxapp h=user m=job c=invitedel{/yun}', param, function(data){
               hideLoading();
               if (data.error == 1) {
                 that.browse = 5;
-                showToast("{yun:}t key='wap_user_00147'{/yun}",2, function() {
+                showToast(that.i18n.deleteSuccess,2, function() {
                   that.list.splice(index, 1);
                 });return false;
               } else {
-                showToast("{yun:}t key='wap_user_00146'{/yun}");
+                showToast(that.i18n.deleteFailed);
               }
             });
 

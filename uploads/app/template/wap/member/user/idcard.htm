@@ -5,16 +5,16 @@
 <div  id="yunvue" class="wap_member_box none">
 	<form id="idcard_form"> 
 	<div class="com_cardlist">
-   <span v-if="status==0 &&  photo==''" class="sfyz_icon">未认证</span>
-   <span v-else-if="status==0 &&  photo!=''"  class="sfyz_icon">审核中</span>
-   <span v-else-if="status==1"  class="sfyz_icon">已认证</span>
+   <span v-if="status==0 &&  photo==''" class="sfyz_icon">{yun:}t key='wap_user_00175'{/yun}</span>
+   <span v-else-if="status==0 &&  photo!=''"  class="sfyz_icon">{yun:}t key='wap_user_00174'{/yun}</span>
+   <span v-else-if="status==1"  class="sfyz_icon">{yun:}t key='wap_user_00128'{/yun}</span>
    <div v-else-if="status==2" class="">
-       <span  class="sfyz_icon">未通过</span><block v-if="statusbody!='' &&  status ==2">原因:{{statusbody}}</block>，请重新上传，如需有疑问，可拨打客服服务热线
+       <span  class="sfyz_icon">{yun:}t key='wap_user_00167'{/yun}</span><block v-if="statusbody!='' &&  status ==2">{{i18n.reasonPrefix}}{{statusbody}}</block>{{i18n.reuploadTip}}{yun:}t key='default_00129'{/yun}
    </div>
 		   <div class="">
-        <div class="">身份证号</div>
+        <div class="">{yun:}t key='wap_user_00173'{/yun}</div>
         <div class="sfyz_box">
-            <input type="idcard" name="idcard" :value="idcard" placeholder="请输入身份证号码" />
+            <input type="idcard" name="idcard" :value="idcard" :placeholder="i18n.idcardPlaceholder" />
         </div>      
        <div class="idcard_box">
 		   
@@ -26,15 +26,15 @@
             </div>
 	   </div>
       
-            <div class="sfyz_tip">上传本人的身份证人像页照片文字清晰，四角齐全,格式为 {{pic_type}} 不得超过{{maxsize}}M</div>
-                <div class="sfyz_tip">  身份证照片仅用于实名认证</div>
+            <div class="sfyz_tip">{{i18n.uploadTip}} {{pic_type}} {{i18n.notExceed}} {{maxsize}}M</div>
+                <div class="sfyz_tip">  {{i18n.idcardPurpose}}</div>
      
        
   
 
     </div>
 		
-	</div> <div class="new_m_bth" @click="saveIdcard">提交</div>
+	</div> <div class="new_m_bth" @click="saveIdcard">{yun:}t key='wap_user_00176'{/yun}</div>
 
         </form>
 </div>
@@ -49,7 +49,19 @@
             status: 4,
             idcard: '',
             pic: '',
-            pic_type: ''
+            pic_type: '',
+            i18n: {
+                reasonPrefix: '{yun:}t key='wap_01086'{/yun}',
+                reuploadTip: '{yun:}t key='wap_00845'{/yun}',
+                idcardPlaceholder: '{yun:}t key='wap_01087'{/yun}',
+                uploadTip: '{yun:}t key='wap_01088'{/yun}',
+                notExceed: '{yun:}t key='common_01663'{/yun}',
+                idcardPurpose: '{yun:}t key='wap_01089'{/yun}',
+                uploadNewFirst: '{yun:}t key='wap_01090'{/yun}',
+                fillIdcard: '{yun:}t key='wap_01091'{/yun}',
+                idcardFormatError: '{yun:}t key='wap_01092'{/yun}',
+                submitting: '{yun:}t key='wap_js_00158'{/yun}',
+            },
         },
         created() {   
             this.getIdcard();
@@ -79,11 +91,11 @@
                 var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
                 var v = getFormValue('idcard_form');
                 if (v.preview == '') {
-                    return showToast('上传新身份证后才能修改');
+                    return showToast(that.i18n.uploadNewFirst);
                 } else if (v.idcard == '') {
-                    return showToast('请填写身份证号码');
+                    return showToast(that.i18n.fillIdcard);
                 } else if (reg.test(v.idcard) === false) {
-                    return showToast('身份证号格式错误');
+                    return showToast(that.i18n.idcardFormatError);
                 } else {
                     var formData = {
                         idcard: v.idcard,
@@ -91,7 +103,7 @@
                     };
                    
                     
-                    showLoading('提交中...');
+                    showLoading(that.i18n.submitting);
                     $.post('{yun:}url d=wxapp h=user m=set c=saveidcard{/yun}',formData,function(data){
                         hideLoading();      
                         if (data.error == 1) {

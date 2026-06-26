@@ -54,10 +54,10 @@ class finance_controller extends com_controller
 
 				if(empty($order)){
 					$error	=	2;
-					$msg	=	'订单不存在'; 
+					$msg	=	yun_auto_t('订单不存在'); 
 				}elseif($order['order_state']!='1'){
 					$error	=	3;
-					$msg	=	'请检查订单状态,本订单无需付款';
+					$msg	=	yun_auto_t('请检查订单状态,本订单无需付款');
 				}else{
 					$ordertype	=	array(
 						'1'	=>	'购买会员',
@@ -93,7 +93,7 @@ class finance_controller extends com_controller
 			$data['webtel']	 =	$this->config['sy_comwebtel']?$this->config['sy_comwebtel']:$this->config['sy_freewebtel'];
 		}else{
 			$error	=	2;
-			$msg	=	'暂未开通手机支付，请移步至电脑端充值！'; 
+			$msg	=	yun_auto_t('暂未开通手机支付，请移步至电脑端充值！'); 
 		}
 
 	    $this->render_json($error,$msg,$data);
@@ -192,7 +192,7 @@ class finance_controller extends com_controller
           $return = $jobM->setJobPromote(intval($_POST['id']), $_POST);
           $this->render_json(0, $return['msg'], $return);
       }else{
-          $this->render_json(8, '已超出套餐剩余数量');
+          $this->render_json(8, yun_auto_t('已超出套餐剩余数量'));
       }
     }
 	
@@ -306,10 +306,10 @@ class finance_controller extends com_controller
 		
 		if(!empty($oid[0])){
 			$comorderM	->	del($oid[0]['id'],array('uid'=>$this->member['uid']));
-			$msg	=	'取消成功！';
+			$msg	=	yun_auto_t('取消成功！');
 			$error	=	1;
 		}else{
-			$msg	=	'订单不存在！';
+			$msg	=	yun_auto_t('订单不存在！');
 			$error	=	2;
 		}
 		$this->render_json($error, $msg);
@@ -410,7 +410,7 @@ class finance_controller extends com_controller
 
             $data['shareData']  =   array(
                 'url'       =>  Url('wap').'index.php?c=register&uid='.$this->member['uid'],
-                'title'     =>  '邀请注册',
+                'title'     =>  yun_auto_t('邀请注册'),
                 'summary'   =>  '我在'.$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',
                 'imageUrl'  =>  checkpic($this->config['sy_wx_sharelogo'])
             );
@@ -493,7 +493,7 @@ class finance_controller extends com_controller
 
             $data['shareData']  =   array(
                 'url'       =>  Url('wap').'index.php?c=register&uid='.$this->member['uid'],
-                'title'     =>  '邀请注册',
+                'title'     =>  yun_auto_t('邀请注册'),
                 'summary'   =>  '我在'.$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',
                 'imageUrl'  =>  checkpic($this->config['sy_wx_sharelogo'])
             );

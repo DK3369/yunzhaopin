@@ -3,12 +3,12 @@
 <div id="yunvue" class="none">
     
     <div class="yunvueSubjects">
-    	<!--职位发布成功样式-->
+    	<!-- Job posted success -->
         <div class="job_box_title yunvueJobTite">
             <div class="yunvueJobText">
                 <div>
-                    <span>职位发布成功</span>
-                    <b>急着招人？试试以下操作</b>
+                    <span>{yun:}t key='wap_01173'{/yun}</span>
+                    <b>{yun:}t key='wap_01174'{/yun}</b>
                 </div>
                 
             </div>
@@ -17,7 +17,7 @@
                 <!-- <img src="../../../../images/dksk.png" alt=""> -->
             </div>
         </div>
-        <!--置顶等功能样式-->
+        <!-- Promotion options -->
         <div class="job_box_body yunvueJobButnd">
             <ul>
 
@@ -27,8 +27,8 @@
                             <img src="{yun:}$wap_style{/yun}/images/dredge_top.png" alt="">
                         </div>
                         <div class="job_box_body_left_word">
-                            <div class="body_left_word_title">置顶</div>
-                            <div class="body_left_word_connect">锁定前排好位置，坐享牛人滚滚来</div>
+                            <div class="body_left_word_title">{yun:}t key='wap_user_00335'{/yun}</div>
+                            <div class="body_left_word_connect">{yun:}t key='wap_com_00198'{/yun}</div>
                         </div>
                     </div>
                     <div class="job_box_body_right">
@@ -41,8 +41,8 @@
                             <img src="{yun:}$wap_style{/yun}/images/job_Help_wanted.png" alt="">
                         </div>
                         <div class="job_box_body_left_word">
-                            <div class="body_left_word_title">急聘</div>
-                            <div class="body_left_word_connect">快速提高招聘效率，享受更多服务</div>
+                            <div class="body_left_word_title">{yun:}t key='wap_com_00250'{/yun}</div>
+                            <div class="body_left_word_connect">{yun:}t key='wap_com_00197'{/yun}</div>
                         </div>
                     </div>
                     <div class="job_box_body_right">
@@ -55,8 +55,8 @@
                             <img src="{yun:}$wap_style{/yun}/images/job_recommend.png" alt="">
                         </div>
                         <div class="job_box_body_left_word">
-                            <div class="body_left_word_title">推荐</div>
-                            <div class="body_left_word_connect">享特殊标识，提高曝光机会</div>
+                            <div class="body_left_word_title">{yun:}t key='wap_com_00251'{/yun}</div>
+                            <div class="body_left_word_connect">{yun:}t key='wap_com_00208'{/yun}</div>
                         </div>
                     </div>
                     <div class="job_box_body_right">
@@ -71,8 +71,8 @@
                             <img src="{yun:}$wap_style{/yun}/images/dredge_refresh.png" alt="">
                         </div>
                         <div class="job_box_body_left_word">
-                            <div class="body_left_word_title">刷新</div>
-                            <div class="body_left_word_connect">每天预约刷新，牛人主动来寻</div>
+                            <div class="body_left_word_title">{yun:}t key='wap_user_00334'{/yun}</div>
+                            <div class="body_left_word_connect">{yun:}t key='wap_com_00207'{/yun}</div>
                         </div>
                     </div>
                     <div class="job_box_body_right">
@@ -86,8 +86,8 @@
                             <img src="{yun:}$wap_style{/yun}/images/dredge_refresh.png" alt="">
                         </div>
                         <div class="job_box_body_left_word">
-                            <div class="body_left_word_title">刷新</div>
-                            <div class="body_left_word_connect">每天自动刷新，牛人主动来寻</div>
+                            <div class="body_left_word_title">{yun:}t key='wap_user_00334'{/yun}</div>
+                            <div class="body_left_word_connect">{yun:}t key='wap_com_00206'{/yun}</div>
                         </div>
                     </div>
                     <div class="job_box_body_right">
@@ -102,8 +102,8 @@
                             <img src="{yun:}$wap_style{/yun}/images/job_Reward.png" alt="">
                         </div>
                         <div class="job_box_body_left_word">
-                            <div class="body_left_word_title">悬赏</div>
-                            <div class="body_left_word_connect">提高牛人与职位的匹配度和成功率</div>
+                            <div class="body_left_word_title">{yun:}t key='wap_com_00357'{/yun}</div>
+                            <div class="body_left_word_connect">{yun:}t key='wap_01175'{/yun}</div>
                         </div>
                     </div>
                     <div class="job_box_body_right">
@@ -117,11 +117,11 @@
             <input id="jobid" :value="jobid" type="hidden"/>
         </div>
         <div class="yunvueJoblikdj">
-            <a href="{yun:}if $backurl{/yun}{yun:}$backurl{/yun}{yun:}else{/yun}javascript:goBack();{yun:}/if{/yun}">跳过</a>
+            <a href="{yun:}if $backurl{/yun}{yun:}$backurl{/yun}{yun:}else{/yun}javascript:goBack();{yun:}/if{/yun}">{yun:}t key='wap_user_00299'{/yun}</a>
         </div>
         
     </div>
-    <!--职位推广设置弹出-->
+    <!-- Job promotion popup -->
     <van-popup v-model="tc_server" position="bottom">
         <div class="top_set_box" style="position: unset; display: block">
             <div class="top_set_box_title">
@@ -136,17 +136,17 @@
             <div class="top_set_box_day" v-if="promote_tc">{{promote_tc}}</div>
             <div class="top_set_box_day" v-else>
                 <div class="set_box_day_left">{{package_allowance}}</div>
-                <div class="set_box_day_right">{{days_remaining}}天</div>
+                <div class="set_box_day_right">{{days_remaining}}{yun:}t key='common_02067'{/yun}</div>
             </div>
             <div class="top_set_box_setday">
                 <div class="box_setday_left">{{promote_day_title}}</div>
                 <div class="box_setday_right">
-                    <input type="number" v-model='promote_day' @input="dayCheck" oninput="value=value.replace(/^0|[\^d]/g,'')" maxlength='3' placeholder="请设置天数" autocomplete="off">
+                    <input type="number" v-model='promote_day' @input="dayCheck" oninput="value=value.replace(/^0|[\^d]/g,'')" maxlength='3' :placeholder="i18n.setDaysPlaceholder" autocomplete="off">
                 </div>
             </div>
             <input type="hidden" v-model="promote_jobid" />
             <input type="hidden" v-model="promote_type" />
-            <div class="top_set_box_btn" @click="setJobPromote">确定</div>
+            <div class="top_set_box_btn" @click="setJobPromote">{yun:}t key='common_02016'{/yun}</div>
         </div>
     </van-popup>
 
@@ -162,15 +162,15 @@
                 <span @click="topage('index.php?c=server')"><img src="{yun:}$wap_style{/yun}/images/job_bnner.png" alt=""></span>
             </div>
             <div class="top_set_box_setday">
-                <div class="box_setday_left">{{server.name}}天数</div>
+                <div class="box_setday_left">{{server.name}}{{i18n.daysLabelSuffix}}</div>
                 <div class="box_setday_right">
-                    <input type="number" v-model='server.days' @input="checkDay" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请设置天数" autocomplete="off">
+                    <input type="number" v-model='server.days' @input="checkDay" oninput="value=value.replace(/^0|[\^d]/g,'')" :placeholder="i18n.setDaysPlaceholder" autocomplete="off">
                 </div>
             </div>
             <div class="top_set_box_discounts" v-if="couponShow" @click="couponPicker">
-                <div class="box_setday_left">优惠券</div>
+                <div class="box_setday_left">{yun:}t key='wap_com_00356'{/yun}</div>
                 <div class="box_discounts_nav">
-                    <div class="box_setday_right">{{server.couponName ? server.couponName : '请选择优惠券'}}</div>
+                    <div class="box_setday_right">{{server.couponName ? server.couponName : i18n.selectCoupon}}</div>
                     <div class="box_discounts_nav_icon">
                         <img src="{yun:}$wap_style{/yun}/images/dredge_add.png" alt="">
                     </div>
@@ -185,17 +185,17 @@
 
             <div class="top_set_box_discounts" v-if="dkShow">
                 <div class="select_discounts_text">
-                    <div class="discounts_text_top">{{config.integral_pricename}}抵扣</div>
-                    <div class="discounts_text_bom">你当前有<i class="text_bom_integral">{{statis.integral}}</i>{{config.integral_pricename}}（1元={{config.integral_proportion}}{{config.integral_pricename}}）</div>
+                    <div class="discounts_text_top">{{config.integral_pricename}}{yun:}t key='wap_00928'{/yun}</div>
+                    <div class="discounts_text_bom">{{i18n.integralBalancePrefix}}<i class="text_bom_integral">{{statis.integral}}</i>{{config.integral_pricename}}{{i18n.integralRatePrefix}}{{config.integral_proportion}}{{config.integral_pricename}}{{i18n.integralRateSuffix}}</div>
                 </div>
                 <div class="select_discounts_icon">
                     <van-switch v-model="server.switchChecked" active-color="#DEAC65" inactive-color="#dcdee0" @change="integralSwitchChange"></van-switch>
                 </div>
             </div>
             <div class="top_set_box_discounts" v-if="isDk">
-                <div class="box_setday_left">抵扣数量</div>
+                <div class="box_setday_left">{yun:}t key='wap_00864'{/yun}</div>
                 <div class="box_setday_right">
-                    <input type="number" v-model='server.dkNum' @input="dkCheck" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请输入抵扣数量" autocomplete="off" />
+                    <input type="number" v-model='server.dkNum' @input="dkCheck" oninput="value=value.replace(/^0|[\^d]/g,'')" :placeholder="i18n.deductPlaceholder" autocomplete="off" />
                 </div>
             </div>
 
@@ -206,7 +206,7 @@
                         <div class="pay_box_left_icon">
                             <img src="{yun:}$wap_style{/yun}/images/dredge_wx.png" alt="">
                         </div>
-                        <div class="pay_box_left_name">微信支付</div>
+                        <div class="pay_box_left_name">{yun:}t key='wap_user_00202'{/yun}</div>
                     </div>
                     <div class="card_pay_box_icon" >
                         <img :src="src_weixin" alt="">
@@ -217,7 +217,7 @@
                         <div class="pay_box_left_icon">
                             <img src="{yun:}$wap_style{/yun}/images/dredge_zfb.png" alt="">
                         </div>
-                        <div class="pay_box_left_name">支付宝支付</div>
+                        <div class="pay_box_left_name">{yun:}t key='wap_00627'{/yun}</div>
                     </div>
                     <div class="card_pay_box_icon">
                         <img  :src="src_alipay" alt="">
@@ -227,39 +227,39 @@
 
             <div class="deficiency_box_btn" v-if="payStyle == 'price'">
                 <div class="deficiency_box_btn_left">
-                    <div class="box_btn_left_pay">应付金额：</div>
+                    <div class="box_btn_left_pay">{yun:}t key='wap_com_00221'{/yun}</div>
                     <div class="box_btn_left_center">￥</div>
                     <div class="box_btn_left_monye">{{order_price}}</div>
                 </div>
-                <div class="deficiency_box_btn_right" @click="buyByPrice">立即购买</div>
+                <div class="deficiency_box_btn_right" @click="buyByPrice">{yun:}t key='wap_user_00206'{/yun}</div>
             </div>
 
             <div class="deficiency_box_btn" v-if="payStyle == 'integral'">
                 <div class="deficiency_box_btn_left">
-                    <div class="box_btn_left_pay">支付{{config.integral_name}}：</div>
+                    <div class="box_btn_left_pay">{{i18n.payPrefix}}{{config.integral_name}}：</div>
                     <div class="box_btn_left_center"></div>
                     <div class="box_btn_left_monye">{{order_integral}}</div>
                 </div>
-                <div class="deficiency_box_btn_right" @click="buyByIntegral">立即购买</div>
+                <div class="deficiency_box_btn_right" @click="buyByIntegral">{yun:}t key='wap_user_00206'{/yun}</div>
             </div>
 
             <div class="deficiency_box_btn" v-if="payStyle == 'coupon'">
                 <div class="deficiency_box_btn_left">
-                    <div class="box_btn_left_pay">优惠券支付：</div>
+                    <div class="box_btn_left_pay">{yun:}t key='wap_01177'{/yun}</div>
                     <div class="box_btn_left_center">￥</div>
                     <div class="box_btn_left_monye">{{order_price}}</div>
                 </div>
-                <div class="deficiency_box_btn_right" @click="buyByCoupon">立即购买</div>
+                <div class="deficiency_box_btn_right" @click="buyByCoupon">{yun:}t key='wap_user_00206'{/yun}</div>
             </div>
 
         </div>
     </van-popup>
 
-    <!--预约刷新弹出-->
+    <!-- Scheduled refresh popup -->
     <van-popup v-model="reserveJob" position="bottom">
         <div class="refresh_box" style="position: unset; display: block">
             <div class="top_set_box_title">
-                <div class="box_title_left">刷新设置</div>
+                <div class="box_title_left">{yun:}t key='wap_com_00226'{/yun}</div>
                 <div class="box_title_right" @click="closeJobReserve">
                     <img src="{yun:}$wap_style{/yun}/images/job.dell.png" alt="">
                 </div>
@@ -269,14 +269,14 @@
             </div>
 
             <div class="refresh_list">
-                <div class="refresh_listname">刷新状态</div>
+                <div class="refresh_listname">{yun:}t key='wap_00850'{/yun}</div>
                 <div class="refresh_listname_zt">
                     <van-switch v-model="switchChecked" @change="switchChange" active-color="#2778f8" inactive-color="#dcdee0" size="20"/></van-switch>
                     <input type="hidden" v-model="status"/>
                 </div>
             </div>
             <div class="refresh_list">
-                <div class="refresh_listname">刷新间隔</div>
+                <div class="refresh_listname">{yun:}t key='wap_com_00227'{/yun}</div>
                 <div class="refresh_text" @click="interval_popup = true;">
                     <span>{{interval_name}}</span>
                     <div class="refresh_timeicon">
@@ -285,13 +285,13 @@
                 </div>
                 <div class="refresh_text" style="margin-top: 0.23rem;" v-show="intervalDiv">
                     <input type="number" v-model="space" @blur="checkInterval" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="0">
-                    <span class="refresh_time">分钟</span>
+                    <span class="refresh_time">{yun:}t key='wap_com_00247'{/yun}</span>
                 </div>
             </div>
             <div class="refresh_list">
-                <div class="refresh_listname">截止日期</div>
+                <div class="refresh_listname">{yun:}t key='wap_com_00234'{/yun}</div>
                 <div class="refresh_text">
-                    <div class=" " @click="showDatePopup">{{formatDate ? formatDate : '不限'}}</div>
+                    <div class=" " @click="showDatePopup">{{formatDate ? formatDate : i18n.unlimited}}</div>
 
                     <div class="refresh_timeicon">
                         <img src="{yun:}$wap_style{/yun}/images/yun_wap_partdate.png" alt="">
@@ -301,37 +301,37 @@
             </div>
 
             <div class="refresh_list">
-                <div class="refresh_listname">刷新时间段</div>
+                <div class="refresh_listname">{yun:}t key='wap_com_00220'{/yun}</div>
                 <div class="refresh_list_sd" @click="showSTimePopup">{{s_time ? s_time : '09:00'}}</div>
                 <div class="refresh_list_sd" @click="showETimePopup">{{e_time ? e_time : '17:00'}}</div>
                 <input type="hidden" v-model="s_time"/>
                 <input type="hidden" v-model="e_time"/>
             </div>
             <div class="refresh_list_gz">
-                <div class="refresh_list_gz_t">刷新规则:</div>
-                <div>剩余刷新资源 <span class="refresh_list_gz_n">{{statis.upJobNum}}</span> 份&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;单职位可预约<span class="refresh_list_gz_n"> {{reserveNum}} </span>次自动刷新</div>
-                <div>1.截止日期不得设置今天，超过截止日期，自动关闭预约设置</div>
-                <div>2.刷新资源不足，将自动停止，购买后需重新设置</div>
+                <div class="refresh_list_gz_t">{yun:}t key='wap_com_00225'{/yun}:</div>
+                <div>{yun:}t key='wap_com_00217'{/yun} <span class="refresh_list_gz_n">{{statis.upJobNum}}</span>{{i18n.reserveRuleMid}}<span class="refresh_list_gz_n"> {{reserveNum}} </span>{yun:}t key='wap_com_00222'{/yun}</div>
+                <div>{yun:}t key='wap_com_00192'{/yun}</div>
+                <div>{yun:}t key='wap_com_00193'{/yun}</div>
             </div>
 
-            <div class="top_set_box_btn" @click="setReserveRefreshJob">确定</div>
+            <div class="top_set_box_btn" @click="setReserveRefreshJob">{yun:}t key='common_02016'{/yun}</div>
         </div>
     </van-popup>
 
     <van-popup v-model:show="interval_popup" round position="bottom">
-        <van-picker show-toolbar v-model="intervalId" :columns="intervalArr" value-key="name" title="刷新间隔" @cancel="interval_popup=false" @confirm="confirmInterval"/>
+        <van-picker show-toolbar v-model="intervalId" :columns="intervalArr" value-key="name" :title="i18n.refreshIntervalTitle" @cancel="interval_popup=false" @confirm="confirmInterval"/>
     </van-popup>
 
     <van-popup v-model="date_popup" position="bottom">
-        <van-datetime-picker v-model="currentDate" type="date" title="请选择截止日期" :min-date="minDate" @cancel="cancelDate" @confirm="confirmDate"/>
+        <van-datetime-picker v-model="currentDate" type="date" :title="i18n.selectEndDate" :min-date="minDate" @cancel="cancelDate" @confirm="confirmDate"/>
     </van-popup>
 
     <van-popup v-model="s_time_popup" position="bottom">
-        <van-datetime-picker v-model="s_time" type="time" title="请选择开始时间" @cancel="cancelSTime" @confirm="confirmSTime"/>
+        <van-datetime-picker v-model="s_time" type="time" :title="i18n.selectStartTime" @cancel="cancelSTime" @confirm="confirmSTime"/>
     </van-popup>
 
     <van-popup v-model="e_time_popup" position="bottom">
-        <van-datetime-picker v-model="e_time" type="time" title="请选择截止时间" @cancel="cancelETime" @confirm="confirmETime"/>
+        <van-datetime-picker v-model="e_time" type="time" :title="i18n.selectEndTime" @cancel="cancelETime" @confirm="confirmETime"/>
     </van-popup>
 </div>
 
@@ -347,13 +347,13 @@
         data: {
             jobid:0,
             job:{},
-            job_recommend: false,   //  职位推广弹出框
-            cancel_popup: false,    //  取消推广弹出
+            job_recommend: false,   // Job promotion popup
+            cancel_popup: false,    // Cancel promotion popup
 
-            tc_server: false,         //  推广套餐设置弹出
-            single_server: false,      //  推广消费设置弹出
+            tc_server: false,         // Promotion package popup
+            single_server: false,      // Promotion pay popup
 
-            reserveJob: false,      //  预约刷新弹出
+            reserveJob: false,      // Scheduled refresh popup
 
             promote_title: '',
             package_allowance: '',
@@ -365,15 +365,15 @@
             promote_jobid: 0,
             promote_type: '',
 
-            date_popup: false,      //  预约刷新截止日期弹出
+            date_popup: false,      // Scheduled refresh end date popup
             minDate: new Date(),
             currentDate: '',
             formatDate: '',
 
-            s_time_popup: false,    //  预约刷新时间段开始
+            s_time_popup: false,    // Scheduled refresh time start
             s_time: '',
 
-            e_time_popup: false,    //  预约刷新时间段截止
+            e_time_popup: false,    // Scheduled refresh time end
             e_time: '',
 
             info: [],
@@ -408,10 +408,10 @@
             },
             integral: {},
 
-            couponShow: false,  //  优惠券
-            isCoupon: false,    //  选择优惠卡券
-            dkShow: false,      //  抵扣
-            isDk: false,        //  填写积分抵扣
+            couponShow: false,  // Coupon
+            isCoupon: false,    // Select coupon
+            dkShow: false,      // Points deduction
+            isDk: false,        // Enter points deduction
 
             payTypeShow: false,
             payStyle: 'price',
@@ -422,8 +422,8 @@
 
             key: '',
 
-            reward: 2, //	悬赏招聘
-            reserve: 1, //	预约刷新
+            reward: 2, // Bounty recruitment
+            reserve: 1, // Scheduled refresh
 
 
             reserveNum: 0,
@@ -436,21 +436,11 @@
 
             interval_popup: false,
             intervalId: '',
-            interval_name: '每隔1小时',
-            intervalArr: [
-                {value: 60, name: '每隔1小时刷新'},
-                {value: 120, name: '每隔2小时刷新'},
-                {value: 180, name: '每隔3小时刷新'},
-                {value: 240, name: '每隔4小时刷新'},
-                {value: 300, name: '每隔5小时刷新'},
-                {value: 360, name: '每隔6小时刷新'},
-                {value: 420, name: '每隔7小时刷新'},
-                {value: 480, name: '每隔8小时刷新'},
-                {value: 1, name: '自定义刷新间隔'}
-            ],
+            interval_name: '',
+            intervalArr: [],
             intervalDiv: false,
 
-            stype: 1, //tab栏
+            stype: 1,
 
             mb_content: '',
             moreKey: 0,
@@ -459,23 +449,7 @@
             closeArr: {},
 
             share_popup: false,
-            shareOptions: [
-                {
-                    name: '微信',
-                    icon: 'wechat',
-                    className: 'wechat'
-                },
-                {
-                    name: '复制文本',
-                    icon: '{yun:}$wap_style{/yun}/images/fx_wb.png',
-                    className: 'copytxt'
-                },
-                {
-                    name: '复制链接',
-                    icon: '{yun:}$wap_style{/yun}/images/fx_lj.png',
-                    className: 'link'
-                }
-            ],
+            shareOptions: [],
             jobHbShow: false,
             jobHbNext: 0,
             jobHb: '',
@@ -493,7 +467,7 @@
 
             sd: {},
 
-            // tab数量显示
+            // Tab count display
             zp_num: 0,
             ds_num: 0,
             xj_num: 0,
@@ -503,7 +477,61 @@
             recruitJobId: 0,
             recruitLi: false,
             recruitShow: false,
-            rctHb: ''
+            rctHb: '',
+
+            i18n: {
+                setDaysPlaceholder: '{yun:}t key='wap_com_00223'{/yun}',
+                daySuffix: '{yun:}t key='common_02067'{/yun}',
+                daysLabelSuffix: '{yun:}t key='wap_00870'{/yun}',
+                integralBalancePrefix: '{yun:}t key='wap_00866'{/yun}',
+                integralRatePrefix: '{yun:}t key='wap_00867'{/yun}',
+                integralRateSuffix: '{yun:}t key='wap_00868'{/yun}',
+                deductPlaceholder: '{yun:}t key='wap_00865'{/yun}',
+                payPrefix: '{yun:}t key='wap_00869'{/yun}',
+                unlimited: '{yun:}t key='common_01936'{/yun}',
+                reserveRuleMid: '{yun:}t key='wap_00862'{/yun}',
+                refreshIntervalTitle: '{yun:}t key='wap_com_00227'{/yun}',
+                selectEndDate: '{yun:}t key='wap_00861'{/yun}',
+                selectStartTime: '{yun:}t key='wap_com_00215'{/yun}',
+                selectEndTime: '{yun:}t key='wap_com_00216'{/yun}',
+                selectInterval: '{yun:}t key='wap_00851'{/yun}',
+                interval1h: '{yun:}t key='wap_00853'{/yun}',
+                interval2h: '{yun:}t key='wap_00854'{/yun}',
+                interval3h: '{yun:}t key='wap_00855'{/yun}',
+                interval4h: '{yun:}t key='wap_00856'{/yun}',
+                interval5h: '{yun:}t key='wap_00857'{/yun}',
+                interval6h: '{yun:}t key='wap_00858'{/yun}',
+                interval7h: '{yun:}t key='wap_00859'{/yun}',
+                interval8h: '{yun:}t key='wap_00860'{/yun}',
+                intervalCustom: '{yun:}t key='wap_00852'{/yun}',
+                wechat: '{yun:}t key='wap_com_00249'{/yun}',
+                copyText: '{yun:}t key='wap_com_00232'{/yun}',
+                copyLink: '{yun:}t key='wap_com_00233'{/yun}',
+                notNeeded: '{yun:}t key='wap_com_00107'{/yun}',
+                goBuy: '{yun:}t key='wap_com_00048'{/yun}',
+                autoRefresh: '{yun:}t key='wap_com_00239'{/yun}',
+                jobTop: '{yun:}t key='wap_com_00238'{/yun}',
+                jobRec: '{yun:}t key='wap_com_00237'{/yun}',
+                jobUrgent: '{yun:}t key='wap_com_00219'{/yun}',
+                urgentHire: '{yun:}t key='member_com_00247'{/yun}',
+                promoteFreeAuto: '{yun:}t key='wap_com_00202'{/yun}',
+                promoteFreeTop: '{yun:}t key='wap_com_00201'{/yun}',
+                promoteFreeRec: '{yun:}t key='wap_com_00200'{/yun}',
+                promoteFreeUrgent: '{yun:}t key='wap_com_00199'{/yun}',
+                packageTop: '{yun:}t key='wap_00884'{/yun}',
+                packageRec: '{yun:}t key='wap_00885'{/yun}',
+                packageUrgent: '{yun:}t key='wap_00886'{/yun}',
+                topDays: '{yun:}t key='wap_user_00209'{/yun}',
+                recDays: '{yun:}t key='wap_com_00041'{/yun}',
+                urgentDays: '{yun:}t key='wap_00871'{/yun}',
+                promoteDaysRequired: '{yun:}t key='wap_00882'{/yun}',
+                packageUsedUp: '{yun:}t key='wap_com_00205'{/yun}',
+                paramError: '{yun:}t key='wap_com_00228'{/yun}',
+                intervalRequired: '{yun:}t key='wap_00883'{/yun}',
+                timeRangeInvalid: '{yun:}t key='wap_com_00213'{/yun}',
+                selectCoupon: '{yun:}t key='wap_01176'{/yun}',
+                noCoupon: '{yun:}t key='wap_01178'{/yun}',
+            },
 
         },
         computed: {
@@ -518,8 +546,26 @@
             }
         },
         created() {
-            let that = this,
-                id = getUrlKey('jobid');
+            let that = this;
+            that.interval_name = that.i18n.selectInterval;
+            that.intervalArr = [
+                {value: 60, name: that.i18n.interval1h},
+                {value: 120, name: that.i18n.interval2h},
+                {value: 180, name: that.i18n.interval3h},
+                {value: 240, name: that.i18n.interval4h},
+                {value: 300, name: that.i18n.interval5h},
+                {value: 360, name: that.i18n.interval6h},
+                {value: 420, name: that.i18n.interval7h},
+                {value: 480, name: that.i18n.interval8h},
+                {value: 1, name: that.i18n.intervalCustom}
+            ];
+            that.shareOptions = [
+                {name: that.i18n.wechat, icon: 'wechat', className: 'wechat'},
+                {name: that.i18n.copyText, icon: '{yun:}$wap_style{/yun}/images/fx_wb.png', className: 'copytxt'},
+                {name: that.i18n.copyLink, icon: '{yun:}$wap_style{/yun}/images/fx_lj.png', className: 'link'}
+            ];
+
+            let id = getUrlKey('jobid');
             if (id) {
                 that.jobid = id;
             }
@@ -599,7 +645,7 @@
 		                        }else{
 
 		                            this.intervalId = 1;
-		                            this.interval_name = '自定义刷新间隔';
+		                            this.interval_name = this.i18n.intervalCustom;
 		                            this.intervalDiv = true;
 		                        }
 								this.space = interval;
@@ -670,48 +716,48 @@
 
             showTc(type, num){
                 var self = this;
-                self.promote_jobid  =   self.jobid; // 推广职位ID
+                self.promote_jobid  =   self.jobid; // Promoted job ID
                 self.promote_day = '';
 
                 if (type === 'auto') {
 
-                    self.promote_title = '自动刷新';
+                    self.promote_title = self.i18n.autoRefresh;
                     if (self.tgPrice === 0) {
-                        self.promote_tc = '限时福利：自动刷新金额 0 元';
+                        self.promote_tc = self.i18n.promoteFreeAuto;
                     }
                     self.promote_type = 'autojob';
                 } else if (type === 'top') {
 
-                    self.promote_title = '职位置顶';
+                    self.promote_title = self.i18n.jobTop;
                     if (self.tgPrice === 0 ) {
-                        self.promote_tc = '限时福利：职位置顶金额 0 元';
+                        self.promote_tc = self.i18n.promoteFreeTop;
                     } else {
-                        self.package_allowance = '您的职位置顶套餐剩余';
+                        self.package_allowance = self.i18n.packageTop;
                         self.days_remaining = num;
                     }
-                    self.promote_day_title = '置顶天数';
+                    self.promote_day_title = self.i18n.topDays;
                     self.promote_type = 'top';
                 } else if (type === 'rec') {
 
-                    self.promote_title = '职位推荐';
+                    self.promote_title = self.i18n.jobRec;
                     if (self.tgPrice === 0) {
-                        self.promote_tc = '限时福利：职位推荐金额 0 元';
+                        self.promote_tc = self.i18n.promoteFreeRec;
                     } else {
-                        self.package_allowance = '您的职位推荐套餐剩余';
+                        self.package_allowance = self.i18n.packageRec;
                         self.days_remaining = num;
                     }
-                    self.promote_day_title = '推荐天数';
+                    self.promote_day_title = self.i18n.recDays;
                     self.promote_type = 'rec';
                 } else if (type === 'urgent') {
 
-                    self.promote_title = '职位紧急招聘';
+                    self.promote_title = self.i18n.jobUrgent;
                     if (self.tgPrice === 0) {
-                        self.promote_tc = '限时福利：紧急招聘金额 0 元';
+                        self.promote_tc = self.i18n.promoteFreeUrgent;
                     } else {
-                        self.package_allowance = '您的职位紧急招聘套餐剩余';
+                        self.package_allowance = self.i18n.packageUrgent;
                         self.days_remaining = num;
                     }
-                    self.promote_day_title = '急聘天数';
+                    self.promote_day_title = self.i18n.urgentDays;
                     self.promote_type = 'urgent';
                 }
 
@@ -770,7 +816,7 @@
             setJobPromote(){
                 var that = this;
                 if (that.promote_day === '' || that.promote_day === 'undefined') {
-                    return showToast('请填写职位推广天数！');
+                    return showToast(this.i18n.promoteDaysRequired);
                 }
                 var formData = {
                     days: that.promote_day,
@@ -811,7 +857,7 @@
                         self.toServer();
                         self.single_server = false;
                     }else{
-                        self.server.name = '职位置顶';
+                        self.server.name = self.i18n.jobTop;
                         self.only = self.config.onlyTop;
                         self.promote_type = 'jobtop';
                         self.single_server = true;
@@ -821,7 +867,7 @@
                         self.toServer();
                         self.single_server = false;
                     }else{
-                        self.server.name = '职位推荐';
+                        self.server.name = self.i18n.jobRec;
                         self.only = self.config.onlyRec;
                         self.promote_type = 'jobrec';
                         self.single_server = true;
@@ -831,13 +877,13 @@
                         self.toServer();
                         self.single_server = false;
                     }else{
-                        self.server.name = '紧急招聘';
+                        self.server.name = self.i18n.urgentHire;
                         self.only = self.config.onlyUrgent;
                         self.promote_type = 'joburgent';
                         self.single_server = true;
                     }
                 }else if(type === 'auto'){
-                    self.server.name = '自动刷新';
+                    self.server.name = self.i18n.autoRefresh;
 					self.only=2;
                     self.promote_type = 'autojob';
                     self.single_server = true;
@@ -849,7 +895,7 @@
 
                 that.couponShow = false;
                 that.server.couponId = 0;
-                that.server.couponName = '请选择优惠券';
+                that.server.couponName = that.i18n.selectCoupon;
                 that.coupon_price = 0;
 
                 that.dkShow = false;
@@ -879,7 +925,7 @@
 
                 var price = accMul(that.server.days, that.tgPrice);
 
-                if (that.config.online == 3 && that.only == 2){     //  积分消费模式 && 不强制金额消费
+                if (that.config.online == 3 && that.only == 2){     // Points-only mode && amount not forced
 
                     that.couponShow = false;
                     that.server.couponId = 0;
@@ -891,7 +937,7 @@
                     var integral_sub    =   accSub(integral_need, parseInt(that.statis.integral));
 
                     that.order_integral =   integral_need;
-                    if (parseInt(integral_sub) <= 0 ){  //  积分充足
+                    if (parseInt(integral_sub) <= 0 ){  // Sufficient points
 
                         that.payStyle   =   'integral';
                         that.payTypeShow = false;
@@ -912,7 +958,7 @@
 
                     that.getCoupon();
 
-                    if (parseInt(that.config.online) == 1 && parseInt(that.only) == 2){ //  抵扣消费模式 && 不强制金额消费
+                    if (parseInt(that.config.online) == 1 && parseInt(that.only) == 2){ // Deduction mode && amount not forced
                         that.dkShow = true;
                     }else{
 
@@ -944,7 +990,7 @@
                             }
                             that.server.couponData.push({
                                 value: 0,
-                                text: '暂不使用优惠券',
+                                text: that.i18n.noCoupon,
                                 price: 0
                             });
 
@@ -977,9 +1023,9 @@
 
                     self.coupon_price = e.price;
 
-                    var oPrice = accSub(parseFloat(price), parseFloat(e.price));    //  使用优惠券，还需要支付的差价
+                    var oPrice = accSub(parseFloat(price), parseFloat(e.price));    // Price difference after coupon
 
-                    if (parseFloat(oPrice) <= 0){    //  优惠券消费
+                    if (parseFloat(oPrice) <= 0){    // Coupon payment
 
                         self.payStyle = 'coupon';
                         self.payTypeShow = false;
@@ -990,7 +1036,7 @@
                         self.order_price = price;
                     }else{
 
-                        if (self.server.dkNum > 0){ //  优惠券 + 积分抵扣
+                        if (self.server.dkNum > 0){ // Coupon + points deduction
 
                             var integral_need = accMul(oPrice, self.config.integral_proportion);
 
@@ -1081,7 +1127,7 @@
                 var integral_need   =   parseInt(accMul(price, that.config.integral_proportion));
 
 
-                if (parseInt(that.statis.integral) > integral_need){  //  积分充足
+                if (parseInt(that.statis.integral) > integral_need){  // Sufficient points
 
                     if (parseInt(that.server.dkNum) >= integral_need){
 
@@ -1270,14 +1316,14 @@
             },
 
             toServer:function(){
-                modalVue.$data.mb_content = '套餐已用完，购买会员更优惠';
-                modalVue.$data.cancelText = '不用了';
-                modalVue.$data.confirmText = '去购买';
+                modalVue.$data.mb_content = this.i18n.packageUsedUp;
+                modalVue.$data.cancelText = this.i18n.notNeeded;
+                modalVue.$data.confirmText = this.i18n.goBuy;
                 modalVue.$data.yunModal = true;
                 modalType = 'vip';
             },
 
-            /** 预约刷新 Start */
+            /** Scheduled refresh Start */
             showJobReserve(){
                 var ajaxUrl ='{yun:}url d=wxapp h=com m=job c=getRefresh{/yun}';
                 let pData = {job_id:this.jobid};
@@ -1290,7 +1336,7 @@
                             refreshStatus = data.data.refreshStatus?data.data.refreshStatus:'';
                             if (refreshStatus == 0){
                                 that.space = '60'
-                                that.interval_name = '每隔1小时刷新';
+                                that.interval_name = that.i18n.interval1h;
                                 that.switchChecked = false;
                                 that.status = 2;
                                 that.intervalIndex = 0;
@@ -1322,7 +1368,7 @@
                                     }else{
                                         that.intervalIndex = intervalA.length - 1;
                                         that.intervalId = 1;
-                                        that.interval_name = '自定义刷新间隔';
+                                        that.interval_name = that.i18n.intervalCustom;
                                         that.intervalDiv = true;
                                     }
                                 }
@@ -1422,13 +1468,13 @@
                 var self = this;
 
                 if (self.jobid == '' || self.jobid == 0 || self.jobid == undefined) {
-                    showToast('参数错误');
+                    showToast(self.i18n.paramError);
                     return false;
                 }
 
                 if (self.status == 1 ) {
                     if (self.space == 0) {
-                        showToast('请填写刷新时间间隔');
+                        showToast(self.i18n.intervalRequired);
                         return false;
                     }
                 }
@@ -1438,7 +1484,7 @@
                     var stime = self.s_time.split(':');
                     var etime = self.e_time.split(':');
                     if (parseInt(stime[0]) > parseInt(etime[0]) || (parseInt(stime[0]) === parseInt(etime[0]) && parseInt(stime[1]) >= parseInt(etime[1])) ){
-                        showToast('请合理设置刷新时间段');
+                        showToast(self.i18n.timeRangeInvalid);
                         return false;
                     }
                 }
@@ -1467,7 +1513,7 @@
                 } catch (err) {
                 }
             },
-            /** 预约刷新 End */
+            /** Scheduled refresh End */
             topage: function (url) {
                 location.href = url;
             },
@@ -1480,7 +1526,7 @@
         }
     });
 </script>
-<!-- 余额不足提示 -->
+<!-- Insufficient balance tip -->
 {yun:}include file="$wapstyle/publichtm/yun_modal.htm"{/yun}
 
 </html>

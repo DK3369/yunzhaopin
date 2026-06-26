@@ -1,4 +1,6 @@
 var throttleFlag;
+var _reg = window.REG_I18N || {};
+
 function login(){
 	// 节流处理：在一定时间内，只能触发一次
 	if (!throttleFlag) {
@@ -12,28 +14,28 @@ function login(){
 	var field = getFormValue('login_form');
 	if(field.act_login ==0){
 		if(field.username == ''){
-			return showToast('请填写用户名');
+			return showToast(_reg.enterUsername || '');
 		}
 		if(field.password == ''){
-			return showToast('请填写密码');
+			return showToast(_reg.enterPassword || '');
 		}
 	
 	}else{
 		if(field.moblie == ""){
-			return showToast('请填写手机号');
+			return showToast(_reg.enterMobile || '');
 		}
 		if(field.dynamiccode ==""){
-			return showToast('请填写短信验证码');
+			return showToast(_reg.enterSmsCode || '');
 		}
 	}
 	if(field.xieyicheck !=1){
-		return showToast('您必须同意注册协议才能登录！');
+		return showToast(_reg.agreeLoginProtocol || '');
 	}
-	var codesear=new RegExp('前台登录');
+	var codesear=new RegExp(_reg.codeWebLogin || '');
 	if(codesear.test(code_web)){
 		if(code_kind==1){
 			if(!field.authcode){
-				return showToast('请填写验证码！');
+				return showToast(_reg.enterAuthCode || '');
 			}					
 		}else if(code_kind > 2){
 			if(field.verify_token ==''){
@@ -56,7 +58,7 @@ function login(){
 				}
 				if(res.msg.indexOf('script')>0){
 					$('#uclogin').html(res.msg);
-					res.msg = '登录成功';
+					res.msg = _reg.loginSuccess || '';
 				}
 				showToast(res.msg, res.tm, function () {
 					if (res.url) {
@@ -83,29 +85,29 @@ function checkRegById(id) {
 	var obj = $.trim($('#'+id).val());
 	if (id == 'u_name'){
 		if (obj == ''){
-			showToast('姓名不能为空', 2);
+			showToast(_reg.nameRequired || '', 2);
 			return false;
 		}else if (sy_resumename_num == 1 && !isChinaName(obj)){
-			showToast('姓名请输入2-6位汉字！');
+			showToast(_reg.nameHanFormat || '');
 			return false;
 		}
 	}else if (id == 'c_name'){
 		if (obj == ''){
 			if (obj == ''){
-				showToast('企业名称不能为空', 2);
+				showToast(_reg.companyNameRequired || '', 2);
 				return false;
 			}
 		}else{
 			$.post(wapurl + "index.php?c=register&a=checkComName", {c_name: obj}, function (data) {
 				var data = eval('(' + data + ')');
 				if (data.errcode == 1) {
-					return showToast("企业名称已存在！");
+					return showToast(_reg.companyNameExists || "");
 				}
 			});
 		}
 	}else if (id == 'c_link'){
 		if (obj == ''){
-			showToast('企业联系人不能为空', 2);
+			showToast(_reg.companyContactRequired || '', 2);
 			return false;
 		}
 	}
@@ -134,7 +136,7 @@ function checkRegUser(){
 	if(exitsid("username")) {
 		var username = field.username;
 		if(field.username == ''){
-			return showToast('用户名不能为空!');return false;
+			return showToast(_reg.usernameRequired || '');return false;
 		}else{
 			let usernameCheck = true;
 			$.ajax({
@@ -147,13 +149,13 @@ function checkRegUser(){
 				success: function(res) {
 					if(res.errcode==1){
 						usernameCheck = false;
-						return showToast("用户名已存在！");
+						return showToast(_reg.usernameExists || "");
 					}else if(res.errcode==2){
 						usernameCheck = false;
-						return showToast("用户名不得包含特殊字符！");
+						return showToast(_reg.usernameSpecialChar || "");
 					}else if(res.errcode==3){
 						usernameCheck = false;
-						return showToast("该用户名已被禁止注册！");
+						return showToast(_reg.usernameBanned || "");
 					}else if(res.errcode==4){
 						usernameCheck = false;
 						return showToast(res.msg);
@@ -173,10 +175,10 @@ function checkRegUser(){
 	if(exitsid("moblie")) {
 		var moblie = $("#moblie").val();
 		if(moblie == "") {
-			return showToast("请填写手机号！");
+			return showToast(_reg.enterMobile || "");
 			return false;
 		} else if(!isjsMobile(moblie)) {
-			return showToast("手机格式不正确！");
+			return showToast(_reg.mobileFormatError || "");
 			return false;
 		}
 		let moblieCheck = true;
@@ -189,7 +191,7 @@ function checkRegUser(){
 			success: function(res) {
 				if (res == 2) {
 					moblieCheck = false;
-					return showToast("该手机号已被禁止使用！");
+					return showToast(_reg.mobileBanned || "");
 				}
 			},
 			error: function(err) {
@@ -206,40 +208,40 @@ function checkRegUser(){
 		var myreg = /^([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9\-]+@([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
 		var email = $("#email").val();
 		if(email == "") {
-			return showToast("邮箱不能为空！");
+			return showToast(_reg.emailRequired || "");
 			return false;
 		} else if(!myreg.test(email)) {
-			return showToast("邮箱格式不正确！");
+			return showToast(_reg.emailFormatError || "");
 			return false;
 		}
 	}
 	var password = field.password;
 	if(password == "") {
-		return showToast("密码不能为空！");
+		return showToast(_reg.passwordRequired || "");
 		return false;
 	} else if(password.length < 6 || password.length > 20) {
-		return showToast("密码长度应在6-20位！");
+		return showToast(_reg.passwordLength || "");
 		return false;
 	}
 	if(exitsid("passconfirm")) {
 		var passconfirm = field.passconfirm;
 		if(passconfirm == "") {
-			return showToast("确认密码不能为空！");
+			return showToast(_reg.confirmPasswordRequired || "");
 			return false;
 		} else if(password != passconfirm) {
-			return showToast("两次密码不一致！");
+			return showToast(_reg.passwordMismatch || "");
 			return false;
 		}
 	}
 	if(exitsid("moblie_code")) {
 		if($("#moblie_code").val() == "") {
-			return showToast('短信验证码不能为空！');
+			return showToast(_reg.smsCodeRequired || '');
 			return false;
 		}
 	}
 
 	if($("#xieyicheck").val() ==0) {
-		showToast('您必须同意注册协议才能成为本站会员！');
+		showToast(_reg.agreeRegisterProtocol || '');
 		return false;
 	}
 	// 有发送短信验证码不需要触发验证
@@ -250,12 +252,12 @@ function checkRegUser(){
 	var isRealnameCheck = $("#isRealnameCheck").val();
 	// 1-邮箱/3-用户名注册且实名认证，需要发送短信验证码
 	if(((regway == 1 || regway == 3) && isRealnameCheck != 1) || (regway == 2 && !noblur)){
-		var codesear = new RegExp('注册会员');
+		var codesear = new RegExp(_reg.codeWebRegister || '');
 		if(codesear.test(code_web)) {
 			if(code_kind == 1) {
 				authcode = $.trim($("#checkcode").val());
 				if(!authcode) {
-					return showToast('图片验证码不能为空！');
+					return showToast(_reg.imageCodeRequired || '');
 					return false;
 				}
 			} else if(code_kind >2) {
@@ -320,26 +322,17 @@ function exitsid(id) {
 	}
 }
 function check_moblie() {
-	// 不需要触发此方法情况,改为发送验证码时验证
-	// 1-用户名注册且实名认证，需要发送短信验证码
-	// 2-手机号注册，有极验/顶象验证码
 	var noblur = document.getElementById('noblur');
 	var regway = $("#regway").val();
 	var isRealnameCheck = $("#isRealnameCheck").val();
-	// 1-邮箱/3-用户名注册且实名认证，需要发送短信验证码
-	// if((regway == 1 || regway == 3) && isRealnameCheck == 1){
-	// 	return false;
-	// }else if(regway == 2 && noblur){
-	// 	return false;
-	// }
 	
 	var moblie = $("#moblie").val();
 	if(moblie == "") {
  		$("#moblie_yes").hide();
-		showToast("手机不能为空！");
+		showToast(_reg.mobileEmpty || "");
 		return false;
 	}else if(!isjsMobile(moblie)){
-		showToast("手机格式不正确！");
+		showToast(_reg.mobileFormatError || "");
 		return false;
 	}
 	
@@ -352,8 +345,7 @@ function check_moblie() {
 		} else {
 			
 			if(data == 2) {
-				msg = "该手机号已被禁止使用！";
-				showToast("该手机号已被禁止使用！");
+				showToast(_reg.mobileBanned || "");
 			} else {
 				$("#zy_mobile").val(moblie);
 				var data = eval('(' + data + ')');
@@ -366,21 +358,21 @@ function mobileUserd(data){
 	$("#moblie").val("");
 	$("#zy_uid").val(data.uid);
 	$("#jcbind").css('dispaly',"block");
-	yunvue.$data.desctoast = '解除手机号与该账号的绑定，解除绑定后，您无法继续用手机号登录该账号';
+	yunvue.$data.desctoast = _reg.unbindMobileDesc || '';
 	if(data.usertype=='1'){		
-		yunvue.$data.zy_type = '该手机号已被注册为个人账号';		
+		yunvue.$data.zy_type = _reg.mobileRegisteredPersonal || '';		
 		if(data.name){			
-			yunvue.$data.zy_name="个人名称："+data.name.substr(0,1)+"**";
+			yunvue.$data.zy_name=(_reg.personalNamePrefix || '')+data.name.substr(0,1)+"**";
 		}
 		
 	}else if(data.usertype=='2'){
-		yunvue.$data.zy_type = '该手机号已被注册为企业账号';		
+		yunvue.$data.zy_type = _reg.mobileRegisteredCompany || '';		
 		if(data.name){			
-			yunvue.$data.zy_name="企业名称："+data.name;
+			yunvue.$data.zy_name=(_reg.companyNamePrefix || '')+data.name;
 		}
 	}else if(data.usertype=='0'){
 		$("#jcbind").css("display","none");
-		yunvue.$data.zy_type = '该手机号已被注册';
+		yunvue.$data.zy_type = _reg.mobileRegistered || '';
 		yunvue.$data.zy_name="";
 	} 
 	yunvue.$data.checkmobileshow = true
@@ -393,7 +385,7 @@ function CheckPW(){
 function check_password() {
 	var password = $("#password").val();
 	if(password == "") {
-		return showToast('密码不能为空!');
+		return showToast(_reg.passwordRequired || '');
 	} else {
 		$.post(wapurl + "index.php?c=register&a=ajaxreg",{password:password},function(data){
 
@@ -416,16 +408,16 @@ function check_username() {
 	$("#username").val(username);
 		
 	if(username == "") {
-		return showToast("用户名不能为空");
+		return showToast(_reg.usernameRequired || "");
 	} else {
       $.post(wapurl + "index.php?c=register&a=ajaxreg",{username:username},function(data){
       	var data = eval('(' + data + ')');
         if(data.errcode==1){
-			return showToast("用户名已存在！");
+			return showToast(_reg.usernameExists || "");
 		}else if(data.errcode==2){
-			return showToast("用户名不得包含特殊字符！");
+			return showToast(_reg.usernameSpecialChar || "");
 		}else if(data.errcode==3){
-			return showToast("该用户名已被禁止注册！");
+			return showToast(_reg.usernameBanned || "");
 		}else if(data.errcode==4){
 			return showToast(data.msg);
 		}else{
@@ -441,10 +433,10 @@ function check_email() {
 	var email = $("#email").val();
 	if(email == "") {
 		$("#email_yes").hide();
-		showToast("邮箱不能为空！");
+		showToast(_reg.emailRequired || "");
 		return false;
 	}else if(!myreg.test(email)) {
-		showToast("邮箱格式不正确！");
+		showToast(_reg.emailFormatError || "");
 		return false;
 	}
 	$.post(wapurl + "index.php?c=register&a=regemail", {
@@ -459,21 +451,21 @@ function check_email() {
 			$("#zy_uid").val(data.uid);
 			$("#zy_email").val(email);
 			$("#jcbind").css('dispaly',"block");
-			yunvue.$data.desctoast = '解除邮箱与该账号的绑定，解除绑定后，您无法继续用该邮箱登录';
+			yunvue.$data.desctoast = _reg.unbindEmailDesc || '';
 			if(data.usertype=='1'){
-				yunvue.$data.zy_type = '该邮箱已被注册为个人账号';
+				yunvue.$data.zy_type = _reg.emailRegisteredPersonal || '';
 				if(data.name){
-					yunvue.$data.zy_name="个人名称："+data.name.substr(0,1)+"**";
+					yunvue.$data.zy_name=(_reg.personalNamePrefix || '')+data.name.substr(0,1)+"**";
 				}
 				
 			}else if(data.usertype=='2'){				
-				yunvue.$data.zy_type = '该邮箱已被注册为企业账号';
+				yunvue.$data.zy_type = _reg.emailRegisteredCompany || '';
 				if(data.name){
-					yunvue.$data.zy_name="企业名称："+data.name;
+					yunvue.$data.zy_name=(_reg.companyNamePrefix || '')+data.name;
 				}
 			}else if(data.usertype=='0'){
 				$("#jcbind").css("display","none");
-				yunvue.$data.zy_type = '该邮箱已被注册';
+				yunvue.$data.zy_type = _reg.emailRegistered || '';
 				yunvue.$data.zy_name="";
 			} 
 			
@@ -501,23 +493,23 @@ function sendmsg(img) {
 	
 	var verify_token;
 	var verify_str;
-	var codesear = new RegExp('注册会员');
+	var codesear = new RegExp(_reg.codeWebRegister || '');
 	if(moblie == "") {
-		showToast("请填写手机号！");
+		showToast(_reg.enterMobile || "");
 		return false;
 	}else if(!isjsMobile(moblie)){
-		showToast("手机格式不正确！");
+		showToast(_reg.mobileFormatError || "");
 		return false;
 	}
 	if(send > 0) {
-		showToast('请不要频繁重复发送！');
+		showToast(_reg.doNotResendFrequently || '');
 		return false;
 	}
 	if(codesear.test(code_web)) {
 		if(code_kind == 1) {
 			code = $.trim($("#checkcode").val());
 			if(!code) {
-				showToast('请填写图片验证码！');
+				showToast(_reg.enterImageCode || '');
 				return false;
 			}
 		} else if(code_kind >2) {
@@ -533,13 +525,9 @@ function sendmsg(img) {
 			verify_str = $('input[name="verify_str"]').val();
 		}
 	}
-	// 两种情况验证手机号是否被使用，改为在发送验证码时验证
-	// 1-用户名注册且实名认证，需要发送短信验证码
-	// 2-手机号注册，有极验/顶象验证码
 	var noblur;
 	var regway = $("#regway").val();
 	var isRealnameCheck = $("#isRealnameCheck").val();
-	// 1-邮箱/3-用户名注册且实名认证，需要发送短信验证码
 	if((regway == 1 || regway == 3) && isRealnameCheck == 1){
 		noblur = 1;
 	}else if(regway == 2){
@@ -584,15 +572,14 @@ function sendmsg(img) {
 function sendtime(i) {
 	i--;
 	if(i == -1) {
-		$("#time").html("重新获取");
+		$("#time").html(_reg.resend || '');
 		$("#send").val(0)
 	} else {
 		$("#send").val(1)
-		$("#time").html(i + "秒");
+		$("#time").html(i + (_reg.secondUnit || ''));
 		setTimeout("sendtime(" + i + ");", 1000);
 	}
 }
-//协议
 function choosexie(e){
 	if(e.value==1){
 		e.value=0;
@@ -601,7 +588,6 @@ function choosexie(e){
 	}
 }
 function post_pass() {
-	// 节流处理：在一定时间内，只能触发一次
 	if (!throttleFlag) {
 		throttleFlag = true;
 		setTimeout(function(){
@@ -615,10 +601,10 @@ function post_pass() {
 	var email = $("#zy_email").val();
 	var pw = $("#login_password").val();
 	if(zyuid == "") {
-		return showToast('该用户不存在');
+		return showToast(_reg.userNotExist || '');
 	}
 	if(pw == "") {
-		return showToast('请输入密码');
+		return showToast(_reg.enterPasswordAlt || '');
 	}
 	showLoading();
 	$.post(wapurl + "index.php?c=register&a=writtenoff", {
@@ -628,27 +614,25 @@ function post_pass() {
 		pw: pw
 	}, function(data) {
 		if(data == 2) {
-			return showToast('密码错误！');
+			return showToast(_reg.passwordWrong || '');
 
 		}else if(data == 4) {			
 			
-			showToast('账号已锁定无法解绑',2,function(){
+			showToast(_reg.accountLocked || '',2,function(){
 				yunvue.$data.checkPWshow = false;
 				location.reload(true);
 			});
 
 		} else if(data == 1){
 			
-			showToast("解绑成功", 2, function() {
+			showToast(_reg.unbindSuccess || "", 2, function() {
 				yunvue.$data.checkPWshow = false;
 				location.reload(true);
 			});
 		}
 	})
 }
-// 微信等，登录直接注册账号绑定手机号
 function checkwxbind(target_form) {
-	// 节流处理：在一定时间内，只能触发一次
 	if (!throttleFlag) {
 		throttleFlag = true;
 		setTimeout(function(){
@@ -661,17 +645,17 @@ function checkwxbind(target_form) {
 	if(exitsid("moblie") && $("#login_sj_box").css('display') != 'none') {
 		var moblie = $("#moblie").val();
 		if(moblie == "") {
-			showToast("请填写手机号！");
+			showToast(_reg.enterMobile || "");
 			return false;
 			
 		} else if(!isjsMobile(moblie)) {
-			showToast("手机格式不正确！");
+			showToast(_reg.mobileFormatError || "");
 			return false;
 		}
 	}
 	if(exitsid("moblie_code") && $("#login_sj_box").css('display') != 'none') {
 		if($("#moblie_code").val() == "") {
-			showToast('短信验证码不能为空！');			
+			showToast(_reg.smsCodeRequired || '');			
 			return false;
 		}
 	}
@@ -680,9 +664,7 @@ function checkwxbind(target_form) {
 	return false;
 }
 
-//快捷登录绑定已有账号
 function bindacount(){
-	// 节流处理：在一定时间内，只能触发一次
 	if (!throttleFlag) {
 		throttleFlag = true;
 		setTimeout(function(){
@@ -695,18 +677,17 @@ function bindacount(){
 	var username=$.trim($("#username").val());
 	var password=$.trim($("#password").val()); 
 	if(username==''||password==''){
-		return showToast('用户名或密码均不能为空！');
+		return showToast(_reg.usernamePasswordRequired || '');
 	}
-	// 验证码验证
 	var authcode;
 	
 	var verify_token,verify_str;
-	var codesear=new RegExp('前台登录');
+	var codesear=new RegExp(_reg.codeWebLogin || '');
 	if(codesear.test(code_web)){
 		if(code_kind==1){
 			authcode=$.trim($("#checkcode").val());  
 			if(!authcode){
-				return showToast('请填写验证码！');
+				return showToast(_reg.enterAuthCode || '');
 			}					
 		}else if(code_kind>2){
 		
@@ -724,7 +705,7 @@ function bindacount(){
 		}
 	}
 	
-	showLoading('执行中');
+	showLoading(_reg.processing || '');
     
     $.post(wapurl + "index.php?c=login&a=baloginsave",{provider:provider,username:username,password:password,authcode:authcode,verify_token:verify_token,verify_str:verify_str}, function (data) {
 
@@ -755,9 +736,7 @@ function bindacount(){
     
     return false;
 }
-//快捷登录直接注册账号
 function creatacount(){
-	// 节流处理：在一定时间内，只能触发一次
 	if (!throttleFlag) {
 		throttleFlag = true;
 		setTimeout(function(){
@@ -767,7 +746,7 @@ function creatacount(){
 		return false;
 	}
 	var provider=$.trim($("#provider").val());
-	showLoading('执行中');
+	showLoading(_reg.processing || '');
 	$.post(wapurl + "index.php?c=login&a=balogin", {provider:provider}, function(data) {
 		hideLoading();
 		data = eval('(' + data + ')');

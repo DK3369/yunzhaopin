@@ -4,16 +4,16 @@
     .goBackHome {z-index: 2001;}
     .companyheader {width: 100%;height: 3.4rem;background: #2778f8;}
 </style>
-<!-- 页面头部导航栏 -->
+<!-- {yun:}t key='common_02103'{/yun}面{yun:}t key='common_02068'{/yun}部{yun:}t key='wap_00042'{/yun}栏 -->
 <div class="companyheader">
     <div class="company_top" style="float: left;">
         <a href="{yun:}if $backurl{/yun}{yun:}$backurl{/yun}{yun:}else{/yun}javascript:goBack();{yun:}/if{/yun}" class="company_back"></a>
         <span style="color: #fff;font-size: 0.426666rem;display: inline-block;"> {yun:}t key='wap_00188'{/yun}</span>
     </div>
 </div>
-<!-- 页面主体部分 -->
+<!-- {yun:}t key='common_02103'{/yun}面主{yun:}t key='common_02054'{/yun}部{yun:}t key='common_02058'{/yun} -->
 <div class="min_body">
-    <!-- 顶部卡片视图 -->
+    <!-- 顶部卡片视{yun:}t key='common_02064'{/yun} -->
     <div class="top_card">
         {yun:}if $row.hotlogo==1 {/yun}
         <div class="top_card_top_word_name_right"></div>
@@ -40,7 +40,7 @@
         
     </div>
     <div class="comnew_bg">
-        <!-- 导航栏 -->
+        <!-- {yun:}t key='wap_00042'{/yun}栏 -->
         <div class="phpyuncomnav">
             <ul>
                 <li data-type='jobCtrl' class=" tabCtrl">
@@ -54,16 +54,16 @@
                 </li>
             </ul>
         </div>
-        <!-- 卡片视图 -->
+        <!-- 卡片视{yun:}t key='common_02064'{/yun} -->
         <div class="card_data_box jobCtrl cardCtrl {yun:}if $smarty.get.show{/yun}none{yun:}/if{/yun}">
             
 
             {yun:}assign var=uid value=$row.uid{/yun}
-            <!-- 卡片主体 -->
+            <!-- 卡片主{yun:}t key='common_02054'{/yun} -->
             <div id="company_job_list">
                 {yun:}joblist namelen=8 comlen=12 ispage=0 com_id='auto.id' islt=4 item=job_list name=joblist1{/yun}
                 <div class="">
-                    <!-- 卡片视图主体部分 -->
+                    <!-- 卡片视{yun:}t key='common_02064'{/yun}主{yun:}t key='common_02054'{/yun}部{yun:}t key='common_02058'{/yun} -->
                     <a href="{yun:}url m=wap c=job a=comapply id=$job_list.id{/yun}" title="{yun:}$job_list.name{/yun}">
                         <div class="comnew_joblist ">
                             <div class="comnew_jobtop">
@@ -91,7 +91,7 @@
                 {yun:}/joblist{/yun}
             </div>
         </div>
-        <!-- 公司详情概况 -->
+        <!-- {yun:}t key='wap_00184'{/yun}概况 -->
         <div class="company_generalize comCtrl cardCtrl {yun:}if !$smarty.get.show{/yun}none{yun:}/if{/yun}">
             <!-- {yun:}t key='wap_com_00158'{/yun} -->
             {yun:}if $row.address{/yun}
@@ -100,7 +100,7 @@
                 <div class="newcom_add" {yun:}if $config.map_key{/yun} onclick="navigateTo('{yun:}url m=wap c=job a=jobmap uid=$row.uid{/yun}')"{yun:}/if{/yun}>
                 <div class="newcom_add_dz"><i class="newcom_add_dzicon"></i>{yun:}$row.address{/yun}</div>
                 {yun:}if $row.x && $row.y && $config.map_key{/yun}
-                <div class="newcom_add_jl">距离<em id="distance"></em></div>
+                <div class="newcom_add_jl">{yun:}t key='wap_01573'{/yun}<em id="distance"></em></div>
                 <input type="hidden" id="map_x" value="{yun:}$mapx{/yun}"/>
                 <input type="hidden" id="map_y" value="{yun:}$mapy{/yun}"/>
                 {yun:}/if{/yun}
@@ -156,7 +156,7 @@
                 <p class="phpyunaboutp"> {yun:}t key='wap_00036'{/yun}<em id="regInstitute"></em></p>
                 <p class="phpyunaboutp"> {yun:}t key='wap_00038'{/yun}<em id="regStatus"></em></p>
                 <p class="phpyunaboutp"> {yun:}t key='wap_00035'{/yun}<em id="regCapital"></em></p>
-                <p class="phpyunaboutp"> 注册地址：<em id="regLocation"></em></p>
+                <p class="phpyunaboutp"> {yun:}t key='wap_01574'{/yun}<em id="regLocation"></em></p>
                 <p class="phpyunaboutp"> {yun:}t key='wap_00039'{/yun}<em id="businessScope"></em></p>
                 <div class="business_information_body_bot">
                     <p class="phpyunaboutp"> {yun:}t key='admin_yunying_00139'{/yun}： </p>
@@ -174,7 +174,7 @@
 </div>
 </div>
 <div id="app" style="display: none;">
-    <!-- 投递简历弹出框 -->
+    <!-- {yun:}t key='wap_com_00235'{/yun}弹出框 -->
     <van-dialog v-model="telQrcodeBoxShow" title="{yun:}t key='wap_00462'{/yun}" :show-confirm-button="false" close-on-click-overlay>
         <div class="">
             <div class="">
@@ -184,7 +184,7 @@
         </div>
     </van-dialog>
 
-    <!--分享面板-->
+    <!--{yun:}t key='wap_com_00246'{/yun}面板-->
     <van-share-sheet v-model="shareShow" title="{yun:}t key='wap_js_00040'{/yun}" :options="shareoptions" @select="shareSelect"></van-share-sheet>
     {yun:}if $config.sy_h5_share==1{/yun}
     <div class="none" data-url='{yun:}url m=wap c=company a=share id=$row.id{/yun}' id="shareClick"></div>
@@ -225,23 +225,23 @@
             </div>
             {yun:}else{/yun}
             <div onclick="atn('{yun:}$row.uid{/yun}','{yun:}url m=wap c=ajax a=atncompany{/yun}')">
-                <span>关注企业</span>
+                <span>{yun:}t key='wap_01571'{/yun}</span>
             </div>
             {yun:}/if{/yun}
             {yun:}else{/yun}
             {yun:}if $usertype{/yun}
             <div {yun:}if $config.sy_user_change==1{/yun}onclick="showToast('{yun:}t key='wap_00032'{/yun}');" {yun:}else{/yun}onclick="showToast('{yun:}t key='wap_00030'{/yun}');" {yun:}/if{/yun}>
-            <span>关注企业</span>
+            <span>{yun:}t key='wap_01571'{/yun}</span>
         </div>
         {yun:}else{/yun}
         <div onclick="pleaselogin("{yun:}t key='wap_00026'{/yun}",'{yun:}url m=wap c=login{/yun}')">
-            <span>关注企业</span>
+            <span>{yun:}t key='wap_01571'{/yun}</span>
         </div>
         {yun:}/if{/yun}
         {yun:}/if{/yun}
 
         <div class="haibaos">
-            <span @click="toHb">生成海报</span>
+            <span @click="toHb">{yun:}t key='wap_01572'{/yun}</span>
         </div>
     </div>
 </div>
@@ -284,7 +284,7 @@
 
     '{yun:}if $hbNum > 0{/yun}'
     shareoptions.splice(1, 0, {
-        name: '分享海报',
+        name: '{yun:}t key='wap_00872'{/yun}',
         icon: '{yun:}$wap_style{/yun}/images/fx_hb.png',
         className: 'poster'
     });
@@ -385,14 +385,14 @@
             $('#' + tabtype + '_t').addClass('colorshow');
             $('#' + tabtype + '_d').addClass('Article_indicates');
             if (tabtype == 'comCtrl') {
-                // 选择基本信息时实例化swiper
+                // {yun:}t key='wap_js_00067'{/yun}{yun:}t key='wap_00456'{/yun}{yun:}t key='common_02084'{/yun}实例化swiper
                 myimgswiper = new Swiper('#imgswiper', {
                     direction: 'horizontal',
                     autoplay: true,
                     loop: false
                 });
             } else {
-                // 选择非基本信息时销毁swiper
+                // {yun:}t key='wap_js_00067'{/yun}非{yun:}t key='wap_00456'{/yun}{yun:}t key='common_02084'{/yun}销毁swiper
                 if (myimgswiper) {
                     myimgswiper.destroy();
                 }

@@ -34,7 +34,7 @@
 			    </div>
 			    <div class="Invited_line">
 			        <div class="Invited_line_q">
-			            <div class="line_q_left">面试地址</div>
+			            <div class="line_q_left">{yun:}t key='wap_01055'{/yun}</div>
 			            <div class="line_q_right">{{item.address}}</div>
 			        </div>
 			      
@@ -77,7 +77,7 @@
     </div>
 	</div>
     <div v-else>
-        <van-empty image="search" description="暂无面试模板"/>
+        <van-empty image="search" :description="i18n.noTemplates"/>
         <div class="none_position_body_btn" @click="addYqmb">{yun:}t key='wap_com_00410'{/yun}</div>
         </van-empty>
     </div>
@@ -101,6 +101,11 @@
             searchLoadingComplete: false,
 
             maxnum: 0,
+            i18n: {
+                noTemplates: '{yun:}t key='wap_01214'{/yun}',
+                maxTemplatesPrefix: '{yun:}t key='wap_01215'{/yun}',
+                maxTemplatesSuffix: '{yun:}t key='wap_01216'{/yun}',
+            },
         },
         computed: {
             count() {
@@ -177,7 +182,7 @@
                 var that = this;
 
 				if (parseInt(that.total) >= parseInt(that.maxnum)){
-                    return showModal('最多只能添加'+that.maxnum+'个模板');
+                    return showModal(that.i18n.maxTemplatesPrefix + that.maxnum + that.i18n.maxTemplatesSuffix);
                 }else{
                     that.toPage('index.php?c=yqmbedit');
                 }

@@ -4,7 +4,11 @@ $.ajaxSetup({
 	},
 	crossDomain:true 
 });
-// 获取表单提交值
+function wapPub(key) {
+	var pub = typeof WAP_PUBLIC_I18N !== 'undefined' ? WAP_PUBLIC_I18N : {};
+	return pub[key] || '';
+}
+// Get form field values
 function getFormValue(formid) {
 	var itemForm = $("#" + formid).eq(0);
 
@@ -32,7 +36,7 @@ function getFormValue(formid) {
 }
 
 /**
- * @desc 邮箱格式验证
+ * @desc Email format validation
  */
 function check_email(strEmail) {
 	var emailReg = /^([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9\-]+@([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
@@ -42,7 +46,7 @@ function check_email(strEmail) {
 		return false;
 }
 /**
- * @desc 手机号码验证
+ * @desc Mobile number validation
  */
 function isjsMobile(obj){
 	var reg= /^[1][3456789]\d{9}$/;   
@@ -52,7 +56,7 @@ function isjsMobile(obj){
     else return true;
 }
 /**
- * @desc 电话验证
+ * @desc Phone number validation
  */
 function isjsTell(str) {
 	//var result = str.match(/^((0\d{2,3})-)(\d{7,8})(-(\d{3,}))?$/);
@@ -65,15 +69,15 @@ function sign(){
 	$.post(wapurl+"index.php?c=ajax&a=sign",{rand:Math.random()},function(res){
 		hideLoading();
 		if(res.type=="-2"){
-			showToast('操作失败', 2);return false;
+			showToast(wapPub('operationFailed'), 2);return false;
 		}else{ 
-			showToast('签到成功+'+res.integral,2,function(){window.location.reload(true)});return false;
+			showToast(wapPub('signSuccessPrefix')+res.integral,2,function(){window.location.reload(true)});return false;
 		}
 	}, 'json');
 }
 
 function signok(){
-    showToast('今日已签到，请明天再来', 2);return false;
+    showToast(wapPub('signedTodayComeTomorrow'), 2);return false;
 }
 
 function navigateTo(url){
@@ -122,11 +126,11 @@ function showImgDelay(imgObj,imgSrc,maxErrorNum){
 		maxErrorNum	=	parseInt(maxErrorNum) - parseInt(1);
     }
 }
-// 请先登录
+// Please log in first
 function pleaselogin(msg,url){
 	showConfirm(msg, function(){
 		window.location.href = url;
-	},'取消', '登录');
+	}, wapPub('cancel'), wapPub('login'));
 }
 // 统一删除函数
 function vant_del(msg = '', url){
@@ -154,10 +158,10 @@ function vant_del(msg = '', url){
 		},'json');
 	});
 }
-//退出
+// Logout
 function islogout(url,msg) {	
 	
-	showConfirm('确认退出吗？',function(){
+	showConfirm(wapPub('confirmLogout'),function(){
 		window.localStorage.setItem("socketState", "2");
 		window.location.href = url;
 	});
@@ -179,11 +183,11 @@ $(document).ready(function () {
 		}
         $.post(wapurl+"/index.php?c=resume&a=report",{eid:eid,ruid:uid},function(data){
         	if(data==3){
-                showToast('查看联系方式之后才可以举报', 2);return false;  
+                showToast(wapPub('reportAfterContact'), 2);return false;  
             }else if(data==1){
-                showToast('您已经举报过简历！', 2);return false;  
+                showToast(wapPub('alreadyReportedResume'), 2);return false;  
             }else if(data==2){
-                showConfirm('你确定举报这份简历？',function(){
+                showConfirm(wapPub('confirmReportResume'),function(){
                 	location.href = wapurl+"index.php?c=reportlist&uid="+uid+"&eid="+eid+"&r_name="+r_name;
                 })
 				
@@ -215,27 +219,27 @@ function footernav(type){
 	}
 }
 
-// 问答关注功能
+// Q&A follow feature
 function attention(id,type,url){
 	showLoading()
 	$.post(url,{id:id,type:type},function(data){
 		hideLoading();
 		var data=eval('('+data+')');  
-		if(type==1){var msg='关注';}else{var msg='+  关注';} 
+		if(type==1){var msg=wapPub('followBtn');}else{var msg=wapPub('followBtnAdd');} 
 		if(data.st==8){
 			showToast(data.msg, 2);return false;	
 		}else{		
-			$(".num"+id).html(data.url+"人关注");
+			$(".num"+id).html(data.url+wapPub('followersSuffix'));
 			$(".index_num"+id).html(data.url);
 			
 			if(data.tm==1){				
 				$(".q"+id+">a").attr("class","watch_qxgz");
-				$(".q"+id+">a").html("取消关注");
-				showToast("关注成功！", 2,function(){location.reload(true);});return false; 
+				$(".q"+id+">a").html(wapPub('unfollow'));
+				showToast(wapPub('followSuccess'), 2,function(){location.reload(true);});return false; 
 			}else{
 				$(".q"+id+">a").attr("class","watch_gz");
 				$(".q"+id+">a").html(msg);
-				showToast("取消成功！", 2,function(){location.reload(true);});return false; 
+				showToast(wapPub('unfollowSuccess'), 2,function(){location.reload(true);});return false; 
 			}				
 		} 
 	});
@@ -286,16 +290,16 @@ function savepwd(){
 	var passwordnew=$.trim($("#passwordnew").val());
 	var passwordconfirm=$.trim($("#passwordconfirm").val());
 	if(password<6){
-		showToast('原密码不正确！',2);return false;
+		showToast(wapPub('oldPasswordWrong'),2);return false;
 	}
 	if(passwordnew.length<6){
-		showToast('新密码长度必须大于等于6！',2);return false;
+		showToast(wapPub('newPasswordMinLength'),2);return false;
 	}
 	if(password == passwordnew){
-		showToast('请输入新密码不同于原密码！', 2);return false;
+		showToast(wapPub('newPasswordMustDiffer'), 2);return false;
 	}
 	if(passwordnew != passwordconfirm || passwordconfirm.length<6){
-		showToast('两次输入密码不一致！', 2);return false;
+		showToast(wapPub('passwordMismatch'), 2);return false;
 	}
 	showLoading()
 	$.post(wapurl+"?c=ajax&a=setpwd",{password:password,passwordnew:passwordnew,passwordconfirm:passwordconfirm},function(data){
@@ -378,7 +382,7 @@ function debounce(func, wait = 500) {
 }
 
 
-function atn(id,url){// 关注企业
+function atn(id,url){// Follow company
 	if(id){
 		showLoading()
 		$.post(url,{id:id},function(data){
@@ -419,7 +423,7 @@ function checkshowjob(type, id, operation_type) {
 
 function checkOncePassword(id,img){
     if($("#once_password").val()==''){
-        showToast('请输入密码');
+        showToast(wapPub('enterPassword'));
         return;
     }
 
@@ -455,7 +459,7 @@ function checkCode(id){
 
 function checkTinyPassword(id, img){
 	if($("#tiny_password").val()==''){
-		showToast('请输入密码');
+		showToast(wapPub('enterPassword'));
 		return;
 	}
 	var operation_type = $("#operation_type").val();
@@ -577,7 +581,7 @@ function post2ajax(target_form) {
 					}
 					if(json_data.msg.indexOf('script')>0){
 						$('#uclogin').html(json_data.msg);
-						json_data.msg = '登录成功';
+						json_data.msg = wapPub('loginSuccess');
 					}
 					showToast(json_data.msg, json_data.tm, function () {
 						if (json_data.url) {
@@ -649,7 +653,7 @@ function get_comment(aid,show,url){
 function for_comment(aid,qid,url,comurl){
 	var content=$.trim($("#comment_"+aid).val()); 
 	if(content=="" || content=="undefined"){
-		showToast('评论内容不能为空！');return false; 
+		showToast(wapPub('commentEmpty'));return false; 
 	}else{
 		showLoading();
 		$.post(url,{aid:aid,qid:qid,content:content},function(msg){
@@ -661,9 +665,9 @@ function for_comment(aid,qid,url,comurl){
 				$("#com_num_"+aid).html(com_num); 
 				get_comment(aid,'1',comurl);
 			}else if(msg=='0'){
-				showToast('评论失败！');return false; 
+				showToast(wapPub('commentFailed'));return false; 
 			}else if(msg=='no_login'){ 
-				showToast('请先登录！');return false; 
+				showToast(wapPub('pleaseLogin'));return false; 
 			}else{
 				showToast(msg);return false; 
 			}

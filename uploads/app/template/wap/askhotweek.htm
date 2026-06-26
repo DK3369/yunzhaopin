@@ -6,7 +6,7 @@
     <div class="ask_hotweek_name"><a href="{yun:}url m=wap c=ask a=content id='`$list.id`'{/yun}">{yun:}$list.title|mb_substr:0:42:"utf-8"{/yun}</a></div>
        <div class="ask_hotweek_p"> {yun:}$list.content|strip_tags|mb_substr:0:36:'utf-8'{/yun}</div>
     
-         <div class="ask_jx_info"><span class="ask_jx_data ask_jx_data_hd">{yun:}$list.answer_num{/yun} {yun:}t key='wap_00332'{/yun}</span><span class="ask_jx_data ask_jx_data_yl">{yun:}$list.visit{/yun} 阅读</span><span class="ask_jx_data ask_jx_data_gz">{yun:}$list.atnnum{/yun} {yun:}t key='common_01949'{/yun}</span></div>
+         <div class="ask_jx_info"><span class="ask_jx_data ask_jx_data_hd">{yun:}$list.answer_num{/yun} {yun:}t key='wap_00332'{/yun}</span><span class="ask_jx_data ask_jx_data_yl">{yun:}$list.visit{/yun} {yun:}t key='wap_01578'{/yun}</span><span class="ask_jx_data ask_jx_data_gz">{yun:}$list.atnnum{/yun} {yun:}t key='common_01949'{/yun}</span></div>
          
        <div class="ask_jx_info_img" style="margin-top:5px;"><img src="{yun:}$list.pic{/yun}" width="20" height="20"> <a href="{yun:}url m=wap c=ask a=myquestion uid='`$list.uid`'{/yun}" class="ask_jx_username">{yun:}$list.nickname|mb_substr:0:15:'utf-8'{/yun}</a> <span class="ask_jx_time">{yun:}$list.add_time|date_format:"%Y-%m-%d"{/yun}</span></div>
 
@@ -16,7 +16,7 @@
 <div class="clear"></div>
 {yun:}if $total==0{/yun}
 
-<div class="noresult png" >还没有任何问题，抓紧提问吧！</div>
+<div class="noresult png" >{yun:}t key='wap_01298'{/yun}</div>
 {yun:}else{/yun} 
 <div class="pages">{yun:}$pagenav{/yun}</div>
 {yun:}/if{/yun}     

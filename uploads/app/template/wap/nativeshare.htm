@@ -1,4 +1,4 @@
-<!----如果是微信登录，引导微信自有分享------>
+<!-- WeChat: use native share -->
 <script src="{yun:}$wap_style{/yun}/js/nativeshare/nativeshare.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
 <link rel="stylesheet" href="{yun:}$wap_style{/yun}/js/nativeshare/nativeshare.css?v={yun:}$config.cachecode{/yun}" type="text/css"/>
 
@@ -27,7 +27,7 @@
                 if (regurl != '') {
                     wx.ready(function () {
                         var shareData = {
-                            title: '邀请注册-{yun:}$config.sy_webname{/yun}',
+                            title: '{yun:}t key='wap_01590'{/yun}-{yun:}$config.sy_webname{/yun}',
                             desc: '{yun:}$description{/yun}',
                             link: regurl,
                             imgUrl: '{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_sharelogo{/yun}',
@@ -99,7 +99,7 @@
 
 {yun:}else{/yun}
 
-<!----如果是UC QQ浏览器，弹出分享界面------>
+<!-- UC/QQ browser share UI -->
 <script src='{yun:}$wap_style{/yun}/js/appshare.js?v={yun:}$config.cachecode{/yun}' type='text/javascript'></script>
 
 <div id="nativeShare"></div>
@@ -120,9 +120,9 @@
                 }
                 plusShare(message, function (res) {
                     if (res) {
-                        plus.nativeUI.toast("分享成功");
+                        plus.nativeUI.toast("{yun:}t key='wap_01494'{/yun}");
                     } else {
-                        plus.nativeUI.toast("分享失败");
+                        plus.nativeUI.toast("{yun:}t key='wap_01495'{/yun}");
                     }
                 })
             });
@@ -143,20 +143,20 @@
         });
     }
 </script>
-<!----如果是其他浏览器分享，则弹出分享指引------>
+<!-- Other browsers: share guide overlay -->
 {yun:}/if{/yun}
 
-<!--微信分享公共代码--->
+<!-- WeChat share common code -->
 
-<!--分享-->
+<!-- Share -->
 <div id="otherBrowser" style="width:100%;height:100%; background:rgba(51,51,51,0.9); position:fixed;left:0px;top:0px ; z-index:100000001;display:none">
     <div class="yun_wap_share_tip" style="width:100%; position:absolute; z-index:100000001;top:50%; margin-top:-90px;">
-        <div class="yun_wap_share_tip_p"><i class="yun_wap_share_n">1.</i>点击浏览器顶部或底部的<i class="yun_wap_share_tip_i3"></i>或<i class="yun_wap_share_tip_i4"></i></div>
-        <div class="yun_wap_share_tip_p"><i class="yun_wap_share_n">2.</i>然后点击分享按钮<i class="yun_wap_share_tip_i"></i>或<i class="yun_wap_share_tip_i2"></i></div>
-        <div class="yun_wap_share_tip_p"><i class="yun_wap_share_n">3.</i>分享给朋友或者朋友圈</div>
+        <div class="yun_wap_share_tip_p"><i class="yun_wap_share_n">1.</i>{yun:}t key='wap_01591'{/yun}<i class="yun_wap_share_tip_i3"></i>{yun:}t key='wap_01592'{/yun}<i class="yun_wap_share_tip_i4"></i></div>
+        <div class="yun_wap_share_tip_p"><i class="yun_wap_share_n">2.</i>{yun:}t key='wap_01593'{/yun}<i class="yun_wap_share_tip_i"></i>{yun:}t key='wap_01592'{/yun}<i class="yun_wap_share_tip_i2"></i></div>
+        <div class="yun_wap_share_tip_p"><i class="yun_wap_share_n">3.</i>{yun:}t key='wap_01496'{/yun}</div>
     </div>
 </div>
-<!--分享-->
+<!-- Share -->
 <div id="weixinBrowser"
      style="width:100%;height:100%; background:rgba(51,51,51,0.9); position:fixed;left:0px;top:0px ; z-index:100000001;display:block;display:none">
     <div class="yun_wap_share_tip" style="width:100%; position:absolute; z-index:100000001;">

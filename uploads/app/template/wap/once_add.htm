@@ -11,33 +11,33 @@
 <div id="main">
     <!--页面主内容区开始-->
     <ul class="yun_newwap_box">
-        <li class="yun_newwap_text"><span class="yun_newwap_text_name">我想招聘</span>
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name">{yun:}t key='wap_01356'{/yun}</span>
             <span class="yun_newwap_text_box"> 
-				<input type="text" id="title" name="title" value="{yun:}$row.title{/yun}" class="reinputText" placeholder="请填写招聘名称,如厨师">
+				<input type="text" id="title" name="title" value="{yun:}$row.title{/yun}" class="reinputText" placeholder="{yun:}t key='wap_01357'{/yun}">
             </span>
         </li>
 	 
-        <li class="yun_newwap_text"><span class="yun_newwap_text_name">工作薪资</span>
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name">{yun:}t key='wap_01358'{/yun}</span>
             <span class="yun_newwap_text_box"> 
-            <input type="text" id="salary" name="salary"  value="{yun:}$row.salary{/yun}"  onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" class="reinputText" placeholder="请填写工资">
+            <input type="text" id="salary" name="salary"  value="{yun:}$row.salary{/yun}"  onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" class="reinputText" placeholder="{yun:}t key='wap_01359'{/yun}">
             </span>
         </li>
-        <li class=""><span class="yun_newwap_text_name">工作地区</span>
+        <li class=""><span class="yun_newwap_text_name">{yun:}t key='wap_01360'{/yun}</span>
             <span class="yun_newwap_text_box" @click="showArea=true">
-                <button id='cityPicker' type='button' v-cloak>{{city  ? city : '请填写工作地区'}}</button>
+                <button id='cityPicker' type='button' v-cloak>{{city  ? city : i18n.fillWorkArea}}</button>
                 <input type="hidden" id="provinceid" name="provinceid" v-model="provinceid">
                 <input type="hidden" id="cityid" name="cityid" v-model="cityid">
                 <input type="hidden" id="three_cityid" name="three_cityid" v-model="three_cityid">
             </span>
         </li>
-        <li class="yun_newwap_text"><span class="yun_newwap_text_name">详细地址</span>
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name">{yun:}t key='wap_01362'{/yun}</span>
             <span class="yun_newwap_text_box"> 
-				<input type="text" id="address" name="address" value="{yun:}$row.address{/yun}"  class="reinputText" placeholder="请填写详细地址">
+				<input type="text" id="address" name="address" value="{yun:}$row.address{/yun}"  class="reinputText" placeholder="{yun:}t key='wap_01363'{/yun}">
             </span>
         </li>
         <li>
-            <span class="yun_newwap_text_name">招聘要求</span>
-            <div class="yun_newwap_text_box yun_newwap_text_box_p" @click="onRequireShow" v-cloak>{{require  ? require : '请填写'}}
+            <span class="yun_newwap_text_name">{yun:}t key='wap_01364'{/yun}</span>
+            <div class="yun_newwap_text_box yun_newwap_text_box_p" @click="onRequireShow" v-cloak>{{require  ? require : i18n.fillIn}}
                 <textarea style="display: none;" id="contents" name="require" :value="require" ></textarea>
             </div>
         </li>
@@ -45,28 +45,28 @@
 
     <ul class="yun_newwap_box mt15">
         
-        <li class="yun_newwap_text"><span class="yun_newwap_text_name">店面名称</span>
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name">{yun:}t key='wap_01366'{/yun}</span>
             <div class="yun_newwap_text_box">
-                <input type="text" id="companyname" name="companyname" value="{yun:}$row.companyname{/yun}" class="reinputText" placeholder="请填写店铺名称">
+                <input type="text" id="companyname" name="companyname" value="{yun:}$row.companyname{/yun}" class="reinputText" placeholder="{yun:}t key='wap_01367'{/yun}">
             </div>
         </li>
         
-        <li class="yun_newwap_text"><span class="yun_newwap_text_name">联&nbsp;系&nbsp; 人</span>
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name">{yun:}t key='wap_01431'{/yun}</span>
             <div class="yun_newwap_text_box">
-                <input type="text" id="linkman" name="linkman" value="{yun:}$row.linkman{/yun}" class="reinputText" placeholder="请填写联系人">
+                <input type="text" id="linkman" name="linkman" value="{yun:}$row.linkman{/yun}" class="reinputText" placeholder="{yun:}t key='wap_01368'{/yun}">
             </div>
         </li>
         
-        <li class="yun_newwap_text"><span class="yun_newwap_text_name">联系电话</span>
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name">{yun:}t key='wap_01432'{/yun}</span>
             <div class="yun_newwap_text_box">
-                <input type="text" id="phone" name="phone" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" value="{yun:}$row.phone{/yun}" class="reinputText" placeholder="请填写联系电话">
+                <input type="text" id="phone" name="phone" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" value="{yun:}$row.phone{/yun}" class="reinputText" placeholder="{yun:}t key='wap_01369'{/yun}">
             </div>
         </li>
 		{yun:}if strpos($config.code_web,"店铺招聘")!==false{/yun}
 			{yun:}if $config.code_kind == 1{/yun}
-			<li class="yun_newwap_text"><span class="yun_newwap_text_name">验证码</span>
+			<li class="yun_newwap_text"><span class="yun_newwap_text_name">{yun:}t key='wap_01370'{/yun}</span>
 				<div class="yun_newwap_yz">
-					<input type="text" id="checkcode" name="checkcode" id="checkcode" value="" placeholder="请输入图片验证码">
+					<input type="text" id="checkcode" name="checkcode" id="checkcode" value="" placeholder="{yun:}t key='wap_user_00141'{/yun}">
 					<div class="yun_newwap_yz_img">
 						<img id="vcode_img" class="" src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php" onclick="checkCode('vcode_img');" />
 					</div>
@@ -75,23 +75,23 @@
 			{yun:}/if{/yun}
 		{yun:}/if{/yun}
 		{yun:}if $config.sy_msg_isopen==1{/yun}
-        <li class="yun_newwap_text"><span class="yun_newwap_text_name">短信验证码</span>
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name">{yun:}t key='wap_01371'{/yun}</span>
             <div class="yun_newwap_text_box yun_newwap_text_sjyz" style="padding-right:120px;">
-       <input type="text" id="moblie_code" class="inputitem_w input" name="moblie_code" placeholder="请填写短信验证码"><a href="javascript:;" id="send_msg_tip" onclick="send_msg('{yun:}url m=wap c=once a=sendmsg{/yun}')" class="yun_newwap_text_sjyz_send" style="width:">获取验证码</a>
+       <input type="text" id="moblie_code" class="inputitem_w input" name="moblie_code" placeholder="{yun:}t key='wap_01372'{/yun}"><a href="javascript:;" id="send_msg_tip" onclick="send_msg('{yun:}url m=wap c=once a=sendmsg{/yun}')" class="yun_newwap_text_sjyz_send" style="width:">{yun:}t key='wap_01373'{/yun}</a>
             </div>
         </li>
 		{yun:}/if{/yun}
 
         {yun:}if $row.id{/yun}
-        <li class="yun_newwap_text yunNewwapShicha"><span class="yun_newwap_text_name">招聘时长</span>
+        <li class="yun_newwap_text yunNewwapShicha"><span class="yun_newwap_text_name">{yun:}t key='wap_01374'{/yun}</span>
             <div class=" yun_newwap_text_time">
-                <span class="yun_newwap_text_time_dw" style="top:10px;right:10px;">{yun:}$row.day_n{/yun} 天</span>
+                <span class="yun_newwap_text_time_dw" style="top:10px;right:10px;">{yun:}$row.day_n{/yun} {yun:}t key='wap_01375'{/yun}</span>
             </div>
         </li>
         {yun:}else{/yun}
-        <li class="yun_newwap_text"><span class="yun_newwap_text_name" style="top: 5px;">招聘时长</span>
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name" style="top: 5px;">{yun:}t key='wap_01374'{/yun}</span>
             <div class=" yun_newwap_text_time" @click="oncepricegearOpen">
-                <span>{{ oncepricegearStr ? oncepricegearStr : '请选择招聘时长'}}</span>
+                <span>{{ oncepricegearStr ? oncepricegearStr : i18n.selectDuration}}</span>
                 <input type="hidden" id="oncepricegear" name="oncepricegear" :value="oncepricegear"/>
             </div>
         </li>
@@ -100,7 +100,7 @@
     </ul>
     {yun:}if $config.sy_once_yyzz == 1{/yun}
     <ul class="yun_newwap_box ">
-        <li class=""><span class="yun_newwap_text_name">店面营业执照</span>
+        <li class=""><span class="yun_newwap_text_name">{yun:}t key='wap_01377'{/yun}</span>
             <div class="yun_newwap_text_box">
                 <span class="once_cont_wate_list_photo_pic" id="yyzzpreviewshow" style="right:30px;"> <img id="yyzzpreviewimg" src="{yun:}if $row.yyzz_n{/yun}{yun:}$row.yyzz_n{/yun}{yun:}/if{/yun}"   width="35" height="35"></span>
                 <div class="once_cont_wate_list_photo">
@@ -114,7 +114,7 @@
     </ul>
     {yun:}/if{/yun}
     <ul class="yun_newwap_box ">
- <li class=""><span class="yun_newwap_text_name">店面形象</span>
+ <li class=""><span class="yun_newwap_text_name">{yun:}t key='wap_01378'{/yun}</span>
      <div class="yun_newwap_text_box">
      	<span class="once_cont_wate_list_photo_pic" id="previewshow" style="right:30px;"> <img id="previewimg" src="{yun:}if $row.pic_n{/yun}{yun:}$row.pic_n{/yun}{yun:}else{/yun}{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_once_icon{/yun}{yun:}/if{/yun}"   width="35" height="35"></span>
          <div class="once_cont_wate_list_photo">
@@ -128,30 +128,30 @@
      </ul>
     <ul class="yun_newwap_box ">
         {yun:}if $row.id==''{/yun}
-        <li class="yun_newwap_text"><span class="yun_newwap_text_name">设置密码</span>
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name">{yun:}t key='wap_01379'{/yun}</span>
             <div class="yun_newwap_text_box">
-                <input type="password" id="password" name="password" onkeyup="this.value=this.value.replace(/^ +| +$/g,'')" class=" " placeholder="请输入密码">
+                <input type="password" id="password" name="password" onkeyup="this.value=this.value.replace(/^ +| +$/g,'')" class=" " placeholder="{yun:}t key='wap_01380'{/yun}">
             </div>
         </li>
         {yun:}else{/yun}
-        <li class="yun_newwap_text"><span class="yun_newwap_text_name">密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码</span>
+        <li class="yun_newwap_text"><span class="yun_newwap_text_name">{yun:}t key='common_02093'{/yun}</span>
             <div class="yun_newwap_text_box">
-                <input type="password" id="password" name="password" onkeyup="this.value=this.value.replace(/^ +| +$/g,'')" class=" " placeholder="请输入密码">
+                <input type="password" id="password" name="password" onkeyup="this.value=this.value.replace(/^ +| +$/g,'')" class=" " placeholder="{yun:}t key='wap_01380'{/yun}">
             </div>
         </li>
 		{yun:}/if{/yun} 
 		
 		
-    </ul>   <div class="yun_newwap_box_ts">提示：密码可用于刷新/修改/删除此信息</div>
+    </ul>   <div class="yun_newwap_box_ts">{yun:}t key='wap_01381'{/yun}</div>
     <div class="yun_newwap_bth ">
 		<input id="id" name="id" value="{yun:}$row.id{/yun}" type="hidden" /> 
-		<button id="oncesubmit" type="button" onclick="oncesubmit()">提交操作</button>
+		<button id="oncesubmit" type="button" onclick="oncesubmit()">{yun:}t key='wap_00354'{/yun}</button>
 	</div>
 
     <van-popup v-model="showArea" round position="bottom">
        <van-cascader
         v-model="areaValue"
-        title="请选择地区"
+        title="{yun:}t key='wap_01382'{/yun}"
         :options="areaList"
         @close="showArea = false"
         @finish="onAreaFinish"
@@ -160,15 +160,15 @@
 
     <van-popup v-model="showoncepricegear" round position="bottom">
         <div class="oncepriceAll none">
-            <h3>招聘时长</h3>
+            <h3>{yun:}t key='wap_01374'{/yun}</h3>
             <div v-for="(opgitem, opgkey) in oncepricegearData.oncepricegear_index"
                  :class="oncepricegearOpt.id && oncepricegearOpt.id == opgitem ? 'oncepriceList riceListLink' : 'oncepriceList'"
                  @click="oncepricegearChange(opgitem, oncepricegearData.oncepricegear_name[opgitem], oncepricegearData.oncepricegear_price[opgitem])">
-                <span>{{oncepricegearData.oncepricegear_name[opgitem]}} 天</span>
-                <span>{{oncepricegearData.oncepricegear_price[opgitem]}} 元</span>
+                <span>{{oncepricegearData.oncepricegear_name[opgitem]}} {yun:}t key='wap_01375'{/yun}</span>
+                <span>{{oncepricegearData.oncepricegear_price[opgitem]}} {yun:}t key='common_02056'{/yun}</span>
             </div>
             <div class="oncepriceClick" @click="oncepricegearConfirm">
-                <button>确定</button>
+                <button>{yun:}t key='wap_01384'{/yun}</button>
             </div>
         </div>
     </van-popup>
@@ -205,10 +205,10 @@
 
     <div class="yun_wap_info_brief none">
       
-            <div class="yun_wap_info_brief_tit"> 招聘要求 </div>
-            <div class="yun_wap_info_brief_c">  <textarea class="  tip contenttext"  id="content" name="require" placeholder="请填写招聘的具体要求，如性别、学历、年龄、工作经验和工作待遇等"  v-model="require" ></textarea></div>
+            <div class="yun_wap_info_brief_tit"> {yun:}t key='wap_01364'{/yun} </div>
+            <div class="yun_wap_info_brief_c">  <textarea class="  tip contenttext"  id="content" name="require" placeholder="{yun:}t key='wap_01383'{/yun}"  v-model="require" ></textarea></div>
         <div class="yunset_bth_box" @click="cancelRequire">   
-            <a class="yun_wap_info_brief_tit_bc mui-action-back">确定</a>    
+            <a class="yun_wap_info_brief_tit_bc mui-action-back">{yun:}t key='wap_01384'{/yun}</a>    
         </div>
     </div>
 </van-popup>
@@ -233,9 +233,9 @@
     (function() {
         var num = '{yun:}$num{/yun}';
         if(parseInt(num) > 0 ) {
-            showConfirm('您还有{yun:}$num{/yun}个订单未付款，是否继续发布！', function(){
+            showConfirm('{yun:}t key='wap_01544'{/yun}{yun:}$num{/yun}{yun:}t key='wap_01545'{/yun}', function(){
                 window.location.href=wapurl+"index.php?c=once&a=paylog";
-            }, '继续发布', '去付款');
+            }, '{yun:}t key=\'wap_01385\'{/yun}', '{yun:}t key=\'wap_01386\'{/yun}');
         }
     })()
 </script>
@@ -256,6 +256,13 @@
     var vm = new Vue({
         el: '#main',
         data:{
+            i18n: {
+                fillWorkArea: '{yun:}t key=\'wap_01361\'{/yun}',
+                fillIn: '{yun:}t key=\'wap_01365\'{/yun}',
+                selectDuration: '{yun:}t key=\'wap_01376\'{/yun}',
+                days: '{yun:}t key=\'wap_01375\'{/yun}',
+                yuan: '{yun:}t key=\'common_02056\'{/yun}',
+            },
             showArea: false,
             areaValue:'',
             city:'{yun:}$city_name[$row.provinceid]{/yun}{yun:}$city_name[$row.cityid]{/yun}{yun:}$city_name[$row.three_cityid]{/yun}',
@@ -320,7 +327,7 @@
             },
             oncepricegearConfirm: function() {
                 this.oncepricegear = this.oncepricegearOpt.id;
-                this.oncepricegearStr = this.oncepricegearOpt.days + ' 天/' + this.oncepricegearOpt.price + ' 元';
+                this.oncepricegearStr = this.oncepricegearOpt.days + ' ' + this.i18n.days + '/' + this.oncepricegearOpt.price + ' ' + this.i18n.yuan;
                 this.showoncepricegear = false;
             }
         }
@@ -339,11 +346,11 @@
 
         var verify_token,verify_str;
         if(moblie == "" || moblie == "请输入手机号码") {
-            showToast("请输入手机号码！");
+            showToast("{yun:}t key='wap_01389'{/yun}");
             return false;
         } else {
             if(!isjsMobile(moblie)) {
-                showToast('手机格式错误！');
+                showToast('{yun:}t key=\'wap_01390\'{/yun}');
                 return false;
             }
         }
@@ -352,7 +359,7 @@
             if(code_kind == 1) {
                 code = $.trim($("#checkcode").val());
                 if(!code) {
-                    showToast('请填写图片验证码！');
+                    showToast('{yun:}t key=\'wap_js_00116\'{/yun}');
                     return false;
                 }
             } else if(code_kind > 2) {
@@ -399,7 +406,7 @@
                 }
             })
         } else {
-            showToast('请勿重复发送！', 2);
+            showToast('{yun:}t key=\'wap_01391\'{/yun}', 2);
             return false;
         }
     }
@@ -407,13 +414,13 @@
     //倒计时
     function smsTimer(obj) {
         if(smsTimer_flag > 0) {
-            $(obj).html('重新发送(' + smsTimer_flag + 's)');
+            $(obj).html('{yun:}t key=\'wap_01388\'{/yun}' + smsTimer_flag + 's)');
             $(obj).attr({
                 'style': ''
             });
             smsTimer_flag--;
         } else {
-            $(obj).html('重新发送');
+            $(obj).html('{yun:}t key=\'wap_01387\'{/yun}');
             $(obj).attr({
                 'style': ''
             });

@@ -4,11 +4,11 @@
     <div class="m_tab" v-if="islook">
         <div class="m_tabbox category">
             <ul>
-                <li :class="browse == 0 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=sq&browse=0')">全部</li>
-                <li :class="browse == 1 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=sq&browse=1')">未查看</li>         
-                <li :class="browse == 3 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=sq&browse=3')">已面试</li>
-                <li :class="browse == 4 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=sq&browse=4')">不合适</li>
-                <li :class="browse == 7 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=sq&browse=7')">已入职</li>
+                <li :class="browse == 0 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=sq&browse=0')">{{i18n.tabAll}}</li>
+                <li :class="browse == 1 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=sq&browse=1')">{{i18n.tabUnread}}</li>
+                <li :class="browse == 3 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=sq&browse=3')">{{i18n.tabInterviewed}}</li>
+                <li :class="browse == 4 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=sq&browse=4')">{{i18n.tabUnfit}}</li>
+                <li :class="browse == 7 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=sq&browse=7')">{{i18n.tabHired}}</li>
             </ul>
         </div>
     </div>
@@ -25,7 +25,7 @@
 						    </div>
 						    <div class="Posted_card_pay">{{item.job_salary}}</div>
 						</div>
-						<div class="Posted_card_cen" style="position: relative;"><span class="Posted_card_cx">{{item.body != '' ? '已撤销' : ''}}</span>
+						<div class="Posted_card_cen" style="position: relative;"><span class="Posted_card_cx">{{item.body != '' ? i18n.revoked : ''}}</span>
 						    <ul>
 						        <li>{{item.cityclassname}}</li>
 						        <li>{{item.edu}}</li>
@@ -48,18 +48,16 @@
                 <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange"/>
             </div>
             <div class="wap_member_bgcar" v-show="islook&&count==0">
-                <div class="wap_member_no"> 暂无申请记录
-                    <div><a class="wap_member_no_submit" href="{yun:}url m=wap c=job{/yun}">前往申请</a></div>
+                <div class="wap_member_no">{{i18n.noApplyRecords}}
+                    <div><a class="wap_member_no_submit" href="{yun:}url m=wap c=job{/yun}">{{i18n.goApply}}</a></div>
                 </div>
             </div>
         </div>
     </div>
-    <!--投递进展-->
 
 
     <div class="m_cardbox" v-else>
         <div class="m_cardbgbox">
-            <!-- 投递进展 已投递-->
             <div class="issue_post_body_card" v-for="(item, sqkey) in list" :key="sqkey" @touchstart="touchin(sqkey)" @touchend="cleartime(sqkey, '')" @touchmove="cleartouch">
                 <div class="Posted_card_top" @touchend="cleartime(sqkey, 'job')">
                     <div class="Posted_card_name">{{item.job_name}}</div>
@@ -79,14 +77,14 @@
                         <div class="state_underway_icon">
                             <img src="{yun:}$wap_style{/yun}/images/deliver_pass.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="state_underway_text">已投递</div>
+                        <div class="state_underway_text">{{i18n.statusApplied}}</div>
                     </div>
                     <div class="Posted_state_nodot">· · · ·</div>
                     <div class=" Posted_state_without">
                         <div class="state_been_icon">
                             <img src="{yun:}$wap_style{/yun}/images/deliver_no_show.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="state_without_text">已查看</div>
+                        <div class="state_without_text">{{i18n.statusViewed}}</div>
                     </div>
                     <div class="Posted_state_nodot">· · · ·</div>
                     <div class="Posted_state_without">
@@ -94,7 +92,7 @@
                             <img src="{yun:}$wap_style{/yun}/images/deliver_no_show.png" alt="" width="100%"
                                  height="100%">
                         </div>
-                        <div class="state_without_text">已面试</div>
+                        <div class="state_without_text">{{i18n.statusInterviewed}}</div>
                     </div>
                     <div class="Posted_state_nodot">· · · ·</div>
                     <div class="Posted_state_without">
@@ -102,7 +100,7 @@
                             <img src="{yun:}$wap_style{/yun}/images/deliver_no_show.png" alt="" width="100%"
                                  height="100%">
                         </div>
-                        <div class="state_without_text">已入职</div>
+                        <div class="state_without_text">{{i18n.statusHired}}</div>
                     </div>
                 </div>
                 <div class="Posted_card_state" v-if="browse==2">
@@ -110,14 +108,14 @@
                         <div class="state_been_icon">
                             <img src="{yun:}$wap_style{/yun}/images/deliver_been.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="state_without_text">已投递</div>
+                        <div class="state_without_text">{{i18n.statusApplied}}</div>
                     </div>
                     <div class="Posted_state_dot">· · · ·</div>
                     <div class=" Posted_state_underway">
                         <div class="state_underway_icon">
                             <img src="{yun:}$wap_style{/yun}/images/deliver_pass.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="state_underway_text">已查看</div>
+                        <div class="state_underway_text">{{i18n.statusViewed}}</div>
                     </div>
                     <div class="Posted_state_nodot">· · · ·</div>
                     <div class="Posted_state_without">
@@ -125,7 +123,7 @@
                             <img src="{yun:}$wap_style{/yun}/images/deliver_no_show.png" alt="" width="100%"
                                  height="100%">
                         </div>
-                        <div class="state_without_text">已面试</div>
+                        <div class="state_without_text">{{i18n.statusInterviewed}}</div>
                     </div>
                     <div class="Posted_state_nodot">· · · ·</div>
                     <div class="Posted_state_without">
@@ -133,7 +131,7 @@
                             <img src="{yun:}$wap_style{/yun}/images/deliver_no_show.png" alt="" width="100%"
                                  height="100%">
                         </div>
-                        <div class="state_without_text">已入职</div>
+                        <div class="state_without_text">{{i18n.statusHired}}</div>
                     </div>
                 </div>
                 <div class="Posted_card_state" v-else-if="browse==3">
@@ -141,28 +139,28 @@
                         <div class="state_been_icon">
                             <img src="{yun:}$wap_style{/yun}/images/deliver_been.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="state_without_text">已投递</div>
+                        <div class="state_without_text">{{i18n.statusApplied}}</div>
                     </div>
                     <div class="Posted_state_dot">· · · ·</div>
                     <div class="Posted_state_without">
                         <div class="state_been_icon">
                             <img src="{yun:}$wap_style{/yun}/images/deliver_been.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="state_without_text">已查看</div>
+                        <div class="state_without_text">{{i18n.statusViewed}}</div>
                     </div>
                     <div class="Posted_state_dot">· · · ·</div>
                     <div class="Posted_state_underway">
                         <div class="state_underway_icon">
                             <img src="{yun:}$wap_style{/yun}/images/deliver_pass.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="state_underway_text">已面试</div>
+                        <div class="state_underway_text">{{i18n.statusInterviewed}}</div>
                     </div>
                     <div class="Posted_state_nodot">· · · ·</div>
                     <div class="Posted_state_without">
                         <div class="state_been_icon">
                             <img src="{yun:}$wap_style{/yun}/images/deliver_no_show.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="state_without_text">已入职</div>
+                        <div class="state_without_text">{{i18n.statusHired}}</div>
                     </div>
                 </div>
                 <div class="Posted_card_state" v-else-if="browse==4">
@@ -170,28 +168,28 @@
                         <div class="state_been_icon">
                             <img src="{yun:}$wap_style{/yun}/images/deliver_been.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="state_without_text">已投递</div>
+                        <div class="state_without_text">{{i18n.statusApplied}}</div>
                     </div>
                     <div class="Posted_state_dot">· · · ·</div>
                     <div class="Posted_state_without">
                         <div class="state_been_icon">
                             <img src="{yun:}$wap_style{/yun}/images/deliver_been.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="state_without_text">已查看</div>
+                        <div class="state_without_text">{{i18n.statusViewed}}</div>
                     </div>
                     <div class="Posted_state_dot">· · · ·</div>
                     <div class="Posted_state_underway">
                         <div class="state_underway_icon">
                             <img src="{yun:}$wap_style{/yun}/images/deliver_pass.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="state_underway_text">不合适</div>
+                        <div class="state_underway_text">{{i18n.statusUnfit}}</div>
                     </div>
                     <div class="Posted_state_nodot">· · · ·</div>
                     <div class="Posted_state_without">
                         <div class="state_been_icon">
                             <img src="{yun:}$wap_style{/yun}/images/deliver_no_show.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="state_without_text">已入职</div>
+                        <div class="state_without_text">{{i18n.statusHired}}</div>
                     </div>
                 </div>
                 <div class="Posted_card_state" v-else-if="browse==7">
@@ -199,14 +197,14 @@
                         <div class="state_been_icon">
                             <img src="{yun:}$wap_style{/yun}/images/deliver_been.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="state_been_text">已投递</div>
+                        <div class="state_been_text">{{i18n.statusApplied}}</div>
                     </div>
                     <div class="Posted_state_dot">· · · ·</div>
                     <div class="Posted_state_been">
                         <div class="state_been_icon">
                             <img src="{yun:}$wap_style{/yun}/images/deliver_been.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="state_been_text">已查看</div>
+                        <div class="state_been_text">{{i18n.statusViewed}}</div>
                     </div>
                     <div class="Posted_state_dot">· · · ·</div>
 
@@ -214,7 +212,7 @@
                         <div class="state_been_icon">
                             <img src="{yun:}$wap_style{/yun}/images/deliver_been.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="state_been_text">已沟通</div>
+                        <div class="state_been_text">{{i18n.statusCommunicated}}</div>
                     </div>
                     <div class="Posted_state_dot">· · · ·</div>
 
@@ -222,22 +220,22 @@
                         <div class="state_underway_icon">
                             <img src="{yun:}$wap_style{/yun}/images/deliver_pass.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="state_underway_text">已入职</div>
+                        <div class="state_underway_text">{{i18n.statusHired}}</div>
                     </div>
                 </div>
-                <div class="Posted_state_hrtip">别急，HR当前这正在处理简历</div>
+                <div class="Posted_state_hrtip">{{i18n.hrProcessingTip}}</div>
             </div>
             <div v-if="count==2">
                 <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange"/>
             </div>
         </div>
         <div class="wap_member_bgcar" v-show="islook&&count==0">
-            <div class="wap_member_no"> 暂无相关记录
-                <div><a class="wap_member_no_submit" href="{yun:}url m=wap c=job{/yun}">前往申请</a></div>
+            <div class="wap_member_no">{{i18n.noRelatedRecords}}
+                <div><a class="wap_member_no_submit" href="{yun:}url m=wap c=job{/yun}">{{i18n.goApply}}</a></div>
             </div>
         </div>
     </div>
-	<van-action-sheet v-model="sheetShow" :actions="reasonList" @select="onSelect" cancel-text="取消" @cancel="sheetShow = false" :closeable="false" title="请选择取消原因" />
+	<van-action-sheet v-model="sheetShow" :actions="reasonList" @select="onSelect" :cancel-text="i18n.cancel" @cancel="sheetShow = false" :closeable="false" :title="i18n.selectCancelReason" />
 </div>
 
 <script>
@@ -251,6 +249,34 @@
     new Vue({
         el: '#yunvue',
         data: {
+            i18n: {
+                tabAll: '{yun:}t key='wap_js_00075'{/yun}',
+                tabUnread: '{yun:}t key='wap_user_00260'{/yun}',
+                tabInterviewed: '{yun:}t key='wap_user_00266'{/yun}',
+                tabUnfit: '{yun:}t key='wap_user_00354'{/yun}',
+                tabHired: '{yun:}t key='wap_user_00356'{/yun}',
+                statusApplied: '{yun:}t key='wap_user_00357'{/yun}',
+                statusViewed: '{yun:}t key='wap_user_00258'{/yun}',
+                statusInterviewed: '{yun:}t key='wap_user_00266'{/yun}',
+                statusHired: '{yun:}t key='wap_user_00356'{/yun}',
+                statusUnfit: '{yun:}t key='wap_user_00354'{/yun}',
+                statusCommunicated: '{yun:}t key='wap_user_00359'{/yun}',
+                revoked: '{yun:}t key='wap_user_00358'{/yun}',
+                noApplyRecords: '{yun:}t key='wap_user_00350'{/yun}',
+                noRelatedRecords: '{yun:}t key='wap_00987'{/yun}',
+                goApply: '{yun:}t key='wap_user_00353'{/yun}',
+                hrProcessingTip: '{yun:}t key='wap_00988'{/yun}',
+                cancel: '{yun:}t key='wap_js_00080'{/yun}',
+                selectCancelReason: '{yun:}t key='wap_user_00348'{/yun}',
+                confirmCancelApply: '{yun:}t key='wap_00984'{/yun}',
+                confirmDelete: '{yun:}t key='wap_user_00001'{/yun}',
+                cancelling: '{yun:}t key='wap_user_00152'{/yun}',
+                cancelSuccess: '{yun:}t key='wap_00985'{/yun}',
+                cancelFailed: '{yun:}t key='wap_00986'{/yun}',
+                deleting: '{yun:}t key='wap_user_00355'{/yun}',
+                deleteSuccess: '{yun:}t key='wap_user_00147'{/yun}',
+                deleteFailed: '{yun:}t key='wap_user_00146'{/yun}',
+            },
             list: [],
             limit: 10,
             browse: browse,
@@ -260,12 +286,12 @@
             islook: false,
 			sheetShow: false,
 			reasonList: [
-				{name:'已经找到工作'}, 
-				{name:'想休息一段时间'}, 
-				{name:'生病了'}, 
-				{name:'看错信息了'}, 
-				{name:'很长时间没有查看'}, 
-				{name:'其它原因'}
+				{name: '{yun:}t key='wap_user_00349'{/yun}', value: '已经找到工作'},
+				{name: '{yun:}t key='wap_user_00347'{/yun}', value: '想休息一段时间'},
+				{name: '{yun:}t key='wap_user_00360'{/yun}', value: '生病了'},
+				{name: '{yun:}t key='wap_user_00351'{/yun}', value: '看错信息了'},
+				{name: '{yun:}t key='wap_user_00346'{/yun}', value: '很长时间没有查看'},
+				{name: '{yun:}t key='wap_user_00352'{/yun}', value: '其它原因'}
 			]
         },
         computed: {
@@ -318,7 +344,6 @@
             },
 			touchin(key) {
 				if(loopVal){
-					 //再次清空定时器，防止重复注册定时器
 					clearInterval(loopVal);
 				}
 				var self = this;
@@ -330,7 +355,7 @@
 
 						self.sqdel();
 					}else{
-                        showConfirm('确定要取消申请？', function() {
+                        showConfirm(self.i18n.confirmCancelApply, function() {
                             self.sheetShow = true;
                         });
 
@@ -339,21 +364,18 @@
 			},
 			cleartime(key, goType) {
 				if(loop == 0 && goType){
-					// click
                     if(goType == 'com'){
                         this.pageTo(this.list[key].wapcom_url);
                     }else{
                         this.pageTo(this.list[key].wapjob_url);
                     }
 				}
-				// 这个方法主要是用来将每次手指移出之后将计时器清零
 				if(loopVal){
 					clearInterval(loopVal);
 					loopVal = null;
 				}
 				loop = 0;
 			},
-			// 滑动时清除定时器
 			cleartouch(){
 			    if(loopVal){
 					clearInterval(loopVal);
@@ -365,17 +387,17 @@
 				let self = this;
 				let	param = {
 						ids: cancel_id,
-						body: item.name
+						body: item.value
 					};
 				self.sheetShow = false;
-                showLoading('取消中');
+                showLoading(self.i18n.cancelling);
                 $.post('{yun:}url d=wxapp h=user m=job c=qxSqJob{/yun}', param, function (res) {
                     hideLoading();
                     if (res.error == 1) {
-                        self.list[cancel_key].body = item.name;
-                        showToast('取消成功');
+                        self.list[cancel_key].body = item.value;
+                        showToast(self.i18n.cancelSuccess);
                     } else {
-                        showModal('取消失败');
+                        showModal(self.i18n.cancelFailed);
                     }
                 })
 			},
@@ -384,15 +406,15 @@
 				let	param = {
 						ids: cancel_id
 					};
-				showConfirm('确定要删除？', function() {
-					showLoading('删除中');
+				showConfirm(self.i18n.confirmDelete, function() {
+					showLoading(self.i18n.deleting);
 					$.post('{yun:}url d=wxapp h=user m=job c=delsqjob{/yun}', param, function (res) {
 					    hideLoading();
 						if (res.error == 1) {
 							self.list.splice(cancel_key, 1);
-							showToast('删除成功');
+							showToast(self.i18n.deleteSuccess);
 						} else {
-							showModal('删除失败');
+							showModal(self.i18n.deleteFailed);
 						}
 					})
 				})

@@ -441,7 +441,7 @@ class set_controller extends com_controller
 	    
 	    if (!empty($row)){
 	        
-	        $this->render_json(1,'您已申请了注销账号');
+	        $this->render_json(1, yun_auto_t('您已申请了注销账号'));
 	    }else{
 	        
 	        $this->render_json(0,'ok');

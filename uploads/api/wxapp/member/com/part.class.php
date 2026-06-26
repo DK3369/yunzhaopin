@@ -353,7 +353,7 @@ class part_controller extends com_controller
 
         if (empty($partids)) {
 
-            $this->render_json(1, '没有招聘中的职位');
+            $this->render_json(1, yun_auto_t('没有招聘中的职位'));
         }
 
         $this->company_statis($this->member['uid']);
@@ -414,7 +414,7 @@ class part_controller extends com_controller
     {
         if (!$_POST['id']) {
 
-            $this->render_json(3, '参数不正确');
+            $this->render_json(3, yun_auto_t('参数不正确'));
         } else {
 
             $partM  =   $this->MODEL('part');
@@ -428,11 +428,11 @@ class part_controller extends com_controller
                 if (!isVip($statis['vip_etime'])) {
 
                     $error  =   8;
-                    $msg    =   '会员已到期，无法上架，请先升级会员！';
+                    $msg    =   yun_auto_t('会员已到期，无法上架，请先升级会员！');
                     if ($this->config['sy_iospay'] == 2) {
 
                         $error  =   2;
-                        $msg    =   '您好，目前不支持上架职位';// 苹果关闭支付功能
+                        $msg    =   yun_auto_t('您好，目前不支持上架职位');
                     }
                     $this->render_json($error, $msg);
                 }
@@ -501,7 +501,7 @@ class part_controller extends com_controller
 
                 $this->render_json(0, 'ok');
             } else {
-                $this->render_json(2, '设置失败');
+                $this->render_json(2, yun_auto_t('设置失败'));
             }
         }
     }

@@ -1,17 +1,17 @@
 {yun:}include file="$wapstyle/member/header.htm"{/yun} 
 
-<!-- 页面主体 -->
+<!-- Page body -->
 <div id="yunvue" class="none">
 
 
 <div class="m_tab"  v-if="islook">
   <div class="m_tabbox category">
   <ul>
-    <li :class="status == 0 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=invite&status=0')">全部</li>
-    <li :class="status == 1 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=invite&status=1')">未查看</li>
-    <li :class="status == 2 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=invite&status=2')">已查看</li>
-    <li :class="status == 3 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=invite&status=3')">待面试</li>
-    <li :class="status == 4 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=invite&status=4')">已拒绝</li>
+    <li :class="status == 0 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=invite&status=0')">{{i18n.tabAll}}</li>
+    <li :class="status == 1 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=invite&status=1')">{{i18n.tabUnread}}</li>
+    <li :class="status == 2 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=invite&status=2')">{{i18n.tabViewed}}</li>
+    <li :class="status == 3 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=invite&status=3')">{{i18n.tabPending}}</li>
+    <li :class="status == 4 ? 'm_tabactive' : ''" @click="pageTo('index.php?c=invite&status=4')">{{i18n.tabRejected}}</li>
   </ul>
 </div></div>
   <div class="m_cardbox"> 
@@ -19,21 +19,21 @@
     <div class="Posted_body_card" v-for="(item, invitekey) in list" :key="invitekey">
       <div class="Posted_card_top" v-on:click="pageTo('index.php?c=invitecont&id='+item.id)">
         <div class="Posted_card_name"><i class="m_ms_new" v-if="item.is_browse==1">NEW</i>{{item.fname}}</div>
-        <div class="Posted_card_pay" v-if="item.is_browse==1">未查看</div>
-        <div class="Posted_card_pay" v-else-if="item.is_browse==2">已查看</div>
+        <div class="Posted_card_pay" v-if="item.is_browse==1">{{i18n.unread}}</div>
+        <div class="Posted_card_pay" v-else-if="item.is_browse==2">{{i18n.viewed}}</div>
         <div class="Posted_card_pay" v-else-if="item.is_browse==3">
-			<span v-if="item.over">已结束</span>
-			<span v-else>待面试</span>
+			<span v-if="item.over">{{i18n.ended}}</span>
+			<span v-else>{{i18n.pendingInterview}}</span>
 		</div>
-        <div class="Posted_card_pay" v-else-if="item.is_browse==4">已拒绝</div>
+        <div class="Posted_card_pay" v-else-if="item.is_browse==4">{{i18n.rejected}}</div>
       </div>
       <div class="interview_time_box" v-on:click="pageTo('index.php?c=invitecont&id='+item.id)">
-        <div class="card_interview_text">面试时间</div>
+        <div class="card_interview_text">{{i18n.interviewTime}}</div>
         <div class="card_interview_time">{{item.intertime}}</div>
       </div>
       <div class="interview_job_box">
         <div class="interview_box_post" v-on:click="pageTo('index.php?c=invitecont&id='+item.id)">
-          <div class="card_interview_text">面试职位</div>
+          <div class="card_interview_text">{{i18n.interviewJob}}</div>
           <div class="card_interview_time">{{item.jobname}}</div>
         </div>
         
@@ -48,8 +48,8 @@
    </div><div class="wap_member_bgcar"v-show="islook&&count==0">
     <div class="wap_member_no" >
 		
-      <div class="wap_member_no_p1"> 目前您暂未收到面试通知
-        <div><a class="wap_member_no_submit" href="{yun:}url m=wap c=job{/yun}">搜索职位</a></div>
+      <div class="wap_member_no_p1"> {{i18n.noInviteNotice}}
+        <div><a class="wap_member_no_submit" href="{yun:}url m=wap c=job{/yun}">{{i18n.searchJobs}}</a></div>
       </div> </div>
     </div>
   </div>
@@ -68,7 +68,27 @@
           status: status,          
           total:0,
           page: currentPage ? currentPage : 1,
-          islook :false
+          islook :false,
+          i18n: {
+            tabAll: '{yun:}t key='wap_js_00075'{/yun}',
+            tabUnread: '{yun:}t key='wap_user_00260'{/yun}',
+            tabViewed: '{yun:}t key='wap_user_00258'{/yun}',
+            tabPending: '{yun:}t key='wap_01049'{/yun}',
+            tabRejected: '{yun:}t key='wap_user_00257'{/yun}',
+            unread: '{yun:}t key='wap_user_00260'{/yun}',
+            viewed: '{yun:}t key='wap_user_00258'{/yun}',
+            pendingInterview: '{yun:}t key='wap_01049'{/yun}',
+            ended: '{yun:}t key='wap_user_00259'{/yun}',
+            rejected: '{yun:}t key='wap_user_00257'{/yun}',
+            interviewTime: '{yun:}t key='wap_user_00255'{/yun}',
+            interviewJob: '{yun:}t key='wap_user_00256'{/yun}',
+            noInviteNotice: '{yun:}t key='wap_01050'{/yun}',
+            searchJobs: '{yun:}t key='wap_user_00254'{/yun}',
+            confirmDeleteInvite: '{yun:}t key='wap_01051'{/yun}',
+            deleting: '{yun:}t key='wap_js_00166'{/yun}',
+            deleteSuccess: '{yun:}t key='wap_user_00147'{/yun}',
+            deleteFailed: '{yun:}t key='wap_user_00146'{/yun}',
+          },
         },
         computed: {
           count(){
@@ -116,7 +136,7 @@
           },
           delInvite:function(e){
             
-             showConfirm('您确定要删除该邀请？', () => {
+             showConfirm(this.i18n.confirmDeleteInvite, () => {
               this.delfuc('del', e);
             })
 
@@ -127,16 +147,16 @@
                 id: that.list[index].id,
                 type: type
               };
-             showLoading('删除中...')
+             showLoading(that.i18n.deleting)
              
             $.post('{yun:}url d=wxapp h=user m=job c=invitedel{/yun}', param, function(data){
               hideLoading();
               if (data.error == 1) {
-                showToast('删除成功',2, function() {
+                showToast(that.i18n.deleteSuccess,2, function() {
                   that.list.splice(index, 1);         
                 });
               } else {
-                showToast('删除失败');
+                showToast(that.i18n.deleteFailed);
               }
             });
                 

@@ -1,53 +1,58 @@
-// 获取EXP
+// Get experience options
 function getExp() {
     return comFormat('job_exp');
 }
 
-// 获取学历
+// Get education options
 function getEdu() {
     return comFormat('job_edu');
 }
 
-// 获取到岗时间
+// Get report-to-work time options
 function getReport() {
     return comFormat('job_report');
 }
 
-// 获取企业性质
+// Get company nature options
 function getPr() {
     return comFormat('job_pr');
 }
 
-// 获取企业规模
+// Get company size options
 function getMun() {
     return comFormat('job_mun');
 }
 
-// 获取性别要求
+function comPickerI18n(key) {
+    var i18n = typeof COM_PICKER_I18N !== 'undefined' ? COM_PICKER_I18N : {};
+    return i18n[key] || '';
+}
+
+// Get gender options (display labels are i18n; ids are API values)
 function getSex() {
     return {
         'id': [3, 1, 2],
-        'name': ['不限', '男', '女']
+        'name': [comPickerI18n('noLimit'), comPickerI18n('male'), comPickerI18n('female')]
     };
 }
 function getSexReq() {
     return {
         'id': [3, 2],
-        'name': ['不限', '女']
+        'name': [comPickerI18n('noLimit'), comPickerI18n('female')]
     };
 }
 
-// 获取婚姻状况
+// Get marital status options
 function getMarriage() {
     return comFormat('job_marriage');
 }
 
-//获取简历备注
+// Get resume remark options
 function getremark() {
     return comFormat('job_remark');
 }
 
-// 获取语言要求
+// Get language requirements
 function getLang() {
     var data = [];
     if (typeof comd['job_lang'] !== 'undefined') {
@@ -60,7 +65,7 @@ function getLang() {
     return data;
 }
 
-// 格式化数据
+// Format picker data from cache
 function comFormat(key) {
     var data = {
         name: [],
@@ -78,7 +83,7 @@ function comFormat(key) {
     return data
 }
 
-// 获取行业
+// Get industry options
 function getHy(defaultOptionName) {
     if (defaultOptionName) {
         var data = {
@@ -104,23 +109,23 @@ function getHy(defaultOptionName) {
     return data
 }
 
-// 获取经验要求
+// Get experience requirement options
 function getExpReq() {
     let exp = userFormat('user_word');
-    exp.name.unshift('请选择工作经验');
+    exp.name.unshift(comPickerI18n('selectExperience'));
     exp.id.unshift('0');
     return exp;
 }
 
-// 获取学历要求
+// Get education requirement options
 function getEduReq() {
     let edu = userFormat('user_edu');
-    edu.name.unshift('请选择学历');
+    edu.name.unshift(comPickerI18n('selectEducation'));
     edu.id.unshift('0');
     return edu;
 }
 
-// 格式化数据
+// Format user cache data for pickers
 function userFormat(key) {
     var data = {
         name: [],
@@ -138,13 +143,14 @@ function userFormat(key) {
     return data
 }
 
-// 获取创办时间年
+// Get founding year options
 function getFoundedYear(){
     var date = new Date(),
         year = date.getFullYear(),
-        yearArr = [];
+        yearArr = [],
+        yearSuffix = comPickerI18n('yearSuffix');
     for (var i = year; i >= 1900; i--){
-        yearArr.push({date: i, text: i + '年'});
+        yearArr.push({date: i, text: i + yearSuffix});
     }
     return yearArr;
 }

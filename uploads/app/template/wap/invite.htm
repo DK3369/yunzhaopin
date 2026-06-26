@@ -11,9 +11,9 @@
                         <div class="Name_of_the_interview">{{user.name}}</div>
                         <div class="skill_of_the_interview">
                             <ul>
-                                <li>{{user.user_exp}}经验</li>
+                                <li>{{user.user_exp}}{yun:}t key='wap_01424'{/yun}</li>
                                 <li> · {{user.useredu}}</li>
-                                <li>{{user.age?` · ${user.age}岁`:''}}</li>
+                                <li>{{user.age?` · ${user.age}{yun:}t key='wap_01425'{/yun}`:''}}</li>
                             </ul>
                         </div>
                     </div>
@@ -29,8 +29,8 @@
                     </div>
                 </div>
                 <div class="job_resume">
-                    <div class="job_resume_left">面试时间</div>
-                    <div class="job_resume_right_two" @click="dateShow = true">{{intertime == '' ? '请选择面试时间' :
+                    <div class="job_resume_left">{yun:}t key='wap_01426'{/yun}</div>
+                    <div class="job_resume_right_two" @click="dateShow = true">{{intertime == '' ? i18n.selectInterviewTime :
                         intertime}}
                     </div>
                     <div class="job_resume_nav">
@@ -42,13 +42,13 @@
                     <van-datetime-picker
                             v-model="currentDate"
                             type="datetime"
-                            title="选择面试时间"
+                            title="{yun:}t key='wap_01428'{/yun}"
                             @cancel="dateShow = false"
                             @confirm="dateConfirm"
                     />
                 </van-popup>
                 <div class="job_resume">
-                    <div class="job_resume_left">面试职位</div>
+                    <div class="job_resume_left">{yun:}t key='wap_01429'{/yun}</div>
                     <div class="job_resume_right_two"  @click="jobShow = true">{{inviteMsg[jobnameIndex].name}}
                     </div>
                     <div class="job_resume_nav">
@@ -68,7 +68,7 @@
                 </van-popup>
 
                 <div class="job_resume" v-if="yqmbShow">
-                    <div class="job_resume_left">邀请模板</div>
+                    <div class="job_resume_left">{yun:}t key='wap_01430'{/yun}</div>
                     <div class="job_resume_right_two" @click="openYqmbShow = true">{{yqmbData[yqmbIndex].name}}</div>
                     <div class="job_resume_nav">
                         <img src="{yun:}$wap_style{/yun}/images/icon_more.png" alt="" width="100%" height="100%">
@@ -86,22 +86,22 @@
                     />
                 </van-popup>
                 <div class="job_resume">
-                    <div class="job_resume_left">联系人</div>
+                    <div class="job_resume_left">{yun:}t key='wap_01431'{/yun}</div>
                     <div class="job_resume_right">
-                        <input type="text" name="linkman" v-model="inviteV.link_man" placeholder="请填写联系人">
+                        <input type="text" name="linkman" v-model="inviteV.link_man" placeholder="{yun:}t key='wap_01368'{/yun}">
                     </div>
 
                 </div>
                 <div class="job_resume">
-                    <div class="job_resume_left">联系方式</div>
+                    <div class="job_resume_left">{yun:}t key='wap_01432'{/yun}</div>
                     <div class="job_resume_right">
-                        <input type="number" name="linktel" v-model="inviteV.link_moblie" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请填写联系电话">
+                        <input type="number" name="linktel" v-model="inviteV.link_moblie" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="{yun:}t key='wap_01369'{/yun}">
                     </div>
                 </div>
                 <div class="job_resume">
-                    <div class="job_resume_left">面试地址</div>
+                    <div class="job_resume_left">{yun:}t key='wap_01433'{/yun}</div>
                     <div class="job_resume_right">
-                        <input name="address" type="text" v-model="inviteV.address" placeholder="请填写面试地址">
+                        <input name="address" type="text" v-model="inviteV.address" placeholder="{yun:}t key='wap_01434'{/yun}">
                     </div>
                     <!--<div class="job_resume_right_two">江苏省南京市雨花台区小心路12栋 501室</div>-->
                     <!--<div class="job_resume_nav">-->
@@ -109,11 +109,11 @@
                     <!--</div>-->
                 </div>
                 <div class="remark">
-                    <div class="remark_name">备注信息</div>
+                    <div class="remark_name">{yun:}t key='wap_01435'{/yun}</div>
                     <div class="remark_word">
                         <div action="" class="remark_word_box">
                         <textarea name="content" v-model="inviteV.content" class="remark_word_text" style="resize:none;"
-                                  placeholder="可告知求职者面试时所需材料,面试前的相关注意事项"></textarea>
+                                  placeholder="{yun:}t key='wap_01436'{/yun}"></textarea>
                             <!--<div class="expressions_bom">-->
                             <!--    <i class="expressions_bom_new">0</i>-->
                             <!--    <i class="expressions_bom_sum">/ 200</i>-->
@@ -122,7 +122,7 @@
                     </div>
                 </div>
                 <div class="bc_box ">
-                    <div class=" ">{{ymedit?'更新':'保存'}}邀请模板</div>
+                    <div class=" ">{{ymedit?i18n.update:i18n.save}}{yun:}t key=\'wap_01430\'{/yun}</div>
                     <div class="bc_box_kg ">
                         <van-switch v-model="ymchecked" active-color="#1989fa" inactive-color="#dcdee0" size="20"/>
                     </div>
@@ -130,7 +130,7 @@
 
             </div>
             <!-- 保存按钮 -->
-            <input type="submit" value="发送面试邀请" class="Save_button"/>
+            <input type="submit" value="{yun:}t key='wap_01438'{/yun}" class="Save_button"/>
         </form>
     </div>
 </div>
@@ -273,17 +273,17 @@
         let yd = yunvue.$data;
         try {
             if (yd.jobid < 1) {
-                showModal('请选择面试职位');
+                showModal('{yun:}t key=\'wap_01439\'{/yun}');
             } else if (e.linkman.value == '') {
-                showModal('请填写联系人');
+                showModal('{yun:}t key=\'wap_01368\'{/yun}');
             } else if (e.linktel.value == '') {
-                showModal('请填写联系电话');
+                showModal('{yun:}t key=\'wap_01369\'{/yun}');
             } else if (isjsMobile(e.linktel.value) == false && isjsTell(e.linktel.value) == false) {
-                showModal('联系电话格式错误');
+                showModal('{yun:}t key=\'wap_01440\'{/yun}');
             } else if (yd.intertime == '') {
-                showModal('请选择面试时间');
+                showModal('{yun:}t key=\'wap_01427\'{/yun}');
             } else if (e.address.value == '') {
-                showModal('请填写面试地址');
+                showModal('{yun:}t key=\'wap_01434\'{/yun}');
             } else {
                 var formData = {
                     linkman: e.linkman.value,
@@ -302,12 +302,12 @@
                 formData.jobname = yd.jobname;
 
 
-                showLoading('邀请中');
+                showLoading('{yun:}t key=\'wap_01441\'{/yun}');
                 $.post('{yun:}url d=wxapp m=resume c=invitesave{/yun}', formData, function (data) {
                     hideLoading();
                     if (data.error == 3) {
 						window.localStorage.setItem("needRefresh", 1);
-                        showToast('邀请成功', 2, function () {
+                        showToast('{yun:}t key=\'wap_01442\'{/yun}', 2, function () {
                             
                             history.go(-1)
                         });

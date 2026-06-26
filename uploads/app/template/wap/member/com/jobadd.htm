@@ -1,7 +1,7 @@
 {yun:}include file="$wapstyle/member/cheader.htm"{/yun}
 <link href="{yun:}$wap_style{/yun}/css/cmc.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet" />
 
-<!-- 页面整体部分 -->
+<!-- Page main section -->
 <div id="yunvue" class="none">
     <div>
         <div id="jobAddMain">
@@ -10,39 +10,39 @@
                     <div class="yun_createbox">
                         <div class="yun_createlist">
 
-                                <div class="yun_create_name"><span class="m_bt">*</span>职位名称</div>
+                                <div class="yun_create_name"><span class="m_bt">*</span>{{i18n.jobName}}</div>
                                 <div class="yun_create_text">
-                                    <input v-if="joblock==1 && jobid>0" name="name" placeholder="请填写职位名称" v-model="info.name" disabled/>
-                                    <input v-else name="name" placeholder="请填写职位名称" v-model="info.name"/>
+                                    <input v-if="joblock==1 && jobid>0" name="name" :placeholder="i18n.jobNamePlaceholder" v-model="info.name" disabled/>
+                                    <input v-else name="name" :placeholder="i18n.jobNamePlaceholder" v-model="info.name"/>
                                 </div>
 
                         </div>
                         <div class="yun_createlist"  @click="classBox('job')">
-                            <div class="yun_create_name"><span class="m_bt">*</span>职位类别</div>
+                            <div class="yun_create_name"><span class="m_bt">*</span>{{i18n.jobCategory}}</div>
                             <input class="ask_input" hidden="true" id="job_classid"  :value="jobclassid" name="jobclassid"/>
-                            <div class="yun_create_select" id="jobnameshow"  :style="jobname?'':'color:#cecccc;'">{{jobname?jobname:'请选择职位类别'}}</div>
+                            <div class="yun_create_select" id="jobnameshow"  :style="jobname?'':'color:#cecccc;'">{{jobname?jobname:i18n.selectJobCategory}}</div>
                             <div class="yun_create_fx">
                                 <img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
                             </div>
                         </div>
                         <div class="yun_createlist" @click="opensalary">
-                            <div class="yun_create_name"><span class="m_bt">*</span>薪资待遇</div>
+                            <div class="yun_create_name"><span class="m_bt">*</span>{{i18n.salary}}</div>
 
 								<div class="yun_create_select" v-if="info.salary_n">{{info.salary_n}}</div>
-								<div class="yun_create_select" style="color:#cecccc;" v-else>请填写薪资待遇</div>
+								<div class="yun_create_select" style="color:#cecccc;" v-else>{{i18n.salaryPlaceholder}}</div>
 
                             <div class="yun_create_fx">
                             	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
                             </div>
                         </div>
                         <div class="yun_createlist">
-                            <div class="yun_create_name"><span class="m_bt">*</span>招聘人数</div>
+                            <div class="yun_create_name"><span class="m_bt">*</span>{{i18n.headcount}}</div>
                                 <div class="yun_create_text">
-                                    <input name="zp_num" v-model="info.zp_num" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请填写招聘人数"/>
+                                    <input name="zp_num" v-model="info.zp_num" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" :placeholder="i18n.headcountPlaceholder"/>
                                 </div>
                         </div>
                         <div class="yun_createlist" @click="expShow = true">
-                            <div class="yun_create_name"><span class="m_bt">&nbsp;</span>经验要求</div>
+                            <div class="yun_create_name"><span class="m_bt">&nbsp;</span>{{i18n.expRequired}}</div>
                                 <div class="yun_create_select" >
                                     {{exp.name[expIndex]}}
                                     <input hidden="true" name="exp" :value="info.exp ? info.exp : exp.id[expIndex]"/>
@@ -51,13 +51,13 @@
                             	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
                             </div>
                         </div>
-                        <!--经验要求选择器-->
+                        <!-- Experience picker -->
                         <van-popup v-model="expShow" round position="bottom">
                             <van-picker show-toolbar :default-index="expIndex" @cancel="expShow = false" :columns="exp.name" @confirm="bindexpChange"/>
                         </van-popup>
                         <div class="yun_createlist" @click="eduShow = true">
 
-                                <div class="yun_create_name"><span class="m_bt">&nbsp;</span>学历要求</div>
+                                <div class="yun_create_name"><span class="m_bt">&nbsp;</span>{{i18n.eduRequired}}</div>
                                 <div class="yun_create_select" >
                                     {{edu.name[eduIndex]}}
                                     <input hidden="true" name="edu" :value="info.edu ? info.edu : edu.id[eduIndex]"/>
@@ -67,17 +67,17 @@
                             	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
                             </div>
                         </div>
-                        <!--学历要求选择器-->
+                        <!-- Education picker -->
                         <van-popup v-model="eduShow" round position="bottom">
                             <van-picker show-toolbar :default-index="eduIndex" @cancel="eduShow = false" :columns="edu.name" @confirm="bindeduChange"/>
                         </van-popup>
                         <div class="yun_createlist" @click="opendesc">
 
-                                <div class="yun_create_name"><span class="m_bt">*</span>职位描述</div>
+                                <div class="yun_create_name"><span class="m_bt">*</span>{{i18n.jobDesc}}</div>
 
 
 								<div class="yun_create_select" v-if="info.description_t">{{info.description_t}}</div>
-								<div class="yun_create_select" style="color:#cecccc;" v-else>介绍工作内容，任职要求</div>
+								<div class="yun_create_select" style="color:#cecccc;" v-else>{{i18n.descPlaceholder}}</div>
 
 
                             <div class="yun_create_fx">
@@ -87,10 +87,10 @@
 
                         <div class="yun_createlist" @click="linkShow = true">
 
-                                <div class="yun_create_name"><span class="m_bt">*</span>工作地址</div>
+                                <div class="yun_create_name"><span class="m_bt">*</span>{{i18n.workAddress}}</div>
 
 								<div class="yun_create_text_p yunCtreate"  v-if="city">{{link_msg}}</div>
-								<div class="yun_create_text_p yunCtreate" style="color:#cecccc;" v-else>{{nolink_msg}}</div>
+								<div class="yun_create_text_p yunCtreate" style="color:#cecccc;" v-else>{{i18n.setWorkAddress}}</div>
 
 
                             <div class="yun_create_fx">
@@ -100,9 +100,9 @@
 
                         <div class="yun_createlist create_resume_listend" @click="firstlink = true">
 
-                                <div class="yun_create_name"><span class="m_bt">&nbsp;</span>设置</div>
+                                <div class="yun_create_name"><span class="m_bt">&nbsp;</span>{{i18n.settings}}</div>
                                 <div class="yun_create_text_p" >
-                                    <span>联系方式设置</span>
+                                    <span>{{i18n.contactSettings}}</span>
                                 </div>
 
                             <div class="yun_create_fx">
@@ -110,7 +110,7 @@
                             </div>
                         </div>
                     </div>
-                    <input type="submit" value="下一步" class="issue_post_body_btn">
+                    <input type="submit" :value="i18n.nextStep" class="issue_post_body_btn">
                 </form>
             </div>
             <div v-show="!jobfirst" class="issue_post_body">
@@ -118,7 +118,7 @@
                     <div class="yun_createbox">
                         <div class="yun_createlist" @click="hyShow = true">
 
-                                <div class="yun_create_name">从事行业</div>
+                                <div class="yun_create_name">{{i18n.industry}}</div>
                                 <div class="yun_create_select" >
                                     {{hy.name[hyIndex]}}
                                     <input hidden="true" name="hy" :value="info.hy"/>
@@ -128,13 +128,13 @@
                            	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
                            </div>
                         </div>
-                        <!--从事行业选择器-->
+                        <!-- Industry picker -->
                         <van-popup v-model="hyShow" round position="bottom">
                             <van-picker show-toolbar :default-index="hyIndex" @cancel="hyShow = false" :columns="hy.name" @confirm="bindhyChange"/>
                         </van-popup>
                         <div class="yun_createlist" @click="reportShow = true">
 
-                                <div class="yun_create_name">到岗时间</div>
+                                <div class="yun_create_name">{{i18n.reportTime}}</div>
                                 <div class="yun_create_select" >
                                     {{report.name[reportIndex]}}
                                     <input hidden="true" name="report" :value="info.report"/>
@@ -144,14 +144,14 @@
                             	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
                             </div>
                         </div>
-                        <!--到岗时间选择器-->
+                        <!-- Report time picker -->
                         <van-popup v-model="reportShow" round position="bottom">
                             <van-picker show-toolbar :default-index="reportIndex" @cancel="reportShow = false" :columns="report.name" @confirm="bindreportChange"/>
                         </van-popup>
                         <div class="yun_createlist" @click="firstage = true">
-                            <div class="yun_create_name">年龄要求</div>
+                            <div class="yun_create_name">{{i18n.ageRequired}}</div>
                             <div class="yun_create_select" >
-                                {{!info.zp_age ? '请填写年龄要求' : info.zp_age}}
+                                {{!info.zp_age ? i18n.ageRequiredPlaceholder : info.zp_age}}
                             </div>
                             <div class="yun_create_fx">
                             	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
@@ -159,7 +159,7 @@
                         </div>
                         <div class="yun_createlist" @click="sexShow = true" v-if="com_job_sexswitch==1">
 
-                                <div class="yun_create_name">性别要求</div>
+                                <div class="yun_create_name">{{i18n.sexRequired}}</div>
                                 <div class="yun_create_select" >
                                     {{sex.name[sexIndex]}}
                                     <input hidden="true" name="sex" :value="info.sex ? info.sex : sex.id[sexIndex]"/>
@@ -169,13 +169,13 @@
                            	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
                            </div>
                         </div>
-                        <!--性别要求选择器-->
+                        <!-- Sex requirement picker -->
                         <van-popup v-model="sexShow" round position="bottom">
                             <van-picker show-toolbar :default-index="sexIndex" @cancel="sexShow = false" :columns="sex.name" @confirm="bindsexChange"/>
                         </van-popup>
                         <div class="yun_createlist" @click="marriageShow = true">
 
-                                <div class="yun_create_name">婚姻状况</div>
+                                <div class="yun_create_name">{{i18n.marriage}}</div>
                                 <div class="yun_create_select" >
                                     {{marriage.name[marriageIndex]}}
                                     <input hidden="true" name="marriage" :value="info.marriage"/>
@@ -185,15 +185,15 @@
                             	<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
                             </div>
                         </div>
-                        <!--婚姻状况选择器-->
+                        <!-- Marriage status picker -->
                         <van-popup v-model="marriageShow" round position="bottom">
                             <van-picker show-toolbar :default-index="marriageIndex" @cancel="marriageShow = false" :columns="marriage.name" @confirm="bindmarriageChange"/>
                         </van-popup>
                         <div class="yun_createlist" @click="firstlang = true">
 
-                                <div class="yun_create_name">语言要求</div>
+                                <div class="yun_create_name">{{i18n.langRequired}}</div>
                                 <div class="yun_create_select">
-                                    {{langt ? langt : '请选择语言'}}
+                                    {{langt ? langt : i18n.selectLang}}
                                     <input name="lang" :value="langid" hidden="true"/>
                                 </div>
 
@@ -203,9 +203,9 @@
                         </div>
                         <div class="yun_createlist" @click="firstwelfare = true">
 
-                                <div class="yun_create_name">福利待遇</div>
+                                <div class="yun_create_name">{{i18n.welfare}}</div>
                                 <div class="yun_create_select">
-                                    {{welfareval ? welfareval : '请选择福利待遇'}}
+                                    {{welfareval ? welfareval : i18n.selectWelfare}}
                                     <input name="welfare" :value="welfareval?welfareval:''" hidden="true"/>
                                 </div>
 
@@ -215,8 +215,8 @@
                         </div>
 
                         <div class="yun_createlist yun_createlistend">
-                            <div class="yun_create_name">应届生</div>
-                            <div class="yun_create_text_p" style="color:#999; font-size: 12px;">是否接受应届生
+                            <div class="yun_create_name">{{i18n.graduate}}</div>
+                            <div class="yun_create_text_p" style="color:#999; font-size: 12px;">{{i18n.acceptGraduate}}
                                <div class="yun_create_text_kg"> <van-switch v-model="is_graduate" active-color="#2778f8" inactive-color="#dcdee0" size="26"/>
                             </div>  </div>
                         </div>
@@ -225,42 +225,42 @@
                         <div class="require_card_title">
                             <img src="{yun:}$wap_style{/yun}/images/issue_post_title.png" alt="">
                         </div>
-                        <div v-if="sqjob_req==0" style="color:#999; padding-top: 0.266666rem;">不符合条件的求职者，将自动标记为不合适。</div>
-                        <div v-else style="color:#999">不符合条件的求职者，将无法投递简历。</div>
+                        <div v-if="sqjob_req==0" style="color:#999; padding-top: 0.266666rem;">{{i18n.unqualifiedAutoReject}}</div>
+                        <div v-else style="color:#999">{{i18n.unqualifiedNoApply}}</div>
                         <div class="require_card_box" style="margin-top: 0.266666rem;">
 
                             <div class="require_card_box_left">
-                                <div class="card_box_left_q">经验</div>
+                                <div class="card_box_left_q">{{i18n.expLabel}}</div>
                                 <div class="card_box_left_a" @click="expReqShow = true">
-                                    {{expreqIndex == 0 ? '请选择' : exp_req.name[expreqIndex]}}
+                                    {{expreqIndex == 0 ? i18n.pleaseSelect : exp_req.name[expreqIndex]}}
                                     <input hidden="true" name="exp_req" :value="expreqid"/>
                                 </div>
                             </div>
-                            <!--经验要求选择器-->
+                            <!-- Application exp picker -->
                             <van-popup v-model="expReqShow" round position="bottom">
                                 <van-picker show-toolbar :default-index="expreqIndex" @cancel="expReqShow = false" :columns="exp_req.name" @confirm="bindexpreqChange"/>
                             </van-popup>
                             <div class="require_card_box_left">
-                                <div class="card_box_left_q">学历</div>
+                                <div class="card_box_left_q">{{i18n.eduLabel}}</div>
                                 <div class="card_box_left_a" @click="eduReqShow = true">
-                                    {{edureqIndex == 0 ? '请选择' : edu_req.name[edureqIndex]}}
+                                    {{edureqIndex == 0 ? i18n.pleaseSelect : edu_req.name[edureqIndex]}}
                                     <input hidden="true" name="edu_req" :value="edureqid"/>
                                 </div>
                             </div>
-                            <!--学历要求选择器-->
+                            <!-- Application edu picker -->
                             <van-popup v-model="eduReqShow" round position="bottom">
                                 <van-picker show-toolbar :default-index="edureqIndex" @cancel="eduReqShow = false" :columns="edu_req.name" @confirm="bindedureqChange"/>
                             </van-popup>
                             <div class="require_card_box_left">
-                                <div class="card_box_left_q">年龄</div>
+                                <div class="card_box_left_q">{{i18n.ageLabel}}</div>
                                 <div class="card_box_left_a" @click="ageReqShow = true">
-                                    {{!info.age_req ? '请填写' : info.age_req}}
+                                    {{!info.age_req ? i18n.pleaseFill : info.age_req}}
                                     <input hidden="true" name="minage_req" :value="info.minage_req"/>
                                     <input hidden="true" name="maxage_req" :value="info.maxage_req"/>
                                 </div>
                             </div>
                             <div class="require_card_box_left" v-if="com_job_sexswitch==1">
-                                <div class="card_box_left_q">性别</div>
+                                <div class="card_box_left_q">{{i18n.sexLabel}}</div>
                                 <div class="card_box_left_a" @click="sexReqShow = true">
                                     {{sex_req.name[sexreqIndex]}}
                                     <input hidden="true" name="sex_req" :value="info.sex_req ? info.sex_req : sex_req.id[sexreqIndex]"/>
@@ -268,30 +268,30 @@
                             </div>
                         </div>
                     </div>
-                    <input type="submit" value="立即发布" class="issue_post_body_btn">
-                    <div class="issue_post_body_btn" style="background-color: #ffffff;    background: linear-gradient(270deg,#ffffff,#ffffff); color: #0a0a0a" @click="jobfirst = true">返回上一步</div>
+                    <input type="submit" :value="i18n.publishNow" class="issue_post_body_btn">
+                    <div class="issue_post_body_btn" style="background-color: #ffffff;    background: linear-gradient(270deg,#ffffff,#ffffff); color: #0a0a0a" @click="jobfirst = true">{{i18n.backStep}}</div>
                 </form>
             </div>
         </div>
-        <!--性别要求选择器-->
+        <!-- Sex requirement picker (application) -->
         <van-popup v-model="sexReqShow" round position="bottom">
             <van-picker show-toolbar :default-index="sexreqIndex" @cancel="sexReqShow = false" :columns="sex_req.name" @confirm="bindsexReqChange"/>
         </van-popup>
 
-        <!--工作地址弹出层-->
+        <!-- Work address popup -->
         <van-popup v-model="linkShow" round position="bottom">
             <div class="tel_tck">
                 <div class="tel_tck_bg"></div>
                 <div class="yun_jobadd_touch">
                     <div class="yun_jobadd_touch_tit">
-                        <span class="yun_jobadd_touch_s">工作地址</span><span style="float: right; color: #000; font-size: 16px;" @click="openAddressManage">管理</span>
+                        <span class="yun_jobadd_touch_s">{{i18n.workAddress}}</span><span style="float: right; color: #000; font-size: 16px;" @click="openAddressManage">{{i18n.manage}}</span>
                     </div>
                     <div :class="info.is_link==1 ? 'yun_t_list yun_t_list_cur':'yun_t_list'" @click="bindlinkChang"
                          data-num="1" :data-linkmsg="defLink.linkmsg" :data-provinceid="defLink.provinceid"
                          :data-cityid="defLink.cityid" :data-three_cityid="defLink.three_cityid"
                          :data-x="defLink.x" :data-y="defLink.y">
                         <i class="yun_t_icon"></i>
-                        <div class="yun_t_user">{{defLink.link_man}}<span class="yun_t_user_telmr">默认</span></div>
+                        <div class="yun_t_user">{{defLink.link_man}}<span class="yun_t_user_telmr">{{i18n.defaultTag}}</span></div>
                         <div class="yun_t_add">{{defLink.phone_n}}<span :class="defLink.phone_n ? 'yun_t_user_tel' : ''">{{defLink.tel_n}}</span></div>
                         <div class="yun_t_add">{{defLink.cityStr}}{{defLink.link_address}}</div>
                     </div>
@@ -307,34 +307,34 @@
                         </div>
                     </div>
                     <div class="yun_jobadd_qd">
-                        <button class="yun_jobadd_qd_bth" @click="linkShow = false">确认</button>
+                        <button class="yun_jobadd_qd_bth" @click="linkShow = false">{{i18n.confirmBtn}}</button>
                     </div>
                 </div>
             </div>
         </van-popup>
 
-        <!--地址管理弹出层-->
+        <!-- Address management popup -->
         <van-popup v-model="addressManage" position="right" :overlay="false" :style="{ height: '100%',width:'100%',backgroundColor:'#f2f3f3'}">
             <div class="comheader">
                 <a class="comheader_return" @click="closeAddressManage"></a>
-                <div class="comheader_tit">地址管理</div>
+                <div class="comheader_tit">{{i18n.addressManage}}</div>
             </div>
             <div>
                 <section class="wap_member_box">
                     <div class="Subclass">
                         <div class="com_cardlist_tit">
-                            <a href="javascript:void(0);" >{{defLink.link_address}}【默认企业地址】</a>
+                            <a href="javascript:void(0);" >{{defLink.link_address}}{{i18n.defaultCompanyAddress}}</a>
                         </div>
 
                         <div class="com_member_hr_p1">
-                            <span class="member_c9">所在区域 </span>{{defLink.cityStr}}
+                            <span class="member_c9">{{i18n.areaLabel}} </span>{{defLink.cityStr}}
                         </div>
 
                         <div class="com_member_hr_p1">
-                            <span class="member_c9">联&nbsp;&nbsp;系&nbsp;&nbsp;人 </span>{{defLink.link_man}}
+                            <span class="member_c9">{{i18n.contactPerson}} </span>{{defLink.link_man}}
                         </div>
                         <div class="com_member_hr_p1">
-                            <span class="member_c9">联系电话 </span>{{defLink.phone_n}} &nbsp;&nbsp;&nbsp;{{defLink.tel_n}}
+                            <span class="member_c9">{{i18n.contactPhone}} </span>{{defLink.phone_n}} &nbsp;&nbsp;&nbsp;{{defLink.tel_n}}
                         </div>
                     </div>
                     <div class="Subclass" v-for="(item, akey) in linkAddress" :key="akey">
@@ -343,14 +343,14 @@
                         </div>
 
                         <div class="com_member_hr_p1">
-                            <span class="member_c9">所在区域 </span>{{item.city}}
+                            <span class="member_c9">{{i18n.areaLabel}} </span>{{item.city}}
                         </div>
 
                         <div class="com_member_hr_p1">
-                            <span class="member_c9">联&nbsp;&nbsp;系&nbsp;&nbsp;人 </span>{{item.link_man}}
+                            <span class="member_c9">{{i18n.contactPerson}} </span>{{item.link_man}}
                         </div>
                         <div class="com_member_hr_p1">
-                            <span class="member_c9">联系电话 </span>{{item.link_moblie}}<template v-if="item.link_moblie"> &nbsp;&nbsp;&nbsp;</template>{{item.link_phone}}
+                            <span class="member_c9">{{i18n.contactPhone}} </span>{{item.link_moblie}}<template v-if="item.link_moblie"> &nbsp;&nbsp;&nbsp;</template>{{item.link_phone}}
                         </div>
                         <div class="interview_card_bom">
                             <div class="card_bom_icon">
@@ -361,7 +361,7 @@
                             </div>
                         </div>
                     </div>
-                    <div @click="openNewAddress"> <div class="issue_post_body_btn">添加新地址</div></div>
+                    <div @click="openNewAddress"> <div class="issue_post_body_btn">{{i18n.addNewAddress}}</div></div>
                 </section>
             </div>
         </van-popup>
@@ -369,7 +369,7 @@
         <van-popup v-model="newAddress" position="right" :overlay="false" :style="{ height: '100%',width:'100%',backgroundColor:'#f2f3f3'}">
             <div class="comheader">
                 <a class="comheader_return" @click="closeNewAddress"></a>
-                <div class="comheader_tit">新建工作地址</div>
+                <div class="comheader_tit">{{i18n.newWorkAddress}}</div>
             </div>
             <div class="issue_post_body">
                 <form onsubmit="return newAddressFormSubmit(this)">
@@ -377,31 +377,31 @@
 
                         <div class=" yun_createbox">
                             <div class="yun_createlist">
-                                <div class="yun_create_name"><span class="m_bt">*</span>联&nbsp;&nbsp;系&nbsp;&nbsp;人</div>
+                                <div class="yun_create_name"><span class="m_bt">*</span>{{i18n.contactPerson}}</div>
                                 <div class="yun_create_text">
-                                    <input name="link_man" id="link_man" placeholder="请输入联系人" v-model="linkA.link_man" onblur="notNumber(this)" />
+                                    <input name="link_man" id="link_man" :placeholder="i18n.inputContact" v-model="linkA.link_man" onblur="notNumber(this)" />
                                 </div>
                             </div>
                             <div class="yun_createlist">
-                                <div class="yun_create_name"><span class="m_bt">*</span>手机号码</div>
+                                <div class="yun_create_name"><span class="m_bt">*</span>{{i18n.mobilePhone}}</div>
                                 <div class="yun_create_text">
-                                    <input name="link_moblie" placeholder="请输入联系手机" v-model="linkA.link_moblie" oninput="value=value.replace(/^0|[\^d]/g,'')" type="number" maxlength="11"/>
+                                    <input name="link_moblie" :placeholder="i18n.inputMobile" v-model="linkA.link_moblie" oninput="value=value.replace(/^0|[\^d]/g,'')" type="number" maxlength="11"/>
                                 </div>
                             </div>
                             <div class="yun_createlist">
-                                <div class="yun_create_name"> 固定电话</div>
+                                <div class="yun_create_name"> {{i18n.landline}}</div>
                                 <div class="yun_create_text">
-                                    <input name="link_phone" placeholder="请输入固定电话" v-model="linkA.link_phone" type="text" />
+                                    <input name="link_phone" :placeholder="i18n.inputLandline" v-model="linkA.link_phone" type="text" />
                                 </div>
                             </div>
                             <div class="yun_createlist">
-                                <div class="yun_create_name"><span class="m_bt">&nbsp;</span>联系邮箱</div>
+                                <div class="yun_create_name"><span class="m_bt">&nbsp;</span>{{i18n.contactEmail}}</div>
                                 <div class="yun_create_text">
-                                    <input name="email" placeholder="请输入联系邮箱" v-model="linkA.email" type="text"/>
+                                    <input name="email" :placeholder="i18n.inputEmail" v-model="linkA.email" type="text"/>
                                 </div>
                             </div>
                             <div class="yun_createlist">
-                                <div class="yun_create_name"><span class="m_bt">*</span>所在地区</div>
+                                <div class="yun_create_name"><span class="m_bt">*</span>{{i18n.region}}</div>
                                 <div class="yun_create_text_p" @click="areaShow=true" style="color: #666;">{{linkCity}}</div>
                                 <input hidden="true" name="provinceid" :value="linkA.provinceid"/>
                                 <input hidden="true" name="cityid" :value="linkA.cityid"/>
@@ -412,9 +412,9 @@
                                 </div>
                             </div>
                             <div class="yun_createlist" style="border-bottom:none">
-                                <div class="yun_create_name"><span class="m_bt">*</span>详细地址</div>
+                                <div class="yun_create_name"><span class="m_bt">*</span>{{i18n.detailAddress}}</div>
                                 <div class="yun_create_text">
-                                    <input name="link_address" placeholder="请输入详细地址" v-model="linkA_address"/>
+                                    <input name="link_address" :placeholder="i18n.inputDetailAddress" v-model="linkA_address"/>
                                 </div>
                                 <div class="yun_create_fx" @click="chooseLocation" v-if="map_key!=''">
                                     <img src="{yun:}$wap_style{/yun}/images/issue_location.png" alt="">
@@ -422,7 +422,7 @@
                             </div>
                         </div>
                         <div class="security_bth">
-                            <button type="submit" class="security_bth_but">保 存</button>
+                            <button type="submit" class="security_bth_but">{{i18n.saveBtn}}</button>
                         </div>
                     </div>
                 </form>
@@ -436,21 +436,21 @@
                         <div class="comWapMapOnes">
                             <div class="comWapMapTwos" v-if="map_key!=''">
                                 <div class="body_card_job_box">
-                                    请单击下方地图完成地址标记
+                                    {{i18n.mapClickHint}}
                                 </div>
-                                <div id="map_container"  style="width:100%;height:280px;overflow: hidden;margin:0;font-family:'微软雅黑';" v-if="map_key!=''"></div>
+                                <div id="map_container"  style="width:100%;height:280px;overflow: hidden;margin:0;font-family:'Microsoft YaHei';" v-if="map_key!=''"></div>
                             </div>
                             <div class="comWapMapShows">
                                 <div class="comWapMapEatel">
                                     <div class="yun_createlist">
-                                        <div class="yun_create_name">详细地址</div>
+                                        <div class="yun_create_name">{{i18n.detailAddress}}</div>
                                         <div class="yun_create_text">
-                                            <input placeholder="请输入详细地址" v-model="linkA_address" name="link_address"/>
+                                            <input :placeholder="i18n.inputDetailAddress" v-model="linkA_address" name="link_address"/>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="comWapMapTishi" v-if="poi.length > 0">
-                                    <span>可以选择搜索结果设置企业位置</span>
+                                    <span>{{i18n.poiHint}}</span>
                                 </div>
                                 <ul>
                                     <li v-for="(item,pk) in poi" :key="pk">
@@ -464,49 +464,49 @@
                         </div>
                     </div>
                     <div class="security_bth" style="padding-top: 0;">
-                        <button type="submit" class="security_bth_but">确 定</button>
+                        <button type="submit" class="security_bth_but">{{i18n.okBtn}}</button>
                     </div>
                 </form>
             </div>
         </van-popup>
 
-        <!--城市选择-->
+        <!-- City picker -->
         <van-popup v-model="areaShow" round position="bottom">
-            <van-cascader v-model="areaValue" title="请选择工作区域" :options="areaOptions" @close="areaShow = false" @finish="onAreaFinish"/>
+            <van-cascader v-model="areaValue" :title="i18n.selectWorkArea" :options="areaOptions" @close="areaShow = false" @finish="onAreaFinish"/>
         </van-popup>
 
-        <!--联系方式弹出层-->
+        <!-- Contact settings popup -->
         <van-popup v-model="firstlink" round position="bottom" closeable @click-overlay="mapshow = false">
             <div v-show="!mapshow" class="tel_tck">
                 <div class="tel_tck_bg"></div>
                 <form onsubmit="return linkSubmit(this)">
                     <div class="yun_jobadd_touch">
                         <div class="yun_jobadd_touch_tit">
-                            <span class="yun_jobadd_touch_s">联系方式设置</span>
+                            <span class="yun_jobadd_touch_s">{{i18n.contactSettings}}</span>
                         </div>
 						<div class="yun_t_setlist">
-						<div class="yun_t_setname">同步联系方式  </div>
-						<div class="yun_t_set_p">同步联系方式，工作地址到其他职位</div>
+						<div class="yun_t_setname">{{i18n.syncContact}}  </div>
+						<div class="yun_t_set_p">{{i18n.syncContactDesc}}</div>
 						<div class="yun_t_set_kg"> <van-switch v-model="is_tblink" active-color="#1989fa" inactive-color="#dcdee0" size="26"/></div>
 						</div>
 						<div class="yun_t_setlist">
-						<div class="yun_t_setname">隐藏联系方式  </div>
-						<div class="yun_t_set_p">是否对求职者公开联系方式</div>
+						<div class="yun_t_setname">{{i18n.hideContact}}  </div>
+						<div class="yun_t_set_p">{{i18n.hideContactDesc}}</div>
 						<div class="yun_t_set_kg">  <van-switch v-model="is_hide" active-color="#1989fa" inactive-color="#dcdee0" size="26"/> </div>
 						</div>
 						<div class="yun_t_setlist">
-						<div class="yun_t_setname">短信通知  </div>
-						<div class="yun_t_set_p">求职者投递简历将会收到短信通知</div>
+						<div class="yun_t_setname">{{i18n.smsNotify}}  </div>
+						<div class="yun_t_set_p">{{i18n.smsNotifyDesc}}</div>
 						<div class="yun_t_set_kg"> <van-switch v-model="is_message" active-color="#1989fa" inactive-color="#dcdee0" size="26"/></div>
 						</div>
 						<div class="yun_t_setlist">
-						<div class="yun_t_setname">邮件通知  </div>
-						<div class="yun_t_set_p">求职者投递简历将会通过邮件通知</div>
+						<div class="yun_t_setname">{{i18n.emailNotify}}  </div>
+						<div class="yun_t_set_p">{{i18n.emailNotifyDesc}}</div>
 						<div class="yun_t_set_kg">    <van-switch v-model="is_email" active-color="#1989fa" inactive-color="#dcdee0" size="26"/></div>
 						</div>
                        
                         <div class="yun_jobadd_qd">
-                            <button formType="submit" class="yun_jobadd_qd_bth">确认</button>
+                            <button formType="submit" class="yun_jobadd_qd_bth">{{i18n.confirmBtn}}</button>
                         </div>
                     </div>
                 </form>
@@ -514,125 +514,125 @@
 
         </van-popup>
 
-        <!--薪资待遇-->
+        <!-- Salary popup -->
         <van-popup v-model="firstsalary" round position="bottom"/>
         <div class="issue_post_body_card">
             <form onsubmit="return upSalary(this)">
                 <div class="post_body_card_job" style="margin-bottom: 0px;;">
-                    <div class="post_body_card_job_left" style="font-weight: 600; color: #0a0a0a">薪资待遇</div>
+                    <div class="post_body_card_job_left" style="font-weight: 600; color: #0a0a0a">{{i18n.salary}}</div>
                     <div class="" @click="firstsalary = false">
                         <img style="height: .6rem" src="{yun:}$wap_style{/yun}/images/job.dell.png">
                     </div>
                 </div>
-				<div class="yun_t_jobxztip">请填写薪资范围，薪资单位（元/月）</div>
+				<div class="yun_t_jobxztip">{{i18n.salaryRangeTip}}</div>
 				 <div class="yun_t_jobxztextbox">
 				 <div class="yun_t_jobxztext">
-				 <input name="minsalary" :value="info.minsalary" :disabled="salarydis" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请填写最低薪资"/></div>
+				 <input name="minsalary" :value="info.minsalary" :disabled="salarydis" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" :placeholder="i18n.minSalaryPlaceholder"/></div>
 				<div class="yun_t_jobxztextbox_z"> -</div>
-				  <div class="yun_t_jobxztext"> <input name="maxsalary" :value="info.maxsalary" :disabled="salarydis" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请填写最高薪资"/></div>
+				  <div class="yun_t_jobxztext"> <input name="maxsalary" :value="info.maxsalary" :disabled="salarydis" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" :placeholder="i18n.maxSalaryPlaceholder"/></div>
 				 </div>
-				<div class="yun_t_jobxz_my"  v-if="com_job_myswitch==1">  薪资面议	<span class="yun_t_jobxz_my_kg"><van-switch v-model="info.salarytype==1 ? true : false" @change="salaryChange" active-color="#1989fa" inactive-color="#dcdee0" size="26"/> </span></div>
+				<div class="yun_t_jobxz_my"  v-if="com_job_myswitch==1">  {{i18n.negotiable}}	<span class="yun_t_jobxz_my_kg"><van-switch v-model="info.salarytype==1 ? true : false" @change="salaryChange" active-color="#1989fa" inactive-color="#dcdee0" size="26"/> </span></div>
                
                
               
                 <div>
-                    <input class="issue_post_body_btn" type="submit" value="确定">
+                    <input class="issue_post_body_btn" type="submit" :value="i18n.confirm">
                 </div>
             </form>
         </div>
         </van-popup>
 
-        <!--职位描述弹出-->
+        <!-- Job description popup -->
         <van-popup v-model="descshow" position="right" :style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
             <div class="comheader">
                 <a class="comheader_return" @click="descshow = false"></a>
-                <div class="comheader_tit">职位描述</div>
+                <div class="comheader_tit">{{i18n.jobDesc}}</div>
             </div>
             <div class="issue_post_body">
               <div class="yun_createbox">
-              	<div class="yun_create_bjtip">不能填写电话，QQ，微信等联系方式及特殊符号，性别歧视等内容  </div>
-                    <textarea id="content" placeholder="简单描述工作内容,职位要求~" maxlength="-1" style="width:100%;height: 300px;" name="description" :value="info.description"></textarea>
+              	<div class="yun_create_bjtip">{{i18n.descRuleTip}}  </div>
+                    <textarea id="content" :placeholder="i18n.descInputPlaceholder" maxlength="-1" style="width:100%;height: 300px;" name="description" :value="info.description"></textarea>
                 </div>
                 <div class="security_bth">
-                    <button type="submit" class="security_bth_but" @click="upDesc">保 存</button>
+                    <button type="submit" class="security_bth_but" @click="upDesc">{{i18n.saveBtn}}</button>
                 </div>
             </div>
         </van-popup>
-        <!--年龄要求-->
+        <!-- Age requirement popup -->
         <van-popup v-model="firstage" round position="bottom"/>
         <div class="issue_post_body_card">
             <form onsubmit="return upAge(this)">
                 <div class="post_body_card_job">
-                    <div class="post_body_card_job_left" style="font-weight: 600; color: #0a0a0a">年龄要求</div>
+                    <div class="post_body_card_job_left" style="font-weight: 600; color: #0a0a0a">{{i18n.ageRequired}}</div>
                     <div class="" @click="firstage = false">
                         <img style="height: .6rem" src="{yun:}$wap_style{/yun}/images/job.dell.png">
                     </div>
                 </div>
                 <div class="post_body_card_job">
                     <div class="body_card_job_box">
-                        <div class="card_job_box_post">最小年龄</div>
+                        <div class="card_job_box_post">{{i18n.minAge}}</div>
                         <div class="card_job_box_name">
-                            <input name="zp_minage" placeholder="请填写最小年龄" :value="info.zp_minage" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" />
+                            <input name="zp_minage" :placeholder="i18n.minAgePlaceholder" :value="info.zp_minage" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" />
                         </div>
                     </div>
-                    <div class="body_card_job_icon">岁</div>
+                    <div class="body_card_job_icon">{{i18n.ageUnit}}</div>
                 </div>
                 <div class="post_body_card_job">
                     <div class="body_card_job_box">
-                        <div class="card_job_box_post">最大年龄</div>
+                        <div class="card_job_box_post">{{i18n.maxAge}}</div>
                         <div class="card_job_box_name">
-                            <input name="zp_maxage" placeholder="请填写最大年龄" :value="info.zp_maxage" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" />
+                            <input name="zp_maxage" :placeholder="i18n.maxAgePlaceholder" :value="info.zp_maxage" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" />
                         </div>
                     </div>
-                    <div class="body_card_job_icon">岁</div>
+                    <div class="body_card_job_icon">{{i18n.ageUnit}}</div>
                 </div>
                 <div>
-                    <input class="issue_post_body_btn" type="submit" value="确定">
+                    <input class="issue_post_body_btn" type="submit" :value="i18n.confirm">
                 </div>
             </form>
         </div>
         </van-popup>
-        <!--投递要求年龄限制-->
+        <!-- Application age requirement popup -->
         <van-popup v-model="ageReqShow" round position="bottom"/>
         <div class="issue_post_body_card">
             <form onsubmit="return upAgeReq(this)">
                 <div class="post_body_card_job">
-                    <div class="post_body_card_job_left" style="font-weight: 600; color: #0a0a0a">年龄要求</div>
+                    <div class="post_body_card_job_left" style="font-weight: 600; color: #0a0a0a">{{i18n.ageRequired}}</div>
                     <div class="" @click="ageReqShow = false">
                         <img style="height: .6rem" src="{yun:}$wap_style{/yun}/images/job.dell.png">
                     </div>
                 </div>
                 <div class="post_body_card_job">
                     <div class="body_card_job_box">
-                        <div class="card_job_box_post">最小年龄</div>
+                        <div class="card_job_box_post">{{i18n.minAge}}</div>
                         <div class="card_job_box_name">
-                            <input name="minage_req" placeholder="请填写最小年龄" :value="info.minage_req" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" />
+                            <input name="minage_req" :placeholder="i18n.minAgePlaceholder" :value="info.minage_req" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" />
                         </div>
                     </div>
-                    <div class="body_card_job_icon">岁</div>
+                    <div class="body_card_job_icon">{{i18n.ageUnit}}</div>
                 </div>
                 <div class="post_body_card_job">
                     <div class="body_card_job_box">
-                        <div class="card_job_box_post">最大年龄</div>
+                        <div class="card_job_box_post">{{i18n.maxAge}}</div>
                         <div class="card_job_box_name">
-                            <input name="maxage_req" placeholder="请填写最大年龄" :value="info.maxage_req" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" />
+                            <input name="maxage_req" :placeholder="i18n.maxAgePlaceholder" :value="info.maxage_req" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" />
                         </div>
                     </div>
-                    <div class="body_card_job_icon">岁</div>
+                    <div class="body_card_job_icon">{{i18n.ageUnit}}</div>
                 </div>
                 <div>
-                    <input class="issue_post_body_btn" type="submit" value="确定">
+                    <input class="issue_post_body_btn" type="submit" :value="i18n.confirm">
                 </div>
             </form>
         </div>
         </van-popup>
-        <!--语言要求弹框-->
+        <!-- Language requirement popup -->
         <van-popup v-model="firstlang" round position="bottom"  @close="firstwelfare=false"/>
         <div class="tel_tck">
             <div class="tel_tck_bg"></div>
             <div class="yun_jobadd_touch">
                 <div class="jstextarea_tck_c_between xztextarea_tck_tit_box ">
-                    <div class="xztextarea_tck_tit">语言要求</div>
+                    <div class="xztextarea_tck_tit">{{i18n.langRequired}}</div>
                 </div>
                 <div class="lag_textmax welfare_box_new">
                     <div class="lag_text" v-for="(item, langkey) in lang" :key="langkey">
@@ -642,18 +642,18 @@
                 </div>
          
 			    <div class="lag_text_qd">
-                    <div class="lag_text_qd_bth" @click="firstlang = false">确认</div>
+                    <div class="lag_text_qd_bth" @click="firstlang = false">{{i18n.confirmBtn}}</div>
                 </div>
             </div>
         </div>
         </van-popup>
-        <!--福利待遇弹框-->
+        <!-- Welfare popup -->
         <van-popup v-model="firstwelfare" round position="bottom" :closeable="true" @close="firstwelfare=false"/>
         <div class="tel_tckfl">
             <div class="tel_tck_bg"></div>
             <div class="yun_jobadd_touch">
                 <div class="jstextarea_tck_c_between">
-                    <div class="xztextarea_tck_tit">福利待遇</div>
+                    <div class="xztextarea_tck_tit">{{i18n.welfare}}</div>
                 </div>
                 <div class="flbutton welfare_box_new">
                     <div v-for="(item, welfarekey) in welfareall" :key="welfarekey">
@@ -664,14 +664,14 @@
                 </div>
                 <div class="fl_textbox welfare_box">
                     <div class="fl_text welfare_laft">
-                        <input type="text" name="addwelfare" placeholder="填写福利名称"v-model="welfareAdd"/>
+                        <input type="text" name="addwelfare" :placeholder="i18n.welfareInputPlaceholder" v-model="welfareAdd"/>
                     </div>
                     <div class="fl_but welfare_right">
-                        <button @click="bindwelfareAdd">添加</button>
+                        <button @click="bindwelfareAdd">{{i18n.addBtn}}</button>
                     </div>
                 </div>
                 <div class="lag_text_qd">
-                    <div class="lag_text_qd_bth" @click="firstwelfare = false">确认</div>
+                    <div class="lag_text_qd_bth" @click="firstwelfare = false">{{i18n.confirmBtn}}</div>
                 </div>
             </div>
         </div>
@@ -698,25 +698,61 @@
 </script>
 <script type="text/javascript" src="{yun:}$config.mapurl{/yun}"></script>
 {yun:}/if{/yun}
-<!--职能、城市公共弹窗-->
+<!-- Job/city picker modal -->
 {yun:}include file="$wapstyle/member/public/resume_city_job.htm"{/yun}
 <script>
+    var COM_JOBADD_I18N = {
+        linkmanNoAllDigits: '{yun:}t key='wap_com_00005'{/yun}',
+        linkmanMaxLength: '{yun:}t key='wap_com_00002'{/yun}',
+        welfareExists: '{yun:}t key='wap_com_00120'{/yun}',
+        welfareLength: '{yun:}t key='wap_com_00267'{/yun}',
+        detailAddressRequired: '{yun:}t key='wap_00904'{/yun}',
+        linkmanRequired: '{yun:}t key='wap_com_00012'{/yun}',
+        phoneRequired: '{yun:}t key='wap_com_00007'{/yun}',
+        mobileFormatError: '{yun:}t key='wap_com_00006'{/yun}',
+        selectCity: '{yun:}t key='wap_com_00011'{/yun}',
+        cityLevelRequired: '{yun:}t key='wap_com_00004'{/yun}',
+        workAddressRequired: '{yun:}t key='wap_00903'{/yun}',
+        saving: '{yun:}t key='wap_com_00018'{/yun}',
+        salaryRequired: '{yun:}t key='wap_00887'{/yun}',
+        salaryMaxGtMin: '{yun:}t key='wap_com_00264'{/yun}',
+        salaryFixedTip: '{yun:}t key='wap_com_00255'{/yun}',
+        negotiable: '{yun:}t key='common_02045'{/yun}',
+        yuanPerMonth: '{yun:}t key='wap_com_00295'{/yun}',
+        jobNameRequired: '{yun:}t key='wap_com_00270'{/yun}',
+        jobCategoryRequired: '{yun:}t key='wap_com_00272'{/yun}',
+        headcountRequired: '{yun:}t key='wap_00888'{/yun}',
+        descRequired: '{yun:}t key='wap_00902'{/yun}',
+        minorLaw: '{yun:}t key='wap_com_00257'{/yun}',
+        maxAgeGt16: '{yun:}t key='wap_com_00266'{/yun}',
+        ageRangeInvalid: '{yun:}t key='wap_com_00269'{/yun}',
+        ageAbove: '{yun:}t key='wap_com_00280'{/yun}',
+        ageBelow: '{yun:}t key='wap_com_00281'{/yun}',
+        publishConfirm: '{yun:}t key='wap_com_00259'{/yun}',
+        cancel: '{yun:}t key='wap_js_00080'{/yun}',
+        continueBtn: '{yun:}t key='wap_com_00306'{/yun}',
+        submitting: '{yun:}t key='wap_com_00286'{/yun}',
+        confirmDelete: '{yun:}t key='wap_00812'{/yun}',
+        deleting: '{yun:}t key='wap_js_00166'{/yun}',
+        jobCategorySelect: '{yun:}t key='wap_00900'{/yun}',
+        selectWorkLocation: '{yun:}t key='wap_00901'{/yun}',
+    };
+
     function notNumber(obj){
-        obj.value = obj.value.replace(/[-_ ]/g,'');// 去掉空格
+        obj.value = obj.value.replace(/[-_ ]/g,'');// trim spaces
         if(!obj.value){
             return ;
         }
         var  test = obj.value.replace(/[0-9]/g,'');
         if (!test){
-            showModal('联系人不支持全数字', 2);
+            showModal(COM_JOBADD_I18N.linkmanNoAllDigits, 2);
             obj.value = ''
             $('#link_man').focus()
             return false;
         }else{
             if(/\d/.test(obj.value)){
                 if(obj.value.length>8){
-                    // obj.value = obj.value.substring(0,8);
-                    showModal('联系人填写字数不能超过8个', 2);
+                    showModal(COM_JOBADD_I18N.linkmanMaxLength, 2);
                     obj.value = ''
                     $('#link_man').focus()
                     return false;
@@ -737,8 +773,8 @@
 
     var map = null;
     var umeditor = {};
-    var citydefault = '请选择工作地点',
-        jobdefault = '请选择职位类别';
+    var citydefault = '',
+        jobdefault = '';
   
     var yunvue = new Vue({
             el: '#yunvue',
@@ -750,13 +786,13 @@
                     salarytype: false,
                     is_graduate: false,
 
-                    // 工作地点选择
+                    // Work location picker
                     areaShow: false,
                     areaValue: 0,
                     areaOptions: cityData,
 
 
-                    // 联系方式
+                    // Contact info
                     mapshow: false,
                     geolocation: {
                         x: '',
@@ -766,7 +802,6 @@
                     firstlink: false,
 
                     link_msg: '',
-				    nolink_msg: '请设置工作地址',
                     is_tblink: false,
                     is_hide: false,
                     is_message: true,
@@ -779,7 +814,7 @@
                     addressManage: false,
                     newAddress: false,
                     linkA: [],
-                    linkCity: '请选择所在城市',
+                    linkCity: '',
                     addressShow: false,
 
                     addressId: '',
@@ -896,7 +931,7 @@
                     sqjob_req:0,
 
 
-                    // pickker 弹出参数
+                    // Picker popup flags
                     expShow: false,
                     eduShow: false,
                     hyShow: false,
@@ -909,27 +944,121 @@
                     sexReqShow: false,
 
                     map_key:map_key,
-                    poi: []
+                    poi: [],
+                    i18n: {
+                        jobName: '{yun:}t key='wap_com_00288'{/yun}',
+                        jobNamePlaceholder: '{yun:}t key='wap_com_00270'{/yun}',
+                        jobCategory: '{yun:}t key='wap_user_00018'{/yun}',
+                        selectJobCategory: '{yun:}t key='wap_com_00272'{/yun}',
+                        salary: '{yun:}t key='wap_com_00290'{/yun}',
+                        salaryPlaceholder: '{yun:}t key='wap_00887'{/yun}',
+                        headcount: '{yun:}t key='wap_com_00333'{/yun}',
+                        headcountPlaceholder: '{yun:}t key='wap_00888'{/yun}',
+                        expRequired: '{yun:}t key='wap_com_00287'{/yun}',
+                        eduRequired: '{yun:}t key='wap_com_00283'{/yun}',
+                        jobDesc: '{yun:}t key='wap_com_00289'{/yun}',
+                        descPlaceholder: '{yun:}t key='wap_com_00268'{/yun}',
+                        workAddress: '{yun:}t key='wap_com_00331'{/yun}',
+                        setWorkAddress: '{yun:}t key='wap_com_00271'{/yun}',
+                        settings: '{yun:}t key='wap_com_00307'{/yun}',
+                        contactSettings: '{yun:}t key='wap_com_00275'{/yun}',
+                        nextStep: '{yun:}t key='common_01878'{/yun}',
+                        industry: '{yun:}t key='wap_user_00010'{/yun}',
+                        reportTime: '{yun:}t key='wap_com_00279'{/yun}',
+                        ageRequired: '{yun:}t key='wap_com_00284'{/yun}',
+                        ageRequiredPlaceholder: '{yun:}t key='wap_00889'{/yun}',
+                        sexRequired: '{yun:}t key='wap_com_00332'{/yun}',
+                        marriage: '{yun:}t key='wap_com_00282'{/yun}',
+                        langRequired: '{yun:}t key='wap_com_00292'{/yun}',
+                        selectLang: '{yun:}t key='wap_com_00277'{/yun}',
+                        welfare: '{yun:}t key='wap_com_00173'{/yun}',
+                        selectWelfare: '{yun:}t key='wap_00891'{/yun}',
+                        graduate: '{yun:}t key='wap_com_00298'{/yun}',
+                        acceptGraduate: '{yun:}t key='wap_00890'{/yun}',
+                        unqualifiedAutoReject: '{yun:}t key='wap_com_00256'{/yun}',
+                        unqualifiedNoApply: '{yun:}t key='wap_com_00258'{/yun}',
+                        expLabel: '{yun:}t key='wap_com_00305'{/yun}',
+                        eduLabel: '{yun:}t key='wap_com_00301'{/yun}',
+                        ageLabel: '{yun:}t key='wap_com_00302'{/yun}',
+                        sexLabel: '{yun:}t key='wap_com_00303'{/yun}',
+                        pleaseSelect: '{yun:}t key='wap_user_00100'{/yun}',
+                        pleaseFill: '{yun:}t key='wap_com_00299'{/yun}',
+                        publishNow: '{yun:}t key='wap_com_00184'{/yun}',
+                        backStep: '{yun:}t key='wap_com_00278'{/yun}',
+                        manage: '{yun:}t key='wap_com_00304'{/yun}',
+                        defaultTag: '{yun:}t key='wap_js_00098'{/yun}',
+                        confirmBtn: '{yun:}t key='wap_js_00094'{/yun}',
+                        addressManage: '{yun:}t key='wap_com_00402'{/yun}',
+                        defaultCompanyAddress: '{yun:}t key='wap_00906'{/yun}',
+                        areaLabel: '{yun:}t key='wap_com_00032'{/yun}',
+                        contactPerson: '{yun:}t key='wap_user_00267'{/yun}',
+                        contactPhone: '{yun:}t key='wap_user_00265'{/yun}',
+                        addNewAddress: '{yun:}t key='wap_com_00031'{/yun}',
+                        newWorkAddress: '{yun:}t key='wap_00894'{/yun}',
+                        inputContact: '{yun:}t key='wap_com_00013'{/yun}',
+                        mobilePhone: '{yun:}t key='wap_user_00241'{/yun}',
+                        inputMobile: '{yun:}t key='wap_com_00142'{/yun}',
+                        landline: '{yun:}t key='wap_com_00014'{/yun}',
+                        inputLandline: '{yun:}t key='wap_com_00008'{/yun}',
+                        contactEmail: '{yun:}t key='wap_com_00016'{/yun}',
+                        inputEmail: '{yun:}t key='wap_com_00009'{/yun}',
+                        region: '{yun:}t key='wap_com_00015'{/yun}',
+                        detailAddress: '{yun:}t key='wap_user_00243'{/yun}',
+                        inputDetailAddress: '{yun:}t key='wap_00905'{/yun}',
+                        saveBtn: '{yun:}t key='wap_com_00017'{/yun}',
+                        mapClickHint: '{yun:}t key='wap_com_00003'{/yun}',
+                        poiHint: '{yun:}t key='wap_com_00001'{/yun}',
+                        okBtn: '{yun:}t key='wap_com_00019'{/yun}',
+                        selectWorkArea: '{yun:}t key='wap_com_00010'{/yun}',
+                        syncContact: '{yun:}t key='wap_00892'{/yun}',
+                        syncContactDesc: '{yun:}t key='wap_com_00260'{/yun}',
+                        hideContact: '{yun:}t key='wap_com_00276'{/yun}',
+                        hideContactDesc: '{yun:}t key='wap_com_00265'{/yun}',
+                        smsNotify: '{yun:}t key='wap_00893'{/yun}',
+                        smsNotifyDesc: '{yun:}t key='wap_com_00261'{/yun}',
+                        emailNotify: '{yun:}t key='wap_com_00293'{/yun}',
+                        emailNotifyDesc: '{yun:}t key='wap_com_00262'{/yun}',
+                        salaryRangeTip: '{yun:}t key='wap_00895'{/yun}',
+                        minSalaryPlaceholder: '{yun:}t key='wap_00896'{/yun}',
+                        maxSalaryPlaceholder: '{yun:}t key='wap_00897'{/yun}',
+                        negotiable: '{yun:}t key='wap_com_00291'{/yun}',
+                        confirm: '{yun:}t key='common_02016'{/yun}',
+                        descRuleTip: '{yun:}t key='wap_user_00059'{/yun}',
+                        descInputPlaceholder: '{yun:}t key='wap_com_00263'{/yun}',
+                        minAge: '{yun:}t key='wap_com_00285'{/yun}',
+                        maxAge: '{yun:}t key='wap_com_00308'{/yun}',
+                        minAgePlaceholder: '{yun:}t key='wap_00898'{/yun}',
+                        maxAgePlaceholder: '{yun:}t key='wap_00899'{/yun}',
+                        ageUnit: '{yun:}t key='common_02074'{/yun}',
+                        welfareInputPlaceholder: '{yun:}t key='wap_com_00274'{/yun}',
+                        addBtn: '{yun:}t key='wap_js_00091'{/yun}',
+                        selectCity: '{yun:}t key='wap_com_00011'{/yun}',
+                        selectWorkLocation: '{yun:}t key='wap_00901'{/yun}',
+                    },
                 };
             },
             created() {
                 let that = this,
                     id = getUrlKey('id');
+                citydefault = that.i18n.selectWorkLocation;
+                jobdefault = that.i18n.selectJobCategory;
+                that.city = citydefault;
+                that.linkCity = that.i18n.selectCity;
                 if (id) {
                     that.jobid = id;
                 }
 
-                that.exp = getExp(); // 获取经验要求
-                that.edu = getEdu(); // 获取学历要求
-                that.hy = getHy('不限'); // 获取行业
-                that.report = getReport(); // 获取到岗时间
-                that.sex = getSex(); // 获取性别要求
+                that.exp = getExp();
+                that.edu = getEdu();
+                that.hy = getHy(typeof COM_PICKER_I18N !== 'undefined' ? COM_PICKER_I18N.noLimit : '');
+                that.report = getReport();
+                that.sex = getSex();
                 that.sex_req = getSexReq();
               
-                that.marriage = getMarriage(); // 获取婚姻状况
-                that.exp_req = getExpReq(); // 获取经验要求
-                that.edu_req = getEduReq(); // 获取学历要求
-                that.lang = getLang(); // 获取语言要求
+                that.marriage = getMarriage();
+                that.exp_req = getExpReq();
+                that.edu_req = getEduReq();
+                that.lang = getLang();
       
                 that.jobinfo();
                 
@@ -964,7 +1093,7 @@
                             that.com_job_myswitch = res.com_job_myswitch;
 							that.com_job_sexswitch = res.com_job_sexswitch;
                             that.info = res;
-                            that.info.age_req = "请填写";
+                            that.info.age_req = that.i18n.pleaseFill;
                             that.info.zp_age = "";
                             that.sqjob_req = res.sqjob_req;
                             if (!res.description) {
@@ -1078,8 +1207,7 @@
 
                                 that.is_graduate = (res.is_graduate && res.is_graduate == 1) ? true : false;
                                 
-                                // 下标赋值
-                                //     that.langIndex = data.langIndex;
+                                // Set picker indices
                                 let reportIndex = that.report.id.indexOf(res.report ? parseInt(res.report) : 0);
                                 that.reportIndex = reportIndex < 0 ? 0 : reportIndex;
                                 let eduIndex = that.edu.id.indexOf(res.edu ? parseInt(res.edu) : 0);
@@ -1187,10 +1315,10 @@
                     }
                 },
                 classBox: function(type){
-                    cityjobVue.$data.jobheader = '职位类别选择';
+                    cityjobVue.$data.jobheader = COM_JOBADD_I18N.jobCategorySelect;
                     cityjobVue.$data[type + 'Show'] = true;
                     
-                    // 加载职位、地区多选js
+                    // Load job/city multi-select script
                     if(cmcJs){
                         cmcJs.remove();
                     }
@@ -1204,7 +1332,7 @@
                     cmcJs.src = "{yun:}$wap_style{/yun}/js/cmc.js?v={yun:}$config.cachecode{/yun}";
                     document.body.appendChild(cmcJs);
                 },
-                // 工作地点选择
+                // Work location picker
                 onAreaFinish({selectedOptions}) {
                     this.provinceid = 0;
                     this.cityid = 0;
@@ -1231,7 +1359,7 @@
                             cityStr += ' ' + selectedOptions[2].text;
                         }
                     }
-                    this.linkCity = cityStr ? cityStr : citydefault;
+                    this.linkCity = cityStr ? cityStr : this.i18n.selectCity;
                     this.areaShow = false;
                 },
 
@@ -1309,8 +1437,8 @@
                     var paramer = {
                         id: id,
                     };
-                    showConfirm('确定删除?', () => {
-                        showLoading('删除中...')
+                    showConfirm(COM_JOBADD_I18N.confirmDelete, () => {
+                        showLoading(COM_JOBADD_I18N.deleting)
                         $.post('{yun:}url d=wxapp h=com m=set c=delAddress{/yun}', paramer, function (data) {
                             hideLoading();
                             if (data.error == 1) {
@@ -1365,7 +1493,7 @@
                         if (data && data.error == 0) {
                             let res = data.data;
                             that.linkA = res;
-                            that.linkCity = res.provinceid ? res.city_one + ' ' + res.city_two + ' ' + (res.city_three ? res.city_three : '') : '请选择所在城市';
+                            that.linkCity = res.provinceid ? res.city_one + ' ' + res.city_two + ' ' + (res.city_three ? res.city_three : '') : that.i18n.selectCity;
                             that.provinceid = res.provinceid;
                             that.cityid = res.cityid;
                             that.three_cityid = res.three_cityid;
@@ -1464,19 +1592,19 @@
                         position: point
                     });
                     map.add(marker);
-                    // 解决移动端 click事件点击无效
+                    // Fix mobile click not firing on map
                     map.on("touchmove", function (e) {
                         map.setStatus({
                             dragEnable: true
                         });
                     });
-                    //  触摸结束时触发次此事件  此时开启禁止拖动
+                    // Re-disable drag after touch ends
                     map.on("touchend", function (e) {
                         map.setStatus({
                             dragEnable: false
                         });
                     });
-                    // 初始化地图 禁止拖动   注：虽禁止拖动，但是可以出发拖动事件
+                    // Initial map: drag disabled (events still fire)
                     map.setStatus({
                         dragEnable: false
                     });
@@ -1544,9 +1672,9 @@
                     }
 
                     if ($.trim(welfareAdd) != '' && welfareAdd.length >= 2 && welfareAdd.length <= 8) {
-                        //判断信息是否已经存在
+                        // Check duplicate welfare name
                         if (welnameall.indexOf(welfareAdd) > -1) {
-                            showModal('相同福利信息已存在，请重新填写');
+                            showModal(COM_JOBADD_I18N.welfareExists);
                             return;
                         }
 
@@ -1562,7 +1690,7 @@
                         this.welfareAdd = '';
                         this.welid = 'w' + welfareall.length;
                     } else {
-                        showModal('请填写2-8个福利字符！');
+                        showModal(COM_JOBADD_I18N.welfareLength);
                     }
                 },
             }
@@ -1577,7 +1705,7 @@
                 longitude = yd.longitude;
 
             if (link_address.length == 0) {
-                showModal('请填写详细地址');
+                showModal(COM_JOBADD_I18N.detailAddressRequired);
                 return false;
             }
 
@@ -1585,7 +1713,7 @@
         } catch (e) {
         }
 
-        return false; // 阻止form提交
+        return false; // prevent form submit
     }
 
     function newAddressFormSubmit(e) {
@@ -1602,22 +1730,21 @@
         try {
 
             if (obj.link_man.length == 0) {
-                showModal('请填写联系人');
+                showModal(COM_JOBADD_I18N.linkmanRequired);
                 return false;
             }else{
-                var link_man = obj.link_man.replace(/[-_ ]/g,'');// 去掉空格
+                var link_man = obj.link_man.replace(/[-_ ]/g,'');// trim spaces
                 if(!link_man){
                     return ;
                 }
                 var  test = link_man.replace(/[0-9]/g,'');
                 if (!test){
-                    showModal('联系人不支持全数字');
+                    showModal(COM_JOBADD_I18N.linkmanNoAllDigits);
                     return false;
                 }else{
                     if(/\d/.test(link_man)){
                         if(link_man.length>8){
-                            // obj.value = obj.value.substring(0,8);
-                            showModal('联系人填写字数不能超过8个');
+                            showModal(COM_JOBADD_I18N.linkmanMaxLength);
                             return false;
                         }
                     }
@@ -1625,12 +1752,12 @@
             }
 
             if (obj.link_moblie.length == 0 && obj.link_phone.length == 0) {
-                showModal('请填写联系电话');
+                showModal(COM_JOBADD_I18N.phoneRequired);
                 return false;
             }
             if (obj.link_moblie.length > 0) {
                 if (isjsMobile(obj.link_moblie) == false) {
-                    showModal('联系手机格式错误');
+                    showModal(COM_JOBADD_I18N.mobileFormatError);
                     return false;
                 }
             }
@@ -1640,17 +1767,17 @@
             obj.three_cityid = yd.three_cityid
 
             if (obj.provinceid == 0) {
-                showModal('请选择所在城市');
+                showModal(COM_JOBADD_I18N.selectCity);
                 return false;
             }
             if (ct[obj.provinceid]) {
                 if (obj.cityid == 0) {
-                    showModal('所在城市请选择二级类别');
+                    showModal(COM_JOBADD_I18N.cityLevelRequired);
                     return false;
                 }
             }
             if (obj.link_address.length == 0) {
-                showModal('请填写工作地址');
+                showModal(COM_JOBADD_I18N.workAddressRequired);
                 return false;
             }
             yd.firstData = obj;
@@ -1665,7 +1792,7 @@
 
             Object.assign(formData, yd.firstData);
 
-            showLoading('保存中');
+            showLoading(COM_JOBADD_I18N.saving);
             $.post('{yun:}url d=wxapp h=com m=set c=saveAddress{/yun}', formData, function (data) {
                 hideLoading();
                 if (data.error == 1) {
@@ -1690,28 +1817,28 @@
 
         if (yunvue.$data.info.salarytype == false || typeof(yunvue.$data.info.salarytype)=='undefined') {
             if (e.minsalary.value.trim() == '') {
-                showModal('请填写薪资待遇');
+                showModal(COM_JOBADD_I18N.salaryRequired);
                 return false;
             } else if (parseInt(e.minsalary.value) > parseInt(e.maxsalary.value) && e.maxsalary.value !=0) {
-                showModal('最高工资必须大于最低工资！');
+                showModal(COM_JOBADD_I18N.salaryMaxGtMin);
                 return false;
             }else if (parseInt(e.minsalary.value) == parseInt(e.maxsalary.value)) {
-                showModal('最高工资必须大于最低工资，如是固定工资只需填写最低工资！');
+                showModal(COM_JOBADD_I18N.salaryFixedTip);
                 return false;
             }
             if (e.maxsalary.value.trim() != '' && e.maxsalary.value.trim() != 0) {
                 yunvue.$data.info.maxsalary = e.maxsalary.value;
                 yunvue.$data.info.minsalary = e.minsalary.value;
-                yunvue.$data.info.salary_n = e.minsalary.value + '-' + e.maxsalary.value + '元/月';
+                yunvue.$data.info.salary_n = e.minsalary.value + '-' + e.maxsalary.value + COM_JOBADD_I18N.yuanPerMonth;
             } else {
                 yunvue.$data.info.maxsalary = '';
                 yunvue.$data.info.minsalary = e.minsalary.value;
-                yunvue.$data.info.salary_n = e.minsalary.value + '元/月';
+                yunvue.$data.info.salary_n = e.minsalary.value + COM_JOBADD_I18N.yuanPerMonth;
             }
         } else {
             yunvue.$data.info.maxsalary = 0;
             yunvue.$data.info.minsalary = 0;
-            yunvue.$data.info.salary_n = '面议';
+            yunvue.$data.info.salary_n = COM_JOBADD_I18N.negotiable;
             
         }
         yunvue.$data.firstsalary = false;
@@ -1737,40 +1864,40 @@
         var yd = yunvue.$data;
 
         if (e.name.value.length == 0) {
-            showModal('请填写职位名称');
+            showModal(COM_JOBADD_I18N.jobNameRequired);
             return false;
         }
 
         if (e.jobclassid.value == '') {
-            showModal('请选择职位类别');
+            showModal(COM_JOBADD_I18N.jobCategoryRequired);
             return false;
         }
 
         if (yd.salarydis == false) {
             if (yd.info.minsalary) {
                 if (yd.info.minsalary.length == 0 || yd.info.minsalary == 0) {
-                    showModal('请填写薪资待遇');
+                    showModal(COM_JOBADD_I18N.salaryRequired);
                     return false;
                 } else if (parseInt(yd.info.minsalary) > parseInt(yd.info.maxsalary) && yd.info.maxsalary.length > 0 && yd.info.maxsalary != 0) {
 
-                    showModal('最高工资必须大于最低工资！');
+                    showModal(COM_JOBADD_I18N.salaryMaxGtMin);
                     return false;
                 }else if (parseInt(yd.info.minsalary) == parseInt(yd.info.maxsalary)) {
-                    showModal('最高工资必须大于最低工资，如是固定工资只需填写最低工资！');
+                    showModal(COM_JOBADD_I18N.salaryFixedTip);
                     return false;
                 }
             } else {
-                showModal('请填写薪资待遇');
+                showModal(COM_JOBADD_I18N.salaryRequired);
                 return false;
             }
         }
         if(e.zp_num.value == 0 || e.zp_num.value == 0){
-            showModal('请填写招聘人数');
+            showModal(COM_JOBADD_I18N.headcountRequired);
             return false;
         }
         let description = yd.info.description.replace(/<[^>]+>/g, "");
         if (description.trim() == '') {
-            showModal('请填写职位描述');
+            showModal(COM_JOBADD_I18N.descRequired);
             return false;
         }
 
@@ -1800,7 +1927,7 @@
             link_id: yd.info.link_id
         }
 
-        //处理下一步
+        // Prepare step-two data
         Object.assign(firstData, yd.linkData);
 
         if (yd.linkData.is_link == 1){
@@ -1817,16 +1944,16 @@
     function upAge(e) {
         if (e.zp_minage.value.trim() != '' ) {
             if (e.zp_minage.value > 0 && e.zp_minage.value.trim() < 16) {
-                showModal('法律规定：禁止招收未满16周岁未成年人！');
+                showModal(COM_JOBADD_I18N.minorLaw);
                 return false;
             }
         }
         if (e.zp_maxage.value.trim() != '') {
             if (e.zp_maxage.value > 0 && e.zp_maxage.value.trim() < 16) {
-                showModal('最大年龄需大于16周岁！');
+                showModal(COM_JOBADD_I18N.maxAgeGt16);
                 return false;
             } else if (e.zp_maxage.value && e.zp_maxage.value.trim() > 99) {
-                showModal('请设置合理的年龄区间！');
+                showModal(COM_JOBADD_I18N.ageRangeInvalid);
                 return false;
             }
         }
@@ -1842,16 +1969,16 @@
     function upAgeReq(e) {
         if (e.minage_req.value.trim() != '' ) {
             if (e.minage_req.value > 0 && e.minage_req.value.trim() < 16) {
-                showModal('法律规定：禁止招收未满16周岁未成年人！');
+                showModal(COM_JOBADD_I18N.minorLaw);
                 return false;
             }
         }
         if (e.maxage_req.value.trim() != '') {
             if (e.maxage_req.value > 0 && e.maxage_req.value.trim() < 16) {
-                showModal('最大年龄需大于16周岁！');
+                showModal(COM_JOBADD_I18N.maxAgeGt16);
                 return false;
             } else if (e.maxage_req.value.trim() > 99) {
-                showModal('请设置合理的年龄区间！');
+                showModal(COM_JOBADD_I18N.ageRangeInvalid);
                 return false;
             }
         }
@@ -1872,9 +1999,9 @@
         if (minage && maxage) {
             return minage + '-' + maxage;
         } else if (minage && minage > 0) {
-            return minage + '周岁以上'
+            return minage + COM_JOBADD_I18N.ageAbove
         } else if (maxage && maxage > 0) {
-            return maxage + '周岁以下'
+            return maxage + COM_JOBADD_I18N.ageBelow
         } else {
             return '';
         }
@@ -1918,15 +2045,15 @@
         if (yd.joblock == 0 || yd.jobid > 0) {
             toformSubmit();
         } else {
-            showConfirm('发布后,职位名称将不可修改是否继续?', function (e) {
+            showConfirm(COM_JOBADD_I18N.publishConfirm, function (e) {
                 toformSubmit();
-            }, '取消', '继续');
+            }, COM_JOBADD_I18N.cancel, COM_JOBADD_I18N.continueBtn);
         }
         return false;
     }
 
     function toformSubmit() {
-        showLoading('正在提交');
+        showLoading(COM_JOBADD_I18N.submitting);
         $.post('{yun:}url d=wxapp h=com m=job c=saveJob{/yun}', yunvue.$data.formData, function (data) {
             hideLoading();
             if (data.error == 9) {

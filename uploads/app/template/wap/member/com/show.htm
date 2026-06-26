@@ -1,9 +1,9 @@
 {yun:}include file="$wapstyle/member/cheader.htm"{/yun}
 <div class="none" id="yunvue">
-	<!-- 页面整体部分 -->
+	<!-- Page layout -->
 	<div class="issue_post_body">
 		<div class="issue_post_body_card">
-			<div class="comshowtip">上传公司环境照片，可提升企业曝光率</div>
+			<div class="comshowtip">{yun:}t key='wap_01201'{/yun}</div>
 			<div class="company_photo_box">
 				<van-uploader v-model="showList" :before-delete="beforedel" :after-read="afterRead"
 					:before-read="beforeRead" :max-size="5242880" />
@@ -24,8 +24,16 @@
 			picAdd: [],
 			picList: [],
 			picViewNum: [],
-			btext: '保存',
+			btext: '{yun:}t key='wap_user_00101'{/yun}',
 			showList: [],
+			i18n: {
+				save: '{yun:}t key='wap_user_00101'{/yun}',
+				reupload: '{yun:}t key='wap_user_00097'{/yun}',
+				saveFailed: '{yun:}t key='wap_user_00077'{/yun}',
+				saveSuccess: '{yun:}t key='wap_user_00104'{/yun}',
+				uploading: '{yun:}t key='wap_user_00244'{/yun}',
+				deleting: '{yun:}t key='wap_js_00166'{/yun}',
+			},
 
 		},
 		created() {
@@ -48,7 +56,7 @@
 						if (list && list.length > 0) {
 							let picViewNum = []
 							for (let i = 0; i < list.length; i++) {
-								picViewNum.push(i) // 只是个计数器，没其它作用，每个盒子展示两个图片，顾出来个这o(*￣︶￣*)o
+								picViewNum.push(i)
 								let temp = {
 									'url': list[i].picurl,
 									'id': list[i].id
@@ -67,22 +75,17 @@
 				var noupload = true;
 				self.picAdd.forEach(function(val,index){
 					if(val.index == detail.index){
-						// 删除的是本次选择的，不是已经上传的
 						noupload = false;
 						self.picAdd.splice(index, 1);
 					}
 				});
 				if(noupload){
-					// 删除已经上传的，需要记录
 					self.picDel.push(file);
 				}
 				return true;
 			},
 			beforeRead(file) {
 				return new Promise((resolve) => {
-					// compressorjs 默认开启 checkOrientation 选项
-					// 会将图片修正为正确方向
-					// 图片压缩
 					new Compressor(file, {
 						quality: 0.6,
 						success: resolve,
@@ -91,9 +94,6 @@
 				});
 			},
 			afterRead(file,detail) {
-				//保存添加图片的上传信息
-				//拼接个对象进去
-
 				let obj = {
 					error: true,
 					url: file.content,
@@ -109,7 +109,7 @@
 				let saveErr = false;
 				if (showAdd.length > 0) {
 					uploadArr = showAdd;
-					showLoading('上传中...');
+					showLoading(that.i18n.uploading);
 					that.uploadAjax();
 					return false;
 				}
@@ -121,7 +121,7 @@
 							formData.id.push(showDel[i].id);
 						}
 					}
-					showLoading('删除中...');
+					showLoading(that.i18n.deleting);
 					$.post('{yun:}url d=wxapp h=com m=info c=showdel{/yun}', formData, function(data) {
 						if (data.error != 1) {
 							saveErr = true;
@@ -130,10 +130,10 @@
 				}
 				
 				if (saveErr) {
-					that.btext = "重新上传";
-					showToast('保存失败');
+					that.btext = that.i18n.reupload;
+					showToast(that.i18n.saveFailed);
 				} else {
-					showToast("保存成功", 2, function() {
+					showToast(that.i18n.saveSuccess, 2, function() {
 						history.back();
 					});
 				}
@@ -157,17 +157,15 @@
 						that.uploadAjax(key);
 					})
 				}else{
-					// 上传完毕
 					this.picAdd = [];
 					if(this.picDel.length > 0){
-						// 有需要删除的图片，再处理删除
 						this.showSave();
 					}else{
 						if (uploadErr) {
-							this.btext = "重新上传";
-							showToast('保存失败');
+							this.btext = this.i18n.reupload;
+							showToast(this.i18n.saveFailed);
 						} else {
-							showToast("保存成功", 2, function() {
+							showToast(this.i18n.saveSuccess, 2, function() {
 								history.back();
 							});
 						}

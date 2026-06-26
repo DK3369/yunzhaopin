@@ -6,19 +6,19 @@
                 <div class="msg_user_r">
                     <div v-if="item.eid">
                         <div @click="pageTo(item.wapexp_url)">
-                            <text class="yp_user_look">查看简历</text>
+                            <text class="yp_user_look">{{i18n.viewResume}}</text>
                         </div>
                     </div>
                     <div v-else>
-                        <text class="yp_user_look">暂无简历</text>
+                        <text class="yp_user_look">{{i18n.noResume}}</text>
                     </div>
                 </div>
             </div>
             <div class="msg_box">
-                <div class="zx_list" v-if="item.job_name"><span class="zx_n">咨询职位</span> {{item.job_name}}</div>
-                <div class="zx_list"><span class="zx_n">咨询内容</span> {{item.content}}</div>
-                <div class="zx_list" v-if="item.reply"><span class="zx_n">回复内容</span> {{item.reply}}</div>
-                <div class="zx_list"><span class="zx_n">咨询日期</span> {{item.datetime_n}}</div>
+                <div class="zx_list" v-if="item.job_name"><span class="zx_n">{{i18n.inquiryJob}}</span> {{item.job_name}}</div>
+                <div class="zx_list"><span class="zx_n">{{i18n.inquiryContent}}</span> {{item.content}}</div>
+                <div class="zx_list" v-if="item.reply"><span class="zx_n">{{i18n.replyContent}}</span> {{item.reply}}</div>
+                <div class="zx_list"><span class="zx_n">{{i18n.inquiryDate}}</span> {{item.datetime_n}}</div>
             </div>
 
             <div class="msg_hf" v-if="!item.reply" @click="replystatus(item.id,item.content)"><img src="{yun:}$wap_style{/yun}/images/Apply_compile.png" alt=""></div>
@@ -28,23 +28,23 @@
         <div v-if="total>limit">
             <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange"/>
         </div>
-        <div class="wap_member_no" v-show="count==0">暂无记录！</div>
+        <div class="wap_member_no" v-show="count==0">{{i18n.noRecords}}</div>
     </div>
-    <!--弹出效果-->
+    <!-- Popup effect -->
     <van-popup v-model="firstreply" position="bottom" round closeable/>
 
     <form id="reply_form">
 
         <div class="job_tckpd">
-            <div class="job_tcktit">回复咨询</div>
+            <div class="job_tcktit">{{i18n.replyInquiry}}</div>
             <div class="job_tcktip">{{content}}！</div>
             <div class="job_tcktextarea">
-                <textarea class=" mt10" placeholder="回复信息，请勿输入电话，QQ，邮箱等联系方式" maxlength="-1" style="width:100%" name="reply" value=''></textarea>
+                <textarea class=" mt10" :placeholder="i18n.replyPlaceholder" maxlength="-1" style="width:100%" name="reply" value=''></textarea>
                 <input class="ask_input" hidden="true" id="id" name="id" :value="replyid"/>
             </div>
 
             <div class="job_tckbth">
-                <div @click="savereply" class="job_tckbth_div">确定</div>
+                <div @click="savereply" class="job_tckbth_div">{{i18n.confirm}}</div>
             </div>
         </div>
     </form>
@@ -63,6 +63,24 @@
             replyid: '',
             firstreply: false,
             content: '',
+            i18n: {
+                viewResume: '{yun:}t key='wap_com_00316'{/yun}',
+                noResume: '{yun:}t key='wap_com_00315'{/yun}',
+                inquiryJob: '{yun:}t key='wap_user_00163'{/yun}',
+                inquiryContent: '{yun:}t key='wap_user_00162'{/yun}',
+                replyContent: '{yun:}t key='wap_com_00313'{/yun}',
+                inquiryDate: '{yun:}t key='wap_01137'{/yun}',
+                noRecords: '{yun:}t key='wap_00827'{/yun}',
+                replyInquiry: '{yun:}t key='wap_com_00314'{/yun}',
+                replyPlaceholder: '{yun:}t key='wap_01188'{/yun}',
+                confirm: '{yun:}t key='wap_com_00019'{/yun}',
+                fillReplyDesc: '{yun:}t key='wap_01186'{/yun}',
+                replying: '{yun:}t key='wap_01187'{/yun}',
+                confirmDelete: '{yun:}t key='wap_00812'{/yun}',
+                deleting: '{yun:}t key='wap_user_00355'{/yun}',
+                deleteSuccess: '{yun:}t key='wap_user_00147'{/yun}',
+                deleteFailed: '{yun:}t key='wap_user_00146'{/yun}',
+            },
         },
         computed: {
             count() {
@@ -100,14 +118,14 @@
             savereply: function () {
                 var v = getFormValue('reply_form');
                 if (v.reply.length == 0) {
-                    return showToast('请填写回复描述');
+                    return showToast(this.i18n.fillReplyDesc);
                 }
 
                 var paramer = {
                     reply: v.reply,
                     id: v.id,
                 };
-                showLoading('回复中...');
+                showLoading(this.i18n.replying);
                 $.post('{yun:}url d=wxapp h=com m=msg c=savereply{/yun}', paramer, function (data) {
                     hideLoading();
                     if (data.error == 1) {
@@ -132,16 +150,16 @@
                 var paramer = {
                     id: id,
                 };
-                showConfirm("确定删除？", function () {
-                    showLoading('删除中...');
+                showConfirm(that.i18n.confirmDelete, function () {
+                    showLoading(that.i18n.deleting);
                     $.post('{yun:}url d=wxapp h=com m=msg c=delsmsglist{/yun}', paramer, function (data) {
                         hideLoading();
 
                         if (data.error == 0) {
                             that.list.splice(key, 1);
-                            showToast('删除成功');
+                            showToast(that.i18n.deleteSuccess);
                         } else {
-                            showToast('删除失败');
+                            showToast(that.i18n.deleteFailed);
                         }
                     }, 'json');
                 })

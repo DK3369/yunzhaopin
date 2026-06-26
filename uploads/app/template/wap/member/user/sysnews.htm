@@ -6,7 +6,7 @@
      <div class="chatnewcardheader">{yun:}t key='common.message'{/yun}</div> 
  	
  
-	<!-- 滑动模块 -->
+	<!-- Swipe module -->
 	<div class="chatnewcard">
 	   <ul>
 			<li data-url="invite" class="navigetali">
@@ -22,7 +22,7 @@
 				<div class="card_logo">
 					<img src="{yun:}$wap_style{/yun}/images/copy.png" alt="" width="100%" height="100%">
 				</div>
-				<i class="card_word">投递反馈</i>
+				<i class="card_word">{yun:}t key='wap_01133'{/yun}</i>
 			</li>
 			{yun:}if $config.com_message{/yun}
 			<li data-url="commsg" class="navigetali">
@@ -48,12 +48,12 @@
 	</div>
 </div>
    
-<!--  微信提示 -->
+<!-- WeChat notification tip -->
 <div class="chatnewtipbox" id="gzhTsDiv" style="display: none;">
 	<div class="chatnewtip" > 
 		<i class="chatnewtipicon"></i>
 		<div class="chatnewcard_gzhtip"> 
-			<span> 开启微信通知，重要信息不错过</span>
+			<span> {yun:}t key='wap_01134'{/yun}</span>
 			<span onclick="toSubscribe();" class="chatnewcard_gzhtip_set">  {yun:}t key='wap_00100'{/yun}></span>
 		</div>	
 	</div>
@@ -63,10 +63,10 @@
  <div class="chatnewcard_bgpd  ">
      
     
-   	<!-- 页面整体对话框 -->
+   	<!-- Page dialog -->
    	<div class="dialog_box none" id="sysChatbox">
 	 
-		<!-- 关注公众号弹框 -->
+		<!-- Official account popup -->
 		<van-popup v-model="gzhShow" close-on-click-overlay="true" closeable="true" @close="closeGzhShow" round >
 			<div class="gzh_gzbox">
 				<div class="gzh_gzbox_n">{yun:}t key='wap_user_00191'{/yun}</div>

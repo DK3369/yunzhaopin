@@ -27,20 +27,20 @@
     <div class="news_cont_ms">
         {yun:}$Info.starttime|date_format:"%Y-%m-%d"{/yun}
         <span class="news_list_box_ly">{yun:}t key='admin_user_00148'{/yun}：{yun:}if $Info.source{/yun}{yun:}$Info.source|mb_substr:0:16:'utf-8'{/yun}{yun:}else{/yun}{yun:}$config.sy_webname{/yun}{yun:}/if{/yun}</span>
-        点击：<span id="click"><script language="javascript" src="{yun:}url m=wap c=article a=GetHits id='`$Info.id`'{/yun}"></script></span> {yun:}t key='common_02089'{/yun}
+        {yun:}t key='wap_01472'{/yun}<span id="click"><script language="javascript" src="{yun:}url m=wap c=article a=GetHits id='`$Info.id`'{/yun}"></script></span> {yun:}t key='common_02089'{/yun}
         <span class="news_list_box_ly">{yun:}t key='admin_00172'{/yun}：{yun:}if $Info.author{/yun}{yun:}$Info.author|mb_substr:0:16:'utf-8'{/yun}{yun:}else{/yun}{yun:}$config.sy_webname{/yun}{yun:}/if{/yun}</span>
     </div>
 
     <div class="wap_news_cont">
         <div class="wap_txt link_lan"> {yun:}$Info.content{/yun}</div>
     </div>
-    <!--资讯场景码-->
+    <!--{yun:}t key='default_00154'{/yun}{yun:}t key='admin_tool_00624'{/yun}{yun:}t key='common_02093'{/yun}-->
    <div class="" style="width:100%; text-align:center"> 
     <img src="{yun:}url m=wap c=ajax a=pubqrcode toc=article toa=show toid=$Info.id{/yun}" width="150" height="150">
-   <div class="" style="color:#666"> 微信扫一扫分享资讯</div>
+   <div class="" style="color:#666"> {yun:}t key='wap_01473'{/yun}</div>
     </div>
     <div class="atc_news_tj">
-        <div class="news_in_tit"><span>相关推荐</span></div>
+        <div class="news_in_tit"><span>{yun:}t key='wap_01474'{/yun}</span></div>
         <div>
             {yun:}if $about{/yun}
             <ul>
@@ -51,7 +51,7 @@
                 {yun:}/foreach{/yun}
             </ul>
             {yun:}else{/yun}
-                <div class="evaluate_pj_no"><i class="evaluate_pj_no_icon"></i>暂无相关推荐</div>
+                <div class="evaluate_pj_no"><i class="evaluate_pj_no_icon"></i>{yun:}t key='wap_01475'{/yun}</div>
             {yun:}/if{/yun}
         </div>
     </div>
@@ -79,7 +79,7 @@
     <div class="newsShowButTwo">
         <a id="shareClick">
             <img src="{yun:}$wap_style{/yun}/images/weix.png" alt="">
-            <span>转发分享</span>
+            <span>{yun:}t key='wap_01476'{/yun}</span>
         </a>
     </div>
 </div>

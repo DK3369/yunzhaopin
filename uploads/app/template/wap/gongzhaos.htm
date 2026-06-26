@@ -27,7 +27,7 @@
     </div>
 </div>
 <div class="relevanRecom">
-	<div class="titles">您可能还想看</div>
+	<div class="titles">{yun:}t key='wap_01622'{/yun}</div>
 	{yun:}gongzhao limit=6 order=startime sort=desc item=alist t_len=28{/yun}
 		{yun:}if $alist.id != $row.id{/yun}
 		<a href="{yun:}url m=wap c=gongzhao a=show id=$alist.id{/yun}">

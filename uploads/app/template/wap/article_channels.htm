@@ -4,7 +4,7 @@
     body{font-size:.373333rem !important;}
 </style>
 <div class="" id="editnone">
-    <div class="articlemune_tit">我的频道<a href="javascript:void(0);" onclick="editshow();" class="articlemune_tit_bj">{yun:}t key='common.edit'{/yun}</a></div>
+    <div class="articlemune_tit">{yun:}t key='wap_01463'{/yun}<a href="javascript:void(0);" onclick="editshow();" class="articlemune_tit_bj">{yun:}t key='common.edit'{/yun}</a></div>
 
     <section>
         <div>
@@ -24,7 +24,7 @@
         </div>
     </section>
 
-    <div class="articlemune_tit">推荐频道</div>
+    <div class="articlemune_tit">{yun:}t key='wap_01464'{/yun}</div>
 
     <section>
         <div>
@@ -48,7 +48,7 @@
 <!-- {yun:}t key='common.edit'{/yun} -->
 <div class="" style="display:none" id="editshow">
 
-    <div class="articlemune_tit">我的频道<a href="javascript:void(0);" onclick="edit('{yun:}url m=wap c=article a=editchannels{/yun}');" class="articlemune_tit_bj">{yun:}t key='wap_user_00298'{/yun}</a></div>
+    <div class="articlemune_tit">{yun:}t key='wap_01463'{/yun}<a href="javascript:void(0);" onclick="edit('{yun:}url m=wap c=article a=editchannels{/yun}');" class="articlemune_tit_bj">{yun:}t key='wap_user_00298'{/yun}</a></div>
 
     <section>
         <div>
@@ -68,7 +68,7 @@
         </div>
     </section>
 
-    <div class="articlemune_tit">推荐频道</div>
+    <div class="articlemune_tit">{yun:}t key='wap_01464'{/yun}</div>
     <section>
         <div>
             <ul id="oldc" class="articlemune">
@@ -121,12 +121,12 @@
         $("#newc").find('li').each(function () {
             newc.push($(this).attr('data-category'));
         });
-        showToast('执行中');
+        showToast('{yun:}t key='wap_01537'{/yun}');
         $.post(url, {oldc: oldc, newc: newc}, function (data) {
             hideLoading();
             if (data) {
                 if (data == 1) {
-                    showToast('我的频道最少要有一个', 2);
+                    showToast('{yun:}t key='wap_01538'{/yun}', 2);
                 } else {
                     window.location.href = data;
                 }

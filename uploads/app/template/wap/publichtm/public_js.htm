@@ -4,6 +4,47 @@ window.yunI18nInit({
     lang: '{yun:}$config.sy_lang{/yun}',
     langPackUrl: '{yun:}url m=wap c=index a=langpack{/yun}'
 });
+var WAP_PUBLIC_I18N = {
+	operationFailed: '{yun:}t key='wap_js_00141'{/yun}',
+	signSuccessPrefix: '{yun:}t key='wap_01251'{/yun}',
+	signedTodayComeTomorrow: '{yun:}t key='wap_01252'{/yun}',
+	cancel: '{yun:}t key='wap_js_00080'{/yun}',
+	login: '{yun:}t key='wap_js_00145'{/yun}',
+	confirmLogout: '{yun:}t key='wap_00818'{/yun}',
+	reportAfterContact: '{yun:}t key='wap_01253'{/yun}',
+	alreadyReportedResume: '{yun:}t key='wap_01254'{/yun}',
+	confirmReportResume: '{yun:}t key='wap_01255'{/yun}',
+	followBtn: '{yun:}t key='common_01949'{/yun}',
+	followBtnAdd: '{yun:}t key='wap_01264'{/yun}',
+	unfollow: '{yun:}t key='wap_js_00140'{/yun}',
+	followSuccess: '{yun:}t key='wap_01256'{/yun}',
+	unfollowSuccess: '{yun:}t key='wap_00985'{/yun}',
+	followersSuffix: '{yun:}t key='wap_01257'{/yun}',
+	oldPasswordWrong: '{yun:}t key='wap_01258'{/yun}',
+	newPasswordMinLength: '{yun:}t key='wap_01259'{/yun}',
+	newPasswordMustDiffer: '{yun:}t key='wap_01260'{/yun}',
+	passwordMismatch: '{yun:}t key='wap_js_00138'{/yun}',
+	enterPassword: '{yun:}t key='wap_js_00139'{/yun}',
+	commentEmpty: '{yun:}t key='wap_01261'{/yun}',
+	commentFailed: '{yun:}t key='wap_01262'{/yun}',
+	pleaseLogin: '{yun:}t key='wap_js_00154'{/yun}',
+	loginSuccess: '{yun:}t key='wap_01263'{/yun}',
+	minRechargePrefix: '{yun:}t key='wap_01265'{/yun}',
+	insufficientRecharge: '{yun:}t key='wap_js_00136'{/yun}',
+	selectPaymentMethod: '{yun:}t key='wap_01042'{/yun}',
+	fillPromoteDays: '{yun:}t key='wap_00882'{/yun}',
+};
+var USER_PICKER_I18N = {
+	nameFullPublic: '{yun:}t key='wap_user_00239'{/yun}',
+	nameShowId: '{yun:}t key='wap_js_00167'{/yun}',
+	nameGenderTitle: '{yun:}t key='wap_js_00168'{/yun}',
+	selectEducation: '{yun:}t key='wap_js_00114'{/yun}',
+	selectExperience: '{yun:}t key='wap_00937'{/yun}',
+	selectMarriage: '{yun:}t key='wap_user_00235'{/yun}',
+	selectProficiency: '{yun:}t key='wap_user_00072'{/yun}',
+	noLimit: '{yun:}t key='common_01936'{/yun}',
+	toPresent: '{yun:}t key='wap_js_00170'{/yun}',
+};
 </script>
 <script src="{yun:}$wap_style{/yun}/js/jquery.min.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
 <script src="{yun:}$wap_style{/yun}/js/vue.min.js?v={yun:}$config.cachecode{/yun}"></script> 
@@ -21,7 +62,7 @@ window.yunI18nInit({
 </section>
 <script src="{yun:}$wap_style{/yun}/js/tuozhuai.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
 {yun:}/if{/yun}
-<!--底部导航弹出-->
+<!-- Bottom navigation popup -->
 <div id="footerVue" class="none">
 	<van-popup v-model="yunfoot" position="bottom" round closeable>
 		<footer>

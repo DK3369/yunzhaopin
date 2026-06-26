@@ -9,7 +9,7 @@
 
   <div class="answer_qus">
     <div class="answer_qus_ct">
-        <div>我的回答：{yun:}$alist.content{/yun}</div> 
+        <div>{yun:}t key='wap_01316'{/yun}{yun:}$alist.content{/yun}</div> 
         <div class="question_mm">
         <div class="question_tm"><font color="#999">{yun:}$alist.add_time|date_format:"%Y-%m-%d"{/yun}</font></div>
      {yun:}if $uid==$myuid{/yun}
@@ -23,7 +23,7 @@
       </div>
       {yun:}/if{/yun}
 
-    <div class="question_de" ><a href="javascript:void(0)" onclick="vant_del('确定要删除该提问？','{yun:}url m=wap c=ask a=delask type=1 id=$alist.id{/yun}')">{yun:}t key='common.delete'{/yun}</a></div></div>
+    <div class="question_de" ><a href="javascript:void(0)" onclick="vant_del('{yun:}t key='wap_01317'{/yun}','{yun:}url m=wap c=ask a=delask type=1 id=$alist.id{/yun}')">{yun:}t key='common.delete'{/yun}</a></div></div>
     
     {yun:}/if{/yun}
     </div>
@@ -32,10 +32,10 @@
 {yun:}foreachelse{/yun}
 <div class="noresult png">
 {yun:}if $uid==$myuid{/yun}
-您还没有参与任何话题的回答！
-<a href="{yun:}url m=wap c=ask{/yun}#answer"  class="wap_mb_no_sr" style="color:#fff;">我要答题</a>
+{yun:}t key='wap_01318'{/yun}
+<a href="{yun:}url m=wap c=ask{/yun}#answer"  class="wap_mb_no_sr" style="color:#fff;">{yun:}t key='wap_01319'{/yun}</a>
 {yun:}else{/yun}
-他还没有参与问题的回答！
+{yun:}t key='wap_01320'{/yun}
 {yun:}/if{/yun}</div>
 {yun:}/foreach{/yun}
 <div class="pages">{yun:}$pagenav{/yun}</div> 

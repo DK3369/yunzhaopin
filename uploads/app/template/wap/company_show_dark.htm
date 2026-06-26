@@ -14,7 +14,7 @@
     }
 </style>
 
-<!-- 页面头部导航栏 -->
+<!-- {yun:}t key='common_02103'{/yun}面{yun:}t key='common_02068'{/yun}部{yun:}t key='wap_00042'{/yun}栏 -->
 <div class="companyheader">
     <div class="scwheader">
         <div class="company_top">
@@ -74,10 +74,10 @@
         </div>
 
         {yun:}if $row.yyzz_status=='1'{/yun}
-            <div class="scwyrz"><i class="scwyrz_icon"></i>已安全认证</div>
+            <div class="scwyrz"><i class="scwyrz_icon"></i>{yun:}t key='wap_01575'{/yun}</div>
         {yun:}/if{/yun}
         {yun:}if $row.hotlogo==1 {/yun}
-            <div class="scwyrz"><i class="scwymq_icon"></i>优质名企</span></div>
+            <div class="scwyrz"><i class="scwymq_icon"></i>{yun:}t key='wap_01576'{/yun}</span></div>
         {yun:}/if{/yun}
         <div class="scw_comshow_logo">
             <img src="{yun:}$row.logo{/yun}" alt="" width="100%" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_unit_icon{/yun}',2);">
@@ -99,7 +99,7 @@
         <div class="scw_comadd_tit">{yun:}t key='wap_00040'{/yun}</div>
         <div class="scw_comadd_add">{yun:}$row.address{/yun}
             {yun:}if $row.x && $row.y && $config.map_key{/yun}
-            <span class=" ">距离<em id="distance"></em></span>
+            <span class=" ">{yun:}t key='wap_01573'{/yun}<em id="distance"></em></span>
             <input type="hidden" id="map_x" value="{yun:}$mapx{/yun}"/>
             <input type="hidden" id="map_y" value="{yun:}$mapy{/yun}"/>
             <span class="scw_comadd_dh">{yun:}t key='wap_00042'{/yun}</span>
@@ -131,7 +131,7 @@
             <p class=""> {yun:}t key='wap_00036'{/yun}<em id="regInstitute"></em></p>
             <p class=""> {yun:}t key='wap_00038'{/yun}<em id="regStatus"></em></p>
             <p class=""> {yun:}t key='wap_00035'{/yun}<em id="regCapital"></em></p>
-            <p class=""> 注册地址：<em id="regLocation"></em></p>
+            <p class=""> {yun:}t key='wap_01574'{/yun}<em id="regLocation"></em></p>
             <p class=""> {yun:}t key='admin_user_company_00063'{/yun}：<em id="creditCode"></em></p>
             <p class=""> {yun:}t key='wap_00039'{/yun}<em id="businessScope"></em></p>
             <div class="scw_comcont_tyc">
@@ -159,10 +159,10 @@
 
 
     
-    <!-- 卡片视图 -->
+    <!-- 卡片视{yun:}t key='common_02064'{/yun} -->
     <div class="scw_job">
         <div class="scw_job_c">
-            <div class="scw_job_tit"> 正在招聘职位<span class="tm_job_m">{yun:}$row.zpNum{/yun}</span></div>
+            <div class="scw_job_tit"> {yun:}t key='wap_01577'{/yun}<span class="tm_job_m">{yun:}$row.zpNum{/yun}</span></div>
             <div class="scw_jobbox" style=" display: none;">
                 {yun:}if $departmentNames{/yun}
                 <div class=" ">
@@ -174,11 +174,11 @@
                 {yun:}/if{/yun}
 
                 {yun:}assign var=uid value=$row.uid{/yun}
-                <!-- 卡片主体 -->
+                <!-- 卡片主{yun:}t key='common_02054'{/yun} -->
                 <div id="company_job_list">
                     {yun:}joblist namelen=8 comlen=12 ispage=0 com_id='auto.id' islt=4 item=job_list name=joblist1 depower='all'{/yun}
                     <div class="recommend_post_card_box">
-                        <!-- 卡片视图主体部分 -->
+                        <!-- 卡片视{yun:}t key='common_02064'{/yun}主{yun:}t key='common_02054'{/yun}部{yun:}t key='common_02058'{/yun} -->
                         <a href="{yun:}url m=wap c=job a=comapply id=$job_list.id{/yun}"
                            title="{yun:}$job_list.name{/yun}">
                             <div class="recommend_post_card">
@@ -224,7 +224,7 @@
 </div>
 
 <div id="app" style="display: none;">
-    <!-- 投递简历弹出框 -->
+    <!-- {yun:}t key='wap_com_00235'{/yun}弹出框 -->
     <van-dialog v-model="telQrcodeBoxShow" title="{yun:}t key='wap_00462'{/yun}" :show-confirm-button="false" close-on-click-overlay>
         <div class="">
             <div class="">
@@ -233,7 +233,7 @@
             </div>
         </div>
     </van-dialog>
-    <!--分享面板-->
+    <!--{yun:}t key='wap_com_00246'{/yun}面板-->
     <van-share-sheet v-model="shareShow" title="{yun:}t key='wap_js_00040'{/yun}" :options="shareoptions" @select="shareSelect"></van-share-sheet>
     {yun:}if $config.sy_h5_share==1{/yun}
     <div class="none" data-url='{yun:}url m=wap c=company a=share id=$row.id{/yun}' id="shareClick"></div>
@@ -288,7 +288,7 @@
 
     '{yun:}if $hbNum > 0{/yun}'
     shareoptions.splice(1, 0, {
-        name: '分享海报',
+        name: '{yun:}t key='wap_00872'{/yun}',
         icon: '{yun:}$wap_style{/yun}/images/fx_hb.png',
         className: 'poster'
     });

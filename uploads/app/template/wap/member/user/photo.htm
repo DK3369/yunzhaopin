@@ -5,20 +5,30 @@
 <script src="{yun:}$wap_style{/yun}/js/alloy-crop.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
 <script src="{yun:}$wap_style{/yun}/js/compress.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
 <script src="{yun:}$wap_style{/yun}/js/exif.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
-<script src="{yun:}$wap_style{/yun}/js/user.js?v={yun:}$config.cachecode{/yun}"></script>   
+<script src="{yun:}$wap_style{/yun}/js/user.js?v={yun:}$config.cachecode{/yun}"></script>
+<script>
+window.USER_PHOTO_I18N = {
+    photoTip: '{yun:}t key='wap_01093'{/yun}',
+    uploadLimit: '{yun:}t key='wap_01094'{/yun}',
+    submit: '{yun:}t key='wap_user_00176'{/yun}',
+    photoUnchanged: '{yun:}t key='wap_00656'{/yun}',
+    ok: '{yun:}t key='common_02016'{/yun}',
+    cancel: '{yun:}t key='wap_js_00080'{/yun}',
+};
+</script>
     <div class="issue_post_body" id="yunvue">
         <div class="video_interview_card">
-            <div class="image_body_title">真实的照片更易获得企业青睐，请用清晰的生活照，上传成功将直接作为头像</div>
+            <div class="image_body_title">{yun:}t key='wap_01093'{/yun}</div>
             <div class="image_body_box">
                 <div class="image_body_img" onclick="fileSelect()">
                     <img :src="info.photo ? info.photo : '{yun:}$wap_style{/yun}/images/add_newrenewal.png'" width="100%" height="100%" id="changeAvatar">
                 </div>
                <input id="image" type="file" accept="image/*" class="none" onchange="photoChange(this)" />
                 <input type="hidden" value=""  id="preview">
-                <div class="image_body_text">最多上传一张</div>
+                <div class="image_body_text">{yun:}t key='wap_01094'{/yun}</div>
             </div>
         </div>
-        <input name="submit" type="button" onclick="savePhoto()" value="提交" class="photo_button" />
+        <input name="submit" type="button" onclick="savePhoto()" value="{yun:}t key='wap_user_00176'{/yun}" class="photo_button" />
     </div>
     <script>
 		var yunvue = new Vue({
@@ -44,8 +54,8 @@
 		})
 	</script>			
     <script>
+    var photoI18n = window.USER_PHOTO_I18N || {};
 
-    
     function fileSelect(){
 		document.getElementById("image").click(); 
 	}
@@ -66,14 +76,14 @@
 			cancel: function() {
 				$('#showResult').fadeIn();
 			},
-			ok_text: '确定',
-			cancel_text: '取消'
+			ok_text: photoI18n.ok || 'OK',
+			cancel_text: photoI18n.cancel || 'Cancel'
 		});
 	}
     function savePhoto() {
         var uimage = $("#preview").val();
         if(uimage == '') {
-            showToast('头像未改变，无需修改');
+            showToast(photoI18n.photoUnchanged || '');
             return false;
         }else{
 			var regS = new RegExp("\\+", "gi");

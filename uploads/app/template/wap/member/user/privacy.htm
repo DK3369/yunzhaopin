@@ -2,14 +2,14 @@
 <div id="yunvue" class="none">
 <div class="mui-content">
     <div class="privacy_title">
-        <p>{yun:}t key='wap_js_00125'{/yun}：设置为公开时,企业才能搜索到默认简历</p>
+        <p>{yun:}t key='wap_01144'{/yun}</p>
     </div>
     <div class="privacy_body">
         <ul class="privacy_body_card">
             <li  @click="changeStatus(1)" value="1">
                 <a class="mui-navigate-right">
-                    <div class="privacy_body_card_title">简历公开</div>
-                     <span class="privacy_list_p">我正在找工作，希望企业关注我的简历</span>
+                    <div class="privacy_body_card_title">{yun:}t key='wap_01105'{/yun}</div>
+                     <span class="privacy_list_p">{yun:}t key='wap_01106'{/yun}</span>
                 </a>
                     <div  class="mui-table-pitch-on"  v-if="status==1">
                     <img src="{yun:}$wap_style{/yun}/images/table-view_yes.png" alt="" width="100%" height="100%">
@@ -17,17 +17,17 @@
             </li>
             <li  @click="changeStatus(3)" value="3">
                 <a class="mui-navigate-right">
-                    <div class="privacy_body_card_title">仅投递公司可见</div>
-                     <span class="privacy_list_p">可投递简历，仅投递公司可见</span>
+                    <div class="privacy_body_card_title">{yun:}t key='wap_01107'{/yun}</div>
+                     <span class="privacy_list_p">{yun:}t key='wap_01108'{/yun}</span>
                 </a>
-                    <div class="mui-table-pitch-on" v-if="status==3">
+                    <div class="mui-table-pitch-on"  v-if="status==3">
                     <img src="{yun:}$wap_style{/yun}/images/table-view_yes.png" alt="" width="100%" height="100%">
                 </div>
             </li>
             <li  @click="changeStatus(2)" value="2">
                 <a class="mui-navigate-right">
-                    <div class="privacy_body_card_title">简历保密</div>
-                     <span class="privacy_list_p">不找工作，企业不能搜索到您的简历</span>
+                    <div class="privacy_body_card_title">{yun:}t key='wap_01109'{/yun}</div>
+                     <span class="privacy_list_p">{yun:}t key='wap_01110'{/yun}</span>
                </a>
                 <div class="mui-table-pitch-on" v-if="status==2">
                     <img src="{yun:}$wap_style{/yun}/images/table-view_yes.png" alt="" width="100%" height="100%">
@@ -35,8 +35,8 @@
             </li>
             <li class="privacy_list_af" @click="pageTo('index.php?c=blacklist')">
                <div>
-                <div class="privacy_body_card_title">屏蔽企业 </div>
-                <span class="privacy_list_p">我不希望某些企业搜索到我的简历</span>
+                <div class="privacy_body_card_title">{yun:}t key='wap_01111'{/yun} </div>
+                <span class="privacy_list_p">{yun:}t key='wap_01112'{/yun}</span>
                </div>
                 <div class="mui-table-pitch-on">
                     <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="" width="100%" height="100%">
@@ -94,7 +94,6 @@
 						window.localStorage.setItem("needRefresh", 1);
                         showToast("{yun:}t key='wap_user_00264'{/yun}");
                         if(jobid){
-                            // From the job details page, you need to refresh the job page after modification.
                             history.back();
                         }
                     }

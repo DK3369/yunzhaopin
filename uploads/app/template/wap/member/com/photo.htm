@@ -6,6 +6,20 @@
 <script src="{yun:}$wap_style{/yun}/js/alloy-crop.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
 <script src="{yun:}$wap_style{/yun}/js/compress.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
 <script src="{yun:}$wap_style{/yun}/js/exif.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<script>
+window.COM_PHOTO_I18N = {
+    selectLogo: '{yun:}t key='wap_com_00133'{/yun}',
+    uploadTip: '{yun:}t key='wap_00840'{/yun}',
+    submit: '{yun:}t key='wap_user_00176'{/yun}',
+    photoUnchanged: '{yun:}t key='wap_user_00229'{/yun}',
+    uploading: '{yun:}t key='wap_user_00244'{/yun}',
+    reviewing: '{yun:}t key='wap_user_00174'{/yun}',
+    rejected: '{yun:}t key='wap_user_00167'{/yun}',
+    approved: '{yun:}t key='wap_user_00165'{/yun}',
+    ok: '{yun:}t key='common_02016'{/yun}',
+    cancel: '{yun:}t key='wap_js_00080'{/yun}',
+};
+</script>
 <div id="yunvue">
     <div class="clear"></div>
     <div class="verify">
@@ -19,15 +33,15 @@
                     </div>
                     <div class="clear"></div>
                     <div class="photo_xz">
-                        <input id="image" type="file" accept="image/*" onchange="photoChange(this)"/> 选择上传logo
+                        <input id="image" type="file" accept="image/*" onchange="photoChange(this)"/> {{i18n.selectLogo}}
 
                     </div>
-                    <div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>选择上传logo点击提交按钮即可上传
+                    <div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>{{i18n.uploadTip}}
                         <span v-if="info.logo_n">
                             (
-                            <font v-if="logo_status == '1'" color="#909399">审核中</font>
-                            <font v-else-if="logo_status == '2'" color="#F56C6C">未通过</font>
-                            <font v-else color="#67C23A">已审核</font>
+                            <font v-if="logo_status == '1'" color="#909399">{{i18n.reviewing}}</font>
+                            <font v-else-if="logo_status == '2'" color="#F56C6C">{{i18n.rejected}}</font>
+                            <font v-else color="#67C23A">{{i18n.approved}}</font>
                             )
                         </span>
                     </div>
@@ -36,18 +50,20 @@
                 <input type="hidden" value="" id="preview">
             </div>
             <div class="photo_tj">
-                <input name="submit" type="button" onclick="photo()" value="提交" class="yunset_bth"/>
+                <input name="submit" type="button" onclick="photo()" :value="i18n.submit" class="yunset_bth"/>
             </div>
         </div>
     </div>
 </div>
 <script>
+    var photoI18n = window.COM_PHOTO_I18N || {};
     var yunvue = new Vue({
         el: '#yunvue',
         data() {
             return {
                 logo_status: '',
                 info: {},
+                i18n: photoI18n,
             };
         },
         created() {
@@ -60,7 +76,7 @@
             }, 'json')
         }
     });
-	// 裁剪logo
+	// Crop logo image
 	function toAlloyCrop(pic) {
 		new AlloyCrop({
 			image_src: pic,
@@ -70,26 +86,24 @@
 			ok: function (base64, canvas) {
 				yunvue.$data.info.logo = base64;
 				$("#preview").val(base64);
-				// $('#showResult').fadeIn();
 			},
 			cancel: function () {
-				// $('#showResult').fadeIn();
 			},
-			ok_text: '确定',
-			cancel_text: '取消'
+			ok_text: photoI18n.ok || 'OK',
+			cancel_text: photoI18n.cancel || 'Cancel'
 		});
 	}
-    // 上传logo
+    // Upload logo
     function photo() {
         let yd = yunvue.$data;
         var uimage = $("#preview").val();
         if (uimage == '') {
-            showToast('请选择图片后再提交');
+            showToast(photoI18n.photoUnchanged || '');
             return false;
         } else {
             var regS = new RegExp("\\+", "gi");
             uimage = uimage.replace(regS, "#");
-            showLoading('上传中');
+            showLoading(photoI18n.uploading || '');
             $.ajax({
                 type: 'POST',
                 url: '{yun:}url d=wxapp h=com m=info c=savephoto{/yun}',
@@ -104,7 +118,6 @@
                     if (data.error == 1) {
                         showToast(data.msg, 2, function () {
                             $("#preview").val('')
-                            // yd.photoShow = false;
                         });
                     } else {
                         showModal(data.msg);

@@ -8,10 +8,10 @@
 			<input :placeholder="regnameplaceholder" name="username" value="" class="yun_from_name_input"/>
 		</div>
 		<div class="yun_from_list">
-			<input password="true" placeholder="请输入登录密码" name="password" value="" class="yun_from_name_input"/>
+			<input password="true" :placeholder="i18n.loginPasswordPlaceholder" name="password" value="" class="yun_from_name_input"/>
 		</div>
 		</div>				
-		<div class="yun_bth modification_name_btn" @click="saveSetName">确认</div>
+		<div class="yun_bth modification_name_btn" @click="saveSetName">{yun:}t key='wap_js_00094'{/yun}</div>
 	</form>
 </div>
 </div>
@@ -21,6 +21,20 @@ var yunvue = new Vue({
     el: '#yunvue',
     data: {
         regnameplaceholder:'',
+        i18n: {
+            loginPasswordPlaceholder: '{yun:}t key='wap_00703'{/yun}',
+            usernamePrefix: '{yun:}t key='wap_01095'{/yun}',
+            lengthLabel: '{yun:}t key='wap_00707'{/yun}',
+            mustInclude: '{yun:}t key='wap_user_00306'{/yun}',
+            han: '{yun:}t key='wap_user_00345'{/yun}',
+            num: '{yun:}t key='common_01997'{/yun}',
+            zm: '{yun:}t key='common_01973'{/yun}',
+            sp: '{yun:}t key='wap_01014'{/yun}',
+            usernameLengthError: '{yun:}t key='wap_00168'{/yun}',
+            passwordLengthError: '{yun:}t key='wap_user_00343'{/yun}',
+            submitting: '{yun:}t key='wap_js_00158'{/yun}',
+            updateSuccess: '{yun:}t key='wap_user_00344'{/yun}',
+        },
     },
     created() {   
         this.getCon();
@@ -40,20 +54,20 @@ var yunvue = new Vue({
 					reg_name_num 	= con.reg_name_num,
 					reg_name_han 	= con.reg_name_han;
 				
-				var regnameplaceholder = '请输入新用户名'+ '长度'+reg_nameminlen+'-'+reg_namemaxlen+'位';
+				var regnameplaceholder = that.i18n.usernamePrefix + that.i18n.lengthLabel + reg_nameminlen + '-' + reg_namemaxlen;
 				if(reg_name_han=='1' || reg_name_sp=='1' || reg_name_num=='1' || reg_name_zm=='1'){
-					regnameplaceholder +='须包含';
+					regnameplaceholder += that.i18n.mustInclude;
 					if (reg_name_han=='1'){
-						regnameplaceholder +='汉字 ';
+						regnameplaceholder += that.i18n.han + ' ';
 					}
 					if (reg_name_num=='1'){
-						regnameplaceholder +='数字 ';
+						regnameplaceholder += that.i18n.num + ' ';
 					}
 					if (reg_name_zm=='1'){
-						regnameplaceholder +='字母 ';
+						regnameplaceholder += that.i18n.zm + ' ';
 					}
 					if (reg_name_sp=='1'){
-						regnameplaceholder +='字符!@#.$-_';
+						regnameplaceholder += that.i18n.sp;
 					}
 					
 				}
@@ -63,27 +77,26 @@ var yunvue = new Vue({
         },         
         saveSetName:function(){
             var that = this;
-            var self = this;
 			var formData = {};
 			var v = getFormValue('setname_form');
 			var username = v.username;
 			var pass = v.password;
 				
 			if(username.length<2 || username.length>16){
-				return showToast('用户名长度应该为2-16位！');
+				return showToast(that.i18n.usernameLengthError);
 			}
 			if(pass.length<6 || pass.length>20){
-				return showToast('密码长度应该为6-20位！');
+				return showToast(that.i18n.passwordLengthError);
 			}
 			
 			formData.password = pass;
 			formData.username = username;           
             
-            showLoading('提交中...');
+            showLoading(that.i18n.submitting);
             $.post('{yun:}url d=wxapp h=user m=set c=setname{/yun}',formData,function(data){
                 hideLoading();      
                 if (data.error == 1) {
-                    showToast('修改成功，请重新登录',2, function() {
+                    showToast(that.i18n.updateSuccess,2, function() {
                        window.localStorage.setItem("socketState", "2");
                        window.location.href="{yun:}url m=wap c=login{/yun}"
                     });

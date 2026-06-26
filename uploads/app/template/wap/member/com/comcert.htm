@@ -7,23 +7,23 @@
 
     <div class="wap_member_box">
 
-        <!--状态提示语句-->
-        <div v-if="status==-1" class="security">未认证，当前未上传相关企业资质</div>
-        <div v-else-if="status==0" class="security">企业资质正在审核中，如需快速审核，请拨打客服服务热线：{yun:}($config.sy_comwebtel!='')?$config.sy_comwebtel:$config.sy_freewebtel{/yun}</div>
-        <div v-else-if="status==1" class="security">企业资质已成功认证，若需修改则需要重新审核</div>
-        <div v-else-if="status==2" class="security">审核未通过，{{statusBody ? '原因：'+statusBody+'，' : ''}}请重新上传。如有疑问可拨打服务热线：{yun:}($config.sy_comwebtel!='')?$config.sy_comwebtel:$config.sy_freewebtel{/yun}</div>
+        <!-- Status tips -->
+        <div v-if="status==-1" class="security">{yun:}t key='wap_com_00053'{/yun}</div>
+        <div v-else-if="status==0" class="security">{{i18n.certReviewing}}{yun:}($config.sy_comwebtel!='')?$config.sy_comwebtel:$config.sy_freewebtel{/yun}</div>
+        <div v-else-if="status==1" class="security">{yun:}t key='wap_com_00052'{/yun}</div>
+        <div v-else-if="status==2" class="security">{{i18n.reviewFailed}}，{{statusBody ? i18n.reasonPrefix + statusBody + '，' : ''}}{{i18n.certReuploadSuffix}}{yun:}($config.sy_comwebtel!='')?$config.sy_comwebtel:$config.sy_freewebtel{/yun}</div>
 
 
         <form id="certFrom">
 
             <ul class="security">
                 <li>
-                    <span class="security_anme">企业全称</span>
+                    <span class="security_anme">{yun:}t key='wap_com_00061'{/yun}</span>
                     <div class="security_text"><input type="text" v-model="comName" class="security_text_t"></div>
                 </li>
                 <li v-if="com_social_credit == 1">
-                    <span class="security_anme">信用代码</span>
-                    <div class="security_text"><input type="text" v-model="social_credit" class="security_text_t" placeholder="输入统一社会信用代码"></div>
+                    <span class="security_anme">{yun:}t key='wap_com_00062'{/yun}</span>
+                    <div class="security_text"><input type="text" v-model="social_credit" class="security_text_t" :placeholder="i18n.socialCreditPlaceholder"></div>
                 </li>
             </ul>
 
@@ -40,8 +40,8 @@
                     </div>
 
                     <i class="yunset_identity_pic_tj"></i>
-                    <div class="yunset_identity_tip" style="padding-top:10px;">上传营业执照/组织机构代码证</div>
-                    <span class="yunset_identity_tip_a">选择上传图片</span>
+                    <div class="yunset_identity_tip" style="padding-top:10px;">{yun:}t key='wap_com_00054'{/yun}</div>
+                    <span class="yunset_identity_tip_a">{yun:}t key='wap_com_00034'{/yun}</span>
                 </div>
             </div>
 
@@ -57,8 +57,8 @@
                         <input type='hidden' name='owner_cert' value='' id='owner_cert'>
                     </div>
                     <i class="yunset_identity_pic_tj"></i>
-                    <div class="yunset_identity_tip" style="padding-top:10px;">上传经办人身份证</div>
-                    <span class="yunset_identity_tip_a">选择上传图片</span>
+                    <div class="yunset_identity_tip" style="padding-top:10px;">{yun:}t key='wap_00842'{/yun}</div>
+                    <span class="yunset_identity_tip_a">{yun:}t key='wap_com_00034'{/yun}</span>
                 </div>
             </div>
 
@@ -73,12 +73,12 @@
                         <input type='hidden' name='wt_cert' value='' id='wt_cert'>
                     </div>
                     <i class="yunset_identity_pic_tj"></i>
-                    <div class="yunset_identity_tip" style="padding-top:10px;">上传委托书/承诺函</div>
-                    <span class="yunset_identity_tip_a">选择上传图片</span>
+                    <div class="yunset_identity_tip" style="padding-top:10px;">{yun:}t key='wap_00843'{/yun}</div>
+                    <span class="yunset_identity_tip_a">{yun:}t key='wap_com_00034'{/yun}</span>
                 </div>
 
-                <div class="yunset_identity_tip_c" style="padding-top:10px;" v-if="exa_cert_wt">委托书/承诺函范本
-                    <a href="javascript:void(0);" @click="downFb" style="color:#3b7cff; text-decoration:underline">查看范本</a>
+                <div class="yunset_identity_tip_c" style="padding-top:10px;" v-if="exa_cert_wt">{yun:}t key='wap_com_00057'{/yun}
+                    <a href="javascript:void(0);" @click="downFb" style="color:#3b7cff; text-decoration:underline">{yun:}t key='wap_com_00063'{/yun}</a>
                 </div>
             </div>
 
@@ -92,17 +92,17 @@
                         <input type='hidden' name='other_cert' value='' id='other_cert'>
                     </div>
                     <i class="yunset_identity_pic_tj"></i>
-                    <div class="yunset_identity_tip" style="padding-top:10px;">上传其他证明材料（选填）</div>
-                    <span class="yunset_identity_tip_a">选择上传图片</span>
+                    <div class="yunset_identity_tip" style="padding-top:10px;">{yun:}t key='wap_com_00055'{/yun}</div>
+                    <span class="yunset_identity_tip_a">{yun:}t key='wap_com_00034'{/yun}</span>
                 </div>
 
-                <div class="yunset_identity_tip_c" style="padding-top:10px;">执照中的文字、图片、章印等需清晰可辨别，否则不能通过认证。</div>
-                <div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>格式为 {{pic_type}} 不得超过{{file_maxsize}}M</div>
+                <div class="yunset_identity_tip_c" style="padding-top:10px;">{yun:}t key='wap_com_00051'{/yun}</div>
+                <div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>{{i18n.fileFormatIntro.replace('{{pic_type}}', pic_type).replace('{{file_maxsize}}', file_maxsize)}}</div>
 
             </div>
 
             <div class="yunset_bth_box yunset_bth_zzbox">
-                <input type="button" value="保存" class="yunset_bth" @click="saveCert">
+                <input type="button" :value="i18n.save" class="yunset_bth" @click="saveCert">
             </div>
         </form>
 
@@ -133,7 +133,23 @@
 
                 exa_cert_wt: '',
                 pic_type: '',
-                file_maxsize: ''
+                file_maxsize: '',
+
+                i18n: {
+                    certReviewing: '{yun:}t key='wap_00844'{/yun}',
+                    reviewFailed: '{yun:}t key='wap_user_00325'{/yun}',
+                    reasonPrefix: '{yun:}t key='admin_system_00134'{/yun}',
+                    certReuploadSuffix: '{yun:}t key='wap_00845'{/yun}',
+                    socialCreditPlaceholder: '{yun:}t key='wap_00837'{/yun}',
+                    fileFormatIntro: '{yun:}t key='wap_com_00050'{/yun}',
+                    save: '{yun:}t key='wap_user_00101'{/yun}',
+                    fullNameRequired: '{yun:}t key='wap_00835'{/yun}',
+                    socialCreditRequired: '{yun:}t key='wap_00836'{/yun}',
+                    licenseRequired: '{yun:}t key='wap_com_00059'{/yun}',
+                    ownerCertRequired: '{yun:}t key='wap_com_00058'{/yun}',
+                    wtCertRequired: '{yun:}t key='wap_com_00056'{/yun}',
+                    submitting: '{yun:}t key='wap_js_00158'{/yun}',
+                },
 
             }
         },
@@ -186,19 +202,19 @@
 
                 if (that.comName == ''){
 
-                    return showToast('请填写企业全称');
+                    return showToast(that.i18n.fullNameRequired);
                 }else if (that.social_credit == '' && that.com_social_credit == 1){
 
-                    return showToast('请填写统一社会信用代码');
+                    return showToast(that.i18n.socialCreditRequired);
                 }else if (v.check == '' && that.photo == '') {
 
-                    return showToast('请上传营业执照');
+                    return showToast(that.i18n.licenseRequired);
                 } else if (v.owner_cert == '' && that.photo_owner_cert=='' && that.com_cert_owner == 1) {
 
-                    return showToast('请上传经办人身份证');
+                    return showToast(that.i18n.ownerCertRequired);
                 } else if (v.wt_cert == '' && that.photo_wt_cert=='' && that.com_cert_wt == 1) {
 
-                    return showToast('请上传委托书/承诺函');
+                    return showToast(that.i18n.wtCertRequired);
                 }else {
 
                     var formData = {
@@ -226,7 +242,7 @@
                         formData.other_cert         =   that.photo_other_cert;
                     }
 
-                    showLoading('提交中...');
+                    showLoading(that.i18n.submitting);
                     $.post('{yun:}url d=wxapp h=com m=set c=saveCert{/yun}', formData, function (data) {
                         hideLoading();
                         if (data.error == 1) {

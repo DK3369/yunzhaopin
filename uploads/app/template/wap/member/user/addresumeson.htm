@@ -5,25 +5,23 @@
 
 			<div class="yun_createbox" v-if="type=='work'">
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">*</span>公司名称</div>
+					<div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00080'{/yun}</div>
 					<div class="yun_create_text">
-						<input type="text" name="name" v-model="info.name" placeholder="请填写公司名称">
+						<input type="text" name="name" v-model="info.name" :placeholder="i18n.fillCompanyName">
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>担任职位</div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='wap_user_00091'{/yun}</div>
 					<div class="yun_create_text">
-						<input type="text" name="title" v-model="info.title" placeholder="请填写担任职位">
+						<input type="text" name="title" v-model="info.title" :placeholder="i18n.fillTitle">
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>工作内容</div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='wap_user_00086'{/yun}</div>
 					<div class="yun_create_select job_resume_right_two" @click="openContent" v-if="content">{{content}}
 					</div>
-					
 					<div class="yun_create_select job_resume_right_two" @click="openContent" style="color:#cecccc;"
-						v-else>请填写工作内容</div>
-
+						v-else>{{i18n.fillWorkContent}}</div>
 					<div class="yun_create_fx">
 						<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
 					</div>
@@ -32,267 +30,232 @@
 				<div class="yun_time_box">
 					<div class="yun_time_all">
 						<div>
-
-							<div class="yun_time_name"><span class="m_bt">*</span>入职时间</div>
-	               <div class="yun_b_xz"  @click="timeShow('workList', 'sdate')" v-if="sdate">{{sdate}}</div>
-					<div class="yun_b_xz" @click="timeShow('workList', 'sdate')"  style="color:#cecccc;" v-else>请选择</div>
-
-
-
+							<div class="yun_time_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00079'{/yun}</div>
+							<div class="yun_b_xz" @click="timeShow('workList', 'sdate')" v-if="sdate">{{sdate}}</div>
+							<div class="yun_b_xz" @click="timeShow('workList', 'sdate')" style="color:#cecccc;" v-else>{{i18n.selectPlease}}</div>
 						</div>
-						<div class="yun_b_z">至</div>
-
+						<div class="yun_b_z">{yun:}t key='common_02098'{/yun}</div>
 						<div>
-							<div class="yun_time_name"><span class="m_bt">*</span>离职时间</div>
-
-								<div class="yun_b_xz"  @click="timeShow('workList', 'edate')" v-if="nowday">至今</div>
-								<div class="yun_b_xz" @click="timeShow('workList', 'edate')" v-else-if="edate">{{edate}}</div>
-							 <div class="yun_b_xz" @click="timeShow('workList', 'edate')"  style="color:#cecccc;" v-else>请选择</div>
-								
+							<div class="yun_time_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00095'{/yun}</div>
+							<div class="yun_b_xz" @click="timeShow('workList', 'edate')" v-if="nowday">{{i18n.toPresent}}</div>
+							<div class="yun_b_xz" @click="timeShow('workList', 'edate')" v-else-if="edate">{{edate}}</div>
+							<div class="yun_b_xz" @click="timeShow('workList', 'edate')" style="color:#cecccc;" v-else>{{i18n.selectPlease}}</div>
 						</div>
-
 					</div>
 				</div>
 			</div>
 			<div class="yun_createbox" v-if="type=='edu'">
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span><span class="m_bt">*</span>学校名称</div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span><span class="m_bt">*</span>{yun:}t key='wap_user_00085'{/yun}</div>
 					<div class="yun_create_text">
-						<input type="text" name="name" v-model="info.name" placeholder="请填写学校名称">
+						<input type="text" name="name" v-model="info.name" :placeholder="i18n.fillSchoolName">
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>专业名称</div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='wap_00452'{/yun}</div>
 					<div class="yun_create_text">
-						<input type="text" name="specialty" v-model="info.specialty" placeholder="请填写专业">
+						<input type="text" name="specialty" v-model="info.specialty" :placeholder="i18n.fillSpecialty">
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">*</span>最高学历</div>
+					<div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00092'{/yun}</div>
 					<div class="yun_create_select" @click="eduPickerShow" v-if="eduText">{{eduText}}</div>
-					<div class="yun_create_select" @click="eduPickerShow" style="color:#cecccc;" v-else>请选择学历</div>
-                   <div class="yun_create_fx" @click="eduPickerShow">
+					<div class="yun_create_select" @click="eduPickerShow" style="color:#cecccc;" v-else>{{i18n.selectEdu}}</div>
+					<div class="yun_create_fx" @click="eduPickerShow">
 						<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
 					</div>
-
-
 				</div>
 				<div class="yun_time_box">
 					<div class="yun_time_all">
 						<div>
-							<div class="yun_time_name"><span class="m_bt">*</span>入学时间</div>
-							 <div class="yun_b_xz"  @click="timeShow('eduList', 'sdate')" v-if="sdate">{{sdate}}</div>
-							<div class="yun_b_xz" @click="timeShow('eduList', 'sdate')"  style="color:#cecccc;" v-else>请选择</div>
-							
+							<div class="yun_time_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00078'{/yun}</div>
+							<div class="yun_b_xz" @click="timeShow('eduList', 'sdate')" v-if="sdate">{{sdate}}</div>
+							<div class="yun_b_xz" @click="timeShow('eduList', 'sdate')" style="color:#cecccc;" v-else>{{i18n.selectPlease}}</div>
 						</div>
-						<div class="yun_b_z">至</div>
+						<div class="yun_b_z">{yun:}t key='common_02098'{/yun}</div>
 						<div>
-							<div class="yun_time_name"><span class="m_bt">*</span>毕业时间</div>
-							<div class="yun_b_xz"  @click="timeShow('eduList', 'edate')" v-if="edate">{{edate}}</div>
-							<div class="yun_b_xz" @click="timeShow('eduList', 'edate')"  style="color:#cecccc;" v-else>请选择</div>
+							<div class="yun_time_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00093'{/yun}</div>
+							<div class="yun_b_xz" @click="timeShow('eduList', 'edate')" v-if="edate">{{edate}}</div>
+							<div class="yun_b_xz" @click="timeShow('eduList', 'edate')" style="color:#cecccc;" v-else>{{i18n.selectPlease}}</div>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div class="yun_createbox" v-if="type=='project'">
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">*</span>项目名称</div>
+					<div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00099'{/yun}</div>
 					<div class="yun_create_text">
-						<input type="text" name="name" v-model="info.name" placeholder="请填写项目名称">
+						<input type="text" name="name" v-model="info.name" :placeholder="i18n.fillProjectName">
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name">担任职位</div>
+					<div class="yun_create_name">{yun:}t key='wap_user_00091'{/yun}</div>
 					<div class="yun_create_text">
-						<input type="text" name="title" v-model="info.title" placeholder="请填写担任职位">
+						<input type="text" name="title" v-model="info.title" :placeholder="i18n.fillTitle">
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name">项目内容</div>
-					
+					<div class="yun_create_name">{yun:}t key='wap_user_00098'{/yun}</div>
 					<div class="yun_create_select job_resume_right_two" @click="openContent" v-if="content">{{content}}
 					</div>
-					
 					<div class="yun_create_select job_resume_right_two" @click="openContent" style="color:#cecccc;"
-						v-else>请填写项目内容</div>
-					
-					
-					
+						v-else>{{i18n.fillProjectContent}}</div>
 					<div class="yun_create_fx">
 						<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
 					</div>
 				</div>
 
-
-
 				<div class="yun_time_box">
 					<div class="yun_time_all">
 						<div>
-							<div class="yun_time_name"><span class="m_bt">*</span>开始时间</div>
-							
-	                         <div class="yun_b_xz"  @click="timeShow('projectList', 'sdate')" v-if="sdate">{{sdate}}</div>
-							<div class="yun_b_xz" @click="timeShow('projectList', 'sdate')"  style="color:#cecccc;" v-else>请选择</div>
+							<div class="yun_time_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00087'{/yun}</div>
+							<div class="yun_b_xz" @click="timeShow('projectList', 'sdate')" v-if="sdate">{{sdate}}</div>
+							<div class="yun_b_xz" @click="timeShow('projectList', 'sdate')" style="color:#cecccc;" v-else>{{i18n.selectPlease}}</div>
 						</div>
-						<div class="yun_b_z">至</div>
+						<div class="yun_b_z">{yun:}t key='common_02098'{/yun}</div>
 						<div>
-							<div class="yun_time_name"><span class="m_bt">*</span>结束时间</div>
-						<div class="yun_b_xz"  @click="timeShow('projectList', 'edate')" v-if="edate">{{edate}}</div>
-						<div class="yun_b_xz" @click="timeShow('projectList', 'edate')"  style="color:#cecccc;" v-else>请选择</div>
-						
-
+							<div class="yun_time_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00096'{/yun}</div>
+							<div class="yun_b_xz" @click="timeShow('projectList', 'edate')" v-if="edate">{{edate}}</div>
+							<div class="yun_b_xz" @click="timeShow('projectList', 'edate')" style="color:#cecccc;" v-else>{{i18n.selectPlease}}</div>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div class="yun_createbox" v-if="type=='training'">
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">*</span>培训机构</div>
+					<div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00084'{/yun}</div>
 					<div class="yun_create_text">
-						<input type="text" name="name" v-model="info.name" placeholder="请填写培训机构">
+						<input type="text" name="name" v-model="info.name" :placeholder="i18n.fillTrainingOrg">
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>培训方向</div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='wap_user_00083'{/yun}</div>
 					<div class="yun_create_text">
-						<input type="text" name="title" v-model="info.title" placeholder="请填写培训方向">
+						<input type="text" name="title" v-model="info.title" :placeholder="i18n.fillTrainingDir">
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>培训描述</div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='wap_user_00082'{/yun}</div>
 					<div class="yun_create_select job_resume_right_two" @click="openContent" v-if="content">{{content}}
 					</div>
-					
 					<div class="yun_create_select job_resume_right_two" @click="openContent" style="color:#cecccc;"
-						v-else>请填写大概描述培训内容</div>
-						
+						v-else>{{i18n.fillTrainingDesc}}</div>
 					<div class="yun_create_fx">
 						<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
 					</div>
 				</div>
 
-
-
 				<div class="yun_time_box">
 					<div class="yun_time_all">
 						<div>
-							<div class="yun_time_name"><span class="m_bt">*</span>开始时间</div>
-						
-							<div class="yun_b_xz"  @click="timeShow('trainList', 'sdate')" v-if="sdate">{{sdate}}</div>
-							<div class="yun_b_xz" @click="timeShow('trainList', 'sdate')"  style="color:#cecccc;" v-else>请选择</div>
+							<div class="yun_time_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00087'{/yun}</div>
+							<div class="yun_b_xz" @click="timeShow('trainList', 'sdate')" v-if="sdate">{{sdate}}</div>
+							<div class="yun_b_xz" @click="timeShow('trainList', 'sdate')" style="color:#cecccc;" v-else>{{i18n.selectPlease}}</div>
 						</div>
-						<div class="yun_b_z">至</div>
+						<div class="yun_b_z">{yun:}t key='common_02098'{/yun}</div>
 						<div>
-							<div class="yun_time_name"><span class="m_bt">*</span>结束时间</div>
-							<div class="yun_b_xz"  @click="timeShow('trainList', 'edate')" v-if="edate">{{edate}}</div>
-							<div class="yun_b_xz" @click="timeShow('trainList', 'edate')"  style="color:#cecccc;" v-else>请选择</div>
-							
+							<div class="yun_time_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00096'{/yun}</div>
+							<div class="yun_b_xz" @click="timeShow('trainList', 'edate')" v-if="edate">{{edate}}</div>
+							<div class="yun_b_xz" @click="timeShow('trainList', 'edate')" style="color:#cecccc;" v-else>{{i18n.selectPlease}}</div>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div class="yun_createbox" v-if="type=='skill'">
 				<div class="yun_createlist">
-					<div class="yun_create_name">技能名称</div>
+					<div class="yun_create_name">{yun:}t key='wap_user_00089'{/yun}</div>
 					<div class="yun_create_text">
-						<input type="text" name="name" v-model="info.name" placeholder="请填写技能名称">
+						<input type="text" name="name" v-model="info.name" :placeholder="i18n.fillSkillName">
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name">掌握时间</div>
+					<div class="yun_create_name">{yun:}t key='wap_00458'{/yun}</div>
 					<div class="yun_create_text">
-						<input type="number" name="longtime" v-model="info.longtime" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请填写使用时长, 单位“年”">
+						<input type="number" name="longtime" v-model="info.longtime" oninput="value=value.replace(/^0|[\^d]/g,'')" :placeholder="i18n.fillSkillYears">
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name">熟练程度</div>
-					
+					<div class="yun_create_name">{yun:}t key='wap_user_00094'{/yun}</div>
 					<div class="yun_create_select" @click="ingPickerShow" v-if="ingText">{{ingText}}</div>
-					<div class="yun_create_select" @click="ingPickerShow" style="color:#cecccc;" v-else>请选择熟练程度</div>
-					
-					
+					<div class="yun_create_select" @click="ingPickerShow" style="color:#cecccc;" v-else>{{i18n.selectProficiency}}</div>
 					<div class="yun_create_fx" @click="ingPickerShow">
-
 						<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
 					</div>
 				</div>
-<div class="job_resume_jn">
-				<div class="job_resume_jn_name">技能证书	</div>
-					<div class="job_resume_jn_tip">上传展示自身优势的证书</div>
-			
-				<div class="uploading_photo_box">
-					<img id="previewimg" :src="info.pic" border="0"
-						onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_skill{/yun}',2);">
-					<input type="file" name="pic" onchange="previewImage(this,'preview')" accept="image/*"
-						class="uploading_photo_file ">
-					<input type='hidden' name='preview' value='' id='preview'>
-
-				</div>	</div>
+				<div class="job_resume_jn">
+					<div class="job_resume_jn_name">{yun:}t key='wap_user_00090'{/yun}</div>
+					<div class="job_resume_jn_tip">{{i18n.uploadCertTip}}</div>
+					<div class="uploading_photo_box">
+						<img id="previewimg" :src="info.pic" border="0"
+							onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_skill{/yun}',2);">
+						<input type="file" name="pic" onchange="previewImage(this,'preview')" accept="image/*"
+							class="uploading_photo_file ">
+						<input type='hidden' name='preview' value='' id='preview'>
+					</div>
+				</div>
 			</div>
 			<div class="yun_createbox" v-if="type=='other'">
 				<div class="yun_createlist">
-					<div class="yun_create_name">标题</div>
+					<div class="yun_create_name">{yun:}t key='wap_user_00103'{/yun}</div>
 					<div class="yun_create_text">
-						<input type="text" name="name" v-model="info.name" placeholder="请填写标题">
+						<input type="text" name="name" v-model="info.name" :placeholder="i18n.fillHeading">
 					</div>
 				</div>
 				<div class="yun_createlist yun_createlistend">
-					<div class="yun_create_name">内容</div>
+					<div class="yun_create_name">{yun:}t key='wap_user_00102'{/yun}</div>
 					<div class="yun_create_select job_resume_right_two" @click="openContent">{{content}}</div>
 					<div class="yun_create_fx">
 						<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
 					</div>
 				</div>
 			</div>
-			<!--作品-->
+			<!-- Portfolio -->
 			<div class="personal_details_card" v-if="type=='show'">
 				<div v-if="type=='skill' || type=='show'" class="job_resume_tip" style="padding-bottom: 0.266666rem;">
-					为了您的个人信息安全，请不要公开您的电话号码、身份证号、证件号等个人证件信息；建议上传清晰自然生活照，或者您的专业代表作品。
+					{{i18n.showPrivacyTip}}
 				</div>
 				<div>
 					<van-uploader v-model="showList" :before-delete="beforedel" :after-read="afterRead"
 						:before-read="beforeRead" :max-size="5242880" />
 				</div>
 			</div>
-			<!--自我评价-->
+			<!-- Self evaluation -->
 			<div class="yun_my_introduce_box" v-if="type=='desc'">
-
 				<div class="yun_info_fl_c">
-
-
-					<div class="yun_info_textarea"> <textarea name="description" v-model="description" class="yun_wap_addresume_texttextAreaMsg"
-							placeholder="对自己做一个简短的评价，让用人单位快速了解你，请不要填写手机号，QQ,微信等联系方式">{{description}}</textarea></div>
+					<div class="yun_info_textarea">
+						<textarea name="description" v-model="description" class="yun_wap_addresume_texttextAreaMsg"
+							:placeholder="i18n.selfEvalPlaceholder">{{description}}</textarea>
+					</div>
 					<div class="zwpj_other" @click="intcontent=true" v-if="introduce_demo_show"><i
-							class="zwpj_other_icon"></i>看看别人怎么写</div>
+							class="zwpj_other_icon"></i>{{i18n.seeOthersWrite}}</div>
 
 					<div class="">
 						<div class="yun_my_introduce_sl_box" v-if="intcontent">
-							<div class="yun_my_introduce_tb">自我介绍样本 <span @click="nextintroduce(introduce.id)"
-									class="yun_my_introduce_tb_h">换一个</span></div>
+							<div class="yun_my_introduce_tb">{{i18n.introSample}} <span @click="nextintroduce(introduce.id)"
+									class="yun_my_introduce_tb_h">{{i18n.switchSample}}</span></div>
 							<div>{{introduce.content}}</div>
-
 						</div>
-						<div class="yun_my_introduce_tit"> 职业优势 <span class="yun_my_introduce_tit_s">(最多可选择5项)</span>
+						<div class="yun_my_introduce_tit"> {{i18n.careerStrength}} <span class="yun_my_introduce_tit_s">{{i18n.maxFiveItems}}</span>
 						</div>
 						<div id="newtag"></div>
 						<span v-for="(item, tkey) in tag" :key="item" @click="tagchoose(item)"
 							class="yun_my_introduce_bq yun_my_introduce_bq_cur" tag-class="2">{{ item }}</span>
 						<span v-for="(items, ukey) in usertag" :key="ukey" @click="tagchoose(items)"
 							class="yun_my_introduce_bq " tag-class="1">{{ items }}</span>
-						<div class="yun_info_fl_zdy_tip"> 您也可以自定义优势</div>
+						<div class="yun_info_fl_zdy_tip"> {{i18n.customStrengthTip}}</div>
 						<div class="yun_info_fl_zdy"><input type="text" name="addtag" :value="addtag"
-								@input="bindaddtagInput" tabindex="1000" placeholder="请输入标签名称">
-							<div class="yun_info_fl_zdy_tj" @click="bindaddtagChang">添加</div>
+								@input="bindaddtagInput" tabindex="1000" :placeholder="i18n.tagNamePlaceholder">
+							<div class="yun_info_fl_zdy_tj" @click="bindaddtagChang">{{i18n.addBtn}}</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="Save_button" @click="submitClick" v-if="type !='show'">保存</div>
+			<div class="Save_button" @click="submitClick" v-if="type !='show'">{{i18n.saveBtn}}</div>
 			<div class="Save_button" @click="showSave" v-else>{{btext}}</div>
 		</form>
 	</div>
-	<!--描述-->
+	<!-- Description popup -->
 	<van-popup v-model="contentBox" position="right" :style="{ height: '100%',width:'100%',backgroundColor:'#f3f3f3'}">
-		<!-- 页面头部 -->
 		<div class="workplace_header">
 			<div class="workplace_header_left" @click="contentSubmit">
 				<img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" width="100%" height="100%">
@@ -301,14 +264,14 @@
 			<div class="workplace_header_right"></div>
 		</div>
 		<div class="description_box">
-			<div class="yun_create_bjusertip">不能填写电话，QQ，微信等联系方式及特殊符号，性别歧视等内容  </div>
-			<div class="resume_ms_textarea"><textarea v-model="content" placeholder="请输入内容"
+			<div class="yun_create_bjusertip">{{i18n.contentTip}}</div>
+			<div class="resume_ms_textarea"><textarea v-model="content" :placeholder="i18n.inputContent"
 					style="width: 100%;height: 300px;border: none; padding: .133333rem; outline: none;"></textarea>
 			</div>
-			<div class="Create_resume_btn" @click="contentSubmit">确认</div>
+			<div class="Create_resume_btn" @click="contentSubmit">{{i18n.confirmBtn}}</div>
 		</div>
 	</van-popup>
-	<!--开始、结束时间选择器-->
+	<!-- Start/end time picker -->
 	<van-popup v-model="timeBox" round position="bottom">
 		<van-picker show-toolbar :columns="timeData" @cancel="timeBox = false" @confirm="timeConfirm"
 			@change="timeChange" />
@@ -319,7 +282,7 @@
 			@confirm="eduConfirm" />
 	</van-popup>
 	<van-popup v-model="ingShow" round position="bottom">
-		<van-picker title="熟练程度" show-toolbar :columns="ing" :default-index="ingIndex" @cancel="ingShow = false"
+		<van-picker :title="i18n.proficiencyTitle" show-toolbar :columns="ing" :default-index="ingIndex" @cancel="ingShow = false"
 			@confirm="ingConfirm" />
 	</van-popup>
 </div>
@@ -359,7 +322,6 @@
 				ingShow: false,
 				ingText: '',
 				pic: '',
-
 				formData: null,
 				disabledAfter: false,
 				hitherto: false,
@@ -368,7 +330,7 @@
 				showAdd: [],
 				showList: [],
 				showViewNum: [],
-				btext: '保存',
+				btext: '{yun:}t key='wap_user_00101'{/yun}',
 				contentBox: false,
 				content: '',
 				contentTitle: '',
@@ -382,7 +344,68 @@
 				introduce: {},
 				intcontent: false,
 				timeData: [],
-				timeBox: false
+				timeBox: false,
+				i18n: {
+					fillCompanyName: '{yun:}t key='wap_user_00063'{/yun}',
+					fillTitle: '{yun:}t key='wap_user_00066'{/yun}',
+					fillWorkContent: '{yun:}t key='wap_user_00065'{/yun}',
+					selectPlease: '{yun:}t key='wap_user_00100'{/yun}',
+					toPresent: '{yun:}t key='wap_js_00170'{/yun}',
+					fillSchoolName: '{yun:}t key='wap_user_00064'{/yun}',
+					fillSpecialty: '{yun:}t key='wap_00949'{/yun}',
+					selectEdu: '{yun:}t key='wap_js_00114'{/yun}',
+					fillProjectName: '{yun:}t key='wap_user_00069'{/yun}',
+					fillProjectContent: '{yun:}t key='wap_user_00068'{/yun}',
+					fillTrainingOrg: '{yun:}t key='wap_00946'{/yun}',
+					fillTrainingDir: '{yun:}t key='wap_00963'{/yun}',
+					fillTrainingDesc: '{yun:}t key='wap_00950'{/yun}',
+					fillSkillName: '{yun:}t key='wap_00947'{/yun}',
+					fillSkillYears: '{yun:}t key='wap_00951'{/yun}',
+					selectProficiency: '{yun:}t key='wap_user_00072'{/yun}',
+					proficiencyTitle: '{yun:}t key='wap_user_00094'{/yun}',
+					uploadCertTip: '{yun:}t key='wap_00952'{/yun}',
+					fillHeading: '{yun:}t key='wap_user_00075'{/yun}',
+					showPrivacyTip: '{yun:}t key='wap_00960'{/yun}',
+					selfEvalPlaceholder: '{yun:}t key='member_user_00063'{/yun}',
+					seeOthersWrite: '{yun:}t key='wap_user_00062'{/yun}',
+					introSample: '{yun:}t key='wap_00954'{/yun}',
+					switchSample: '{yun:}t key='wap_00955'{/yun}',
+					careerStrength: '{yun:}t key='wap_00958'{/yun}',
+					maxFiveItems: '{yun:}t key='wap_00956'{/yun}',
+					customStrengthTip: '{yun:}t key='wap_00957'{/yun}',
+					tagNamePlaceholder: '{yun:}t key='wap_user_00070'{/yun}',
+					addBtn: '{yun:}t key='wap_js_00091'{/yun}',
+					saveBtn: '{yun:}t key='wap_user_00101'{/yun}',
+					contentTip: '{yun:}t key='wap_user_00059'{/yun}',
+					inputContent: '{yun:}t key='wap_user_00076'{/yun}',
+					confirmBtn: '{yun:}t key='wap_js_00094'{/yun}',
+					workContentTitle: '{yun:}t key='wap_00938'{/yun}',
+					projectContentTitle: '{yun:}t key='wap_00939'{/yun}',
+					trainingContentTitle: '{yun:}t key='wap_00940'{/yun}',
+					workExpContentTitle: '{yun:}t key='wap_00962'{/yun}',
+					fillCompany: '{yun:}t key='wap_00941'{/yun}',
+					fillJoinDate: '{yun:}t key='wap_00942'{/yun}',
+					fillLeaveDate: '{yun:}t key='wap_00943'{/yun}',
+					fillStartTime: '{yun:}t key='wap_00944'{/yun}',
+					fillEndTime: '{yun:}t key='wap_00945'{/yun}',
+					fillTrainingInst: '{yun:}t key='wap_00946'{/yun}',
+					fillSkill: '{yun:}t key='wap_00947'{/yun}',
+					fillContentDesc: '{yun:}t key='wap_00948'{/yun}',
+					selectEnrollDate: '{yun:}t key='wap_00961'{/yun}',
+					selectGradDate: '{yun:}t key='wap_user_00071'{/yun}',
+					confirmDateOrder: '{yun:}t key='wap_user_00061'{/yun}',
+					fillEvalContent: '{yun:}t key='wap_user_00067'{/yun}',
+					maxFiveTags: '{yun:}t key='wap_00959'{/yun}',
+					tagLengthTip: '{yun:}t key='wap_user_00060'{/yun}',
+					tagExists: '{yun:}t key='wap_user_00074'{/yun}',
+					uploading: '{yun:}t key='wap_user_00244'{/yun}',
+					deleting: '{yun:}t key='wap_js_00166'{/yun}',
+					reupload: '{yun:}t key='wap_user_00097'{/yun}',
+					saveFailed: '{yun:}t key='wap_user_00077'{/yun}',
+					saveSuccess: '{yun:}t key='wap_user_00104'{/yun}',
+					selectUploadFirst: '{yun:}t key='wap_00953'{/yun}',
+					saving: '{yun:}t key='wap_js_00165'{/yun}',
+				}
 			};
 		},
 		created() {
@@ -402,22 +425,22 @@
 				});
 			},
 			bindaddtagInput: function(e) {
-				let that = this;
 				this.addtag = e.target.value;
 			},
 			bindaddtagChang: function() {
 				var that = this;
 				var newtag = $.trim(that.addtag);
 				var tag = that.tag;
+				var i18n = that.i18n;
 
 				if (tag.length > 4) {
-					return showToast('最多只能选择5个');
+					return showToast(i18n.maxFiveTags);
 				} else {
 					if (newtag.length < 2 || newtag.length > 8 || newtag == '') {
-						return showToast('请输入2-8个标签字符');
+						return showToast(i18n.tagLengthTip);
 					} else {
 						if (tag.indexOf(newtag) > -1) {
-							return showToast('标签已存在');
+							return showToast(i18n.tagExists);
 						} else {
 							tag.push(newtag);
 						}
@@ -429,12 +452,12 @@
 			},
 			tagchoose: function(num) {
 				var that = this;
-				var num = num;
 				var tag = that.tag;
 				var usertag = that.usertag;
+				var i18n = that.i18n;
 				if (tag.indexOf(num) == -1) {
 					if (tag.length > 4) {
-						return showToast('最多只能选择5个');
+						return showToast(i18n.maxFiveTags);
 					}
 					tag.push(num);
 					for (var i = 0; i < usertag.length; i++) {
@@ -448,7 +471,6 @@
 							tag.splice(i, 1);
 						}
 					}
-
 					usertag.push(num);
 				}
 
@@ -461,7 +483,6 @@
 				this.eduShow = false;
 			},
 			ingConfirm: function(e) {
-
 				this.ingText = e.text;
 				this.ingIndex = e.value;
 				this.ingShow = false;
@@ -470,7 +491,6 @@
 				eduPicker(this.info.education);
 			},
 			ingPickerShow: function() {
-
 				ingPicker(this.info.ing);
 			},
 			beginDateConfirm: function(e) {
@@ -489,7 +509,6 @@
 				} else {
 					return year + '-' + month;
 				}
-
 			},
 			infoShow: function() {
 				var self = this;
@@ -503,7 +522,6 @@
 					$.post('{yun:}url d=wxapp h=user m=resume c=addresumeson{/yun}', param, function(data) {
 						hideLoading();
 						if (data) {
-
 							let res = data.data.list;
 							self.info = res;
 							self.content = res.content ? res.content : '';
@@ -530,9 +548,7 @@
 								self.staCurrentDate = new Date(res.sdate_n);
 							}
 							if (self.type == 'show') {
-
 								if (res && res.length > 0) {
-									let showViewNum = []
 									for (let i = 0; i < res.length; i++) {
 										let temp = {
 											'url': res[i].picurl,
@@ -573,23 +589,18 @@
 			},
 			openContent: function() {
 				if (this.type == 'work') {
-					this.contentTitle = "工作内容描述";
+					this.contentTitle = this.i18n.workContentTitle;
 				} else if (this.type == 'project') {
-					this.contentTitle = "项目内容描述";
+					this.contentTitle = this.i18n.projectContentTitle;
 				} else if (this.type == 'training') {
-					this.contentTitle = "培训内容描述";
+					this.contentTitle = this.i18n.trainingContentTitle;
 				} else if (this.type == 'skill') {
-					this.contentTitle = "工作经历描述";
-				} else if (this.type == 'project') {
-					this.contentTitle = "工作经历描述";
+					this.contentTitle = this.i18n.workExpContentTitle;
 				}
 				this.contentBox = true;
 			},
 			beforeRead(file) {
 				return new Promise((resolve) => {
-					// compressorjs 默认开启 checkOrientation 选项
-					// 会将图片修正为正确方向
-					// 图片压缩
 					new Compressor(file, {
 						quality: 0.6,
 						success: resolve,
@@ -598,29 +609,23 @@
 				});
 			},
 			afterRead(file, detail) {
-				//保存添加图片的上传信息
-				//拼接个对象进去
-
 				let obj = {
 					error: true,
 					url: file.content,
 					index: detail.index
 				};
 				this.showAdd.push(obj);
-
 			},
 			beforedel(file, detail) {
 				var self = this;
 				var noupload = true;
 				self.showAdd.forEach(function(val, index) {
 					if (val.index == detail.index) {
-						// 删除的是本次选择的，不是已经上传的
 						noupload = false;
 						self.showAdd.splice(index, 1);
 					}
 				});
 				if (noupload) {
-					// 删除已经上传的，需要记录
 					self.showDel.push(file);
 				}
 				return true;
@@ -629,10 +634,10 @@
 				let that = this;
 				let showAdd = that.showAdd;
 				let showDel = that.showDel;
-				let saveErr = false;
+				let i18n = that.i18n;
 				if (showAdd.length > 0) {
 					uploadArr = showAdd;
-					showLoading('上传中...');
+					showLoading(i18n.uploading);
 					that.uploadAjax();
 					return false;
 				}
@@ -647,15 +652,15 @@
 						}
 					}
 					formData.id = delIds;
-					showLoading('删除中...');
+					showLoading(i18n.deleting);
 					$.post('{yun:}url d=wxapp h=user m=resume c=delResumeFb{/yun}', formData, function(data) {
 						hideLoading();
 						if (data.error != 1) {
-							that.btext = "重新上传";
-							showToast('保存失败');
+							that.btext = i18n.reupload;
+							showToast(i18n.saveFailed);
 						} else {
 							window.localStorage.setItem("needRefresh", 1);
-							showToast("保存成功", 2, function() {
+							showToast(i18n.saveSuccess, 2, function() {
 								history.back();
 							});
 						}
@@ -663,11 +668,12 @@
 					return false;
 				}
 				if (showAdd.length == 0 && showDel.length == 0) {
-					showToast('请先选择要上传的图片');
+					showToast(i18n.selectUploadFirst);
 				}
 			},
 			uploadAjax(key = 0) {
 				var that = this;
+				var i18n = that.i18n;
 				if (key < uploadArr.length) {
 					var formData = {
 						eid: this.eid,
@@ -677,7 +683,6 @@
 					$.post("{yun:}url d=wxapp h=user m=resume c=showSave{/yun}", formData, function(data) {
 						if (data.error == 1) {
 							uploadArr[key].error = false;
-
 						} else {
 							uploadArr[key].error = true;
 							uploadErr = true;
@@ -688,16 +693,14 @@
 				} else {
 					this.showAdd = [];
 					if (this.showDel.length > 0) {
-						// 有需要删除的图片，再处理删除
 						this.showSave();
 					} else {
 						if (uploadErr) {
-							this.btext = "重新上传";
-							showToast('保存失败');
+							this.btext = i18n.reupload;
+							showToast(i18n.saveFailed);
 						} else {
-							// 上传完毕
 							window.localStorage.setItem("needRefresh", 1);
-							showToast("保存成功", 2, function() {
+							showToast(i18n.saveSuccess, 2, function() {
 								history.back();
 							});
 						}
@@ -712,6 +715,7 @@
 				var st = Date.parse(this.sdate) / 1000;
 				var ed = Date.parse(this.edate) / 1000;
 				var formData = {};
+				var i18n = this.i18n;
 				formData.eid = this.eid;
 				formData.table = table;
 				var field = getFormValue('resumeson_form');
@@ -719,18 +723,14 @@
 					var nowday = this.nowday;
 
 					if (field.name == '') {
-						return showToast('请填写单位名称');
+						return showToast(i18n.fillCompany);
 					} else if (this.sdate == "") {
-						return showToast('请填写入职时间');
-
+						return showToast(i18n.fillJoinDate);
 					} else if (this.edate == "" && !nowday) {
-						return showToast('请填写离职时间');
-
+						return showToast(i18n.fillLeaveDate);
 					} else if (!nowday && this.sdate && this.edate && st > ed) {
-						return showToast('请确认日期先后顺序');
-
+						return showToast(i18n.confirmDateOrder);
 					} else {
-
 						formData.name = field.name;
 						formData.sdate = this.sdate;
 						formData.edate = this.edate;
@@ -741,15 +741,15 @@
 				}
 				if (table == 'edu') {
 					if (field.name == '') {
-						return showToast('请填写学校名称');
+						return showToast(i18n.fillSchoolName);
 					} else if (this.eduIndex == 0) {
-						return showToast('请选择学历');
+						return showToast(i18n.selectEdu);
 					} else if (this.sdate == "") {
-						return showToast('请选择入学时间');
+						return showToast(i18n.selectEnrollDate);
 					} else if (this.edate == "") {
-						return showToast('请选择毕业时间');
+						return showToast(i18n.selectGradDate);
 					} else if (st > ed) {
-						return showToast('请确认日期先后顺序');
+						return showToast(i18n.confirmDateOrder);
 					} else {
 						formData.name = field.name;
 						formData.sdate = this.sdate;
@@ -760,15 +760,14 @@
 				}
 				if (table == 'project') {
 					if (field.name == '') {
-						return showToast('请填写项目名称');
+						return showToast(i18n.fillProjectName);
 					} else if (this.sdate == "") {
-						return showToast('请填写开始时间');
+						return showToast(i18n.fillStartTime);
 					} else if (this.edate == "") {
-						return showToast('请填写结束时间');
+						return showToast(i18n.fillEndTime);
 					} else if (st > ed) {
-						return showToast('请确认日期先后顺序');
+						return showToast(i18n.confirmDateOrder);
 					} else {
-
 						formData.name = field.name;
 						formData.sdate = this.sdate;
 						formData.edate = this.edate;
@@ -778,19 +777,14 @@
 				}
 				if (table == 'training') {
 					if (field.name == '') {
-						return showToast('请填写培训机构');
-
+						return showToast(i18n.fillTrainingInst);
 					} else if (this.sdate == "") {
-						return showToast('请填写开始时间');
-
+						return showToast(i18n.fillStartTime);
 					} else if (this.edate == "") {
-						return showToast('请填写结束时间');
-
+						return showToast(i18n.fillEndTime);
 					} else if (st > ed) {
-						return showToast('请确认日期先后顺序');
-
+						return showToast(i18n.confirmDateOrder);
 					} else {
-
 						formData.name = field.name;
 						formData.sdate = this.sdate;
 						formData.edate = this.edate;
@@ -800,9 +794,9 @@
 				}
 				if (table == 'skill') {
 					if (field.name == '') {
-						return showToast('请填写技能名称');
+						return showToast(i18n.fillSkill);
 					} else if (this.ingIndex == 0) {
-						return showToast('请选择熟练程度');
+						return showToast(i18n.selectProficiency);
 					} else {
 						formData.name = field.name;
 						formData.ing = this.ingIndex;
@@ -812,35 +806,30 @@
 				}
 				if (table == 'other') {
 					if (field.name == '') {
-						return showToast('请填写标题');
-
+						return showToast(i18n.fillHeading);
 					} else if (this.content == '') {
-						return showToast('请填写内容描述');
-
+						return showToast(i18n.fillContentDesc);
 					} else {
 						formData.name = field.name;
 						formData.content = this.content;
-
 					}
 				}
 				if (table == 'desc') {
 					if (field.description == '') {
-						return showToast('请填写评价内容');
+						return showToast(i18n.fillEvalContent);
 					} else {
 						var tag = this.tag.join(',');
 						formData.table = 'resume';
 						formData.tag = tag;
 						formData.description = field.description;
 					}
-
 				}
-
 
 				if (this.id > 0) {
 					formData.id = this.id;
 				}
 
-				showLoading('保存中...');
+				showLoading(i18n.saving);
 				if (field.preview) {
 					formData.preview = field.preview;
 					$.ajax({
@@ -859,11 +848,9 @@
 								showToast(data.msg);
 							}
 						},
-
 					});
 				} else {
-					$.post('{yun:}url d=wxapp h=user m=resume c=saveresumeson{/yun}', formData, function(
-					data) {
+					$.post('{yun:}url d=wxapp h=user m=resume c=saveresumeson{/yun}', formData, function(data) {
 						hideLoading();
 						if (data.error == 1) {
 							window.localStorage.setItem("needRefresh", 1);
@@ -876,7 +863,6 @@
 					});
 				}
 			},
-			// 时间picker显示
 			timeShow(type, time) {
 				pickerType = type;
 				pickerTime = time;
@@ -886,19 +872,18 @@
 					self.timeBox = true;
 				})
 			},
-			// 时间picker滚动
 			timeChange: function(e) {
 				var f = e.getValues();
-				if (f[0] == '至今') {
+				// Must match userPicker.js PRESENT_API_VALUE
+				if (f[0] == (typeof PRESENT_API_VALUE !== 'undefined' ? PRESENT_API_VALUE : '至今')) {
 					this.timeData[1].values = [];
 				} else {
 					this.timeData[1].values = workMonth;
 				}
 			},
-			// 时间picker确认
 			timeConfirm: function(e) {
 				this.timeBox = false;
-				if (e[0] == '至今') {
+				if (e[0] == (typeof PRESENT_API_VALUE !== 'undefined' ? PRESENT_API_VALUE : '至今')) {
 					var date = e[0];
 					this.nowday = 1;
 				} else {

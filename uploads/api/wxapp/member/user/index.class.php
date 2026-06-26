@@ -166,11 +166,11 @@ class index_controller extends user_controller{
 					$integral	=	$this->config['integral_signin'];
 				}
 				$signday	=	$member['signday']+1;
-				$msg		=	'连续签到'.$signday."天";
+				$msg		=	yun_auto_t('连续签到').$signday.yun_auto_t('天');
 			}else{
 				$signday	=	'1';
 				$integral	=	$this->config['integral_signin'];
-				$msg		=	'第一次签到';
+				$msg		=	yun_auto_t('第一次签到');
 			}
 			$arr	=	array();
 			
@@ -182,15 +182,15 @@ class index_controller extends user_controller{
 				
 				$userinfoM -> upInfo(array('uid'=>$this->member['uid']),array('signday'=>$signday,'signdays'=>array('+','1')));
 				
-				$data['msg']	=	'签到成功！+'.$integral.$this->config['integral_pricename'];
+				$data['msg']	=	yun_auto_t('签到成功！+').$integral.$this->config['integral_pricename'];
 				$data['error']	=	1;
 				
 			}else{
-				$data['msg']	=	'今天已签到';
+				$data['msg']	=	yun_auto_t('今天已签到');
 				$data['error']	=	2;
 			}
 		}else{
-			$data['msg']	=	'签到失败！';
+			$data['msg']	=	yun_auto_t('签到失败！');
 			$data['error']	=	2;
 		}
 		$this->render_json($data['error'],$data['msg'],$data);

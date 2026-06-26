@@ -9,9 +9,9 @@
     <div class="jz_top_box ">
         <div class="jz_top_box_tit"><h2>{yun:}$job.name{/yun}</h2>
             <div class="jz_comname "> {yun:}$job.com_name{/yun}</div>
-            {yun:}if $job.is_recommend gt 0{/yun} <span class="part_hot">优选</span>{yun:}/if{/yun}
+            {yun:}if $job.is_recommend gt 0{/yun} <span class="part_hot">{yun:}t key='wap_01392'{/yun}</span>{yun:}/if{/yun}
             <div class="Part_jsfs">{yun:}$job.billing_cycle_n{/yun}</div>
-            <span class="part_box_ztt">{yun:}if $job.edate{/yun}短期{yun:}else{/yun}{yun:}t key='wap_com_00341'{/yun}{yun:}/if{/yun}</span>
+            <span class="part_box_ztt">{yun:}if $job.edate{/yun}{yun:}t key='wap_01393'{/yun}{yun:}else{/yun}{yun:}t key='wap_com_00341'{/yun}{yun:}/if{/yun}</span>
             <div class="jz_top_box_xz">{yun:}$job.salary{/yun} <em class="jz_top_box_xz_dw">{yun:}$job.salary_type_n{/yun}</em></div>
         </div>
         <div class="yun_jzdata">
@@ -34,7 +34,7 @@
                     {yun:}if $job.sex{/yun}
                     <li><span class="user_contnet_info_n">{yun:}t key='wap_com_00332'{/yun}： </span>{yun:}$job.sex_n{/yun}</li>
                     {yun:}/if{/yun}
-                    <li><span class="user_contnet_info_n">有效期至： </span>{yun:}if $job.edate{/yun}{yun:}$job.edate|date_format:'%Y-%m-%d'{/yun}{yun:}else{/yun}{yun:}t key='wap_js_00135'{/yun}{yun:}/if{/yun}
+                    <li><span class="user_contnet_info_n">{yun:}t key='wap_01394'{/yun} </span>{yun:}if $job.edate{/yun}{yun:}$job.edate|date_format:'%Y-%m-%d'{/yun}{yun:}else{/yun}{yun:}t key='wap_js_00135'{/yun}{yun:}/if{/yun}
                     </li>
                     <li>
                         <table class="det-tab" width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -91,7 +91,7 @@
                     </li>
                     {yun:}else{/yun}
                     <li>{yun:}t key='wap_user_00265'{/yun}：
-                        {yun:}if $job.link_tip==1 || $job.link_tip==2 || $job.link_tip==3{/yun}暂未开放联系方式
+                        {yun:}if $job.link_tip==1 || $job.link_tip==2 || $job.link_tip==3{/yun}{yun:}t key='wap_01395'{/yun}
                         {yun:}else if $job.link_tip==4{/yun}{yun:}t key='wap_00369'{/yun}
                         {yun:}else if $job.link_tip==5{/yun}{yun:}t key='wap_00370'{/yun}
                         {yun:}else if $job.link_tip==6{/yun}{yun:}t key='wap_00371'{/yun}
@@ -128,7 +128,7 @@
                 <div class="part_show_cont" id="partcontent">
                     {yun:}$job.content{/yun}
                 </div>
-                <div class="job_jz_tips">{yun:}t key='wap_js_00125'{/yun}：刷信誉、淘宝刷钻、YY网络兼职、加YY联系的职位都是骗子！收取费用或押金的都有欺诈嫌疑，请警惕！</div>
+                <div class="job_jz_tips">{yun:}t key='wap_js_00125'{/yun}：{yun:}t key='wap_01588'{/yun}</div>
                 
             </div>
         </div>
@@ -163,13 +163,13 @@
     <div class="makeAcalBune">
         <div class="makeAcalTell">
             {yun:}if $job.link_tip==1 || $job.link_tip==2 || $job.link_tip==3{/yun}
-            <a href="javascript:void(0)" onclick="showToast('暂未开放联系方式')">{yun:}t key='wap_00279'{/yun}</a>
+            <a href="javascript:void(0)" onclick="showToast('{yun:}t key=\'wap_01395\'{/yun}')">{yun:}t key='wap_00279'{/yun}</a>
             {yun:}else if $job.link_tip==4{/yun}
             <a href="javascript:void(0)" onclick="showToast("{yun:}t key='wap_00369'{/yun}")">{yun:}t key='wap_00279'{/yun}</a>
             {yun:}else if $job.link_tip==5{/yun}
             <a href="javascript:void(0)" onclick="showToast('{yun:}t key='wap_user_00197'{/yun}，{yun:}t key='wap_00447'{/yun}')">{yun:}t key='wap_00279'{/yun}</a>
             {yun:}else if $job.link_tip==6{/yun}
-            <a href="javascript:void(0)" onclick="showToast('报名兼职，{yun:}t key='wap_00447'{/yun}')">{yun:}t key='wap_00279'{/yun}</a>
+            <a href="javascript:void(0)" onclick="showToast('{yun:}t key='wap_00371'{/yun}')">{yun:}t key='wap_00279'{/yun}</a>
             {yun:}else if $job.link_tip==7{/yun}
             <a href="javascript:void(0)" onclick="showToast('{yun:}t key='wap_00261'{/yun}，{yun:}t key='wap_00447'{/yun}')">{yun:}t key='wap_00279'{/yun}</a>
             {yun:}else{/yun}
@@ -184,7 +184,7 @@
             {yun:}if $usertype==1{/yun}
             <a href="javascript:PartApply('{yun:}$job.id{/yun}');">{yun:}t key='wap_00375'{/yun}</a>
             {yun:}else{/yun}
-            <a onclick="showToast('只有个人用户才能申请报名', 2);" href="javascript:;">{yun:}t key='wap_00375'{/yun}</a>
+            <a onclick="showToast('{yun:}t key=\'wap_01396\'{/yun}', 2);" href="javascript:;">{yun:}t key='wap_00375'{/yun}</a>
             {yun:}/if{/yun}
             {yun:}else{/yun}
             <a onclick="pleaselogin('{yun:}t key='wap_00376'{/yun}','{yun:}url m=wap c=login{/yun}')" href="javascript:;">{yun:}t key='wap_00375'{/yun}</a>

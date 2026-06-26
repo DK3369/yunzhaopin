@@ -1,13 +1,13 @@
 {yun:}include file="$wapstyle/member/cheader.htm"{/yun}
-<!-- 页面主体部分 -->
+<!-- Page body -->
 <div id="yunvue" class="none">
     <div class="memberuser_nav category">
         <ul>
-            <li :class="is_browse == '' ? 'memberuser_nav_cur' : ''" @click="browseShow('')">全部</li>
-            <li :class="is_browse == '1' ? 'memberuser_nav_cur' : ''" @click="browseShow('1')">未查看</li>
-            <li :class="is_browse == '3' ? 'memberuser_nav_cur' : ''" @click="browseShow('3')">已面试</li>
-            <li :class="is_browse == '4' ? 'memberuser_nav_cur' : ''" @click="browseShow('4')">不合适</li>
-            <li :class="is_browse == '7' ? 'memberuser_nav_cur' : ''" @click="browseShow('7')">已入职</li>
+            <li :class="is_browse == '' ? 'memberuser_nav_cur' : ''" @click="browseShow('')">{yun:}t key='wap_js_00075'{/yun}</li>
+            <li :class="is_browse == '1' ? 'memberuser_nav_cur' : ''" @click="browseShow('1')">{yun:}t key='wap_user_00260'{/yun}</li>
+            <li :class="is_browse == '3' ? 'memberuser_nav_cur' : ''" @click="browseShow('3')">{yun:}t key='wap_user_00266'{/yun}</li>
+            <li :class="is_browse == '4' ? 'memberuser_nav_cur' : ''" @click="browseShow('4')">{yun:}t key='wap_user_00354'{/yun}</li>
+            <li :class="is_browse == '7' ? 'memberuser_nav_cur' : ''" @click="browseShow('7')">{yun:}t key='wap_user_00356'{/yun}</li>
         </ul>
     </div>
     <div class="resume_management_body_card ">
@@ -34,21 +34,21 @@
                             <div v-else-if="item.is_browse=='7'" class="hr_userlist_icon">
                                 <img src="{yun:}$wap_style{/yun}/images/Apply_Rz.png" alt="">
                             </div>
-                            <div class="hr_userlist_p "><span class="hr_yyy" v-if="item.userid_msg==1">已邀约</span></div>
-                            <div class="hr_userlist_p"><span class=" hr_yxz" v-if="item.islink==1">已下载</span></div>
+                            <div class="hr_userlist_p "><span class="hr_yyy" v-if="item.userid_msg==1">{{i18n.invited}}</span></div>
+                            <div class="hr_userlist_p"><span class=" hr_yxz" v-if="item.islink==1">{{i18n.downloaded}}</span></div>
                         </div>
                             <div class="hr_userlist_info">
-                                <span v-if="item.exp">{{item.exp}}经验 · </span>
-                                <span v-if="item.edu">{{item.edu}}学历 · </span>
-                                <span v-if="item.age==0">保密</span>
-                                <span v-else>{{item.age}}岁</span>
+                                <span v-if="item.exp">{{item.exp}}{{i18n.expSuffix}}</span>
+                                <span v-if="item.edu">{{item.edu}}{{i18n.eduSuffix}}</span>
+                                <span v-if="item.age==0">{{i18n.confidential}}</span>
+                                <span v-else>{{item.age}}{{i18n.ageSuffix}}</span>
                             </div>
                             <div class="hr_userlist_wsh">{{item.state_n}}</div>
                         </div>
 
-                        <div class="hr_userlist_p"><span class="hr_userlist_t" v-if="item.remark || item.status_n">简历备注</span> {{item.remark}}  {{item.status_n}}</div>
-                        <div class="hr_userlist_p"><span class="hr_userlist_t">应聘职位</span> {{item.job_name}}</div>
-                        <div class="hr_userlist_p"><span class="hr_userlist_t">应聘时间 </span> {{item.datetime_n}}</div>
+                        <div class="hr_userlist_p"><span class="hr_userlist_t" v-if="item.remark || item.status_n">{{i18n.resumeRemark}}</span> {{item.remark}}  {{item.status_n}}</div>
+                        <div class="hr_userlist_p"><span class="hr_userlist_t">{{i18n.appliedJob}}</span> {{item.job_name}}</div>
+                        <div class="hr_userlist_p"><span class="hr_userlist_t">{{i18n.appliedAt}}</span> {{item.datetime_n}}</div>
 
                         <div class="hr_userlist_cz">
                             <div class="hr_userlist_czicon" @click.stop="setRemark(item.uid, item.eid,infokey)">
@@ -71,34 +71,34 @@
             <div class="bgboxpt " v-else>
                 <div class="wap_member_bgcar">
                     <div class="wap_member_no" >
-                        <div class="wap_member_no_p1">暂未应聘记录~</div>
+                        <div class="wap_member_no_p1">{yun:}t key='wap_00805'{/yun}</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!--备注弹出-->
+    <!-- Remark popup -->
     <van-popup v-model="remarkShow" position="bottom" round closeable>
         <div class="job_tckpd">
-            <div class="job_tcktit">备注简历</div>
+            <div class="job_tcktit">{yun:}t key='wap_com_00069'{/yun}</div>
             <div class="jobSelects jobSelectsnew"  @click.stop="select()" v-if="bzIndex">{{bz.name[bzIndex]}}</div>
-            <div class="jobSelects jobSelectsnew"  @click.stop="select()" v-else  style="color:#999;">请选择备注状态</div>
+            <div class="jobSelects jobSelectsnew"  @click.stop="select()" v-else  style="color:#999;">{yun:}t key='wap_00806'{/yun}</div>
             <div class="job_tcktextarea mt10">
-                <textarea class="mt10"  v-model="remark"  placeholder="请输入备注内容"></textarea>
+                <textarea class="mt10"  v-model="remark"  :placeholder="i18n.remarkPlaceholder"></textarea>
             </div>
             <div class="job_tckbth">
-                <input class="" type="button" value="提交" @click="remarkResume" />
+                <input class="" type="button" :value="i18n.submit" @click="remarkResume" />
             </div>
         </div>
     </van-popup>
 	<van-popup v-model="bzshow" position="bottom"/>
         <van-picker show-toolbar :default-index="bzIndex" @cancel="bzshow = false" :columns="bz.name"  @confirm="bindbzChange" />
     </van-popup>
-    <van-action-sheet v-model="show" :actions="sheetList" :description="sheetTips.text" cancel-text="取消" close-on-click-action @cancel="show = false" @select="sheetClick"/>
+    <van-action-sheet v-model="show" :actions="sheetList" :description="i18n.setResumeStatus" :cancel-text="i18n.cancel" close-on-click-action @cancel="show = false" @select="sheetClick"/>
 
 </div>
 
-<!--备注弹出 end-->
+<!-- End remark popup -->
 <script src="{yun:}$plusstyle{/yun}/com.cache.js?v={yun:}$config.cachecode{/yun}"></script>
 <script src="{yun:}$wap_style{/yun}/js/comPicker.js?v={yun:}$config.cachecode{/yun}"></script>
 <script>
@@ -109,16 +109,7 @@
         data() {
             return {
                 show: false,
-                sheetList: [
-                    {name: '未查看', color: ''},
-                    {name: '已查看', color: ''},
-                    {name: '已面试', color: ''},
-                    {name: '不合适', color: ''},
-                    {name: '已入职', color: ''}
-                ],
-                sheetTips: {
-                    text: '设置简历状态'
-                },
+                sheetList: [],
                 browseIndex: 0,
                 islook: false,
                 is_browse: '',
@@ -147,13 +138,47 @@
                     id:[],
                     name: [
                     ]
-                }
+                },
+                i18n: {
+                    invited: '{yun:}t key='wap_com_00072'{/yun}',
+                    downloaded: '{yun:}t key='wap_com_00071'{/yun}',
+                    expSuffix: '{yun:}t key='wap_00815'{/yun}',
+                    eduSuffix: '{yun:}t key='wap_00816'{/yun}',
+                    confidential: '{yun:}t key='wap_user_00333'{/yun}',
+                    ageSuffix: '{yun:}t key='common_02074'{/yun}',
+                    resumeRemark: '{yun:}t key='wap_com_00070'{/yun}',
+                    appliedJob: '{yun:}t key='wap_00810'{/yun}',
+                    appliedAt: '{yun:}t key='wap_00811'{/yun}',
+                    remarkPlaceholder: '{yun:}t key='wap_00807'{/yun}',
+                    submit: '{yun:}t key='wap_user_00176'{/yun}',
+                    setResumeStatus: '{yun:}t key='wap_00808'{/yun}',
+                    cancel: '{yun:}t key='wap_js_00080'{/yun}',
+                    notViewed: '{yun:}t key='wap_user_00260'{/yun}',
+                    viewed: '{yun:}t key='wap_user_00258'{/yun}',
+                    interviewed: '{yun:}t key='wap_user_00266'{/yun}',
+                    notSuitable: '{yun:}t key='wap_user_00354'{/yun}',
+                    onboarded: '{yun:}t key='wap_user_00356'{/yun}',
+                    selectResumeStatus: '{yun:}t key='wap_00809'{/yun}',
+                    confirmDelete: '{yun:}t key='wap_00812'{/yun}',
+                    deleting: '{yun:}t key='wap_user_00355'{/yun}',
+                    deleteSuccess: '{yun:}t key='wap_user_00147'{/yun}',
+                    setting: '{yun:}t key='wap_user_00321'{/yun}',
+                    resumeAuditPrefix: '{yun:}t key='wap_00813'{/yun}',
+                    resumeAuditSuffix: '{yun:}t key='wap_00814'{/yun}',
+                },
             };
         },
         created() {
+            this.sheetList = [
+                {name: this.i18n.notViewed, color: ''},
+                {name: this.i18n.viewed, color: ''},
+                {name: this.i18n.interviewed, color: ''},
+                {name: this.i18n.notSuitable, color: ''},
+                {name: this.i18n.onboarded, color: ''}
+            ];
             this.bz = getremark();
             this.bz.id.unshift(0)
-            this.bz.name.unshift('请选择简历状态')
+            this.bz.name.unshift(this.i18n.selectResumeStatus)
             this.jobid = getUrlKey('jobid');
             var is_browse = getUrlKey('is_browse');
             if(is_browse){
@@ -213,12 +238,12 @@
                     ids: id,
                 };
 
-                showConfirm('确定删除？', function () {
-                    showLoading('删除中');
+                showConfirm(that.i18n.confirmDelete, function () {
+                    showLoading(that.i18n.deleting);
                     $.post('{yun:}url d=wxapp h=com m=resume c=hr_del{/yun}', paramer, function (data) {
                         if (data.error == 1) {
                             hideLoading();
-                            showToast('删除成功',2,function () {
+                            showToast(that.i18n.deleteSuccess,2,function () {
                                 that.info.splice(key, 1);
                             });
                         }
@@ -257,7 +282,7 @@
                     remark: that.remark,
                     status: that.status
                 };
-                showLoading('设置中');
+                showLoading(that.i18n.setting);
                 $.post('{yun:}url d=wxapp h=com m=resume c=hrRemark{/yun}', paramer, function (data) {
                     hideLoading();
                     if (data.error == 1) {
@@ -276,11 +301,11 @@
                 hid = id;
                 hkey = key;
 
-                // 处理action-sheet选中状态
+                // Sync action-sheet selected state
                 this.sheetList.forEach((item, index) => {
                     if (index == (parseInt(this.info[key].is_browse) - 1)) {
                         item.color = '#5FB878';
-                    }else if (index == (parseInt(this.info[key].is_browse) - 3) && item.name=='已入职') {
+                    }else if (index == (parseInt(this.info[key].is_browse) - 3) && item.name==this.i18n.onboarded) {
                         item.color = '#5FB878';
                     } else {
                         item.color = '';
@@ -289,7 +314,7 @@
                 this.show = true;
             },
             sheetClick(e, index) {
-                if (e.name=='已入职') {
+                if (e.name==this.i18n.onboarded) {
                     var browseIndex = index + 3; 
                 }else{
                     var browseIndex = index + 1; 
@@ -300,7 +325,7 @@
                     browse: browseIndex
                 };
                 
-                showLoading('设置中');
+                showLoading(that.i18n.setting);
                 $.post('{yun:}url d=wxapp h=com m=resume c=hrset{/yun}', paramer, function (data) {
                     hideLoading();
                     if (data.error == 1) {
@@ -313,10 +338,10 @@
             },
             resumeShow: function (url, key) {
 				if(this.info[key].state != 1){
-					return showModal('该简历审核状态是' + this.info[key].state_n + '，无法查看！请查看其它简历');
+					return showModal(this.i18n.resumeAuditPrefix + this.info[key].state_n + this.i18n.resumeAuditSuffix);
 				}
                 if (this.info[key].is_browse == 1) {
-                    // 未查看的设置为已查看
+                    // Mark unviewed as viewed
                     this.info[key].is_browse = 2;
                 }
 

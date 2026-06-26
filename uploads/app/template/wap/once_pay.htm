@@ -9,14 +9,14 @@
 <form action="{yun:}url m=wap{/yun}index.php?c=once&a=getOrder" method="post" onsubmit="return pay_form();">
 	<div class="once_pay_box">
     <div class="once_pay_list mt10">
-        <span class="once_pay_list_name">所需金额</span><em class="once_pay_list_money"> ￥ <span class="price">{yun:}$once_fk_price{/yun}</span></em>
+        <span class="once_pay_list_name">{yun:}t key='wap_01354'{/yun}</span><em class="once_pay_list_money"> ￥ <span class="price">{yun:}$once_fk_price{/yun}</span></em>
 		 <input type="hidden" value="{yun:}$once_fk_price{/yun}" id="once_price" name="once_price" />
 	</div>
     <div id="pay_style">
 		{yun:}if $paytype.alipay && $isweixin!=1{/yun}
             <div class="spread_box spread_box_bor" onclick="paycheck('alipay');">
                 <div class="spread_zf_list spread_zf_list_zfb">
-                    <i class="alipay member_set_meal_fk_xz" style="top:0"></i> 支付宝支付
+                    <i class="alipay member_set_meal_fk_xz" style="top:0"></i> {yun:}t key='wap_01355'{/yun}
                 </div>
             </div>
         {yun:}/if{/yun}
@@ -27,7 +27,7 @@
     </div>
     {yun:}else{/yun}
      <div class="pay_zfgb_tip">
-        <span>网站已关闭支付功能，{yun:}t key='wap_00509'{/yun}！</span>
+        <span>{yun:}t key='wap_01043'{/yun}{yun:}t key='wap_00509'{/yun}！</span>
     </div>
     {yun:}/if{/yun} {yun:}if $config.sy_freewebtel{/yun}
     <div class="once_pay_tel">

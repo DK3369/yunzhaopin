@@ -1,19 +1,19 @@
 <div id="searchhtml" class="none">
-    <!-- 头部 -->
+    <!-- Header -->
     <div class="wap_search_header">
         <div class="wap_search_header_c">
 			<div class="wap_search_headerqx" onclick="searchhtmlhide()"> </div>
             <form method="get" action="{yun:}$config_wapdomain{/yun}/index.php">
                 <input type="hidden" id="type" name="c" value="{yun:}if $smarty.get.c{/yun}{yun:}$smarty.get.c{/yun}{yun:}else{/yun}job{yun:}/if{/yun}"/>
                 <div class="wap_search_text">
-                    <input type="text" value="" onkeyup="this.value = this.value.replace(/[,]/g,'');" id="input_search" name="keyword" class="" placeholder="{yun:}t key='admin_00245'{/yun}{yun:}if $smarty.get.c=='job' || !$smarty.get.c{/yun}职位名/公司名{yun:}elseif $smarty.get.c=='resume'{/yun}{yun:}t key='admin_tool_00574'{/yun}{yun:}/if{/yun}">
+                    <input type="text" value="" onkeyup="this.value = this.value.replace(/[,]/g,'');" id="input_search" name="keyword" class="" placeholder="{yun:}t key='admin_00245'{/yun}{yun:}if $smarty.get.c=='job' || !$smarty.get.c{/yun}{yun:}t key='wap_01243'{/yun}{yun:}elseif $smarty.get.c=='resume'{/yun}{yun:}t key='admin_tool_00574'{/yun}{yun:}/if{/yun}">
                     
                 </div><div class="wap_search_hbth"><input type="submit" value="{yun:}t key='common.search'{/yun}" class=""></div>
             </form>
             
         </div>
     </div>
-    <!-- 主体 -->
+    <!-- Main content -->
     <div class="Search_jobs_body" id="historyBox" style="display:none">
         <div class="search_history_tit">
             <span class=" ">{yun:}t key='wap_00384'{/yun}</span>
@@ -79,7 +79,7 @@
                 var data = eval('(' + data + ')');
 
                 if (data.hisid) {
-                    $("#clearhistory").html("<a href='javascript:void(0);' onclick=\"clearhis('" + data.hisid + "')\">清除历史</a>");
+                    $("#clearhistory").html("<a href='javascript:void(0);' onclick=\"clearhis('" + data.hisid + "')\">{yun:}t key='wap_01250'{/yun}</a>");
                     $("#historyBox").show();
                 }
                 if (data.list) {

@@ -15,7 +15,7 @@
 
    
     {yun:}if $uid==$list.uid{/yun}
-    <div class="home_question_cz"><a href="javascript:void(0)" onclick="vant_del('确定要删除该提问？','{yun:}url m=wap c=ask a=delask id=$list.id{/yun}')" class="home_question_cz_sc">{yun:}t key='common.delete'{/yun}</a></div>
+    <div class="home_question_cz"><a href="javascript:void(0)" onclick="vant_del('{yun:}t key='wap_01317'{/yun}','{yun:}url m=wap c=ask a=delask id=$list.id{/yun}')" class="home_question_cz_sc">{yun:}t key='common.delete'{/yun}</a></div>
     {yun:}/if{/yun}
 
 </div>
@@ -34,7 +34,7 @@
   
 
     {yun:}if $uid==$liste.uid{/yun}
-    <div class="home_question_cz"><a href="javascript:void(0)" onclick="vant_del('确定要删除该提问？','{yun:}url m=wap c=ask a=delask id=$liste.id{/yun}')" class="home_question_cz_sc">{yun:}t key='common.delete'{/yun}</a></div>
+    <div class="home_question_cz"><a href="javascript:void(0)" onclick="vant_del('{yun:}t key='wap_01317'{/yun}','{yun:}url m=wap c=ask a=delask id=$liste.id{/yun}')" class="home_question_cz_sc">{yun:}t key='common.delete'{/yun}</a></div>
     {yun:}/if{/yun}
  
 </div>
@@ -43,10 +43,10 @@
 {yun:}if $smarty.get.total!=1{/yun}
 <div class="noresult">
 {yun:}if $uid==$myuid{/yun}
-您还没有发起任何话题，抓紧提问吧！
+{yun:}t key='wap_01620'{/yun}
 <a href="{yun:}url m=wap c=ask a=addquestion {/yun}"  class="wap_mb_no_sr" style="color:#fff;">{yun:}t key='wap_00278'{/yun}</a>
 {yun:}else{/yun}
-他还没有发起话题！
+{yun:}t key='wap_01621'{/yun}
 {yun:}/if{/yun}</div>
 {yun:}else{/yun} 
 <div class="pages">{yun:}$pagenav{/yun}</div> 

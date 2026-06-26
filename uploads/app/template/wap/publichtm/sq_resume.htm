@@ -10,14 +10,17 @@ var sq_resume_vue =  new Vue({
 		data: {
 			ajaxHtml:'',
 			ajaxShow:false,
-		},	
+			i18n: {
+				inviteConfirm: "{yun:}t key='wap_01249'{/yun}",
+			},
+		},
 	    methods:{
 	    	
 		}
 	});
 
 function issq_resume(obj){
-	showConfirm('TA没有向你投递简历，确定邀请？',function(){
+	showConfirm(sq_resume_vue.$data.i18n.inviteConfirm,function(){
 		sq_resume(obj)
 	}); 
 }
@@ -28,7 +31,7 @@ function sq_resume(obj){
 	var jobtype = $(obj).attr("jobtype");
 	showLoading();
 	
-	// 判断是否达到每天最大操作次数
+	// Check daily action limit
 	$.post(wapurl + 'index.php?c=ajax&a=ajax_day_action_check', {'type' : 'interview'},
 		function(data){
 		
@@ -47,7 +50,7 @@ function sq_resume(obj){
 					var status	=	data.status;
 					
 					if(status == 1){
-						// 强制操作
+						// Mandatory action
 						certVue.$data.checked = data.msgList;
 						certVue.$data.yunCert = true;
 					}else if(status == 2){

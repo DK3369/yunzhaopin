@@ -3,7 +3,7 @@
 <script src="{yun:}$wap_style{/yun}/js/swiper/swiper.min.js?v={yun:}$config.cachecode{/yun}"></script>
 
 <div id="yunvue" class="none">
-    <!-- 页面头部 -->
+    <!-- Page header -->
 	
     <div class="userheader">
       <div class="userheader_nav">
@@ -17,7 +17,7 @@
                 <img src="{yun:}$wap_style{/yun}/images/comtop4.png" alt="" width="100%" height="100%">
             </div>
         </div>  
-        <!-- 头像级名称简历完整度 -->
+        <!-- Avatar, name and resume completeness -->
         <div class="userheader_datum userheaderToubuds">
             <div class="userheader_datum_logo" onclick="navigateTo('index.php?c=photo')">
                 <img :src="info.photo" alt="" width="100%" height="100%">
@@ -30,12 +30,12 @@
                         <span>{{info.integrity}}%</span>
                     </div>
                 </div>
-                <!--提示完善简历-->
+                <!-- Complete resume prompt -->
                 <div class="userheader_datum_job_state">
                     <div v-if="info.exp_n && info.edu_n && info.age" class="userheader_datum_job_data">
-                        {{info.exp_n}}经验/{{info.edu_n}}学历/{{info.age}}岁
+                        {{info.exp_n}}{{i18n.expSuffix}}{{info.edu_n}}{{i18n.eduSuffix}}{{info.age}}{{i18n.ageSuffix}}
                     </div>
-                    <div v-else class="userheader_datum_job_data"> 编辑基本信息</div>
+                    <div v-else class="userheader_datum_job_data">{{i18n.editBasicInfo}}</div>
                 </div>
             </div>
             <div class="userheader_datum_right"
@@ -43,7 +43,7 @@
               
                 <div>
                     <div class="userheader_datum_right_word">
-                        <span>{{info.rnums != 0 ? '编辑简历':'创建简历'}}</span>
+                        <span>{{info.rnums != 0 ? i18n.editResume : i18n.createResume}}</span>
                         <img src="{yun:}$wap_style{/yun}/images/comtop1.png" alt="">
                     </div>
                     <!-- <div class="userheader_datum_right_nav">
@@ -53,66 +53,66 @@
 
             </div>
         </div>
-        <!-- 公司参数 -->
+        <!-- Stats -->
         <div class="userparticulars">
             <ul>
                 <li onclick="navigateTo('index.php?c=invite')">
                     <i class="userparticulars_number">{{info.yqnum}}</i>
-                    <i class="userparticulars_word">面试通知</i>
+                    <i class="userparticulars_word">{yun:}t key='wap_user_00216'{/yun}</i>
                 </li>
                 <li onclick="navigateTo('index.php?c=sq')">
                     <i class="userparticulars_number">{{info.sq_jobnum}}</i>
-                    <i class="userparticulars_word">已投简历</i>
+                    <i class="userparticulars_word">{yun:}t key='wap_00787'{/yun}</i>
                 </li>
                 <li onclick="navigateTo('index.php?c=collect')">
                     <i class="userparticulars_number">{{info.fav_jobnum}}</i>
-                    <i class="userparticulars_word">收藏/关注</i>
+                    <i class="userparticulars_word">{yun:}t key='wap_user_00193'{/yun}</i>
                 </li>
                 <li onclick="navigateTo('index.php?c=look')">
                     <i class="userparticulars_number">{{info.looknum}}</i>
-                    <i class="userparticulars_word">浏览</i>
+                    <i class="userparticulars_word">{yun:}t key='wap_user_00221'{/yun}</i>
                 </li>
             </ul>
         </div>
 
     </div>
     <div class="heiseVipDao">
-        <!-- 黑色导航条 -->
+        <!-- Alert bar -->
         <div class="vip_nav" v-if="info.wstitle&&info.wsts==1">
             <div class="vip_nav_img">
                 <img src="{yun:}$wap_style{/yun}/images/inform.png" alt="" width="100%" height="100%">
             </div>
-            <i class="vip_nav_word">简历缺少{{info.wstitle}}，获得面试几率较低</i>
-            <div class="vip_nav_remind" :onclick="'navigateTo(\''+info.wswapurl+'\')'">去完善</div>
+            <i class="vip_nav_word">{{i18n.resumeMissingPrefix}}{{info.wstitle}}{{i18n.lowInterviewChance}}</i>
+            <div class="vip_nav_remind" :onclick="'navigateTo(\''+info.wswapurl+'\')'">{{i18n.goComplete}}</div>
         </div>
         <div class="vip_nav" v-if="info.wstitle&&info.wsts==2">
             <div class="vip_nav_img">
                 <img src="{yun:}$wap_style{/yun}/images/inform.png" alt="" width="100%" height="100%">
             </div>
-            <i class="vip_nav_word">完善{{info.wstitle}}，更能获得企业的青睐</i>
-            <div class="vip_nav_remind" :onclick="'navigateTo(\''+info.wswapurl+'\')'">去完善</div>
+            <i class="vip_nav_word">{{i18n.completePrefix}}{{info.wstitle}}{{i18n.moreAppeal}}</i>
+            <div class="vip_nav_remind" :onclick="'navigateTo(\''+info.wswapurl+'\')'">{{i18n.goComplete}}</div>
         </div>
         <div class="vip_nav" v-if="info.wstitle&&info.wsts==3">
             <div class="vip_nav_img">
                 <img src="{yun:}$wap_style{/yun}/images/inform.png" alt="" width="100%" height="100%">
             </div>
-            <i class="vip_nav_word" v-if="info.status==2">简历已隐藏，企业无法主动发现你</i>
-            <i class="vip_nav_word" v-if="info.status==3">简历仅投递企业可见</i>
-            <div class="vip_nav_remind" :onclick="'navigateTo(\''+info.wswapurl+'\')'">取消隐藏</div>
+            <i class="vip_nav_word" v-if="info.status==2">{{i18n.resumeHidden}}</i>
+            <i class="vip_nav_word" v-if="info.status==3">{{i18n.resumeApplyOnly}}</i>
+            <div class="vip_nav_remind" :onclick="'navigateTo(\''+info.wswapurl+'\')'">{{i18n.cancelHide}}</div>
         </div>
     </div>
-    <!-- 页面主体部分 -->
+    <!-- Main content -->
     <div class="min_body">
         <div class="user_nav_fast" style="height: auto;" v-if="info.expect_state == '3'">
             <div style=" padding: .22rem">
-                <div style="font-weight: 600; font-size: .4rem; color: #181818">温馨提示</div>
+                <div style="font-weight: 600; font-size: .4rem; color: #181818">{yun:}t key='wap_user_00205'{/yun}</div>
                 <div style="font-size: .32rem; padding: .22rem 0;">
-                    <div>简历审核未通过，请重新完善简历，联系客服快速审核</div>
-                    <div style="margin-top: 5px;" v-if="info.statusbody">原因：{{info.statusbody}}</div>
+                    <div>{yun:}t key='wap_00781'{/yun}</div>
+                    <div style="margin-top: 5px;" v-if="info.statusbody">{{i18n.reasonPrefix}}{{info.statusbody}}</div>
                 </div>
             </div>
         </div>
-        <!-- 四个功能按钮 -->
+        <!-- Quick actions -->
         <div class="user_nav_fast mt10">
             <ul>
                 <li @click="topCheck">
@@ -120,33 +120,33 @@
                         <img src="{yun:}$wap_style{/yun}/images/jobhunter_top.png" alt="" width="100%" height="100%">
                     </div>
                     <i class=" user_nav_fast_word" v-if="info.expect_state=='1' && info.expect_top=='1' && info.topdatetime > 0">
-                        已置顶
+                        {yun:}t key='wap_user_00219'{/yun}
                     </i>
                     <i class=" user_nav_fast_word" v-else>
-                        置顶简历
+                        {yun:}t key='wap_user_00210'{/yun}
                     </i>
                 </li>
                 <li @click="refreshResume">
                     <div class=" user_nav_fast_img">
                         <img src="{yun:}$wap_style{/yun}/images/jobhunter_refresh.png" alt="" width="100%" height="100%">
                     </div>
-                    <i class=" user_nav_fast_word">刷新简历</i>
+                    <i class=" user_nav_fast_word">{yun:}t key='wap_user_00199'{/yun}</i>
                 </li>
                 <li @click="previewResume">
                     <div class=" user_nav_fast_img">
                         <img src="{yun:}$wap_style{/yun}/images/jobhunter_preview.png" alt="" width="100%" height="100%">
                     </div>
-                    <i class=" user_nav_fast_word">预览简历</i>
+                    <i class=" user_nav_fast_word">{yun:}t key='wap_user_00217'{/yun}</i>
                 </li>
                 <li @click="pageTo('index.php?c=likejob&id='+info.def_job)">
                     <div class=" user_nav_fast_img">
                         <img src="{yun:}$wap_style{/yun}/images/userpp.png" alt="" width="100%" height="100%">
                     </div>
-                    <i class=" user_nav_fast_word">职位速配</i>
+                    <i class=" user_nav_fast_word">{yun:}t key='wap_user_00211'{/yun}</i>
                 </li>
             </ul>
         </div>
-        <!-- 广告位开始 -->
+        <!-- Ad banner -->
         <div class="wap_useradvertisement" style="display: none;">
             <div class="swiper-container" id="imgswiper">
                 <div class="swiper-wrapper" >
@@ -160,8 +160,8 @@
                 </div>
             </div>            
         </div>
-        <!-- 结束 -->
-        <!-- 功能任务区域 -->
+        <!-- End ad banner -->
+        <!-- Menu list -->
         <div class="taskbar_box">
             <div class="taskbar_enterprise"
                 :onclick="info.rnums != 0 ? 'navigateTo(\'index.php?c=resume\')' : 'navigateTo(\'index.php?c=addresume\')'">
@@ -169,10 +169,10 @@
                     <div class="taskbar_datum_img">
                         <img src="{yun:}$wap_style{/yun}/images/resume_index.png" alt="" width="100%" height="100%">
                     </div>
-                    <div class="taskbar_datum_word">我的简历</div>
+                    <div class="taskbar_datum_word">{yun:}t key='wap_user_00204'{/yun}</div>
                 </div>
                 <div class="taskbar_nav">
-                    <div class="taskbar_nav_word" v-if="info.rnums != 0">正在找工作</div>
+                    <div class="taskbar_nav_word" v-if="info.rnums != 0">{yun:}t key='wap_user_00194'{/yun}</div>
                     <div class="taskbar_nav_img">
                         <img src="{yun:}$wap_style{/yun}/images/my_more.png" alt="" width="100%" height="100%">
                     </div>
@@ -183,7 +183,7 @@
                     <div class="taskbar_datum_img">
                         <img src="{yun:}$wap_style{/yun}/images/ys.png" alt="" width="100%" height="100%">
                     </div>
-                    <div class="taskbar_datum_word">隐私设置</div>
+                    <div class="taskbar_datum_word">{yun:}t key='wap_user_00215'{/yun}</div>
                 </div>
                 <div class="taskbar_nav">
                     <div class="taskbar_nav_img">
@@ -196,7 +196,7 @@
                     <div class="taskbar_datum_img">
                         <img src="{yun:}$wap_style{/yun}/images/video.png" alt="" width="100%" height="100%">
                     </div>
-                    <div class="taskbar_datum_word">视频面试</div>
+                    <div class="taskbar_datum_word">{yun:}t key='wap_00788'{/yun}</div>
                 </div>
                 <div class="taskbar_nav">
                     <div class="taskbar_nav_img">
@@ -209,7 +209,7 @@
                     <div class="taskbar_datum_img">
                         <img src="{yun:}$wap_style{/yun}/images/Live_speech.png" alt="" width="100%" height="100%">
                     </div>
-                    <div class="taskbar_datum_word">直播宣讲会</div>
+                    <div class="taskbar_datum_word">{yun:}t key='wap_00789'{/yun}</div>
                 </div>
                 <div class="taskbar_nav">
                     <div class="taskbar_nav_img">
@@ -223,11 +223,10 @@
                         <div class="taskbar_datum_img">
                             <img src="{yun:}$wap_style{/yun}/images/job_training.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="taskbar_datum_word">其他服务</div>
+                        <div class="taskbar_datum_word">{yun:}t key='wap_user_00196'{/yun}</div>
                     </div>
                     <div class="taskbar_nav">
-                        <div class="taskbar_nav_word">{{config.part == 1 ? '兼职 ' : ''}}{{config.ask == 1 ? '问答 ' :
-                            ''}}{{config.reward == 1 ? '赏金职位 ' : ''}}等</div>
+                        <div class="taskbar_nav_word">{{config.part == 1 ? i18n.partTime : ''}}{{config.ask == 1 ? i18n.ask : ''}}{{config.reward == 1 ? i18n.rewardJob : ''}}{{i18n.etc}}</div>
                         <div class="taskbar_nav_img">
                             <img src="{yun:}$wap_style{/yun}/images/my_more.png" alt="" width="100%" height="100%">
                         </div>
@@ -240,7 +239,7 @@
                         <img src="{yun:}$wap_style{/yun}/images/financial_management.png" alt="" width="100%"
                             height="100%">
                     </div>
-                    <div class="taskbar_datum_word">财务管理</div>
+                    <div class="taskbar_datum_word">{yun:}t key='wap_user_00213'{/yun}</div>
                 </div>
                 <div class="taskbar_nav">
                     <div class="taskbar_nav_img">
@@ -253,7 +252,7 @@
                     <div class="taskbar_datum_img">
                         <img src="{yun:}$wap_style{/yun}/images/sz.png" alt="" width="100%" height="100%">
                     </div>
-                    <div class="taskbar_datum_word">账户设置</div>
+                    <div class="taskbar_datum_word">{yun:}t key='wap_user_00214'{/yun}</div>
                 </div>
                 <div class="taskbar_nav">
                     <div class="taskbar_nav_img">
@@ -266,7 +265,7 @@
                     <div class="taskbar_datum_img">
                         <img src="{yun:}$wap_style{/yun}/images/fk.png" alt="" width="100%" height="100%">
                     </div>
-                    <div class="taskbar_datum_word">意见反馈</div>
+                    <div class="taskbar_datum_word">{yun:}t key='wap_user_00203'{/yun}</div>
                 </div>
                 <div class="taskbar_nav">
                     <div class="taskbar_nav_img">
@@ -278,35 +277,35 @@
 
         <div class="companyDatapage">
             <div class="companyDataTell" v-if="webtel">
-                <span>客服电话  {{webtel}} &nbsp; &nbsp;<span v-if="worktime">({{worktime}})</span></span>
+                <span>{{i18n.servicePhone}}  {{webtel}} &nbsp; &nbsp;<span v-if="worktime">({{worktime}})</span></span>
             </div>
             <div class="companyDatazhiao">
-                <a href="{yun:}url m=wap c=rlzy{/yun}">人力资源服务许可证</a>
+                <a href="{yun:}url m=wap c=rlzy{/yun}">{yun:}t key='wap_user_00184'{/yun}</a>
                 <span></span>
-                <a href="{yun:}url m=wap c=yyzz{/yun}">营业执照</a>
+                <a href="{yun:}url m=wap c=yyzz{/yun}">{yun:}t key='wap_user_00212'{/yun}</a>
             </div>
         </div>
     </div>
     <van-popup v-model="topResumeShow" :closeable="true" :close-on-click-overlay="false" position="bottom" :style="{ height: '45%', padding: '0.1rem 0 0.5rem 0' }">
         <div class="entrust_box">
-            <div class="entrust_box_title">简历置顶</div>
+            <div class="entrust_box_title">{yun:}t key='wap_user_00207'{/yun}</div>
             <div class="entrust_box_now">
-                <div class="entrust_box_text">当前简历</div>
+                <div class="entrust_box_text">{yun:}t key='wap_user_00201'{/yun}</div>
                 <div class="entrust_box_text">{{info.resume_name}}</div>
             </div>
             <div class="entrust_box_now" v-if="day>0">
-                <div class="entrust_box_text">当前简历置顶剩余{{day}}天</div>
+                <div class="entrust_box_text">{{i18n.topRemainingPrefix}}{{day}}{{i18n.daySuffix}}</div>
             </div>
             <div class="entrust_box_now">
-                <div class="entrust_box_text">置顶天数</div>
-                <div class="entrust_box_text"><input type="number" maxlength="2" :value="days" @input="dayInput" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请设置置顶天数" style="text-align: right;" /></div>
+                <div class="entrust_box_text">{yun:}t key='wap_user_00209'{/yun}</div>
+                <div class="entrust_box_text"><input type="number" maxlength="2" :value="days" @input="dayInput" oninput="value=value.replace(/^0|[\^d]/g,'')" :placeholder="i18n.setTopDays" style="text-align: right;" /></div>
             </div>
             <div class="zd_pay_box">
                 <div v-if="fktype.fkwx" class="zd_pay_list">
                     <div class="zd_pay_icon">
                         <img src="{yun:}$wap_style{/yun}/images/dredge_wx.png" alt="" width="30" height="30">
                     </div>
-                    <div class="zd_pay_name">微信支付</div>
+                    <div class="zd_pay_name">{yun:}t key='wap_user_00202'{/yun}</div>
                     <div @click="changefk('fkwx')" class="zd_pay_xz">
                         <div v-if="fk=='fkwx'">
                             <img src="{yun:}$wap_style{/yun}/images/dredge_affirm.png" alt="" width="100%" height="100%">
@@ -318,7 +317,7 @@
                 </div>
                 <div v-if="fktype.fkal && isweixin == 2" class="zd_pay_list">
                     <div class="zd_pay_icon"> <img src="{yun:}$wap_style{/yun}/images/dredge_zfb.png" alt="" width="30" height="30"></div>
-                    <div class="zd_pay_name">支付宝支付</div>
+                    <div class="zd_pay_name">{yun:}t key='wap_00627'{/yun}</div>
                     <div @click="changefk('fkal')" class="zd_pay_xz">
                         <div v-if="fk=='fkal'" class=" ">
                             <img src="{yun:}$wap_style{/yun}/images/dredge_affirm.png" alt="" width="100%" height="100%">
@@ -329,18 +328,18 @@
                     </div>
                 </div>
             </div>
-            <div class="zd_pay_fk">应付金额: <span class="zd_pay_fk_dw">￥<span class="zd_pay_fk_n">{{order_price}}</span></span>
-                <div @click="buyResumeTop" class="zd_pay_bth">立即购买</div>
+            <div class="zd_pay_fk">{yun:}t key='wap_user_00192'{/yun} <span class="zd_pay_fk_dw">￥<span class="zd_pay_fk_n">{{order_price}}</span></span>
+                <div @click="buyResumeTop" class="zd_pay_bth">{yun:}t key='wap_user_00206'{/yun}</div>
             </div>
         </div>
     </van-popup>
-	<!-- 关注公众号弹框 --> 
+	<!-- WeChat official account popup -->
 	<van-popup v-model="gzhshow" :close-on-click-overlay="gzhclose" :closeable="gzhclose" round >
 		<div class="gzh_gzbox">
-			<div class="gzh_gzbox_n">关注公众号</div>
+			<div class="gzh_gzbox_n">{yun:}t key='wap_user_00191'{/yun}</div>
 				<img :src="gzhurl" @touchstart="gzhstart" @touchend="gzhend">
-			<div class="gzh_gzbox_p">长按识别二维码</div>
-			<div class="gzh_gzbox_p">随时随地查找好工作</div>
+			<div class="gzh_gzbox_p">{yun:}t key='wap_user_00188'{/yun}</div>
+			<div class="gzh_gzbox_p">{yun:}t key='wap_user_00185'{/yun}</div>
 		</div>
     </van-popup>
 </div>
@@ -369,6 +368,42 @@ var yunvue = new Vue({
             isweixin: isweixin ? isweixin : 2,
             webtel: '',
             worktime: '',
+            i18n: {
+                expSuffix: '{yun:}t key='wap_00773'{/yun}',
+                eduSuffix: '{yun:}t key='wap_00774'{/yun}',
+                ageSuffix: '{yun:}t key='common_02074'{/yun}',
+                editBasicInfo: '{yun:}t key='wap_user_00189'{/yun}',
+                editResume: '{yun:}t key='wap_user_00208'{/yun}',
+                createResume: '{yun:}t key='wap_user_00197'{/yun}',
+                resumeMissingPrefix: '{yun:}t key='wap_00775'{/yun}',
+                lowInterviewChance: '{yun:}t key='wap_00776'{/yun}',
+                completePrefix: '{yun:}t key='common_01975'{/yun}',
+                moreAppeal: '{yun:}t key='wap_00778'{/yun}',
+                goComplete: '{yun:}t key='wap_user_00218'{/yun}',
+                resumeHidden: '{yun:}t key='wap_00779'{/yun}',
+                resumeApplyOnly: '{yun:}t key='wap_00780'{/yun}',
+                cancelHide: '{yun:}t key='wap_user_00200'{/yun}',
+                reasonPrefix: '{yun:}t key='admin_system_00134'{/yun}',
+                partTime: '{yun:}t key='wap_00783'{/yun}',
+                ask: '{yun:}t key='wap_00784'{/yun}',
+                rewardJob: '{yun:}t key='wap_00785'{/yun}',
+                etc: '{yun:}t key='wap_00786'{/yun}',
+                servicePhone: '{yun:}t key='wap_com_00102'{/yun}',
+                topRemainingPrefix: '{yun:}t key='wap_00782'{/yun}',
+                daySuffix: '{yun:}t key='common_02067'{/yun}',
+                setTopDays: '{yun:}t key='wap_user_00186'{/yun}',
+                createResumeFirst: '{yun:}t key='wap_user_00190'{/yun}',
+                resumeNotApprovedTop: '{yun:}t key='wap_00790'{/yun}',
+                paymentClosed: '{yun:}t key='wap_user_00183'{/yun}',
+                refreshSuccess: '{yun:}t key='wap_user_00198'{/yun}',
+                enterTopDays: '{yun:}t key='wap_user_00186'{/yun}',
+                selectPayment: '{yun:}t key='wap_user_00187'{/yun}',
+                purchasing: '{yun:}t key='wap_00792'{/yun}',
+                topSuccess: '{yun:}t key='wap_00793'{/yun}',
+                wxRebindConfirm: '{yun:}t key='wap_user_00362'{/yun}',
+                no: '{yun:}t key='common_02063'{/yun}',
+                yes: '{yun:}t key='common_02085'{/yun}',
+            },
         }
 
     },
@@ -411,10 +446,10 @@ var yunvue = new Vue({
         topCheck: function() {
             var that = this;
             if (!that.info.def_job) {
-                showToast('请先创建简历');
+                showToast(this.i18n.createResumeFirst);
             } else {
                 if (that.info.expect_state != '1') {
-                    showToast('简历还未审核，无法置顶');
+                    showToast(this.i18n.resumeNotApprovedTop);
                 } else {
                     showLoading();
                     var eid = that.info.def_job;
@@ -428,7 +463,7 @@ var yunvue = new Vue({
                             if (that.fktype.fkwx || that.fktype.fkal) {
                                 that.topResumeShow = true;
                             } else {
-                                showToast('网站已关闭支付接口，请联系管理员');
+                                showToast(that.i18n.paymentClosed);
                             }
                         }
                     }, 'json');
@@ -436,16 +471,17 @@ var yunvue = new Vue({
             }
         },
         refreshResume: function() {
-            if (!this.info.def_job) {
-                showToast('请先创建简历');
+            var that = this;
+            if (!that.info.def_job) {
+                showToast(that.i18n.createResumeFirst);
             } else {
                 showLoading();
                 $.post("{yun:}url d=wxapp h=user m=resume c=refresh_resume{/yun}", {
-                    id: this.info.def_job,provider: 'wap'
+                    id: that.info.def_job,provider: 'wap'
                 }, function(data) {
                     hideLoading();
                     if (data.error == 1) {
-                        showToast('刷新成功');
+                        showToast(that.i18n.refreshSuccess);
                     } else {
                         showToast(data.msg);
                     }
@@ -454,7 +490,7 @@ var yunvue = new Vue({
         },
         previewResume: function() {
             if (!this.info.def_job) {
-                showToast('请先创建简历');
+                showToast(this.i18n.createResumeFirst);
             } else {
                 window.location.href = wapurl + '?c=resume&a=show&id=' + this.info.def_job;
             }
@@ -462,19 +498,19 @@ var yunvue = new Vue({
         buyResumeTop: function() {
             var that = this;
             if (that.days == '') {
-                return showToast('请输入置顶天数');
+                return showToast(that.i18n.enterTopDays);
             }
             if (that.fk == '') {
-                return showToast('请选择支付方式');
+                return showToast(that.i18n.selectPayment);
             }
             let formData = {
-                id: this.info.def_job,
+                id: that.info.def_job,
                 rdays: that.days,
                 fktype: that.fk,
                 type: 'wap',
                 server: 'zdresume'
             };
-            showLoading('购买中');
+            showLoading(that.i18n.purchasing);
             $.post('{yun:}url d=wxapp h=user m=finance c=setServer{/yun}', formData, function(data) {
                 hideLoading();
                 if (data.msg == 'ok') {
@@ -484,7 +520,7 @@ var yunvue = new Vue({
                         window.location.href = res.url;
                     } else {
 
-                        showToast('置顶成功', 2, function() {
+                        showToast(that.i18n.topSuccess, 2, function() {
                             location.reload();
                         });
                     }
@@ -495,7 +531,7 @@ var yunvue = new Vue({
 
             }, 'json');
         },
-        //乘
+        // Multiply
         accMul: function(arg1, arg2) {
             var m = 0,
                 s1 = arg1.toString(),
@@ -527,7 +563,7 @@ var yunvue = new Vue({
         },
 		gzhstart: function(){
 			if(loopVal){
-				 //再次清空定时器，防止重复注册定时器
+				 // Clear timer again to prevent duplicate registration
 				clearTimeout(loopVal);
 			}
 			var self = this;
@@ -560,15 +596,15 @@ var yunvue = new Vue({
 				yunvue.$data.gzhshow = true;
 			}else if(res.subscribe == 2 && !gzhConfirm) {
 				if(!gzhBox){
-					// 页面首次查询，先弹出二维码弹窗
+					// Show QR code popup on first check
 					yunvue.$data.gzhshow = true;
 					gzhBox = true;
 				}else{
 					gzhConfirm = true;
 					yunvue.$data.gzhshow = false;
-					showConfirm('本账号绑定的微信号，不是当前微信号，是否要换绑为当前微信号？', function() {
+					showConfirm(yunvue.$data.i18n.wxRebindConfirm, function() {
 						hbwx();
-					},'否','是');
+					}, yunvue.$data.i18n.no, yunvue.$data.i18n.yes);
 				}
 			}else if(res.subscribe == 1 && gzhBox) {
 				window.location.reload();

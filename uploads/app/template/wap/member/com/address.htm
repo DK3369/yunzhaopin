@@ -4,7 +4,7 @@
     <section class="wap_member_box">
         <div class="Subclass" v-if="defaultLinkShow">
             <div class="com_cardlist_tit">
-                <a href="javascript:void(0);" >{{Link.link_address}}【默认企业地址】</a>
+                <a href="javascript:void(0);" >{{Link.link_address}}{yun:}t key='wap_00906'{/yun}</a>
             </div>
 
             <div class="com_member_hr_p1">
@@ -110,7 +110,7 @@
                 var paramer = {
                     id: id,
                 };
-                showConfirm('确定删除?', () => {
+                showConfirm('{yun:}t key='wap_00812'{/yun}', () => {
                     showLoading("{yun:}t key='wap_js_00166'{/yun}")
                     $.post('{yun:}url d=wxapp h=com m=set c=delAddress{/yun}', paramer, function (data) {
                         hideLoading();

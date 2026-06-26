@@ -1,5 +1,5 @@
 {yun:}include file="$wapstyle/member/cheader.htm"{/yun}
-<!-- 页面整体部分 -->
+<!-- Page layout -->
 <div id="yunvue" class="none">
 
     <div class="issue_post_body">
@@ -8,31 +8,31 @@
 
                 <div class="yun_createlist">
 
-                    <div class="yun_create_name"><span class="m_bt">*</span>联&nbsp;&nbsp;系&nbsp;&nbsp;人</div>
+                    <div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='member_com_00184'{/yun}</div>
                     <div class="yun_create_text">
-                        <input name="link_man" id="link_man" placeholder="请输入联系人" v-model="info.link_man"  onblur="notNumber(this)"/>
+                        <input name="link_man" id="link_man" :placeholder="i18n.linkmanPlaceholder" v-model="info.link_man"  onblur="notNumber(this)"/>
                     </div>
                 </div>
                 <div class="yun_createlist">
-                    <div class="yun_create_name"><span class="m_bt">*</span>手机号码</div>
+                    <div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00241'{/yun}</div>
                     <div class="yun_create_text">
-                        <input name="link_moblie" placeholder="请输入手机号码" v-model="info.link_moblie" oninput="value=value.replace(/^0|[\^d]/g,'')" type="number"  maxlength="11"/>
+                        <input name="link_moblie" :placeholder="i18n.mobilePlaceholder" v-model="info.link_moblie" oninput="value=value.replace(/^0|[\^d]/g,'')" type="number"  maxlength="11"/>
                     </div>
                 </div>
                 <div class="yun_createlist">
-                    <div class="yun_create_name"> 固定电话</div>
+                    <div class="yun_create_name"> {yun:}t key='wap_com_00014'{/yun}</div>
                     <div class="yun_create_text">
-                        <input name="link_phone" placeholder="请输入固定电话" v-model="info.link_phone" type="text"  />
+                        <input name="link_phone" :placeholder="i18n.landlinePlaceholder" v-model="info.link_phone" type="text"  />
                     </div>
                 </div>
                 <div class="yun_createlist">
-                    <div class="yun_create_name"><span class="m_bt">&nbsp;</span>联系邮箱</div>
+                    <div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='wap_com_00016'{/yun}</div>
                     <div class="yun_create_text">
-                        <input name="email" placeholder="请输入联系邮箱" v-model="info.email" type="text"/>
+                        <input name="email" :placeholder="i18n.emailPlaceholder" v-model="info.email" type="text"/>
                     </div>
                 </div>
                 <div class="yun_createlist">
-                    <div class="yun_create_name"><span class="m_bt">*</span>所在地区</div>
+                    <div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_com_00015'{/yun}</div>
                     <div class="yun_create_text_p" @click="areaShow=true" style="color: #666;">{{city}}</div>
                     <input hidden="true" name="provinceid" :value="provinceid"/>
                     <input hidden="true" name="cityid" :value="cityid"/>
@@ -43,9 +43,9 @@
                     </div>
                 </div>
                 <div class="yun_createlist create_resume_listend">
-                    <div class="yun_create_name"><span class="m_bt">*</span>详细地址</div>
+                    <div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00243'{/yun}</div>
                     <div class="yun_create_text">
-                        <input name="link_address" placeholder="请输入详细地址" v-model="address"/>
+                        <input name="link_address" :placeholder="i18n.addressPlaceholder" v-model="address"/>
                     </div>
 
                     <div class="yun_create_fx" @click="openAddress" v-if="map_key!=''">
@@ -54,7 +54,7 @@
                 </div>
             </div>
             <div class="security_bth">
-                <button type="submit" class="security_bth_but">保 存</button>
+                <button type="submit" class="security_bth_but">{yun:}t key='wap_com_00017'{/yun}</button>
             </div>
         </form>
     </div>
@@ -66,21 +66,21 @@
                     <div class="comWapMapOnes">
                         <div class="comWapMapTwos" v-if="map_key!=''">
                             <div class="body_card_job_box">
-                                请单击下方地图完成地址标记
+                                {yun:}t key='wap_com_00003'{/yun}
                             </div>
                             <div id="map_container"  style="width:100%;height:280px;overflow: hidden;margin:0;font-family:'微软雅黑';" v-if="map_key!=''"></div>
                         </div>
                         <div class="comWapMapShows">
                             <div class="comWapMapEatel">
                                 <div class="yun_createlist">
-                                    <div class="yun_create_name">详细地址</div>
+                                    <div class="yun_create_name">{yun:}t key='wap_user_00243'{/yun}</div>
                                     <div class="yun_create_text">
-                                        <input placeholder="请输入详细地址" v-model="address" name="address"/>
+                                        <input :placeholder="i18n.addressPlaceholder" v-model="address" name="address"/>
                                     </div>
                                 </div>
                             </div>
                             <div class="comWapMapTishi" v-if="poi.length > 0">
-                                <span>可以选择搜索结果设置企业位置</span>
+                                <span>{yun:}t key='wap_com_00001'{/yun}</span>
                             </div>
                             <ul>
                                 <li v-for="(item,pk) in poi" :key="pk">
@@ -94,15 +94,15 @@
                     </div>
                 </div>
                 <div class="security_bth" style="padding-top: 0;">
-                    <button type="submit" class="security_bth_but">确 定</button>
+                    <button type="submit" class="security_bth_but">{yun:}t key='wap_com_00019'{/yun}</button>
                 </div>
             </form>
         </div>
     </van-popup>
 
-    <!--城市选择-->
+    <!-- City picker -->
     <van-popup v-model="areaShow" round position="bottom">
-        <van-cascader v-model="areaValue" title="请选择工作区域" :options="areaOptions" @close="areaShow = false" @finish="onAreaFinish"/>
+        <van-cascader v-model="areaValue" :title="i18n.workAreaTitle" :options="areaOptions" @close="areaShow = false" @finish="onAreaFinish"/>
     </van-popup>
 </div>
 
@@ -119,22 +119,34 @@
 <script src="{yun:}$wap_style{/yun}/js/category.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
 
 <script>
+    var COM_ADDRESS_I18N = {
+        linkmanNoAllDigits: '{yun:}t key='wap_com_00005'{/yun}',
+        linkmanMaxLength: '{yun:}t key='wap_com_00002'{/yun}',
+        addressRequired: '{yun:}t key='wap_00904'{/yun}',
+        linkmanRequired: '{yun:}t key='wap_com_00012'{/yun}',
+        phoneRequired: '{yun:}t key='wap_com_00007'{/yun}',
+        mobileFormatError: '{yun:}t key='wap_com_00006'{/yun}',
+        selectCity: '{yun:}t key='wap_com_00011'{/yun}',
+        cityLevelRequired: '{yun:}t key='wap_com_00004'{/yun}',
+        companyAddressRequired: '{yun:}t key='wap_00833'{/yun}',
+        saving: '{yun:}t key='wap_com_00018'{/yun}',
+    };
+
     function notNumber(obj){
-        obj.value = obj.value.replace(/[-_ ]/g,'');// 去掉空格
+        obj.value = obj.value.replace(/[-_ ]/g,'');
         if(!obj.value){
             return ;
         }
         var  test = obj.value.replace(/[0-9]/g,'');
         if (!test){
-            showToast('联系人不支持全数字', 2);
+            showToast(COM_ADDRESS_I18N.linkmanNoAllDigits, 2);
             obj.value = ''
             $('#link_man').focus()
             return false;
         }else{
             if(/\d/.test(obj.value)){
                 if(obj.value.length>8){
-                    // obj.value = obj.value.substring(0,8);
-                    showToast('联系人填写字数不能超过8个', 2);
+                    showToast(COM_ADDRESS_I18N.linkmanMaxLength, 2);
                     obj.value = ''
                     $('#link_man').focus()
                     return false;
@@ -159,7 +171,7 @@
 
             info: {},
 
-            city: '请选择所在城市',
+            city: '{yun:}t key='wap_com_00011'{/yun}',
 
             areaShow: false,
             areaValue: 0,
@@ -179,7 +191,15 @@
 
             addressId: addressId ? addressId : '',
 			map_key: map_key,
-            poi:[]
+            poi:[],
+            i18n: {
+                linkmanPlaceholder: '{yun:}t key='wap_com_00013'{/yun}',
+                mobilePlaceholder: '{yun:}t key='wap_user_00142'{/yun}',
+                landlinePlaceholder: '{yun:}t key='wap_com_00008'{/yun}',
+                emailPlaceholder: '{yun:}t key='wap_com_00009'{/yun}',
+                addressPlaceholder: '{yun:}t key='wap_00905'{/yun}',
+                workAreaTitle: '{yun:}t key='wap_com_00010'{/yun}',
+            },
         },
         created() {
             this.getAddressInfo();
@@ -336,7 +356,7 @@
             let link_address = e.address.value;
 
             if (link_address.length == 0) {
-                showModal('请填写详细地址');
+                showModal(COM_ADDRESS_I18N.addressRequired);
                 return false;
             }
 
@@ -344,7 +364,7 @@
         } catch (e) {
         }
 
-        return false; // 阻止form提交
+        return false;
     }
 
     function formSubmit(e) {
@@ -361,21 +381,21 @@
         try {
 
             if (obj.link_man.length == 0) {
-                showModal('请填写联系人');
+                showModal(COM_ADDRESS_I18N.linkmanRequired);
                 return false;
             }else{
-                var link_man = obj.link_man.replace(/[-_ ]/g,'');// 去掉空格
+                var link_man = obj.link_man.replace(/[-_ ]/g,'');
                 if(!link_man){
                     return ;
                 }
                 var  test = link_man.replace(/[0-9]/g,'');
                 if (!test){
-                    showModal('联系人不支持全数字');
+                    showModal(COM_ADDRESS_I18N.linkmanNoAllDigits);
                     return false;
                 }else{
                     if(/\d/.test(link_man)){
                         if(link_man.length>8){
-                            showModal('联系人填写字数不能超过8个');
+                            showModal(COM_ADDRESS_I18N.linkmanMaxLength);
                             return false;
                         }
                     }
@@ -383,12 +403,12 @@
             }
 
             if (obj.link_moblie.length == 0 && obj.link_phone.length == 0) {
-                showModal('请填写联系电话');
+                showModal(COM_ADDRESS_I18N.phoneRequired);
                 return false;
             }
             if (obj.link_moblie.length > 0) {
                 if (isjsMobile(obj.link_moblie) == false) {
-                    showModal('联系手机格式错误');
+                    showModal(COM_ADDRESS_I18N.mobileFormatError);
                     return false;
                 }
             }
@@ -398,21 +418,20 @@
             obj.three_cityid = yd.threecityid
 
             if (obj.provinceid == 0) {
-                showModal('请选择所在城市');
+                showModal(COM_ADDRESS_I18N.selectCity);
                 return false;
             }
             if (ct[obj.provinceid]) {
                 if (obj.cityid == 0) {
-                    showModal('所在城市请选择二级类别');
+                    showModal(COM_ADDRESS_I18N.cityLevelRequired);
                     return false;
                 }
             }
             if (obj.link_address.length == 0) {
-                showModal('请填写企业地址');
+                showModal(COM_ADDRESS_I18N.companyAddressRequired);
                 return false;
             }
 
-            // 处理下一步
             yd.firstData = obj;
 
             let formData = {};
@@ -425,7 +444,7 @@
 
             Object.assign(formData, yd.firstData);
 
-            showLoading('保存中');
+            showLoading(COM_ADDRESS_I18N.saving);
             $.post('{yun:}url d=wxapp h=com m=set c=saveAddress{/yun}', formData, function (data) {
                 hideLoading();
                 if (data.error == 1) {

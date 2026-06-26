@@ -4,7 +4,7 @@
     
     <div class="com_list_box" v-for="item in comlist" :key="item.name">
         <div class="ptyhybox" style="position: relative;"  v-if="item.fact_status=='1'">
-            <div class="ptyhy"><i class="ptyhy_icon"></i>实地核验 </div> 
+            <div class="ptyhy"><i class="ptyhy_icon"></i>{yun:}t key='wap_00274'{/yun} </div> 
         </div> 
         <a :data-href="item.wapurl" href="javascript:void(0)" onclick="toPage(this)" class="job_list">
             <div class="com_list_t_box">
@@ -33,7 +33,7 @@
         
         <a v-if="item.jobnum>0" :data-href="item.wapurl_showjob" href="javascript:void(0)" onclick="toPage(this)">
             <div class="com_list_box_joblist">
-                <span class="com_list_box_jobzs"><em class="com_list_box_jobncor">{{item.jobnum}}</em>个在招职位</span>
+                <span class="com_list_box_jobzs"><em class="com_list_box_jobncor">{{item.jobnum}}</em>{yun:}t key='wap_com_00094'{/yun}</span>
                 <i class="com_list_box_jobzs_more"></i>
             </div>
         </a>

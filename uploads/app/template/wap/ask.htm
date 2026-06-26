@@ -10,12 +10,12 @@
     <div class="ask_search_box">
 
         <a {yun:}if $uid{/yun} href="{yun:}url m=wap c=ask a=addquestion {/yun}" {yun:}else{/yun}href="javascript:void(0)" onclick="pleaselogin("{yun:}t key='wap_00150'{/yun}",'{yun:}url m=wap c=login{/yun}')" {yun:}/if{/yun} class="ask_search_box_tw">
-        	<span class="ask_search_box_tw_c">提问</span></a>
+        	<span class="ask_search_box_tw_c">{yun:}t key='wap_01570'{/yun}</span></a>
         <div class="ask_search_ct">
             <form name="myform" method="get" action="{yun:}url m=wap{/yun}index.php">
                 <input type="hidden" name="c" value="ask" />
                 <input type="hidden" name="a" value="list" />
-                <input type="text" value="{yun:}$smarty.get.keyword{/yun}" name="keyword" id="keyword" class="ask_search_text" placeholder="搜一搜感兴趣的问题">
+                <input type="text" value="{yun:}$smarty.get.keyword{/yun}" name="keyword" id="keyword" class="ask_search_text" placeholder="{yun:}t key='wap_01580'{/yun}">
                 <i class="ask_btn_icon"><input type="submit" value="" class="ask_search_bth"></i>
             </form>
         </div>
@@ -42,7 +42,7 @@
     <div class="ask_top_nav" style="display:none;">
         <div class="ask_top_nav_list">
             <a href="{yun:}url m=wap c='ask'{/yun}" class="ask_top_nav_iconhome">{yun:}t key='wap_00160'{/yun}</a>
-            <a {yun:}if $uid{/yun} href="{yun:}url m=wap c=ask a=myquestion uid=$uid{/yun}" {yun:}else{/yun}href="javascript:void(0)" onclick="pleaselogin("{yun:}t key='wap_00150'{/yun}",'{yun:}url m=wap c=login{/yun}')" {yun:}/if{/yun} class="ask_top_nav_iconzy">我的主页</a>
+            <a {yun:}if $uid{/yun} href="{yun:}url m=wap c=ask a=myquestion uid=$uid{/yun}" {yun:}else{/yun}href="javascript:void(0)" onclick="pleaselogin("{yun:}t key='wap_00150'{/yun}",'{yun:}url m=wap c=login{/yun}')" {yun:}/if{/yun} class="ask_top_nav_iconzy">{yun:}t key='wap_01579'{/yun}</a>
             <a href="{yun:}url m=wap c=ask a=hotweek {/yun}" class="ask_top_nav_iconhot">{yun:}t key='wap_00153'{/yun}</a>
             <a href="{yun:}url m=wap c=ask a=topic {/yun}" class="ask_top_nav_iconht">{yun:}t key='wap_00158'{/yun}</a>
             <a {yun:}if $uid{/yun} href="{yun:}url m=wap c=ask a=addquestion{/yun}" {yun:}else{/yun}href="javascript:void(0)" onclick="pleaselogin("{yun:}t key='wap_00150'{/yun}",'{yun:}url m=wap c=login{/yun}')" {yun:}/if{/yun} class="ask_top_nav_icontw">{yun:}t key='wap_00278'{/yun}</a>
@@ -59,7 +59,7 @@
         <a href="{yun:}url m=wap c=ask a=hotweek {/yun}">{yun:}t key='wap_00153'{/yun}</a>
     </li>
     <li>
-        <a {yun:}if $uid{/yun} href="{yun:}url m=wap c=ask a=myquestion uid=$uid{/yun}" {yun:}else{/yun}href="javascript:void(0)" onclick="pleaselogin("{yun:}t key='wap_00150'{/yun}",'{yun:}url m=wap c=login{/yun}')" {yun:}/if{/yun}>我的主页</a>
+        <a {yun:}if $uid{/yun} href="{yun:}url m=wap c=ask a=myquestion uid=$uid{/yun}" {yun:}else{/yun}href="javascript:void(0)" onclick="pleaselogin("{yun:}t key='wap_00150'{/yun}",'{yun:}url m=wap c=login{/yun}')" {yun:}/if{/yun}>{yun:}t key='wap_01579'{/yun}</a>
     </li>
 
 </ul>
@@ -96,7 +96,7 @@
             <div class="ask_jx_name">
                 <a href="{yun:}url m=wap c=ask a=content id='`$rlist.id`'{/yun}">{yun:}$rlist.title{/yun}</a>
             </div>
-            <div class="ask_jx_info"><span class="ask_jx_data ask_jx_data_hd">{yun:}$rlist.answer_num{/yun} {yun:}t key='wap_00332'{/yun}</span><span class="ask_jx_data ask_jx_data_yl">{yun:}$rlist.visit{/yun} 阅读</span><span class="ask_jx_data ask_jx_data_gz">{yun:}$rlist.atnnum{/yun} {yun:}t key='common_01949'{/yun}</span></div>
+            <div class="ask_jx_info"><span class="ask_jx_data ask_jx_data_hd">{yun:}$rlist.answer_num{/yun} {yun:}t key='wap_00332'{/yun}</span><span class="ask_jx_data ask_jx_data_yl">{yun:}$rlist.visit{/yun} {yun:}t key='wap_01578'{/yun}</span><span class="ask_jx_data ask_jx_data_gz">{yun:}$rlist.atnnum{/yun} {yun:}t key='common_01949'{/yun}</span></div>
 
             <div class="ask_jx_info_img"><img src="{yun:}$rlist.pic{/yun}" width="20" height="20">
                 <a href="{yun:}url m=wap c=ask a=myquestion uid='`$rlist.uid`'{/yun}" class="ask_jx_username">{yun:}$rlist.nickname|mb_substr:0:25:'utf-8'{/yun}</a> <span class="ask_jx_time">{yun:}$rlist.add_time|date_format:"%Y-%m-%d"{/yun}</span></div>
@@ -108,7 +108,7 @@
 
 <div class="clear"></div>
 <div class="index_newbox" style="float:left;width:100%; background:none">
-    <div class="ask_jxtit" style="background:none"><span class="ask_jxtit_name">达人推荐</span></div>
+    <div class="ask_jxtit" style="background:none"><span class="ask_jxtit_name">{yun:}t key='wap_01581'{/yun}</span></div>
     <div class="ask_box_list_c">
         <ul class="ask_box_list">
             {yun:}foreach from=$recom item=rlist key=k{/yun}
@@ -168,7 +168,7 @@
 	}
 </script>
 <div class="ask_tw">
-    <a {yun:}if $uid{/yun} href="{yun:}url m=wap c=ask a=addquestion {/yun}" {yun:}else{/yun}href="javascript:void(0)" onclick="pleaselogin("{yun:}t key='wap_00150'{/yun}",'{yun:}url m=wap c=login{/yun}')" {yun:}/if{/yun} class=""><span class="ask_tw_p">提问</span></a>
+    <a {yun:}if $uid{/yun} href="{yun:}url m=wap c=ask a=addquestion {/yun}" {yun:}else{/yun}href="javascript:void(0)" onclick="pleaselogin("{yun:}t key='wap_00150'{/yun}",'{yun:}url m=wap c=login{/yun}')" {yun:}/if{/yun} class=""><span class="ask_tw_p">{yun:}t key='wap_01570'{/yun}</span></a>
 </div>
 </body>
 </html>

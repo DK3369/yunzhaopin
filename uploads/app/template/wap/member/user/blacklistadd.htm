@@ -3,9 +3,9 @@
     <div id='list'>
         <div class=" blacklist_show">
             <div class="search_com_text_box">
-                <div class="search_com_text"><input type="text" @input="bindKeywordInput" :value="searchKeyword" placeholder="请输入企业名称" />
+                <div class="search_com_text"><input type="text" @input="bindKeywordInput" :value="searchKeyword" placeholder="{yun:}t key='wap_user_00149'{/yun}" />
                     <div class="search_com_button">
-                        <button @click="keywordSearch">搜索</button>
+                        <button @click="keywordSearch">{yun:}t key='wap_js_00086'{/yun}</button>
                     </div>
                 </div>
             </div>
@@ -13,23 +13,23 @@
         <div class="" v-show="showview">
             <div class="blacklist_show">
                 <div class="blacklistadd_box">
-                    <div class="blacklistadd_box_pp">企业名称匹配</div>
+                    <div class="blacklistadd_box_pp">{yun:}t key='wap_user_00150'{/yun}</div>
                     <ul class="mui-table-view" id="comullist">
                         <li v-for="(item,blkey) in blackList" :key="blkey">
                             <van-checkbox v-model="item.checked" shape="square" @click="checkCount(item.checked,item.uid)">{{item.name}}</van-checkbox>
                         </li>
                         <li class='mui-table-view-cell mui-indexed-list-item mui-checkbox mui-left'>
-                            <van-checkbox v-model="select_all" shape="square" @click="selectall">全选</van-checkbox>
+                            <van-checkbox v-model="select_all" shape="square" @click="selectall">{yun:}t key='wap_js_00074'{/yun}</van-checkbox>
                         </li>
                     </ul>
                 </div>
             </div>
             <div class="search_com_tj">
-                <span class="search_com_tjbut" @click="save">完成{{num}}</span>
+                <span class="search_com_tjbut" @click="save">{{i18n.done}}{{num}}</span>
             </div>
         </div>
         <div class=" blacklist_show">
-            <div id="nonelist" class="blacklist_notip " v-show="noList">暂未匹配到相关企业</div>
+            <div id="nonelist" class="blacklist_notip " v-show="noList">{{i18n.noMatch}}</div>
         </div>
     </div>
 </div>
@@ -48,6 +48,12 @@
                 num: '',
                 countlist: [],
                 noList: false,
+                i18n: {
+                    done: '{yun:}t key='wap_user_00298'{/yun}',
+                    searching: '{yun:}t key='wap_01121'{/yun}',
+                    noMatch: '{yun:}t key='wap_01122'{/yun}',
+                    selectCompany: '{yun:}t key='wap_01123'{/yun}',
+                },
             };
         },
         created() {
@@ -56,13 +62,12 @@
         methods: {
             selectall: function (e) {
                 var that = this;
-                var arr = []; //存放选中uid的数组
+                var arr = [];
                 for (let i = 0; i < that.blackList.length; i++) {
 
                     that.blackList[i].checked = (that.select_all)
 
                     if (that.blackList[i].checked == true) {
-                        // 全选获取选中的值
                         arr = arr.concat(that.blackList[i].uid.split(','));
 
                     }
@@ -110,7 +115,7 @@
             fetchSearchList: function () {
                 let that = this;
                 var param = {};
-                showLoading('搜索中...');
+                showLoading(that.i18n.searching);
                 param['keyword'] = that.searchKeyword;
                 $.post('{yun:}url d=wxapp h=user m=privacy c=searchcom{/yun}', param, function (data) {
                     hideLoading();
@@ -136,7 +141,7 @@
                 showLoading();
                 param['p_uid'] = that.batchIds;
                 if (that.batchIds.length == 0) {
-                    return showToast('请选择要屏蔽的企业');
+                    return showToast(that.i18n.selectCompany);
                 }
                 $.post('{yun:}url d=wxapp h=user m=privacy c=save{/yun}', param, function (data) {
                     hideLoading();

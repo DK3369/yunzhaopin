@@ -1,3 +1,11 @@
+// API sentinel for "present" end date; keep Chinese for backend comparison
+var PRESENT_API_VALUE = '至今';
+
+function userPickerI18n(key) {
+	var i18n = typeof USER_PICKER_I18N !== 'undefined' ? USER_PICKER_I18N : {};
+	return i18n[key] || '';
+}
+
 if(typeof pickerType !== 'undefined'){
 	var workYear = [],
 		workMonth = [],
@@ -19,12 +27,12 @@ if(typeof pickerType !== 'undefined'){
 		}
 	}
 }
-// 处理开始、结束时间选择器默认值
+// Build default values for start/end time pickers
 function timePicker(type, time, date){
 	let year = deepClone(workYear),
 		dy = deepClone(defaultYear);
 	if(type == 'workList' && time == 'edate'){
-		year.unshift('至今');
+		year.unshift(PRESENT_API_VALUE);
 		dy = dy + 1;
 	}else if(type == 'eduList' && time == 'edate'){
 		for(let k = nowYear + 1; k<= 2030; k++){
@@ -34,10 +42,10 @@ function timePicker(type, time, date){
 	}
 	var timeData = [];
 	if(date){
-		// 有默认值
+		// Has default value
 		let datearr = date.split('-');
 		if(datearr.length == 2){
-			// 非至今
+			// Not "present"
 			timeData = [
 				{
 					values: year
@@ -57,7 +65,7 @@ function timePicker(type, time, date){
 				}
 			});
 		}else{
-			// 至今
+			// "Present" sentinel
 			timeData = [
 				{
 					values: year,
@@ -70,7 +78,7 @@ function timePicker(type, time, date){
 			];
 		}
 	}else{
-		// 没有默认值
+		// No default value
 		timeData = [
 			{
 				values: year,
@@ -84,9 +92,13 @@ function timePicker(type, time, date){
 	}
 	return timeData;
 }
-// 姓名展示形式
+// Name display mode picker
 function namePicker(value, show = true){
-	var nameData = [{value: 1, text: '完全公开'},{value: 2, text: '显示编号(例:NO.11)'},{value: 3, text: '性别称呼(例:X先生)'}],
+	var nameData = [
+			{value: 1, text: userPickerI18n('nameFullPublic')},
+			{value: 2, text: userPickerI18n('nameShowId')},
+			{value: 3, text: userPickerI18n('nameGenderTitle')}
+		],
 		nameIndex = 0;
 	for(let i = 0; i < nameData.length; i++){
 		let val = nameData[i].value;
@@ -100,10 +112,10 @@ function namePicker(value, show = true){
 		yunvue.$data.nameShow = true;
 	}
 }
-// 学历
+// Education picker
 function eduPicker(value, show = true){
 	var eduIndex = 0;
-	var eduData = [{value: 0, text: '请选择学历'}];
+	var eduData = [{value: 0, text: userPickerI18n('selectEducation')}];
 	if(typeof useri.user_edu !== 'undefined'){
 		var edu = useri['user_edu'];
 		for(var i = 0; i < edu.length; i++){
@@ -124,10 +136,10 @@ function eduPicker(value, show = true){
 		yunvue.$data.eduShow = true;
 	}
 }
-// 工作经验
+// Work experience picker
 function expPicker(value, show = true){
 	var expIndex = 0;
-	var expData = [{value: 0, text: '请选择工作经验'}];
+	var expData = [{value: 0, text: userPickerI18n('selectExperience')}];
 	if(typeof useri.user_word !== 'undefined'){
 		var exp = useri['user_word'];
 		for(var i = 0; i < exp.length; i++){
@@ -148,10 +160,10 @@ function expPicker(value, show = true){
 		yunvue.$data.expShow = true;
 	}
 }
-// 婚姻状况
+// Marital status picker
 function marriagePicker(value, show = true){
 	var marriageIndex = 0;
-	var	marriageData = [{value: 0, text: '请选择婚姻状况'}];
+	var	marriageData = [{value: 0, text: userPickerI18n('selectMarriage')}];
 	if(typeof useri.user_marriage !== 'undefined'){
 		var marriage = useri['user_marriage'];
 		for(var i = 0; i < marriage.length; i++){
@@ -172,10 +184,10 @@ function marriagePicker(value, show = true){
 		yunvue.$data.marriageShow = true;
 	}
 }
-// 技能熟练度
+// Skill proficiency picker
 function ingPicker(value, show = true){
 	var ingIndex = 0;
-	var	ingData = [{value: 0, text: '请选择技能熟练度'}];
+	var	ingData = [{value: 0, text: userPickerI18n('selectProficiency')}];
 	if(typeof useri.user_ing !== 'undefined'){
 		var ing = useri['user_ing'];
 		for(var i = 0; i < ing.length; i++){
@@ -196,7 +208,7 @@ function ingPicker(value, show = true){
 		yunvue.$data.ingShow = true;
 	}
 }
-// 工作性质
+// Work type picker
 function typePicker(value, show = true){
 	var typeIndex = 0;
 	var typeData = [];
@@ -219,19 +231,18 @@ function typePicker(value, show = true){
 	if(show){
 		yunvue.$data.typeShow = true;
 	}else{
-		// 非必填项，初始化
+		// Optional field initialization
 		if(!value){
 			yunvue.$data.type_n = typeData[0].text;
 			yunvue.$data.info.type = typeData[0].value;
 		}
 	}
 }
-// 从事行业
+// Industry picker
 function hyPicker(value, show = true){
 	var hyIndex = 0;
-	var hyData = [{value: 0, text: '不限'}];
+	var hyData = [{value: 0, text: userPickerI18n('noLimit')}];
 	if(typeof hi !== 'undefined'){
-		// 从事行业
 		for(let i = 0; i < hi.length; i++){
 			let val = hi[i];
 			hyData.push({
@@ -249,7 +260,7 @@ function hyPicker(value, show = true){
 		yunvue.$data.hyShow = true;
 	}
 }
-// 求职状态-到岗时间
+// Job status and report-to-work picker
 function rjPicker(jv, rv, show = true){
 	var jobstatusData = [],
 		jobstatusIndex = 0,
@@ -291,7 +302,7 @@ function rjPicker(jv, rv, show = true){
 	if(show){
 		yunvue.$data.rjShow = true;
 	}else{
-		// 非必填项，初始化
+		// Optional field initialization
 		if(!jv && !rv){
 			yunvue.$data.rjValue = jobstatusData[0].text + (reportData.length > 0 ? '-' + reportData[0].text : '');
 			yunvue.$data.info.jobstatus = jobstatusData[0].value;

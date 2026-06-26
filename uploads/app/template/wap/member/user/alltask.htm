@@ -9,12 +9,12 @@
                              <img src="{yun:}$wap_style{/yun}/images/vip_sign_in.png" alt="" width="100%" height="100%">
                          </div>
                          <div class="task_subject_init">
-                             <div class="subject_init_top">完成签到</div>
+                             <div class="subject_init_top">{{i18n.taskSignIn}}</div>
                              <div class="subject_init_bom">+{{integral_signin}}{{integral_pricename}}</div>
                          </div>
                     </div>
-                    <div class="task_subject_box_btn_accomplish" v-if="tasklist.signin">已签到</div>
-                    <div class="task_subject_box_btn" v-else @click="sign">立即签到</div>     
+                    <div class="task_subject_box_btn_accomplish" v-if="tasklist.signin">{{i18n.signedIn}}</div>
+                    <div class="task_subject_box_btn" v-else @click="sign">{{i18n.signInNow}}</div>
                 </li>
                 <li>
                     <div class="task_subject_box">
@@ -22,24 +22,24 @@
                              <img src="{yun:}$wap_style{/yun}/images/vip_register.png" alt="" width="100%" height="100%">
                          </div>
                          <div class="task_subject_init">
-                             <div class="subject_init_top">邀请好友注册</div>
+                             <div class="subject_init_top">{{i18n.taskInviteReg}}</div>
                              <div class="subject_init_bom">+{{integral_invite_reg}}{{integral_pricename}}</div>
                          </div>
                     </div>
-                    <div class="task_subject_box_btn" @click="getInviteRegHb()">立即邀请</div>
-                </li>                
+                    <div class="task_subject_box_btn" @click="getInviteRegHb()">{{i18n.inviteNow}}</div>
+                </li>
                 <li>
                     <div class="task_subject_box">
                          <div class="task_subject_icon">
                              <img src="{yun:}$wap_style{/yun}/images/task_iphpne.png" alt="" width="100%" height="100%">
                          </div>
                          <div class="task_subject_init">
-                             <div class="subject_init_top">认证手机号</div>
+                             <div class="subject_init_top">{{i18n.taskVerifyMobile}}</div>
                              <div class="subject_init_bom">+{{integral_mobliecert}}{{integral_pricename}}</div>
                          </div>
                     </div>
-                  	<div class="task_subject_box_btn_accomplish" v-if="tasklist.phoneChecked">已认证</div>
-                    <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=bindingbox&type=moblie')">立即认证</div>     
+                  	<div class="task_subject_box_btn_accomplish" v-if="tasklist.phoneChecked">{{i18n.verified}}</div>
+                    <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=bindingbox&type=moblie')">{{i18n.verifyNow}}</div>
                 </li>
 				<li>
                     <div class="task_subject_box">
@@ -47,25 +47,25 @@
                              <img src="{yun:}$wap_style{/yun}/images/task_wx.png" alt="" width="100%" height="100%">
                          </div>
                          <div class="task_subject_init">
-                             <div class="subject_init_top">微信绑定</div>
+                             <div class="subject_init_top">{{i18n.taskWechatBind}}</div>
                              <div class="subject_init_bom">+{{integral_bind_wx}}{{integral_pricename}}</div>
                          </div>
                     </div>
-                    <div class="task_subject_box_btn_accomplish" v-if="tasklist.weixinBind">已绑定</div>
-                    <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=binding')">立即绑定</div>     
-                </li> 
+                    <div class="task_subject_box_btn_accomplish" v-if="tasklist.weixinBind">{{i18n.bound}}</div>
+                    <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=binding')">{{i18n.bindNow}}</div>
+                </li>
                 <li>
                     <div class="task_subject_box">
                          <div class="task_subject_icon">
                              <img src="{yun:}$wap_style{/yun}/images/task_authentication.png" alt="" width="100%" height="100%">
                          </div>
                          <div class="task_subject_init">
-                             <div class="subject_init_top">上传身份验证</div>
+                             <div class="subject_init_top">{{i18n.taskIdVerify}}</div>
                              <div class="subject_init_bom">+{{integral_identity}}{{integral_pricename}}</div>
                          </div>
                     </div>
-                   <div class="task_subject_box_btn_accomplish" v-if="tasklist.identification">已认证</div>
-                   <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=idcard')">立即认证</div>     
+                   <div class="task_subject_box_btn_accomplish" v-if="tasklist.identification">{{i18n.verified}}</div>
+                   <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=idcard')">{{i18n.verifyNow}}</div>
                 </li>
                 <li>
                 <div class="task_subject_box">
@@ -73,12 +73,12 @@
                          <img src="{yun:}$wap_style{/yun}/images/task_streamer.png" alt="" width="100%" height="100%">
                      </div>
                      <div class="task_subject_init">
-                         <div class="subject_init_top">上传头像</div>
+                         <div class="subject_init_top">{{i18n.taskUploadAvatar}}</div>
                          <div class="subject_init_bom">+{{integral_avatar}}{{integral_pricename}}</div>
                      </div>
                 </div>
-                <div class="task_subject_box_btn_accomplish" v-if="tasklist.photo">已上传</div>
-                   <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=photo')">立即上传</div>  
+                <div class="task_subject_box_btn_accomplish" v-if="tasklist.photo">{{i18n.uploaded}}</div>
+                   <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=photo')">{{i18n.uploadNow}}</div>
               </li>
               <li>
                  <div class="task_subject_box">
@@ -86,12 +86,12 @@
                           <img src="{yun:}$wap_style{/yun}/images/vip_datum.png" alt="" width="100%" height="100%">
                       </div>
                       <div class="task_subject_init">
-                          <div class="subject_init_top">完善基本资料</div>
+                          <div class="subject_init_top">{{i18n.taskCompleteProfile}}</div>
                           <div class="subject_init_bom">+{{integral_userinfo}}{{integral_pricename}}</div>
                       </div>
                  </div>
-                 <div class="task_subject_box_btn_accomplish" v-if="tasklist.baseInfo">已完善</div>
-                   <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=info')">立即完善</div>  
+                 <div class="task_subject_box_btn_accomplish" v-if="tasklist.baseInfo">{{i18n.completed}}</div>
+                   <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=info')">{{i18n.completeNow}}</div>
                </li>
                <li>
                     <div class="task_subject_box">
@@ -99,12 +99,12 @@
                              <img src="{yun:}$wap_style{/yun}/images/task_issue .png" alt="" width="100%" height="100%">
                          </div>
                          <div class="task_subject_init">
-                             <div class="subject_init_top">发布简历</div>
+                             <div class="subject_init_top">{{i18n.taskPostResume}}</div>
                              <div class="subject_init_bom">+{{integral_add_resume}}{{integral_pricename}}</div>
                          </div>
                     </div>
-                     <div class="task_subject_box_btn_accomplish" v-if="tasklist.expectnum !=0">已发布</div>
-                   <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=addresume')">发布简历</div>  
+                     <div class="task_subject_box_btn_accomplish" v-if="tasklist.expectnum !=0">{{i18n.published}}</div>
+                   <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=addresume')">{{i18n.taskPostResume}}</div>
                 </li>
                 <li>
                 <div class="task_subject_box">
@@ -112,11 +112,11 @@
                          <img src="{yun:}$wap_style{/yun}/images/task_falst_logoin.png" alt="" width="100%" height="100%">
                      </div>
                      <div class="task_subject_init">
-                         <div class="subject_init_top">每天首次登录</div>
+                         <div class="subject_init_top">{{i18n.taskDailyLogin}}</div>
                          <div class="subject_init_bom">+{{integral_login}}{{integral_pricename}}</div>
                      </div>
                 </div>
-                <div class="task_subject_box_btn_accomplish">已登录</div>
+                <div class="task_subject_box_btn_accomplish">{{i18n.loggedIn}}</div>
               </li>
               <li>
                 <div class="task_subject_box">
@@ -124,12 +124,12 @@
                          <img src="{yun:}$wap_style{/yun}/images/task_ mailbox .png" alt="" width="100%" height="100%">
                      </div>
                      <div class="task_subject_init">
-                         <div class="subject_init_top">认证邮箱</div>
+                         <div class="subject_init_top">{{i18n.taskVerifyEmail}}</div>
                          <div class="subject_init_bom">+{{integral_emailcert}}{{integral_pricename}}</div>
                      </div>
                 </div>
-               <div class="task_subject_box_btn_accomplish" v-if="tasklist.emailChecked">已认证</div>
-                   <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=bindingbox&type=email')">立即认证</div>  
+               <div class="task_subject_box_btn_accomplish" v-if="tasklist.emailChecked">{{i18n.verified}}</div>
+                   <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=bindingbox&type=email')">{{i18n.verifyNow}}</div>
               </li>
             <li>
                 <div class="task_subject_box">
@@ -137,28 +137,25 @@
                          <img src="{yun:}$wap_style{/yun}/images/task_issue .png" alt="" width="100%" height="100%">
                      </div>
                      <div class="task_subject_init">
-                         <div class="subject_init_top">发布问题</div>
+                         <div class="subject_init_top">{{i18n.taskPostQuestion}}</div>
                          <div class="subject_init_bom">+{{integral_question}}{{integral_pricename}}</div>
                      </div>
                 </div>
-               
-                   <div class="task_subject_box_btn" v-if="tasklist.question" onclick="navigateTo('{yun:}url m=wap c=ask a=addquestion {/yun}')">发布问题</div>  
-                   <div class="task_subject_box_btn_accomplish" v-else>今日已发布</div>
+                   <div class="task_subject_box_btn" v-if="tasklist.question" onclick="navigateTo('{yun:}url m=wap c=ask a=addquestion {/yun}')">{{i18n.taskPostQuestion}}</div>
+                   <div class="task_subject_box_btn_accomplish" v-else>{{i18n.postedToday}}</div>
             </li>
-    
               <li>
                 <div class="task_subject_box">
                      <div class="task_subject_icon">
                          <img src="{yun:}$wap_style{/yun}/images/task_answer.png" alt="" width="100%" height="100%">
                      </div>
                      <div class="task_subject_init">
-                         <div class="subject_init_top">回答问题</div>
+                         <div class="subject_init_top">{{i18n.taskAnswerQuestion}}</div>
                          <div class="subject_init_bom">+{{integral_answer}}{{integral_pricename}}</div>
                      </div>
                 </div>
-                <div class="task_subject_box_btn" v-if="tasklist.answer" onclick="navigateTo('{yun:}url m=ask{/yun}#last-question')">回答问题</div>  
-                <div class="task_subject_box_btn_accomplish" v-else>今日已回答</div>
-                   
+                <div class="task_subject_box_btn" v-if="tasklist.answer" onclick="navigateTo('{yun:}url m=ask{/yun}#last-question')">{{i18n.taskAnswerQuestion}}</div>
+                <div class="task_subject_box_btn_accomplish" v-else>{{i18n.answeredToday}}</div>
               </li>
               <li>
                 <div class="task_subject_box">
@@ -166,34 +163,69 @@
                          <img src="{yun:}$wap_style{/yun}/images/task_reply.png" alt="" width="100%" height="100%">
                      </div>
                      <div class="task_subject_init">
-                         <div class="subject_init_top">评论回复</div>
+                         <div class="subject_init_top">{{i18n.taskCommentReply}}</div>
                          <div class="subject_init_bom">+{{integral_answerpl}}{{integral_pricename}}</div>
                      </div>
                 </div>
-                <div class="task_subject_box_btn" v-if="tasklist.answerpl" onclick="navigateTo('{yun:}url m=ask{/yun}#last-question')">评论回答</div>  
-                <div class="task_subject_box_btn_accomplish" v-else>今日已评论</div>
-                   
+                <div class="task_subject_box_btn" v-if="tasklist.answerpl" onclick="navigateTo('{yun:}url m=ask{/yun}#last-question')">{{i18n.commentAnswer}}</div>
+                <div class="task_subject_box_btn_accomplish" v-else>{{i18n.commentedToday}}</div>
               </li>
             </ul>
         </div>
     </div>
-	<!--  邀请注册海报  -->
     <van-popup v-model="inviteRegHbShow" round closeable :style="{height:'90%',width:'90%',background:'none'}">
         <div class="hb_tc">
             <img :src="inviteRegHb" style="max-width: 100%;">
             <div class="hb_tc_bth">
-                <div @click="getInviteRegHb()" class="hb_tc_hyz">换一张</div>
-                <div class="hb_tc_bchb"> <span class="hb_tc_bchb_c" @click="inviteRegHbTipShow=!inviteRegHbTipShow" v-if="inviteRegHbTipShow"> <i class="hb_tc_bchbicon"></i>长按图片保存 </span></div>
+                <div @click="getInviteRegHb()" class="hb_tc_hyz">{{i18n.changePoster}}</div>
+                <div class="hb_tc_bchb"> <span class="hb_tc_bchb_c" @click="inviteRegHbTipShow=!inviteRegHbTipShow" v-if="inviteRegHbTipShow"> <i class="hb_tc_bchbicon"></i>{{i18n.longPressSave}} </span></div>
             </div>
         </div>
     </van-popup>
 </div>
-<script> 
+<script>
 	var wapurl = "{yun:}url m=wap{/yun}";
     var invite_reg_hbids = [];
 	new Vue({
         el: '#yunvue',
         data: {
+            i18n: {
+                taskSignIn: '{yun:}t key='wap_user_00114'{/yun}',
+                signedIn: '{yun:}t key='wap_00989'{/yun}',
+                signInNow: '{yun:}t key='wap_user_00118'{/yun}',
+                taskInviteReg: '{yun:}t key='wap_user_00108'{/yun}',
+                inviteNow: '{yun:}t key='wap_user_00121'{/yun}',
+                taskVerifyMobile: '{yun:}t key='wap_user_00109'{/yun}',
+                verified: '{yun:}t key='wap_user_00128'{/yun}',
+                verifyNow: '{yun:}t key='wap_user_00120'{/yun}',
+                taskWechatBind: '{yun:}t key='wap_user_00115'{/yun}',
+                bound: '{yun:}t key='wap_user_00127'{/yun}',
+                bindNow: '{yun:}t key='wap_user_00119'{/yun}',
+                taskIdVerify: '{yun:}t key='wap_user_00106'{/yun}',
+                taskUploadAvatar: '{yun:}t key='wap_user_00110'{/yun}',
+                uploaded: '{yun:}t key='wap_user_00123'{/yun}',
+                uploadNow: '{yun:}t key='wap_user_00116'{/yun}',
+                taskCompleteProfile: '{yun:}t key='wap_00990'{/yun}',
+                completed: '{yun:}t key='wap_user_00125'{/yun}',
+                completeNow: '{yun:}t key='wap_user_00117'{/yun}',
+                taskPostResume: '{yun:}t key='wap_user_00111'{/yun}',
+                published: '{yun:}t key='wap_user_00124'{/yun}',
+                taskDailyLogin: '{yun:}t key='wap_00991'{/yun}',
+                loggedIn: '{yun:}t key='wap_user_00126'{/yun}',
+                taskVerifyEmail: '{yun:}t key='wap_user_00122'{/yun}',
+                taskPostQuestion: '{yun:}t key='wap_user_00112'{/yun}',
+                postedToday: '{yun:}t key='wap_00992'{/yun}',
+                taskAnswerQuestion: '{yun:}t key='wap_user_00113'{/yun}',
+                answeredToday: '{yun:}t key='wap_00993'{/yun}',
+                taskCommentReply: '{yun:}t key='wap_00994'{/yun}',
+                commentAnswer: '{yun:}t key='wap_00995'{/yun}',
+                commentedToday: '{yun:}t key='wap_00996'{/yun}',
+                changePoster: '{yun:}t key='wap_user_00129'{/yun}',
+                longPressSave: '{yun:}t key='wap_00214'{/yun}',
+                signingIn: '{yun:}t key='wap_user_00107'{/yun}',
+                generating: '{yun:}t key='wap_00073'{/yun}',
+                featureUnavailable: '{yun:}t key='wap_user_00105'{/yun}',
+            },
           integral_pricename: '',
             tasklist: [],
 
@@ -221,7 +253,7 @@
            
           }
         },
-        created() {   
+        created() {
          this.getIntegralTask();
         },
         methods:{
@@ -229,8 +261,7 @@
             showLoading();
             var that = this;
             $.post('{yun:}url d=wxapp h=user m=finance c=getIntegralTask{/yun}',{rand:Math.random()},function(data){
-              	hideLoading();      
-              	
+              	hideLoading();
 	            if (data.error == 1) {
 					var list = data.data;
 					that.integral_pricename = list.integral_pricename;
@@ -239,10 +270,10 @@
 					that.integral_signin = list.integral_signin;
 					that.integral_invite_reg = list.integral_invite_reg;
 					that.integral_avatar = list.integral_avatar;
-					that.integral_mobliecert = list.integral_mobliecert;						
+					that.integral_mobliecert = list.integral_mobliecert;
 					that.integral_userinfo = list.integral_userinfo;
 					that.integral_login = list.integral_login;
-					that.integral_emailcert = list.integral_emailcert;					
+					that.integral_emailcert = list.integral_emailcert;
 					that.integral_identity = list.integral_identity;
 					that.integral_add_resume = list.integral_add_resume;
 					that.integral_question = list.integral_question;
@@ -251,14 +282,13 @@
 					that.integral_bind_wx = list.integral_bind_wx;
 					that.expectnum = list.expectnum;
 				}
-               
             },'json');
-          },     
+          },
           sign:function(){
-          	showLoading('签到中...');
+          	showLoading(this.i18n.signingIn);
             var that = this;
             $.post('{yun:}url d=wxapp h=user m=index c=sign{/yun}',{rand:Math.random()},function(data){
-              	hideLoading();      
+              	hideLoading();
               	if (data.error == 1) {
 					window.localStorage.setItem("needRefresh", 1);
 					showToast(data.msg,2, function() {
@@ -267,7 +297,6 @@
 				} else {
 					showToast(data.msg);
 				}
-               
             },'json');
           },
 		  getInviteRegHbList: function() {
@@ -297,13 +326,13 @@
                 if(hbNum == 0){
                     var lr = that.getInviteRegHbList();
                     if(!lr){
-                        showToast("功能无法使用，请联系网站客服", 2);
+                        showToast(that.i18n.featureUnavailable, 2);
                         return false;
                     }
-                    hbNum = invite_reg_hbids.length; // 重新分配海报数量
+                    hbNum = invite_reg_hbids.length;
                 }
 
-                showLoading('生成中...');
+                showLoading(that.i18n.generating);
                 const src = wapurl + '?c=ajax&a=getInviteRegHb&hb=' + invite_reg_hbids[hb];
                 if (hb < (parseInt(hbNum) - 1)) {
                     var next = hb + 1;
@@ -325,7 +354,7 @@
 			  window.localStorage.setItem("needRefresh", 1);
               window.location.href = url;
           }
-        } 
+        }
       });
 </script>
 </body>

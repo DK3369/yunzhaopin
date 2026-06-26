@@ -1,6 +1,6 @@
 
 
-		<!-- 固定的手机底部 -->
+		<!-- Fixed mobile footer -->
 		
 		<div class="wap_footer">
 			<div class="wap_footerfixd">
@@ -49,7 +49,7 @@
 
 					<a class="wap_footernav" href="{yun:}if !$username{/yun}{yun:}url m=wap c=login{/yun}{yun:}else{/yun}{yun:}url m=wap{/yun}member/index.php?c=sysnews{yun:}/if{/yun}">
 						<div class="wap_footericon">
-							<!--未读消息数量-->
+							<!-- Unread message count -->
 						    <div id="tzmsgNum" class="none  Unread_message"></div>
 							{yun:}if $smarty.get.c=='sysnews'{/yun}
 							<img src="{yun:}$wap_style{/yun}/images/tab_icon_news_s.png" alt="" style="width: 100%;">
@@ -74,11 +74,11 @@
 		</div>
 
 
-		<!--企业点击发布-->
+		<!-- Company publish action -->
 		{yun:}if $usertype=='2' && !isset($membernav){/yun}
-			<!-- 余额不足提示 -->
+			<!-- Insufficient balance prompt -->
 			{yun:}include file="$wapstyle/publichtm/yun_modal.htm"{/yun}
-			<!-- 强制操作提醒弹出框 -->
+			<!-- Mandatory action reminder modal -->
 			{yun:}include file="$wapstyle/publichtm/yun_cert.htm"{/yun}
 			<script src="{yun:}$wap_style{/yun}/js/com.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
 		{yun:}/if{/yun}
@@ -106,7 +106,7 @@
 							if (res.error==1) {
 			                    // {yun:}t key='common_01740'{/yun}
 			                    modalVue.$data.mb_content = res.msg;
-			                    modalVue.$data.cancelText = "不用了';
+			                    modalVue.$data.cancelText = "{yun:}t key='wap_com_00107'{/yun}";
 			                    modalVue.$data.confirmText = "{yun:}t key='wap_com_00048'{/yun}";
 			                    modalVue.$data.yunModal = true;
 			                    modalType = 'job';
@@ -118,7 +118,7 @@
 			                    modalVue.$data.yunModal = true;
 			                    modalType = 'toaddjob';
 			                }else {
-			                    // 强制操作
+			                    // Mandatory action
 			                    certVue.$data.checked = res;
 			                    certVue.$data.yunCert = true;
 			                }

@@ -10,13 +10,13 @@
 		{yun:}if $smarty.get.type=="email"{/yun}
 		<ul class="security mt15">
 			<li>
-				<span class="security_anme">邮&nbsp;&nbsp; 箱 </span>
+				<span class="security_anme">{yun:}t key='wap_user_00179'{/yun}</span>
 				<div class="security_text">
 					<input type="text" class="security_text_t" name="email" id="emailval" v-model="email" placeholder="{yun:}t key='wap_js_00121'{/yun}">
 				</div>
 			</li>
 			<li>
-				<span class="security_anme">图片验证</span>
+				<span class="security_anme">{yun:}t key='wap_01146'{/yun}</span>
 				<div class="security_text  Image_authentication">
 					<input v-model="authcode" type="text" name="authcode" class="security_text_t" placeholder="{yun:}t key='wap_com_00035'{/yun}">
 					<div class="security_text_authentication">
@@ -26,7 +26,7 @@
 			</li>
 		</ul>
 		<div class="security_bth">
-			<input type="button" value="发送到邮箱验证" class="security_bth_but" @click="formSubmit()">
+			<input type="button" value="{yun:}t key='wap_01115'{/yun}" class="security_bth_but" @click="formSubmit()">
 		</div>
 		{yun:}/if{/yun}
 
@@ -40,7 +40,7 @@
 			</li>
 
 			<li>
-				<span class="security_anme">图片验证</span>
+				<span class="security_anme">{yun:}t key='wap_01146'{/yun}</span>
 				<div class="security_text">
 					<div class="security_text">
 						<input type="text" name="authcode" v-model="authcode" class="security_text_t" placeholder="{yun:}t key='wap_com_00035'{/yun}">
@@ -55,7 +55,7 @@
 				<span class="security_anme">{yun:}t key='wap_com_00036'{/yun}</span>
 				<div class="security_text">
 					<div class="security_text">
-						<input type="text" v-model="code" class="security_text_t" maxlength="6"  placeholder="输入短信验证码" id="moblie_code">
+						<input type="text" v-model="code" class="security_text_t" maxlength="6" placeholder="{yun:}t key='wap_00677'{/yun}" id="moblie_code">
 					</div>
 					<a href="javascript:void(0);" onclick="sendmoblie('vcode_img');" class="security_hq" id="time">{yun:}t key='wap_user_00144'{/yun}</a>
 				</div>
@@ -70,6 +70,14 @@
 <input type="hidden" id="send" value="0" />
 
 <script>
+    var COM_BINDINGBOX_I18N = {
+        fillMobile: '{yun:}t key='wap_01117'{/yun}',
+        fillAuthcode: '{yun:}t key='wap_user_00141'{/yun}',
+        fillSmsCode: '{yun:}t key='wap_01118'{/yun}',
+        fillEmail: '{yun:}t key='wap_01119'{/yun}',
+        bindSuccess: '{yun:}t key='wap_user_00145'{/yun}',
+        emailSent: '{yun:}t key='wap_01116'{/yun}',
+    };
     var yunvue = new Vue({
         el: '#yunvue',
         data() {
@@ -108,19 +116,19 @@
 
 				if (that.bind == 'tel') {
 					if (that.moblie == '') {
-						return showModal('请填写手机号');
+						return showModal(COM_BINDINGBOX_I18N.fillMobile);
 					} else if (!isjsMobile(that.moblie)) {
-						return showModal('请填写正确的手机');
+						return showModal("{yun:}t key='wap_user_00140'{/yun}");
 					}
 
 					if(that.authcode==""){
-						return showModal("{yun:}t key='wap_user_00141'{/yun}");
+						return showModal(COM_BINDINGBOX_I18N.fillAuthcode);
 					}
 
 					formData.moblie = that.moblie;
 
 					if (that.code == '') {
-						return showModal('请填写短信验证码');
+						return showModal(COM_BINDINGBOX_I18N.fillSmsCode);
 					}
 					var url = '{yun:}url d=wxapp h=com m=set c=bindingbox{/yun}';
 					formData.code = that.code;
@@ -128,13 +136,13 @@
 					var emailReg = /^([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9\-]+@([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
 
 					if (that.email == '') {
-						return showModal('请填写邮箱');
+						return showModal(COM_BINDINGBOX_I18N.fillEmail);
 					} else if (!emailReg.test(that.email)) {
 						return showModal("{yun:}t key='wap_js_00120'{/yun}");
 					}
 
                     if(that.authcode==""){
-                        return showModal("{yun:}t key='wap_user_00141'{/yun}");
+                        return showModal(COM_BINDINGBOX_I18N.fillAuthcode);
                     }
 					var url	= '{yun:}url m=wap c=ajax a=emailcert{/yun}';
 					formData.email = that.email;
@@ -150,11 +158,11 @@
 				    hideLoading();
 					if (data.error == 0) {
 						if (bind == 'tel') {
-							showModal("{yun:}t key='wap_user_00145'{/yun}", function() {
+							showModal(COM_BINDINGBOX_I18N.bindSuccess, function() {
 								history.go(-1)
 							});
 						} else if (bind == 'email') {
-							showModal('邮件发送成功', function() {
+							showModal(COM_BINDINGBOX_I18N.emailSent, function() {
 								history.go(-1)
 							});
 						}

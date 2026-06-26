@@ -6,15 +6,15 @@
        
            <div class="yun_createlist">
                
-                   <div class="yun_create_name"><span class="m_bt">*</span>模板名称</div>
+                   <div class="yun_create_name"><span class="m_bt">*</span>{{i18n.templateName}}</div>
                 <div class="yun_create_text">
-                    <input type="text" v-model="info.name" placeholder="请输入模板名称">
+                    <input type="text" v-model="info.name" :placeholder="i18n.templateNamePlaceholder">
                 </div>  
         </div>
          <div class="yun_createlist" @click="showTimePicker">
-         <div class="yun_create_name"><span class="m_bt">*</span>面试时间</div>
+         <div class="yun_create_name"><span class="m_bt">*</span>{{i18n.interviewTime}}</div>
                 <div class="yun_create_text_p" v-if="info.intertime">{{info.intertime}}</div>
-			   <div class="yun_create_text_p"style="color:#cecccc;" v-else>请选择面试时间</div>
+			   <div class="yun_create_text_p"style="color:#cecccc;" v-else>{{i18n.selectInterviewTime}}</div>
 				
           
             <div class="yun_create_fx">
@@ -22,39 +22,39 @@
             </div>
         </div>
           <div class="yun_createlist">
-              <div class="yun_create_name"><span class="m_bt">*</span>联系人</div>
+              <div class="yun_create_name"><span class="m_bt">*</span>{{i18n.contactPerson}}</div>
                 <div class="yun_create_text">
-                    <input type="text" v-model="info.linkman" placeholder="请填写姓名">
+                    <input type="text" v-model="info.linkman" :placeholder="i18n.namePlaceholder">
                 </div>  
         </div>
           <div class="yun_createlist">
-               <div class="yun_create_name"><span class="m_bt">*</span>联系方式</div>
+               <div class="yun_create_name"><span class="m_bt">*</span>{{i18n.contactInfo}}</div>
                 <div class="yun_create_text">
-                    <input type="number" v-model="info.linktel" oninput="value=value.replace(/^0|[\^d]/g,'')" placeholder="请输入手机号" />
+                    <input type="number" v-model="info.linktel" oninput="value=value.replace(/^0|[\^d]/g,'')" :placeholder="i18n.phonePlaceholder" />
                 </div>
              
         </div>
           <div class="yun_createlist">
-              <div class="yun_create_name"><span class="m_bt">*</span>面试地址</div>
+              <div class="yun_create_name"><span class="m_bt">*</span>{{i18n.interviewAddress}}</div>
                 <div class="yun_create_text">
-                    <input type="text" v-model="info.address" placeholder="输入具体工作地址" />
+                    <input type="text" v-model="info.address" :placeholder="i18n.addressPlaceholder" />
                 </div> 
 
         </div>
         <div class="remark" style="padding: 10px 15px;">
-           <div class=" "> 备注信息</div>
+           <div class=" ">{{i18n.remarkInfo}}</div>
             <div class="remark_word">
                 <form action="" class="remark_word_box">
                     <textarea name="description" style="resize:none;color:#000; font-size: 0.426666rem;" class="remark_word_text" v-model="info.content"
-                              placeholder="请输入告知牛人的其他内容，例如所需材料"></textarea>
+                              :placeholder="i18n.remarkPlaceholder"></textarea>
                 </form>
             </div>
         </div>
     </div>
-    <div class="issue_post_body_btn" @click="saveMb">保存</div>
+    <div class="issue_post_body_btn" @click="saveMb">{{i18n.save}}</div>
 
     <van-popup v-model="timeShow" position="bottom"/>
-        <van-datetime-picker v-model="currentDate" type="datetime" title="选择面试时间" @cancel="timeShow=false" :min-date="minDate"  @confirm="setInterTime" />
+        <van-datetime-picker v-model="currentDate" type="datetime" :title="i18n.pickInterviewTime" @cancel="timeShow=false" :min-date="minDate"  @confirm="setInterTime" />
     </van-popup>
 </div>
 
@@ -77,6 +77,29 @@
             timeShow: false,
             currentDate: new Date(),
             minDate: new Date(),
+            i18n: {
+                templateName: '{yun:}t key='wap_com_00413'{/yun}',
+                templateNamePlaceholder: '{yun:}t key='wap_com_00411'{/yun}',
+                interviewTime: '{yun:}t key='wap_user_00255'{/yun}',
+                selectInterviewTime: '{yun:}t key='wap_01217'{/yun}',
+                contactPerson: '{yun:}t key='wap_user_00267'{/yun}',
+                namePlaceholder: '{yun:}t key='wap_user_00054'{/yun}',
+                contactInfo: '{yun:}t key='wap_00462'{/yun}',
+                phonePlaceholder: '{yun:}t key='wap_js_00119'{/yun}',
+                interviewAddress: '{yun:}t key='wap_01055'{/yun}',
+                addressPlaceholder: '{yun:}t key='wap_01219'{/yun}',
+                remarkInfo: '{yun:}t key='wap_user_00263'{/yun}',
+                remarkPlaceholder: '{yun:}t key='wap_01220'{/yun}',
+                save: '{yun:}t key='wap_user_00101'{/yun}',
+                pickInterviewTime: '{yun:}t key='wap_01218'{/yun}',
+                loading: '{yun:}t key='wap_com_00318'{/yun}',
+                saving: '{yun:}t key='wap_01225'{/yun}',
+                nameRequired: '{yun:}t key='wap_01221'{/yun}',
+                timeRequired: '{yun:}t key='wap_01222'{/yun}',
+                contactRequired: '{yun:}t key='wap_01223'{/yun}',
+                phoneRequired: '{yun:}t key='wap_com_00412'{/yun}',
+                addressRequired: '{yun:}t key='wap_01224'{/yun}',
+            },
         },
         created() {
             if (parseInt(yid) > 0) {
@@ -94,7 +117,7 @@
                     paramer = {
                         yid: yid
                     };
-                showLoading('加载中');
+                showLoading(that.i18n.loading);
                 $.post('{yun:}url d=wxapp h=com m=set c=yqmbedit{/yun}', paramer, function (data) {
                     hideLoading();
                     if (data.error == 1) {
@@ -141,19 +164,19 @@
                 var that = this;
 
                 if (that.info.name.length == 0){
-                    return showToast('模板名称不能为空');
+                    return showToast(that.i18n.nameRequired);
                 }
                 if (that.info.intertime.length == 0){
-                    return showToast('面试时间不能为空');
+                    return showToast(that.i18n.timeRequired);
                 }
                 if (that.info.linkman.length == 0){
-                    return showToast('联系人不能为空');
+                    return showToast(that.i18n.contactRequired);
                 }
                 if (that.info.linktel.length == 0){
-                    return showToast('联系电话不能为空');
+                    return showToast(that.i18n.phoneRequired);
                 }
                 if (that.info.address.length == 0){
-                    return showToast('面试地址不能为空');
+                    return showToast(that.i18n.addressRequired);
                 }
 
                 var paramer = {
@@ -167,7 +190,7 @@
                 if (parseInt(yid)>0){
                     paramer.yid = yid;
                 }
-                showLoading('修改中');
+                showLoading(that.i18n.saving);
                 $.post('{yun:}url d=wxapp h=com m=set c=yqmbeditsave{/yun}', paramer, function (data) {
                     hideLoading();
                     if (data.error == 1) {

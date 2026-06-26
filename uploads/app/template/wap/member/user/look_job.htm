@@ -1,6 +1,6 @@
 {yun:}include file="$wapstyle/member/header.htm"{/yun}
 <div class="main_member_cot_box">
-	<div class="wap_member_comp_h1"><span>浏览的职位</span></div>
+	<div class="wap_member_comp_h1"><span>{yun:}t key='wap_01135'{/yun}</span></div>
 	<div class="m_user_infocont">
 
 		{yun:}foreach item=one from=$look{/yun}
@@ -19,7 +19,7 @@
 					{yun:}if $one.status == '正在招聘'{/yun}
 					<span class="m_user_jobzt">{yun:}$one.status{/yun}</span>
 					{yun:}else{/yun}
-					<span class="m_user_jobjs">已停止</span>
+					<span class="m_user_jobjs">{yun:}t key='wap_01136'{/yun}</span>
 					{yun:}/if{/yun}
 				</div>
 				<div class="m_user_info_com">{yun:}$one.com_name{/yun} </div>
@@ -30,7 +30,7 @@
 		</div>
 		{yun:}foreachelse{/yun}
 		<div class="wap_member_no">
-			您还没有浏览过的职位<div><a class="wap_member_no_submit" href="{yun:}url m=wap c=job{/yun}">去搜索相关职位</a></div>
+			{yun:}t key='wap_00828'{/yun}<div><a class="wap_member_no_submit" href="{yun:}url m=wap c=job{/yun}">{yun:}t key='wap_00829'{/yun}</a></div>
 		</div>
 		{yun:}/foreach{/yun}
 	</div>

@@ -2,11 +2,11 @@
 <div class="m_cardbox none" id="yunvue">
 <div class="m_cardbg">
 
-        <div class="evaluate_job_name">对本次面试 {{jobInfo.com_name}} {{jobInfo.name}}的职位体验如何？</div>
+        <div class="evaluate_job_name">{{i18n.interviewExpPrefix}}{{jobInfo.com_name}} {{jobInfo.name}}{{i18n.interviewExpSuffix}}</div>
 
     <form id="comment_Form" onsubmit='return false;'>
         <div class="evaluate_com_mypj_zt">
-            <div class="evaluate_com_mypj">总体评价</div>
+            <div class="evaluate_com_mypj">{{i18n.overallRating}}</div>
             <ul class="evaluate_com_mypj_list">                
                 <li :class="item.show==1?'evaluate_changetag evaluate_changetag_cur':'evaluate_changetag'" 
                     v-for="(item,index) in totalname" :key="index" @click="tagchoose(index)"><em>{{item.name}}</em></li>               
@@ -14,7 +14,7 @@
         </div>
 
         <div class="evaluate_com_pjbox">
-            <div class="evaluate_com_mypj">我的评分</div>
+            <div class="evaluate_com_mypj">{{i18n.myRating}}</div>
             <div class="evaluate_com_pjlist">
                 <div class="evaluate_com_pjtit">{yun:}t key='wap_user_00156'{/yun} </div>
                 <div class="com_pjia_liststar">
@@ -29,7 +29,7 @@
                 </div>
             </div>
 			 <div class="evaluate_com_pjlist">
-                <div class="evaluate_com_pjtit">面试官态度 </div>
+                <div class="evaluate_com_pjtit">{{i18n.interviewerAttitude}} </div>
                 <div class="com_pjia_liststar">
                    <van-rate v-model="hrscore" :size="25" color="#ffd21e" void-icon="star" void-color="#eee" @change="onChangeHr" :readonly="!control"/>
                 </div>
@@ -38,14 +38,14 @@
         </div>
 
         <div class="evaluate_com_msbox">
-            <div class="evaluate_com_mstit">请您简要描述一下面试心得体会</div>
-            <textarea id="content" name="content" v-model="content" :disabled="!control" class="evaluate_textarea" placeholder="亲，写点面试过程吧，你的面试经历对其他求职者有很大帮助的。">{{content}}</textarea>
+            <div class="evaluate_com_mstit">{{i18n.interviewNotesTitle}}</div>
+            <textarea id="content" name="content" v-model="content" :disabled="!control" class="evaluate_textarea" :placeholder="i18n.interviewNotesPlaceholder">{{content}}</textarea>
         </div>
 
 
         <div class="evaluate_com_msbox">
-            <div class="evaluate_com_mstit">对公司的第一印象如何，简单描述一下您的感受</div>
-            <textarea id="othercontent" name="othercontent" v-model="othercontent" :disabled="!control" class="evaluate_textarea" placeholder="如 公司环境氛围规模等">{{othercontent}}</textarea>
+            <div class="evaluate_com_mstit">{{i18n.companyImpressionTitle}}</div>
+            <textarea id="othercontent" name="othercontent" v-model="othercontent" :disabled="!control" class="evaluate_textarea" :placeholder="i18n.companyImpressionPlaceholder">{{othercontent}}</textarea>
         </div>
         <div class="evaluate_com_fb">
            
@@ -91,6 +91,18 @@
             control: true,
             starshow: false,
             jobInfo:{},
+            i18n: {
+                interviewExpPrefix: '{yun:}t key='wap_01069'{/yun}',
+                interviewExpSuffix: '{yun:}t key='wap_01070'{/yun}',
+                overallRating: '{yun:}t key='wap_01071'{/yun}',
+                myRating: '{yun:}t key='wap_01072'{/yun}',
+                interviewerAttitude: '{yun:}t key='wap_01073'{/yun}',
+                interviewNotesTitle: '{yun:}t key='wap_01074'{/yun}',
+                interviewNotesPlaceholder: '{yun:}t key='wap_01075'{/yun}',
+                companyImpressionTitle: '{yun:}t key='wap_01076'{/yun}',
+                companyImpressionPlaceholder: '{yun:}t key='wap_01077'{/yun}',
+                fillCompleteComment: '{yun:}t key='wap_01078'{/yun}',
+            },
         },
         created() {
             this.getcomment();
@@ -115,7 +127,6 @@
                         that.content = that.msgInfo.content;
                         that.othercontent = that.msgInfo.othercontent;
                         if (that.msgInfo.id > 0) {
-                            // that.control = false; // Temporarily turn off the disabled function
                             that.isnmval = that.msgInfo.isnm;
                         }
                         setTimeout(function() {
@@ -173,13 +184,13 @@
                 var tarr = [];
                 
                 if (that.content =='') {
-                    showModal('请填写完整评论信息');
+                    showModal(that.i18n.fillCompleteComment);
                     return false;
                 }
 
                 if (that.othercontent == '') {
 
-                    showModal('请填写完整评论信息');
+                    showModal(that.i18n.fillCompleteComment);
                     return false;
                 }
                 for (var i = 0; i < that.totalname.length; i++) {

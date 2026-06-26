@@ -38,27 +38,27 @@
 <div class="yun_map_tit">
     <ul>
         <li>
-            <a href="{yun:}url m=wap c=map x=$smarty.get.x y=$smarty.get.y{/yun}">列表</a>
+            <a href="{yun:}url m=wap c=map x=$smarty.get.x y=$smarty.get.y{/yun}">{yun:}t key='wap_01418'{/yun}</a>
         </li>
         <li class="yun_map_cur">
-            <a href="{yun:}url m=wap c=map a=maplist x=$smarty.get.x y=$smarty.get.y{/yun}" class="">地图</a>
+            <a href="{yun:}url m=wap c=map a=maplist x=$smarty.get.x y=$smarty.get.y{/yun}" class="">{yun:}t key='wap_01419'{/yun}</a>
         </li>
     </ul>
 </div>
 <div id="allmap"></div>
 <input type="hidden" name="x" id="mapx" value="{yun:}$mapx{/yun}"/>
 <input type="hidden" name="y" id="mapy" value="{yun:}$mapy{/yun}"/>
-<!--左面-->
+<!-- Left panel -->
 <!--div id="map-controls">
     <button id="show-company-list"><i class="map_list map_iconfont_search_map "></i></button>
     <button id="my-location"><i class="map_jz_list map_iconfont_search_map_nav "></i></button>
 </div-->
-<!--右面放大缩小-->
-<!--公司-->
-<!--下面公司-->
+<!-- Right zoom controls -->
+<!-- Company -->
+<!-- Company list below -->
 <div id="company-panel-controls" style="display:none;">
     <span id="company-panel-close" class="icon close" style="display: none;"></span>
-    <span id="company-panel-refresh">换一批<span class="icon refresh"></span><i class="iconfont map_iconfont_search_map_nav_hyh" style="font-size:16px; margin-left:5px;"></i></span>
+    <span id="company-panel-refresh">{yun:}t key='wap_01420'{/yun}<span class="icon refresh"></span><i class="iconfont map_iconfont_search_map_nav_hyh" style="font-size:16px; margin-left:5px;"></i></span>
 </div>
 <div id="company-panel" style="display:none;">
     <div id="company-list" style="margin-left: 0; width:100%;"></div>
@@ -145,7 +145,7 @@
             }
             joblist_length = res.list[i].joblist.length;
         }
-        var info_html = ' <div class="map_company">' + '<div class="map_company_cont">' + '<ul class="map_company_post">' + joblist_html + '</ul>' + '<div class="map_company_xq"><a href="' + res.list[i].comurl + '">查看详情>></a></div>' + '</div>' + '</div>';
+        var info_html = ' <div class="map_company">' + '<div class="map_company_cont">' + '<ul class="map_company_post">' + joblist_html + '</ul>' + '<div class="map_company_xq"><a href="' + res.list[i].comurl + '">{yun:}t key=\'wap_01421\'{/yun}</a></div>' + '</div>' + '</div>';
         var infoWindow = new AMap.InfoWindow({
 		   content: '<div class="map_company_h1"><a style="color:#000;" href="' + res.list[i].comurl + '">' + res.list[i].com_name + '</a></div>',
 		   offset: [0,-30]
@@ -225,7 +225,7 @@
                     $('#company-panel-controls').show();
                     $('#company-panel').show();
                 } else {
-                    showToast('您的附近没有相关职位！', 2);
+                    showToast('{yun:}t key='wap_01422'{/yun}', 2);
                     $('#company-panel-controls').hide();
                     $('#company-panel').hide();
 					var mk = new AMap.Marker({
@@ -243,7 +243,7 @@
         });
         map.on("click",function(e){
 			var lngLat = e.lnglat;
-			showConfirm('您确定查找该地区附近的职位吗？', function(){
+			showConfirm('{yun:}t key='wap_01423'{/yun}', function(){
                 setTimeout(function () {
                     location.href = wapurl + "index.php?c=map&x=" + lngLat.lng + "&y=" + lngLat.lat + "";
                 }, 0);

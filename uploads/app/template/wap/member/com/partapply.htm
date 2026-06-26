@@ -17,7 +17,7 @@
                         </div>
                         <div class="com_member_hr_p1"><span class="member_c9">{yun:}t key='wap_user_00241'{/yun}</span>{{item.telphone}}</div>
                         <div class="com_member_hr_p1">
-                            <span class="member_c9">申请兼职 </span>
+                            <span class="member_c9">{{i18n.partApply}}</span>
                             <em @click="toPart(item.wapjob_url)" class="wap_m_post_user">{{item.partname}} </em>
                         </div>
                         <div class="com_member_hr_p1">
@@ -41,7 +41,7 @@
                 <div class="none_position_body_img">
                     <img src="{yun:}$wap_style{/yun}/images/none_position.png" alt="">
                 </div>
-                <div class="none_position_body_text">目前还没有用户报名哦~</div>
+                <div class="none_position_body_text">{{i18n.noApplicants}}</div>
             </div>
         </div>
     </div>
@@ -65,6 +65,11 @@
                 isFromSearch: true,
                 searchLoading: true,
                 searchLoadingComplete: false,
+                i18n: {
+                    partApply: '{yun:}t key='wap_01189'{/yun}',
+                    noApplicants: '{yun:}t key='wap_01190'{/yun}',
+                    confirmDelete: '{yun:}t key='wap_00812'{/yun}',
+                },
             };
         },
         created() {
@@ -132,7 +137,7 @@
                 var paramer = {
                     ids: id,
                 };
-                showConfirm('确定删除？', function () {
+                showConfirm(that.i18n.confirmDelete, function () {
                     showLoading("{yun:}t key='wap_user_00355'{/yun}");
                     $.post('{yun:}url d=wxapp h=com m=part c=delapply{/yun}', paramer, function (data) {
                         hideLoading();

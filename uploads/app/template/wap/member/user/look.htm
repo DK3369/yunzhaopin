@@ -3,8 +3,8 @@
     <div class="m_tab ">
           <div class="m_tabbox category">
 		<ul>
-            <li :class="type == 'look' ? 'm_tabactive' : ''" @click="pageTo('index.php?c=look&type=look')">谁看过我</li>
-            <li :class="type == 'lookjob' ? 'm_tabactive' : ''" @click="pageTo('index.php?c=look&type=lookjob')">我的足迹</li>
+            <li :class="type == 'look' ? 'm_tabactive' : ''" @click="pageTo('index.php?c=look&type=look')">{yun:}t key='wap_user_00276'{/yun}</li>
+            <li :class="type == 'lookjob' ? 'm_tabactive' : ''" @click="pageTo('index.php?c=look&type=lookjob')">{yun:}t key='wap_user_00275'{/yun}</li>
         </ul> 
     </div>    </div>
     <div class="m_cardbox" v-if="type== 'look'">
@@ -33,7 +33,7 @@
             <div class="Posted_card_look">
                 <div class="Posted_look_box">
                     <div class="Posted_box_job">{{item.linkman}}{{item.linkjob ? '·' + item.linkjob : item.linkjob}}</div>
-                    <div class="Posted_box_text">查看了您</div>
+                    <div class="Posted_box_text">{{i18n.viewedYou}}</div>
                 </div>
 
                 <div class="Posted_look_del" @click.stop="lookdel(item.id, lookkey)">
@@ -45,7 +45,7 @@
         <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange" /> 
         </div>   <div class="wap_member_bgcar"v-show="islook&&count==0">
         <div class="wap_member_no">
-           暂无记录！
+           {yun:}t key='wap_00827'{/yun}
         </div>          </div>  
     </div>    </div>
     <div class="m_cardbox" v-if="type=='lookjob'">        
@@ -79,7 +79,7 @@
             <van-pagination v-model="page" :total-items="total" :items-per-page="limit" force-ellipses @change="pageChange" /> 
             </div>        <div class="wap_member_bgcar"  v-show="islook&&count==0">
         <div class="wap_member_no">
-            您还没有浏览过的职位<div><a class="wap_member_no_submit" href="{yun:}url m=wap c=job{/yun}">去搜索相关职位</a></div>
+            {yun:}t key='wap_00828'{/yun}<div><a class="wap_member_no_submit" href="{yun:}url m=wap c=job{/yun}">{yun:}t key='wap_00829'{/yun}</a></div>
         </div>     </div>
     </div>   
 </div>
@@ -95,7 +95,14 @@
           type: type,        
           total:0,
           page: currentPage ? currentPage : 1,
-          islook :false
+          islook :false,
+          i18n: {
+            viewedYou: '{yun:}t key='wap_00826'{/yun}',
+            confirmDelete: '{yun:}t key='wap_00812'{/yun}',
+            deleting: '{yun:}t key='wap_js_00166'{/yun}',
+            deleteSuccess: '{yun:}t key='wap_user_00147'{/yun}',
+            deleteFailed: '{yun:}t key='wap_user_00146'{/yun}',
+          },
         },
         computed: {
           count(){
@@ -162,16 +169,16 @@
                 ids: id
               };
              
-             showConfirm('确定删除', () => {
-                showLoading('删除中...')
+             showConfirm(that.i18n.confirmDelete, () => {
+                showLoading(that.i18n.deleting)
                 $.post('{yun:}url d=wxapp h=user m=resume c=look_resume_del{/yun}', param, function(data){
                   hideLoading();
                   if (data.error == 1) {
-                    showToast('删除成功',2, function() {
+                    showToast(that.i18n.deleteSuccess,2, function() {
                       that.list.splice(key, 1);   
                     });
                   } else {
-                    showToast('删除失败');
+                    showToast(that.i18n.deleteFailed);
                   }
                 });
              });   

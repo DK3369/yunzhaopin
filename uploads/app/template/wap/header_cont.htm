@@ -24,7 +24,7 @@
 		<link href="{yun:}$config_wapdomain{/yun}/js/vant/lib/index.css?v={yun:}$config.cachecode{/yun}"
 			rel="stylesheet" />
 
-		<!--wxapp 引用页面控制，不需要此返回-->
+		<!-- wxapp embed: hide back navigation -->
 		{yun:}if !$wxapp{/yun}
 
 		<script>
@@ -38,7 +38,7 @@
 
 	<body>
 
-		<!-- 邀请面试页面头部分 -->
+		<!-- Invite interview page header -->
 		{yun:}if $smarty.get.c == 'resume' && $smarty.get.a == 'invite'{/yun}
 		<div class="header">
 			<div class="header_fixed">
@@ -53,7 +53,7 @@
 			</div>
 		</div>
 
-		<!--wxapp 引用页面控制，不需要标题栏-->
+		<!-- wxapp embed: hide title bar -->
 		{yun:}elseif !$wxapp{/yun}
 
 		<div class="header header_count">

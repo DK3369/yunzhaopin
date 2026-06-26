@@ -10,9 +10,9 @@
 			<div class="particulars_title_text">
 				{yun:}$Info.title{/yun}
 				{yun:}if $Info.stime<'0'&&$Info.etime>'0'{/yun}
-				<span class="particulars_title_icon">进行中</span>
+				<span class="particulars_title_icon">{yun:}t key='wap_00604'{/yun}</span>
 				{yun:}elseif $Info.stime>'0'{/yun}
-				<span class=" particulars_title_icon">预定中</span>
+				<span class=" particulars_title_icon">{yun:}t key='wap_00605'{/yun}</span>
 				{yun:}/if{/yun}
 			</div>
 		</div>
@@ -20,7 +20,7 @@
 			<div class="word_time_icon">
 				<img src="{yun:}$wap_style{/yun}/images/career_fair_time.png" alt="">
 			</div>
-			<div class="word_time">{yun:}$Info.starttime|date_format:"%Y-%m-%d"{/yun} 至 {yun:}$Info.endtime|date_format:"%Y-%m-%d"{/yun}</div>
+			<div class="word_time">{yun:}$Info.starttime|date_format:"%Y-%m-%d"{/yun} {yun:}t key='wap_01349'{/yun} {yun:}$Info.endtime|date_format:"%Y-%m-%d"{/yun}</div>
 		</div>
 		{yun:}if $Info.address{/yun}
 
@@ -39,27 +39,27 @@
 			<section>
 				{yun:}if $space.pic_n{/yun}
 				<div class="zph_bg_pd mt15">
-					<div class="zphwap_title"><span class="">招聘会展位图</span></div>
+					<div class="zphwap_title"><span class="">{yun:}t key='wap_01343'{/yun}</span></div>
 					<div class="fairs_display">
 						<img src="{yun:}$space.pic_n{/yun}" class="png" style="max-width:100%" />
 					</div>
 				</div>
 				{yun:}/if{/yun}
 				<div class="zph_show_zwcontent mt15">
-					<div class="zphwap_title"><span class="">招聘会展位在线预订</span></div>
+					<div class="zphwap_title"><span class="">{yun:}t key='wap_01344'{/yun}</span></div>
 					<div class="zph_show_content">
 
 						<div class="zph_make">
 							<div class="zph_makelist">
 								<img class="zph_make_ticon" src="{yun:}$wap_style{/yun}/images/zw_wyd.png" style="background:no-repeat; background-size:100%;" />
-								可选
+								{yun:}t key='wap_01345'{/yun}
 							</div>
 							<div class="zph_makelist">
 								<img class="zph_make_ticon" src="{yun:}$wap_style{/yun}/images/zw_yxz.png" style="background:no-repeat; background-size:100%;" />
-								已选</div>
+								{yun:}t key='wap_01346'{/yun}</div>
 							<div class="zph_makelist">
 								<img class="zph_make_ticon" src="{yun:}$wap_style{/yun}/images/zw_yyd.png" style="background:no-repeat; background-size:100%;" />
-								不可选
+								{yun:}t key='wap_01347'{/yun}
 							</div>
 						</div>
 
@@ -76,7 +76,7 @@
 									price="{yun:}if $config.com_integral_online==3 && !$meal_zph{/yun}{yun:}$val.price{/yun}{yun:}else{/yun}{yun:}$val.price/$config.integral_proportion{/yun}{yun:}/if{/yun}">
 									<i class="zph_make_icon zph_make_icon_kyd"></i>
 									<div class="zph_show_zw_n">{yun:}$val.name{/yun}</div>
-									<div class="zph_show_zw_zt">可选</div>
+									<div class="zph_show_zw_zt">{yun:}t key='wap_01345'{/yun}</div>
 								</div>
 								{yun:}else{/yun}
 
@@ -85,7 +85,7 @@
 									comurl="{yun:}url m=wap c=company a=show id=$val.uid{/yun}">
 									<i class="zph_make_icon zph_make_icon_yyd"></i>
 									<div class="zph_show_zw_n">{yun:}$val.name{/yun}</div>
-									<div class="zph_show_zw_zt">不可选</div>
+									<div class="zph_show_zw_zt">{yun:}t key='wap_01347'{/yun}</div>
 								</div>
 
 								{yun:}/if{/yun}
@@ -105,20 +105,20 @@
 				<div class="zph_makeboxfix">
 					<div class="zph_make_bth_box">
 						<div class="zph_make_zw_c">
-							<a href="javascript:void(0)" @click="pageTo(comurl)">{{comname}} </a>已预订
+							<a href="javascript:void(0)" @click="pageTo(comurl)">{{comname}} </a>{yun:}t key='wap_00562'{/yun}
 						</div>
 					</div>
 				</div>
 			</div>
 		</van-popup>
-		<!--可预订-->
+		<!--{yun:}t key='admin_00301'{/yun}-->
 		<van-popup v-model="reserveShow" round position="bottom" @close="reserveClose" closeable>
 			<div class="zph_xzjob ">
-				<div class="zph_xzjob_tit">请选择参会职位</div>
+				<div class="zph_xzjob_tit">{yun:}t key='wap_01348'{/yun}</div>
 				<div class="zph_xzjob_cont">
 					<van-checkbox-group v-model="result" @change="changeResult" ref="jobcheckboxGroup">
 						<van-cell-group>
-							<van-cell clickable title="全选" @click="jobCheckAlltoggle">
+							<van-cell clickable title="{yun:}t key='wap_js_00074'{/yun}" @click="jobCheckAlltoggle">
 								<template #right-icon>
 									<van-checkbox v-model="allresult" ref="jobCheckAll" shape="square"></van-checkbox>
 								</template>
@@ -133,19 +133,19 @@
 					</van-checkbox-group>
 				</div>
 				<div class="zph_xzjob_bot">
-					<div class="zph_xzjob_bot_t">参会展位：<span>{{zphzwname}}</span>
-						<span class="zph_make_zw_jg">价格
+					<div class="zph_xzjob_bot_t">{yun:}t key='wap_com_00425'{/yun}：<span>{{zphzwname}}</span>
+						<span class="zph_make_zw_jg">{yun:}t key='wap_00563'{/yun}
 							<span v-if="com_integral_online=='3' && !meal_zph">
 								<span class="zph_make_zw_jg_n" id="zphzwprice">{{zphzwprice}}</span>
 								{{integral_priceunit}}{{integral_pricename}}
 							</span>
 							<span v-else>
-								<span class="zph_make_zw_jg_n" id="zphzwprice">{{zphzwprice}}</span>元
+								<span class="zph_make_zw_jg_n" id="zphzwprice">{{zphzwprice}}</span>{yun:}t key='common_02056'{/yun}
 							</span>
 						</span>
 					</div>
 
-					<span id="clickzph" onclick="clickzph();" class="zph_xzjob_bth">提交</span>
+					<span id="clickzph" onclick="clickzph();" class="zph_xzjob_bth">{yun:}t key='wap_user_00176'{/yun}</span>
 				</div>
 			</div>
 		</van-popup>

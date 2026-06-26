@@ -26,7 +26,7 @@
 		<header>
 			<div class="header_bg">
 				<a class="hd-lbtn" href="{yun:}if $backurl{/yun}{yun:}$backurl{/yun}{yun:}else{/yun}javascript:goBack();{yun:}/if{/yun}"><i class="header_top_l iconfont"></i></a>
-				<div class="header_h1">手机上传</div>
+				<div class="header_h1">{yun:}t key='wap_00542'{/yun}</div>
 			</div>
 		</header>
 		<div class="main_member_body">
@@ -39,8 +39,8 @@
 			</style>
 			{yun:}if $type == 2{/yun}
 			<ul class="yunset_password mt15">
-				<li><span class="yunset_password_mname">您的姓名</span> <input type="text" name="name" id="name" value="" class="yunset_text"></li>
-				<li><span class="yunset_password_mname">证件号码</span> <input type="text" name="idcard" id="idcard" value="" class="yunset_text"></li>
+				<li><span class="yunset_password_mname">{yun:}t key='wap_01397'{/yun}</span> <input type="text" name="name" id="name" value="" class="yunset_text"></li>
+				<li><span class="yunset_password_mname">{yun:}t key='wap_01398'{/yun}</span> <input type="text" name="idcard" id="idcard" value="" class="yunset_text"></li>
 			</ul>
 			<div class="yunset_identity_box">
 				<div class="yunset_identity">
@@ -52,22 +52,22 @@
 						<input type='hidden' name='preview' value='' id='preview'>
 					</div>
 
-					<div class="yunset_identity_tip">上传图片</div>
-					<div class="yunset_identity_tip_c">（ 文字清晰，四角齐全 )</div>
+					<div class="yunset_identity_tip">{yun:}t key='wap_01399'{/yun}</div>
+					<div class="yunset_identity_tip_c">{yun:}t key='wap_01400'{/yun}</div>
 
 				</div>
 
 			</div>
-			<div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>格式为
-				{yun:}$config.pic_type{/yun}不得超过{yun:}$config.file_maxsize{/yun}M</div>
+			<div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>{yun:}t key='wap_01401'{/yun}
+				{yun:}$config.pic_type{/yun}{yun:}t key='wap_01402'{/yun}{yun:}$config.file_maxsize{/yun}M</div>
 
 			{yun:}else{/yun}
 			<ul class="yunset_password mt15">
-				<li><span class="yunset_password_mname">公司名称</span> <input type="text" name="com_name" id="com_name" value="" class="yunset_text"></li>
+				<li><span class="yunset_password_mname">{yun:}t key='wap_01403'{/yun}</span> <input type="text" name="com_name" id="com_name" value="" class="yunset_text"></li>
 			</ul>
 			{yun:}if $config.com_social_credit=="1"{/yun}
 			<ul class="yunset_password mt15">
-				<li><span class="yunset_password_mname">信用代码</span> <input type="text" name="social_credit" id="social_credit" value="" class="yunset_text"></li>
+				<li><span class="yunset_password_mname">{yun:}t key='wap_01404'{/yun}</span> <input type="text" name="social_credit" id="social_credit" value="" class="yunset_text"></li>
 			</ul>
 			{yun:}/if{/yun}
 			<div class="yunset_identity_box">
@@ -86,9 +86,9 @@
 
 					</div>
 					<i class="yunset_identity_pic_tj"></i>
-					<div class="yunset_identity_tip" style="padding-top:10px;">上传营业执照/组织机构代码证</div>
-					<span class="yunset_identity_tip_a">选择上传图片</span>
-					<div class="yunset_identity_tip_c" style="padding-top:10px;">执照中的文字、图片、章印等需清晰可辨别，否则不能通过认证。 </div>
+					<div class="yunset_identity_tip" style="padding-top:10px;">{yun:}t key='wap_01405'{/yun}</div>
+					<span class="yunset_identity_tip_a">{yun:}t key='wap_01406'{/yun}</span>
+					<div class="yunset_identity_tip_c" style="padding-top:10px;">{yun:}t key='wap_01407'{/yun} </div>
 
 				</div>
 			</div>
@@ -109,9 +109,9 @@
 
 					</div>
 					<i class="yunset_identity_pic_tj"></i>
-					<div class="yunset_identity_tip" style="padding-top:10px;">上传经办人身份证</div>
-					<span class="yunset_identity_tip_a">选择上传图片</span>
-					<div class="yunset_identity_tip_c" style="padding-top:10px;">图片和文字需清晰可辨别，否则不能通过认证。 </div>
+					<div class="yunset_identity_tip" style="padding-top:10px;">{yun:}t key='wap_01408'{/yun}</div>
+					<span class="yunset_identity_tip_a">{yun:}t key='wap_01406'{/yun}</span>
+					<div class="yunset_identity_tip_c" style="padding-top:10px;">{yun:}t key='wap_01409'{/yun} </div>
 
 				</div>
 			</div>
@@ -133,9 +133,9 @@
 
 					</div>
 					<i class="yunset_identity_pic_tj"></i>
-					<div class="yunset_identity_tip" style="padding-top:10px;">上传委托书/承诺函</div>
-					<span class="yunset_identity_tip_a">选择上传图片</span>
-					<div class="yunset_identity_tip_c" style="padding-top:10px;">图片和文字需清晰可辨别，否则不能通过认证。 </div>
+					<div class="yunset_identity_tip" style="padding-top:10px;">{yun:}t key='wap_01410'{/yun}</div>
+					<span class="yunset_identity_tip_a">{yun:}t key='wap_01406'{/yun}</span>
+					<div class="yunset_identity_tip_c" style="padding-top:10px;">{yun:}t key='wap_01409'{/yun} </div>
 
 				</div>
 			</div>
@@ -159,14 +159,14 @@
 
 					</div>
 					<i class="yunset_identity_pic_tj"></i>
-					<div class="yunset_identity_tip" style="padding-top:10px;">上传其他材料（选填）</div>
-					<span class="yunset_identity_tip_a">选择上传图片</span>
-					<div class="yunset_identity_tip_c" style="padding-top:10px;">图片和文字需清晰可辨别，否则不能通过认证。 </div>
+					<div class="yunset_identity_tip" style="padding-top:10px;">{yun:}t key='wap_01411'{/yun}</div>
+					<span class="yunset_identity_tip_a">{yun:}t key='wap_01406'{/yun}</span>
+					<div class="yunset_identity_tip_c" style="padding-top:10px;">{yun:}t key='wap_01409'{/yun} </div>
 
 				</div>
 			</div>
 			{yun:}/if{/yun}
-			<div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>格式为 {yun:}$config.pic_type{/yun}不得超过{yun:}$config.file_maxsize{/yun}M</div>
+			<div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>{yun:}t key='wap_01401'{/yun} {yun:}$config.pic_type{/yun}{yun:}t key='wap_01402'{/yun}{yun:}$config.file_maxsize{/yun}M</div>
 
 			{yun:}/if{/yun}
 
@@ -175,7 +175,7 @@
 			<div class="yunset_bth_box">
 				<input type="hidden" id="type" value="{yun:}$type{/yun}">
 				<input type="hidden" id="token" value="{yun:}$token{/yun}">
-				<input type="button" id="submit" onclick="check_form_post()" value="保存" class="yunset_bth">
+				<input type="button" id="submit" onclick="check_form_post()" value="{yun:}t key='wap_user_00101'{/yun}" class="yunset_bth">
 			</div>
 		</div>
 		<script src="{yun:}$wap_style{/yun}/js/jquery.min.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
@@ -197,7 +197,7 @@
 		    function check_form_post() {
 		        var img = $.trim($("#pic").val());
 		        if(img == "") {
-		            showToast('请上传图片');
+		            showToast('{yun:}t key=\'wap_01412\'{/yun}');
 		            return false;
 		        }
 				var imgdata = {},
@@ -212,15 +212,15 @@
 					var name = $.trim($('#name').val());
 					var idcard = $.trim($('#idcard').val());
 					if(name == '') {
-		                showToast('请填写您的姓名');
+		                showToast('{yun:}t key=\'wap_01413\'{/yun}');
 		                return false;
 		            }
 		            if(idcard == '') {
-		                showToast('请填写证件号码');
+		                showToast('{yun:}t key=\'wap_01414\'{/yun}');
 		                return false;
 		            }
 		            if(checkIdcard($.trim(idcard)) == false) {
-		                showToast('请填写正确证件号码！');
+		                showToast('{yun:}t key=\'wap_01415\'{/yun}');
 		                return false;
 		            } 
 					imgdata.name = name;
@@ -233,7 +233,7 @@
 		            var wt_cert = $.trim($('#wt_cert').val());
 		            var other_cert = $.trim($('#other_cert').val());
 					if(com_name == '') {
-		                showToast('请填写公司名称');
+		                showToast('{yun:}t key=\'wap_01416\'{/yun}');
 		                return false;
 		            }
 					imgdata.com_name = com_name;
@@ -254,7 +254,7 @@
 		            }
 		            
 				}
-		        showLoading('上传中');
+		        showLoading('{yun:}t key=\'wap_01417\'{/yun}');
 				$.post('{yun:}$config_wapdomain{/yun}/index.php?c=upload&a=uploadimg_save',imgdata,function(data){
 					hideLoading();
 					var data=eval('('+data+')');

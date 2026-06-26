@@ -17,7 +17,7 @@
 					{yun:}if $order.type==1{/yun}{yun:}t key='default_00090'{/yun}
 					{yun:}else if $order.type=='2'{/yun}{yun:}$config.integral_pricename{/yun}{yun:}t key='common_01946'{/yun}
 					{yun:}else if $order.type=='3'{/yun}{yun:}t key='admin_system_00529'{/yun}
-					{yun:}else if $order.type=='4'{/yun}金额充值
+					{yun:}else if $order.type=='4'{/yun}{yun:}t key='wap_01041'{/yun}
 					{yun:}else if $order.type=='14'{/yun}{yun:}t key='wap_user_00207'{/yun}
 					{yun:}/if{/yun}
 				</em>
@@ -38,7 +38,7 @@
 			</div>
 		{yun:}else{/yun}
 			<div class="pay_zfgb_tip">
-				<span>网站已关闭支付功能，{yun:}t key='wap_00509'{/yun}！</span>
+				<span>{yun:}t key='wap_01043'{/yun}{yun:}t key='wap_00509'{/yun}！</span>
 			</div>
 		{yun:}/if{/yun}
 
@@ -56,7 +56,7 @@
     function order_form() {
         var paytype = $('#paytype').val();
         if(paytype == "") {
-            showToast('请选择一种支付方式！', 2);
+            showToast('{yun:}t key='wap_01042'{/yun}', 2);
             return false;
         } else if(paytype == 'alipay') {
             $("#paymentform").attr("action", "{yun:}$config.sy_weburl{/yun}/api/wapalipay/alipayto.php?dingdan={yun:}$order.order_id{/yun}&dingdanname={yun:}$order.order_id{/yun}&alimoney={yun:}$order.order_price{/yun}");

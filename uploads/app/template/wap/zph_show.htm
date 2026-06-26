@@ -1,6 +1,6 @@
 {yun:}include file="$wapstyle/header_cont.htm"{/yun}
 {yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
- <!-- 页面头部部分 -->
+ <!-- {yun:}t key='common_02103'{/yun}面{yun:}t key='common_02068'{/yun}部部{yun:}t key='common_02058'{/yun} -->
 <div id="yunvue"  class="none"> 
 <div class="newzph_img">
 	<a href="{yun:}if $backurl{/yun}{yun:}$backurl{/yun}{yun:}else{/yun}javascript:goBack();{yun:}/if{/yun}" class="header_back"></a>
@@ -9,47 +9,47 @@
 <div class="newzph_pd">
 	<div class="newzph_show">
 		<div class="newzphshow_sj">
-		<div class="newzph_sj_n_b"><span class="newzph_sj_n">{yun:}$Info.comnum{/yun}</span>家</div>
-		参会企业 
+		<div class="newzph_sj_n_b"><span class="newzph_sj_n">{yun:}$Info.comnum{/yun}</span>{yun:}t key='wap_01333'{/yun}</div>
+		{yun:}t key='wap_00559'{/yun} 
 		</div>
 		 <div class="newzphshow_sj">
-		 <div class="newzph_sj_n_b"><span class="newzph_sj_n">{yun:}$Info.jobnum{/yun}</span>个</div>
-		参会职位
+		 <div class="newzph_sj_n_b"><span class="newzph_sj_n">{yun:}$Info.jobnum{/yun}</span>{yun:}t key='common_02050'{/yun}</div>
+		{yun:}t key='wap_00560'{/yun}
 		 </div>
 		 <div class="newzphshow_sj">
-		<div class="newzph_sj_n_b"><span class="newzph_sj_n"> {yun:}$Info.zpnum{/yun}</span>人</div>
-		招聘人数
+		<div class="newzph_sj_n_b"><span class="newzph_sj_n"> {yun:}$Info.zpnum{/yun}</span>{yun:}t key='common_02051'{/yun}</div>
+		{yun:}t key='wap_com_00333'{/yun}
 		 </div>
 		<div class="newzphshow_sj">
-		<div class="newzph_sj_n_b"><span class="newzph_sj_n"> {yun:}$Info.sqnum{/yun}</span>次</div>
-		投递简历
+		<div class="newzph_sj_n_b"><span class="newzph_sj_n"> {yun:}$Info.sqnum{/yun}</span>{yun:}t key='wap_01543'{/yun}</div>
+		{yun:}t key='wap_com_00235'{/yun}
 		 </div>
 	</div>
 
 	<div class="newzphshow_tit">
 		<ul>
-			<li id="zphtab" class="newzphshow_titcur tabCtrl"><a href="javascript:void(0);" onclick="tab('zph');">招聘会介绍</a></li>
-			<li id="comtab" class="tabCtrl"><a href="javascript:void(0);" onclick="tab('com');">参会企业</a></li>
-			<li id="jobtab" class="tabCtrl"><a href="javascript:void(0);" onclick="tab('job');">招聘岗位</a></li>
+			<li id="zphtab" class="newzphshow_titcur tabCtrl"><a href="javascript:void(0);" onclick="tab('zph');">{yun:}t key='wap_00566'{/yun}</a></li>
+			<li id="comtab" class="tabCtrl"><a href="javascript:void(0);" onclick="tab('com');">{yun:}t key='wap_00559'{/yun}</a></li>
+			<li id="jobtab" class="tabCtrl"><a href="javascript:void(0);" onclick="tab('job');">{yun:}t key='wap_01536'{/yun}</a></li>
 		</ul>
 	</div>
 	<!--介绍-->
 	<div id="zphBox" class="newzphshow_p boxCtrl">
 		{yun:}if $Info.body{/yun}
 		<div class=" ">
-	       	<div class="body_concise_title">招聘会简章</div>
+	       	<div class="body_concise_title">{yun:}t key='wap_01334'{/yun}</div>
 	       	<div class="body_concise_content">
 		        <section>
 		    		<div class="zph_bg_pd   img_auto">
 		    			<div class="  body_concise_content">
 							{yun:}if $Info.organizers{/yun}
-				    		<div class="">主&nbsp;  办&nbsp; 方：{yun:}$Info.organizers{/yun}</div>
+				    		<div class="">{yun:}t key='wap_01546'{/yun}{yun:}$Info.organizers{/yun}</div>
 				            {yun:}/if{/yun}
 				
 				        	{yun:}$Info.body{/yun}
-							<div class="">举办时间：{yun:}$Info.starttime_n{/yun}~{yun:}$Info.endtime_n{/yun}</div>
-							{yun:}if $Info.address{/yun}<div class="">举办地点：{yun:}$Info.address{/yun}</div>{yun:}/if{/yun}
-							{yun:}if $Info.traffic{/yun}<div class="">交通路线：{yun:}$Info.traffic{/yun}</div>{yun:}/if{/yun}
+							<div class="">{yun:}t key='wap_01547'{/yun}{yun:}$Info.starttime_n{/yun}~{yun:}$Info.endtime_n{/yun}</div>
+							{yun:}if $Info.address{/yun}<div class="">{yun:}t key='wap_01336'{/yun}{yun:}$Info.address{/yun}</div>{yun:}/if{/yun}
+							{yun:}if $Info.traffic{/yun}<div class="">{yun:}t key='wap_01337'{/yun}{yun:}$Info.traffic{/yun}</div>{yun:}/if{/yun}
 						</div>
 		
 		     		</div>
@@ -60,7 +60,7 @@
 		{yun:}if $Info.media{/yun}
 		<section>
 		    <div class="zph_bg_pd mt15 img_auto">
-		        <div class="body_concise_title"><span class="">媒体宣传</span></div>
+		        <div class="body_concise_title"><span class="">{yun:}t key='wap_00569'{/yun}</span></div>
 		        <div class="zph_show_content"> {yun:}$Info.media{/yun}
 		    </div></div>
 		</section>
@@ -68,7 +68,7 @@
 		{yun:}if $Info.packages{/yun}
 		<section>
 		    <div class="zph_bg_pd mt15 img_auto">
-		        <div class="body_concise_title"><span class="">超值服务套餐</span></div>
+		        <div class="body_concise_title"><span class="">{yun:}t key='wap_01338'{/yun}</span></div>
 		        <div class="zph_show_content"> {yun:}$Info.packages{/yun}</div>
 		    </div>
 		</section>
@@ -76,21 +76,21 @@
 		{yun:}if $Info.booth{/yun}
 		<section>
 		    <div class="zph_bg_pd mt15 img_auto">
-		        <div class="body_concise_title"><span class="">展位设置方案</span></div>
+		        <div class="body_concise_title"><span class="">{yun:}t key='wap_00564'{/yun}</span></div>
 		      <div class="zph_show_content">   {yun:}$Info.booth{/yun}</div>
 		    </div>
 		</section>
 		{yun:}/if{/yun}
 		{yun:}if $Info.participate{/yun}
 		<div class="zph_bg_pd mt15 img_auto">
-		    <div class="body_concise_title"><span class="">参与办法</span></div>
+		    <div class="body_concise_title"><span class="">{yun:}t key='wap_00568'{/yun}</span></div>
 		    <div class="zph_show_content"> {yun:}$Info.participate{/yun}</div>
 		</div>
 		{yun:}/if{/yun}
 	</div>
 	
 
-	<!--参会企业-->
+	<!--{yun:}t key='wap_00559'{/yun}-->
 	<div id="comBox" class="newzph_showcom boxCtrl none">
 		<div v-if="islook">
 			<div v-if="com_total">
@@ -114,8 +114,8 @@
 							</div>
 						</div>
 						
-						<div class="newzph_showcomjobmore"><a :href="com.comwapurl" class="newzph_showcomjobmore_a">查看全部岗位</a></div>
-						<div class="newzph_showcomzw">展位号：{{com.sidname}} - {{com.cidname}} - {{com.bidname}}</div>
+						<div class="newzph_showcomjobmore"><a :href="com.comwapurl" class="newzph_showcomjobmore_a">{yun:}t key='wap_00565'{/yun}</a></div>
+						<div class="newzph_showcomzw">{yun:}t key='wap_00607'{/yun}{{com.sidname}} - {{com.cidname}} - {{com.bidname}}</div>
 					</li>
 				</ul>
 				<div v-if="com_total > com_limit" style="margin-top: .266667rem;">
@@ -124,12 +124,12 @@
 			</div>
 			<div v-if="com_total==0">
 	            <div class="wap_member_no">
-	                招聘会企业整理中，即将发布
+	                {yun:}t key='wap_01339'{/yun}
 	            </div>
 	        </div>
         </div>
 	</div>
-	<!--参会岗位-->
+	<!--{yun:}t key='common_01958'{/yun}{yun:}t key='member_user_00105'{/yun}-->
 	<div id="jobBox" class="newzph_showjob boxCtrl none">
 		<div v-if="islook">
 			<div v-if="job_total">
@@ -145,7 +145,7 @@
 								<span class="newzph_showjobfl_n" v-for="(wel, wkey) in job.welfare_n" :key="wkey">{{wel}}</span> 
 							</div>
 							<div class="newzph_showjobcom">{{job.com_name}}</div>
-							<span class="newzph_showjob_sq">申请</span>
+							<span class="newzph_showjob_sq">{yun:}t key='wap_00574'{/yun}</span>
 						</a>
 					</li>
 				</ul>
@@ -155,13 +155,13 @@
 			</div>
 			<div v-if="job_total==0">
 	              <div class="wap_member_no">
-	                招聘会岗位整理中，即将发布
+	                {yun:}t key='wap_01340'{/yun}
 	            </div>
 	        </div>
 	    </div>
 	</div>
 
-	<!--参会岗位 end-->
+	<!--{yun:}t key='common_01958'{/yun}{yun:}t key='member_user_00105'{/yun} end-->
 </div>
 </div>
 <style>
@@ -173,16 +173,16 @@
             <div class="particulars_tail_icon">
                 <img src="{yun:}$wap_style{/yun}/images/icon_iphone.png" alt="">
             </div>
-            <div class="particulars_tail_text">电话咨询</div>
+            <div class="particulars_tail_text">{yun:}t key='wap_00570'{/yun}</div>
             </a>
        {yun:}if $Info.stime lt '0'|| $Info.etime lt '0'{/yun}
-    <a class="particulars_tail_right particulars_tail_right_tz">已停止预订</a>
+    <a class="particulars_tail_right particulars_tail_right_tz">{yun:}t key='wap_01341'{/yun}</a>
     {yun:}else{/yun} {yun:}if $usertype==2{/yun}
-    <a href="{yun:}url m=wap c=zph a=reserve id='`$Info.id`'{/yun}" class="particulars_tail_right">预订展位</a>
+    <a href="{yun:}url m=wap c=zph a=reserve id='`$Info.id`'{/yun}" class="particulars_tail_right">{yun:}t key='wap_00571'{/yun}</a>
     {yun:}else{/yun} {yun:}if $uid{/yun}
-	<a href="javascript:void(0);"  onclick="showToast('只有企业用户才能预订');" class="particulars_tail_right">预订展位</a>
+	<a href="javascript:void(0);"  onclick="showToast('{yun:}t key='wap_01342'{/yun}');" class="particulars_tail_right">{yun:}t key='wap_00571'{/yun}</a>
 	{yun:}else{/yun}
-    <a href="{yun:}url m=wap c=login {/yun}" class="particulars_tail_right">预订展位</a>
+    <a href="{yun:}url m=wap c=login {/yun}" class="particulars_tail_right">{yun:}t key='wap_00571'{/yun}</a>
     {yun:}/if{/yun} {yun:}/if{/yun} {yun:}/if{/yun}
 </div>
 

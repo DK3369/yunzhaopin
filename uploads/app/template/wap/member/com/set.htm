@@ -1,13 +1,13 @@
 {yun:}include file="$wapstyle/member/cheader.htm"{/yun}
 <!--{yun:}t key='member_user_00059'{/yun}-->
 <div class="none" id="yunvue">
-    <!-- 页面整体部分 -->
+    <!-- Page layout -->
     <div class="issue_post_body_new">
         <div class="issue_post_body_card" style="padding-top: 0px; margin-top: 0px;;">
             <div class="com_set_list" onclick="navigateTo('index.php?c=info')">
 
                 <div class="com_set_listname">{yun:}t key='wap_user_00341'{/yun}</div>
-                <div class="com_set_listp">完善企业基本资料</div>
+                <div class="com_set_listp">{yun:}t key='wap_00803'{/yun}</div>
                 <div class="com_set_listicon">
                     <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="" width="100%" height="100%">
                 </div>
@@ -59,14 +59,14 @@
             </div>
 
             <div class="com_set_list" onclick="navigateTo('index.php?c=safe')">
-                <div class="com_set_listname">账号与安全</div>
+                <div class="com_set_listname">{yun:}t key='wap_00817'{/yun}</div>
                 <div class="com_set_listicon">
                     <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
                 </div>
             </div>
 
         </div>
-        <div class="logout_btn" onclick="islogout('{yun:}url m=wap c=loginout{/yun}','确认退出吗？');">{yun:}t key='common.logout'{/yun}</div>
+        <div class="logout_btn" onclick="islogout('{yun:}url m=wap c=loginout{/yun}','{yun:}t key='wap_00818'{/yun}');">{yun:}t key='common.logout'{/yun}</div>
     </div>
 </div>
 <script>

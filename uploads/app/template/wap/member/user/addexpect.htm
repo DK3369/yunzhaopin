@@ -2,67 +2,62 @@
 <link href="{yun:}$wap_style{/yun}/css/cmc.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet" />
 <div id="yunvue" class="yunVueBox none">
 	<div class="personal_details_min_body">
-		<!-- 页面卡片式图 -->
 		<form id="addexpectForm">	
 		<div class="yun_createbox">
 			<div class="yun_createlist">
-				<div class="yun_create_name" ><span class="m_bt">*</span>期望职位</div>
+				<div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00015'{/yun}</div>
 				<div class="yun_create_text">
-					<input type="text" name="name" v-model="info.name" placeholder="请输入期望职位：客服">
+					<input type="text" name="name" v-model="info.name" :placeholder="i18n.expectJobPlaceholder">
 					<input type="hidden" name="sy_rname_num" :value="sy_rname_num"/>
 				</div>
 			</div>
 			<div class="yun_createlist" @click="salaryBox = true">
-				<div class="yun_create_name" ><span class="m_bt">*</span>期望薪资</div>
+				<div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00016'{/yun}</div>
 				<div class="yun_create_select" v-if="salary">{{salary}}</div>
-				<div class="yun_create_select" style="color:#cecccc;" v-else>请填写期望薪资</div>
-               <div class="yun_create_fx">
+				<div class="yun_create_select" style="color:#cecccc;" v-else>{{i18n.fillExpectSalary}}</div>
+				<div class="yun_create_fx">
 					<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
 				</div>
 				<input type="hidden" name="minsalary" :value="minsalary"/>
 				<input type="hidden" name="maxsalary" :value="maxsalary"/>
 			</div>
 			<div class="yun_createlist" @click="classBox('city')">
-				<div class="yun_create_name" ><span class="m_bt">*</span>工作城市</div>
+				<div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00011'{/yun}</div>
 				<div class="yun_create_select" id="citynameshow">{{cityname}}</div>
-				<input type="hidden" id="city_classid" name="city_classid" :value="cityclassid"  />
+				<input type="hidden" id="city_classid" name="city_classid" :value="cityclassid"/>
 				<div class="yun_create_fx">
 					<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
 				</div>
 			</div>
 			<div class="yun_createlist" @click="typePicker">
-				<div class="yun_create_name" ><span class="m_bt">*</span>工作性质</div>
+				<div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00012'{/yun}</div>
 				<div class="yun_create_select" id="typeValue" v-if="info.type_n">{{info.type_n}}</div>
-				<div class="yun_create_select" style="color:#cecccc;" v-else>请选择工作性质</div>
-
-				
-				
+				<div class="yun_create_select" style="color:#cecccc;" v-else>{{i18n.selectWorkType}}</div>
 				<div class="yun_create_fx">
 					<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
 				</div>
 				<input type="hidden" id="type" name="type" :value="info.type">
 			</div>
 			<div class="yun_createlist" @click="classBox('job')">
-				<div class="yun_create_name" ><span class="m_bt">*</span>职位类别</div>
+				<div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00018'{/yun}</div>
 				<div class="yun_create_select" id="jobnameshow">{{jobname}}</div>
 				<div class="yun_create_fx">
 					<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
 				</div>
-				<input type="hidden" id="job_classid" name="jobclassid" :value="jobclassid" />
+				<input type="hidden" id="job_classid" name="jobclassid" :value="jobclassid"/>
 			</div>
 			<div class="yun_createlist" @click="hyPicker">
-				<div class="yun_create_name" ><span class="m_bt">&nbsp;</span>从事行业</div>
-				<div class="yun_create_select"id="hyValue" v-if="info.hy_n">{{info.hy_n}}</div>
-				<div class="yun_create_select" style="color:#cecccc;" v-else>请选择从事行业</div>
-				
+				<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='wap_user_00010'{/yun}</div>
+				<div class="yun_create_select" id="hyValue" v-if="info.hy_n">{{info.hy_n}}</div>
+				<div class="yun_create_select" style="color:#cecccc;" v-else>{{i18n.selectIndustry}}</div>
 				<div class="yun_create_fx">
 					<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
 				</div>
 				<input type="hidden" id="hy" name="hy" :value="info.hy">
 			</div>
 			<div class="yun_createlist yun_createlistend" @click="rjPicker">
-				<div class="yun_create_name" ><span class="m_bt">&nbsp;</span>求职状态</div>
-				<div class="yun_create_select" id="rjValue">{{info.jobstatus_n?info.jobstatus_n:'请选择'}}-{{info.report_n?info.report_n:'请选择'}}</div>
+				<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='wap_user_00017'{/yun}</div>
+				<div class="yun_create_select" id="rjValue">{{info.jobstatus_n ? info.jobstatus_n : i18n.selectPlease}}-{{info.report_n ? info.report_n : i18n.selectPlease}}</div>
 				<div class="yun_create_fx">
 					<img src="{yun:}$wap_style{/yun}/images/yunfx.png" alt="" width="100%" height="100%">
 				</div>
@@ -74,44 +69,22 @@
 		<input type="hidden" name="url" value="{yun:}url d=wxapp h=user m=resume c=saveexpect{/yun}">
 		</form>
 		<div class="yun_create_bthbox">
-		<div class="yun_create_bth " id="headSave" onclick="headSave('{yun:}$smarty.get.c{/yun}')">保存</div>	</div>
+			<div class="yun_create_bth" id="headSave" onclick="headSave('{yun:}$smarty.get.c{/yun}')">{{i18n.saveBtn}}</div>
+		</div>
 	</div>
 	
 	<van-popup v-model="typeShow" round position="bottom">
-		<van-picker show-toolbar :columns="type" :default-index="typeIndex" 
-		 @cancel="typeShow = false" @confirm="typeConfirm"/>
+		<van-picker show-toolbar :columns="type" :default-index="typeIndex" @cancel="typeShow = false" @confirm="typeConfirm"/>
 	</van-popup>
 	<van-popup v-model="hyShow" round position="bottom">
-		<van-picker show-toolbar :columns="hy" :default-index="hyIndex" 
-		 @cancel="hyShow = false" @confirm="hyConfirm"/>
+		<van-picker show-toolbar :columns="hy" :default-index="hyIndex" @cancel="hyShow = false" @confirm="hyConfirm"/>
 	</van-popup>
 	<van-popup v-model="rjShow" round position="bottom">
 		<van-picker show-toolbar :columns="rj" @cancel="rjShow = false" @confirm="rjConfirm"/>
 	</van-popup>
-	<!--期望薪资弹窗-->
 	<van-popup v-model="salaryBox" round position="bottom">
 		<van-picker show-toolbar :columns="salaryColumns" @cancel="salaryBox = false" @confirm="salarySubmit" @change="salaryChange"/>
 	</van-popup>
-	<!--<van-popup v-model="salaryBox" round position="center" round  closeable :style="{ width: '80%'}">-->
-	<!--	<form id="salarySubmit">-->
-	<!--		<div class="">-->
-	<!--			<div class="salaryh1">期望薪资</div>-->
-	<!--			<div class="salary_list">-->
-	<!--			<span class="salaryname">最低薪资：</span>-->
-	<!--			<div class="salary_text">-->
-	<!--				<input type="number" name="minsalary" oninput="value=value.replace(/^0|[\^d]/g,'')" :value="minsalary" placeholder="最低薪资"/>-->
-	<!--			</div></div>-->
-	<!--			<div class="salary_list">-->
-	<!--			<span class="salaryname">最高薪资：</span>-->
-	<!--			<div class="salary_text">-->
-	<!--				<input type="number" name="maxsalary" oninput="value=value.replace(/^0|[\^d]/g,'')" :value="maxsalary" placeholder="最高薪资"/>-->
-	<!--			</div></div>-->
-	<!--			<div class="salary_subnew">-->
-	<!--				<div  class="salary_sub_bth" @click="salarySubmit">确认</div>-->
-	<!--			</div>-->
-	<!--		</div>-->
-	<!--	</form>-->
-	<!--</van-popup>-->
 </div>
 <script src="{yun:}$plusstyle{/yun}/user.cache.js?v={yun:}$config.cachecode{/yun}"></script>
 <script src="{yun:}$wap_style{/yun}/js/userPicker.js?v={yun:}$config.cachecode{/yun}"></script>
@@ -120,28 +93,41 @@
 <script src="{yun:}$plusstyle{/yun}/cityparent.cache.js?v={yun:}$config.cachecode{/yun}"></script>
 <script src="{yun:}$jobplusstyle{/yun}/job.cache.js?v={yun:}$config.cachecode{/yun}"></script>
 <script src="{yun:}$jobplusstyle{/yun}/jobparent.cache.js?v={yun:}$config.cachecode{/yun}"></script>
-<!--职能、城市公共弹窗-->
 {yun:}include file="$wapstyle/member/public/resume_city_job.htm"{/yun}
 <script>
+	var USER_EXPECT_I18N = {
+		fillExpectJob: '{yun:}t key='wap_00935'{/yun}',
+		expectJobMaxPrefix: '{yun:}t key='wap_00981'{/yun}',
+		charSuffix: '{yun:}t key='wap_00982'{/yun}',
+		selectExpectJob: '{yun:}t key='wap_00979'{/yun}',
+		selectExpectCity: '{yun:}t key='wap_js_00164'{/yun}',
+		selectWorkType: '{yun:}t key='wap_js_00163'{/yun}',
+		selectReportTime: '{yun:}t key='wap_00980'{/yun}',
+		selectJobStatus: '{yun:}t key='wap_00934'{/yun}',
+		fillExpectSalary: '{yun:}t key='wap_js_00162'{/yun}',
+		salaryRangeInvalid: '{yun:}t key='wap_js_00161'{/yun}',
+		saving: '{yun:}t key='wap_js_00165'{/yun}',
+	};
+
 	var cmcJs = null;
 	var eid = '{yun:}$smarty.get.eid{/yun}';
-		eid = eid ? eid : '';
+	eid = eid ? eid : '';
 
 	var jobclass = '',
 		jobclassname = '',
 		jobclassidData = [],
 		cityclass = '',
-		cityclassname = ''
+		cityclassname = '',
 		cityclassidData = [];
 
-	var yunvue =  new Vue({
+	var yunvue = new Vue({
 		el: '#yunvue',
 		data() {
-		    return {
+			return {
 				typeShow: false,
 				typeIndex: 0,
 				type: [],
-				type_n:'',
+				type_n: '',
 				hyShow: false,
 				hyIndex: 0,
 				hy: [],
@@ -149,44 +135,55 @@
 				rj: [],
 				eid: eid,
 				info: {},
-				cityname: '',
+				cityname: '{yun:}t key='wap_js_00164'{/yun}',
 				cityclassid: '',
 				cityShow: false,
-				jobname: '',
+				jobname: '{yun:}t key='wap_com_00272'{/yun}',
 				jobclassid: '',
 				jobShow: false,
-				jobstatus_report_con:'',
-				jobstatusid: '',		
+				jobstatus_report_con: '',
+				jobstatusid: '',
 				reportid: '',
 				sy_rname_num: 10,
-				salaryBox:false,
+				salaryBox: false,
 				salary: '',
-				minsalary:'',
-				maxsalary:'',
+				minsalary: '',
+				maxsalary: '',
 				salaryList: [],
 				salaryColumns: [],
-		    };
+				i18n: {
+					expectJobPlaceholder: '{yun:}t key='wap_00978'{/yun}',
+					fillExpectSalary: '{yun:}t key='wap_js_00162'{/yun}',
+					selectWorkType: '{yun:}t key='wap_js_00163'{/yun}',
+					selectIndustry: '{yun:}t key='wap_user_00009'{/yun}',
+					selectPlease: '{yun:}t key='wap_user_00100'{/yun}',
+					saveBtn: '{yun:}t key='wap_user_00101'{/yun}',
+					yuan: '{yun:}t key='wap_00925'{/yun}',
+					selectExpectCity: '{yun:}t key='wap_js_00164'{/yun}',
+					selectJobCategory: '{yun:}t key='wap_com_00272'{/yun}',
+				}
+			};
 		},
 		created() {
 			this.infoShow();
 		},
-		methods:{
-			infoShow: function(){
+		methods: {
+			infoShow: function() {
 				showLoading();
 				let that = this;
-				$.post('{yun:}url d=wxapp h=user m=resume c=expectedit{/yun}', {eid: that.eid}, function(data){
+				$.post('{yun:}url d=wxapp h=user m=resume c=expectedit{/yun}', {eid: that.eid}, function(data) {
 					hideLoading();
 					var list = data.data;
-					
+
 					that.info = list;
 					that.info.maxsalary = list.maxsalary > 0 ? list.maxsalary : '';
 
-					that.cityname = list.city_classname ? list.city_classname : '';
+					that.cityname = list.city_classname ? list.city_classname : that.i18n.selectExpectCity;
 					that.cityclassid = list.city_classid ? list.city_classid : '';
-					that.jobname = list.job_classname ? list.job_classname : '';
+					that.jobname = list.job_classname ? list.job_classname : that.i18n.selectJobCategory;
 					that.jobclassid = list.job_classid ? list.job_classid : '';
-					that.jobstatus_report_con = list.jobstatus_n + '-' + list.report_n ;
-					that.jobstatusid= list.jobstatus;
+					that.jobstatus_report_con = list.jobstatus_n + '-' + list.report_n;
+					that.jobstatusid = list.jobstatus;
 					that.reportid = list.report;
 					that.islook = true;
 					that.minsalary = list.minsalary;
@@ -197,9 +194,9 @@
 					if (list.salaryList.length > 0) {
 						that.salaryList = list.salaryList;
 						let minsalaryColumns = {values: [], defaultIndex: 0};
-							maxsalaryColumns = {values: [], defaultIndex: 0};
+						maxsalaryColumns = {values: [], defaultIndex: 0};
 
-						that.salaryList.forEach(function(item,index) {
+						that.salaryList.forEach(function(item, index) {
 							if (index < that.salaryList.length - 1) {
 								minsalaryColumns.values.push(item)
 							}
@@ -228,11 +225,10 @@
 					cityjobVue.$data.citynameArr = list.citynameArr;
 					cityjobVue.$data.jobnameArr = list.jobnameArr;
 
-					
 					jobclass = list.job_classid;
 					jobclassname = list.job_classname;
 					jobclassidData = [];
-					for(let i in list.jobArr){
+					for (let i in list.jobArr) {
 						jobclassidData.push({
 							value: list.jobArr[i]
 						});
@@ -241,41 +237,40 @@
 					cityclass = list.city_classid;
 					cityclassname = list.city_classname;
 					cityclassidData = [];
-					for(let i in list.cityArr){
+					for (let i in list.cityArr) {
 						cityclassidData.push({
 							value: list.cityArr[i]
 						});
 					}
-					
+
 					$(".yunVueBox").css('display', 'block');
-				},'json');
+				}, 'json');
 			},
-			typeConfirm(e){
+			typeConfirm(e) {
 				this.typeShow = false;
-				this.info.type_n= e.text;
+				this.info.type_n = e.text;
 				this.info.type = e.value;
 			},
-			hyConfirm(e){
+			hyConfirm(e) {
 				this.hyShow = false;
-				this.info.hy_n=e.text;
+				this.info.hy_n = e.text;
 				this.info.hy = e.value;
 			},
-			rjConfirm(e){
-				this.rjShow = false;						
+			rjConfirm(e) {
+				this.rjShow = false;
 				this.info.report = e[1].value;
-				this.info.report_n=e[1].text;
+				this.info.report_n = e[1].text;
 				this.info.jobstatus = e[0].value;
 				this.info.jobstatus_n = e[0].text;
-				
 			},
-			typePicker:function(){
+			typePicker: function() {
 				typePicker(this.info.type);
 			},
-			hyPicker:function(){
+			hyPicker: function() {
 				hyPicker(this.info.hy);
 			},
-			rjPicker:function(){
-				rjPicker(this.info.jobstatus,this.info.report)
+			rjPicker: function() {
+				rjPicker(this.info.jobstatus, this.info.report)
 			},
 			salaryChange: function(picker, value, index) {
 				let salaryList = this.salaryList,
@@ -290,53 +285,30 @@
 					picker.setColumnIndex(1, 0);
 				}
 			},
-			salarySubmit:function(value){
+			salarySubmit: function(value) {
 				this.minsalary = value[0];
 				this.maxsalary = value[1];
-				this.salary = value[0] + '-' + value[1] + '元';
+				this.salary = value[0] + '-' + value[1] + this.i18n.yuan;
 				this.salaryBox = false;
-
-				// var v = getFormValue('salarySubmit');
-				// if (v.minsalary.trim() == '') {
-				// 	showModal('请选择期望薪资');
-				// 	return false;
-				// } else if (parseInt(v.minsalary) > parseInt(v.maxsalary) && v.minsalary.trim() != '') {
-				// 	showModal('请正确填写期望薪资范围');
-				// 	return false;
-				// }
-				// if (v.maxsalary.trim() != '') {
-				// 	this.maxsalary = v.maxsalary;
-				// 	this.minsalary = v.minsalary;
-				// 	this.salary = v.minsalary + '-' + v.maxsalary;
-				// } else {
-				// 	this.minsalary = v.minsalary;
-				// 	this.maxsalary = v.maxsalary;
-				// 	this.salary = v.minsalary;
-				// }
-				// this.salaryBox = false;
 			},
-			classBox: function(type){
-
+			classBox: function(type) {
 				cityjobVue.$data[type + 'Show'] = true;
-				
-				// 加载职位、地区多选js
-				if(cmcJs){
+
+				if (cmcJs) {
 					cmcJs.remove();
 				}
-				if(typeof zn_search !== "undefined"){
-					delete(zn_search);
-					$('.zn_search').off('input','.inputListener');
-					$('.classTap').off('change','input');
+				if (typeof zn_search !== "undefined") {
+					delete (zn_search);
+					$('.zn_search').off('input', '.inputListener');
+					$('.classTap').off('change', 'input');
 				}
 				cmcJs = document.createElement('script');
 				cmcJs.src = "{yun:}$wap_style{/yun}/js/cmc.js?v={yun:}$config.cachecode{/yun}";
 				document.body.appendChild(cmcJs);
 			},
-
 		}
 	});
 </script>
 
 </body>
 </html>
-

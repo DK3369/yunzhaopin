@@ -46,6 +46,9 @@
             limit: 20,
             total: 0,
             page: currentPage ? currentPage : 1,
+            i18n: {
+                confirmDelete: '{yun:}t key='wap_00812'{/yun}',
+            },
         },
         computed: {
             count() {
@@ -84,7 +87,7 @@
                 var paramer = {
                     id: id,
                 };
-                showConfirm("确定删除？", function () {
+                showConfirm(that.i18n.confirmDelete, function () {
                     showLoading("{yun:}t key='wap_js_00166'{/yun}");
                     $.post('{yun:}url d=wxapp h=com m=msg c=sysmsgnews{/yun}', paramer, function (data) {
                         hideLoading();

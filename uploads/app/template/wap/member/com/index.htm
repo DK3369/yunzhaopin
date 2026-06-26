@@ -43,21 +43,21 @@
     }
 </style>
 <div id="yunvue" class="none">
-    <!-- 页面头部 -->
+    <!-- Page header -->
     <div class="commemberheaderbg">
         <div class="commemberheader commemberTops">
 
             <div class="compauNamImgs">
-                <!--已签到-->
+                <!-- Signed in -->
                 <img src="{yun:}$wap_style{/yun}/images/comtop2.png" alt="" v-if="signstate == 1">
-                <!--未签到-->
+                <!-- Not signed in -->
                 <img src="{yun:}$wap_style{/yun}/images/comtop22.png" alt="" v-else-if="signstate == 0"
                     @click="sign">
-                <!--设置-->
+                <!-- Settings -->
                 <img src="{yun:}$wap_style{/yun}/images/comtop4.png" alt=""
                     onclick="navigateTo('index.php?c=set')">
             </div>
-            <!-- 公司名称 -->
+            <!-- Company name -->
             <div class="company">
                 <div class="company_left" onclick="navigateTo('index.php?c=photo&t=1')">
                     <img :src="info.logo" width="100%" height="100%">
@@ -70,25 +70,25 @@
                         <div class="company_center_top">{{info.name}}</div>
 
                     </div>
-                    <div class="company_center_top" v-else onclick="navigateTo('index.php?c=info')">编辑基本信息</div>
+                    <div class="company_center_top" v-else onclick="navigateTo('index.php?c=info')">{yun:}t key='wap_user_00189'{/yun}</div>
 
                     <div class="company_center_bto"
                         onclick="navigateTo('{yun:}url m=wap c=company a=show id=$uid{/yun}')">
-                        <i class="company_center_bto_name">企业信息</i>
+                        <i class="company_center_bto_name">{yun:}t key='wap_com_00095'{/yun}</i>
                         <img src="{yun:}$wap_style{/yun}/images/comtop1.png" class="company_center_bto_nav" alt="">
                     </div>
                 </div>
             </div>
-            <!-- 公司参数 -->
+            <!-- Company stats -->
             <div class="particulars_new">
                 <ul>
                     <li onclick="navigateTo('index.php?c=hr')"><i class="particulars_number">{{msg.sqnum}}</i><i
-                            class="particulars_word">应聘简历</i></li>
+                            class="particulars_word">{yun:}t key='wap_00794'{/yun}</i></li>
                     <li onclick="navigateTo('index.php?c=invite')"><i
-                            class="particulars_number">{{msg.invite_num}}</i><i class="particulars_word">面试邀请</i></li>
+                            class="particulars_number">{{msg.invite_num}}</i><i class="particulars_word">{yun:}t key='wap_com_00046'{/yun}</i></li>
                     <li onclick="navigateTo('index.php?c=look_job')"><i class="particulars_number">{{msg.hits}}</i> <i
-                            class="particulars_word">浏览量</i></li>
-                    <li><i class="particulars_number">{{msg.expoure}}</i> <i class="particulars_word">曝光量</i></li>
+                            class="particulars_word">{yun:}t key='wap_com_00112'{/yun}</i></li>
+                    <li><i class="particulars_number">{{msg.expoure}}</i> <i class="particulars_word">{yun:}t key='wap_com_00111'{/yun}</i></li>
                 </ul>
             </div>
 
@@ -99,10 +99,10 @@
                 <div class="comvip_nav_left">
                     <div class="comvipDaoText">
                         <img src="{yun:}$wap_style{/yun}/images/comtop5.png" alt="">
-                        <span class="spancomva1">招聘效率太慢？快升级VIP</span>
+                        <span class="spancomva1">{yun:}t key='wap_com_00087'{/yun}</span>
                     </div>
                 </div>
-                <div class="comvip_nav_right" onclick="navigateTo('index.php?c=server')">去升级</div>
+                <div class="comvip_nav_right" onclick="navigateTo('index.php?c=server')">{yun:}t key='wap_com_00108'{/yun}</div>
             </div>
 			<div class="comvip_nav comvipDaohang" v-if="sjtip == 0">
 				<div class="comvip_nav_left">
@@ -112,25 +112,25 @@
 						<span class="spandates">{{info.vipetime_n}}</span>
                     </div>
                     <div class="comvipDaoTips">
-                        <span>合理利用会员权益，有效提升招聘效率</span>
+                        <span>{yun:}t key='wap_com_00083'{/yun}</span>
                     </div>
                 </div>
-                <div class="comvip_nav_right" onclick="navigateTo('index.php?c=server')">升级权益</div>
+                <div class="comvip_nav_right" onclick="navigateTo('index.php?c=server')">{yun:}t key='wap_com_00098'{/yun}</div>
             </div>
             <div class="comvipDaoBorder">
                 <div style="overflow: hidden; position: relative;">
                     <div class="comvipDaoOline">
                         <div class="comvipDaineTite">
                             <b>{{jobnums}}</b>
-                            <span>个在招职位</span>
+                            <span>{yun:}t key='wap_com_00094'{/yun}</span>
                         </div>
                         <div class="comvipDaineLink">
                             <a href="javascript:;" onclick="navigateTo('index.php?c=job')" v-if="jobnums > 0">
-                                <span>去管理</span>
+                                <span>{yun:}t key='wap_com_00109'{/yun}</span>
                                 <img src="{yun:}$wap_style{/yun}/images/manager_more.png" alt="">
                             </a>
                             <a href="javascript:;" @click="jobAdd" v-else>
-                                <span>去发布</span>
+                                <span>{yun:}t key='wap_com_00047'{/yun}</span>
                                 <img src="{yun:}$wap_style{/yun}/images/manager_more.png" alt="">
                             </a>
                         </div>
@@ -141,27 +141,27 @@
                                 <div class="Member_Center_img">
                                     <img src="{yun:}$wap_style{/yun}/images/yun_cy_icon6.png" alt="" width="100%" height="100%">
                                 </div>
-                                <i class="Member_Center_word">职位管理</i>
+                                <i class="Member_Center_word">{yun:}t key='wap_com_00106'{/yun}</i>
                             </li>
                             <li onclick="navigateTo('index.php?c=resumecolumn')">
                                 <div class="Member_Center_img">
                                     <img src="{yun:}$wap_style{/yun}/images/yun_cy_icon5.png" alt="" width="100%" height="100%">
                                 </div>
-                                <i class="Member_Center_word">简历管理</i>
+                                <i class="Member_Center_word">{yun:}t key='wap_com_00105'{/yun}</i>
                             </li>
                             <li onclick="navigateTo('index.php?c=zhaopin')">
                                 <div class="Member_Center_img">
                                     <img src="{yun:}$wap_style{/yun}/images/yun_cy_icon3.png" alt="" width="100%" height="100%">
                                 </div>
-                                <i class="Member_Center_word">招聘数据</i>
+                                <i class="Member_Center_word">{yun:}t key='wap_com_00103'{/yun}</i>
                             </li>
                             <li onclick="navigateTo('index.php?c=server')">
                                 <div class="Member_Center_img">
                                     <img src="{yun:}$wap_style{/yun}/images/yun_cy_icon4.png" alt="" width="100%" height="100%">
                                 </div>
-                                <i class="Member_Center_word">会员服务</i>
+                                <i class="Member_Center_word">{yun:}t key='wap_com_00097'{/yun}</i>
                                 <span v-if="msg.couponNum>0" onclick="navigateTo('index.php?c=coupon_list')"
-                                    class="cy_box_tip">{{msg.couponNum}}张优惠券待使用</span>
+                                    class="cy_box_tip">{{msg.couponNum}}{yun:}t key='wap_00795'{/yun}</span>
                             </li>
                         </ul>
                     </div>
@@ -172,25 +172,24 @@
     </div>
     <div class="comzhtip" style="height: auto;" v-if="info.r_status != 1">
 
-        <div class="comzhtip_tit">温馨提示 </div>
+        <div class="comzhtip_tit">{yun:}t key='wap_user_00205'{/yun} </div>
 
         <div v-if="info.r_status == 0">
-            <div class="comzhtip_p1">帐号审核中，发布的职位信息将在审核通过后展示</div>
-            <div class="comzhtip_p2">我们会24小时内进行审核请保持电话畅通，联系客服快速审核({{webtel}})</div>
+            <div class="comzhtip_p1">{yun:}t key='wap_com_00080'{/yun}</div>
+            <div class="comzhtip_p2">{{i18n.auditContactPrefix}}{{webtel}})</div>
         </div>
         <div class="" v-if="info.r_status == 2 || info.r_status == 4">
-            <div class="comzhtip_p1"> 帐号被锁定</div>
-            <div class="comzhtip_p2">联系客服快速解锁({{webtel}})</div>
+            <div class="comzhtip_p1">{{i18n.accountLocked}}</div>
+            <div class="comzhtip_p2">{{i18n.unlockContactPrefix}}{{webtel}})</div>
         </div>
         <div class=" " v-else-if="info.r_status == 3">
-            <div class="comzhtip_p1">您的帐号未通过审核
-                <span v-if="info.lock_info">，原因：{{info.lock_info}}。</span><span v-else>。</span>
+            <div class="comzhtip_p1">{{i18n.accountNotApproved}}<span v-if="info.lock_info">{{i18n.reasonPrefix}}{{info.lock_info}}。</span><span v-else>。</span>
             </div>
-            <div class="comzhtip_p2"> 欢迎随时与我们取得联系({{webtel}})</div>
+            <div class="comzhtip_p2">{{i18n.contactUsPrefix}}{{webtel}})</div>
 
         </div>
     </div>
-    <!-- 广告位开始 -->
+    <!-- Ad banner -->
     <div class="wap_advertisement" style="display: none;">
         <div class="swiper-container" id="imgswiper">
             <div class="swiper-wrapper">
@@ -204,11 +203,11 @@
             </div>
         </div>
     </div>
-    <!-- 结束 -->
-    <!-- 任务栏部分 -->
+    <!-- End ad banner -->
+    <!-- Menu section -->
     <div class="taskbar">
-        <div v-if="yrbtn==1" @click="getLastYearReport" class="djck"> <i class="djck_icon"></i> 亲，你的年度报告来了，请查收~ <span
-                class="djck_bth">查看></span></div>
+        <div v-if="yrbtn==1" @click="getLastYearReport" class="djck"> <i class="djck_icon"></i> {yun:}t key='wap_com_00085'{/yun} <span
+                class="djck_bth">{yun:}t key='wap_00802'{/yun}</span></div>
 
         <div class="taskbar_box" style="margin-top: 0px;;">
             <div class="taskbar_enterprise" onclick="navigateTo('index.php?c=info');">
@@ -216,10 +215,10 @@
                     <div class="taskbar_datum_img">
                         <img src="{yun:}$wap_style{/yun}/images/enterprise_data.png" alt="" width="100%" height="100%">
                     </div>
-                    <div class="taskbar_datum_word">企业资料</div>
+                    <div class="taskbar_datum_word">{yun:}t key='wap_com_00096'{/yun}</div>
                 </div>
                 <div class="taskbar_nav">
-                    <div class="taskbar_nav_word">完善企业基本资料</div>
+                    <div class="taskbar_nav_word">{yun:}t key='wap_00803'{/yun}</div>
                     <div class="taskbar_nav_img">
                         <img src="{yun:}$wap_style{/yun}/images/my_more.png" alt="" width="100%" height="100%">
                     </div>
@@ -232,10 +231,10 @@
                         <div class="taskbar_datum_img">
                             <img src="{yun:}$wap_style{/yun}/images/caiwuegl.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="taskbar_datum_word">财务管理</div>
+                        <div class="taskbar_datum_word">{yun:}t key='wap_user_00213'{/yun}</div>
                     </div>
                     <div class="taskbar_nav">
-                        <div class="taskbar_nav_word" v-if="nofkorder>0">{{nofkorder}}个订单未付款</div>
+                        <div class="taskbar_nav_word" v-if="nofkorder>0">{{nofkorder}}{yun:}t key='common_01445'{/yun}</div>
                         <div class="taskbar_nav_img">
                             <img src="{yun:}$wap_style{/yun}/images/my_more.png" alt="" width="100%" height="100%">
                         </div>
@@ -248,7 +247,7 @@
                         <div class="taskbar_datum_img">
                             <img src="{yun:}$wap_style{/yun}/images/customer_service.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="taskbar_datum_word">客户服务</div>
+                        <div class="taskbar_datum_word">{yun:}t key='wap_com_00100'{/yun}</div>
                     </div>
                     <div class="taskbar_nav">
                         <div class="taskbar_nav_img">
@@ -263,10 +262,10 @@
                         <div class="taskbar_datum_img">
                             <img src="{yun:}$wap_style{/yun}/images/resume_index.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="taskbar_datum_word">其他服务</div>
+                        <div class="taskbar_datum_word">{yun:}t key='wap_user_00196'{/yun}</div>
                     </div>
                     <div class="taskbar_nav">
-                        <div class="taskbar_nav_word">兼职，招聘会，专题 等</div>
+                        <div class="taskbar_nav_word">{yun:}t key='wap_com_00089'{/yun}</div>
                         <div class="taskbar_nav_img">
                             <img src="{yun:}$wap_style{/yun}/images/my_more.png" alt="" width="100%" height="100%">
                         </div>
@@ -279,7 +278,7 @@
                         <div class="taskbar_datum_img">
                             <img src="{yun:}$wap_style{/yun}/images/sz.png" alt="" width="100%" height="100%">
                         </div>
-                        <div class="taskbar_datum_word">账户设置</div>
+                        <div class="taskbar_datum_word">{yun:}t key='wap_user_00214'{/yun}</div>
                     </div>
                     <div class="taskbar_nav">
 
@@ -295,23 +294,23 @@
         <div class="zphb_show" v-show="isHb && hbNum > 0">
             <a href="{yun:}url m=wap c=company a=whb id=$uid{/yun}">
                 <div class="zphb_show_c">
-                    <div class="zphb_show_tit">微海报</div>
-                    <div class="zphb_show_sp">一键生成招聘海报，分享到朋友圈</div>
+                    <div class="zphb_show_tit">{yun:}t key='wap_com_00110'{/yun}</div>
+                    <div class="zphb_show_sp">{yun:}t key='wap_com_00084'{/yun}</div>
                 </div>
             </a>
         </div>
         <div class="companyDatapage">
             <div class="companyDataTell" v-if="webtel">
-                <span>客服电话  {{webtel}} &nbsp; &nbsp;<span v-if="worktime">({{worktime}})</span></span>
+                <span>{{i18n.servicePhone}}  {{webtel}} &nbsp; &nbsp;<span v-if="worktime">({{worktime}})</span></span>
             </div>
             <div class="companyDatazhiao">
-                <a href="{yun:}url m=wap c=rlzy{/yun}">人力资源服务许可证</a>
+                <a href="{yun:}url m=wap c=rlzy{/yun}">{yun:}t key='wap_user_00184'{/yun}</a>
                 <span></span>
-                <a href="{yun:}url m=wap c=yyzz{/yun}">营业执照</a>
+                <a href="{yun:}url m=wap c=yyzz{/yun}">{yun:}t key='wap_user_00212'{/yun}</a>
             </div>
         </div>
     </div>
-    <!-- 提醒用户刷新职位遮罩层 -->
+    <!-- Job refresh reminder overlay -->
     <div class="refresh_mask" id="jobTip">
         <div class="refresh_mask_box">
             <div class="refresh_mask_box_img">
@@ -322,19 +321,19 @@
                     <img src="{yun:}$wap_style{/yun}/images/refresh_del.png" alt="" width="100%">
                 </div>
             </div>
-            <div class="refresh_mask_box_word"><i>尊敬的企业用户</i> <i>刷新职位可获得更多曝光机会</i></div>
+            <div class="refresh_mask_box_word"><i>{yun:}t key='wap_com_00093'{/yun}</i> <i>{yun:}t key='wap_com_00086'{/yun}</i></div>
             <div class="refresh_mask_box_btn_q">
-                <div class="refresh_mask_box_btn" @click="jobRefreshAsk">立即刷新</div>
+                <div class="refresh_mask_box_btn" @click="jobRefreshAsk">{yun:}t key='wap_user_00331'{/yun}</div>
             </div>
         </div>
     </div>
-    <!-- 添加客服微信弹框 memberwap.css -->
+    <!-- Customer service WeChat popup -->
     <van-popup v-model="gwbox" round>
         <div class="service_mask_box">
             <div class="service_mask_del" @click="gwbox = false">
                 <img src="{yun:}$wap_style{/yun}/images/refresh_del.png" alt="" width="100%" height="100%">
             </div>
-            <div class="service_mask_title">{{guweninfo.ewm_n ? '添加下方客服微信' : ''}}</div>
+            <div class="service_mask_title">{{guweninfo.ewm_n ? i18n.addServiceWechat : ''}}</div>
             <div class="service_mask_QRcode">
                 <img :src="guweninfo.ewm_n ? guweninfo.ewm_n : guweninfo.photo_n" alt="" width="100%" height="100%">
             </div>
@@ -342,26 +341,26 @@
                 <div class="service_mask_information_icon">
                     <img src="{yun:}$wap_style{/yun}/images/icon_iphone.png" alt="" width="100%" height="100%">
                 </div>
-                <div class="service_mask_information_text">客服电话</div>
+                <div class="service_mask_information_text">{yun:}t key='wap_com_00102'{/yun}</div>
             </div>
             <a class="service_mask_information" v-if="guweninfo.qq" target="_blank" :href="'http://wpa.qq.com/msgrd?v=3&uin='+guweninfo.qq+'&site=qq&menu=yes'">
                 <div class="service_mask_information_icon">
                     <img src="{yun:}$wap_style{/yun}/images/service_qq.png" alt="" width="100%" height="100%">
                 </div>
-                <div class="service_mask_information_text">客服QQ</div>
+                <div class="service_mask_information_text">{yun:}t key='wap_com_00101'{/yun}</div>
             </a>
         </div>
     </van-popup>
-	<!-- 关注公众号弹框 -->
+	<!-- WeChat official account popup -->
 	<van-popup v-model="gzhshow" :close-on-click-overlay="gzhclose" :closeable="gzhclose" round >
 		<div class="gzh_gzbox">
-			<div class="gzh_gzbox_n">关注公众号</div>
+			<div class="gzh_gzbox_n">{yun:}t key='wap_user_00191'{/yun}</div>
 				<img :src="gzhurl" @touchstart="gzhstart" @touchend="gzhend">
-			<div class="gzh_gzbox_p">长按识别二维码</div>
-			<div class="gzh_gzbox_p">随时随地查找好工作</div>
+			<div class="gzh_gzbox_p">{yun:}t key='wap_user_00188'{/yun}</div>
+			<div class="gzh_gzbox_p">{yun:}t key='wap_user_00185'{/yun}</div>
 		</div>
 	</van-popup>
-    <!-- 年度统计弹出来 -->
+    <!-- Year report popup -->
     <van-popup v-model="yearReportShow" closeable round     :style="{ background:'none'}">
         <div class=""  @click="getLastYearReport">  
             <img :src="yrTip" alt="" width="280" height=" 310">
@@ -372,7 +371,7 @@
         <div class="hb_tc">
             <img :src="yrSrc" style="max-width: 100%;">
             <div class="hb_tc_bth">
-                <div @click="yrShow=!yrShow" class="hb_btn_hyz">长按图片保存</div>
+                <div @click="yrShow=!yrShow" class="hb_btn_hyz">{yun:}t key='wap_00214'{/yun}</div>
             </div>
         </div>
     </van-popup>
@@ -412,7 +411,32 @@ var yunvue = new Vue({
         yearReportShow:false,
         yrbtn:0,
         paused: 0,
-		sjtip: 1,// 是否展示升级套餐提醒
+		sjtip: 1, // Show upgrade package reminder
+        i18n: {
+            auditContactPrefix: '{yun:}t key='wap_00796'{/yun}',
+            accountLocked: '{yun:}t key='wap_00797'{/yun}',
+            unlockContactPrefix: '{yun:}t key='wap_00798'{/yun}',
+            accountNotApproved: '{yun:}t key='wap_00799'{/yun}',
+            reasonPrefix: '{yun:}t key='wap_00800'{/yun}',
+            contactUsPrefix: '{yun:}t key='wap_00801'{/yun}',
+            addServiceWechat: '{yun:}t key='wap_00804'{/yun}',
+            servicePhone: '{yun:}t key='wap_com_00102'{/yun}',
+            notNeeded: '{yun:}t key='wap_com_00107'{/yun}',
+            goBuy: '{yun:}t key='wap_com_00048'{/yun}',
+            cancel: '{yun:}t key='wap_js_00080'{/yun}',
+            goPublish: '{yun:}t key='wap_com_00047'{/yun}',
+            confirm: '{yun:}t key='common_02016'{/yun}',
+            membershipPaused: '{yun:}t key='wap_com_00081'{/yun}',
+            noRefreshJobs: '{yun:}t key='wap_com_00091'{/yun}',
+            refreshPrefix: '{yun:}t key='wap_com_00104'{/yun}',
+            refreshJobMid: '{yun:}t key='wap_com_00090'{/yun}',
+            refreshQuotaMid: '{yun:}t key='wap_com_00088'{/yun}',
+            refreshConfirmSuffix: '{yun:}t key='wap_com_00092'{/yun}',
+            generating: '{yun:}t key='wap_00073'{/yun}',
+            wxRebindConfirm: '{yun:}t key='wap_user_00362'{/yun}',
+            no: '{yun:}t key='common_02063'{/yun}',
+            yes: '{yun:}t key='common_02085'{/yun}',
+        },
     },
     created() {
         this.getInfo();
@@ -515,21 +539,21 @@ var yunvue = new Vue({
             comjobAdd(url, { job: 'job' }, function(res) {
                 
                 if (res.error==1) {
-                    // 套餐不足
+                    // Insufficient package quota
                     modalVue.$data.mb_content = res.msg;
-                    modalVue.$data.cancelText = '不用了';
-                    modalVue.$data.confirmText = '去购买';
+                    modalVue.$data.cancelText = self.i18n.notNeeded;
+                    modalVue.$data.confirmText = self.i18n.goBuy;
                     modalVue.$data.yunModal = true;
                     modalType = 'job';
                 } else if(res.error==2){
                     modalVue.$data.mb_content = res.msg;
-                    modalVue.$data.cancelText = '取消';
-                    modalVue.$data.confirmText = '去发布';
+                    modalVue.$data.cancelText = self.i18n.cancel;
+                    modalVue.$data.confirmText = self.i18n.goPublish;
                     modalVue.$data.tourl = res.tourl;
                     modalVue.$data.yunModal = true;
                     modalType = 'toaddjob';
                 }else {
-                    // 强制操作
+                    // Mandatory action required
                     certVue.$data.checked = res;
                     certVue.$data.yunCert = true;
                 }
@@ -541,22 +565,22 @@ var yunvue = new Vue({
         jobRefreshAsk: function() {
             this.closeJobTip();
             if (this.paused == 1){
-                showToast('当前账户会员权益已暂停，请联系客服开启服务~');
+                showToast(this.i18n.membershipPaused);
                 return;
             }
             if (this.jobnums > 0) {
                 this.jobTip = false;
                 if (parseInt(this.statis.upJobNum) >= parseInt(this.jobnums)) {
-                    modalVue.$data.mb_content = '本次刷新' + this.jobnums + '个在招职位，将扣除' + this.jobnums + '份套餐刷新量，当前余量' + this.statis.breakjob_num + '份，是否继续？';
-                    modalVue.$data.cancelText = '取消';
-                    modalVue.$data.confirmText = '确定';
+                    modalVue.$data.mb_content = this.i18n.refreshPrefix + this.jobnums + this.i18n.refreshJobMid + this.jobnums + this.i18n.refreshQuotaMid + this.statis.breakjob_num + this.i18n.refreshConfirmSuffix;
+                    modalVue.$data.cancelText = this.i18n.cancel;
+                    modalVue.$data.confirmText = this.i18n.confirm;
                     modalVue.$data.yunModal = true;
                     modalType = 'askRefresh';
                 } else {
                     this.jobrefresh();
                 }
             } else {
-                showToast('您暂无可刷新职位');
+                showToast(this.i18n.noRefreshJobs);
             }
         },
         jobrefresh: function() {
@@ -564,8 +588,8 @@ var yunvue = new Vue({
             var url = "{yun:}url d=wxapp h=com m=job c=refresh{/yun}";
             comjobRefresh(url, { jobid: '' , provider: 'wap'}, function(res) {
                 modalVue.$data.mb_content = res.msg;
-                modalVue.$data.cancelText = '不用了';
-                modalVue.$data.confirmText = '去购买';
+                modalVue.$data.cancelText = self.i18n.notNeeded;
+                modalVue.$data.confirmText = self.i18n.goBuy;
                 modalVue.$data.yunModal = true;
                 modalType = 'refreshAll';
             }, function () {
@@ -577,7 +601,7 @@ var yunvue = new Vue({
         },
 		gzhstart: function(){
 			if(loopVal){
-				 //再次清空定时器，防止重复注册定时器
+				// Clear timer again to avoid duplicate registration
 				clearTimeout(loopVal);
 			}
 			var self = this;
@@ -595,7 +619,7 @@ var yunvue = new Vue({
         getLastYearReport: function () {
             var that = this;
 
-            showLoading('生成中...');
+            showLoading(this.i18n.generating);
 
             const src = wapurl + 'index.php?c=ajax&a=lastYearReport&uid='+uid;
             that.yrSrc = src;
@@ -626,15 +650,15 @@ var yunvue = new Vue({
     				yunvue.$data.gzhshow = true;
     			}else if(res.subscribe == 2 && !gzhConfirm) {
     				if(!gzhBox){
-    					// 页面首次查询，先弹出二维码弹窗
+    					// First query on page: show QR code popup
     					yunvue.$data.gzhshow = true;
     					gzhBox = true;
     				}else{
     					gzhConfirm = true;
     					yunvue.$data.gzhshow = false;
-    					showConfirm('本账号绑定的微信号，不是当前微信号，是否要换绑为当前微信号？', function() {
+    					showConfirm(yunvue.$data.i18n.wxRebindConfirm, function() {
     						hbwx();
-    					},'否','是');
+    					}, yunvue.$data.i18n.no, yunvue.$data.i18n.yes);
     				}
                 }else if(res.subscribe == 1) {
                     if (gzhBox){
@@ -663,8 +687,8 @@ var yunvue = new Vue({
 	}
 </script>
 {yun:}/if{/yun}
-<!-- 余额不足提示 -->
+<!-- Insufficient balance modal -->
 {yun:}include file="$wapstyle/publichtm/yun_modal.htm"{/yun}
-<!-- 强制操作提醒弹出框 -->
+<!-- Mandatory action modal -->
 {yun:}include file="$wapstyle/publichtm/yun_cert.htm"{/yun}
 {yun:}include file="$wapstyle/footer.htm"{/yun}

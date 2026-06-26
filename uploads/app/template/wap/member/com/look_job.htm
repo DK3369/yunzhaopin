@@ -16,12 +16,12 @@
                             <ul>
                                 <li>{{item.exp}}·</li>
                                 <li>{{item.edu}}·</li>
-                                <li>{{item.age}}岁</li>
+                                <li>{{item.age}}{{i18n.ageSuffix}}</li>
                             </ul>
                         </div>
                         <div class="particulars_concise_bom">
                             <div class="concise_bom_desired_position Intention_to_width">
-                                <div class="concise_bom_desired Intention_to_locate">意向</div>
+                                <div class="concise_bom_desired Intention_to_locate">{yun:}t key='wap_com_00021'{/yun}</div>
                                 <div class="concise_bom_position  Intention_to_word">{{item.jobclassidname}}</div>
                             </div>
                             <div class="concise_bom_icon" @click.stop="delLookJob(item.id, infokey)">
@@ -37,7 +37,7 @@
         </div>
         <div v-if="total==0">
             <div class="wap_member_no">
-                您暂时还没有人才浏览您的职位
+                {yun:}t key='wap_00821'{/yun}
             </div>
         </div>
     </div>
@@ -54,6 +54,12 @@
                 pageTotal: 0,
                 page: 1,
                 limit: 10,
+                i18n: {
+                    ageSuffix: '{yun:}t key='common_02074'{/yun}',
+                    confirmDelete: '{yun:}t key='wap_00812'{/yun}',
+                    deleting: '{yun:}t key='wap_user_00355'{/yun}',
+                    deleteSuccess: '{yun:}t key='wap_user_00147'{/yun}',
+                },
             };
         },
         created() {
@@ -89,12 +95,12 @@
                 var paramer = {
                     ids: id,
                 };
-                showConfirm('确定删除？', function () {
-                    showLoading('删除中');
+                showConfirm(that.i18n.confirmDelete, function () {
+                    showLoading(that.i18n.deleting);
                     $.post('{yun:}url d=wxapp h=com m=resume c=look_job_del{/yun}', paramer, function (data) {
                         hideLoading();
                         if (data.error == 1) {
-                            showToast('删除成功', 2, function () {
+                            showToast(that.i18n.deleteSuccess, 2, function () {
                                 that.info.splice(key, 1);
                             });
                         }

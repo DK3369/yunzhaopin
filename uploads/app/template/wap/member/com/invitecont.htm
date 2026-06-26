@@ -10,13 +10,13 @@
                     <div style="color:#999; padding-top: 0.266666rem;" v-if="resume.living">{yun:}t key='common_01907'{/yun}：{{resume.living}}</div>
                 </div>
                 <div class="popular_position_bottom">
-                    当前状态：
-                    <span v-if="show.is_browse==1 || show.is_browse==2">待接受</span>
+                    {{i18n.currentStatus}}
+                    <span v-if="show.is_browse==1 || show.is_browse==2">{{i18n.pendingAccept}}</span>
                     <span v-else-if="show.is_browse==3">
                         <span v-if="show.over" style="color: #FF4200;">{yun:}t key='wap_user_00259'{/yun}</span>
                         <span v-else>{yun:}t key='wap_user_00262'{/yun}</span>
                     </span>
-                    <span v-else-if="show.is_browse==4">拒绝面试</span>
+                    <span v-else-if="show.is_browse==4">{{i18n.declineInterview}}</span>
                     <span v-else style="color: #FF4200;">{yun:}t key='wap_user_00266'{/yun}</span>
                 </div>
             </div>
@@ -44,7 +44,7 @@
                     <div class="popular_template_a">{{show.linktel}}</div>
                 </div>
                 <div class="invitecont_list">
-                    <div class="invitecont_list_name">面试地址</div>
+                    <div class="invitecont_list_name">{{i18n.interviewAddress}}</div>
                     <div class=" ">{{show.address}}</div>
                 </div>
                 <div class="popular_card_map" v-if="show.staticimg">
@@ -72,6 +72,12 @@
             browse: 2,
             covers: [],
             moreShow: false,
+            i18n: {
+                currentStatus: '{yun:}t key='wap_01052'{/yun}',
+                pendingAccept: '{yun:}t key='wap_00822'{/yun}',
+                declineInterview: '{yun:}t key='wap_01053'{/yun}',
+                interviewAddress: '{yun:}t key='wap_01055'{/yun}',
+            },
         },
         created() {
             this.inviteshow();

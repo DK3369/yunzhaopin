@@ -7,73 +7,72 @@
 <script src="{yun:}$wap_style{/yun}/js/exif.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
 <div id="yunvue" class="none">
 	<div class="personal_details_min_body" id="wholeBody">
-		<!-- 页面卡片式图 -->
 		<div class="yun_createbox">
 			<form id="infoForm">
 			 
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>头<span class="nbsp">像</span></div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='common_02068'{/yun}<span class="nbsp">{yun:}t key='common_02055'{/yun}</span></div>
 					<div class="yun_create_text">
-							<div class="yun_create_tx">真实头像可提升求职成功率</div>
+							<div class="yun_create_tx">{yun:}t key='wap_user_00225'{/yun}</div>
 					<div class="yun_create_tximg" @click="openPhoto">
 						<img :src="infoShow.photo" alt="" width="100%" height="100%">
 					</div>
 					</div>
 				</div>
 				<div class="yun_createlist yun_createlist_pr">
-					<div class="yun_create_name"><span class="m_bt">*</span>姓<span class="nbsp">名</span></div>
+					<div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='common_02070'{/yun}<span class="nbsp">{yun:}t key='common_02061'{/yun}</span></div>
 					<div class="yun_create_text">
-						<input type="text" name="name" placeholder="请输入姓名" :value="infoShow.name" :disabled="infoShow.idcard_status==1" />
+						<input type="text" name="name" :placeholder="i18n.namePlaceholder" :value="infoShow.name" :disabled="infoShow.idcard_status==1" />
 						<input type="hidden" id="idcard_status" name="idcard_status" :value="infoShow.idcard_status"  />
 					</div>
 			
 		
 			
 					<div class="yun_create_gender">
-							<div @click="changeSex(1)" :class="sexid==1?'yun_create_genderselect':''">男</div>
-							<div @click="changeSex(2)" :class="sexid==2?'yun_create_genderselect':''">女</div>
+							<div @click="changeSex(1)" :class="sexid==1?'yun_create_genderselect':''">{{i18n.male}}</div>
+							<div @click="changeSex(2)" :class="sexid==2?'yun_create_genderselect':''">{{i18n.female}}</div>
 							</div>
 										
 					<input type="hidden" name="sex" id="sex" :value="sexid" />
 			
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">*</span>现居住地</div>
+					<div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00242'{/yun}</div>
 					<div class="yun_create_text">
-						<input type="text" name="living" v-model="infoShow.living" placeholder="请输入现居住地">
+						<input type="text" name="living" v-model="infoShow.living" :placeholder="i18n.livingPlaceholder">
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">*</span>手机号码</div>
+					<div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00241'{/yun}</div>
 					<div class="yun_create_text" v-if="infoShow.moblie_status==1&&infoShow.telphone">						
 						<div class="yun_create_bkt">{{infoShow.telphone}} </div>
-						<i class="yun_create_tip">已验证</i>
+						<i class="yun_create_tip">{yun:}t key='wap_user_00246'{/yun}</i>
 						<input type="hidden" name="telphone" v-model="infoShow.telphone">	
 					</div>
 					<div class="yun_create_text" v-else>						
-						<input type="number" name="telphone" oninput="value=value.replace(/^0|[\^d]/g,'')" v-model="infoShow.telphone" placeholder="请输入手机号码" >
+						<input type="number" name="telphone" oninput="value=value.replace(/^0|[\^d]/g,'')" v-model="infoShow.telphone" :placeholder="i18n.mobilePlaceholder" >
 					</div>					
 				</div>
 				
 			
 			 
 						<div onclick="birthdayPicker()" class="yun_createlist">
-							<div class="yun_create_name"><span class="m_bt">*</span>出生年月</div>
+							<div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00236'{/yun}</div>
 						
 					
 							<div class="yun_create_select" v-if="dateValue">{{dateValue}}</div>
-							<div class="yun_create_select" style="color:#cecccc;" v-else>请选择</div>
+							<div class="yun_create_select" style="color:#cecccc;" v-else>{{i18n.selectPlease}}</div>
                       <input type="hidden" id="birthday" name="birthday" :value="dateValue">
 					<div class="yun_create_fx">
 						<img src="{yun:}$wap_style{/yun}/images/yunfx.png"alt="" width="100%" height="100%">
 					</div>
 						</div>
 						 	<div class="yun_createlist"@click="eduPicker">
-					<div class="yun_create_name"><span class="m_bt">*</span>最高学历</div>
+					<div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00092'{/yun}</div>
 							
 						
 								<div class="yun_create_select" v-if="edu_n">{{edu_n}}</div>
-						<div class="yun_create_select" style="color:#cecccc;" v-else>请选择</div>
+						<div class="yun_create_select" style="color:#cecccc;" v-else>{{i18n.selectPlease}}</div>
 							
 							
 							<input type="hidden" id="edu" name="edu" :value="infoShow.edu">
@@ -82,46 +81,46 @@
 							</div>
 						</div>
 						<div @click="expPicker"class="yun_createlist">
-								<div class="yun_create_name"><span class="m_bt">*</span>工作经验</div>
+								<div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_user_00240'{/yun}</div>
 							
 							
 								<div class="yun_create_select" id="expValue" v-if="exp_n">{{exp_n}}</div>
-							<div class="yun_create_select"  style="color:#cecccc;" v-else>请选择</div>
+							<div class="yun_create_select"  style="color:#cecccc;" v-else>{{i18n.selectPlease}}</div>
 							<input type="hidden" id="exp" name="exp" :value="infoShow.exp">
 						<div class="yun_create_fx">
 							<img src="{yun:}$wap_style{/yun}/images/yunfx.png"alt="" width="100%" height="100%">
 						</div>
 						</div>  
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>详细地址</div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='wap_user_00243'{/yun}</div>
 					<div class="yun_create_text">
-						<input type="text" name="address" v-model="infoShow.address" placeholder="XXX省XXX市XXX区XXX街道">
+						<input type="text" name="address" v-model="infoShow.address" :placeholder="i18n.addressPlaceholder">
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>身<span class="nbsp">高</span></div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='common_02100'{/yun}<span class="nbsp">{yun:}t key='common_02105'{/yun}</span></div>
 					<div class="yun_create_text">
-						<input type="text" name="height" v-model="infoShow.height" placeholder="请输入身高。单位：厘米">
+						<input type="text" name="height" v-model="infoShow.height" :placeholder="i18n.heightPlaceholder">
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>体<span class="nbsp">重</span></div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='common_02054'{/yun}<span class="nbsp">{yun:}t key='common_02101'{/yun}</span></div>
 					<div class="yun_create_text">
-						<input type="text" name="weight" v-model="infoShow.weight" placeholder="请输入体重。单位：公斤">
+						<input type="text" name="weight" v-model="infoShow.weight" :placeholder="i18n.weightPlaceholder">
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>民<span class="nbsp">族</span></div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='wap_user_00249'{/yun}<span class="nbsp">{yun:}t key='wap_user_00248'{/yun}</span></div>
 					<div class="yun_create_text">
-						<input type="text" name="nationality" v-model="infoShow.nationality" placeholder="例：汉">
+						<input type="text" name="nationality" v-model="infoShow.nationality" :placeholder="i18n.nationalityPlaceholder">
 					</div>
 				</div>
 		 
 					<div class="yun_createlist"@click="marriagePicker">
-						<div class="yun_create_name"><span class="m_bt">&nbsp;</span>婚<span class="nbsp">姻</span></div>
+						<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='common_02072'{/yun}<span class="nbsp">{yun:}t key='common_02071'{/yun}</span></div>
 					
 						<div class="yun_create_select" v-if="marriage_n" id="marriageValue">{{marriage_n}}</div>
-						<div class="yun_create_select" id="marriageValue" style="color:#cecccc;" v-else>请选择婚姻</div>
+						<div class="yun_create_select" id="marriageValue" style="color:#cecccc;" v-else>{{i18n.selectMarriage}}</div>
                         <input type="hidden" id="marriage" name="marriage" :value="infoShow.marriage">
 				
 					<div class="yun_create_fx">
@@ -129,36 +128,36 @@
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>户<span class="nbsp">籍</span></div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='common_02079'{/yun}<span class="nbsp">{yun:}t key='wap_user_00251'{/yun}</span></div>
 					<div class="yun_create_text">
-						<input type="text" name="domicile" v-model="infoShow.domicile" placeholder="例：江苏-南京">
+						<input type="text" name="domicile" v-model="infoShow.domicile" :placeholder="i18n.domicilePlaceholder">
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>微&nbsp;信&nbsp;&nbsp;号</div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='admin_00032'{/yun}</div>
 					<div class="yun_create_text">
-						<input type="text" name="wxid" v-model="infoShow.wxid" placeholder="微信号可用于聊天时使用">
+						<input type="text" name="wxid" v-model="infoShow.wxid" :placeholder="i18n.wxidPlaceholder">
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>电子邮箱</div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='wap_user_00179'{/yun}</div>
 					<div class="yun_create_text" v-if="infoShow.email_status==1&&infoShow.email">
 						<div class="yun_create_bkt">{{infoShow.email}} </div>
-						<i class="yun_create_tip">已验证</i>
+						<i class="yun_create_tip">{yun:}t key='wap_user_00246'{/yun}</i>
 						<input type="hidden" name="email" v-model="infoShow.email">
 						 
 					</div>
 					<div class="yun_create_text" v-else>
-						<input type="text" name="email" v-model="infoShow.email" placeholder="请输入电子邮箱" >
+						<input type="text" name="email" v-model="infoShow.email" :placeholder="i18n.emailPlaceholder" >
 					</div>
 				</div>
 				<input type="hidden" name="url" value="{yun:}url d=wxapp h=user m=info c=saveinfo{/yun}">
 				
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>姓名展示</div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='wap_user_00238'{/yun}</div>
 				
 					<div class="yun_create_select"  @click="namePicker" id="nameValue"v-if="nametype_n">{{nametype_n}}</div>
-					<div class="yun_create_select"  @click="namePicker" id="nameValue"style="color:#cecccc;" v-else>完全公开</div>
+					<div class="yun_create_select"  @click="namePicker" id="nameValue"style="color:#cecccc;" v-else>{{i18n.nameDefaultFullPublic}}</div>
 
 
 					<input type="hidden" id="nametype" name="nametype" :value="infoShow.nametype">
@@ -167,9 +166,9 @@
 					</div>
 				</div>
 				<div class="yun_createlist create_resume_listend">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>头像展示</div>
-					<div class="yun_create_select" v-if="infoShow.phototype==1" @click="photoPicker" id="photoValue">不公开</div>
-					<div class="yun_create_select" v-else @click="photoPicker" id="photoValue">公开</div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='wap_user_00237'{/yun}</div>
+					<div class="yun_create_select" v-if="infoShow.phototype==1" @click="photoPicker" id="photoValue">{{i18n.photoPrivate}}</div>
+					<div class="yun_create_select" v-else @click="photoPicker" id="photoValue">{{i18n.photoPublic}}</div>
 					<input type="hidden" id="phototype" name="phototype" :value="infoShow.phototype">
 					
 				<div class="yun_create_fx">
@@ -179,10 +178,9 @@
 				
 			</form>
 		</div>	<div class="yun_create_bthbox">
-		<div class="yun_create_bth " id="headSave" onclick="headSave('{yun:}$smarty.get.c{/yun}')">保存</div>	</div>
+		<div class="yun_create_bth " id="headSave" onclick="headSave('{yun:}$smarty.get.c{/yun}')">{yun:}t key='wap_user_00101'{/yun}</div>	</div>
 	</div>
 	<div>
-		<!--picker选择器-->
 		<van-popup v-model="photoShow" round position="bottom">
 			<van-picker show-toolbar :columns="photo" :default-index="photoIndex" 
 			 @cancel="photoShow = false" @confirm="photoConfirm"/>
@@ -213,7 +211,7 @@
 		
 		    <div class="comheader">
 		        <a class="comheader_return" @click="photoBoxShow = false"></a>
-		        <div class="comheader_tit">上传头像</div>
+		        <div class="comheader_tit">{yun:}t key='wap_user_00110'{/yun}</div>
 		    </div>
 		    <div class="verify">
 		        <div class="photo_i_box_v">
@@ -224,15 +222,15 @@
 		                    </div>
 		                    <div class="clear"></div>
 		                    <div class="photo_xz">
-		                        <input id="image" type="file" accept="image/*" onchange="photoChange(this)"/> 选择上传头像
+		                        <input id="image" type="file" accept="image/*" onchange="photoChange(this)"/> {{i18n.selectUploadAvatar}}
 		
 		                    </div>
-		                    <div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>选择上传头像点击提交按钮即可上传
+		                    <div class="yunset_identity_msg"><i class="yunset_identity_msg_icon"></i>{{i18n.uploadAvatarHint}}
 		                        <span v-if="infoShow.photo_n">
 		                            (
-		                            <font v-if="infoShow.photo_status == '1'" color="red">审核中</font>
-		                            <font v-else-if="infoShow.photo_status == '2'" color="red">未通过</font>
-		                            <font v-else color="red">已审核</font>
+		                            <font v-if="infoShow.photo_status == '1'" color="red">{{i18n.photoReviewing}}</font>
+		                            <font v-else-if="infoShow.photo_status == '2'" color="red">{{i18n.photoRejected}}</font>
+		                            <font v-else color="red">{{i18n.photoApproved}}</font>
 		                            )
 		                        </span>
 		                    </div>
@@ -241,7 +239,7 @@
 		                <input type="hidden" value="" id="preview">
 		            </div>
 		            <div class="photo_tj">
-		                <input name="submit" type="button" onclick="photo()" value="提交" class="yunset_bth"/>
+		                <input name="submit" type="button" onclick="photo()" :value="i18n.submitBtn" class="yunset_bth"/>
 		            </div>
 		        </div>
 		    </div>
@@ -258,8 +256,26 @@
 <script src="{yun:}$wap_style{/yun}/js/compress.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
 <script src="{yun:}$wap_style{/yun}/js/exif.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
 <script>
-	// 时间选择器参数要重新处理，iOS不支持以中划线分隔的日期格式，要替换成反斜杠/
-	
+	// iOS date picker requires slash-separated dates instead of hyphen format
+
+	var USER_INFO_I18N = {
+		fillName: '{yun:}t key='wap_user_00234'{/yun}',
+		nameFormatInvalid: '{yun:}t key='wap_js_00160'{/yun}',
+		selectGender: '{yun:}t key='wap_js_00134'{/yun}',
+		selectBirthday: '{yun:}t key='wap_00138'{/yun}',
+		selectEducation: '{yun:}t key='wap_user_00049'{/yun}',
+		selectExperience: '{yun:}t key='wap_00937'{/yun}',
+		fillLiving: '{yun:}t key='wap_user_00231'{/yun}',
+		fillMobile: '{yun:}t key='wap_js_00119'{/yun}',
+		mobileInvalid: '{yun:}t key='wap_user_00140'{/yun}',
+		emailInvalid: '{yun:}t key='wap_js_00108'{/yun}',
+		saving: '{yun:}t key='wap_js_00165'{/yun}',
+		selectPhotoFirst: '{yun:}t key='wap_user_00229'{/yun}',
+		uploading: '{yun:}t key='wap_user_00244'{/yun}',
+		confirm: '{yun:}t key='common_02016'{/yun}',
+		cancel: '{yun:}t key='wap_js_00080'{/yun}',
+	};
+
 	var savephotourl = '{yun:}url d=wxapp h=user m=info c=savephoto{/yun}';
 	var resumename = '{yun:}$config.sy_resumename_num{/yun}';
 	var timestamp = new Date();
@@ -268,9 +284,34 @@
 		el: '#yunvue',
 		data() {
 		    return {
+				i18n: {
+					male: '{yun:}t key='common_02092'{/yun}',
+					female: '{yun:}t key='common_02069'{/yun}',
+					selectPlease: '{yun:}t key='wap_user_00100'{/yun}',
+					selectMarriage: '{yun:}t key='wap_user_00235'{/yun}',
+					namePlaceholder: '{yun:}t key='wap_user_00234'{/yun}',
+					livingPlaceholder: '{yun:}t key='wap_user_00231'{/yun}',
+					mobilePlaceholder: '{yun:}t key='wap_user_00142'{/yun}',
+					addressPlaceholder: '{yun:}t key='wap_user_00224'{/yun}',
+					heightPlaceholder: '{yun:}t key='wap_user_00228'{/yun}',
+					weightPlaceholder: '{yun:}t key='wap_user_00227'{/yun}',
+					nationalityPlaceholder: '{yun:}t key='wap_user_00245'{/yun}',
+					domicilePlaceholder: '{yun:}t key='wap_user_00230'{/yun}',
+					wxidPlaceholder: '{yun:}t key='wap_user_00226'{/yun}',
+					emailPlaceholder: '{yun:}t key='wap_user_00232'{/yun}',
+					nameDefaultFullPublic: '{yun:}t key='wap_user_00239'{/yun}',
+					photoPublic: '{yun:}t key='wap_js_00005'{/yun}',
+					photoPrivate: '{yun:}t key='wap_js_00003'{/yun}',
+					selectUploadAvatar: '{yun:}t key='wap_user_00233'{/yun}',
+					uploadAvatarHint: '{yun:}t key='wap_00655'{/yun}',
+					photoReviewing: '{yun:}t key='wap_user_00174'{/yun}',
+					photoRejected: '{yun:}t key='wap_user_00167'{/yun}',
+					photoApproved: '{yun:}t key='wap_user_00165'{/yun}',
+					submitBtn: '{yun:}t key='wap_user_00176'{/yun}',
+				},
 				photoShow: false,
 				photoIndex: 0,
-				photo: [{value: 0, text: '公开'},{value: 1, text: '不公开'}],
+				photo: [{value: 0, text: '{yun:}t key='wap_js_00005'{/yun}'},{value: 1, text: '{yun:}t key='wap_js_00003'{/yun}'}],
 				nameShow: false,
 				nameIndex: 0,
 				name: [],
@@ -381,15 +422,14 @@
 				this.dateValue = timeFormat(e, 'month');
 				this.year = e.getFullYear();
 			},
-			// 上传头像
 			openPhoto: function () {
 			    this.photoBoxShow = true;
 			},
 		}
 	});
-	// 裁剪logo
 	function toAlloyCrop(pic) {
 	    let yd = yunvue.$data;
+	    var i18n = typeof USER_INFO_I18N !== 'undefined' ? USER_INFO_I18N : {};
 	    new AlloyCrop({
 	        image_src: pic,
 	        width: 200,
@@ -398,27 +438,25 @@
 	        ok: function (base64, canvas) {
 	            yd.infoShow.photo = base64;
 	            $("#preview").val(base64);
-	            // $('#showResult').fadeIn();
 	        },
 	        cancel: function () {
-	            // $('#showResult').fadeIn();
 	        },
-	        ok_text: '确定',
-	        cancel_text: '取消'
+	        ok_text: i18n.confirm,
+	        cancel_text: i18n.cancel
 	    });
 	}
 	
-	// 上传logo
 	function photo() {
 	    let yd = yunvue.$data;
+	    var i18n = typeof USER_INFO_I18N !== 'undefined' ? USER_INFO_I18N : {};
 	    var uimage = $("#preview").val();
 	    if (uimage == '') {
-	        showToast('请选择图片后再提交');
+	        showToast(i18n.selectPhotoFirst);
 	        return false;
 	    } else {
 	        var regS = new RegExp("\\+", "gi");
 	        uimage = uimage.replace(regS, "#");
-	        showLoading('上传中');
+	        showLoading(i18n.uploading);
 	        $.ajax({
 	            type: 'POST',
 	            url: '{yun:}url d=wxapp h=user m=info c=savephoto{/yun}',

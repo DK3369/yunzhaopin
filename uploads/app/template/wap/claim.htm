@@ -10,15 +10,15 @@
 			<div class="J_validate_group">
 				<div class="selecttip">{yun:}t key='wap_00172'{/yun}</div>
 				<div class="account_td1">
-					<input class="input_295_34" name="username" id="username" type="text" placeholder="请输入新的用户名">
+					<input class="input_295_34" name="username" id="username" type="text" placeholder="{yun:}t key='wap_01451'{/yun}">
 				</div>
 				<div class="selecttip">{yun:}t key='wap_user_00305'{/yun}：</div>
 				<div class="account_td1">
-					<input class="input_295_34" name="password" id="password" type="password" placeholder="请输入新的用户密码">
+					<input class="input_295_34" name="password" id="password" type="password" placeholder="{yun:}t key='wap_01452'{/yun}">
 				</div>
-				<div class="selecttip">确认新密码：</div>
+				<div class="selecttip">{yun:}t key='wap_01450'{/yun}</div>
 				<div class="account_td1">
-					<input class="input_295_34" name="cpassword" id="cpassword" type="password" placeholder="请输入确认新的用户密码">
+					<input class="input_295_34" name="cpassword" id="cpassword" type="password" placeholder="{yun:}t key='wap_01453'{/yun}">
 				</div>
 				<div class="reset_btnbox">
 					<input type="hidden" name="uid" value="{yun:}$smarty.get.uid{/yun}" />
@@ -38,12 +38,12 @@
 		var password	=	$.trim($("input[name=password]").val());
 		var cpassword	=	$.trim($("input[name=cpassword]").val());
 		if($.trim(username)=="") {
-			showToast('输入新的用户名！');return false;
+			showToast('{yun:}t key=\'wap_01454\'{/yun}');return false;
 		}else if(username.length<2 || username.length>16){
 			showToast("{yun:}t key='wap_00168'{/yun}");return false;
 		}
 		if(password.length<6 || password.length>20){
-			showToast("密码长度应为6-20{yun:}t key='common_02053'{/yun}！");return false;
+			showToast("{yun:}t key='wap_01586'{/yun}{yun:}t key='common_02053'{/yun}{yun:}t key='wap_01587'{/yun}");return false;
 		}
 		if(password!=cpassword){
 			showToast("{yun:}t key='wap_js_00138'{/yun}");return false;

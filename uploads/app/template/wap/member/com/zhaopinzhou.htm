@@ -2,18 +2,18 @@
 <div id="yunvue" v-show="!weekLoading && !tcLoading">
     <div class="zaopinDataTop">
         <div class="zapiDaTopFanh">
-            <span>招聘数据中心</span>
+            <span>{{i18n.dataCenter}}</span>
         </div>
         <div class="zapiDaTopInfo">
             <div class="zapiDaTopFlex">
                 <div class="zapiDaTopTite">
                     <div class="zapiDaTopTitMic">
-                        <span>我的招聘数据</span>
+                        <span>{{i18n.myRecruitData}}</span>
                     </div>
                     <div class="zapiDaTopTitLik">
                         <a href="javascript:navigateTo('index.php?c=zhaopin');">
                             <img src="{yun:}$wap_style{/yun}/images/zpda2.png" class="dopTitLiImg1" alt="">
-                            <span>今日数据</span>
+                            <span>{{i18n.todayData}}</span>
                             <img src="{yun:}$wap_style{/yun}/images/zpda3.png" class="dopTitLiImg2" alt="">
                         </a>
                     </div>
@@ -28,7 +28,7 @@
         <div class="zaopinDataCont">
             <div class="zaopinDataCotTite">
                 <div class="zaopinDataCotMic">
-                    <span>周数据</span>
+                    <span>{{i18n.weekData}}</span>
                 </div>
                 <div class="zaopinDatInFlex">
                     <div class="zaopinDataCotZhiw" @click="dateShow = true">
@@ -39,7 +39,7 @@
                     </div>
                     <!--<div class="zaopinDataCotZhiw" style="margin-left: 8px;">-->
                     <!--    <div class="zaopinDataCotzwButn">-->
-                    <!--        <span>全部职位</span>-->
+                    <!--        <span>All jobs</span>-->
                     <!--        <img src="{yun:}$wap_style{/yun}/images/zpda4.png" alt="">-->
                     <!--    </div>-->
                     <!--</div>-->
@@ -48,7 +48,7 @@
             <div class="zhouDataModes">
                 <div class="zhouDataModTite">
                     <img src="{yun:}$wap_style{/yun}/images/zhodat1.png" alt="">
-                    <span>查看</span>
+                    <span>{{i18n.views}}</span>
                 </div>
                 <ul>
                     <li v-for="(litem, lkey) in weekData.lookData" :key="lkey" @click="navigateTo(litem.wap_url)">
@@ -62,10 +62,10 @@
             <div class="zhouDataModes">
                 <div class="zhouDataModTite">
                     <img src="{yun:}$wap_style{/yun}/images/zhodat2.png" alt="">
-                    <span>简历</span>
+                    <span>{{i18n.resume}}</span>
                 </div>
                 <ul>
-                    <li v-for="(ritem, rkey) in weekData.resumeData" :key="rkey" @click="ritem.title != '合计' ? navigateTo(ritem.wap_url) : ''">
+                    <li v-for="(ritem, rkey) in weekData.resumeData" :key="rkey" @click="ritem.id != 'total' ? navigateTo(ritem.wap_url) : ''">
                         <div>
                             <span>{{ritem.num}}</span>
                             <b>{{ritem.title}}</b>
@@ -76,7 +76,7 @@
             <div class="zhouDataModes">
                 <div class="zhouDataModTite">
                     <img src="{yun:}$wap_style{/yun}/images/zhodat3.png" alt="">
-                    <span>面试</span>
+                    <span>{{i18n.interview}}</span>
                 </div>
                 <ul>
                     <li v-for="(mitem, mkey) in weekData.msData" :key="mkey" @click="navigateTo(mitem.wap_url)">
@@ -88,7 +88,7 @@
                 </ul>
             </div>
             <div class="zainDatQuayiTite">
-                <span>剩余权益使用量</span>
+                <span>{{i18n.remainingBenefits}}</span>
             </div>
             <div class="zainDatQuaylis" v-loading="tcLoading">
                 <ul>
@@ -113,14 +113,14 @@
             </div>
             <div class="zainDatTuijian">
                 <div class="zainDatTuiTite">
-                    <span>为你推荐</span>
+                    <span>{{i18n.recommended}}</span>
                 </div>
                 <div class="zainDatTuiButns">
                     <ul>
                         <li @click="navigateTo('index.php?c=job')">
                             <div class="zainDatTuiOnes">
-                                <span>涨查看？</span>
-                                <b>去置顶</b>
+                                <span>{{i18n.boostViews}}</span>
+                                <b>{{i18n.goPin}}</b>
                             </div>
                             <div class="zainDatTuiTwos">
                                 <img src="{yun:}$wap_style{/yun}/images/zpda8.png" alt="">
@@ -128,8 +128,8 @@
                         </li>
                         <li @click="navigateTo('{yun:}url m=wap c=resume{/yun}')" style="background: #E6EBFE;">
                             <div class="zainDatTuiOnes">
-                                <span>不满意？</span>
-                                <b>去搜索</b>
+                                <span>{{i18n.notSatisfied}}</span>
+                                <b>{{i18n.goSearch}}</b>
                             </div>
                             <div class="zainDatTuiTwos">
                                 <img src="{yun:}$wap_style{/yun}/images/zpda9.png" alt="">
@@ -140,7 +140,7 @@
             </div>
         </div>
 
-        <!--时间选择器-->
+        <!-- Date picker -->
         <van-popup v-model="dateShow" round position="bottom">
             <van-picker show-toolbar :default-index="dateIndex" @cancel="dateShow = false" :columns="dateList" @confirm="bindDateChange"/>
         </van-popup>
@@ -148,7 +148,7 @@
     <div v-else class="weikaiSubDome">
         <div class="weikaiSubDivs">
             <img src="{yun:}$wap_style{/yun}/images/weikai.png" alt="">
-            <span>很抱歉，功能暂未开放</span>
+            <span>{{i18n.featureNotOpen}}</span>
         </div>
     </div>
 </div>
@@ -172,15 +172,36 @@
                 tcList: [],
                 dateShow: false,
                 dateIndex: 0,
-                dateList: [
-                    { text: '近一周', value: '1' },
-                    { text: '近两周', value: '2' },
-                    { text: '近三周', value: '3' },
-                    { text: '近一月', value: '4' },
-                ]
+                dateList: [],
+                i18n: {
+                    dataCenter: '{yun:}t key='wap_com_00416'{/yun}',
+                    myRecruitData: '{yun:}t key='wap_01204'{/yun}',
+                    weekData: '{yun:}t key='wap_01205'{/yun}',
+                    todayData: '{yun:}t key='wap_com_00419'{/yun}',
+                    views: '{yun:}t key='wap_com_00427'{/yun}',
+                    resume: '{yun:}t key='wap_com_00428'{/yun}',
+                    interview: '{yun:}t key='wap_com_00429'{/yun}',
+                    remainingBenefits: '{yun:}t key='wap_com_00415'{/yun}',
+                    recommended: '{yun:}t key='wap_com_00418'{/yun}',
+                    boostViews: '{yun:}t key='wap_com_00421'{/yun}',
+                    goPin: '{yun:}t key='wap_com_00423'{/yun}',
+                    notSatisfied: '{yun:}t key='wap_com_00417'{/yun}',
+                    goSearch: '{yun:}t key='wap_com_00422'{/yun}',
+                    featureNotOpen: '{yun:}t key='wap_com_00414'{/yun}',
+                    lastWeek: '{yun:}t key='wap_01207'{/yun}',
+                    lastTwoWeeks: '{yun:}t key='wap_01208'{/yun}',
+                    lastThreeWeeks: '{yun:}t key='wap_01209'{/yun}',
+                    lastMonth: '{yun:}t key='wap_01210'{/yun}',
+                },
             };
         },
         created() {
+            this.dateList = [
+                { text: this.i18n.lastWeek, value: '1' },
+                { text: this.i18n.lastTwoWeeks, value: '2' },
+                { text: this.i18n.lastThreeWeeks, value: '3' },
+                { text: this.i18n.lastMonth, value: '4' },
+            ];
             this.getWeekData();
             this.getTcData();
         },

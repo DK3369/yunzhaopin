@@ -14,7 +14,7 @@ function send_msg() {
 	} else if(isjsMobile(moblie) == false) {
 		return showToast(_fpw.mobileFormatError || '');
 	}
-	var codesear = new RegExp('找回密码');
+	var codesear = new RegExp(_fpw.codeWebRecover || '');
 	if (codesear.test(code_web)) {
 		if (code_kind == 1) {
 			code = $.trim($("#authcode").val());

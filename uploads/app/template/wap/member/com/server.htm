@@ -1,17 +1,17 @@
 {yun:}include file="$wapstyle/member/cheader.htm"{/yun}
 <div id="yunvue">
     <div class="none" :style="islook ? 'display:block': ''">
-        <!-- 页面主体部分 -->
+        <!-- Page main section -->
         <div class="dredge_body">
             
-            <!-- tab切换 -->
+            <!-- Tab navigation -->
             <div class="dredge_body_tab">
                 <div class="dredge_body_tab_tetle">
                     <ul>
-                        <li @click="tab" data-tab="4" :class="rating==4 ? 'pitch_on' : ''" v-if="tab4">单份购买</li>
-                        <li @click="tab" data-tab="1" :class="rating==1 ? 'pitch_on' : ''" v-if="tab1 && vipShow">套餐会员</li>
-                        <li @click="tab" data-tab="2" :class="rating==2 ? 'pitch_on' : ''" v-if="tab2 && vipShow">时间会员</li>
-                        <li @click="tab" data-tab="3" :class="rating==3 ? 'pitch_on' : ''" v-if="tab3 && vipShow">增值包</li>
+                        <li @click="tab" data-tab="4" :class="rating==4 ? 'pitch_on' : ''" v-if="tab4">{{i18n.singleBuy}}</li>
+                        <li @click="tab" data-tab="1" :class="rating==1 ? 'pitch_on' : ''" v-if="tab1 && vipShow">{{i18n.packageVip}}</li>
+                        <li @click="tab" data-tab="2" :class="rating==2 ? 'pitch_on' : ''" v-if="tab2 && vipShow">{{i18n.timeVip}}</li>
+                        <li @click="tab" data-tab="3" :class="rating==3 ? 'pitch_on' : ''" v-if="tab3 && vipShow">{{i18n.addonPack}}</li>
                     </ul>
                 </div>
                 <div class="dredge_body_tab_body" v-show="rating == 1">
@@ -25,15 +25,15 @@
                                             <i class="tab_body_left_number_monye">{{item.yh_price ? item.yh_price :
                                                 item.service_price}}</i>
                                         </div>
-                                        <div v-if="item.yh_price" class="vip_box_left_money_yj">原价：<i>{{item.service_price}}</i></div>
+                                        <div v-if="item.yh_price" class="vip_box_left_money_yj">{{i18n.originPrice}}<i>{{item.service_price}}</i></div>
                                     </div>
                                     <div class="tab_body_left_text">
                                         <div class="tab_body_left_text_top">
                                             <div class="left_text_top_vip">{{item.name}}</div>
-                                            <div class="left_text_top_time">（有效期：{{item.service_time}}）</div>
+                                            <div class="left_text_top_time">{{i18n.validPrefix}}{{item.service_time}}{{i18n.validSuffix}}</div>
                                         </div>
                                         <div class="tab_body_left_text_bom" @click.stop="setMoreShow(item.id)">
-                                            <div class="left_text_bom_particular">详细信息</div>
+                                            <div class="left_text_bom_particular">{{i18n.details}}</div>
                                             <div class="left_text_bom_icon">
                                                 <img src="{yun:}$wap_style{/yun}/images/dredge_examine.png" alt="">
                                             </div>
@@ -45,43 +45,43 @@
                                     <img v-if="item.id==cid" src="{yun:}$wap_style{/yun}/images/dredge_affirm.png" alt="">
                                 </div>
                             </div>
-                            <!-- 详细信息 -->
+                            <!-- Package details -->
                             <div class="dredge_body_tab_body_close" v-show="showMore == item.id">
                                 <div class="dredge_close_title">
                                     <div class="dredge_close_line"></div>
-                                    <div class="dredge_close_titlename">简历资源</div>
+                                    <div class="dredge_close_titlename">{{i18n.resumeResource}}</div>
                                 </div>
                                 <div class="dredge_close_body">
                                     <ul>
-                                        <li v-if="item.interview>0">面试邀请:<i class="dredge_close_body_number">{{item.interview}}</i>份;</li>
-                                        <li v-if="item.resume>0">简历下载:<i class="dredge_close_body_number">{{item.resume}}</i>份;</li>
+                                        <li v-if="item.interview>0">{{i18n.interviewInvite}}<i class="dredge_close_body_number">{{item.interview}}</i>{{i18n.unitCopy}}</li>
+                                        <li v-if="item.resume>0">{{i18n.resumeDownload}}<i class="dredge_close_body_number">{{item.resume}}</i>{{i18n.unitCopy}}</li>
 
                                     </ul>
                                 </div>
                                 <div class="dredge_close_title">
                                     <div class="dredge_close_line"></div>
-                                    <div class="dredge_close_titlename">职位资源</div>
+                                    <div class="dredge_close_titlename">{{i18n.jobResource}}</div>
                                 </div>
                                 <div class="dredge_close_body">
                                     <ul>
-                                        <li v-if="item.job_num>0">职位上架:<i class="dredge_close_body_number">{{item.job_num}}</i>份;</li>
-                                        <li v-if="item.rec_num>0">职位推荐:<i class="dredge_close_body_number">{{item.rec_num}}</i>天;</li>
-                                        <li v-if="item.breakjob_num>0">职位刷新:<i class="dredge_close_body_number">{{item.breakjob_num}}</i>份;</li>
-                                        <li v-if="item.top_num>0">职位置顶:<i class="dredge_close_body_number">{{item.top_num}}</i>天;</li>
-                                        <li v-if="item.urgent_num>0">职位紧急:<i class="dredge_close_body_number">{{item.urgent_num}}</i>天;</li>
+                                        <li v-if="item.job_num>0">{{i18n.jobOnline}}<i class="dredge_close_body_number">{{item.job_num}}</i>{{i18n.unitCopy}}</li>
+                                        <li v-if="item.rec_num>0">{{i18n.jobRec}}<i class="dredge_close_body_number">{{item.rec_num}}</i>{{i18n.unitDay}}</li>
+                                        <li v-if="item.breakjob_num>0">{{i18n.jobRefresh}}<i class="dredge_close_body_number">{{item.breakjob_num}}</i>{{i18n.unitCopy}}</li>
+                                        <li v-if="item.top_num>0">{{i18n.jobTop}}<i class="dredge_close_body_number">{{item.top_num}}</i>{{i18n.unitDay}}</li>
+                                        <li v-if="item.urgent_num>0">{{i18n.jobUrgent}}<i class="dredge_close_body_number">{{item.urgent_num}}</i>{{i18n.unitDay}}</li>
                                     </ul>
                                 </div>
                                 <div class="dredge_close_title">
                                     <div class="dredge_close_line"></div>
-                                    <div class="dredge_close_titlename">其他资源</div>
+                                    <div class="dredge_close_titlename">{{i18n.otherResource}}</div>
                                 </div>
                                 <div class="dredge_close_body">
                                     <ul>
-                                        <li v-if="item.zph_num>0">招聘会预定:<i class="dredge_close_body_number">{{item.zph_num}}</i>场;</li>
+                                        <li v-if="item.zph_num>0">{{i18n.jobFairBook}}<i class="dredge_close_body_number">{{item.zph_num}}</i>{{i18n.unitVenue}}</li>
                                     </ul>
                                 </div>
                                 <div class="dredge_close_explain">
-                                    <i class="dredge_close_explain_title">套餐说明：</i>{{item.explains}}
+                                    <i class="dredge_close_explain_title">{{i18n.packageDesc}}：</i>{{item.explains}}
                                 </div>
                             </div>
                         </li>
@@ -97,15 +97,15 @@
 										    <i>￥</i>
 										    <i class="tab_body_left_number_monye">{{item.yh_price ? item.yh_price : item.service_price}}</i>
 										</div>
-										<div v-if="item.yh_price" class="vip_box_left_money_yj">原价：<i>{{item.service_price}}</i></div>
+										<div v-if="item.yh_price" class="vip_box_left_money_yj">{{i18n.originPrice}}<i>{{item.service_price}}</i></div>
                                     </div>
                                     <div class="tab_body_left_text">
                                         <div class="tab_body_left_text_top">
                                             <div class="left_text_top_vip">{{item.name}}</div>
-                                            <div class="left_text_top_time">（有效期：{{item.service_time}}）</div>
+                                            <div class="left_text_top_time">{{i18n.validPrefix}}{{item.service_time}}{{i18n.validSuffix}}</div>
                                         </div>
                                         <div class="tab_body_left_text_bom" @click.stop="setMoreShow(item.id)">
-                                            <div class="left_text_bom_particular">详细信息</div>
+                                            <div class="left_text_bom_particular">{{i18n.details}}</div>
                                             <div class="left_text_bom_icon">
                                                 <img src="{yun:}$wap_style{/yun}/images/dredge_examine.png" alt="">
                                             </div>
@@ -117,47 +117,47 @@
                                     <img v-if="item.id==cid" src="{yun:}$wap_style{/yun}/images/dredge_affirm.png" alt="">
                                 </div>
                             </div>
-                            <!-- 详细信息 -->
+                            <!-- Package details -->
                             <div class="dredge_body_tab_body_close" v-show="showMore == item.id">
                                 <div v-if="item.interview_resume">
                                     <div class="dredge_close_title">
                                         <div class="dredge_close_line"></div>
-                                        <div class="dredge_close_titlename">简历资源</div>
+                                        <div class="dredge_close_titlename">{{i18n.resumeResource}}</div>
                                     </div>
                                     <div class="dredge_close_body">
                                         <ul>
-                                            <li v-if="item.interview_resume">单日限制<i class="dredge_close_body_number">{{item.interview_resume}}</i></li>
+                                            <li v-if="item.interview_resume">{{i18n.dailyLimit}}<i class="dredge_close_body_number">{{item.interview_resume}}</i></li>
                                         </ul>
                                     </div>
                                 </div>
                                 <div v-if="item.job_breakjob || item.rec_num > 0 || item.top_num > 0 || item.urgent_num > 0">
                                     <div class="dredge_close_title">
                                         <div class="dredge_close_line"></div>
-                                        <div class="dredge_close_titlename">职位资源</div>
+                                        <div class="dredge_close_titlename">{{i18n.jobResource}}</div>
                                     </div>
                                     <div class="dredge_close_body">
                                         <ul>
-                                            <li v-if="item.job_breakjob">单日限制<i class="dredge_close_body_number">{{item.job_breakjob}}</i></li>
-                                            <li v-if="item.job_num > 0">职位上架<i class="dredge_close_body_number">{{item.job_num}}</i>份</li>
-                                            <li v-if="item.rec_num > 0">职位推荐:<i class="dredge_close_body_number">{{item.rec_num}}</i>天;</li>
-                                            <li v-if="item.top_num > 0">职位置顶:<i class="dredge_close_body_number">{{item.top_num}}</i>天;</li>
-                                            <li v-if="item.urgent_num > 0">职位紧急:<i class="dredge_close_body_number">{{item.urgent_num}}</i>天;</li>
+                                            <li v-if="item.job_breakjob">{{i18n.dailyLimit}}<i class="dredge_close_body_number">{{item.job_breakjob}}</i></li>
+                                            <li v-if="item.job_num > 0">{{i18n.jobOnlineShort}}<i class="dredge_close_body_number">{{item.job_num}}</i>{{i18n.unitCopyPlain}}</li>
+                                            <li v-if="item.rec_num > 0">{{i18n.jobRec}}<i class="dredge_close_body_number">{{item.rec_num}}</i>{{i18n.unitDay}}</li>
+                                            <li v-if="item.top_num > 0">{{i18n.jobTop}}<i class="dredge_close_body_number">{{item.top_num}}</i>{{i18n.unitDay}}</li>
+                                            <li v-if="item.urgent_num > 0">{{i18n.jobUrgent}}<i class="dredge_close_body_number">{{item.urgent_num}}</i>{{i18n.unitDay}}</li>
                                         </ul>
                                     </div>
                                 </div>
                                 <div v-if="item.zph_num > 0 || item.spview_num > 0 || item.chat_num > 0 || item.sons_num > 0">
                                     <div class="dredge_close_title">
                                         <div class="dredge_close_line"></div>
-                                        <div class="dredge_close_titlename">其他资源</div>
+                                        <div class="dredge_close_titlename">{{i18n.otherResource}}</div>
                                     </div>
                                     <div class="dredge_close_body">
                                         <ul>
-                                            <li v-if="item.zph_num > 0">招聘会预定单日限制:<i class="dredge_close_body_number">{{item.zph_num}}</i>场;</li>
+                                            <li v-if="item.zph_num > 0">{{i18n.jobFairDailyLimit}}<i class="dredge_close_body_number">{{item.zph_num}}</i>{{i18n.unitVenue}}</li>
                                         </ul>
                                     </div>
                                 </div>
                                 <div class="dredge_close_explain">
-                                    <i class="dredge_close_explain_title">套餐说明：</i>{{item.explains}}
+                                    <i class="dredge_close_explain_title">{{i18n.packageDesc}}：</i>{{item.explains}}
                                 </div>
                             </div>
                         </li>
@@ -168,11 +168,11 @@
                         <li v-for="(item,akey) in add" :key="akey">
                             <div class="zzb_tit" :data-sid="item.id" @click="chooseServer">
                                 <span class="zzb_tit_name">{{item.name}}</span>
-                                <span class="zzb_tit_zk" v-if="statis.zk">{{statis.zk_n}}折</span>
-                                <span class="zzb_tit_zkxq">详细信息</span>
+                                <span class="zzb_tit_zk" v-if="statis.zk">{{statis.zk_n}}{{i18n.discountUnit}}</span>
+                                <span class="zzb_tit_zkxq">{{i18n.details}}</span>
                                 <span class="zzb_tit_zkicon"><img src="{yun:}$wap_style{/yun}/images/hylook.png" alt=""></span>
                             </div>
-                            <!-- 详细信息 -->
+                            <!-- Package details -->
                             <div class="dredge_body_tab_body_close" v-show="(sid > 0 && sid==item.id) || (sid == 0 && akey == 0)">
                                 <div class="dredge_close_body">
                                     <div v-for="(dv,dekey) in item.detail" :key="dekey">
@@ -182,32 +182,32 @@
                                                 <img v-else src="{yun:}$wap_style{/yun}/images/hywxz.png" alt="">
                                             </span>
                                             <span v-if="dv.interview" class="zzb_name">
-                                                面试邀请:<i class="zzb_n">{{dv.interview}}</i>份;
+                                                {{i18n.interviewInvite}}<i class="zzb_n">{{dv.interview}}</i>{{i18n.unitCopy}}
                                             </span>
                                             <span v-if="dv.resume" class="zzb_name">
-                                                简历下载:<i class="zzb_n">{{dv.resume}}</i>份;
+                                                {{i18n.resumeDownload}}<i class="zzb_n">{{dv.resume}}</i>{{i18n.unitCopy}}
                                             </span>
                                             <span v-if="dv.job_num" class="zzb_name">
-                                                上架职位:<i class="zzb_n">{{dv.job_num}}</i>份;
+                                                {{i18n.postJob}}<i class="zzb_n">{{dv.job_num}}</i>{{i18n.unitCopy}}
                                             </span>
                                             <span v-if="dv.breakjob_num" class="zzb_name">
-                                                刷新职位:<i class="zzb_n">{{dv.breakjob_num}}</i>次;
+                                                {{i18n.refreshJob}}<i class="zzb_n">{{dv.breakjob_num}}</i>{{i18n.unitTimes}}
                                             </span>
                                             <span v-if="dv.zph_num" class="zzb_name">
-                                                招聘会报名:<i class="zzb_n">{{dv.zph_num}}</i>场;
+                                                {{i18n.jobFairSignup}}<i class="zzb_n">{{dv.zph_num}}</i>{{i18n.unitVenue}}
                                             </span>
                                             <span v-if="dv.top_num" class="zzb_name">
-                                                职位置顶:<i class="zzb_n">{{dv.top_num}}</i>天;
+                                                {{i18n.jobTop}}<i class="zzb_n">{{dv.top_num}}</i>{{i18n.unitDayPlain}}
                                             </span>
                                             <span v-if="dv.urgent_num" class="zzb_name">
-                                                职位紧急:<i class="zzb_n">{{dv.urgent_num}}</i>天;
+                                                {{i18n.jobUrgent}}<i class="zzb_n">{{dv.urgent_num}}</i>{{i18n.unitDayPlain}}
                                             </span>
                                             <span v-if="dv.rec_num" class="zzb_name">
-                                                职位推荐:<i class="zzb_n">{{dv.rec_num}}</i>天;
+                                                {{i18n.jobRec}}<i class="zzb_n">{{dv.rec_num}}</i>{{i18n.unitDayPlain}}
                                             </span>
                                             
 											<div class="">
-                                                <span v-if="dv.yh_price_n" class="zzb_zk">原价{{dv.service_price_n}}</span>
+                                                <span v-if="dv.yh_price_n" class="zzb_zk">{{i18n.originPricePlain}}{{dv.service_price_n}}</span>
                                                 <span class="zzb_jg">{{dv.service_price_n}}</span>
                                             </div>
                                         </div>
@@ -219,51 +219,51 @@
                 </div>
                 <div class="dredge_body_tab_body" v-show="rating == 4">
                     <div v-if="isDay">
-                        <div class="buy_texttime">服务时长</div>
+                        <div class="buy_texttime">{{i18n.serviceDuration}}</div>
                         <div class="wraprowlast">
-                            <div id="1" @click="chooseDay" :class="cd == '1' ? 'buy_card': ''" class="buy_cardtwo">1天</div>
-                            <div id="3" @click="chooseDay" :class="cd == '3' ? 'buy_card': ''" class="buy_cardtwo">3天</div>
-                            <div id="7" @click="chooseDay" :class="cd == '7' ? 'buy_card': ''" class="buy_cardtwo">7天</div>
-                            <div id="15" @click="chooseDay" :class="cd == '15' ? 'buy_card': ''" class="buy_cardtwo">15天</div>
+                            <div id="1" @click="chooseDay" :class="cd == '1' ? 'buy_card': ''" class="buy_cardtwo">{{i18n.day1}}</div>
+                            <div id="3" @click="chooseDay" :class="cd == '3' ? 'buy_card': ''" class="buy_cardtwo">{{i18n.day3}}</div>
+                            <div id="7" @click="chooseDay" :class="cd == '7' ? 'buy_card': ''" class="buy_cardtwo">{{i18n.day7}}</div>
+                            <div id="15" @click="chooseDay" :class="cd == '15' ? 'buy_card': ''" class="buy_cardtwo">{{i18n.day15}}</div>
                             <div :class="cd == '0' ? 'buy_card': ''" class="buy_cardtwo">
-                                <input @focus="zdyDay" maxlength="3" v-model="zdyDays" oninput="value=value.replace(/^0|[\^d]/g,'')" type="number" value="" placeholder="自定义推广天数" class="zzb_cont_day_zdy" />
+                                <input @focus="zdyDay" maxlength="3" v-model="zdyDays" oninput="value=value.replace(/^0|[\^d]/g,'')" type="number" value="" :placeholder="i18n.customPromoDays" class="zzb_cont_day_zdy" />
                             </div>
                         </div>
                     </div>
                     <div v-if="canUseIntegral">
-                        <!--充足积分情况-->
+                        <!-- Sufficient points -->
                         <div class="zzb_cont_single" v-if="!jfmodel_fk">
-                            <div class="zzb_cont_single_p">当前拥有
+                            <div class="zzb_cont_single_p">{{i18n.currentHave}}
                                 <span class="zzb_cont_single_p_n">{{statis.integral}}</span>
                                 {{config.integral_pricename}},
-                                购买此服务将扣除您
+                                {{i18n.deductYou}}
                                 <span class="zzb_cont_single_p_n">{{order_integral}}</span>
                                 {{config.integral_pricename}}
                             </div>
-                            <div class="zzb_cont_single_tip">套餐购买更优惠，升级会员享受专属特权</div>
+                            <div class="zzb_cont_single_tip">{{i18n.packageTip}}</div>
                         </div>
-                        <!--不足积分情况-->
+                        <!-- Insufficient points -->
                         <div class="zzb_cont_single" v-else>
-                            <div class="zzb_cont_single_p">当前拥有
+                            <div class="zzb_cont_single_p">{{i18n.currentHave}}
                                 <span class="zzb_cont_single_p_n">{{statis.integral}}</span>
                                 {{config.integral_pricename}},
-                                购买此服务将扣除您
+                                {{i18n.deductYou}}
                                 <span class="zzb_cont_single_p_n">{{order_integral}}</span>
                                 {{config.integral_pricename}}
                             </div>
                             <div class="deduction_text">
-                                <text class="dksl">充值{{config.integral_pricename}}：</text>
+                                <text class="dksl">{{i18n.recharge}}{{config.integral_pricename}}：</text>
                                 <input maxlength="6" type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" v-model="price_int" class="yun_purchase_text" />
                             </div>
                         </div>
                     </div>
-                    <!--钱情况-->
+                    <!-- Cash payment -->
                     <div v-else class="zzb_cont_single">
-                        <div class="zzb_cont_single_p">{{single_msg}}需支付<span class="zzb_cont_single_p_n">{{order_price}}</span>元</div>
+                        <div class="zzb_cont_single_p">{{single_msg}}{{i18n.needPay}}<span class="zzb_cont_single_p_n">{{order_price}}</span>{{i18n.yuan}}</div>
                     </div>
                 </div>
             </div>
-            <!-- 会员专属权益 -->
+            <!-- Member benefits -->
             <div class="dredge_body_equity" v-show="rating < 3">
                 <div class="dredge_body_equity_box">
                     <div class="dredge_body_equity_tetle">
@@ -276,39 +276,39 @@
                             <div class="equity_boon_icon">
                                 <img src="{yun:}$wap_style{/yun}/images/dredge_service.png" alt="" />
                             </div>
-                            <div class="equity_boon_name">专属客服</div>
+                            <div class="equity_boon_name">{{i18n.vipService}}</div>
                         </li>
                         <li>
                             <div class="equity_boon_icon">
                                 <img src="{yun:}$wap_style{/yun}/images/dredge_identifying.png" alt="" />
                             </div>
-                            <div class="equity_boon_name">身份标识</div>
+                            <div class="equity_boon_name">{{i18n.identityBadge}}</div>
                         </li>
                         <li>
                             <div class="equity_boon_icon">
                                 <img src="{yun:}$wap_style{/yun}/images/dredge_refresh.png" alt="" />
                             </div>
-                            <div class="equity_boon_name">职位刷新</div>
+                            <div class="equity_boon_name">{{i18n.jobRefreshLabel}}</div>
                         </li>
                         <li>
                             <div class="equity_boon_icon">
                                 <img src="{yun:}$wap_style{/yun}/images/dredge_top.png" alt="" />
                             </div>
-                            <div class="equity_boon_name">置顶推广</div>
+                            <div class="equity_boon_name">{{i18n.topPromote}}</div>
                         </li>
                         
                         <li>
                             <div class="equity_boon_icon">
                                 <img src="{yun:}$wap_style{/yun}/images/dredge_resume.png" alt="" />
                             </div>
-                            <div class="equity_boon_name">优质简历</div>
+                            <div class="equity_boon_name">{{i18n.qualityResume}}</div>
                         </li>
                         
                         <li>
                             <div class="equity_boon_icon">
                                 <img src="{yun:}$wap_style{/yun}/images/dredge_discount.png" alt="">
                             </div>
-                            <div class="equity_boon_name">专享折扣</div>
+                            <div class="equity_boon_name">{{i18n.exclusiveDiscount}}</div>
                         </li>
                     </ul>
                 </div>
@@ -317,22 +317,22 @@
 
             <div class="bodyfavourable" v-show="!dkdivshow && !single_only_price && config.fktype">
                 <div class="cardfavourable">
-                    <div class="yhj">{{config.integral_pricename}}抵扣</div>
+                    <div class="yhj">{{config.integral_pricename}}{{i18n.integralDeductLabel}}</div>
                     <div class="rowlast">
-                        <span class="jf">您当前有</span>
+                        <span class="jf">{{i18n.youHave}}</span>
                         <span class="slground">{{statis.integral}}</span>
-                        <span class="jf">{{config.integral_pricename}}（1元={{config.integral_proportion + config.integral_pricename}})</span>
+                        <span class="jf">{{config.integral_pricename}}（1{{i18n.yuanSymbol}}={{config.integral_proportion + config.integral_pricename}})</span>
                     </div>
                     <div class="slither" @click="candk">
                         <van-switch v-model="dkshow" active-color="#e4b46b" inactive-color="#dcdee0" :disabled="isdk" @change="dkChange" size="26"/>
                     </div>
                     <div class="deduction_text" v-show="dkshow">
-                        <span class="dksl">抵扣数量：</span>
-                       <div class="deduction_textinput"> <input type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" cursor-spacing="200px" v-model="integral_dk" placeholder="请输入抵扣数量"></div>
+                        <span class="dksl">{{i18n.deductAmount}}</span>
+                       <div class="deduction_textinput"> <input type="number" oninput="value=value.replace(/^0|[\^d]/g,'')" cursor-spacing="200px" v-model="integral_dk" :placeholder="i18n.deductPlaceholder"></div>
                     </div>
                 </div>
             </div>
-            <!-- 支付方式 -->
+            <!-- Payment methods -->
             <div class="dredge_body_pay" v-if="ptshow && gmtype=='price'">
                 <div v-if="config.fktype && (config.fktype.fkwx || config.fktype.fkal)">
                     <div class="dredge_body_wx" v-if="config.fktype && config.fktype.fkwx" @click="fkcheck" data-fktype="fkwx">
@@ -361,35 +361,35 @@
                     </div>
                 </div>
                 <div class="gb_tip" v-else>
-                    网站已关闭支付接口，请联系管理员
+                    {{i18n.paymentClosed}}
                 </div>
             </div>
 			<div style="height:50px;"></div>
 
             <van-popup v-model="tips" :style="{background:'none'}" closeable>
                 <div class="zfsm_box">
-                    <div class="zfsm_box_tit">支付金额说明</div>
-                    <div>购买需支付{{config.integral_pricename}}：<span class="zfsm_box_n">{{needJf}}</span></div>
-                    <div>账号剩余{{config.integral_pricename}}：<span class="zfsm_box_n">{{statis.integral}}</span></div>
-                    <div>{{config.integral_pricename}}换算比例为：1元 = {{config.integral_proportion + config.integral_pricename}}</div>
-                    <div>换算后应付金额为：<span class="zfsm_box_n">{{order_price}}</span></div>
+                    <div class="zfsm_box_tit">{{i18n.payAmountTip}}</div>
+                    <div>{{i18n.payWith}}{{config.integral_pricename}}：<span class="zfsm_box_n">{{needJf}}</span></div>
+                    <div>{{i18n.accountRemain}}{{config.integral_pricename}}：<span class="zfsm_box_n">{{statis.integral}}</span></div>
+                    <div>{{config.integral_pricename}}{{i18n.exchangeRate}} {{config.integral_proportion + config.integral_pricename}}</div>
+                    <div>{{i18n.payableAmount}}<span class="zfsm_box_n">{{order_price}}</span></div>
                 </div>
             </van-popup>
 
-            <!-- 支付 -->
+            <!-- Checkout -->
             <div class="dredge_bod_buy" v-if="config.fktype">
                 <div class="dredge_bod_buy_number" v-if="gmtype=='price'">
-                    <div class="buy_number_left">应付金额:</div>
+                    <div class="buy_number_left">{{i18n.payableLabel}}</div>
                     <div class="buy_number_center">￥</div>
                     <div class="buy_number_right" style="position: relative;">{{order_price}} <span @click="tips = true" v-if="needTips" class="zf_yw">     <img src="{yun:}$wap_style{/yun}/images/wh.png" alt=""></span></div>
                 </div>
-                <div class="dredge_bod_buy_text" v-if="gmtype=='price'" @click="getdays">立即购买</div>
+                <div class="dredge_bod_buy_text" v-if="gmtype=='price'" @click="getdays">{{i18n.buyNow}}</div>
                 <div class="dredge_bod_buy_number" v-if="gmtype=='integral'">
-                    <div class="buy_number_left">支付{{config.integral_pricename}}：</div>
+                    <div class="buy_number_left">{{i18n.pay}}{{config.integral_pricename}}：</div>
                     <div class="buy_number_center"></div>
                     <div class="buy_number_right">{{order_integral}}</div>
                 </div>
-                <div class="dredge_bod_buy_text" v-if="gmtype=='integral'" @click="getdays">立即购买</div>
+                <div class="dredge_bod_buy_text" v-if="gmtype=='integral'" @click="getdays">{{i18n.buyNow}}</div>
 
             </div>
         </div>
@@ -402,14 +402,14 @@
                     <span>{{vipTips}}</span>
                 </div>
                 <a :href="'tel:' + webTel" class="youxuanButns">
-                    <span>联系客服</span>
+                    <span>{{i18n.contactService}}</span>
                 </a>
                 <div class="youxuanTellsd" v-if="crmLinkWay">
-                    <span>招聘顾问：{{consultant.name}}</span>
+                    <span>{{i18n.consultant}}{{consultant.name}}</span>
                     <span style="color: #3D7DFB;"> {{consultant.mobile}}</span>
                 </div>
                 <div class="youxuanTellsd" v-else>
-                    <span>客服电话：</span>
+                    <span>{{i18n.servicePhone}}</span>
                     <span style="color: #3D7DFB;">{{config.sy_comwebtel}}</span>
                 </div>
             </div>
@@ -418,43 +418,49 @@
 </div>
 <script>
 
+    var COM_SERVER_JS_I18N = {
+        selectPayType: '{yun:}t key='wap_user_00187'{/yun}',
+        selectService: '{yun:}t key='wap_com_00371'{/yun}',
+        selectServiceFirst: '{yun:}t key='wap_js_00151'{/yun}',
+    };
+
     var zphjobid = '';
     var yunvue = new Vue({
         el: '#yunvue',
         data() {
             return {
                 islook: false,
-                server: '', //选中的购买服务
-                oserver: '', //携带的单项服务
-                sigle_show: false, //单项服务是否显示
+                server: '', // Selected service to purchase
+                oserver: '', // Single-item service from URL
+                sigle_show: false, // Show single-item purchase tab
                 singleid: '',
-                single_price: 0, //单项购买价格
-                single_integral: 0, // 单项购买积分
-                jfmodel_fk: true, // 积分模式下，单项服务购买积分不够是否需要充值积分
-                single_msg: '', //单项购买的服务名称
+                single_price: 0, // Single-item price
+                single_integral: 0, // Single-item points cost
+                jfmodel_fk: true, // Recharge points when insufficient in points mode
+                single_msg: '', // Single-item service name
                 statis: {},
-                add: [], //增值服务数据
-                rating_1: [], //套餐会员数据
-                rating_2: [], //时间会员数据
+                add: [], // Addon pack data
+                rating_1: [], // Package VIP data
+                rating_2: [], // Time VIP data
                 config: {},
                 rating: 1,
-                cid: 0, //选中的服务id
-                sid: 0, //仅用于增值服务，用于展开多条信息
+                cid: 0, // Selected service ID
+                sid: 0, // Addon pack expand state only
 
-                showMore: 0, //	更多信息
+                showMore: 0, // Show more details
 
-                dkdivshow: true, //抵扣积分DIV显示隐藏
-                dkshow: false, //抵扣积分INPUT显示隐藏
-                ptshow: true, //支付方式显示隐藏
-                gmtype: 'price', //积分支付和金额支付控制显示(分别有price金额支付/integral完全积分支付)
-                server_price: 0, //选中服务的原始金额
-                single_id: 0, //服务id，包含选中的服务id和单独购买的传参id
-                order_price: 0, //付款金额
-                jfdk_price: 0, // 积分抵扣金额
-                order_integral: 0, //支付积分,在此页面仅有显示作用
-                price_int: 0, //充值积分数，积分模式下，所需服务积分大于持有积分时用到,同时还有最低充值积分制约
-                fktype: '', //支付方式
-                integral_dk: '', //抵扣积分
+                dkdivshow: true, // Points deduction panel visibility
+                dkshow: false, // Points deduction input visibility
+                ptshow: true, // Payment method visibility
+                gmtype: 'price', // price or integral payment mode
+                server_price: 0, // Original service price
+                single_id: 0, // Service ID including single purchase
+                order_price: 0, // Amount to pay
+                jfdk_price: 0, // Points deduction amount
+                order_integral: 0, // Points to pay (display only)
+                price_int: 0, // Recharge points when insufficient
+                fktype: '', // Payment method
+                integral_dk: '', // Points to deduct
                 bid: '',
                 isDay: false,
                 cd: '1',
@@ -471,7 +477,7 @@
                 vip_etime:'',
                 time:'',
 
-	            //  积分模式，积分不足，使用金额，需要金额明细说明
+	            // Points mode: amount breakdown when points insufficient
 	            needTips: false,
 	            tips: false,
 	            needJf: 0,
@@ -482,7 +488,89 @@
                 consultant: {},
                 webTel: '',
                 crmLinkWay: false,
-                singleShow: false
+                singleShow: false,
+                i18n: {
+                    singleBuy: '{yun:}t key='wap_com_00377'{/yun}',
+                    packageVip: '{yun:}t key='wap_com_00380'{/yun}',
+                    timeVip: '{yun:}t key='wap_com_00384'{/yun}',
+                    addonPack: '{yun:}t key='wap_com_00393'{/yun}',
+                    originPrice: '{yun:}t key='wap_00908'{/yun}',
+                    originPricePlain: '{yun:}t key='default_00093'{/yun}',
+                    validPrefix: '{yun:}t key='wap_00909'{/yun}',
+                    validSuffix: '{yun:}t key='wap_00910'{/yun}',
+                    details: '{yun:}t key='wap_00907'{/yun}',
+                    resumeResource: '{yun:}t key='wap_com_00386'{/yun}',
+                    jobResource: '{yun:}t key='wap_com_00388'{/yun}',
+                    otherResource: '{yun:}t key='wap_com_00376'{/yun}',
+                    interviewInvite: '{yun:}t key='wap_00911'{/yun}',
+                    resumeDownload: '{yun:}t key='wap_00912'{/yun}',
+                    jobOnline: '{yun:}t key='wap_00913'{/yun}',
+                    jobOnlineShort: '{yun:}t key='wap_com_00044'{/yun}',
+                    jobRec: '{yun:}t key='wap_00914'{/yun}',
+                    jobRefresh: '{yun:}t key='wap_00915'{/yun}',
+                    jobTop: '{yun:}t key='wap_00916'{/yun}',
+                    jobUrgent: '{yun:}t key='wap_00917'{/yun}',
+                    jobFairBook: '{yun:}t key='wap_00918'{/yun}',
+                    jobFairDailyLimit: '{yun:}t key='wap_00919'{/yun}',
+                    unitCopy: '{yun:}t key='wap_com_00396'{/yun}',
+                    unitDay: '{yun:}t key='wap_com_00398'{/yun}',
+                    unitVenue: '{yun:}t key='wap_com_00397'{/yun}',
+                    unitTimes: '{yun:}t key='wap_00920'{/yun}',
+                    unitCopyPlain: '{yun:}t key='wap_00929'{/yun}',
+                    unitDayPlain: '{yun:}t key='wap_com_00398'{/yun}',
+                    packageDesc: '{yun:}t key='wap_com_00381'{/yun}',
+                    dailyLimit: '{yun:}t key='wap_com_00378'{/yun}',
+                    discountUnit: '{yun:}t key='common_02080'{/yun}',
+                    postJob: '{yun:}t key='wap_com_00028'{/yun}',
+                    refreshJob: '{yun:}t key='wap_com_00029'{/yun}',
+                    jobFairSignup: '{yun:}t key='wap_com_00039'{/yun}',
+                    serviceDuration: '{yun:}t key='wap_com_00385'{/yun}',
+                    day1: '{yun:}t key='wap_js_00142'{/yun}',
+                    day3: '{yun:}t key='wap_com_00394'{/yun}',
+                    day7: '{yun:}t key='wap_com_00395'{/yun}',
+                    day15: '{yun:}t key='wap_com_00392'{/yun}',
+                    customPromoDays: '{yun:}t key='wap_00921'{/yun}',
+                    currentHave: '{yun:}t key='wap_00922'{/yun}',
+                    deductYou: '{yun:}t key='wap_00923'{/yun}',
+                    packageTip: '{yun:}t key='wap_com_00362'{/yun}',
+                    recharge: '{yun:}t key='common_01946'{/yun}',
+                    needPay: '{yun:}t key='wap_00924'{/yun}',
+                    yuan: '{yun:}t key='wap_00925'{/yun}',
+                    yuanUnit: '{yun:}t key='wap_00925'{/yun}',
+                    vipService: '{yun:}t key='wap_com_00374'{/yun}',
+                    identityBadge: '{yun:}t key='wap_com_00391'{/yun}',
+                    jobRefreshLabel: '{yun:}t key='wap_com_00045'{/yun}',
+                    topPromote: '{yun:}t key='wap_com_00387'{/yun}',
+                    qualityResume: '{yun:}t key='wap_com_00375'{/yun}',
+                    exclusiveDiscount: '{yun:}t key='wap_com_00373'{/yun}',
+                    integralDeductLabel: '{yun:}t key='wap_00928'{/yun}',
+                    youHave: '{yun:}t key='wap_com_00382'{/yun}',
+                    yuanSymbol: '{yun:}t key='wap_00925'{/yun}',
+                    deductAmount: '{yun:}t key='wap_00864'{/yun}',
+                    deductPlaceholder: '{yun:}t key='wap_00865'{/yun}',
+                    paymentClosed: '{yun:}t key='wap_user_00183'{/yun}',
+                    payAmountTip: '{yun:}t key='wap_com_00372'{/yun}',
+                    payWith: '{yun:}t key='wap_00931'{/yun}',
+                    accountRemain: '{yun:}t key='wap_com_00390'{/yun}',
+                    exchangeRate: '{yun:}t key='wap_00930'{/yun}',
+                    payableAmount: '{yun:}t key='wap_com_00368'{/yun}',
+                    payableLabel: '{yun:}t key='wap_user_00192'{/yun}',
+                    buyNow: '{yun:}t key='wap_user_00206'{/yun}',
+                    pay: '{yun:}t key='common_01995'{/yun}',
+                    contactService: '{yun:}t key='wap_com_00389'{/yun}',
+                    consultant: '{yun:}t key='wap_00926'{/yun}',
+                    servicePhone: '{yun:}t key='wap_com_00102'{/yun}',
+                    vipTipContact: '{yun:}t key='wap_com_00366'{/yun}',
+                    vipTipPaused: '{yun:}t key='wap_com_00363'{/yun}',
+                    vipExpirePrefix: '{yun:}t key='wap_00927'{/yun}',
+                    vipExpireSuffix: '{yun:}t key='wap_com_00367'{/yun}',
+                    selectPayType: '{yun:}t key='wap_user_00187'{/yun}',
+                    selectService: '{yun:}t key='wap_com_00371'{/yun}',
+                    selectServiceToBuy: '{yun:}t key='wap_com_00369'{/yun}',
+                    selectDuration: '{yun:}t key='wap_com_00370'{/yun}',
+                    selectServiceFirst: '{yun:}t key='wap_js_00151'{/yun}',
+                    submitting: '{yun:}t key='wap_com_00335'{/yun}',
+                },
             };
         },
         created() {
@@ -608,12 +696,12 @@
                         if (res.noPermission && parseInt(res.noPermission) == 1){
 
                             that.vipShow = false;
-                            that.vipTips = '联系客服，开通会员服务~';
+                            that.vipTips = that.i18n.vipTipContact;
                         }
                         if (res.isPaused && parseInt(res.isPaused) == 1){
 
                             that.vipShow = false;
-                            that.vipTips = '当前会员已暂停，联系客户开启服务~';
+                            that.vipTips = that.i18n.vipTipPaused;
                         }
                         if (res.consultant){
 
@@ -649,7 +737,7 @@
                 }
                 
             },
-            //切换上方导航
+            // Switch top tab
             tab: function (e) {
                 let that = this,
                     config = that.config,
@@ -674,12 +762,12 @@
                         that.single_id = that.singleid;
                         that.server_price = that.order_price = that.single_price;
 						if((com_integral_online == '3' || com_integral_online == '1') && config.sy_only_price.indexOf(that.server) > -1){
-							// 抵扣模式、积分模式，要确定单项购买是否有强制消费项目
+							// Check forced cash-only items in deduction/points mode
 							that.single_only_price = true;
 						}
                         if (com_integral_online == '3' && that.single_only_price == false) {
-							// 积分模式下，若自身积分数大于等于服务积分数，则为积分支付，否则金额支付差价。
-							// 并且没有被强制金额消费项目包含在内
+							// Points mode: pay with points or cash difference
+							// Unless item is forced cash-only
                             var integral_cha = that.accSub(that.single_integral, that.statis.integral);
                             that.order_integral = that.single_integral;
                             if (integral_cha <= 0) {
@@ -709,10 +797,10 @@
                     that.dkdivshow = true;
                     that.dkshow = false;
 
-                    // 积分抵扣
-                    //会员套餐消费模式-强制金额消费
+                    // Points deduction
+                    // Package forced cash-only mode
                     if (config.member_meal == '1') {
-                        // 套餐消费模式为抵扣消费、积分消费
+                        // Deduction/points mode for addon/single tabs
                         if ((tab == 3 || tab == 4) && config.com_integral_online == '1' && that.statis.integral > 0) {
                             that.dkdivshow = false;
                         }
@@ -750,7 +838,7 @@
                 }
                 that.defalutfktype();
             },
-            //显示选中的套餐详细
+            // Show selected package details
             chooseServer: function (e) {
                 let that = this,
                     dataset = e.currentTarget.dataset;
@@ -775,7 +863,7 @@
 
             	that.needTips = false;
                 let meal = tt == 'vip' ? this.config.meal_vip : this.config.meal_pack;
-                //选中服务
+                // Select service
                 if (cid && cid != 'undefined') {
                     if (cid != this.cid) {
                         this.cid = cid;
@@ -785,8 +873,8 @@
 	                that.server_price = info.yh_price ? parseFloat(info.yh_price) : parseFloat(info.service_price);
 
 	                if (com_integral_online == '3' && this.config.sy_only_price.indexOf(tt) == -1) {
-	                    // 积分模式下，若自身积分数大于等于服务积分数，则为积分支付，否则金额支付差价。
-	                	// 并且没有被强制金额消费项目包含在内
+	                    // Points mode: pay with points or cash difference
+	                	// Unless item is forced cash-only
 	                    var integral_need = parseInt(that.accMul(that.server_price, pro));
 	                    var integral_cha = that.accSub(integral_need, that.statis.integral);
 	                    if (integral_cha <= 0) {
@@ -827,7 +915,7 @@
                     }
 
                 }
-                //仅用作增值套餐展开信息
+                // Expand addon pack row only
                 if (sid && sid != 'undefined') {
                     if (sid != this.sid) {
                         this.sid = sid;
@@ -838,7 +926,7 @@
                 var that = this;
                 that.showMore = that.showMore == id ? 0 : id;
             },
-            //根据服务id获取服务信息
+            // Get service info by ID
             getChooseInfo: function (id) {
                 var that = this;
                 let data = {};
@@ -867,11 +955,11 @@
                 }
                 return data;
             },
-            //选择支付方式
+            // Select payment method
             fkcheck: function (e) {
                 this.fktype = e.currentTarget.dataset.fktype;
             },
-            //显示与隐藏抵扣积分输入框
+            // Toggle points deduction input
             dkChange: function (switched) {
                 let pro = parseInt(this.config.integral_proportion),
                     order_price = this.order_price;
@@ -882,7 +970,7 @@
 
                     this.integral_dk = '';
                     this.jfdk_price = 0;
-                    // 隐藏时，将相关参数值设为默认值
+                    // Reset values when hidden
                     this.ptshow = true;
                     this.gmtype = 'price';
                     this.order_integral = 0;
@@ -906,34 +994,34 @@
                 }
                 if (server_price == 0) {
                     this.integral_dk = '';
-                    return showModal('请先选择购买服务！');
+                    return showModal(this.i18n.selectServiceFirst);
                 }
               
 
                 var integral_need = parseInt(this.accMul(server_price, pro));
                 if (dknum > 0) {
-                    if (integral >= integral_need) { // 	拥有积分充足
+                    if (integral >= integral_need) { // Sufficient points
 
-                        if (dknum >= integral_need) { // 	输入抵扣积分超过购买积分
+                        if (dknum >= integral_need) { // Deduction exceeds required
 
-                            //	抵扣积分变更最大所需积分
+                            // Cap deduction at required amount
                             integral_dk = integral_need;
-                            order_price = 0; // 抵扣积分后所需金额
+                            order_price = 0; // Amount after deduction
 
                         } else {
                             integral_dk = dknum;
-                            order_price = this.accSub(server_price, this.accDiv(dknum, pro)); //	抵扣积分后所需金额
+                            order_price = this.accSub(server_price, this.accDiv(dknum, pro)); // Amount after deduction
                         }
 
-                    } else { //	拥有积分不充足
+                    } else { // Insufficient points
 
-                        if (dknum >= integral) { //	抵扣所有积分
+                        if (dknum >= integral) { // Deduct all available points
                             integral_dk = integral;
 
-                            order_price = this.accSub(server_price, this.accDiv(integral, pro)); //	抵扣积分后所需金额
+                            order_price = this.accSub(server_price, this.accDiv(integral, pro)); // Amount after deduction
                         } else {
                             integral_dk = dknum;
-                            order_price = this.accSub(server_price, this.accDiv(dknum, pro)); // 抵扣积分后所需金额
+                            order_price = this.accSub(server_price, this.accDiv(dknum, pro)); // Amount after deduction
                         }
                     }
                 } else {
@@ -951,14 +1039,14 @@
                 this.order_price = order_price;
                 this.jfdk_price = this.accSub(server_price, order_price);
             },
-            //单项购买，积分模式下输入充值积分检查，需要大于系统最低充值积分数和服务所需积分数
+            // Validate recharge points for single purchase in points mode
             setPI: function () {
                 var price_int = this.price_int;
                 var pro = parseFloat(this.config.integral_proportion);
                 var integral_cha = this.accSub(price_int, this.statis.integral);
                 var integral_min = parseInt(this.config.integral_min_recharge);
 
-                integral_cha = integral_cha > integral_min ? integral_cha : integral_min; //最低充值积分
+                integral_cha = integral_cha > integral_min ? integral_cha : integral_min; // Minimum recharge
 
                 price_int = integral_cha > price_int ? integral_cha : price_int;
                 this.order_price = this.accDiv(price_int, pro);
@@ -971,7 +1059,7 @@
                 let days = ((etime - time) / ( 60 * 60 * 24));
 
                 if(days < 7 && days >=0){
-                    showConfirm('您的会员还有'+days+'天过期，是否继续购买？',function(){
+                    showConfirm(that.i18n.vipExpirePrefix + days + that.i18n.vipExpireSuffix, function(){
                         if(that.gmtype == 'price'){
                             that.getOrder();
                         }else if(that.gmtype == 'integral'){
@@ -990,9 +1078,9 @@
             getOrder() {
                 let that = this;
                 if (that.fktype == '') {
-                    return showModal('请选择支付方式');
+                    return showModal(this.i18n.selectPayType);
                 } else if (that.server == '') {
-                    return showModal('请选择购买服务');
+                    return showModal(this.i18n.selectService);
                 }
                 let paytype = '';
                 if (that.fktype == 'fkal') {
@@ -1018,7 +1106,7 @@
                 } else if (server == 'jobtop') {
 
                     if (parseInt(that.days) < 1) {
-                        return showModal('请选择服务时长');
+                        return showModal(this.i18n.selectDuration);
                     } else {
                         param.days = that.days;
                     }
@@ -1027,7 +1115,7 @@
                 } else if (server == 'jobrec') {
 
                     if (parseInt(that.days) < 1) {
-                        return showModal('请选择服务时长');
+                        return showModal(this.i18n.selectDuration);
                     } else {
                         param.days = that.days;
                     }
@@ -1036,7 +1124,7 @@
                 } else if (server == 'joburgent') {
 
                     if (parseInt(that.days) < 1) {
-                        return showModal('请选择服务时长');
+                        return showModal(this.i18n.selectDuration);
                     } else {
                         param.days = that.days;
                     }
@@ -1049,7 +1137,7 @@
                 } else if (server == 'partrec') {
 
                     if (parseInt(that.days) < 1) {
-                        return showModal('请选择服务时长');
+                        return showModal(this.i18n.selectDuration);
                     } else {
                         param.days = that.days;
                     }
@@ -1078,7 +1166,7 @@
                 } else if (server == 'autojob') {
 
                     if (parseInt(that.days) < 1) {
-                        return showModal('请选择服务时长');
+                        return showModal(this.i18n.selectDuration);
                     } else {
                         param.days = that.days;
                     }
@@ -1086,12 +1174,12 @@
 
                 }
 
-                showLoading('提交中');
+                showLoading(this.i18n.submitting);
                 $.post('index.php?c=getOrder', param, function (data) {
                     hideLoading();
 					window.localStorage.setItem("needRefresh", 1);
                     
-                    if (data.error == '0') { // 下单成功
+                    if (data.error == '0') { // Order placed
                         showToast(data.msg, 2, function () {
                             location.href = data.url;
                         });
@@ -1104,7 +1192,7 @@
                     }
                 }, 'json')
             },
-            /* 积分支付购买 */
+            /* Points payment */
             integralgm() {
                 var that = this;
                 var server = that.server;
@@ -1154,7 +1242,7 @@
                     hideLoading();
 					window.localStorage.setItem("needRefresh", 1);
                     if (data) {
-                        if (data.error == '0') { // 成功
+                        if (data.error == '0') { // Success
                             showModal(data.msg, function () {
                                 history.go(-1);
                             });
@@ -1180,7 +1268,7 @@
 
                 var integral_min = parseInt(that.config.integral_min_recharge);
 
-                if (com_integral_online == '3') { //积分模式，判断自身积分与所需积分大小，根据情况切换积分付款还是金额付款
+                if (com_integral_online == '3') { // Points mode: switch pay type by balance
                     var integral_need = that.accMul(order_price, pro);
                     var integral_cha = that.accSub(integral_need, that.statis.integral);
                     that.order_integral = integral_need;
@@ -1188,7 +1276,7 @@
                         that.jfmodel_fk = false;
                         that.gmtype = 'integral';
                     } else {
-                        integral_cha = integral_cha > integral_min ? integral_cha : integral_min; //最低充值积分
+                        integral_cha = integral_cha > integral_min ? integral_cha : integral_min; // Minimum recharge
                         that.order_price = that.accDiv(integral_cha, pro);
                         that.price_int = integral_cha;
                         that.jfmodel_fk = true;
@@ -1224,7 +1312,7 @@
 
                 var integral_min = parseInt(this.config.integral_min_recharge);
                 var order_price = this.accMul(this.single_price, this.zdyDays);
-                if (com_integral_online == '3') { //积分模式，判断自身积分与所需积分大小，根据情况切换积分付款还是金额付款
+                if (com_integral_online == '3') { // Points mode: switch pay type by balance
 
                     var integral_need = this.accMul(order_price, pro);
                     var integral_cha = this.accSub(integral_need, this.statis.integral);
@@ -1233,7 +1321,7 @@
                         this.jfmodel_fk = false;
                         this.gmtype = 'integral';
                     } else {
-                        integral_cha = integral_cha > integral_min ? integral_cha : integral_min; //最低充值积分
+                        integral_cha = integral_cha > integral_min ? integral_cha : integral_min; // Minimum recharge
                         this.price_int = integral_cha;
                         this.order_price = this.accDiv(integral_cha, pro);
                         this.jfmodel_fk = true;
@@ -1249,15 +1337,15 @@
             },
             candk: function () {
                 if (this.isdk) {
-                    return showModal('请选择要购买的服务');
+                    return showModal(this.i18n.selectServiceToBuy);
                 }
                 return true;
             },
-            //减
+            // Subtract
             accSub: function (arg1, arg2) {
                 return this.accAdd(arg1, -arg2);
             },
-            //除
+            // Divide
             accDiv: function (arg1, arg2) {
                 var t1 = 0,
                     t2 = 0,
@@ -1276,7 +1364,7 @@
                 return (r1 / r2) * Math.pow(10, t2 - t1);
 
             },
-            //加
+            // Add
             accAdd: function (arg1, arg2) {
                 if (isNaN(arg1)) {
                     arg1 = 0;
@@ -1314,7 +1402,7 @@
                 }
                 return (arg1 + arg2) / m;
             },
-            //乘
+            // Multiply
             accMul: function (arg1, arg2) {
                 var m = 0,
                     s1 = arg1.toString(),

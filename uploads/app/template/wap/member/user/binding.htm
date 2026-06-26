@@ -13,7 +13,7 @@
 		<template v-else>
 			<span v-if="bind.wxbind == 2" class="bingding_box_bth" onclick="tobind('{yun:}url m=wap c=wxconnect login=1{/yun}')">{yun:}t key='wap_user_00139'{/yun}</span>
 			<span v-else class="bingding_box_bth" onclick="tobind('{yun:}url m=wap c=wxconnect login=1{/yun}')">{yun:}t key='wap_user_00119'{/yun}</span>
-			<div class="bingding_box_p">{yun:}t key='member_user_00056'{/yun}，下次你可以直接使用微信快捷登录</div>
+			<div class="bingding_box_p">{yun:}t key='wap_user_00135'{/yun}</div>
 		</template>
 	</li>
 	{yun:}/if{/yun}
@@ -23,12 +23,12 @@
 		<div class="bingding_box_iconbg" :class="bind.qqbind ? 'bingding_yx_qq':''"><i class="bingding_box_iconqq"></i></div>
 		<div class="bingding_box_name">QQ{yun:}t key='member_user_00234'{/yun}</div>
 		<template v-if="bind.qqbind == 1">
-			<div class="bingding_box_p">你已绑定QQ号，下次你可以直接使用QQ{yun:}t key='common_01767'{/yun}</div>
+			<div class="bingding_box_p">{yun:}t key='wap_user_00132'{/yun}</div>
 			<span @click="bindClear('qq')" class="bingding_box_bth_jc">{yun:}t key='wap_user_00138'{/yun}</span>
 		</template>
 		<template v-else>
 			<span class="bingding_box_bth" onclick="tobind('{yun:}url m=qqconnect login=1{/yun}')">{yun:}t key='wap_user_00119'{/yun}</span>
-			<div class="bingding_box_p">{yun:}t key='member_user_00234'{/yun}QQ号，下次你可以直接使用QQ{yun:}t key='common_01767'{/yun}</div>
+			<div class="bingding_box_p">{yun:}t key='wap_user_00134'{/yun}</div>
 		</template>
 	</li>
 	{yun:}/if{/yun}
@@ -49,7 +49,7 @@
 
 	{yun:}if $config.wx_rz != '1' && $config.sy_qqlogin != '1' && $config.sy_sinalogin != '1'{/yun}
 	<div class="wap_member_no">
-		网站未开启第三方绑定，请联系管理员反馈
+		{yun:}t key='wap_01113'{/yun}
 	</div>
 	{yun:}/if{/yun}
 
@@ -60,6 +60,10 @@
 		data() {
 			return {
 				bind: {},
+				i18n: {
+					confirmUnbind: '{yun:}t key='member_user_00051'{/yun}',
+					unbindSuccess: '{yun:}t key='wap_01114'{/yun}',
+				},
 			}
 		},
 		created() {
@@ -76,14 +80,15 @@
 				})
 			},
 			bindClear(type) {
-				showConfirm('确定要解除绑定吗？', function () {
+				var self = this;
+				showConfirm(self.i18n.confirmUnbind, function () {
 					showLoading();
 					$.post('{yun:}url d=wxapp h=user m=set c=binding{/yun}', {
 						provider: 'h5',
 						isbind: 1,
 						type: type
 					}, function (res) {
-						showToast('解除成功', 2, function () {
+						showToast(self.i18n.unbindSuccess, 2, function () {
 							window.location.reload();
 						})
 					})

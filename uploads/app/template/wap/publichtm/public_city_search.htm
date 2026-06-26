@@ -4,7 +4,7 @@
         sy_web_city_two: '{yun:}$config.sy_web_city_two{/yun}',
     };
 
-    // 选择分站地区默认
+    // Default sub-site region selection
     {yun:}if $config.province{/yun}
         cityParam.sy_web_city_one = parseInt('{yun:}$config.province{/yun}');
         cityParam.sy_web_city_two = parseInt('{yun:}$config.cityid{/yun}');
