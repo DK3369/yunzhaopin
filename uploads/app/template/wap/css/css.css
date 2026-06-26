@@ -1,7 +1,7 @@
 @charset "utf-8";
 /* CSS Document text-overflow:ellipsis; overflow:hidden; white-space:nowrap;*/
 
-/*赏金职位*/
+/* section */
 .phpyun_wap_msg{width:100%;text-align:center;padding:4.266667rem 0 1.6rem 0;font-size:.426667rem;position:relative}
 .phpyun_wap_msg_icon{width:1.6rem;height:1.6rem;background:red;color:#fff;line-height:1.6rem;text-align:center;font-size:.853333rem;border-radius:50%;font-weight:700;background-size:100%;display:inline-block;position:absolute;left:50%;margin-left:-.8rem;top:1.866667rem}
 .phpyun_wap_msg_icon_ts{width:1.6rem;height:1.6rem;background:#09f;color:#fff;line-height:1.6rem;text-align:center;font-size:.853333rem;border-radius:50%;font-weight:700;background-size:100%;display:inline-block;position:absolute;left:50%;margin-left:-.8rem;top:1.866667rem}
@@ -27,9 +27,9 @@
 .index_rewardjobs_list_more a:after{content:' ';position:absolute;top:50%;right:.4rem;width:.106667rem;height:.106667rem;border:red solid;-webkit-transform:rotate(45deg);border-width:.026667rem .026667rem 0 0;margin-top:-.053333rem;box-shadow:0 .133333rem .4rem #ddd}
 .index_rewardjob_tit_p{width:100%;text-align:center;font-size:.32rem;color:#999}
 
-/* 登录注册 */
+/* section */
 
-/* 选择身份 */
+/* section */
 .login_tit{font-size:.64rem;padding:1.6rem 0 .533333rem .533333rem;position:relative}
 .regok_tit_p{font-size:.373333rem;color:#999;padding-top:.133333rem}
 .regok_box{padding:0 .533333rem}
@@ -54,7 +54,7 @@
 .regok_box_user_icon_zy{background:url(../images/js_1.png) no-repeat;background-size:100%}
 
 
-/* 忘记密码 */
+/* section */
 .password_box{padding:0 .613333rem}
 .password_select_input{height:1.2rem;line-height:1.2rem;background:#f7f9f8;border-radius:.8rem;margin-top:.533333rem;padding-left:.533333rem;padding-right:.533333rem;position:relative;font-size:.346666rem;color:#666}
 .J_listitme_text{width:100%;display:block}
@@ -85,12 +85,12 @@
 
 
 
-/* 招聘会列表 */
+/* section */
 
 
 
 
-/* 招聘会详细 */
+/* section */
 .particulars_bodybg{height:2.666666rem;background-color:#2778f8}
 .particulars_body{padding-left:.32rem;padding-right:.32rem;padding-bottom:1.6rem;margin-top:-2.133333rem}
 .particulars_body_card{position:relative;width:100%;background-color:#fff;border-radius:.213333rem;padding:.373333rem .4rem .966667rem .4rem}
@@ -173,7 +173,7 @@
 .zph_xzjob_bth{width:100%;height:1.28rem;margin-top:.266666rem;line-height:1.28rem;border-radius:.213333rem;text-align:center;background-color:#2778f8;color:#fff;display:block}
 
 
-/* 网络招聘会列表 */
+/* section */
 .zphnet_banner_list{padding:0 .4rem;box-sizing:border-box;margin-top:.266666rem}
 .zphnet_banner_a{display:block;width:100%;height:100%}
 .zphnet_banner_sd{background-color:#fff;box-sizing:border-box;width:100%;height:100%;box-sizing:border-box;margin-bottom:.32rem;box-shadow:0 0 .533333rem #f1f1f1;border-radius:.106666rem}
@@ -191,7 +191,7 @@
 .yijieshu{background:linear-gradient(to right,#aaa,#ccc);height:.533333rem;display:block;line-height:.533333rem;color:#fff;font-size:.293333rem;font-weight:700;text-align:left;border-radius:0 .106666rem 0 .106666rem;position:absolute;right:0;top:0;text-align:center;padding:0 .266666rem}
 .zphnet_baomingzhong2{background:linear-gradient(to right,#4077ff,#5493fe);padding:0 0 0 .213333rem;height:.533333rem;display:block;line-height:.533333rem;color:#fff;font-size:.293333rem;font-weight:700;text-align:left;border-radius:0 .106666rem 0 .106666rem;position:absolute;right:0;top:0;padding:0 .266666rem}
 
-/*网络招聘会详细页*/
+/* section */
 .zph_net_top{color:#fff;min-height:5.33333rem;position:relative;overflow:hidden}
 .zph_net_top .zbzph_img{width:100%;overflow:hidden}
 .zph_net_top .zbzph_img img{width:100%}
@@ -337,7 +337,7 @@ bottom: 0;left: .15rem; margin: auto; z-index: 22;}
 .zph_net_jobnav .zph_net_jobnav_cur i{position:absolute;height:.08rem;width:.64rem;background:#3d7eff;display:block;bottom:0;left:50%;margin-left:-.32rem}
 
 
-/* 直播宣讲会列表 */
+/* section */
 .xjh_listbox{padding:0 .4rem}
 .xjh_look{color:#999;font-size:.64rem}
 .xjh_list{min-height:2.666666rem;padding:.4rem 4rem .4rem .4rem;background:#fff;position:relative;border-radius:.213333rem;margin-top:.4rem}
@@ -359,7 +359,7 @@ bottom: 0;left: .15rem; margin: auto; z-index: 22;}
 .xjh_searchbox input{width:100%;height:.533333rem;border:none}
 .xjh_searchbth{width:1.2rem;height:.853333rem;line-height:.853333rem;position:absolute;right:.4rem;top:.133333rem;color:#fff;display:block;background:#093;border-radius:.133333rem;text-align:center}
 
-/* 视频面试列表 */
+/* section */
 .spview_box{padding:0 .4rem}
 .spviewlist{background:#fff;color:#333;font-size:.373333rem;margin-top:.266666rem;border-radius:.213333rem}
 .spviewlist_top{padding:.4rem .266666rem .4rem 1.2rem;position:relative;background:url(../images/video_icon.png) no-repeat .4rem center;background-size:.533333rem;color:#666;font-size:.426666rem}
@@ -402,7 +402,7 @@ bottom: 0;left: .15rem; margin: auto; z-index: 22;}
 .telkf_c{border-radius:.266666rem;box-shadow:.026666rem .026666rem .133333rem .026666rem rgba(166,172,184,.5);background:#fff;padding:.533333rem 0;font-size:0.3733333rem}
 
 
-/*foot直播提示弹窗start*/
+/* section */
 .look_show{position:fixed;left:.266666rem;top:4rem;z-index:10000}
 .look_show_icon{width:.693333rem;height:.693333rem;background:url(../images/teljs.png) no-repeat;background-size:100%;position:absolute;left:0;top:.16rem}
 .look_show_c{position:relative;padding-left:.933333rem;padding-right:.933333rem}
@@ -415,7 +415,7 @@ bottom: 0;left: .15rem; margin: auto; z-index: 22;}
 .look_showicon_b{border-radius:0 .533333rem .533333rem 0;background:#fff;border-left:0;height:1.013333rem;padding-left:.666666rem;padding-right:.346667rem;box-shadow:0 0 .266666rem 0 rgb(56 81 76 / 12%)}
 .look_showicon_b .look_show_icon{width:.693333rem;height:.693333rem;background:url(../images/teljs.png) no-repeat;background-size:100%;position:absolute;left:.133333rem;top:.16rem}
 
-/*提示页面*/
+/* section */
 .loginlock{width:100%;height:1.33333rem; line-height:1.33333rem; background:rgba(38,139,219,0.9); font-size:0.533333rem; text-align:center;color:#fff}
 .prompt_message{font-family:微软雅黑;width:100%; background:#fff;height:100%;}
 .prompt_message_cont{ background:#fff; padding:0.533333rem;}
@@ -428,7 +428,7 @@ bottom: 0;left: .15rem; margin: auto; z-index: 22;}
 .prompt_message_tel{ font-size:0.8rem;color:#f60}
 .prompt_message_i_icon_cg{width:2.9333333rem;height:2.9333333rem; display:block; background:url(../images/Certification_prompt_img.png) no-repeat; background-size:100%; margin:0.533333rem auto}
 .prompt_message_i_icon_sd{width:2.9333333rem;height:2.9333333rem; display:block; background:url(../images/Certification_prompt_img.png) no-repeat; background-size:100%; margin:0.533333rem auto}
-/*foot直播提示弹窗end*/
+/* section */
 .mq_box {
     padding: 0.266666rem 0.266666rem 0.213333rem 0.266666rem;
     border: 0.026666rem solid #eee;
@@ -572,7 +572,7 @@ bottom: 0;left: .15rem; margin: auto; z-index: 22;}
     color: #333;
 }
 
-/*兼职*/
+/* section */
 .part_box {
     padding: 0 0.32rem
 }
@@ -975,7 +975,7 @@ bottom: 0;left: .15rem; margin: auto; z-index: 22;}
     font-size: 0.4rem;
 }
 
-/*兼职详细页*/
+/* section */
 .yun_newedition_jobshow_content {
     padding: .133333rem .4rem .4rem .4rem;
     background: #fff;
@@ -1098,7 +1098,7 @@ bottom: 0;left: .15rem; margin: auto; z-index: 22;}
     margin: 0 auto;
 }
 
-/*商城*/
+/* section */
 .redeem_header_box {
     width: 100%;
     height: 4rem;
@@ -1655,7 +1655,7 @@ bottom: 0;left: .15rem; margin: auto; z-index: 22;}
     border-radius: 0.533333rem;
 }
 
-/*商品详情页*/
+/* section */
 .redeemshow_pic {
     width: 100%;
     text-align: center;
@@ -1924,7 +1924,7 @@ bottom: 0;left: .15rem; margin: auto; z-index: 22;}
     width: 100%
 }
 
-/*专题*/
+/* section */
 .special_box {
     padding: 0 0.4rem;
 }
@@ -2514,7 +2514,7 @@ bottom: 0;left: .15rem; margin: auto; z-index: 22;}
 
 
 
-/*意见反馈*/
+/* section */
 .fk_box_lx {
     background: #fff;
     padding: 0.266666rem 0.266666rem 0 0.266666rem;
@@ -2831,7 +2831,7 @@ bottom: 0;left: .15rem; margin: auto; z-index: 22;}
     text-align: center;
 }
 
-/*职场资讯*/
+/* section */
 .news_in_body {
     width: 100%;
 }
@@ -2953,7 +2953,7 @@ bottom: 0;left: .15rem; margin: auto; z-index: 22;}
     height: 5.0666rem;
 }
 
-/*不同尺寸*/
+/* section */
 @media screen and (min-width: 768px) {
   .news_in_list_box_left img{
     height: 7.407rem;
@@ -3028,7 +3028,7 @@ bottom: 0;left: .15rem; margin: auto; z-index: 22;}
 }
 
 
-/*测评*/
+/* section */
 .evaluate_box {
     padding: 0 .266667rem;
 }
@@ -3339,7 +3339,7 @@ bottom: 0;left: .15rem; margin: auto; z-index: 22;}
     text-align: center;
 }
 
-/*分页*/
+/* section */
 .pages {
     width: 100%;
     padding: .266667rem 0;
@@ -3376,7 +3376,7 @@ bottom: 0;left: .15rem; margin: auto; z-index: 22;}
     border: .026667rem solid #288ee0;
 }
 
-/*视频面试*/
+/* section */
 .spview_show_bg {
     background: -webkit-gradient(linear, 0 0, 0 100%, from(#2778F8), to(#2794f1));
     font-size: 0.373333rem;
@@ -4046,7 +4046,7 @@ bottom: 0;left: .15rem; margin: auto; z-index: 22;}
     }
 }
 
-/*附近职位*/
+/* section */
 #loading {
     position: fixed;
     top: 3.733333rem;
@@ -4272,7 +4272,7 @@ bottom: 0;left: .15rem; margin: auto; z-index: 22;}
 }
 
 
-/*积分商城*/
+/* section */
 /*.header{width:100%;height:1.28rem; }
 .header_fixed{width:100%;height:1.28rem; position:fixed;left:0px;top:0px; z-index:10000000}
 .header_bg{width:100%;height:1.28rem;background:#3b7cff; position:relative; z-index:10;}
@@ -4442,7 +4442,7 @@ border: #fff solid;-webkit-transform: rotate(-135deg);border-width: 1px 1px 0 0;
 }
 
 
-/*商品列表*/
+/* section */
 .wap_list {
     width: 100%;
 }
@@ -4545,7 +4545,7 @@ border: #fff solid;-webkit-transform: rotate(-135deg);border-width: 1px 1px 0 0;
 }
 
 
-/*商品兑换*/
+/* section */
 .dh_store_dz {
     position: relative;
     width: 100%;
@@ -4676,7 +4676,7 @@ border: #fff solid;-webkit-transform: rotate(-135deg);border-width: 1px 1px 0 0;
     line-height: .933333rem;
 }
 
-/*商品兑换添加详细地址*/
+/* section */
 .redeemd_address {
     padding: .266667rem 1.333333rem .266667rem 1.066667rem;
     position: relative;
@@ -5532,7 +5532,7 @@ border: #fff solid;-webkit-transform: rotate(-135deg);border-width: 1px 1px 0 0;
     background-size: 100%;
 }
 
-/*悬赏*/
+/* section */
 
 .reward_tip {
     background: #fff1f0;
@@ -5851,7 +5851,7 @@ border: #fff solid;-webkit-transform: rotate(-135deg);border-width: 1px 1px 0 0;
     color: #999
 }
 
-/*分享助力*/
+/* section */
 .heap_box {
     padding: .4rem .533333rem 1.333333rem .533333rem;
     position: relative;
@@ -6699,7 +6699,7 @@ border: #fff solid;-webkit-transform: rotate(-135deg);border-width: 1px 1px 0 0;
     border-radius: .213333rem;
     padding: .373333rem .4rem .466667rem .4rem;
 }
-/*招聘会弹窗*/
+/* section */
 .interview{
     width: 100%;
     height: 100%;

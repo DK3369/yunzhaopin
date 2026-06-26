@@ -72,7 +72,7 @@ class qqconnect_controller extends common
             parse_str($response, $params);
             $graph_url = "https://graph.qq.com/oauth2.0/me?access_token=" . $params['access_token'];
 
-            //QQ互联平台的移动应用和网站应用打通之后可以获取unionid
+            // QQunionid
             if ($this->config['sy_qqdt'] == 1) {
                 $graph_url .= "&unionid=1";
             }
@@ -106,7 +106,7 @@ class qqconnect_controller extends common
                 if (is_array($userinfo)) {
                     if ($userinfo['usertype'] > 0) {
                         if ($userinfo['status'] == '2' || $userinfo['status'] == '4') {
-                            // 账号被锁定
+                            // 
                             header('Location: ' . Url('wap', array('c' => 'login', 'a' => 'loginlock', 'type' => 1)));
                             exit();
                         }
@@ -118,7 +118,7 @@ class qqconnect_controller extends common
                         }
 
                         $userinfoM->upInfo(array('uid' => $userinfo['uid']), $qqdata);
-                        // 会员日志，记录手动登录
+                        // ，
                         $LogM       =   $this->MODEL('log');
                         $logContent =   '账号登录：快捷登录';
                         $logDetail  =   'H5 QQ快捷登录';
@@ -139,7 +139,7 @@ class qqconnect_controller extends common
                         if ($logtime != $nowtime) {
 
                             $this->MODEL('integral')->invtalCheck($userinfo['uid'], $userinfo['usertype'], "integral_login", "会员登录", 22);
-                            //登录日志
+                            // 
                             $logdata['uid']         =   $userinfo['uid'];
                             $logdata['usertype']    =   $userinfo['usertype'];
                             $logdata['did']         =   $userinfo['did'];
@@ -277,7 +277,7 @@ class qqconnect_controller extends common
         if ($this->config['sy_reg_type'] == 2 && empty($userinfo)) {
             $result =   array(
                 'error' =>  2,
-                'msg'   =>  '请先注册账号',
+                'msg'   =>  yun_auto_t('请先注册账号'),
                 'url'   =>  Url('wap', array('c' => 'register'))
             );
         }else {

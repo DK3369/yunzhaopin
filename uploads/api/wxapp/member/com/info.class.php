@@ -20,7 +20,7 @@ class info_controller extends com_controller{
         $comcert   =  $companyM->getCertInfo(array('uid'=>$this->member['uid'],'type'=>3));
 
         $info['cert_pic']    =  $comcert['check'];
-        // 首先根据企业表的认证状态来判断
+        // 
         if ($info['yyzz_status'] == 1){
             $info['cert_status'] = 1;
         }else{
@@ -32,7 +32,7 @@ class info_controller extends com_controller{
 
         $cacheM    =  $this->MODEL('cache');
         $cache     =  $cacheM->GetCache('com');
-        //福利缓存数据
+        // 
         if(is_array($cache['comdata']['job_welfare'])){
             foreach($cache['comdata']['job_welfare'] as $k=>$v){
                 $welfareData[]	=	$cache['comclass_name'][$v];
@@ -67,7 +67,7 @@ class info_controller extends com_controller{
 		$info['app_push']   =  $this->member['app_push'];
 		$info['usertype'] 	= 	$this->member['usertype'];
         
-		// 第三方绑定相关参数
+		// 
 		$userInfoM  =  $this->MODEL('userinfo');
 		$member     =  $userInfoM->getInfo(array('uid'=>$this->member['uid']),array('field'=>'`qqid`,`qqunionid`,`wxid`,`wxopenid`,`unionid`,`sinaid`,`maguid`,`qfyuid`'));
 		
@@ -200,7 +200,7 @@ class info_controller extends com_controller{
         $companyM	=	$this->MODEL('company');
 
         if(empty($this->member['uid'])){
-            $this->render_json(3, '参数不正确');
+            $this->render_json(3, yun_auto_t('参数不正确'));
         }else{
             $where['uid']	=	$this->member['uid'];
             !empty($_GET['pageSize']) && $where['limit'] = $_GET['pageSize'];

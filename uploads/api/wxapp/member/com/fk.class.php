@@ -26,7 +26,7 @@ class fk_controller extends com_controller{
                 $raV[$ratingV['id']]    =   $ratingV;
                 
                 if ($ratingV['category'] == 1) {
-                    //有效期处理
+                    // 
                     if($ratingV['service_time']>0){
                         
                         $ratingV['service_time']	=	$ratingV['service_time'].'天';
@@ -34,9 +34,9 @@ class fk_controller extends com_controller{
                     }else{
                         $ratingV['service_time']	=	'永久';
                     }
-                    //有效期处理end
+                    // end
                     
-                    //价格显示处理
+                    // 
                     if($ratingV['time_start'] < time() && $ratingV['time_end'] > time()){
                         if($this->config['com_integral_online']==3 && !in_array('vip', $sy_only_price)){
                             $ratingV['service_price_n']	=	intval($ratingV['service_price'] * $this->config['integral_proportion']);
@@ -54,7 +54,7 @@ class fk_controller extends com_controller{
                         
                         unset($ratingV['yh_price']);
                     }
-                    //价格显示处理end
+                    // end
                     $ratingV['explains']    	=   $ratingV['explains']?$ratingV['explains']:$ratingV['name'];
                     if ($ratingV['integral_buy']>0){
                         $ratingV['explains']	.=	' 赠送'.$ratingV['integral_buy'].$this->config['integral_pricename'];
@@ -64,7 +64,7 @@ class fk_controller extends com_controller{
                         
                         $rating_1[]     =   $ratingV;
                     } elseif ($ratingV['type'] == 2) {
-                        //套餐详细处理
+                        // 
                         if ($ratingV['interview'] > 0 || $ratingV['resume'] > 0){
                             $ratingV['interview_resume']	=	'';
                             if($ratingV['interview'] > 0){
@@ -81,7 +81,7 @@ class fk_controller extends com_controller{
                         if($ratingV['zph_num'] > 0){
                             $ratingV['zph'].='招聘会报名 : '.$ratingV['zph_num'].'次';
                         }
-                        //套餐详细处理
+                        // 
                         
                         $rating_2[]     =   $ratingV;
                     }
@@ -133,7 +133,7 @@ class fk_controller extends com_controller{
         if(!empty($add)){
             foreach ($add as $k => $v) {
                 foreach ($v['detail'] as $dk => $dv) {
-                    //价格显示处理
+                    // 
                     if($this->config['com_integral_online']==3 && !in_array('pack', $sy_only_price)){
                         
                         if($statis['zk']){
@@ -157,7 +157,7 @@ class fk_controller extends com_controller{
                         }
                         
                     }
-                    //价格显示处理end
+                    // end
                 }
             }
         }
@@ -170,7 +170,7 @@ class fk_controller extends com_controller{
         if($server=='sxpart'||$server=='sxjob'){
             $serverCheck = 'sxjob';
         }
-        // 判断后台是否设置可以单项购买
+        // 
         if($serverCheck && ($serverCheck=='autojob' || in_array($serverCheck,$com_single_can))){
             $data['sigle_show'] = 1;
         }
@@ -409,12 +409,12 @@ class fk_controller extends com_controller{
                 
             }else{
                 
-                // 生成失败 返回具体原因
+                // 
                 $this->render_json(1,$return['error']);
             }
         }else{
             
-            $this->render_json(1,'参数错误，请重试！');
+            $this->render_json(1, yun_auto_t('参数错误，请重试！'));
         }
     }
 }

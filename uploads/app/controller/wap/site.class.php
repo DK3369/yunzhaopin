@@ -63,7 +63,7 @@ class site_controller extends common{
             $domain=array();
             foreach($site_domain as $key=>$val){
                 if($val['fz_type']==1){
-                    // 从最高级开始匹配，匹配到，循环就不再执行
+                    // ，，
                     if ($val['province']==$id){
                         $domain = $val;
                         break;

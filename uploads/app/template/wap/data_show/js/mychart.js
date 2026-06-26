@@ -75,7 +75,7 @@ function echart1() {
             // },
             series: [
                 {
-                    name: '占比',
+                    name: WAP_JS_I18N.sc909e6eb,
                     type: 'pie',
                     radius: '54%',
                     center: ['30%', '40%'],
@@ -186,7 +186,7 @@ function echart2() {
             },
             series: [
                 {
-                    name: '百分比',
+                    name: WAP_JS_I18N.s81522afd,
                     data: [
                         {
                             value: data[0].rate,
@@ -305,7 +305,7 @@ function echart3() {
             // },
             series: [
                 {
-                    name: '经验分布',
+                    name: WAP_JS_I18N.s715989b6,
                     type: 'pie',
                     radius: ['40%', '80%'],
                     center: ['62%', '56%'],
@@ -429,7 +429,7 @@ function echart4() {
             },
             series: [
                 {
-                    name: '学历分布',
+                    name: WAP_JS_I18N.sea93a33d,
                     type: 'bar',
                     stack: 'total',
                     label: {
@@ -522,7 +522,7 @@ function echart5() {
             },
             series: [
                 {
-                    name: '活跃数',
+                    name: WAP_JS_I18N.sd86db5ba,
                     data: valueName,
                     type: 'line',
                     // smooth: true,
@@ -605,7 +605,7 @@ function echart6() {
             },
             series: [
                 {
-                    name: '注册数',
+                    name: WAP_JS_I18N.s80f21d16,
                     data: valueName,
                     type: 'bar',
                     // barWidth: 30,
@@ -688,7 +688,7 @@ function echart7() {
             // },
             series: [
                 {
-                    name: '地区分布',
+                    name: WAP_JS_I18N.sa5f8f963,
                     type: 'pie',
                     radius: '54%',
                     center: ['35%', '40%'],
@@ -801,7 +801,7 @@ function echart8() {
             },
             series: [
                 {
-                    name: '规模分布',
+                    name: WAP_JS_I18N.s7f5969cb,
                     data: [
                         {
                             value: data[0].rate,
@@ -943,7 +943,7 @@ function echart9() {
             },
             series: [
                 {
-                    name: '性质分布',
+                    name: WAP_JS_I18N.s6744c781,
                     type: 'bar',
                     stack: 'total',
                     label: {
@@ -1036,7 +1036,7 @@ function echart10() {
             },
             series: [
                 {
-                    name: '登录次数',
+                    name: WAP_JS_I18N.s0f06f441,
                     data: valueName,
                     type: 'line',
                     // smooth: true,
@@ -1119,7 +1119,7 @@ function echart11() {
             },
             series: [
                 {
-                    name: '发布岗位',
+                    name: WAP_JS_I18N.s14dcbbef,
                     data: valueName,
                     type: 'bar',
                     // barWidth: 30,

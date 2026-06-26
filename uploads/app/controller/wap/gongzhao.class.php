@@ -3,7 +3,7 @@
 
 class gongzhao_controller extends common
 {
-    // 公招列表
+    // 
     function index_action()
     {
         $this->yunset('backurl', Url('wap'));
@@ -11,7 +11,7 @@ class gongzhao_controller extends common
         $this->seo("gongzhao_index");
         $this->yuntpl(array('wap/gongzhao'));
     }
-    // 公招详情
+    // 
     function show_action(){
         if ((int)$_GET['id']) {
             

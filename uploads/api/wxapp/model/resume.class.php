@@ -3,7 +3,7 @@
 class resume_controller extends wxapp_controller
 {
 
-	//简历列表
+	// 
 	function list_action()
 	{
 
@@ -23,22 +23,22 @@ class resume_controller extends wxapp_controller
         }
         if($this->config['com_search']=='1'){
             if(!isset($uid) || (isset($usertype) && $usertype == 1)){
-                // 不是企业登录
+                // 
                 $_POST['limit'] = 3;
                 unset($_POST['keyword']);
             }else if($this->config['com_status_search'] == '1' && (isset($uInfo) && $uInfo['r_status'] != '1')){
-                // 企业登录了，但审核未通过
+                // ，
                 $_POST['limit'] = 3;
                 unset($_POST['keyword']);
             }
         }
-        // 个人允许查看简历
+        // 
         if(!empty($this->config['sy_user_visit_resume']) && isset($usertype) && $usertype == 1){
             $_POST['limit'] = 10;
         }
         $_POST['keyword']  =  $this->stringfilter($_POST['keyword']);
 
-        // 处理分站查询条件
+        // 
         if (!empty($_POST['did'])){
 
             $domain  =  $this->getDomain($_POST['did'], true);
@@ -48,19 +48,19 @@ class resume_controller extends wxapp_controller
                 $data['didcity']    =  $domain['didcity'];
 
                 if (!empty($_POST['provinceid'])){
-                    // 分站下，再次选择城市，查询按选择的来
+                    // ，，
                     $data['didcity']      =  $domain['city_name'][$_POST['provinceid']];
                 }elseif (!empty($domain['provinceid'])){
                     $_POST['provinceid']  =  $domain['provinceid'];
                 }
                 if (!empty($_POST['cityid'])){
-                    // 分站下，再次选择城市，查询按选择的来
+                    // ，，
                     $data['didcity']  =  $domain['city_name'][$_POST['cityid']];
                 }elseif (!empty($domain['cityid'])){
                     $_POST['cityid']  =  $domain['cityid'];
                 }
                 if (!empty($_POST['three_cityid'])){
-                    // 分站下，再次选择城市，查询按选择的来
+                    // ，，
                     $data['didcity']        =  $domain['city_name'][$_POST['three_cityid']];
                 }elseif (!empty($domain['three_cityid'])){
                     $_POST['three_cityid']  =  $domain['three_cityid'];
@@ -80,8 +80,8 @@ class resume_controller extends wxapp_controller
                 }
             }
         }else{
-            // 没有已选择的城市，按后台设置的列表页区域默认设置来（后台-页面设置-列表页区域默认设置）
-            // 设置了一级城市，后面的搜索，不再展示其他一级城市
+            // ，（--）
+            // ，，
             if (empty($_POST['provinceid']) && empty($_POST['cityid']) && empty($_POST['three_cityid']) || (!empty($_POST['provinceid']) && $_POST['provinceid'] == $this->config['sy_web_city_one'])){
 
                 $list_cityid      = isset($_POST['cityid']) ? $_POST['cityid'] : 0;
@@ -171,7 +171,7 @@ class resume_controller extends wxapp_controller
         $this->render_json($data['error'],'',$data);
 
     }
-    //简历内容页
+    // 
     function show_action(){
         $uid = $usertype = 0;
 		$resumeM = $this->MODEL('resume');
@@ -265,23 +265,23 @@ class resume_controller extends wxapp_controller
 
             }else{
                 if ($uid != $expect['uid']) {
-                    // 检查简历隐私状态设置
+                    // 
                     $canShow = true;
                     if ($expect['status'] == 2){
-                        // 简历关闭
+                        // 
                         $canShow = false;
                     }elseif ($expect['status'] == 3){
-                        // 简历状态是投递企业可见
+                        // 
                         $canShow = false;
                         if (isset($expect['userid_job'])){
-                            // 已向企业投递简历，简历可以展示
+                            // ，
                             $canShow = true;
                         }
                     }
                     if (!$canShow){
                         $msg  =  '简历已设置不对外开放！';
                     }else{
-                        // 查询黑名单
+                        // 
                         $blackM     =   $this->MODEL('black');
                         $blackInfo  =   $blackM -> getBlackInfo(array('p_uid' => $uid, 'c_uid'=> $expect['uid']));
 
@@ -295,12 +295,12 @@ class resume_controller extends wxapp_controller
 
         if(!isset($msg)){
             if (!empty($uid)){
-                //人才收藏库
+                // 
 				$reportM					  =	  $this->MODEL('report');
 				$talent_pool                  =   $resumeM -> getTalentNum(array('eid' => $id, 'cuid' => $uid));
 				$report_num				      =	  $reportM->getNum(array('p_uid' => $expect['uid'], 'eid' => $id,'c_uid' => $uid, 'usertype' => $member['usertype']));
                 $JobM                         =   $this->MODEL('job');
-                //已邀请面试数量
+                // 
                 $userid_msg                   =   $JobM -> getYqmsNum(array('fid' => $uid,'uid' => $expect['uid'],'isdel'=>9));
 
                 $expect['report_num']   =   $report_num;
@@ -312,7 +312,7 @@ class resume_controller extends wxapp_controller
             }
             $expect['userid_msg']      =   isset($userid_msg) ? $userid_msg : 0;
             $expect['talent_pool']     =   $talent_pool > 0 ? 1 : 0;
-            //处理浏览记录
+            // 
             $lookM                            =   $this -> MODEL('lookresume');
             $lookM -> browseResume(array(
                 'euid'                  =>  $expect['uid'],
@@ -336,7 +336,7 @@ class resume_controller extends wxapp_controller
                 $expect['showname']  =  $expect['name'];
             }else{
                 $expect['showname']  =  $expect['username_n'];
-                // 没有简历查看权限，处理手机号
+                // ，
                 $expect['telphone'] = sub_string($expect['telphone']);
             }
             $expect['rescheck']	=  $this->config['resume_open_check'];
@@ -344,7 +344,7 @@ class resume_controller extends wxapp_controller
             $data['userData']   =  array('name'=>$member['username'],'type'=>$member['usertype'],'mtype'=>2);
             $data['iosfk']		=  $this->config['sy_iospay'] ;
             
-            //判断是否是企业的个人账号简历
+            // 
             if($member['uid'] == $expect['uid']){
                 $data['isMyResume'] = 1;
             }
@@ -353,7 +353,7 @@ class resume_controller extends wxapp_controller
         
         $this->render_json(0,$msg,$data);
     }
-    //邀请面试页面相关信息
+    // 
     function inviteMsg_action()
     {
 
@@ -390,7 +390,7 @@ class resume_controller extends wxapp_controller
 
         $jobM     =  $this -> MODEL('job');
 
-        //公司旗下职位信息（包含职位联系方式）
+        // （）
         $rows     =  $jobM -> getList(array('uid' => $member['uid'], 'status' => 0, 'state' => 1, 'r_status' => 1, 'limit'=>50), array('link'=>'yes', 'field' => '`id`, `name`, `is_link`, `link_id`'));
 
         $joblist  =  $rows['list'];
@@ -444,7 +444,7 @@ class resume_controller extends wxapp_controller
         $data['joblist']    =   $joblist;
         $data['user']       =   $user;
 
-        //邀请模板
+        // 
         $yqmbM  =   $this->MODEL('yqmb');
         $ymlist =   $yqmbM  ->getList(array('uid'=>$member['uid'],'status'=>1));
         $ymData =   array();
@@ -473,7 +473,7 @@ class resume_controller extends wxapp_controller
 
         $this->render_json(0,'',$data);
     }
-    //邀请面试判断是否满足条件
+    // 
     function invite_action()
     {
         $member =   $this->yzToken($_POST['fid'],$_POST['token']);
@@ -504,7 +504,7 @@ class resume_controller extends wxapp_controller
 		$return['iosfk']	=	$this->config['sy_iospay'] ;
         $this->render_json($error,$msg, $return);
     }
-    //执行邀请面试保存数据
+    // 
     function invitesave_action(){
 	    if(!empty($_POST['source']) && $_POST['source'] == 'wap'){
             $_POST['fid'] = $this->member['uid'];

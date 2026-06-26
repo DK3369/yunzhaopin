@@ -135,8 +135,8 @@
         },
         created() {
          this.actionsList = [
-           {name: this.i18n.declineInterview, value: '拒绝面试'},
-           {name: this.i18n.blockCompany, subname: this.i18n.blockCompanyTip, value: '屏蔽企业'}
+           {name: this.i18n.declineInterview, value: WAP_API_ENUM.DECLINE_INTERVIEW},
+           {name: this.i18n.blockCompany, subname: this.i18n.blockCompanyTip, value: WAP_API_ENUM.BLOCK_COMPANY}
          ];
          this.inviteshow();
         },
@@ -145,10 +145,10 @@
             this.moreShow=false;
           },
           onSelect(item){
-            if (item.value == '拒绝面试') {
+            if (item.value == WAP_API_ENUM.DECLINE_INTERVIEW) {
               this.moreShow = false;
               this.refuseShow =  true;
-            } else if (item.value == '屏蔽企业') {
+            } else if (item.value == WAP_API_ENUM.BLOCK_COMPANY) {
               this.black()
             }
           },

@@ -2,7 +2,7 @@
 
 class set_controller extends user_controller
 {
-    //个人设置信息页面
+    // 
     function getInfo_action()
     {
         
@@ -21,7 +21,7 @@ class set_controller extends user_controller
         $data['iosfk']		=	$this->config['sy_iospay'] ;
         $data['xcx_contact']  =  $this->config['sy_xcx_contact'] ? $this->config['sy_xcx_contact'] : 2;
 
-        // 第三方绑定相关参数
+        // 
         $userInfoM  =  $this->MODEL('userinfo');
         $member     =  $userInfoM->getInfo(array('uid'=>$this->member['uid']),array('field'=>'`qqid`,`qqunionid`,`wxid`,`wxopenid`,`unionid`,`sinaid`,`maguid`,`qfyuid`'));
         
@@ -47,7 +47,7 @@ class set_controller extends user_controller
         
         $this -> render_json(0, 'ok', $data);
     }
-    //查询用户是否有多重身份
+    // 
     function transferInfo_action(){
         $userInfo   = $this->MODEL('userinfo');
         $userStatue = $userInfo -> getUserInfo(array('uid'=>$this->member['uid']),array('usertype'=>2));
@@ -67,7 +67,7 @@ class set_controller extends user_controller
 		);
         $this -> render_json(0, 'ok', $data);
     }
-    //身份证审核查询
+    // 
 	function getidcard_action(){
 	    
 		$ResumeM	=	$this		->	MODEL('resume');
@@ -83,7 +83,7 @@ class set_controller extends user_controller
         );
 		$this -> render_json(1, 'ok', $return);
 	}
-	//上传身份证
+	// 
 	function saveidcard_action()
 	{
 	    $UserinfoM	=	$this -> MODEL('userinfo');
@@ -104,7 +104,7 @@ class set_controller extends user_controller
 		$error		=	$return['errcode']==9 ? 1 : 2;
 		$this -> render_json($error, $return['msg']);
 	}
-	//手机认证,发送短信；
+	// ,；
 	function mobliecert_action(){
 		
 		$user 		=	array(
@@ -128,7 +128,7 @@ class set_controller extends user_controller
 		    $this->render_json($result['error'],$result['msg']);
 		}
 	}
-	//修改密码
+	// 
 	function pwd_action()
 	{
 		$UserinfoM  =   $this->MODEL('userinfo');
@@ -148,7 +148,7 @@ class set_controller extends user_controller
 		$this -> render_json($data['error'], $err['msg']);
 		
 	}
-	//手机号和邮箱绑定
+	// 
 	function bindingbox_action()
 	{
 	    if($_POST['id']=='tel'){
@@ -184,7 +184,7 @@ class set_controller extends user_controller
 				$res  =  array();
 				$user    =  $UserinfoM->getInfo(array('uid'=>$uid),array('field'=>'username,moblie,password,salt,usertype'));
 				if (isset($_POST['provider']) && $user['username'] == $user['moblie']){
-				    // 用户名和手机号重复，修改手机号会修改用户名，需要重新生成token;
+				    // ，，token;
 				    $token  =  md5($data['moblie'].$user['password'].$user['salt'].$user['usertype']);
 				    $res['user']  =  array('uid'=>$uid,'usertype'=>$user['usertype'],'token'=>$token);
 				}
@@ -210,7 +210,7 @@ class set_controller extends user_controller
 	    }elseif ($_POST['id']=='email'){
 
 			$ComapnyM	=	$this->MODEL('company');
-			//判断邮箱是否存在
+			// 
 			$UserinfoM   		=   	$this->MODEL('userinfo');
           
           	$email      		=    	$_POST['email'];
@@ -267,7 +267,7 @@ class set_controller extends user_controller
 		$this -> render_json($error,$msg,$res);
 		
 	}
-	//修改用户名
+	// 
 	function setname_action(){
 		$UserinfoM	=	$this->MODEL('userinfo');
 		$data	=	array(
@@ -294,7 +294,7 @@ class set_controller extends user_controller
 		$this -> render_json($error, $msg);
 		
 	}
-    //账户分离
+    // 
 	function transfer_action(){
 	
 		
@@ -308,7 +308,7 @@ class set_controller extends user_controller
 		
 		$this -> render_json($return['errcode'], $return['msg']);
 	}
-    //社交账号绑定页面
+    // 
 	function getBind_action(){
 	    
 	    $userInfoM  =  $this->MODEL('userinfo');
@@ -335,7 +335,7 @@ class set_controller extends user_controller
 	   
 	    $this->render_json(0, 'ok', $return);
 	}
-	//保存社交账号绑定
+	// 
 	function binding_action()
 	{
 	    if ($_POST['isbind'] == 1){
@@ -367,7 +367,7 @@ class set_controller extends user_controller
 	     
 	    }
 	}
-	// 查询申请注销记录
+	// 
 	function getLogout_action()
 	{
 	    $logoutM  =  $this->MODEL('logout');
@@ -375,13 +375,13 @@ class set_controller extends user_controller
 	    
 	    if (!empty($row)){
 	        
-	        $this->render_json(1,'您已申请了注销账号');
+	        $this->render_json(1, yun_auto_t('您已申请了注销账号'));
 	    }else{
 
 	        $this->render_json(0,'ok');
 	    }
 	}
-	//注销账号申请
+	// 
 	public function logoutApply_action()
 	{
         $_POST  =   $this->post_trim($_POST);
@@ -401,7 +401,7 @@ class set_controller extends user_controller
             $this->render_json($return['errcode'], $return['msg']);
         }
 	}
-    //手机注销账号申请
+    // 
     public function logoutmsg_action()
     {
         $_POST      =  $this->post_trim($_POST);

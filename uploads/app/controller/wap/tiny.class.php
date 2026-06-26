@@ -59,7 +59,7 @@ class tiny_controller extends common{
 		$return		=	$tinyM->setResumeTinyPassword($data);
 		echo yun_json_encode($return);die;
 	}
-    //短信验证
+    // 
     function sendmsg_action(){
         $noticeM	=	$this->MODEL('notice');
         $result		=	$noticeM->jycheck($_POST['authcode'],'普工简历');
@@ -83,7 +83,7 @@ class tiny_controller extends common{
         $info	=	$tinyM->getResumeTinyInfo(array('id'=>intval($_GET['id'])),array('cache'=>1));
 		
 		if(!empty($info)){
-			//检测当前密码是否对应
+			// 
 			session_start();
 			
 			if($info['password'] == $_SESSION['tinypass']){

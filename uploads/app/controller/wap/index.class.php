@@ -50,12 +50,12 @@ class index_controller extends common
         $annM = $this->MODEL('announcement');
         $annum = $annM->getNum();
         $this->yunset('annum', $annum);
-        //热门职位查询
+        // 
         $categoryM	=	$this -> MODEL('category');
         $hotclass = $categoryM->getHotJobClass(array('rec'=>1,'orderby'=>'sort,desc'),'`id`,`keyid`,`name`');
         
         $this->yunset('hotclass', $hotclass);
-        //首页弹框广告记录
+        // 
         $bannerFlag   =   $_COOKIE['wap_bannerFlag'];
         if (!$bannerFlag) {
             $this->cookie->setcookie('wap_bannerFlag', 1, time() + 3600);
@@ -90,64 +90,64 @@ class index_controller extends common
         exit;
     }
 
-    // 关于我们
+    // 
     function about_action()
     {
 
         $descM      =   $this->MODEL('description');
-        $content    =   $descM->getDes(array('name' => '关于我们'), array('field' => 'content'));
+        $content    =   $descM->getDes(array('name' => yun_auto_t('关于我们')), array('field' => 'content'));
         $this->yunset('content', $content);
         if ($_GET['fr'] == 'wxapp') {
             $this->yunset('wxapp', 1);
         }
-        $this->yunset('headertitle', '关于我们');
-        $this->yunset('title', '关于我们');
+        $this->yunset('headertitle', yun_auto_t('关于我们'));
+        $this->yunset('title', yun_auto_t('关于我们'));
         $this->yuntpl(array('wap/about'));
     }
 
-    // 联系我们
+    // 
     function contact_action()
     {
         $descM      =   $this->MODEL('description');
-        $content    =   $descM->getDes(array('name' => '联系我们'), array('field' => 'content'));
+        $content    =   $descM->getDes(array('name' => yun_auto_t('联系我们')), array('field' => 'content'));
         $this->yunset('content', $content);
         if ($_GET['fr'] == 'wxapp') {
             $this->yunset('wxapp', 1);
         }
-        $this->yunset('headertitle', '联系我们');
-        $this->yunset('title', '联系我们');
+        $this->yunset('headertitle', yun_auto_t('联系我们'));
+        $this->yunset('title', yun_auto_t('联系我们'));
         $this->yuntpl(array('wap/about'));
     }
 
-    //下载app
+    // app
     function appDown_action()
     {
         if (preg_match("/(iphone|ipod|ipad)/i", strtolower($_SERVER['HTTP_USER_AGENT']))){
-            // 苹果
+            // 
             include(DATA_PATH . 'api/wxapp/app.config.php');
             if (is_weixin()){
-                // 微信内用二维码
+                // 
                 $down = array(
                     'qrcode' => $this->config['sy_ossurl'] .'/' .$this->config['sy_iosu_qcode']
                 );
             }else{
-                // 其他浏览器用链接
+                // 
                 if (!empty($appconfig['iosurl'])) {
-                    // 苹果微信内不支持链接直接打开appstore
+                    // appstore
                     $down['url'] = $appconfig['iosurl'];
                 }
             }
             $down['version'] = $appconfig['iosversion'];
         }else{
-            // 安卓
+            // 
             include(DATA_PATH . 'api/wxapp/app.config.php');
             if (is_weixin()){
-                // 微信内用二维码
+                // 
                 $down = array(
                     'qrcode' => $this->config['sy_ossurl'] .'/' .$this->config['sy_androidu_qcode']
                 );
             }else{
-                // 其他浏览器用链接
+                // 
                 include(DATA_PATH . 'api/wxapp/app.config.php');
                 if (!empty($appconfig['androidurl'])) {
                     $down['url'] = $appconfig['androidurl'];
@@ -156,40 +156,40 @@ class index_controller extends common
             $down['version'] = $appconfig['androidversion'];
         }
         $this->yunset('down', $down);
-        $this->yunset('headertitle', '下载APP');
+        $this->yunset('headertitle', yun_auto_t('下载APP'));
         $this->yuntpl(array('wap/appdown'));
     }
 
-    // 隐私政策
+    // 
     function privacy_action()
     {
         $descM      =   $this->MODEL('description');
-        $content    =   $descM->getDes(array('name' => '隐私政策'), array('field' => 'content'));
+        $content    =   $descM->getDes(array('name' => yun_auto_t('隐私政策')), array('field' => 'content'));
         $this->yunset('content', $content);
         if ($_GET['fr'] == 'wxapp') {
             $this->yunset('wxapp', 1);
         }
-        $this->yunset('headertitle', '隐私政策');
-        $this->yunset('title', '隐私政策');
+        $this->yunset('headertitle', yun_auto_t('隐私政策'));
+        $this->yunset('title', yun_auto_t('隐私政策'));
         $this->yuntpl(array('wap/about'));
     }
 
-    // 用户协议
+    // 
     function protocol_action()
     {
         $descM      =   $this->MODEL('description');
-        $content    =   $descM->getDes(array('name' => '注册协议'), array('field' => 'content'));
+        $content    =   $descM->getDes(array('name' => yun_auto_t('注册协议')), array('field' => 'content'));
         $this->yunset('content', $content);
         if ($_GET['fr'] == 'wxapp') {
             $this->yunset('wxapp', 1);
         }
-        $this->yunset('headertitle', '服务协议');
-        $this->yunset('title', '服务协议');
+        $this->yunset('headertitle', yun_auto_t('服务协议'));
+        $this->yunset('title', yun_auto_t('服务协议'));
         $this->yuntpl(array('wap/about'));
     }
 
      
-    // 首页名企
+    // 
     function getmq_action(){
         
         $time = time();
@@ -225,16 +225,16 @@ class index_controller extends common
             $hcwhere['time_end']    =   array('>', $time);
             $hcwhere['limit']       =   $_POST['limit'];
             if($this->config['hotcom_top'] == 1){
-                // 职位更新时间(职位修改时，会更新名企表lastupdate字段)
+                // (，lastupdate)
                 $hcwhere['orderby']  =  'lastupdate,DESC';
             }elseif($this->config['hotcom_top'] == 2){
-                // 随机
+                // 
                 $hcwhere['orderby']  =  'rand()';
             }else{
-                // 后台手动设置
+                // 
                 $hcwhere['orderby']  =  'sort';
             };
-            //  查询基础条件是通过$hcom，传过去直接复用
+            // $hcom，
             $hotcom = $companyM->getHotJobList($hcwhere, array('utype' => 'wxapp', 'field' => '`uid`,`hot_pic`','hcom'=>$hcom));
         }else{
             $hotcom = array();

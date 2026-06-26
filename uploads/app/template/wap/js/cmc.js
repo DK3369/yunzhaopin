@@ -1,4 +1,4 @@
-//职位多选---------------------------------------------------------------------------------------------------------------开始----------------------
+// -------------------------------------------------------------------------------------------------------------------------------------
 if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefined"){
 	var jobClassBoxLoad = true;
 	var jobchoose = document.getElementById("jobchoose");
@@ -17,7 +17,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 		var jobclassname = '';
 	}
 
-	//点击一级类别
+	// 
 	$("#jobone").on('click', 'li', function() {
 		$(".yun_category_on").removeClass('yun_category_on');
 		$(this).addClass('yun_category_on');
@@ -32,44 +32,44 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 		}
 		$("#jobthree").removeAttr("style");
 	});
-	//点击二级类别
+	// 
 	$("#jobtwo").on('click', 'li', function() {
 		$(".yun_category_ons").removeClass('yun_category_ons');
 		this.classList.add('yun_category_ons');
 		var jobid = this.getAttribute('data-id');
 		$(".jobthree").addClass('none');
 		var threeobj = $(".job" + jobid);
-		// 如该二级下没有三级,则第三列不显示
+		// ,
 		if(threeobj.length > 0){
 			$(".job" + jobid).removeClass('none');
 			$("#jobthree").css("left", "56.96%");
 			$("#jobthree").css("height", "77%");
 		}
-		// 二级下没有三级的
+		// 
 		if(typeof jt[jobid] == 'undefined'){
 
 			if($.inArray(jobid,jobclass.split(','))==-1){
-				// 未选中，直接选中
+				// ，
 				if(jcnum>1){
 					if(jobclass.split(',').length >= jcnum) {
 						this.checked = false;
 						if(document.getElementById("jobclass"+jobid)){
-							//搜索项设为为选中
+							// 
 							document.getElementById("jobclass"+jobid).checked = false;
 						}
-						return showToast("最多只能选择"+jcnum+"个类别哦");
+						return showToast(CMC_I18N.maxPrefix+jcnum+CMC_I18N.maxSuffix);
 					}
 				}else if(jcnum==1){
-					//单选
+					// 
 					singleDeal(list);
 					jobclass = [];
 					jobclassname = '';
 				}
 				document.getElementById("jobtwo"+jobid).checked = true;
-				//选中处理下方已选显示
+				// 
 				var newchoosed = '<a class="grade_chlose_box_a" data-id="' + jobid + '">' + jn[jobid] + '</a>';
 				$("#jobchoosed").prepend(newchoosed);
-				//处理jobclass和jobclassname，增加内容
+				// jobclassjobclassname，
 				if(jobclass != '' || jobclassname != '') {
 					jobclass += ',' + jobid;
 					jobclassname += ' ' + jn[jobid];
@@ -79,7 +79,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 				}
 				var listlength = jobclass.split(',').length;
 			}else{
-				// 选中的，取消选中
+				// ，
 				document.getElementById("jobtwo"+jobid).checked = false;
 				$("#jobchoosed a").each(function() {
 					var elechoose = this;
@@ -88,7 +88,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 						document.getElementById("jobchoosed").removeChild(elechoose);
 					}
 				});
-				//处理jobclass和jobclassname，减少内容
+				// jobclassjobclassname，
 				var list = arrsplice(jobclass, jobid);
 				var jobnamelist = [];
 				for(var i = 0; i < list.length; i++) {
@@ -110,7 +110,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 			document.getElementById("jobnameshow").style.color = 'black';
 		}
 	});
-	//删除已选类别
+	// 
 	$("#jobchoosed").on('click', 'a', function() {
 		var id = this.getAttribute('data-id');
 		var choosetwo = document.getElementById('jobcheckAll' + id);
@@ -142,7 +142,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 			}
 		}
 		document.getElementById("jobchoosed").removeChild(this);
-		//处理jobclass和jobclassname，减少内容
+		// jobclassjobclassname，
 		var list = arrsplice(jobclass, id);
 		var jobnamelist = [];
 		for(var i = 0; i < list.length; i++) {
@@ -162,7 +162,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 		document.getElementById("jobnameshow").style.color = 'black';
 	});
 	$('#jobthree .checkAll').each(function(i, jobtwo) {
-		//根据获取到的已选数据，处理类别选中
+		// ，
 		if(typeof jobclassidData != "undefined") {
 			$.each(jobclassidData, function(index, vaule, arr) {
 				if(jobtwo.value == vaule.value) {
@@ -175,7 +175,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 				}
 			})
 		}
-		//选中三级全部处理
+		// 
 		document.getElementById(jobtwo.id).addEventListener('change', function() {
 			var jobtwolist = jobclass.split(',');
 			var list = [];
@@ -189,10 +189,10 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 
 			if(this.checked) {
 
-				//选中处理下方已选显示
+				// 
 				var checked = [];
 
-				//选中全部则该类下所有三级都设为已选中和不可选状态
+				// 
 				listBox.each(function() {
 					var ele = this;
 					if(ele.checked == true) {
@@ -238,10 +238,10 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 						if(jobclass.split(',').length >= jcnum && this.checked == true) {
 							this.checked = false;
 							if(document.getElementById("jobclass"+this.value)){
-								//搜索项设为为选中
+								// 
 								document.getElementById("jobclass"+this.value).checked = false;
 							}
-							return showToast("最多只能选择"+jcnum+"个类别哦");
+							return showToast(CMC_I18N.maxPrefix+jcnum+CMC_I18N.maxSuffix);
 						}
 					}
 					if(jcnum==1){//单选
@@ -252,7 +252,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 					}
 					var	newchoosed = '<a class="grade_chlose_box_a" data-id="' + this.value + '">' + jn[this.value] + '</a>';
 					$("#jobchoosed").prepend(newchoosed);
-					//处理jobclass和jobclassname，增加内容
+					// jobclassjobclassname，
 					if(jobclass != '' || jobclassname != '') {
 						jobclass += ',' + this.value;
 						jobclassname += ' ' + jn[this.value];
@@ -263,7 +263,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 					var listlength = jobclass.split(',').length;
 				}
 			} else {
-				//取消选中处理下方已选显示
+				// 
 				var choosed = this.value;
 				$("#jobchoosed a").each(function() {
 					var elechoose = this;
@@ -272,7 +272,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 						document.getElementById("jobchoosed").removeChild(elechoose);
 					}
 				});
-				//取消该类下所有三级的已选中和不可选状态
+				// 
 				listBox.each(function() {
 					var ele = this;
 					ele.checked = false;
@@ -283,7 +283,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 						document.getElementById('jobclass'+ele.value).disabled = false;
 					}
 				})
-				//处理jobclass和jobclassname，减少内容
+				// jobclassjobclassname，
 				var list = arrsplice(jobclass, this.value);
 				var jobnamelist = [];
 				for(var i = 0; i < list.length; i++) {
@@ -306,9 +306,9 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 			document.getElementById("jobnameshow").style.color = 'black';
 		})
 	})
-	//选中单个三级处理
+	// 
 	$('#jobthree .jobthree div .jobthreebox').each(function(j, jobthree) {
-		//根据获取到的已选数据，处理类别选中
+		// ，
 		if(typeof jobclassidData != "undefined") {
 			$.each(jobclassidData, function(index, vaule, arr) {
 				if(jobthree.value == vaule.value) {
@@ -335,7 +335,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 				if($.inArray(""+job_parent[this.value],jobclass.split(','))==-1){
 
 				}else{
-					//存在父级删除父级			
+					// 			
 					var choosed = job_parent[this.value];
 					$("#jobchoosed a").each(function() {
 						var elechoose = this;
@@ -344,7 +344,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 							document.getElementById("jobchoosed").removeChild(elechoose);
 						}
 					});
-					//处理jobclass和jobclassname，减少内容
+					// jobclassjobclassname，
 					var list = arrsplice(jobclass, job_parent[this.value]);
 					var jobnamelist = [];
 					for(var i = 0; i < list.length; i++) {
@@ -360,10 +360,10 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 					if(jobclass.split(',').length >= jcnum && this.checked == true) {
 						this.checked = false;
 						if(document.getElementById("jobclass"+this.value)){
-							//搜索项设为为选中
+							// 
 							document.getElementById("jobclass"+this.value).checked = false;
 						}
-						return showToast("最多只能选择"+jcnum+"个类别哦");
+						return showToast(CMC_I18N.maxPrefix+jcnum+CMC_I18N.maxSuffix);
 					}
 				}
 				if(jcnum==1){//单选
@@ -373,10 +373,10 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 					jobclassname = '';
 				}
 
-				//选中处理下方已选显示
+				// 
 				var newchoosed = '<a class="grade_chlose_box_a" data-id="' + this.value + '">' + jn[this.value] + '</a>';
 				$("#jobchoosed").prepend(newchoosed);
-				//处理jobclass和jobclassname，增加内容
+				// jobclassjobclassname，
 				if(jobclass != '' || jobclassname != '') {
 					jobclass += ',' + this.value;
 					jobclassname += ' ' + jn[this.value];
@@ -386,7 +386,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 				}
 				var listlength = jobclass.split(',').length;
 			} else {
-				//取消选中处理下方已选显示
+				// 
 				var choosed = this.value;
 				$("#jobchoosed a").each(function() {
 					var elechoose = this;
@@ -395,7 +395,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 						document.getElementById("jobchoosed").removeChild(elechoose);
 					}
 				});
-				//处理jobclass和jobclassname，减少内容
+				// jobclassjobclassname，
 				var list = arrsplice(jobclass, this.value);
 				var jobnamelist = [];
 				for(var i = 0; i < list.length; i++) {
@@ -418,10 +418,10 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 			document.getElementById("jobnameshow").style.color = 'black';
 		})
 	})
-	//选中单个没有子集的二级处理
+	// 
 
 	$('#jobtwo .jobtwo div .jobtwobox').each(function(j, jobtwo) {
-		//根据获取到的已选数据，处理类别选中
+		// ，
 
 		if(typeof jobclassidData != "undefined") {
 			$.each(jobclassidData, function(index, vaule, arr) {
@@ -445,10 +445,10 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 				if(list.length >= jcnum && this.checked == true) {
 					this.checked = false;
 					if(document.getElementById("jobclass"+this.value)){
-						//搜索项设为为选中
+						// 
 						document.getElementById("jobclass"+this.value).checked = false;
 					}
-					return showToast("最多只能选择"+jcnum+"个类别哦");
+					return showToast(CMC_I18N.maxPrefix+jcnum+CMC_I18N.maxSuffix);
 				}
 			}
 			if(this.checked == true) {
@@ -457,7 +457,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 					jobclass = [];
 					jobclassname = '';
 				}
-				//选中处理下方已选显示
+				// 
 				var newchoosed = '<a class="grade_chlose_box_a" data-id="' + this.value + '">' + jn[this.value] + '</a>';
 				var newId = this.value;
 				var newAppend	=	1;
@@ -468,7 +468,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 				});
 				if (newAppend == 1) {
 					$("#jobchoosed").prepend(newchoosed);
-					//处理jobclass和jobclassname，增加内容
+					// jobclassjobclassname，
 					if(jobclass != '' || jobclassname != '') {
 						jobclass += ',' + this.value;
 						jobclassname += ' ' + jn[this.value];
@@ -479,7 +479,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 				}
 				var listlength = jobclass.split(',').length;
 			} else {
-				//取消选中处理下方已选显示
+				// 
 				var choosed = this.value;
 				$("#jobchoosed a").each(function() {
 					var elechoose = this;
@@ -488,7 +488,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 						document.getElementById("jobchoosed").removeChild(elechoose);
 					}
 				});
-				//处理jobclass和jobclassname，减少内容
+				// jobclassjobclassname，
 				if(jobclass != '') {
 					var list = arrsplice(jobclass, this.value);
 					var jobnamelist = [];
@@ -512,9 +512,9 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 			document.getElementById("jobnameshow").style.color = 'black';
 		})
 	});
-	//当只有一级时，选中单个一级
+	// ，
 	$('#jobone .jobone div .jobonebox').each(function(j, jobone) {
-		//根据获取到的已选数据，处理类别选中
+		// ，
 		if(typeof jobclassidData != "undefined") {
 			$.each(jobclassidData, function(index, vaule, arr) {
 				if(jobone.value == vaule.value) {
@@ -540,10 +540,10 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 				if(list.length >= jcnum && this.checked == true) {
 					this.checked = false;
 					if(document.getElementById("jobclass"+this.value)){
-						//搜索项设为为选中
+						// 
 						document.getElementById("jobclass"+this.value).checked = false;
 					}
-					return showToast("最多只能选择"+jcnum+"个类别哦");
+					return showToast(CMC_I18N.maxPrefix+jcnum+CMC_I18N.maxSuffix);
 				}
 			}
 			if(this.checked == true) {
@@ -553,10 +553,10 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 					jobclass = [];
 					jobclassname = '';
 				}
-				//选中处理下方已选显示
+				// 
 				var newchoosed = '<a class="grade_chlose_box_a" data-id="' + this.value + '">' + jn[this.value] + '</a>';
 				$("#jobchoosed").prepend(newchoosed);
-				//处理jobclass和jobclassname，增加内容
+				// jobclassjobclassname，
 				if(jobclass != '' || jobclassname != '') {
 					jobclass += ',' + this.value;
 					jobclassname += ' ' + jn[this.value];
@@ -566,7 +566,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 				}
 				var listlength = jobclass.split(',').length;
 			} else {
-				//取消选中处理下方已选显示
+				// 
 				var choosed = this.value;
 				$("#jobchoosed a").each(function() {
 					var elechoose = this;
@@ -575,7 +575,7 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 						document.getElementById("jobchoosed").removeChild(elechoose);
 					}
 				});
-				//处理jobclass和jobclassname，减少内容
+				// jobclassjobclassname，
 				var list = arrsplice(jobclass, this.value);
 				var jobnamelist = [];
 				for(var i = 0; i < list.length; i++) {
@@ -609,9 +609,9 @@ if(document.getElementById('jobClassBox') && typeof jobClassBoxLoad == "undefine
 		});
 	}
 }
-//职位多选---------------------------------------------------------------------------------------------------------------结束----------------------
+// -------------------------------------------------------------------------------------------------------------------------------------
 
-//城市多选---------------------------------------------------------------------------------------------------------------开始----------------------
+// -------------------------------------------------------------------------------------------------------------------------------------
 if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefined"){
 	cityClassBoxLoad = true;
 	var citychoose = document.getElementById("citychoose");
@@ -627,7 +627,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 	if(typeof cityclassname == "undefined") {
 		var cityclassname = '';
 	}
-	//点击一级类别
+	// 
 	$("#cityone").on('click', 'li', function() {
 		$(".yun_category_on").removeClass('yun_category_on');
 		this.classList.add('yun_category_on');
@@ -645,18 +645,18 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 		}
 		if(typeof ct[cityid] == 'undefined'){
 			if($.inArray(cityid,cityclass.split(','))==-1){
-				// 未选中，直接选中
+				// ，
 				var listlength = cityclass.split(',').length;
 				if(listlength > 4) {
 
 					if(document.getElementById("cityclass"+cityid)){
-						//搜索项设为为选中
+						// 
 						document.getElementById("cityclass"+cityid).checked = false;
 					}
-					return showToast("最多只能选择5个类别哦");
+					return showToast(WAP_JS_I18N.sbc29c813);
 				}
 				document.getElementById("cityone"+cityid).checked = true;
-				//处理cityclass和cityclassname，增加内容
+				// cityclasscityclassname，
 				if(cityclass != '' || cityclassname != '') {
 					cityclass += ',' + cityid;
 					cityclassname += ' ' + cn[cityid];
@@ -669,7 +669,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 				var listlength = cityclass.split(',').length;
 			}else{
 				document.getElementById("cityone"+cityid).checked = true;
-				// 选中的，取消选中
+				// ，
 				document.getElementById("cityone"+cityid).checked = false;
 				$("#citychoosed a").each(function() {
 					var elechoose = this;
@@ -678,7 +678,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 						document.getElementById("citychoosed").removeChild(elechoose);
 					}
 				});
-				//处理cityclass和cityclassname，减少内容
+				// cityclasscityclassname，
 				var list = arrsplice(cityclass, cityid);
 				var citynamelist = [];
 				for(var i = 0; i < list.length; i++) {
@@ -701,33 +701,33 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 		}
 
 	});
-	//点击二级类别
+	// 
 	$("#citytwo").on('click', 'li', function() {
 		$(".yun_category_ons").removeClass('yun_category_ons');
 		this.classList.add('yun_category_ons');
 		var cityid = this.getAttribute('data-id');
 		$(".citythree").addClass('none');
 		var threeobj = $(".city" + cityid);
-		// 如该二级下没有三级,则第三列不显示
+		// ,
 		if(threeobj.length > 0){
 			$(".city" + cityid).removeClass('none');
 			$("#citythree").css("left", "56.96%");
 		}
-		// 二级下没有三级并且该二级没有被选中的，二级直接选中
+		// ，
 		if(typeof ct[cityid] == 'undefined'){
 			if($.inArray(cityid,cityclass.split(','))==-1){
-				// 未选中，直接选中
+				// ，
 				var listlength = cityclass.split(',').length;
 				if(listlength > 4) {
 
 					if(document.getElementById("cityclass"+cityid)){
-						//搜索项设为为选中
+						// 
 						document.getElementById("cityclass"+cityid).checked = false;
 					}
-					return showToast("最多只能选择5个类别哦");
+					return showToast(WAP_JS_I18N.sbc29c813);
 				}
 				document.getElementById("citytwo"+cityid).checked = true;
-				//处理cityclass和cityclassname，增加内容
+				// cityclasscityclassname，
 				if(cityclass != '' || cityclassname != '') {
 					cityclass += ',' + cityid;
 					cityclassname += ' ' + cn[cityid];
@@ -740,7 +740,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 				var listlength = cityclass.split(',').length;
 			}else{
 				document.getElementById("citytwo"+cityid).checked = true;
-				// 选中的，取消选中
+				// ，
 				document.getElementById("citytwo"+cityid).checked = false;
 				$("#citychoosed a").each(function() {
 					var elechoose = this;
@@ -749,7 +749,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 						document.getElementById("citychoosed").removeChild(elechoose);
 					}
 				});
-				//处理cityclass和cityclassname，减少内容
+				// cityclasscityclassname，
 				var list = arrsplice(cityclass, cityid);
 				var citynamelist = [];
 				for(var i = 0; i < list.length; i++) {
@@ -771,7 +771,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 			document.getElementById("citynameshow").style.color = 'black';
 		}
 	});
-	//删除已选类别
+	// 
 	$("#citychoosed").on('click', 'a', function() {
 		var id = this.getAttribute('data-id');
 		var choosetwo = document.getElementById('citycheckAll' + id);
@@ -819,7 +819,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 
 		}
 		document.getElementById("citychoosed").removeChild(this);
-		//处理cityclass和cityclassname，减少内容
+		// cityclasscityclassname，
 		var list = arrsplice(cityclass, id);
 
 		var citynamelist = [];
@@ -840,7 +840,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 		document.getElementById("citynameshow").style.color = 'black';
 	});
 	$('#citythree .checkAll').each(function(i, citytwo) {
-		//根据获取到的已选数据，处理类别选中
+		// ，
 		if(typeof cityclassidData != "undefined") {
 			$.each(cityclassidData, function(index, vaule, arr) {
 				if(citytwo.value == vaule.value) {
@@ -853,7 +853,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 				}
 			})
 		}
-		//选中三级全部处理
+		// 
 		document.getElementById(citytwo.id).addEventListener('change', function() {
 			var citytwolist = cityclass.split(',');
 			var list = [];
@@ -865,7 +865,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 			var listBox = $('.citycheck' + this.value);
 			if(this.checked) {
 				var checked = [];
-				//选中全部则该类下所有三级都设为已选中和不可选状态
+				// 
 				listBox.each(function() {
 					var ele = this;
 					if(ele.checked == true) {
@@ -911,15 +911,15 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 					if(cityclass.split(',').length > 4 && this.checked == true) {
 						this.checked = false;
 						if(document.getElementById("cityclass"+this.value)){
-							//搜索项设为为选中
+							// 
 							document.getElementById("cityclass"+this.value).checked = false;
 						}
-						return showToast("最多只能选择5个类别哦");
+						return showToast(WAP_JS_I18N.sbc29c813);
 					}
-					//选中处理下方已选显示
+					// 
 					var newchoosed = '<a class="grade_chlose_box_a" data-id="' + this.value + '">' + cn[this.value] + '</a>';
 					$("#citychoosed").prepend(newchoosed);
-					//处理cityclass和cityclassname，增加内容
+					// cityclasscityclassname，
 					if(cityclass != '' || cityclassname != '') {
 						cityclass += ',' + this.value;
 						cityclassname += ' ' + cn[this.value];
@@ -930,7 +930,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 					var listlength = cityclass.split(',').length;
 				}
 			} else {
-				//取消选中处理下方已选显示
+				// 
 				var choosed = this.value;
 				$("#citychoosed a").each(function() {
 					var elechoose = this;
@@ -939,7 +939,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 						document.getElementById("citychoosed").removeChild(elechoose);
 					}
 				});
-				//取消该类下所有三级的已选中和不可选状态
+				// 
 				listBox.each(function() {
 					var ele = this;
 					ele.checked = false;
@@ -950,7 +950,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 						document.getElementById('cityclass'+ele.value).disabled = false;
 					}
 				})
-				//处理cityclass和cityclassname，减少内容
+				// cityclasscityclassname，
 				var list = arrsplice(cityclass, this.value);
 				var citynamelist = [];
 				for(var i = 0; i < list.length; i++) {
@@ -972,10 +972,10 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 			document.getElementById("citynameshow").style.color = 'black';
 		})
 	})
-	//选中单个三级处理
+	// 
 	$('#citythree .citythree div .citythreebox').each(function(j, citythree) {
 
-		//根据获取到的已选数据，处理类别选中
+		// ，
 		if(typeof cityclassidData != "undefined") {
 			$.each(cityclassidData, function(index, vaule, arr) {
 				if(citythree.value == vaule.value) {
@@ -998,7 +998,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 
 			if(this.checked == true) {
 				var vid = this.value;
-				//选中处理下方已选显示
+				// 
 				if($.inArray(""+city_parent[this.value],citytwolist)==-1){
 
 				}else{
@@ -1007,7 +1007,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 						var id = elechoose.getAttribute('data-id');
 						if(id == city_parent[vid]) {
 
-							//处理cityclass和cityclassname，减少内容
+							// cityclasscityclassname，
 							var list = arrsplice(cityclass, id);
 							var citynamelist = [];
 							for(var i = 0; i < list.length; i++) {
@@ -1025,14 +1025,14 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 				if(cityclass.split(',').length > 4 && this.checked == true) {
 					this.checked = false;
 					if(document.getElementById("cityclass"+this.value)){
-						//搜索项设为为选中
+						// 
 						document.getElementById("cityclass"+this.value).checked = false;
 					}
-					return showToast("最多只能选择5个类别哦");
+					return showToast(WAP_JS_I18N.sbc29c813);
 				}else{
 					var newchoosed = '<a class="grade_chlose_box_a" data-id="' + this.value + '">' + cn[this.value] + '</a>';
 					$("#citychoosed").prepend(newchoosed);
-					//处理cityclass和cityclassname，增加内容
+					// cityclasscityclassname，
 					if(cityclass != '' || cityclassname != '') {
 						cityclass += ',' + this.value;
 						cityclassname += ' ' + cn[this.value];
@@ -1043,7 +1043,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 					var listlength = cityclass.split(',').length;
 				}
 			} else {
-				//取消选中处理下方已选显示
+				// 
 				var choosed = this.value;
 				$("#citychoosed a").each(function() {
 					var elechoose = this;
@@ -1052,7 +1052,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 						document.getElementById("citychoosed").removeChild(elechoose);
 					}
 				});
-				//处理cityclass和cityclassname，减少内容
+				// cityclasscityclassname，
 				var list = arrsplice(cityclass, this.value);
 				var citynamelist = [];
 				for(var i = 0; i < list.length; i++) {
@@ -1074,9 +1074,9 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 			document.getElementById("citynameshow").style.color = 'black';
 		})
 	});
-	//选中单个没有子集的二级处理
+	// 
 	$('#citytwo .citytwo div .citytwobox').each(function(j, citytwo) {
-		//根据获取到的已选数据，处理类别选中
+		// ，
 		if(typeof cityclassidData != "undefined") {
 			$.each(cityclassidData, function(index, vaule, arr) {
 				if(citytwo.value == vaule.value) {
@@ -1098,13 +1098,13 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 			if(list.length > 4 && this.checked == true) {
 				this.checked = false;
 				if(document.getElementById("cityclass"+this.value)){
-					//搜索项设为为选中
+					// 
 					document.getElementById("cityclass"+this.value).checked = false;
 				}
-				return showToast("最多只能选择5个类别哦");
+				return showToast(WAP_JS_I18N.sbc29c813);
 			}
 			if(this.checked == true) {
-				//选中处理下方已选显示
+				// 
 				var newchoosed = '<a class="grade_chlose_box_a" data-id="' + this.value + '">' + cn[this.value] + '</a>';
 				var newId = this.value;
 				var newAppend	=	1;
@@ -1115,7 +1115,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 				});
 				if (newAppend == 1) {
 					$("#citychoosed").prepend(newchoosed);
-					//处理cityclass和cityclassname，增加内容
+					// cityclasscityclassname，
 					if(cityclass != '' || cityclassname != '') {
 						cityclass += ',' + this.value;
 						cityclassname += ' ' + cn[this.value];
@@ -1126,7 +1126,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 				}
 				var listlength = cityclass.split(',').length;
 			} else {
-				//取消选中处理下方已选显示
+				// 
 				var choosed = this.value;
 				$("#citychoosed a").each(function() {
 					var elechoose = this;
@@ -1135,7 +1135,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 						document.getElementById("citychoosed").removeChild(elechoose);
 					}
 				});
-				//处理cityclass和cityclassname，减少内容
+				// cityclasscityclassname，
 				if(cityclass != '') {
 					var list = arrsplice(cityclass, this.value);
 					var citynamelist = [];
@@ -1160,10 +1160,10 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 		})
 	});
 
-	//当只有一级时，选中单个一级
+	// ，
 	$('#cityone .cityone div .cityonebox').each(function(j, cityone) {
 
-		//根据获取到的已选数据，处理类别选中
+		// ，
 		if(typeof cityclassidData != "undefined") {
 			$.each(cityclassidData, function(index, vaule, arr) {
 				if(cityone.value == vaule.value) {
@@ -1187,16 +1187,16 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 			if(list.length > 4 && this.checked == true) {
 				this.checked = false;
 				if(document.getElementById("cityclass"+this.value)){
-					//搜索项设为为选中
+					// 
 					document.getElementById("cityclass"+this.value).checked = false;
 				}
-				return showToast("最多只能选择5个类别哦");
+				return showToast(WAP_JS_I18N.sbc29c813);
 			}
 			if(this.checked == true) {
-				//选中处理下方已选显示
+				// 
 				var newchoosed = '<a class="grade_chlose_box_a" data-id="' + this.value + '">' + cn[this.value] + '</a>';
 				$("#citychoosed").prepend(newchoosed);
-				//处理cityclass和cityclassname，增加内容
+				// cityclasscityclassname，
 				if(cityclass != '' || cityclassname != '') {
 					cityclass += ',' + this.value;
 					cityclassname += ' ' + cn[this.value];
@@ -1206,7 +1206,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 				}
 				var listlength = cityclass.split(',').length;
 			} else {
-				//取消选中处理下方已选显示
+				// 
 				var choosed = this.value;
 				$("#citychoosed a").each(function() {
 					var elechoose = this;
@@ -1215,7 +1215,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 						document.getElementById("citychoosed").removeChild(elechoose);
 					}
 				});
-				//处理cityclass和cityclassname，减少内容
+				// cityclasscityclassname，
 				var list = arrsplice(cityclass, this.value);
 				var citynamelist = [];
 				for(var i = 0; i < list.length; i++) {
@@ -1248,7 +1248,7 @@ if(document.getElementById('cityClassBox') && typeof cityClassBoxLoad == "undefi
 		});
 	}
 }
-//城市多选---------------------------------------------------------------------------------------------------------------结束----------------------
+// -------------------------------------------------------------------------------------------------------------------------------------
 function arrsplice(classlist, id) {
 	var list = classlist.split(',');
 	for(var i = 0; i < list.length; i++) {
@@ -1259,7 +1259,7 @@ function arrsplice(classlist, id) {
 	return list;
 }
 
-//职位、城市类别搜索---------------------------------------------------------------------------------------------------------------结束----------------------
+// 、-------------------------------------------------------------------------------------------------------------------------------------
 if(typeof zn_search == "undefined"){
 	zn_search = true;
 	$('.zn_search').on('input','.inputListener',function(){
@@ -1402,7 +1402,7 @@ if(typeof zn_search == "undefined"){
 			document.getElementById(type+"_search").style.display = 'none';
 		}
 	});
-	//点击搜索项选中或取消选中时，动态触发三级联动选择的选中或取消选中
+	// ，
 	$('.classTap').on('change', 'input', function() {
 		var thisclassid		=	this.value,
 			tclass			=	this.getAttribute('data-class'),
@@ -1472,13 +1472,13 @@ function showSearchResult(type,resultArr){
 		resultArr.forEach(function(item,index){
 
 			typeclass 	= item.upclass==1 ? 'zn_search_three' : 'zn_search_two';
-			//检查是否有上级类名称
+			// 
 			if(item.upname!='' && typeof(item.upname)!="undefined"){
 				upnameHtml 	= ' <span> '+item.upname+'</span>';
 			}else{
 				upnameHtml 	= '';
 			}
-			//检查是否已选中
+			// 
 			if(choosedArr.indexOf(item.value.toString())!=-1){
 				checked		= 'checked';
 			}else{
@@ -1508,7 +1508,7 @@ function showSearchResult(type,resultArr){
 			html +='</div>';
 		})
 	}else{
-		html += '<div class="zn_notip">暂无数据</div>';
+		html += '<div class="zn_notip">'+CMC_I18N.noData+'</div>';
 
 	}
 
@@ -1520,7 +1520,7 @@ function singleDeal(list){
 		if(document.getElementById('jobclass'+list[j])){//搜索项存在的设为未选中状态
 			document.getElementById('jobclass'+list[j]).checked = false;
 		}
-		//取消选中处理下方已选显示
+		// 
 		if(document.getElementById("jobthree"+list[j])){
 			document.getElementById("jobthree"+list[j]).checked = false;
 		}
@@ -1533,7 +1533,7 @@ function singleDeal(list){
 		if(document.getElementById("jobcheckAll"+list[j])){
 			var listBoxed = $('.jobcheck' + list[j]);
 			document.getElementById("jobcheckAll"+list[j]).checked = false;
-			//取消该类下所有三级的已选中和不可选状态
+			// 
 			listBoxed.each(function() {
 				var ele = this;
 				ele.checked = false;

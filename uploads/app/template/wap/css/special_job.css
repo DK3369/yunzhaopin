@@ -199,7 +199,7 @@ section {
     background: #2778f8;
     background: linear-gradient(270deg, #19b7ff, #2778f8, #2778f8);
 }
-/* 控制尺寸 */
+/* section */
 @media (max-width: 375px) {
     .specialSubject{
         /*height: 63vh;*/

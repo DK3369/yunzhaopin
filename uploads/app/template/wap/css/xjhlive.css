@@ -104,7 +104,7 @@ box-shadow: inset 0 0 0 1000px #ffffff!important;
 	color: #fff;
 }
 .xjh_zb_fhui{width: 12px;height: 12px;border: #5f6575 solid;-webkit-transform: rotate(-135deg);border-width: 2px 2px 0 0; display:inline-block; position:absolute;left:10px;top:19px;}
-/* 选项菜单 */
+/* section */
 
 
 .chat_nav{
@@ -174,7 +174,7 @@ box-shadow: inset 0 0 0 1000px #ffffff!important;
 
 
 
-/* 聊天窗 */
+/* section */
 .con1_tips{
 	height: 52px;
 }
@@ -263,7 +263,7 @@ input::-webkit-input-placeholder { color: #c5c9d0; }
 
  .netname>span img{width:20px;height:20px; vertical-align:bottom}
 
-/* 职位开始 */
+/* section */
 
 .show_box_position{
 	

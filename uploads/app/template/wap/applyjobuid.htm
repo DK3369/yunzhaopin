@@ -23,6 +23,7 @@
 	</head>
 
 	<body>
+{yun:}include file="$wapstyle/publichtm/wap_api_enum.htm"{/yun}
 		<!-- Header -->
 
 		<div class="fast_box_header">
@@ -87,7 +88,7 @@
 						</div>
 
 
-						{yun:}if strpos($config.code_web,"注册会员")!==false{/yun}
+						{yun:}if strpos($config.code_web,$wap_code_register)!==false{/yun}
 						{yun:}if $config.code_kind > 2{/yun}
 						<div class="gtdx-captcha">
 							<input type='hidden' id="verify_token" name="verify_token" value="">
@@ -430,7 +431,7 @@
 		</div>
 		{yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}
 
-		{yun:}if strpos($config.code_web,"注册会员")!==false{/yun}
+		{yun:}if strpos($config.code_web,$wap_code_register)!==false{/yun}
 			{yun:}if $config.code_kind>2{/yun}
 				{yun:}if $config.resume_kstd_req != 2 && ($config.resume_create_project==1 || $config.resume_create_exp==1 || $config.resume_create_edu==1){/yun}
 					{yun:}if $config.sy_msg_isopen==1 && $config.sy_msg_regcode==1 && $config.reg_real_name_check==1{/yun}
@@ -650,7 +651,7 @@
 					// Initialize captcha validation
 					initYzmCheck: function(){
                         var that = this;
-                        var codesear = new RegExp('注册会员');
+                        var codesear = new RegExp(WAP_CODE_WEB.REGISTER);
                         if (codesear.test(code_web)) {
                             if (code_kind == 1) {
                                 if (!this.info.authcode) {
@@ -1068,7 +1069,7 @@
 					// Time picker scroll
 					timeChange: function(e) {
 						var f = e.getValues();
-						if (f[0] == '至今') {
+						if (f[0] == WAP_API_ENUM.PRESENT) {
 							this.timeData[1].values = [];
 						} else {
 							this.timeData[1].values = workMonth;
@@ -1077,7 +1078,7 @@
 					// Time picker confirm
 					timeConfirm: function(e) {
 						this.timeBox = false;
-						if (e[0] == '至今') {
+						if (e[0] == WAP_API_ENUM.PRESENT) {
 							var date = e[0];
 							this[pickerType][pickerKey]['totoday'] = 1;
 						} else {

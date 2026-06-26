@@ -263,7 +263,7 @@ class ask_controller extends common{
 			}
 		}
  		$this->yunset("row",$row);
- 		//seo数据
+ 		// seo
  		$info=$M->getInfo(array('uid'=>$uid),array('field'=>'nickname'));
  		if($info['nickname']){
  		    $data['nickname']=$info['nickname'];
@@ -291,7 +291,7 @@ class ask_controller extends common{
  		$this->yunset("g_num",$g_num?$g_num:0);
 		
 		$this->yunset("myuid",$uid);
-		// $this->yunset("backurl",Url('wap',array("c"=>'ask'))); // 去掉返回地址，解决个人主页和职场问答死循环跳转问题
+		// $this->yunset("backurl",Url('wap',array("c"=>'ask'))); // ，
 		$this->seo("myquestio");
 		$this->yunset("headertitle","个人主页");
 		$this->yuntpl(array('wap/question'));
@@ -300,7 +300,7 @@ class ask_controller extends common{
 		$id=(int)$_GET['id'];
 		if($id){
 			$AskM	=	$this -> MODEL('ask');
-			//删除问题、回答、评论
+			// 、、
 			if($_GET['type']==1){//删除回答
 			
 				$result	=	$AskM -> delAnswer(array("id"=>$id,"uid"=>$this->uid));

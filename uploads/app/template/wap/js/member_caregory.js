@@ -13,7 +13,7 @@ if(typeof ci != "undefined" && typeof ct != "undefined" && typeof cn != "undefin
 					for(var k = 0; k <=ct[ct[ci[i]][j]].length; k++) {            
             if(k==0){
               cvlaue='0';
-              ctext='全部';
+              ctext=WAP_JS_I18N.sa8b0c204;
             }else{
               t=k-1;
               cvlaue=	ct[ct[ci[i]][j]][t];
@@ -75,7 +75,7 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 (function($, doc) {
 	$.init();
 	$.ready(function() {
-		//从事行业
+		// 
 		var hyPickerButton = doc.getElementById('hyPicker');
 		if(typeof hyData != "undefined" && hyPickerButton) {
 			var hyPicker = new $.PopPicker();
@@ -93,7 +93,7 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 				});
 			}, false);
 		}
-		//城市选择
+		// 
 		var cityPickerButton = doc.getElementById('cityPicker');
 		if(typeof cityData != "undefined" && cityPickerButton) {
 			var cclass = 3;
@@ -141,7 +141,7 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 					if(items[1]){
 						html = html + " " + items[1].text;
 					}
-					if(items[2] && items[2].text!='全部' && items[2].value!=0){
+					if(items[2] && items[2].text!=WAP_JS_I18N.sa8b0c204 && items[2].value!=0){
 			            html += items[2].text ? " " + items[2].text : '';
 			        }
 					cityPickerButton.innerText = html;
@@ -150,7 +150,7 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 			}, false);
 		}
 
-		//职位类别选择
+		// 
 		var jobPickerButton = doc.getElementById('jobPicker');
 		if(typeof jobData != "undefined" && jobPickerButton) {
 			var jclass = 3;
@@ -261,7 +261,7 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 				});
 			}, false);
 		}
-		//公司性质
+		// 
 		var prComPickerButton = doc.getElementById('prComPicker');
 		if(prComPickerButton) {
 			var prcomPicker = new $.PopPicker();
@@ -279,7 +279,7 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 				});
 			}, false);
 		}
-		//企业规模
+		// 
         var munComPickerButton = doc.getElementById('munComPicker');
         if(munComPickerButton) {
             var muncomPicker = new $.PopPicker();
@@ -297,7 +297,7 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
                 });
             }, false);
         }
-		//企业联系方式是否公开
+		// 
 		var infostatusComPickerButton = doc.getElementById('infostatusComPicker');
 		if(infostatusComPickerButton) {
 			var infostatuscomPicker = new $.PopPicker();
@@ -315,7 +315,7 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 				});
 			}, false);
 		}
-		//企业注册资金
+		// 
 		var moneytypeComPickerButton = doc.getElementById('moneytypeComPicker');
 		if(moneytypeComPickerButton) {
 			var moneytypecomPicker = new $.PopPicker();
@@ -329,16 +329,16 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 				document.activeElement.blur();
 				moneytypecomPicker.show(function(items) {
 					if(items[0].value == 2) {
-						$('.moneyname')[0].innerHTML = '万美元';
+						$('.moneyname')[0].innerHTML = WAP_JS_I18N.s433ee5de;
 					} else {
-						$('.moneyname')[0].innerHTML = '万元';
+						$('.moneyname')[0].innerHTML = WAP_JS_I18N.sb0bee53e;
 					}
 					moneytype.value = items[0].value;
 					moneytypeComPickerButton.innerText = items[0].text;
 				});
 			}, false);
 		}
-		//招聘人数
+		// 
 		if(typeof numberData != "undefined") {
 			var numberPicker = new $.PopPicker();
 			numberPicker.setData(numberData);
@@ -363,7 +363,7 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 				});
 			}, false);
 		}
-		//工作经验
+		// 
 		if(typeof expData != "undefined") {
 			var expPicker = new $.PopPicker();
 			expPicker.setData(expData);
@@ -389,7 +389,7 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 			}, false);
 		}
 
-		//经验门槛
+		// 
 		if(typeof expreqData != "undefined") {
 			var expreqPicker = new $.PopPicker();
 			expreqPicker.setData(expreqData);
@@ -415,7 +415,7 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 			}, false);
 		}
 
-		//学历门槛
+		// 
 		if(typeof edureqData != "undefined") {
 			var edureqPicker = new $.PopPicker();
 			edureqPicker.setData(edureqData);
@@ -441,7 +441,7 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 			}, false);
 		}
 
-		//到岗时间
+		// 
 		if(typeof reportData != "undefined") {
 			var reportPicker = new $.PopPicker();
 			reportPicker.setData(reportData);
@@ -466,7 +466,7 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 				});
 			}, false);
 		}
-		//年龄要求
+		// 
 		var agePickerBtn = doc.getElementById('agePicker');
 		if(typeof ageData != "undefined" && agePickerBtn) {
 			var agePicker = new $.PopPicker();
@@ -491,7 +491,7 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 				});
 			}, false);
 		}
-		//性别要求
+		// 
 		var sexPickerBtn = doc.getElementById('sexPicker');
 		if(typeof sexData != "undefined" && sexPickerBtn) {
 			var sexPicker = new $.PopPicker();
@@ -516,7 +516,7 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 				});
 			}, false);
 		}
-		//教育程度
+		// 
 		var eduPickerBtn = doc.getElementById('eduPicker');
 		if(typeof eduData != "undefined" && eduPickerBtn) {
 			var eduPicker = new $.PopPicker();
@@ -540,7 +540,7 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 				});
 			}, false);
 		}
-		//婚姻状况
+		// 
 		if(typeof marriageData != "undefined") {
 			var marriagePicker = new $.PopPicker();
 			marriagePicker.setData(marriageData);
@@ -564,7 +564,7 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 				});
 			}, false);
 		}
-		//工作性质
+		// 
 		var typePickerButton = document.getElementById('typePicker');
 		if(typeof typeData != "undefined" && typePickerButton) {
 			var typePicker = new mui.PopPicker();
@@ -582,7 +582,7 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 				});
 			}, false);
 		}
-		//求职状态
+		// 
 		var jobstatusPickerButton = document.getElementById('jobstatusPicker');
 		if(typeof jobstatusData != "undefined" && jobstatusPickerButton) {
 			var jobstatusPicker = new mui.PopPicker();
@@ -600,12 +600,12 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 				});
 			}, false);
 		}
-		//头像展示
+		// 
 		var phototypePickerBtn = doc.getElementById('phototypePicker');
 		if(phototypePickerBtn) {
 			var phototypeData = [
-				{value: 0, text: '公开'},
-				{value: 1, text: '不公开'}
+				{value: 0, text: WAP_JS_I18N.sb6a09844},
+				{value: 1, text: WAP_JS_I18N.s9c82aec9}
 			];
 			var phototypePicker = new $.PopPicker();
 			phototypePicker.setData(phototypeData);
@@ -629,7 +629,7 @@ if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefin
 				});
 			}, false);
 		}
-		//姓名展示
+		// 
 		var nametypePickerBtn = doc.getElementById('nametypePicker');
 		if(nametypePickerBtn) {
 			var nametypePicker = new $.PopPicker();

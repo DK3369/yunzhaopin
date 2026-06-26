@@ -1,7 +1,7 @@
 <?php
 
 class atn_controller extends user_controller{
-    //关注的企业列表
+    // 
 	function atncom_action()
 	{
 	    $atnM		=	$this->MODEL('atn');
@@ -31,7 +31,7 @@ class atn_controller extends user_controller{
 		}
 		$this->render_json($error,'',$list,$total);
 	}
-	//保存关注企业
+	// 
 	function atncompany_action()
 	{
 	    $id				=	(int)$_POST['id'];
@@ -52,7 +52,7 @@ class atn_controller extends user_controller{
 		$this->render_json($data['error'],$data['msg']);
 	    
 	}
-	//取消关注企业
+	// 
 	function delatncom_action()
 	{
 	    $utype          =   isset($_POST['utype']) ? $_POST['utype'] : '';

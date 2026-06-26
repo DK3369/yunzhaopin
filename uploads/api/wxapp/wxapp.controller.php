@@ -16,11 +16,11 @@ class wxapp_controller extends common
 
 
         if (isset($_GET['h']) && ($_GET['h'] == 'user' || $_GET['h'] == 'com')) {
-            // 请求会员中心链接
+            // 
             $this->yzTokenNew(1, $_POST['uid'], $_POST['token']);
             
         }else if ($_POST['uid'] && $_POST['token'] && !in_array($_GET['c'], array('talentpool','invitesave'))){
-            // 前台链接
+            // 
             $this->yzTokenNew(0, $_POST['uid'], $_POST['token']);
         }
     }
@@ -37,6 +37,10 @@ class wxapp_controller extends common
 
         $data   =   $this->nullToEnpty($data);
 
+        if (is_string($msg) && $msg !== '' && preg_match('/[\x{4e00}-\x{9fff}]/u', $msg)) {
+            $msg = yun_auto_t($msg);
+        }
+
         $result =   array(
             'error' =>  $error,
             'msg'   =>  isset($msg) ? preg_replace('/\([^\)]+?\)/x', "", str_replace(array("（", "）"), array("(", ")"), $msg)) : '',
@@ -51,7 +55,7 @@ class wxapp_controller extends common
     function yzToken($uid = '', $token = '')
     {
         if(empty($this->member)){
-            // 容错机制，防止传的身份ID字段不是uid
+            // ，IDuid
             $this->yzTokenNew(0, $uid, $token);
         }
         return $this->member;
@@ -66,7 +70,7 @@ class wxapp_controller extends common
     function yzTokenNew($isMember = 0, $uid = '', $token = '')
     {
         if (!empty($this->uid) && !empty($this->usertype)){
-            // wap登录信息
+            // wap
             $this->member  =  array(
                 'uid'       =>  $this->uid,
                 'username'  =>  $this->username,
@@ -77,18 +81,18 @@ class wxapp_controller extends common
             $this->wxappMember(array('uid'=>$this->uid), $isMember);
             
         }elseif (!empty($uid) && !empty($token)){
-            // 移动端登录信息
+            // 
             $this->wxappMember(array('uid'=>$uid,'token'=>$token), $isMember);
             
         }elseif($_GET['c']!='advice'){
-            $this -> render_json(1002, '请先登录');
+            $this -> render_json(1002, yun_auto_t('请先登录'));
         }
     }
-    // 登录信息验证
+    // 
     private function wxappMember($param = array(), $isMember = 0){
         
         $field = '`uid`,`username`,`usertype`,`password`,`salt`,`pid`,`did`,`status`,`login_date`,`subscribe`,`wxid`,`login_ip`,`login_address`';
-        // 版本没有APP的，查询要排除
+        // APP，
         if (isset($this->config['sy_push_open']) && $this->config['sy_push_open'] == 1){
             $field .= ',`app_push`';
         }
@@ -119,20 +123,20 @@ class wxapp_controller extends common
                 $logout	  =	 $logoutM->getInfo(array('uid'=>$param['uid'],'status'=>1));
                 
                 if (!empty($logout)){
-                    $this -> render_json(1002, '您的账号已注销');
+                    $this -> render_json(1002, yun_auto_t('您的账号已注销'));
                 }else{
-                    $this -> render_json(1002, '您的账号已被锁定，请联系网站客服');
+                    $this -> render_json(1002, yun_auto_t('您的账号已被锁定，请联系网站客服'));
                 }
             }
-            // 移动端验证token。没传token的就是wap，登录信息在common中验证
+            // token。tokenwap，common
             if (!empty($param['token'])){
                 $mdtoken  =  md5($member['username'].$member['password'].$member['salt'].$member['usertype']);
                 if($param['token'] != $mdtoken){
                     
-                    $this -> render_json(1002, '登录信息有误，请重新登录');
+                    $this -> render_json(1002, yun_auto_t('登录信息有误，请重新登录'));
                 }
             }
-            // 会员中心的请求链接，需要额外信息和判断
+            // ，
             if ($isMember == 1){
                 if (($member['usertype'] == 2 && $_GET['h']=='com') || ($member['usertype'] == 1 && $_GET['h']=='user')) {
                     
@@ -166,10 +170,10 @@ class wxapp_controller extends common
                         }
                     }
                 }else{
-                    $this -> render_json(1003, '登录身份不符，请重新登录');
+                    $this -> render_json(1003, yun_auto_t('登录身份不符，请重新登录'));
                 }
             }
-            //今日没有登录的，记录登录日志。排除其他控制器，防止并发
+            // ，。，
             if ($member['login_date'] < strtotime('today')){
                 $needlog = true;
                 $get_m = isset($_GET['m']) ? $_GET['m'] : '';
@@ -185,14 +189,14 @@ class wxapp_controller extends common
                         $needlog = false;
                 }
                 if ($member['usertype'] > 0 && $needlog){
-                    // 有身份的，记录登录日志
+                    // ，
                     $time  =  time();
                     $ip    =  fun_ip_get();
                     
                     $logindata  =  array(
                         'uid'      => $user['uid'],
                         'usertype' => $user['usertype'],
-                        'content'  => 'wap端口延续登录'
+                        'content'  => yun_auto_t('wap端口延续登录')
                     );
                     $logM = $this -> MODEL('log');
                     $logM->addLoginlog($logindata, array('continue' => 1));
@@ -205,12 +209,12 @@ class wxapp_controller extends common
                         $upLogin['login_address'] = $ip_address;
                     }
                     $userInfoM->upInfo(array('uid' => $user['uid']),$upLogin);
-                    // 同步个人、企业基本信息表登录信息
+                    // 、
                     if ($member['usertype'] == 1){
                         
                         $rData    = array('login_date' => $time);
                         $resumeM  =  $this -> MODEL('resume');
-                        //登录自动简历刷新，根据后台配置判断
+                        // ，
                         if ($this->config['resume_sx'] == 1) {
                             $expect   =  $resumeM->getExpectByUid($member['uid'], array('field' => '`id`'));
                             if (!empty($expect)) {
@@ -228,7 +232,7 @@ class wxapp_controller extends common
                 }
             }
         }else{
-            $this -> render_json(1002, '用户信息错误，请重新登录');
+            $this -> render_json(1002, yun_auto_t('用户信息错误，请重新登录'));
         }
     }
 
@@ -245,7 +249,7 @@ class wxapp_controller extends common
             $user['appid']  =  $appKey;
             return $user;
         }else{
-            $this->render_json(1005, '不支持curl');
+            $this->render_json(1005, yun_auto_t('不支持curl'));
         }
     }
 
@@ -253,9 +257,9 @@ class wxapp_controller extends common
 	function fktype()
 	{
 	    $fktype  =  array(
-	        'goumai' => '购买',
+	        'goumai' => yun_auto_t('购买'),
 	        'fuhao'  => '￥',
-	        'fkjg'   => '价格',
+	        'fkjg'   => yun_auto_t('价格'),
 	        'wxsrc'  => $this->config['sy_weburl'].'/api/wxapp/static/image/wxzf.png',
 	        'alsrc'  => $this->config['sy_weburl'].'/api/wxapp/static/image/zfb.png',
 	    );
@@ -359,7 +363,7 @@ class wxapp_controller extends common
 	    if ($needCache){
 	        
 	        if ($fz_type == 1){
-	            // 地区分站，处理城市类别缓存
+	            // ，
 	            $cacheM		=  $this->MODEL('cache');
 	            $cacheList	=  $cacheM->GetCache('city');
 	            $city_index	=  $cacheList['city_index'];
@@ -370,26 +374,26 @@ class wxapp_controller extends common
 	            $cityone[]  =  array('value'=>$return['provinceid'],'label'=>$city_name[$return['provinceid']]);
 	            
 	            if (!empty($return['cityid'])){
-	                // 分站是2级类别分站
+	                // 2
 	                $didcity    =  $city_name[$return['cityid']];
 	                
 	                $citytwo[0][]  =  array('value'=>$return['cityid'],'label'=>$city_name[$return['cityid']]);
 	                
 	            }elseif(!empty($return['provinceid']) && empty($return['cityid'])){
-	                // 分站是1级类别分站，要展示2级类别
+	                // 1，2
 	                foreach ($city_type[$return['provinceid']] as $v){
 	                    
 	                    $citytwo[0][]  =  array('value'=>$v,'label'=>$city_name[$v]);
 	                }
 	            }
 	            if (!empty($return['three_cityid'])){
-	                // 分站是3级类别分站
+	                // 3
 	                $didcity      =  $city_name[$return['three_cityid']];
 	                
 	                $citythree[0][0][]  =  array('value'=>$return['three_cityid'],'label'=>$city_name[$return['three_cityid']]);
 	                
 	            }elseif(!empty($return['cityid']) && empty($return['three_cityid'])){
-	                // 分站是2级类别分站，要展示3级类别
+	                // 2，3
 	                foreach ($city_type[$return['cityid']] as $v){
 	                    
 	                    $citythree[0][0][]  =  array('value'=>$v,'label'=>$city_name[$v]);
@@ -435,11 +439,11 @@ class wxapp_controller extends common
 	    if (!empty($this->config['sy_web_city_two'])) {
 	        $return['cityid']  =  $this->config['sy_web_city_two'];
 	    }
-	    // 搜索条件带二级城市类别
+	    // 
 	    if (!empty($search_cityid)){
 	        $return['cityid']  =  $search_cityid;
 	    }
-	    // 搜索条件带三级城市类别
+	    // 
 	    if (!empty($search_threecityid)){
 	        $return['three_cityid']  =  $search_threecityid;
 	    }
@@ -457,16 +461,16 @@ class wxapp_controller extends common
 	        
 	        
 	        if(!empty($this->config['sy_web_city_one']) && empty($this->config['sy_web_city_two'])){
-	            // 只设置了一级城市
+	            // 
 	            $provinceid        =  $this->config['sy_web_city_one'];
-	            $citytwo[0][]      =  array('value'=>0,'label'=>'全部');//第二列 全部
+	            $citytwo[0][]      =  array('value'=>0,'label'=>yun_auto_t('全部'));// Column 2: all
 	            $citythreetwoArr[$provinceid][]	=  array(array());//用做 一级-全部-''
 	            foreach ($city_type[$provinceid] as $v){
 	                
 	                $citytwo[0][]  =  array('value'=>$v,'label'=>$city_name[$v]);
 	                if (is_array($city_type[$v]) && !empty($city_three)){
 	                    $citythreeArr  =  array();
-	                    $citythreeArr[] =  array('value'=>0,'label'=>'全部');
+	                    $citythreeArr[] =  array('value'=>0,'label'=>yun_auto_t('全部'));
 	                    foreach ($city_type[$v] as $ka=>$va){
 	                        $citythreeArr[]  =	array('value'=>$va,'label'=>$city_name[$va]);
 	                    }
@@ -479,12 +483,12 @@ class wxapp_controller extends common
 	        }
 	        
 	        if (!empty($this->config['sy_web_city_two'])) {
-	            // 设置了二级城市
+	            // 
 	            $cityid        =  $this->config['sy_web_city_two'];
 	            $citytwo[0][]  =  array('value'=>$cityid,'label'=>$city_name[$cityid]);
 	            if (!empty($city_three)){
-	                // 二级城市，要展示3级类别
-	                $citythree[0][0][]  =  array('value'=>0,'label'=>'全部');//第三列 全部
+	                // ，3
+	                $citythree[0][0][]  =  array('value'=>0,'label'=>yun_auto_t('全部'));// Column 3: all
 	                foreach ($city_type[$cityid] as $v){
 	                    
 	                    $citythree[0][0][]  =  array('value'=>$v,'label'=>$city_name[$v]);
@@ -510,15 +514,15 @@ class wxapp_controller extends common
 	function checkMcsdk($moblie = '')
 	{
 	    if(empty($moblie)){
-	        $this->render_json(-1, '缺少手机号');
+	        $this->render_json(-1, yun_auto_t('缺少手机号'));
 	    }
 	    $mcsdk = $_SERVER['HTTP_MCSDK'];
 	    if (empty($mcsdk)){
-	        $this -> render_json(-1, '手机号异常');
+	        $this -> render_json(-1, yun_auto_t('手机号异常'));
 	    }else{
 	        $phone = '';
 	        if (isset($_SERVER['HTTP_TIMEOFFSET'])){
-	            // 按客户端时区计算，获取当前时间
+	            // ，
 	            $time = $this->bytimezone($_SERVER['HTTP_TIMEOFFSET']);
 	            $day = date('j', $time);
 	        }else{
@@ -539,7 +543,7 @@ class wxapp_controller extends common
 	            
 	        }
 	        if (!empty($moblie) && $phone != $moblie){
-	            $this -> render_json(-1, '手机号验证异常');
+	            $this -> render_json(-1, yun_auto_t('手机号验证异常'));
 	        }
 	    }
 	}
@@ -565,7 +569,7 @@ class wxapp_controller extends common
 	    
 	    return  $data;
 	}
-	// 获取广告
+	// 
 	public function ad_wxapp($param = array(), $ad_label = null, $randomNum = 0){
 	    
 	    $did  = !empty($_POST['did']) ? $_POST['did'] : 0;
@@ -573,7 +577,7 @@ class wxapp_controller extends common
 	    if (!empty($param['class_id'])){
 	        $adid = (int)$param['class_id'];
 	    }elseif (!empty($param['name'])){
-	        // 按位置获取广告类别
+	        // 
 	        $flagArray = [
 	            'job_show'    => 512,
 	            'resume'      => 505,
@@ -592,11 +596,11 @@ class wxapp_controller extends common
 	        }
 	        $time  =  time();
 	        foreach ($ad_label[$adid] as $k=>$v){
-	            // 图片广告、没过期、全站使用或者与分站对应、app路径不是求职机器人的
+	            // 、、、app
 	            if($v['type']=='pic' && $v['start']<$time && $v['end']>$time && ($v['did'] == -1 || $v['did'] == $did) && !($this->plat == 'app' && stripos($v['appurl'],'jiqiren') > -1)){
 	                $appad = array('pic_url'=>$v['pic'],'src'=>$v['pic']);
 	                if (!empty($v['appurl'])){
-	                    // 处理跳转链接路径，开头没有/的，加上/
+	                    // ，/，
 	                    $appad['appurl']  =  stripos($v['appurl'],'/') == 0 ? $v['appurl'] : '/'.$v['appurl'];
 	                }else{
 	                    $appad['appurl']  =  '';
@@ -606,7 +610,7 @@ class wxapp_controller extends common
 	            }
 	        }
 	        
-	        // 判断是否取随机条数
+	        // 
 	        if ($adpics && $randomNum) {
 	            $adpics = $this->randomArr($adpics, $randomNum);
 	        }
@@ -620,7 +624,7 @@ class wxapp_controller extends common
 	{
 	    $res = '';
 	    if (isset($_SERVER['HTTP_TIMEOFFSET'])){
-	        // 按客户端时区计算，获取当前时间
+	        // ，
 	        $time = $this->bytimezone($_SERVER['HTTP_TIMEOFFSET']);
 	        $day = date('j', $time);
 	    }else{
@@ -642,10 +646,10 @@ class wxapp_controller extends common
 	    }
 	    return $res;
 	}
-	// 生成二维码传图的密钥（放到二维码中）
+	// （）
 	private function generateToken($type, $uid, $password = '')
 	{
-	    // 考虑到二维码承载的信息长度有限，tokenSalt和password都限定字符串长度，以得到较短的token
+	    // ，tokenSaltpassword，token
 	    $password = substr($password, 0, 8);
 	    
 	    $this->tokenSalt = $this->config['sy_safekey'];
@@ -656,22 +660,22 @@ class wxapp_controller extends common
 	 * 按客户端时区计算，获取当前时间
 	 */
 	function bytimezone($lcoaloffset){
-	    // 按传入时区处理，防止跨时区，导致客户端与服务端获得的日期不一致。js得到的timeoffset东区为负，西区为正。
-	    // js得到的timeoffset为分（php为秒）。
+	    // ，，。jstimeoffset，。
+	    // jstimeoffset（php）。
 	    $timeoffset = $lcoaloffset * -1 * 60;
-	    // 服务器时间
+	    // 
 	    $serverdate = new DateTime();
 	    $serveroffset = $serverdate->getOffset();
 	    if($timeoffset > 0){
-	        // 客户端是东区时间
+	        // 
 	        $time = time() + ($timeoffset - abs($serveroffset));
 	    }else{
-	        // 客户端西区时间
+	        // 
 	        if($serveroffset > 0){
-	            // 服务器是东区时间
+	            // 
 	            $time = time() - (abs($timeoffset) + $serveroffset);
 	        }else{
-	            // 服务器是西区时间
+	            // 
 	            $time = time() + (abs($timeoffset) + abs($serveroffset));
 	        }
 	    }

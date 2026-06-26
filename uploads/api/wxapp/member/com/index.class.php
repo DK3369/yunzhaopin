@@ -1,7 +1,7 @@
 <?php
 
 class index_controller extends com_controller{
-    // 企业会员中心首页
+    // 
     function index_action()
     {
         $info      	=  $this->comInfo;
@@ -37,13 +37,13 @@ class index_controller extends com_controller{
 		$return['signstate']=  $signstate;
 		
 		$return['nofkorder']	=  $orderM	->	getCompanyOrderNum(array('uid'=>$this->member['uid'],'usertype' =>$this->member['usertype'],'order_state'=>'1'));
-		// 在招职位数量
+		// 
 		$jobwhere['uid']		=   $this->member['uid'];
 		$jobwhere['state']		=	1;
 		$jobwhere['status']		=	0;
         $normal_job_num         =   $jobM -> getJobNum($jobwhere);;
 		$return['jobnums']		=	$normal_job_num;
-		// 在招职位中，今天未刷新的数量
+		// ，
 		$jobwhere['lastupdate'] =   array('<', strtotime('today'));
 		$return['noRefreshNum'] =   $jobM -> getJobNum($jobwhere);
 		
@@ -52,7 +52,7 @@ class index_controller extends com_controller{
 		$return['iosfk']		=	$this->config['sy_iospay'] ;
 		$return['webtel']		=	$webtel;
 		$return['worktime']		=	!empty($this->config['sy_worktime']) ? $this->config['sy_worktime'] : '';
-		// 客户服务
+		// 
 		$adminM            		=   $this -> MODEL('admin');
 		$guweninfo          	=   $adminM -> getAdminUser(array('uid' => $info['crm_uid']));
 	    $guweninfo['photo_n']	 =  checkpic($guweninfo['photo'], $this->config['sy_guwen']);
@@ -66,7 +66,7 @@ class index_controller extends com_controller{
 		    'zph'      =>  isset($this->config['sy_zph_web']) ? $this->config['sy_zph_web'] : 2,
 		    'special'  =>  isset($this->config['sy_special_web']) ? $this->config['sy_special_web'] : 2
 		);
-		// 强制关注公众号
+		// 
 		if(isset($this->config['com_gzgzh']) && $this->config['com_gzgzh'] == 1){
 		    $return['gzhurl'] = Url('wap', array('c'=>'ajax','a'=>'gzhqrcode','token'=>$this->member['gzhtoken']));
 		    $return['config']['com_gzgzh'] = 1;
@@ -109,7 +109,7 @@ class index_controller extends com_controller{
         $return['sjtip'] = $sjtip;
         $this->render_json(0, 'ok', $return);
     }
-	//签到，TODO:会员中心
+	// ，TODO:
 	function sign_action(){
 		
 		$userinfoM		=	$this -> MODEL('userinfo');

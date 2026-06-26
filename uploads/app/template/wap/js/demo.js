@@ -1,4 +1,4 @@
-//grade开始
+// grade
 $(document).ready(function(){
     $(".grade-w>li").click(function(){
         $(".grade-t")
@@ -40,7 +40,7 @@ $(document).ready(function(){
         }
     });
 });
-//Category开始
+// Category
 $(document).ready(function(){
     $(".Category-w>li").click(function(){
         $(".Category-t").css("left","30.48%")
@@ -53,34 +53,34 @@ $(document).ready(function(){
     });
 });
 
-//Gengduo开始
+// Gengduo
 $(document).ready(function(){
     $(".Gengduoj-w>li").click(function(){
         $(".Gengduoj-t").css("left","50%")
     });
 });
 
-//Gengduos开始
+// Gengduos
 $(document).ready(function(){
     $(".Gengduos-w>li").click(function(){
         $(".Gengduos-t").css("left","50%")
     });
 });
 
-//Gengduot开始
+// Gengduot
 $(document).ready(function(){
     $(".Gengduot-w>li").click(function(){
         $(".Gengduot-t").css("left","50%")
     });
 });
 
-//redeem开始
+// redeem
 $(document).ready(function(){
     $(".redeem-w>li").click(function(){
         $(".redeem-t").css("left","50%")
     });
 });
-//js点击事件监听开始
+// js
 function grade1(id,name,type,smartya){
     $(".grade-w li").removeClass("yun_category_on");	
 	$(".qgrade"+id).addClass('yun_category_on');

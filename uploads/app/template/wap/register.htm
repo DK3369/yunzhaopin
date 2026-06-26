@@ -1,3 +1,4 @@
+{yun:}include file="$wapstyle/publichtm/wap_api_enum.htm"{/yun}
 {yun:}include file="$wapstyle/header.htm"{/yun}
 <style>
 body{ background:#fff}
@@ -57,7 +58,7 @@ body{ background:#fff}
             
            </div>
            {yun:}/if{/yun}
-           {yun:}if strpos($config.code_web,"注册会员")!==false{/yun}
+           {yun:}if strpos($config.code_web,$wap_code_register)!==false{/yun}
            <div>
               {yun:}if $config.code_kind>2{/yun}
               <input type='hidden' id="noblur" value="1" />
@@ -98,7 +99,7 @@ body{ background:#fff}
             <div class="login_textbox">
             <input type="tel" value="" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"  placeholder="{yun:}t key='wap_js_00119'{/yun}" name="moblie" id="moblie" onBlur="check_moblie();" class="account_number">
            </div>
-           {yun:}if strpos($config.code_web,"注册会员")!==false{/yun}
+           {yun:}if strpos($config.code_web,$wap_code_register)!==false{/yun}
            <div class="">
               {yun:}if $config.code_kind>2{/yun}
               <input type='hidden' id="noblur" value="1" />
@@ -163,7 +164,7 @@ body{ background:#fff}
             
            </div>
            {yun:}/if{/yun}
-           {yun:}if strpos($config.code_web,"注册会员")!==false{/yun}
+           {yun:}if strpos($config.code_web,$wap_code_register)!==false{/yun}
             <div>
               {yun:}if $config.code_kind>2{/yun}
               <div class="gtdx-captcha">

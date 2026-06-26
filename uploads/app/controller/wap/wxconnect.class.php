@@ -74,7 +74,7 @@ class wxconnect_controller extends common
 
                             if ($userinfo['usertype'] > 0) {
 								$this->MODEL('integral')->invtalCheck($userinfo['uid'], $userinfo['usertype'], "integral_bind_wx", "微信扫码绑定", 28);
-                                // 会员日志，记录手动绑定微信
+                                // ，
                                 $LogM       =   $this->MODEL('log');
                                 $logContent =   '账号认证：绑定微信';
                                 $logDetail  =   'H5 微信绑定';
@@ -88,11 +88,11 @@ class wxconnect_controller extends common
 
                             if ($userinfo['usertype'] > 0) {
                                 if ($userinfo['status'] == '2' || $userinfo['status'] == '4') {
-                                    // 账号被锁定
+                                    // 
                                     header("location:" . Url('wap', array('c' => 'login', 'a' => 'loginlock', 'type' => 1)));
                                     exit();
                                 }
-                                // 会员日志，记录手动登录
+                                // ，
                                 $LogM       =   $this->MODEL('log');
                                 $logContent =   '账号登录：快捷登录';
                                 $logDetail  =   'H5 微信快捷登录';
@@ -113,7 +113,7 @@ class wxconnect_controller extends common
                                 if ($logtime != $nowtime) {
 
                                     $this->MODEL('integral')->invtalCheck($userinfo['uid'], $userinfo['usertype'], "integral_login", "会员登录", 22);
-                                    //登录日志
+                                    // 
                                     $logdata['uid']         =   $userinfo['uid'];
                                     $logdata['usertype']    =   $userinfo['usertype'];
                                     $logdata['did']         =   $userinfo['did'];
@@ -155,7 +155,7 @@ class wxconnect_controller extends common
 
                         if ($this->uid) {
 
-                            // 会员中心微信绑定
+                            // 
                             $uwhere['wxid']             =   $user['openid'];
 
                             if (!empty($user['unionid'])) {
@@ -169,7 +169,7 @@ class wxconnect_controller extends common
 
                             if ($this->usertype) {
 								$this->MODEL('integral')->invtalCheck($this->uid, $this->usertype, "integral_bind_wx", "微信扫码绑定", 28);
-                                // 会员日志，记录手动绑定微信
+                                // ，
                                 $LogM       =   $this->MODEL('log');
                                 $logContent =   '账号认证：绑定微信';
                                 $logDetail  =   'H5微信绑定';
@@ -251,13 +251,13 @@ class wxconnect_controller extends common
             echo yun_json_encode($result);
         } else {
 
-            $this->yunset('headertitle', '微信登录绑定');
+            $this->yunset('headertitle', yun_auto_t('微信登录绑定'));
             $this->yunset('backurl', Url('wap', array('c' => 'login')));
             $this->yuntpl(array('wap/wxbind'));
         }
     }
 
-    //登录短信验证码发送
+    // 
     function sendmsg_action()
     {
 
@@ -274,7 +274,7 @@ class wxconnect_controller extends common
         if ($this->config['sy_reg_type'] == 2 && empty($userinfo)) {
             $result =   array(
                 'error' =>  2,
-                'msg'   =>  '请先注册账号',
+                'msg'   =>  yun_auto_t('请先注册账号'),
                 'url'   =>  Url('wap', array('c' => 'register'))
             );
         }else {

@@ -1,4 +1,4 @@
-/*用户中心公共头部*/
+/* section */
 .m_header{ width:100%;height:1.173333rem;background: #2778F8; z-index: 9;}
 .m_backheader{width:100%;height:1.173333rem;background:#2E2F32; z-index: 999;position: relative;}
 .m_whiteheader{width:100%;height:1.173333rem;background: #2778F8; position: relative;}
@@ -8,7 +8,7 @@
 .m_header_cont{ text-align: center; font-weight: bold;color:#fff; line-height: 1.173333rem; font-size:0.453333rem;}
 .m_header_c{ position: relative;}
 .m_whiteheader .m_header_cont{ text-align: center; font-weight: bold;color:#fff; line-height: 1.173333rem;}
-/*用户中心公共卡片上tab背景*/
+/* section */
 .m_tab{width:100%;height:2.826666rem;background: #2778F8;}
 .m_tabbox{ padding-left:0.4rem; padding-right:0.4rem;}
 .m_tabbox ul {width: 100%; display: flex;justify-content: space-around; align-items: center;}
@@ -17,7 +17,7 @@
 .m_tabactive:after{width:1.066666rem;height:0.053333rem;content:''; position: absolute;left:50%;bottom:0px; display: inline-block; background-color: #fff;border-radius:1px; margin-left: -0.533333rem;}
 .m_tabbox ul li a{color:#fff;}
 .m_header a{ display: block;}
-/*用户中心公共卡片上tab无背景*/
+/* section */
 .m_taball{width:100%;background: #fff;}
 .m_taballbox{ }
 .m_taballbox ul {width: 100%; display: flex;justify-content: space-around; align-items: center;}
@@ -35,19 +35,19 @@
 .m_taballbox ul  .member_ms_cur a{ color:#000 ;position: relative;}
 .member_ms_cur:after{width:0.8rem;height:0.08rem;content:''; position: absolute;left:50%;bottom:0px; display: inline-block; background-color: #2778f8;border-radius:1px; margin-left: -0.4rem;}
 
-/*用户中心公共卡片间距*/
+/* section */
 .m_cardbox{padding:0 0.32rem}
 .m_cardbgbox{ margin-top:-1.466666rem;}
 .m_cardbg {width: 100%;background-color: #fff; font-size: 0.373333rem ;border-radius: .213333rem;padding:0.4rem 0.4rem 0.4rem 0.4rem;margin-top: 0.266666rem; position: relative;}
 .wap_member_bgcar{width: 100%;background-color: #fff; border-radius: .213333rem;padding:0.4rem 0.4rem 0.4rem 0.4rem;margin-top: 0.266666rem;}
 
-/*用户中心公共卡片删除*/
+/* section */
 .m_card_del{ width: .64rem;height: .64rem; position: absolute;right:0.4rem;bottom:0.4rem}
 .m_card_del img{width:100%;height:100%;;}
 .m_card_bj{ width: .64rem;height: .64rem; position: absolute;right:1.333333rem;bottom:0.4rem}
 .m_card_bj img{width:100%;height:100%;;}
 .card_name_refused,.card_name_accepted{color:#999}
-/*用户中心公共头部*/
+/* section */
 .comheader{width: 100%;line-height:1.173333rem;background:#2778F8;position: relative;z-index: 10;touch-action: none;}
 .comheader_return{width:1.333333rem;line-height:1.173333rem; display:inline-block; position:absolute;left:0.266666rem;top:0px;}
 .comheader_return:after{
@@ -84,7 +84,7 @@
 .header_fa_add_p:after{width:16px;height:16px; display:inline-block; background:url(../../images/yun_wap_bj.png) no-repeat; background-size:100%;content:''; position:absolute;left:0px;top:6px;}
 
 
-/*用户中心公共间距  卡片 删除 修改 */
+/* section */
 .wap_member_box{padding:0px 0.32rem}
 .com_cardlist{ padding: 0.266666rem 0.4rem; background-color: #fff;border-radius:0.213333rem; margin-top: 0.266666rem; font-size: 0.373333rem; line-height:0.8rem; position: relative;}
 .com_card_cz{height: 0.64rem; position: absolute;right:0.266666rem;bottom:0.266666rem;}
@@ -95,7 +95,7 @@
 .wap_member_pt{ padding-top: 0.266666rem;}
 .wap_member_paypd{ margin-top:-1.866666rem;}
 .new_m_bth{width:100%;height:1.28rem; line-height: 1.28rem;color:#fff;border-radius:0.213333rem; text-align: center; background-color: #2778f8; font-size: 17px; font-weight: bold; margin-top:0.8rem;}
-/*企业中心首页*/
+/* section */
 .commemberheader{width:100%; padding-left:.32rem;padding-right:.32rem;background-size:100%}
 .commemberheaderbg{width:100%;background:url(../../images/uesrbackimg1.png) no-repeat; background-size:100%}
 .company{position:relative;width:100%;height:1.28rem;padding-left:1.66667rem;padding-right:.32rem;display:flex; }
@@ -183,7 +183,7 @@
 .cy_box_tip{ width:2.933333rem;position:absolute;right:0.266666rem;top:-0.4rem; color:#fff;border-radius:0.08rem;background: -webkit-linear-gradient(left, #fd3848 , #ff7d4a); font-size:0.32rem; padding:0px; text-align: center;}
  .cy_box_tip:after{ width: 0;height: 0;border: 0.133333rem solid transparent;border-top-color: #ff7d4a ;content:""; position:absolute;right:35%;bottom:-0.266666rem;}
 
-/*用户中心公用部分首页导航*/
+/* section */
 .taskbar{margin-top:.4rem;padding-left:9px;padding-right:9px;}
 .taskbar_box{margin-top:.266667rem;padding:.4rem .28rem;width:100%;background-color:#fff;border-radius:.213333rem}
 .taskbar_enterprise{width:100%;height:.64rem;display:flex;justify-content:space-between;margin-bottom:.606667rem}
@@ -196,7 +196,7 @@
 .taskbar_enterprise_last{width:100%;height:.64rem;display:flex;justify-content:space-between}
 
 
-/*个人中心首页*/
+/* section */
 .min_body{margin-top:.266667rem;padding-left:.32rem;padding-right:.32rem;width:100%}
 .vip_nav{width:100%;height:1.013333rem;background-color:#333;padding-left:0.933333rem ;padding-right:.2rem;display:flex;justify-content:space-between;align-items:center;border-radius:.213333rem;position:relative;margin-top: 0.4rem; font-weight:normal;}
 .vip_nav_img{position:absolute;top:50%;left:.266667rem;transform:translateY(-50%);width:.586667rem;height:.586667rem;display:flex;align-items:center;justify-content:center}
@@ -348,7 +348,7 @@
 }
 
 
-/*简历编辑*/
+/* section */
 .Edit_your_resume_hint{width:100%;height:.8rem;border-top:.013333rem solid #eee;background-color:#fff; position: relative; display: flex; 
 align-items: center;}
 .resume_hint_left{position:relative;padding-left:.836666rem; display: flex; align-items: center;}
@@ -465,7 +465,7 @@ border-radius:0.133333rem;}
 .sq_gjresume_tjno{ font-size: 0.373333rem;  padding-left:20px; position:relative; margin-top:5px;}
 .sq_gjresume_tjno:after{width:13px;height:13px; background:url(../../images/lose_interest_in.png) no-repeat; background-size:100%; display:inline-block; position:absolute;left:0px;top:6px;content:''}
 .sq_gjresume_tjno_tip{ font-size:12px; margin-left:10px;color:#f00}
-/*编辑简历*/
+/* section */
 .job_resume{position:relative;width:100%;display:flex;margin-bottom:.733333rem}
 .job_resume_left{width:25%;font-size:.4rem;font-weight:500;color:#666}
 .job_resume_right_template{font-size:.346667rem;font-weight:500;color:#999}
@@ -735,13 +735,13 @@ border-radius:0.133333rem;}
 .job_resume_tip{color:#999; font-size: 0.373333rem;}
 .resume_ms_textarea{padding:0.4rem;border-radius:0.213333rem; background-color: #fff;;}
 .resume_ms_textarea textarea{ font-size: 0.373rem;}
-/* 个人中心 期望薪资弹窗*/
+/* section */
 .salaryh1{ font-size: 0.426666rem; font-weight: bold;}
 .salary_text{ background-color: #F8f8f8;border-radius:0.213333rem;padding:0.133333rem 0.4rem; margin-top: 0.4rem;}
 .salary_text input{width:100%;height:0.933333rem; line-height:0.933333rem; background-color: #F8f8f8;border:none; font-size: 0.373333rem;}
 .salary_sub{margin-top: 0.8rem;}
 .salary_sub_bth{width:100%;height:1.28rem; line-height: 1.28rem; text-align: center;color:#fff; font-size: 0.426666rem; background-color: #2778f8;border-radius:0.213333rem;}
-/* 个人中心 求职意向*/
+/* section */
 .job_intention{position:relative;height:.426667rem;display:flex;width:100%;margin-bottom:.8rem;display:flex;align-items:center}
 .job_intention_left{width:22%;font-size:.4rem;font-weight:500;color:#666}
 .job_intention_right>input{font-size:.4rem;font-weight:500;color:#333}
@@ -752,7 +752,7 @@ border-radius:0.133333rem;}
 .personal_details_card{position:relative;width:100%;background-color:#fff;border-radius:.213333rem;padding:.4rem;margin-bottom:.4rem;}
 
 
-/*职位管理*/
+/* section */
 .position_management_body{position:absolute;top:1.626667rem;left:0;z-index:9;width:100%;padding-left:.32rem;padding-right:.32rem}
 .management_body_invite{width:100%;height:2.133333rem;display:flex;justify-content:space-between}
 .body_invite_card{width:4.533333rem;height:2.133333rem;background-color:#fff;border-radius:.213333rem;padding:.6rem .4rem .433333rem .4rem;display:flex;justify-content:space-between}
@@ -771,7 +771,7 @@ border-radius:0.133333rem;}
 .management_body_box>ul{display:flex;justify-content:space-between}
 .management_body_box>ul>li{display:flex;flex-direction:column;align-items:center}
 
-/*职位列表*/
+/* section */
 
 .position_body_card{position:relative;width:100%;background-color:#fff;box-shadow:0 .053333rem .293333rem .026667rem rgba(212,212,212,.18);border-radius:.213333rem;padding:.4rem;display:flex;flex-direction:column;margin-bottom:.266667rem}
 .position_body_card_top{width:100%;display:flex;align-items:center}
@@ -820,7 +820,7 @@ border-radius:0.133333rem;}
 .job_czmore_sc:after{width:0.64rem;height:0.64rem; background:url(../../images/delete.png) no-repeat; background-size: 100%;content:""; position: absolute;left:6px;top:6px;}
 .job_czmore_gb:after{width:0.64rem;height:0.64rem; background:url(../../images/gbtg.png) no-repeat; background-size: 100%;content:""; position: absolute;left:6px;top:6px;}
 
-/*职位管理弹框样式*/
+/* section */
 .job_tckpd {padding: 0.533333rem;}
 .job_tcktit {font-size: 0.426666rem;font-weight: bold;color: #000;}
 .job_tcktip {padding: .266667rem 0;font-size: .32rem;}
@@ -839,7 +839,7 @@ border-radius:0.133333rem;}
 .job_tckbth .job_tckbth_div {width: 100%; height: 1.28rem; line-height: 1.28rem; text-align: center; display: block;background-color: #2778F8;color: #fff;border-radius: .213333rem;font-size: 0.426666rem;display: inline-block;}
 
 
-/*设置  最后不用可去掉*/
+/* section */
 .yunset{ padding: 10px 15px; background: #fff;border-radius:8px; }
 .yunset li{ display:block; padding:10px 0px 10px 0px; font-size:16px; background:#fff; position:relative}
 .yunset li:after{content: ' ';position: absolute;top: 50%;margin-top: 4px;right: 0px;width: 8px;height: 8px;border: #b2b2b2 solid;-webkit-transform: rotate(45deg);border-width: 1px 1px 0 0; }
@@ -875,9 +875,9 @@ border-radius:0.133333rem;}
 .yunset_bth_box input{width:100%;height:1.28rem; background-color:#2778f8;background:linear-gradient(#2778f8,#2778f8);border-radius:0.213333rem;color:#fff}
 .Posted_card_cx{ font-size: 0.32rem; font-weight: normal;color:#F00; position: absolute;right:0px;top:0.08rem;}
 
-/*发布*/
+/* section */
 
-/*发布兼职*/
+/* section */
 .warning_title{  font-size: 0.32rem;color:#999}
 .issue_post_body{padding:.32rem}
 .issue_post_body_card{width:100%;background-color:#fff;border-radius:.213333rem;padding:.48rem .333333rem .52rem .4rem; font-size: 0.373333rem ;margin-top: 0.266666rem;}
@@ -907,16 +907,16 @@ border-radius:0.133333rem;}
 .post_body_card_job_right img{width:100%;height:100%;}
 .post_body_card_job a{width:100%;display:flex;justify-content:space-between;align-items:center;}
 .comshowtip { font-size: 0.373333rem;color:#999;}
-/*会员*/
+/* section */
 
 
 
 
 
-/*充值*/
+/* section */
 
 
-/*我的服务*/
+/* section */
 .set_meal_tip{ padding:10px 10px 15px 10px;color:#999; background:#fff; position:relative;}
 .set_meal_tip_name{ font-size:16px; padding-bottom:5px;color:#333;}
 .set_meal_tip_name_hy{color:#f00}
@@ -960,7 +960,7 @@ box-shadow: 0px 4px 12px 0px rgba(38, 122, 248, 0.4);}
 .set_meal_n_p{ font-size:16px;}
 
 
-/*提示*/
+/* section */
 
 .refresh_mask{position:fixed;top:0;left:0;height:100%;width:100%;background:rgba(46,47,50,.5);display:none;z-index:9999}
 .ovfHiden{overflow:hidden;height:100%}
@@ -973,7 +973,7 @@ box-shadow: 0px 4px 12px 0px rgba(38, 122, 248, 0.4);}
 .refresh_mask_box_word>i:first-child{margin-bottom:.333333rem}
 .refresh_mask_box_btn{width:4rem;height:1.066667rem;background:linear-gradient(90deg,#34acfb,#1c80f6);box-shadow:0 .106667rem .32rem 0 rgba(38,122,248,.4);border-radius:.533333rem;text-align:center;line-height:1.066667rem;font-size:.4rem;font-weight:700;color:#fff}
 
-/*企业中心应聘简历*/
+/* section */
 .bgboxpt{padding:0px 0.32rem; margin-top: -1.2rem;}
 .card_content_box_particulars{position:relative;width:100%;min-height:2.4rem;box-shadow:0 .053333rem .293333rem .026667rem rgba(212,212,212,.18);background-color:#fff;margin-bottom:.266667rem;border-radius:.213333rem;padding:.4rem;display:flex}
 .particulars_icon{position:absolute;width:1.6rem;height:1.6rem;margin-right:.4rem;display:flex;align-items:center;justify-content:center}
@@ -1004,7 +1004,7 @@ box-shadow: 0px 4px 12px 0px rgba(38, 122, 248, 0.4);}
 .concise_bom_icon{width:.64rem;height:.64rem;display:flex;align-items:center;justify-content:center; margin-left: 0.266666rem;}
 .wsh{position: absolute;right: 19px;top: 40px;color: #F00;font-size: 12px;}
 
-/*企业中心求职者咨询 */
+/* section */
 .zxuser_name{ font-size: 0.426666rem; font-weight: bold;}
 .zx_n{color:#999; display: inline-block; position: absolute;left:0px;top:0.266666rem;}
 .zx_list{ padding-left:1.866666rem; position: relative; padding-top: 0.266666rem;color:#666}
@@ -1016,10 +1016,10 @@ box-shadow: 0px 4px 12px 0px rgba(38, 122, 248, 0.4);}
 .msg_hf{width:0.64rem;height:0.64rem; position: absolute;right:1.333333rem;bottom:0.4rem;;}
 .msg_hf img{width:100%;height:100%;border-radius:50%;}
 
-/*企业中心系统消息 */
+/* section */
 .sxlist_cont{ font-size: 0.373333rem;}
 
-/*企业中心简历部分 下载 收藏  浏览  关注我的  谁看过我 */
+/* section */
 .memberuser_nav{ background:#2778F8;height:2.933333rem; padding-top:0.533333rem;}
 .memberuser_nav ul{ display:flex;align-items:center;}
 .memberuser_nav ul li{width:33%;text-align:center;color:#fff; opacity: 0.8; font-size:0.426666rem; }
@@ -1051,13 +1051,13 @@ box-shadow: 0px 4px 12px 0px rgba(38, 122, 248, 0.4);}
 
 
 
-/*我推荐的悬赏*/
+/* section */
 
 
 
 
 
-/*好友助力*/
+/* section */
 
 .Friends_help_header_warn{width:100%;height:.8rem;display:flex;align-items:center;justify-content:center; background:#2E2F32; margin-bottom:.266667rem}
 .help_header_warn_icon{width:.533333rem;height:.533333rem;display:flex;align-items:center;justify-content:center;margin-right:.266667rem}
@@ -1080,7 +1080,7 @@ box-shadow: 0px 4px 12px 0px rgba(38, 122, 248, 0.4);}
 .equity_body_post>i{margin-left:.053333rem;margin-right:.053333rem;font-size:.4rem;color:#e3b36b}
 .Friends_help_btn{margin-top:.4rem;width:100%;height:1.28rem;background-color:#2e2f32;border-radius:.64rem;display:flex;align-items:center;justify-content:center;font-size:.48rem;font-weight:700;color:#fff}
 .Friends_help_forbidbtn{margin-top:.4rem;width:100%;height:1.28rem;background-color:#ccc;border-radius:.64rem;display:flex;align-items:center;justify-content:center;font-size:.48rem;font-weight:700;color:#fff}
-/*好友助力*/
+/* section */
 
 .heinvite_friends_header{width:100%;height:6.293333rem;background:url(../../images/invite_friends_banner.png) no-repeat;background-color:#2e2f32;background-size:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-end;z-index:9}
 .friends_header_back{position:absolute;top:1.533333rem;left:.32rem;width:.28rem;height:.453333rem;display:flex;align-items:center;justify-content:center}
@@ -1102,7 +1102,7 @@ box-shadow: 0px 4px 12px 0px rgba(38, 122, 248, 0.4);}
 }
 .card_box_bom{font-size:.32rem;font-weight:500;color:#f0d8c2}
 
-/*会员服务*/
+/* section */
 .VIP_header{width:100%;height:5.6rem;background-color:#2e2f32;padding:.346667rem .6rem 0 .333333rem; position:relative}
 .VIP_header_top{display:flex;align-items:center;justify-content:center;position:relative}
 .header_top_icon{position:absolute;top:0;left:0;width:.28rem;height:.48rem}
@@ -1151,7 +1151,7 @@ box-shadow: 0px 4px 12px 0px rgba(38, 122, 248, 0.4);}
 .task_subject_box_btn_accomplish{width:2.133333rem;height:.8rem;line-height:.8rem;  border:.013333rem solid #999;border-radius:.4rem;font-size:.373333rem; font-weight:700;color:#999;display:flex;align-items:center;justify-content:center}
 
 
-/*充值积分*/
+/* section */
 .pay_header{width:100%;height:200px;;background:linear-gradient(to bottom,#2E2F32,#2E2F32,#F3F3F3);}
 .pay_header_icon{width:0.64rem;height:0.64rem; position: absolute;left:0px;top:0px;}
 .pay_header_p{ font-size: 0.346666rem;color:#fff; padding-left:0.64rem; position: relative;}
@@ -1199,7 +1199,7 @@ box-shadow: 0px 4px 12px 0px rgba(38, 122, 248, 0.4);}
 .buy_number_center{margin-left:.386667rem;font-size:.4rem;font-weight:700;color:#deac65}
 .buy_number_right{font-size:.64rem;font-weight:700;color:#deac65}
 
-/*明细*/
+/* section */
 
 .yun_m_tit{width:100%; text-align: center; display: flex; padding-top: 0.266666rem; background-color: #2778F8; padding-bottom:2.133333rem;}
 .yun_m_tit li{ display: inline-block;height: 1.066666rem; line-height: 1.066666rem; font-size: 0.4rem;opacity: 0.5;}
@@ -1217,7 +1217,7 @@ box-shadow: 0px 4px 12px 0px rgba(38, 122, 248, 0.4);}
 .yun_member_hr_bth{width:2.133333rem;height:0.8rem; text-align: center; font-size: 0.373333rem; line-height: 0.8rem;color:#999;border:0.026666rem solid #999;border-radius:1.066666rem; display: inline-block; margin-left: 0.4rem;}
 .pay_mx_fk{width:2.133333rem;height:0.8rem; text-align: center; line-height: 0.8rem;color:#DCA558;border:0.026666rem solid #DCA558;border-radius:1.066666rem; display: inline-block; margin-left: 0.4rem;}
 
-/*会员服务*/
+/* section */
 .dredge_header{position:fixed;top:0;left:50%;transform:translateX(-50%);min-width:320px;max-width:750px;width:100%;height:1.173333rem;background-color:#2e2f32;display:flex;align-items:center;justify-content:center;z-index: 999;}
 .dredge_header_icon{position:absolute;top:50%;left:.32rem;transform:translateY(-50%);width:.28rem;height:.466667rem;display:flex;align-items:center;justify-content:center}
 .dredge_header_titer{font-size:.453333rem;font-weight:500;color:#fff}
@@ -1319,7 +1319,7 @@ box-shadow: 0px 4px 12px 0px rgba(38, 122, 248, 0.4);}
 .zzb_cont_single{ padding: 1.333333rem 0; text-align: center;color:#666}
 .zzb_cont_single_tip{color:#999; padding-top: 0.266666rem;}
 .zzb_cont_single_p_n{color:#e3b36b}
-/* 新增会员权益box */
+/* section */
 .dredge_body_tab_body_box{width:100%; position:relative; align-items:center;justify-content:space-between; padding-left: 2rem;}
 .dredge_body_tab_body_close{margin-top:.133333rem;width:100%;background-color:#eee;border-radius:.16rem;padding:.4rem}
 .dredge_close_title{width:100%;display:flex;align-items:center;margin-bottom:.4rem}
@@ -1333,7 +1333,7 @@ box-shadow: 0px 4px 12px 0px rgba(38, 122, 248, 0.4);}
 .dredge_close_explain{font-size:.32rem;font-weight:500;color:#666}
 .dredge_close_explain_title{font-size:.32rem;font-weight:700;color:#666}
 
-/*优惠券*/
+/* section */
 .coupon_list_box{  padding:0px 10px;}
 .coupon_list{ background:#fff; padding:10px 10px 10px 110px;border-radius:0.213333rem; position:relative; font-size:12px; margin-top:15px;color:#999}
 .coupon_list_left{width:100px;height:100%; position:absolute;left:0px;top:0px; background:#2778F8;color:#fff; text-align:center;border-radius:5px 0 0 5px;}
@@ -1346,7 +1346,7 @@ box-shadow: 0px 4px 12px 0px rgba(38, 122, 248, 0.4);}
 .coupon_list_cur .coupon_list_left{ background:#f8f8f8;color:#333}
 .coupon_list_right_cz{width:0.666666rem;height:0.666666rem; position:absolute;right:0.266666rem;bottom:0.266666rem;color:#3366cc}
 
-/*搜索企业*/
+/* section */
 .blacklist_show{padding:0.266666rem; font-size: 0.373333rem; }
 .blacklist_tip{ background-color: #fff;padding:0.266666rem;color:#666;font-size: 0.373333rem;}
 .blacklistadd_search_box{background:#fff;border-top:1px solid #eee; padding:10px 70px 10px 10px; position:relative; font-size:14px;color:#666; margin-bottom:10px;}
@@ -1384,10 +1384,10 @@ box-shadow: 0px 4px 12px 0px rgba(38, 122, 248, 0.4);}
 .blacklist_p{ background-color: #fff;border-radius:0.213333rem;padding-right: 0.533333rem;padding:0.266666rem;color:#666;  margin:0.266666rem 0.32rem 0 0.32rem; position: relative;}
 .blacklist_pdel{width:0.533333rem;height:0.533333rem; position: absolute;right:0.266666rem;top:0.266666rem}
 .search_com_showno{ text-align: center;color:#999; padding-top: 0.8rem;}
-/*搜索企业*/
+/* section */
 .yun_jobadd_touch_tit{ font-weight: bold;; font-size: 0.426666rem; }
 
-/*发票信息*/
+/* section */
 .yun_m_tit_three{ background:#fff;}
 .yun_m_tit_three li{ display:inline-block;width:32%; text-align:center}
 .yun_m_tit_three li a{ display:block; padding:12px 0;color:#999}
@@ -1413,7 +1413,7 @@ box-shadow: 0px 4px 12px 0px rgba(38, 122, 248, 0.4);}
 .invoice_list_bth{width:40%;height:1.066666rem; background-color: #2778f8;color:#fff;border-radius:1.066666rem; margin-left: 0.266666rem; margin-right: 0.266666rem; display: inline-block;}
 
 
-/*设置下的   手机绑定 企业资质*/
+/* section */
 
 .corporate_environment_box{width:100%;margin-bottom:.2rem}
 .corporate_environment_box>ul{display:flex;flex-wrap:wrap}
@@ -1452,7 +1452,7 @@ box-shadow: 0px 4px 12px 0px rgba(38, 122, 248, 0.4);}
 .yunset_bth_box button{width:100%;height:45px;background: -webkit-linear-gradient(left, #4386f4 , #4386f4);border:none;color:#fff; font-size:16px;margin:0; padding:0;border:none;color:#fff;border-radius:8px;}
 
 
-/*绑定手机*/
+/* section */
 .security{ padding: 0rem 0.4rem; background-color: #fff;border-radius:0.213333rem; margin-top:0.4rem; font-size: 0.373333rem; line-height:0.8rem;}
 .security li{border-bottom:1px solid #f4f4f4;padding:10px 0;position: relative;}
 .security li span{
@@ -1476,7 +1476,7 @@ color: #333333;
 .page_pd{padding:0.533333rem 0}
 .lag_text_qd{ padding: 0.8rem 0 0.533333rem 0;}
 .lag_text_qd_bth{width:100%;height:1.306666rem; line-height: 1.306666rem; text-align: center ;background-color: #2778f8; font-size: 0.426666rem; font-weight: bold;color:#fff;border-radius:0.213333rem}
-/*邀请面试*/
+/* section */
 .invite_bm{ padding: 0.266666rem 0.4rem; background-color: #fff;border-radius:0.213333rem; margin-top: 0.266666rem; font-size: 0.373333rem; line-height:0.8rem;}
 .remark_word{margin-top:.4rem;position:relative;width:100%;height:3.2rem;overflow:hidden;border-radius:.213333rem}
 .remark_word_text{width:100%;height:100%;border:0;outline:0;font-size:.373333rem;font-family:PingFang SC;font-weight:500;color:#999;background-color:#f6f6f6;padding:.4rem}
@@ -1501,7 +1501,7 @@ color: #333333;
 .invitation_card_contact_icon img{width:100%;height:100%} 
 .mspj{width:.64rem;height:.64rem; position: absolute;right:1.066666rem;top:0;}
 .mspj img{width:100%;height:100%} 
-/*子账户*/
+/* section */
 .Subclass{ padding: 0.266666rem 0.4rem; background-color: #fff;border-radius:0.213333rem; margin: 0.266666rem 0; font-size: 0.373333rem; line-height:0.8rem;}
 .child_cont{ padding-right:10px }
 .child_data_list{padding:10px 0px 10px 95px; position:relative;}
@@ -1520,7 +1520,7 @@ color: #333333;
 .child_fot_c{ padding:20px ; }
 .child_fot_c .child_fot_bth{width:100%;height:40px; line-height: 40px; margin: 0; padding: 0;color:#fff;border:none;border-radius:3px; font-size:16px}
 
-/*账户分离*/
+/* section */
 .transfer_ts{ font-size:12px;  background: #ffffe0;color: #e2731a; padding:5px 10px;}
 .transfer_stepbox{width:100%;height:90px; padding:20px 0px 30px 0px; background:#fff}
 .transfer_stepbox .transfer_stepbox_list{ }
@@ -1556,7 +1556,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .sx_tip_cont{ background: #fff;border-radius:5px;color:#fff; padding:10px; position: relative; margin-top:15px;overflow: hidden;}
 
 
-/*微信绑定*/
+/* section */
 .bingding_yx_wr{float:left;height:50px;line-height:50px;padding-left:20px;}
 .bingding_yx{position:absolute;left:10px;top:19px;width:36px;height:36px;border-radius:50px;float:left;display:block;background:#ccc;}
 
@@ -1581,7 +1581,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .bingding_yx_xl{background:#f0383d;}
 
 
-/*地理位置*/
+/* section */
 
 .workplace_header{background-color:#2778f8;width:100%;height:1.173333rem;display:flex;justify-content:space-between;align-items:center;padding-left:.32rem;padding-right:.373333rem}
 .workplace_header_left{width:.28rem;height:.453333rem;display:flex;align-items:center;justify-content:center}
@@ -1600,7 +1600,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .workplace_location_map{width:100%;height:8.8rem}
 .workplace_location_map img{width:100%;height:100%;}
 
-/*企业环境*/
+/* section */
 .com_picshow{ width:50%; display:inline-block; float:left}
 .com_picshow_c{border:1px solid #eee; background:#fff; margin-left:10px; margin-top:10px; padding:5px;}
 .com_picshow_pic{width:100%; text-align:center}
@@ -1619,7 +1619,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .company_photo_box>ul>li{position:relative;width:3.733333rem;height:2.133333rem;display:flex;align-items:center;justify-content:center;margin-right:.333333rem;margin-bottom:.333333rem}
 .uploading_del{position:absolute;top:0;right:0;transform:translate(50%,-50%);width:.533333rem;height:.533333rem;background-color:#333;border-radius:50%}
 
-/*消息*/
+/* section */
 .synews_bg{width:100%;height:0.96rem; background-color: #2778f8;}
 .synews_bgpd{padding:0px 0.32rem; margin-top: -0.96rem;}
 .card{width:100%;height:2.48rem;background-color:#fff;border-radius:.213333rem}
@@ -1714,7 +1714,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .allchat_jb{display:inline-block;padding:1px 5px;background:red;color:#fff;border-radius:20px;position:absolute;left:45px;top:15px;font-size:12px;line-height:14px;z-index:10}
 
 
-/*关于赏金职位*/
+/* section */
 .member_ms{ background-color: #fff;height:1.2rem;display: flex; text-align: center;}
 .member_ms li{width:50%;height:1.2rem; line-height: 1.2rem; display: flex;text-align: center;}
 .member_ms li a{ width:100%;display: block;color:#999; font-size: 16px;;}
@@ -1769,7 +1769,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .card_content_time{font-size:.32rem;font-weight:500;color:#ccc}
 .card_content_del{width:.64rem;height:.373333rem;display:flex;align-items:center;justify-content:center}
 
-/*赏金收益 提现*/
+/* section */
 .money_body_bg{width:100%;height:1.6rem; background-color: #2E2F32 ;}
 .money_body{padding-left:.6rem;padding-right:.6rem; margin-top: -1.333333rem;}
 .money_body_card{position:relative;width:100%;height:2.666667rem;background-color:#fff;box-shadow:0 .213333rem .426667rem 0 rgba(238,238,238,.5);border-radius:.213333rem;display:flex;align-items:center;justify-content:center;margin-bottom:.866667rem}
@@ -1786,7 +1786,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 
 
 
-/*关于个人中心的*/.userheader_bg{width: 100%;height: 48px;background:#2778F8;position: relative;z-index: 10;touch-action: none;}
+/* section */.userheader_bg{width: 100%;height: 48px;background:#2778F8;position: relative;z-index: 10;touch-action: none;}
 .userheader_tit{width:100%; text-align:center; font-size:18px;color:#fff; line-height:48px;}
 .userheader_return{width:50px;height:48px; display:inline-block; position:absolute;left:10px;top:0px;}
 .userheader_return:after{content: ' ';width: 12px;height: 12px;border: #fff solid;-webkit-transform: rotate(-135deg);border-width: 2px 2px 0 0;color: #fff; display:inline-block; position:absolute;left:5px;top:16px;}
@@ -1818,7 +1818,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .m_ms_job{padding:8px 0px;color:#999}
 .m_ms_jobname{color:#3b7cff;font-weight:bold}
 .m_ms_new{ display:inline-block; background:#fd801f;color:#fff;border-radius:15px 20px 20px 5px; font-size:10px;padding:0px 4px;line-height:15px; margin-left:5px;}
-/*个人中心视频面试*/
+/* section */
 .video_interview_card{width:100%;padding:.266667rem .4rem .266667rem .266667rem;background-color:#fff;border-radius:.213333rem;display:flex;flex-direction:column;margin-bottom:.266667rem};
 .interview_card_top{display:flex;justify-content:space-between;margin-bottom:.466667rem}
 .interview_card_top_box{width:3.013333rem;height:.666667rem;background-color:rgba(39,120,248,.1);display:flex;align-items:center;padding-left:.253333rem;border-radius:.106667rem}
@@ -1833,7 +1833,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .video_interview_name{font-size:.32rem;font-weight:500;color:#444}
 .video_interview_icon{width:.64rem;height:.64rem;display:flex;align-items:center;justify-content:center}
 
-/* 个人中心 兼职管理 */
+/* section */
 .Posted_body_card{display:flex;margin-top:.266667rem;padding:.4rem .266667rem;width:100%;border-radius:.213333rem;background-color:#fff;box-shadow:0 .053333rem .293333rem .026667rem rgba(212,212,212,.18);flex-direction:column}
 .Posted_body {z-index: 99;padding-left: .32rem;padding-right: .32rem}
 .Posted_card_top{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:.266667rem; font-size: 0.373333rem;}
@@ -1853,7 +1853,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .Posted_card_time{font-size:.32rem;font-weight:500;color:#ccc}
 .Posted_card_del{width:100%;margin-top:.133333rem;display:flex;justify-content:space-between}
 .Posted_card_delname{width:90%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;font-size:.373333rem;font-weight:500;color:#666}
-/*个人中心财务管理*/
+/* section */
 .financial_management_header{width:100%;height:4.586667rem;background-color:#2e2f32; position: relative;}
 .management_header_title{position:fixed;top:0;left:50%;min-width:375px;max-width:750px;transform:translateX(-50%);width:100%;height:1.173333rem;display:flex;align-items:center;justify-content:center;z-index:99}
 .management_header_icon{position:absolute;top:50%;left:.333333rem;transform:translateY(-50%);width:.28rem;height:.466667rem;display:flex;align-items:center;justify-content:center}
@@ -1959,7 +1959,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .offer_body_money{font-size:.32rem;font-weight:500;color:#2778f8}
 .padt_bm{ line-height: 0.8rem;}
 .padt_bmzt{ position: absolute;right:0px;top:0px;color:#2778f8;font-size: 0.32rem;}
-/*赏金应聘简历样式*/
+/* section */
 .jobrewardlog_list{ padding:0px 10px 10px 10px;border-left:1px solid #eee; margin-left:5px;}
 
 .jobrewardlog_list li{  position:relative; padding-left:10px;}
@@ -1986,7 +1986,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .yun_member_sub{width:2.133333rem;height:0.8rem; line-height: 0.8rem;border-radius:1.066666rem;border:0.026666rem solid #eee; display: inline-block; text-align: center;color:#666; margin-right: 0.266666rem;}
 .rebates_list{ font-size: 0.373333rem; line-height: 0.8rem;}
 
-/* 会员中心，海报生成*/
+/* section */
 .job_show_whb{ background:#fff; padding:10px 10px 10px 40px;color:#fe8800; position:relative; font-size:16px;border-radius:0.213333rem} 
 .job_show_whb:after{width:22px;height:22px; background:url(../images/wapwxhb.png) no-repeat; background-size:100%; ddisplay:inline-block; content:''; position:absolute;left:10px;top:10px;}
 .job_show_whb:before{content: ' ';position: absolute;top:15px;right: 15px;width: 8px;height: 8px;border: #fe8800 solid;-webkit-transform: rotate(45deg);border-width: 2px 2px 0 0;color: #434343; }
@@ -2010,7 +2010,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .distribution_setmeal_bth{width:100%;height:36px; background:#f60;color:#fff;border:none;border-radius:3px; cursor:pointer}
 .distribution_setmeal_fpsm{width:180px; position:absolute;left:460px;top:180px; font-size:12px;color:#f00; line-height:23px;}
 
-/*企业中心邀请面试模板*/
+/* section */
 .Invited_title{display:flex;align-items:center;justify-content:space-between;margin-bottom:.466667rem}
 .Invited_title_name{font-size:.426667rem;font-weight:700;color:#181818}
 .Invited_title_state{font-size:.346667rem;font-weight:500;color:#2778f8}
@@ -2022,7 +2022,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .line_q_remark{width:80%}
 .Invited_line_icon{width:.24rem;height:.426667rem;display:flex;align-items:center;justify-content:center}
 
-/*--分享推广--*/
+/* section */
 .reward_share_show{padding:0.32rem}
 .share_show{ padding: 0.266666rem; background-color: #fff;border-radius:0.213333rem;}
 .addreward_bx{}
@@ -2075,7 +2075,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .paybank_hk_file{width:100%;height:30px; position:absolute;left:0px;top:0px; opacity:0; z-index:10;}
 .paybank_hk_file_icon{width:20px;height:20px; background:url(../images/yun_tj.png) no-repeat; background-size:100%; position:absolute;left:5px;top:5px; z-index:9; display:inline-block}
 
-/*创建新简历*/
+/* section */
 .create_resume{width:100%;height:190px; background-color: #2778F8; position: relative;}
 .create_resume_img{width:3.573333rem;height:3.2rem; position: absolute;right:0.266666rem;bottom:0.4rem}
 .create_resume_img img{width:100%;height:100%;}
@@ -2105,7 +2105,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .Edit_your_resume_header_right{width:.586667rem;height:.586667rem;position:absolute;top:50%;right:.32rem;transform:translateY(-50%);display:flex;align-items:center;justify-content:center}
 .atn_me{width:100%;height:0.533333rem; line-height: 0.533333rem;overflow: hidden;text-overflow: ellipsis;white-space: nowrap; font-size: 0.32rem; margin-top: 0.133333rem;}
 .atn_me .atn_me_name{color:#999; display: inline-block;; margin-right: 0.133333rem;}
-/*系统消息*/
+/* section */
 .mag_show{ line-height: 0.8rem; padding-top: 0.266666rem;}
 .sx_new_tit{ font-weight: bold; font-size: 0.426666rem;}
 .sx_new_cont{ padding: 0.266666rem 0;color:#666; font-size: 0.373333rem;}
@@ -2116,7 +2116,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .sx_new_icon{width:0.64rem;height:0.64rem; position: absolute;right:0px;top:0}
 .sx_new_icon img{width:100%;height:100%;}
 
-/*个人中心我推荐的悬赏*/
+/* section */
 .reward_tit{ position: relative;}
 .reward_tit_name{ font-size: 0.426666rem; font-weight: bold;}
 .reward_tit_zt{ position: absolute;right:0px;top:0px; font-size: 0.32rem;color:#2778f8;}
@@ -2126,7 +2126,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .reward_cz{  position: absolute;right:0px;top:0rem;}
 .reward_cz_icon{width:0.64rem;height:0.64rem; margin-left: 0.266666rem; display: inline-block;}
 .reward_cz_icon img{width:100%;height:100%;}
-/*个人中心  面试评价*/
+/* section */
 .evaluate_com_info{ background:#fff; padding:8px 0px;color:#999}
 .evaluate_job_name{ font-size:14px;color:#999; }
 .evaluate_com_pjlist{ padding:0px 0px 0px 120px; position:relative; margin-top:8px; font-size: 0.373333rem;}
@@ -2146,7 +2146,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .evaluate_bthall{ padding-top: 0.533333rem; padding-bottom: 0.533333rem;}
 .evaluate_textareashow{border:none; margin:10px  0 10px 0;font-size:14px;border-radius:0.213333rem;color:#666}
 .com_pjia_bot{ font-size: 0.373333rem;}
-/*直播宣讲会*/
+/* section */
 
 .preach_interview_card{width:100%;background-color:#fff;border-radius:.213333rem;padding:.4rem .4rem .533333rem .4rem;margin-bottom:.266667rem;display:flex;flex-direction:column}
 .preach_card_title{display:flex;justify-content:space-between}
@@ -2162,7 +2162,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .preach_card_icon{width:.64rem;height:.64rem;display:flex;align-items:center;justify-content:center}
 
 
-/*发布成功*/
+/* section */
 .Resume_success_card{width:100%;padding:.533333rem .4rem .76rem;background-color:#fff;border-radius:.213333rem;display:flex;flex-flow:column}
 .success_title_box{width:100%;display:flex;align-items:center;flex-flow:column;margin-bottom:.4rem}
 .title_box_img{width:1.066667rem;height:1.066667rem;display:flex;align-items:center;justify-content:center;border-radius:50%}
@@ -2182,7 +2182,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .issue_card_recommendbox{margin-top:.8rem;width:100%;display:flex;flex-flow:column}
 .issue_card_recommend{width:100%;display:flex;flex-flow:column;margin-bottom:.533333rem;padding-bottom:.533333rem;border-bottom:.013333rem solid #eee}
 .issue_card_recommendbox>div:last-child{border-bottom:0;margin-bottom:0;padding-bottom:0}
-/*预约刷新*/
+/* section */
 .refresh_list{ padding-left:2.346666rem; font-size: 0.373333rem; position: relative;color: #666; min-height:1.066666rem; padding-top: 0.266666rem;}
 .refresh_listname{ font-size: ; position: absolute;left:0px;top: 0.266666rem; line-height:1.066666rem;;}
 .refresh_text{width:5.38rem;height:1.066666rem;line-height:1.066666rem; padding-right: 1.066666rem; padding-left: 0.266666rem; position:relative;overflow: hidden;border-radius:0.106666rem;border:1px solid #eee}
@@ -2194,7 +2194,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .refresh_list_gz {  background-color: #f8f8f8;border-radius: .213333rem; padding: .2rem; font-size: 0.32rem; margin: 0.266666rem 0;color:#999; line-height:0.666666rem;}
 .refresh_list_gz_n{color:#2778f8}
 .refresh_listname_zt{ padding-top: 0.266666rem;}
-/*去付款*/
+/* section */
 .pay_choice_box{ background-color: #fff;border-radius:0.213333rem; margin:0.32rem; padding: 0.266666rem; font-size: 0.373333rem;}
 .pay_xymoney{ background:#fff; margin-top:10px; padding:10px 10px 10px 100px; position:relative; min-height:30px;}
 .pay_xymoney input{height:20px; line-height:20px;border:none; padding:0; margin:0; font-size:14px;}
@@ -2210,7 +2210,7 @@ content:''; position:absolute;right:0px;bottom:0px; display:inline-block}
 .member_set_meal_fk_zf{ padding:20px 0px;;}
 .member_set_meal_fk_zf .member_set_meal_fk_zf_bth{width:100%;height:1.28rem;color:#fff;border:none; margin:0; padding:0;font-size:16px; background-color: #2778F8;background:linear-gradient(#2778f8,#2778f8);border-radius:0.213333rem;}
 
-/*发布视频面试*/
+/* section */
 .spms_show{padding:0.266666rem 0.266666rem 0.533333rem 0.266666rem}
 .spms_tit{ font-weight: bold; font-size: 0.426666rem; padding-bottom: 0.266666rem;}
 .spms_box{width: 100%; max-height: 8rem; overflow: auto;}
@@ -2340,7 +2340,7 @@ content:''; position:absolute;right:0px;bottom:0px; display:inline-block}
     font-size: 12px;
 }
 .jobSelectsnew{height: 50px;border-rsdius:6px; line-height: 50px; padding-left: 10px;}
-/*20220317后改版创建简历*/
+/* section */
 .yun_createbox{width:100%;background-color:#fff;border-radius:.213333rem;padding:0.12rem 0}
 .yun_createlist{ padding-left:2.8rem ; position: relative;font-size: 0.346666rem; border-bottom:1px solid #f8f8f8}
 .yun_createlist_pr{ padding-right: 2.666666rem;}
@@ -2425,7 +2425,7 @@ background-size:100%; position: absolute;left:10px;top:30px}
 .yun_t_jobxztextbox_z{padding:0px 10px}
 .yun_t_jobxz_my{height:50px; line-height: 30px; font-size:14px;color:#999; position: relative;}
 .yun_t_jobxz_my_kg{ position: absolute;left:70px;top:0px}
-/*后改版创建简历*/
+/* section */
 .jobSelects{
     overflow: hidden;
     /*background: #f90 url(../../../images/duob.pn) no-repeat center ;*/
@@ -2469,7 +2469,7 @@ background-size:100%; position: absolute;left:10px;top:30px}
 .gzh_gzbox_n{ font-size:0.426666rem; font-weight: bold; padding:0.4rem 0;}
 .gzh_gzbox_p{font-size:0.4rem;padding:0.133333rem 0;color:#999}
 
-/*修改*/
+/* section */
 .comCardlAlls{
     overflow: hidden;
     position: relative;
@@ -2732,7 +2732,7 @@ background-size:100%; position: absolute;left:10px;top:30px}
 }
 
 
-/*2023.08.11 添加*/
+/* section */
 .youxuanModels{
     overflow: hidden;
     position: relative;
@@ -3190,7 +3190,7 @@ background-size:100%; position: absolute;left:10px;top:30px}
     padding: 0 0.3rem;
 }
 
-/*消息7.0新款*/
+/* section */
 .chatnewcardbg{width:100%;min-height:140px;background:url(../../images/newbg.png) no-repeat; background-size:100%;}
 .chatnewcardheader{  
     color: #000;
@@ -3223,7 +3223,7 @@ background-size:100%; position: absolute;left:10px;top:30px}
 
 
 
-/*2023.12改*/
+/* section */
 .commemberTops .company{
     position: relative;
     padding: 0.25rem 0 0 0;
@@ -4028,7 +4028,7 @@ background-size:100%; position: absolute;left:10px;top:30px}
 .boomVipBianOldInpt::after{
     overflow: hidden;
     position: absolute;
-    content: "岁";
+    content: attr(data-age-suffix);
     display: block;
     top: 12px;
     right: 8px;

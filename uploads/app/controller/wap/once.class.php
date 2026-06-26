@@ -45,7 +45,7 @@ class once_controller extends common{
 		$this->yunset("headertitle","店铺招聘");
 		$this->yuntpl(array('wap/once'));
 	}
-	//短信验证
+	// 
 	function sendmsg_action(){
         $noticeM	=	$this->MODEL('notice');
         $result		=	$noticeM->jycheck($_POST['authcode'],'店铺招聘');
@@ -78,7 +78,7 @@ class once_controller extends common{
 			$id		=	(int)$_GET['id'];
 			$row	=	$onceM->getOnceInfo(array('id'=>$id));
 			if(!empty($row)){
-			//检测当前密码是否对应
+			// 
 				session_start();
 				
 				if($row['password'] == $_SESSION['oncepass']){
@@ -91,7 +91,7 @@ class once_controller extends common{
 			}
 		}else{
 			if($this->config['once_pay_price']!="0" && $this->config['once_pay_price']!="" && $_COOKIE['fast']){
-				//未付款订单
+				// 
 				$companyorderM	=	$this->MODEL('companyorder');
 				$orderNum 		= 	$companyorderM->getCompanyOrderNum(array('order_state'=>1,'type'=>25,'fast'=>$_COOKIE['fast']));
 				$this->yunset("num",$orderNum);
@@ -239,7 +239,7 @@ class once_controller extends common{
 
 			if($return['id']){
 				if ($return['order_state'] == 2) {
-                    $data['msg']	=	'支付成功';
+                    $data['msg']	=	yun_auto_t('支付成功');
                     $this->ACT_msg_wap($data['url'], $data['msg'], 1, 3);
                 } else {
                     if($_POST['paytype']=='alipay'){
@@ -253,7 +253,7 @@ class once_controller extends common{
                     header('Location: '.$url);exit();
                 }
 			}else{
-				$data['msg']	=	'提交失败！！';
+				$data['msg']	=	yun_auto_t('提交失败！！');
 				$this->ACT_msg_wap($data['url'],$data['msg'], 1, 3);
 			}
 			

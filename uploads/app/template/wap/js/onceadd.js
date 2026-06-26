@@ -33,10 +33,10 @@ function oncesubmit(){
 			pic = pic;
 		}
 		if(title == '') {
-			return showToast('请填写招聘名称！');
+			return showToast(WAP_JS_I18N.s75dc91e2);
 		}
 		if(salary == '') {
-			return showToast('请填写工资！');
+			return showToast(WAP_JS_I18N.sd4cef9af);
 		}
 		var cionly ='';
 		if(ct.length<=0 || ct=='new Array()'){
@@ -44,56 +44,56 @@ function oncesubmit(){
 		}
 		if(cionly == '1'){
 			if(provinceid == '') {
-				return showToast('请选择工作地区！');
+				return showToast(WAP_JS_I18N.sfb9ab0e0);
 			}
 		}else{
 			if(cityid == '') {
-				return showToast('请选择工作地区！');
+				return showToast(WAP_JS_I18N.sfb9ab0e0);
 			}
 		}
 		
 		if(address == '') {
-			return showToast('请填写详细地址！');
+			return showToast(WAP_JS_I18N.s86050b0b);
 		}
 		if((typeof(content) == 'undefined' || content == '') && contents == '') {
-			return showToast('请填写招聘要求！');
+			return showToast(WAP_JS_I18N.sc4809043);
 		}
 		if(companyname == '') {
-			return showToast('请填写店面名称！');
+			return showToast(WAP_JS_I18N.se9eba2fb);
 		}
 		if(linkman == '') {
-			return showToast('请填写联系人！');
+			return showToast(WAP_JS_I18N.sdb562be6);
 		}
 		if(phone == '') {
-			return showToast('请填写联系电话！');
+			return showToast(WAP_JS_I18N.s54e1477a);
 		}
 		if(isjsMobile(phone) == false) {
-			return showToast('请注意联系电话格式！');
+			return showToast(WAP_JS_I18N.s78365e7d);
 		}
 		if(exitsid("moblie_code")){
 			var moblie_code = $("#moblie_code").val();
 			if(moblie_code == ''){
-				return showToast('请填写短信验证码！');			
+				return showToast(WAP_JS_I18N.sd37489f1);			
 			}
 			formData.append('moblie_code', moblie_code);
 		}
 		if (!id && oncepricegear_num == 0) {
-			return showToast('招聘时长未配置，请联系管理员！');
+			return showToast(WAP_JS_I18N.se29d59da);
 		}
 		if(!id && oncepricegear == '') {
-			return showToast('请选择招聘时长！');
+			return showToast(WAP_JS_I18N.s6ad537e7);
 		}
 		if (document.getElementById('yyzz') != null && document.getElementById('yyzzpreviewimg').getAttribute('src') == '') {
-			return showToast('请上传店铺营业执照！');
+			return showToast(WAP_JS_I18N.s7d5b4808);
 		}
 		if(password == '') {
-			return showToast('请填写密码！');
+			return showToast(WAP_JS_I18N.s46dd03e4);
 		}
-		if(code_web.indexOf("店铺招聘")>=0) {
+		if(code_web.indexOf(WAP_JS_I18N.s597a5f0f)>=0) {
 			if(code_kind == 1) {
 				var code = $('#checkcode').val();
 				if(code == '') {
-					return showToast('请填写验证码！');
+					return showToast(WAP_JS_I18N.s377e9f00);
 				}
 			}else if(code_kind > 2) {
 				$("#bind-captcha").attr('data-id','oncesubmit');
@@ -130,7 +130,7 @@ function oncesubmit(){
 		formData.append('preview', document.getElementById('pic').value != '' ? preview : '');
 		formData.append('id', id);
 
-		if(code_web.indexOf("店铺招聘") >= 0){
+		if(code_web.indexOf(WAP_JS_I18N.s597a5f0f) >= 0){
 			if(code_kind == 1){
 				formData.append('authcode', code);
 			}else if(code_kind > 2){

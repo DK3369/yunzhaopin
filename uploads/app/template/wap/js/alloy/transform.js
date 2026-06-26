@@ -69,7 +69,7 @@
             return this;
 
         },
-        // 解决角度为90的整数倍导致Math.cos得到极小的数，其实是0。导致不渲染
+        // 90Math.cos，0。
         _rounded: function(value,i){
             i= Math.pow(10, i || 15);
             // default
@@ -168,7 +168,7 @@
         element.matrix3D = new Matrix3D();
         element.perspective = 500;
         element.scaleX = element.scaleY = element.scaleZ = 1;
-        //由于image自带了x\y\z，所有加上translate前缀
+        // imagex\y\z，translate
         element.translateX = element.translateY = element.translateZ = element.rotateX = element.rotateY = element.rotateZ =element.skewX=element.skewY= element.originX = element.originY = element.originZ = 0;
     }
 

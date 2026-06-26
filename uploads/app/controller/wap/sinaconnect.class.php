@@ -67,7 +67,7 @@ class sinaconnect_controller extends common
 
                     if ($this->uid != "" && $this->username != "") {
 
-                        //已登录状态下 重新绑定账户
+                        // 
                         $UserinfoM->upInfo(array('sinaid' => $tokenuid), array('sinaid' => ''));
                         $UserinfoM->upInfo(array('uid' => $this->uid), array('sinaid' => $tokenuid));
                         $this->wapheader('member/index.php?c=binding');
@@ -78,13 +78,13 @@ class sinaconnect_controller extends common
                     if (is_array($userinfo)) {
                         if ($userinfo['usertype'] > 0) {
                             if ($userinfo['status'] == '2' || $userinfo['status'] == '4') {
-                                // 账号被锁定
+                                // 
                                 header('Location: ' . Url('wap', array('c' => 'login', 'a' => 'loginlock', 'type' => 1)));
                                 exit();
                             }
                             $UserinfoM->upInfo(array('uid' => $userinfo['uid']), array('login_date' => time()));
 
-                            // 会员日志，记录手动登录
+                            // ，
                             $LogM       =   $this->MODEL('log');
                             $logContent =   '账号登录：快捷登录';
                             $logDetail  =   'H5 新浪微博快捷登录';
@@ -105,7 +105,7 @@ class sinaconnect_controller extends common
                             if ($logtime != $nowtime) {
 
                                 $this->MODEL('integral')->invtalCheck($userinfo['uid'], $userinfo['usertype'], "integral_login", "会员登录", 22);
-                                //登录日志
+                                // 
                                 $logdata['uid']         =   $userinfo['uid'];
                                 $logdata['usertype']    =   $userinfo['usertype'];
                                 $logdata['did']         =   $userinfo['did'];
@@ -235,7 +235,7 @@ class sinaconnect_controller extends common
         if ($this->config['sy_reg_type'] == 2 && empty($userinfo)) {
             $result =   array(
                 'error' =>  2,
-                'msg'   =>  '请先注册账号',
+                'msg'   =>  yun_auto_t('请先注册账号'),
                 'url'   =>  Url('wap', array('c' => 'register'))
             );
         }else {
@@ -250,4 +250,3 @@ class sinaconnect_controller extends common
         exit();
     }
 }
-

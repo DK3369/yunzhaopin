@@ -34,7 +34,7 @@ class wxoauth_controller extends common{
 				$params		=	json_decode($response);
 				
 				if($params->openid){
-					//关注公众号并绑定帐号 或者 直接以微信注册的账户
+					// 
 					$userinfoM			=	$this->MODEL('userinfo');
 					$uwhere['wxid']		=	$params->openid;
 					if (!empty($params->openid)){
@@ -48,16 +48,16 @@ class wxoauth_controller extends common{
                         if ($userinfo['login_ip'] != $ip || $userinfo['login_address'] =='') {
                             $upLogin['login_address'] = getIpAddress($ip);
                         }
-					    // 更新登录时间
+					    // 
 					    $userinfoM->upInfo(array('uid' => $userinfo['uid']), $upLogin);
 					    
 					    if ($userinfo['usertype'] > 0){
 					        if ($userinfo['status'] == '2' || $userinfo['status'] == '4') {
-					            // 账号被锁定
+					            // 
 					            echo "<script>window.location.href='".Url('wap',array('c'=>'login','a'=>'loginlock','type'=>1))."';</script>";
 					            exit();
 					        }
-                            // 会员日志，记录手动登录
+                            // ，
                             $LogM       =   $this->MODEL('log');
                             $logDetail  =   '授权登录：微信oauth登录成功';
                             $LogM->addMemberLog($userinfo['uid'], $userinfo['usertype'], '账号登录：授权登录', 32, 1, $logDetail);
@@ -67,7 +67,7 @@ class wxoauth_controller extends common{
 					        
 					        if($logtime!=$nowtime){
 					            $this->MODEL('integral')->invtalCheck($userinfo['uid'],$userinfo['usertype'],"integral_login","会员登录",22);
-					            //登录日志
+					            // 
 					            $logdata['uid']		  =	 $userinfo['uid'];
 					            $logdata['usertype']  =	 $userinfo['usertype'];
 					            $logdata['did']		  =	 $userinfo['did'];
@@ -81,12 +81,12 @@ class wxoauth_controller extends common{
 				}
 			}
 		}
-		// 已绑定
+		// 
 		if($userinfo['uid']){
 		    
 		    echo "<script>window.location.href='".Url('wap')."member/';</script>";
 		}else{
-		    // 未绑定，进入微信绑定页面
+		    // ，
 		    echo "<script>window.location.href='".Url('wap',array('c'=>'wxconnect','wxoauth'=>1))."';</script>";
 		    
 		}

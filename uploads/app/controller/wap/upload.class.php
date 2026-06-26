@@ -4,9 +4,9 @@ class upload_controller extends common{
 	
 	private $tokenSalt = 'phpyun';//加密的salt
 
-	//生成二维码传图的密钥（放到二维码中）
+	// （）
 	private function generateToken($type, $uid){
-		//考虑到二维码承载的信息长度有限，tokenSalt和password都限定字符串长度，以得到较短的token
+		// ，tokenSaltpassword，token
 		$userinfoM	=	$this->MODEL('userinfo');
 		$row 		= 	$userinfoM->getInfo(array('uid'=> $uid),array('field'=>'`password`'));
 		$password 	= isset($row['password']) ? $row['password'] : '';
@@ -17,7 +17,7 @@ class upload_controller extends common{
 		return yunEncrypt("{$type}|{$uid}|{$password}|{$time}", $this->tokenSalt);
 	}
 
-	//验证二维码传图的密钥（提交图片之前进行验证）
+	// （）
 	private function checkToken($token){
 		$token		= 	urldecode($token);
 		
@@ -28,11 +28,11 @@ class upload_controller extends common{
 		if(count($arr) != 4 || $arr[1] == ''){
 			return false;
 		}
-		// token过期了
+		// token
 		if(intval($arr[3] + 86400) < time()){
 		    return false;
 		}
-		//根据uid查询password，对比password
+		// uidpassword，password
 		$uid = $arr[1];
 		$userinfoM	=	$this->MODEL('userinfo');
 		$row 		= 	$userinfoM->getInfo(array('uid'=> $uid),array('field'=>'`password`'));
@@ -45,12 +45,12 @@ class upload_controller extends common{
 		return array('uid' => $uid, 'type' => $arr[0]);
 	}
 
-	//生成二维码（扫码上传入口）
+	// （）
 	public function qrcode_action(){
 		if(!$this->uid){
 			exit(yun_auto_t('请先登录登录'));
 		}
-		//传入上传类型 type , save_action中根据类型选择不同的保存路径
+		// type , save_action
 		$type 	= isset($_GET['type']) ? $_GET['type'] : '';
 		if($type == ''){
 			exit(yun_auto_t('扫码上传图片可选类型type：1企业营业执照上传，2个人身份证上传，3个人头像，4企业logo'));
@@ -63,7 +63,7 @@ class upload_controller extends common{
 		YunQrcode::generatePng2($url, 4);
 	}
 
-	//wap站扫码上传页面
+	// wap
 	public function p_action(){
 
 		$userinfoM	=	$this->MODEL('userinfo');
@@ -111,16 +111,16 @@ class upload_controller extends common{
 		}
 	}
 
-	//保存上传
+	// 
 	public function uploadimg_save_action(){
 	    $token = isset($_POST['token']) ? $_POST['token'] : '';
 		if($token == ''){
-			echo yun_json_encode(array('status' => -1, 'msg' => '二维码传图出错，请联系网站管理员'));
+			echo yun_json_encode(array('status' => -1, 'msg' => yun_auto_t('二维码传图出错，请联系网站管理员')));
 			exit;
 		}
 		$arr = $this->checkToken($token);
 		if($arr == false || !isset($arr['type']) || !isset($arr['uid']) ){
-			echo yun_json_encode(array('status' => -1, 'msg' => '操作超时，请刷新pc端网页二维码重试' . $token));
+			echo yun_json_encode(array('status' => -1, 'msg' => yun_auto_t('操作超时，请刷新pc端网页二维码重试') . $token));
 			exit;
 		}
 
@@ -132,12 +132,12 @@ class upload_controller extends common{
 			echo yun_json_encode(array('status' => 1, 'path' => $path));
 			exit;
 		}else{
-			echo yun_json_encode(array('status' => -1, 'msg' => '上传失败，请重试'));
+			echo yun_json_encode(array('status' => -1, 'msg' => yun_auto_t('上传失败，请重试')));
 			exit;
 		}
 	}
 
-	//根据上传图片的不同环境，保存图片路径到对应的地方，及执行其他逻辑
+	// ，，
 	private function uploadimg_save_path($type, $uid){
 		
 		$companyM 	= 	$this->MODEL('company');
@@ -242,7 +242,7 @@ class upload_controller extends common{
             }
             
 		}else{
-			echo yun_json_encode(array('status' => -1, 'msg' => '请上传图片'));exit;
+			echo yun_json_encode(array('status' => -1, 'msg' => yun_auto_t('请上传图片')));exit;
 		}
 	}
 	/**
@@ -288,7 +288,7 @@ class upload_controller extends common{
 		$error			=	'';
 
 		if(isset($_POST['preview'])){
-				    // pc端上传
+				    // pc
 		    $upArr    	=  array(
 		        'base'  =>  $_POST['preview'],
 		        'dir'   =>  'cert'

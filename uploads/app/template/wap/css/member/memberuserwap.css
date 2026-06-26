@@ -15,7 +15,7 @@ body {
 
 
 
-/*公共头部*/
+/* section */
 
 .personal_details_header {
     position: fixed;
@@ -60,7 +60,7 @@ body {
     ;
 }
 
-/*个人信息*/
+/* section */
 .personal_details_card_head_portrait{position:relative;width:100%;height:1.066667rem;display:flex;align-items:center}
 .personal_details_left{width:2.4rem;font-size:0.4rem;font-weight:500;color:#666; position: absolute;left:0;top:-0.053333rem;}
 .personal_details_center{ font-size:.32rem;font-weight:500;color:#999; padding-left: 2.4rem;}
@@ -93,7 +93,7 @@ body {
         color: #999;
       }
 	 .personal_details_leftmt{top:0.266666rem;}
-/* 个人中心 创建我的简历 */
+/* section */
 
 .Create_resume_header{position:relative;width:100%;height:3.993333rem;padding-top:.266667rem;padding-left:.75rem;padding-right:.64rem;background-color:#2778f8}
 .resume_header_icon_new{position:absolute;top:.213333rem;left:.32rem;width:.28rem;height:.466667rem;display:flex;align-items:center;justify-content:center}
@@ -117,7 +117,7 @@ body {
 .Create_resume_job{width:100%;display:flex;justify-content:center;font-size:.33333rem;font-weight:500;color:#999}
 .Create_resume_btn{margin:.533333rem 0;width:100%;height:1.28rem;background-color:#2778f8;border-radius:.213333rem;display:flex;align-items:center;justify-content:center;font-size:.453333rem;font-weight:700;color:#fff}
 
-/* 个人中心验证手机号 */
+/* section */
 .verification_form{margin-top:1.08rem;padding:0 .586667rem}
 .verification_form_email{padding:.533333rem .586667rem 0 .586667rem}
 .form_email_title{font-size:.346667rem;font-weight:500;color:#333;margin-bottom:.533333rem;display:inline-block}
@@ -131,7 +131,7 @@ body {
 .verification_form_btn{margin-top:1.066667rem;width:100%;height:1.28rem;background-color:#2778f8;border-radius:.213333rem;display:flex;align-items:center;justify-content:center;font-size:.453333rem;font-weight:700;color:#fff}
 
 
-/* 个人中心求职意向 */
+/* section */
 .issue_post_body {
     padding: .32rem
 }
@@ -212,7 +212,7 @@ body {
     color: #333
 }
 
-/* 个人中心 已投简历 */
+/* section */
 .Posted_background{width:100%;height:4rem;background-color:#2778f8;z-index:99}
 .Posted_title{position:fixed;top:.373333rem;left:50%;transform:translateX(-50%);width:100%;min-width:375px;max-width:750px;display:flex;align-items:center;justify-content:center;font-size:.453333rem;font-weight:500;color:#fff;z-index:9}
 .Posted_icon{position:absolute;top:50%;left:.32rem;transform:translateY(-50%);width:.28rem;height:.453333rem;display:flex;align-items:center;justify-content:center}
@@ -252,7 +252,7 @@ body {
 .Posted_state_hrtip{font-size:.32rem;color:#ccc;padding-top:.4rem;border-top:.026667rem solid #f4f4f4;margin-top:.4rem}
 .Posted_state_hrtip_yq{color:#2778f8}
 
-/* 个人中心 待面试 */
+/* section */
 
 .interview_time_box {
     width: 100%;
@@ -313,7 +313,7 @@ body {
     color: #999
 }
 
-/* 个人中心 待接受*/
+/* section */
 .popular_header {
     width: 100%;
     height: 4rem;
@@ -586,7 +586,7 @@ body {
     font-size: 0.32rem;
 }
 
-/* 个人中心 面试评价*/
+/* section */
 .issue_card_title {
     width: 100%;
     font-size: .426667rem;
@@ -691,7 +691,7 @@ body {
     border-radius: .213333rem
 }
 
-/* 个人中心 求职意向*/
+/* section */
  
 .job_intention_left {
     width: 22%;
@@ -708,7 +708,7 @@ body {
 
 .job_intention_right {
     width: 60%;
-    /* 超过文本长度。。。显示 */
+    /* section */
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -732,11 +732,11 @@ body {
     margin-bottom: 0
 }
 
-/* 编辑简历 */
+/* section */
 
 
 
-/*简历置顶*/
+/* section */
 .wap_member {
     padding: 0 .32rem
 }
@@ -982,7 +982,7 @@ body {
     border-radius: 0.213333rem
 }
 
-/*设置*/
+/* section */
 .yunset {
     padding: .266667rem .4rem;
     background: #fff;
@@ -1032,7 +1032,7 @@ body {
     top: .48rem;
 }
 
-/*谁看过我*/
+/* section */
 .Posted_card_look {
     margin-top: .266667rem;
     padding-top: .266667rem;
@@ -1154,7 +1154,7 @@ body {
     font-size: 0.32rem;
 }
 
-/*视频面试*/
+/* section */
 .interview_card {
     width: 100%;
     background-color: #fff;
@@ -1281,7 +1281,7 @@ body {
     height: 100%;
 }
 
-/*兼职*/
+/* section */
 .yun_m_tit {
     width: 100%;
     text-align: center;
@@ -1492,7 +1492,7 @@ body {
     color: #666;
   }
   
-/*身份验证*/
+/* section */
 .sfyz_box{ background-color: #f8f8f8;border-radius:0.533333rem;height:1.226666rem; line-height: 1.226666rem; padding:0 0.533333rem; margin-top: 0.133333rem;}
 .sfyz_box input{width:100%;height:1.226666rem; line-height: 1.226666rem; background: none;border-radius:0.533333rem;}
 .sfyz_tip{ font-size:0.32rem;color:#999; line-height: 0.533333rem;}
@@ -1502,7 +1502,7 @@ body {
 .chooseimage_idcard{width:2.4rem;height:2.4rem; position: absolute;left:0;top:0;  z-index: 1;border-radius:0.213333rem}
 .idcard_boxfile{width:2.4rem;height:2.4rem; position: absolute;left:0;top:0; opacity: 0; z-index: 2;}
 
-/* 使用明细 */
+/* section */
 
 .detail_header_nav{width:100%;height:1.2rem;background-color:#fff}
 .detail_title_back{position:absolute;top:50%;left:.4rem;transform:translateY(-50%);width:.28rem;height:.48rem;display:flex;align-items:center;justify-content:center}
@@ -1547,7 +1547,7 @@ body {
 .compensation_input_pay{font-size:.346667rem;font-weight:500;color:#999}
 .compensation_input_btn{width:100%;height:1.066667rem;background-color:#2778f8;font-size:.453333rem;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;border-radius:.213333rem}
 
-/*赏金明细*/
+/* section */
 .money_header{width:100%;height:2.8rem;background-color:#2e2f32}
 .money_header_title{position:relative;width:100%;height:1.173333rem;display:flex;align-items:center;justify-content:center;font-size:.453333rem;font-weight:500;color:#fff}
 .money_title_icon{width:.28rem;height:.466667rem;position:absolute;top:50%;left:.333333rem;transform:translateY(-50%);display:flex;align-items:center;justify-content:center}
@@ -1565,7 +1565,7 @@ color: #E3B36B;
 .money_body_btns{width:100%;display:flex}
 .money_btns_transform{width:3.2rem;height:1.066667rem;background-color:#fff;border-radius:.533333rem;box-shadow:0 .053333rem .16rem 0 rgba(51,51,51,.1);display:flex;align-items:center;justify-content:center;margin-right:.2rem;font-size:.373333rem;font-weight:700;color:#3f4044}
 .money_btns_withdraw{width:5.333333rem;height:1.066667rem;background-color:#3f4044;box-shadow:0 .08rem .133333rem 0 rgba(51,51,51,.4);border-radius:.533333rem;display:flex;align-items:center;justify-content:center;font-size:.373333rem;font-weight:700;color:#fff}
-/* 提现 */
+/* section */
 .tx_wxtsbg{width:100%;background-image:linear-gradient(#2e2f32 5%,#f3f3f3,#f3f3f3);}
 .tx_wxts{color:#fff;padding:0.453333rem; font-size: 0.32rem;color;#fff}
 .tx_body{padding-left:.453333rem;padding-right:.453333rem;}
@@ -1597,7 +1597,7 @@ color: #E3B36B;
 .deposit_body_btn{margin-top:1.066667rem;width:100%;height:1.28rem;background-color:#2e2f32;display:flex;align-items:center;justify-content:center;box-shadow:0 .133333rem .32rem 0 rgba(46,47,50,.4);border-radius:.64rem;font-size:.48rem;font-weight:700;color:#fff}
 .deposit_card_integral{font-size:.4rem;font-weight:700;color:#333}
 .card_integral_number{font-size:.4rem;font-weight:700;color:#e3b36b;margin-right:.04rem}
-/*自我评价*/
+/* section */
 .yun_my_introduce_box{ background:#fff;border-radius:0.213333rem; }
 .yun_my_introduce_tit{ padding:.533333rem 0 .133333rem 0; font-size:.426667rem; font-weight: bold;}
 .yun_my_introduce_tit_s{ font-size:.32rem;color:#999; margin-left:.266667rem; font-weight: normal; display:inline-block}

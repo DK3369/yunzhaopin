@@ -33,11 +33,11 @@ var nativeShare = function (elementNode, config) {
     this.img_title = config.img_title || document.title || '';
     this.from = config.from || window.location.host || '';
     this.ucAppList = {
-        sinaWeibo: ['kSinaWeibo', 'SinaWeibo', 11, '新浪微博'],
-        weixin: ['kWeixin', 'WechatFriends', 1, '微信好友'],
-        weixinFriend: ['kWeixinFriend', 'WechatTimeline', '8', '微信朋友圈'],
-        QQ: ['kQQ', 'QQ', '4', 'QQ好友'],
-        QZone: ['kQZone', 'QZone', '3', 'QQ空间']
+        sinaWeibo: ['kSinaWeibo', 'SinaWeibo', 11, WAP_JS_I18N.s8fbd3faf],
+        weixin: ['kWeixin', 'WechatFriends', 1, WAP_JS_I18N.s4e02faad],
+        weixinFriend: ['kWeixinFriend', 'WechatTimeline', '8', WAP_JS_I18N.s38b0b472],
+        QQ: ['kQQ', 'QQ', '4', WAP_JS_I18N.s05faad4f],
+        QZone: ['kQZone', 'QZone', '3', WAP_JS_I18N.se28c9d7a]
     };
 
     this.share = function (to_app) {
@@ -69,7 +69,7 @@ var nativeShare = function (elementNode, config) {
                     img_url: img,
                     img_title: img_title,
                     to_app: to_app,//微信好友1,腾讯微博2,QQ空间3,QQ好友4,生成二维码7,微信朋友圈8,啾啾分享9,复制网址10,分享到微博11,创意分享13
-                    cus_txt: "请输入此时此刻想要分享的内容"
+                    cus_txt: WAP_JS_I18N.sdc3614c7
                 };
                 ah = to_app == '' ? '' : ah;
                 if (typeof(browser) != "undefined") {
@@ -89,14 +89,14 @@ var nativeShare = function (elementNode, config) {
 
     this.html = function() {
         var position = document.getElementById(this.elementNode);
-        var html = '<div class="share_bgbox">'+ 
-		    '<div class="label nativesshare">分享到</div>'+
+        var html = '<div class="share_bgbox">'+
+		    '<div class="label nativesshare">'+WAP_JS_I18N.s74c11dae+'</div>'+
             '<div class="list clearfix">'+
-            '<span data-app="weixin" class="nativeShare weixin"><i></i>微信好友</span>'+
-            '<span data-app="weixinFriend" class="nativeShare weixin_timeline"><i></i>微信朋友圈</span>'+
-            '<span data-app="QQ" class="nativeShare qq"><i></i>QQ好友</span>'+
-            '<span data-app="QZone" class="nativeShare qzone"><i></i>QQ空间</span>'+
-			'<span data-app="sinaWeibo" class="nativeShare weibo"><i></i>新浪微博</span>'+
+            '<span data-app="weixin" class="nativeShare weixin"><i></i>'+WAP_JS_I18N.s4e02faad+'</span>'+
+            '<span data-app="weixinFriend" class="nativeShare weixin_timeline"><i></i>'+WAP_JS_I18N.s38b0b472+'</span>'+
+            '<span data-app="QQ" class="nativeShare qq"><i></i>'+WAP_JS_I18N.s05faad4f+'</span>'+
+            '<span data-app="QZone" class="nativeShare qzone"><i></i>'+WAP_JS_I18N.se28c9d7a+'</span>'+
+			'<span data-app="sinaWeibo" class="nativeShare weibo"><i></i>'+WAP_JS_I18N.s8fbd3faf+'</span>'+
             '</div>'
 			'</div>';
         position.innerHTML = html;
@@ -158,7 +158,7 @@ var nativeShare = function (elementNode, config) {
 			
         } else {
 			if(this.url.indexOf('register')!=-1){
-                showToast('请使用微信或手机QQ/UC浏览器打开分享！');
+                showToast(WAP_JS_I18N.s000c20c2);
             }else{
                 $('#otherBrowser').show();
             }

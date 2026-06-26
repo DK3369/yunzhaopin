@@ -29,10 +29,10 @@
 		}
 		var _share = function() {
 			service.send(msg, function() {
-				plus.nativeUI.toast("分享到\"" + service.description + "\"成功！");
+				plus.nativeUI.toast(WAP_JS_I18N.s74c11dae + service.description + WAP_JS_I18N.s15136bf7);
 				callback && callback(true);
 			}, function(e) {
-				plus.nativeUI.toast("分享到\"" + service.description + "\"失败！");
+				plus.nativeUI.toast(WAP_JS_I18N.s74c11dae + service.description + WAP_JS_I18N.sebe62412);
 				callback && callback(false);
 			})
 		};
@@ -42,7 +42,7 @@
 			service.authorize(function() {
 				_share(service, msg, callback);
 			}, function(e) {
-				console.log("认证授权失败");
+				console.log(WAP_JS_I18N.s3fd33816);
 				callback && callback(false);
 			})
 		}
@@ -51,10 +51,10 @@
 	function openSystem(msg, callback) {
 		if(plus.share.sendWithSystem) {
 			plus.share.sendWithSystem(msg, function() {
-				//TODO 系统分享暂不支持回调
+				// TODO
 				//callback && callback(true);
 			}, function() {
-				//TODO 系统分享暂不支持回调
+				// TODO
 				//callback && callback(false);
 			});
 		} else {
@@ -71,14 +71,14 @@
 
 		/*if(shareServices.weixin && isWechatInstalled() && !/360\sAphone/.test(navigator.userAgent)) {
 			plus.nativeUI.actionSheet({
-				title: '分享到',
-				cancel: "取消",
+				title: WAP_JS_I18N.s74c11dae,
+				cancel: WAP_JS_I18N.s625fb26b,
 				buttons: [{
-					title: "微信消息"
+					title: WAP_JS_I18N.sf8d4a7de
 				}, {
-					title: "微信朋友圈"
+					title: WAP_JS_I18N.s38b0b472
 				}, {
-					title: "更多分享"
+					title: WAP_JS_I18N.s2534b1c6
 				}]
 			}, function(e) {
 				var index = e.index;
@@ -105,7 +105,7 @@
 				}
 			})
 		} else {*/
-			//系统分享
+			// 
 			//var url = msg.href ? ('( ' + msg.href + ' )') : '';
 			//msg.title = msg.title + url+'sssss';
 			//msg.content = msg.content + url+'sss';

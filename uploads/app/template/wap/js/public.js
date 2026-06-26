@@ -21,7 +21,7 @@ function getFormValue(formid) {
 
 		item.name = (item.name || '').replace(/^\s*|\s*&/, '');
 		if (!item.name) return;
-		//用于支持数组 name
+		// name
 		if (/^.*\[\]$/.test(item.name)) {
 			var key = item.name.match(/^(.*)\[\]$/g)[0];
 			nameIndex[key] = nameIndex[key] | 0;
@@ -132,24 +132,24 @@ function pleaselogin(msg,url){
 		window.location.href = url;
 	}, wapPub('cancel'), wapPub('login'));
 }
-// 统一删除函数
+// 
 function vant_del(msg = '', url){
 	showConfirm(msg, function(){
 		showLoading();
 		$.get(url, function(res){
 			if(!res.url){
-				// 不需要跳转，返回上一页
+				// ，
 				showToast(res.msg, 2, function(){
 					window.history.go(-1);
 				});
 			}else {
 				if(res.url == '1'){
-					// 页面刷新
+					// 
 					showToast(res.msg, 2, function(){
 						window.location.reload();
 					});
 				}else{
-					// 跳转到需要的地址
+					// 
 					showToast(res.msg, 2, function(){
 						window.location.href = res.url;
 					});
@@ -196,11 +196,11 @@ $(document).ready(function () {
 	});
 })
 var jl_flag;
-// 节流函数：在一定时间内，只能触发一次
+// ：，
 function throttle(func, wait = 1000){
 	if (!jl_flag) {
 		jl_flag = true;
-		// 如果是立即执行，则在wait毫秒内开始时执行
+		// ，wait
 		typeof func === 'function' && func();
 		timer = setTimeout(() => {
 			jl_flag = false;
@@ -245,7 +245,7 @@ function attention(id,type,url){
 	});
 }
 
-// 向左滚动
+// 
 function marquee_l(time,id){
 	$(function(){
 		var _wrap=$(id);
@@ -264,7 +264,7 @@ function marquee_l(time,id){
 		}).trigger('mouseleave');
 	});
 }
-// 向上滚动
+// 
 function marquee(time,id){
 	$(function(){
 		var _wrap=$(id);
@@ -320,7 +320,7 @@ function savepwd(){
 * data:localStorage的Value
 * expire:localStorage的过期时间,默认是1天后过期
 ****/
-//设置缓存
+// 
 function localStorageSet(name, data, expire = 24){
 	expire = new Date().getTime() + expire * 60 * 60 * 1000;
 	var obj = {
@@ -329,7 +329,7 @@ function localStorageSet(name, data, expire = 24){
 		};
 	window.localStorage.setItem(name, JSON.stringify(obj));
 }
-//读取缓存
+// 
 function localStorageGet(name){
 	var storage = window.localStorage.getItem(name);
 	var result = null;
@@ -344,16 +344,16 @@ function localStorageGet(name){
 	}
 	return result;
 }
-// 判断arr是否为一个数组，返回一个bool值
+// arr，bool
 function isArray (arr) {
     return Object.prototype.toString.call(arr) === '[object Array]';
 }
-// 深度克隆
+// 
 function deepClone (obj) {
-	// 对常见的“非”值，直接返回原来值
+	// “”，
 	if([null, undefined, NaN, false].includes(obj)) return obj;
     if(typeof obj !== "object" && typeof obj !== 'function') {
-		//原始类型直接返回
+		// 
         return obj;
     }
     var o = isArray(obj) ? [] : {};
@@ -374,7 +374,7 @@ var timeout = null;
  * @return null
  */
 function debounce(func, wait = 500) {
-	// 清除定时器
+	// 
 	if (timeout !== null) clearTimeout(timeout);
 	timeout = setTimeout(function() {
 		typeof func === 'function' && func();
@@ -593,7 +593,7 @@ function post2ajax(target_form) {
 					}
 					return false; 
                 } else if (json_data.url) {
-                	// 处理缓存，返回登陆页面后刷新
+                	// ，
                 	window.sessionStorage.setItem("needRefresh", true);
                     location.href = json_data.url;
 					return false; 

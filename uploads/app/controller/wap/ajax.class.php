@@ -1,7 +1,7 @@
 <?php
 
 class ajax_controller extends common{
-	// wapadmin使用
+	// wapadmin
 	function wap_job_action(){
 		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
 		
@@ -14,7 +14,7 @@ class ajax_controller extends common{
 		}
 		echo $data;
 	}
-	// wapadmin使用
+	// wapadmin
 	function wap_city_action(){
 	    include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
 	    
@@ -70,7 +70,7 @@ class ajax_controller extends common{
 
 	}
 
-    //加入人才库（收藏简历）
+    // （）
 	function talentpool_action(){
 		
 		$data		=	array(
@@ -85,7 +85,7 @@ class ajax_controller extends common{
 
 		echo yun_json_encode($return);die;
 	}
-    // 邀请面试
+    // 
     function indexajaxresume_action()
     {
         
@@ -106,11 +106,11 @@ class ajax_controller extends common{
         }
     }
     
-	//签到，TODO:会员中心
+	// ，TODO:
 	function sign_action(){
 		
 	    $arr = array('type' => -2);
-	    // 防止重复签到判断
+	    // 
 	    session_start();
 	    if (!isset($_SESSION['qiandao'])){
 	        $_SESSION['qiandao'] = 1;
@@ -169,7 +169,7 @@ class ajax_controller extends common{
 					$userinfoM -> upInfo(array('uid'=>$this->uid),array('signday'=>$signday,'signdays'=>array('+','1')));
 					
 					$arr['type']=date("j");
-					// 签到成功，请除session
+					// ，session
 					unset($_SESSION['qiandao']);
 				}else{
 					
@@ -186,7 +186,7 @@ class ajax_controller extends common{
 			echo yun_json_encode($arr);die;
 		}
 	}
-	//邮箱认证,发送邮件，TODO:会员中心
+	// ,，TODO:
 	function emailcert_action()
     {
         $ComapnyM   =   $this->MODEL('company');
@@ -197,7 +197,7 @@ class ajax_controller extends common{
 
        if (md5(strtolower($code)) != $_SESSION['authcode'] || empty($_SESSION['authcode'])) {
 
-            echo yun_json_encode(array('error' => 2, 'msg' => '图片验证码不正确'));
+            echo yun_json_encode(array('error' => 2, 'msg' => yun_auto_t('图片验证码不正确')));
             die();
         }
 
@@ -217,7 +217,7 @@ class ajax_controller extends common{
     }
 	
 	
-	//手机认证,发送短信，TODO:会员中心
+	// ,，TODO:
 	function mobliecert_action(){
 	    
 		$noticeM 		= 	$this->MODEL('notice');
@@ -251,12 +251,12 @@ class ajax_controller extends common{
 	        echo yun_json_encode($result);exit();
 	    }
 	}
-	//注册会员，发送短信验证码，TODO:wap前台
+	// ，，TODO:wap
     function regcode_action(){
         $this->regcode(2); // PC发送短信
     }
 
-    //发送短信验证码，WAP快速投递
+    // ，WAP
     function regcodeks_action(){
         $this->regcode(8); // WAP快速投递
     }
@@ -268,9 +268,9 @@ class ajax_controller extends common{
 			$this->layer_msg($result['msg'], 9, 0, '', 2, $result['error']);
 		}
 	    $moblie		= 	trim($_POST['moblie']);
-	    // 两种情况验证手机号是否被使用，改为在发送验证码时验证
-	    // 1-用户名注册且实名认证，需要发送短信验证码
-	    // 2-手机号注册，有极验/顶象验证码
+	    // ，
+	    // 1-，
+	    // 2-，
 	    if ($_POST['noblur']){
 	        $registerM	=	$this->MODEL('register');
 	        $return 	= 	$registerM->regMoblie(array('moblie'=>$moblie));
@@ -289,7 +289,7 @@ class ajax_controller extends common{
 	        echo yun_json_encode($result);exit();
 	    }
 	}
-	//快速申请职位入口
+	// 
 	function temporaryresume_action(){
 		$userinfoM	=	$this->MODEL("userinfo");
 		$_POST 		= 	$this->post_trim($_POST);
@@ -341,7 +341,7 @@ class ajax_controller extends common{
 		$return	=	$atnM->addAtnLt($data);
 		echo yun_json_encode($return);die;
 	}
-    //关注企业
+    // 
 	function atncompany_action(){
 		$data	=	array(
 			'id'			=>	(int)$_POST['id'],
@@ -357,7 +357,7 @@ class ajax_controller extends common{
 		echo yun_json_encode($return);die;
 	}
  
-	//职位类别
+	// 
 	function getjob_action(){
 		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
 		$data   =   '';
@@ -395,13 +395,13 @@ class ajax_controller extends common{
 	
 	
 	 
-	//城市类别
+	// 
 	function getcity_action(){
 		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('city.cache.php') : PLUS_PATH.'city.cache.php');
 		$data   =   '';
 		if(is_array($city_type[$_POST['id']])){
 			if($_POST['type']=="cityid"){				
-				// 后台-页面设置-列表页区域默认设置。选择了二级城市,并且是职位、简历、企业列表
+				// --。,、、
 				if (!empty($this->config['sy_web_city_two']) && in_array($_POST['kzq'], array('job','resume','company'))){
 				    $city_type[$_POST['id']] = array($this->config['sy_web_city_two']);
 				}else{
@@ -449,7 +449,7 @@ class ajax_controller extends common{
 		$arr	=	$zphM->ajaxZph($data);
 		
 		if ($arr['status'] == 2 && !empty($_POST['jobid'])){
-		    // 套餐不足，记录jobid的cookie来备用
+		    // ，jobidcookie
 		    $this->cookie->setcookie('zphjobid', $_POST['jobid'], time()+86400);
 		}
 		
@@ -457,7 +457,7 @@ class ajax_controller extends common{
 	}
  
 	
-	//天眼查工商数据获取
+	// 
 	function getbusiness_action(){
 		if($_POST['name']){
 			$noticeM	=	$this -> MODEL('notice');
@@ -473,7 +473,7 @@ class ajax_controller extends common{
 	
 	
 	
-	//修改密码，TODO:会员中心
+	// ，TODO:
 	function setpwd_action(){
 		if($_POST['password']){
 			$UserinfoM  =   $this->MODEL('userinfo');
@@ -498,14 +498,14 @@ class ajax_controller extends common{
 	}
 	
 	 
-    //消息数
+    // 
     function msgNum_action()
     {
 		$M    =  $this->MODEL('msgNum');
 		$arr  =  $M->getmsgNum($this->uid, $this->usertype);
 		echo yun_json_encode($arr);
     }
-    // AJAX URL参数生成
+    // AJAX URL
     function ajax_url_action(){
         if($_POST){
             if($_POST['url']!=""){
@@ -540,7 +540,7 @@ class ajax_controller extends common{
             echo "?".$gourl;die;
         }
     }
-	//wap前台商城商品类别
+	// wap
 	function getredeem_action(){
 		include(function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('redeem.cache.php') : PLUS_PATH.'redeem.cache.php');
 		$data   =   '<li onclick="check_redeem_li(\''.$_POST['id'].'\',\'nid\');"><a href="javascript:;">全部</a></li>';
@@ -554,7 +554,7 @@ class ajax_controller extends common{
 		echo $data;
 	}
 
-    // 企业每日最大操作次数检查
+    // 
     public function ajax_day_action_check_action()
     {
         $type   =   isset($_POST['type']) ? $_POST['type'] : '';
@@ -566,7 +566,7 @@ class ajax_controller extends common{
         echo yun_json_encode($result);
         die();
     }
-    // 切换账号
+    // 
     function notuserout_action(){
         $jobid  =   intval($_POST['jobid']);
         
@@ -584,7 +584,7 @@ class ajax_controller extends common{
         echo $url;
         die();
     }
-    //公共二维码跳转
+    // 
     function pubqrcode_action(){
         
         $wapUrl = Url('wap');
@@ -597,7 +597,7 @@ class ajax_controller extends common{
 		$sy_ewm_type = isset($this -> config['sy_ewm_type']) ? $this -> config['sy_ewm_type'] : '';
 		
 		if(in_array($sy_ewm_type, array('weixin','xcx')) && in_array($toc, $twarr) && $totype != 'wxpubtool'){
-		    // 使用场景码的功能
+		    // 
             $WxM	=	$this -> MODEL('weixin');
 
             $qrcode =	$WxM->pubWxQrcode($toc,$_GET['toid'],$sy_ewm_type);
@@ -622,7 +622,7 @@ class ajax_controller extends common{
 			YunQrcode::generatePng2($wapUrl,4);
 		}
     }
-    // 强制关注公众号场景码
+    // 
     function gzhqrcode_action(){
         
         $token		= 	urldecode($_GET['token']);
@@ -633,7 +633,7 @@ class ajax_controller extends common{
         if(count($arr) != 3 || $arr[1] == ''){
             echo yun_auto_t('二维码验证失败');
         }
-        //根据uid查询password，对比password
+        // uidpassword，password
         $uid = $arr[1];
         $userinfoM	=	$this->MODEL('userinfo');
         $row 		= 	$userinfoM->getInfo(array('uid'=> $uid),array('field'=>'`password`'));
@@ -658,7 +658,7 @@ class ajax_controller extends common{
         }
     }
 
-	//报名招聘会条件判断
+	// 
 	function ajaxComjob_action(){
 	    
 	    if ($_POST['zph']){
@@ -715,7 +715,7 @@ class ajax_controller extends common{
 		
 	    echo yun_json_encode($data);die;
 	}
-    // 申请身份切换
+    // 
 	function applytype_action(){
 	    
 		$memberM		=	$this -> MODEL('userinfo');
@@ -724,7 +724,7 @@ class ajax_controller extends common{
 		echo yun_json_encode(array('msg'=>$res['msg'],'url'=>$res['url'],'errcode'=>$res['errcode']));die;
 	}
 
-	// 获取职位海报
+	// 
     function getJobHb_action()
     {
 
@@ -743,7 +743,7 @@ class ajax_controller extends common{
         echo $whbM->getJobHb($data);
     }
 
-    // 获取企业海报
+    // 
     function getComHb_action()
     {
 
@@ -777,7 +777,7 @@ class ajax_controller extends common{
         echo $whbM->getComHb($data);
     }
 
-    // 获取邀请注册海报模板列表
+    // 
     function getInviteRegHbList_action()
     {
         $whbM   =   $this->MODEL('whb');
@@ -786,7 +786,7 @@ class ajax_controller extends common{
         echo yun_json_encode(['list' => $list]);die;
     }
 
-    // 获取邀请注册海报
+    // 
     function getInviteRegHb_action()
     {
         $whbM   =   $this->MODEL('whb');
@@ -950,7 +950,7 @@ class ajax_controller extends common{
         $data = $tjM->comJobChart();
         echo yun_json_encode(array('data' => $data));
     }
-    // 生成HR年度报告海报
+    // HR
     function lastYearReport_action(){
         if($_GET['uid']){
             $hrlog = $this->MODEL('hrlog');

@@ -1,3 +1,4 @@
+{yun:}include file="$wapstyle/publichtm/wap_api_enum.htm"{/yun}
 {yun:}include file="$wapstyle/header_cont.htm"{/yun}
 
 <div class="clear"></div>
@@ -40,7 +41,7 @@
         </div>
         {yun:}/if{/yun}
 
-        {yun:}if strpos($config.code_web,"前台登录")!==false{/yun}
+        {yun:}if strpos($config.code_web,$wap_code_login)!==false{/yun}
         {yun:}if $config.code_kind >2{/yun}
         <div class="gtdx-captcha">
             <div id="bind-captcha" data-id='send_msg_tip' data-type='click'></div>

@@ -1,3 +1,4 @@
+{yun:}include file="$wapstyle/publichtm/wap_api_enum.htm"{/yun}
 <div id="publictwo" class="none">
 	<!-- Area filter -->
 	<van-popup v-model="areaShow" round position="bottom">
@@ -56,7 +57,7 @@
 					<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_00283'{/yun}</span></div>
 					<ul class="conditional_screening_list">
 					{yun:}foreach from=$comdata.job_edu item=v{/yun}
-					<li id="edu{yun:}$v{/yun}" class="{yun:}if $smarty.get.edu==$v || ($comclass_name[$v]=='不限' && !$smarty.get.edu){/yun}conditional_screening_cur{yun:}/if{/yun} eduCtrl" onclick="check_edu_li('{yun:}$v{/yun}','edu')"><a href="javascript:void(0)">{yun:}$comclass_name[$v]{/yun}</a></li>
+					<li id="edu{yun:}$v{/yun}" class="{yun:}if $smarty.get.edu==$v || ($comclass_name[$v]==$wap_db_unlimited && !$smarty.get.edu){/yun}conditional_screening_cur{yun:}/if{/yun} eduCtrl" onclick="check_edu_li('{yun:}$v{/yun}','edu')"><a href="javascript:void(0)">{yun:}$comclass_name[$v]{/yun}</a></li>
 					{yun:}/foreach{/yun}
 					</ul>
 		        </div>
@@ -64,7 +65,7 @@
 					<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_00287'{/yun}</span></div>
 					<ul class="conditional_screening_list">
 					{yun:}foreach from=$comdata.job_exp item=v{/yun}
-					<li id="exp{yun:}$v{/yun}" class="{yun:}if $smarty.get.exp==$v || ($comclass_name[$v]=='不限' && !$smarty.get.exp){/yun}conditional_screening_cur{yun:}/if{/yun} expCtrl" onclick="check_exp_li('{yun:}$v{/yun}','exp')"><a href="javascript:void(0)">{yun:}$comclass_name[$v]{/yun}</a></li>
+					<li id="exp{yun:}$v{/yun}" class="{yun:}if $smarty.get.exp==$v || ($comclass_name[$v]==$wap_db_unlimited && !$smarty.get.exp){/yun}conditional_screening_cur{yun:}/if{/yun} expCtrl" onclick="check_exp_li('{yun:}$v{/yun}','exp')"><a href="javascript:void(0)">{yun:}$comclass_name[$v]{/yun}</a></li>
 					{yun:}/foreach{/yun}
 					</ul>
 		         </div>
@@ -73,7 +74,7 @@
 					<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_00332'{/yun}</span></div>
 					<ul class="conditional_screening_list">
 					{yun:}foreach from=$com_sex key=key item=v{/yun}
-					<li id="sex{yun:}$key{/yun}" class="{yun:}if $smarty.get.sex==$key || ($v=='不限' && !$smarty.get.sex){/yun}conditional_screening_cur{yun:}/if{/yun} sexCtrl" onclick="check_sex_li('{yun:}$key{/yun}','sex')"><a href="javascript:void(0)">{yun:}$v{/yun}</a></li>
+					<li id="sex{yun:}$key{/yun}" class="{yun:}if $smarty.get.sex==$key || ($v==$wap_db_unlimited && !$smarty.get.sex){/yun}conditional_screening_cur{yun:}/if{/yun} sexCtrl" onclick="check_sex_li('{yun:}$key{/yun}','sex')"><a href="javascript:void(0)">{yun:}$v{/yun}</a></li>
 				   {yun:}/foreach{/yun}
 					</ul>
 		        </div>
@@ -161,7 +162,7 @@
 								<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_00332'{/yun}</span></div>
 								<ul class="conditional_screening_list">
 								{yun:}foreach from=$user_sex key=key item=v{/yun}
-								<li id="sex{yun:}$key{/yun}" class="{yun:}if $smarty.get.sex==$key || ($v=='不限' && !$smarty.get.sex){/yun}conditional_screening_cur{yun:}/if{/yun} sexCtrl" onclick="check_usex_li('{yun:}$key{/yun}','sex')"><a href="javascript:void(0)">{yun:}$v{/yun}</a></li>
+								<li id="sex{yun:}$key{/yun}" class="{yun:}if $smarty.get.sex==$key || ($v==$wap_db_unlimited && !$smarty.get.sex){/yun}conditional_screening_cur{yun:}/if{/yun} sexCtrl" onclick="check_usex_li('{yun:}$key{/yun}','sex')"><a href="javascript:void(0)">{yun:}$v{/yun}</a></li>
 							   {yun:}/foreach{/yun}
 								</ul>
 					        </div>

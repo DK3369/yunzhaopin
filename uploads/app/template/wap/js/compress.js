@@ -7,7 +7,7 @@ function previewImage(obj,type,upurl=''){
 	setFilesReader(obj.files[0], 0,type);
 }
 function setFilesReader(file, ismul,type) {
-	//获取照片方向角属性，用户旋转控制  
+	// ，
 	EXIF.getData(file, function() {     
 		Orientation = EXIF.getTag(this, 'Orientation');  
 	});  
@@ -28,7 +28,7 @@ function readMultiFiles(files) {
 	}
 }
 
-//res代表上传的图片，fileSize大小图片的大小
+// res，fileSize
 function compress(res, fileSize, ismul,type) {
     var img = new Image(), maxW = 1000; //设置最大宽度
 
@@ -105,7 +105,7 @@ function compress(res, fileSize, ismul,type) {
     img.src = res;
 }
 
-//计算压缩比率，size单位为MB
+// ，sizeMB
 function getCompressRate(allowMaxSize,fileSize){
 	var compressRate = 1;
 		
@@ -137,7 +137,7 @@ function photoChange(obj){
 			},1000);
 			obj.value = '';
 		} else {
-			showToast('请上传图片');
+			showToast(WAP_JS_I18N.s56b57214);
 		}
 	}
 }

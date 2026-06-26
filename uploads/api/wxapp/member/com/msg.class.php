@@ -106,25 +106,25 @@ class msg_controller extends com_controller{
         }
         $this->render_json($data['error'], $data['errmsg']);
   	}
-	//消息
+	// 
 	function sysnews_action(){
     
-	    // 聊天
+	    // 
 
 		$JobM		  =  $this -> MODEL('job');
-		// 对我感兴趣（查看职位）
+		// （）
 		$looknum        =   $JobM->getLookJobNum(array('com_id'=>$this->member['uid'],'com_status'=>0));
 		$newlook        =   $JobM->getLookJobInfo(array('com_id'=>$this->member['uid'],'com_status'=>0,'orderby'=>'datetime'), array('utype'=>'user'));
 		$list['looknum']=	$looknum;
 		$list['newlook']=	!empty($newlook) ? $newlook : array();
-   		//申请职位
+   		// 
     	$userid_jobnum	=	$JobM -> getSqJobNum(array('com_id'=>$this->member['uid'],'isdel'=>9,'is_browse'=>'1','type'=>array('<>',3)));
- 		//系统消息
+ 		// 
     	$SysmsgM		=	$this -> MODEL('sysmsg');
  		$sxnum			=	$SysmsgM -> getSysmsgNum(array('fa_uid'=>$this->member['uid'],'usertype'=>$this->member['usertype'],'remind_status'=>'0'));
     	$list['sxnum']	=	$sxnum;
 		$list['userid_jobnum']	=	$userid_jobnum;
-   	 	//求职者咨询
+   	 	// 
 		$jobnum = 0;
 		if ($this->config['com_message'] == 1){
 		    
@@ -159,7 +159,7 @@ class msg_controller extends com_controller{
 	*/
 	function sysmsgnews_action(){
 		$SysmsgM	=	$this -> MODEL('sysmsg');
-    	//存在执行这段代码
+    	// 
 		$msgwhere['fa_uid']     =  $this->member['uid'];
 		$msgwhere['usertype']   =  $this->member['usertype'];
 		$msgwhere['remind_status']= array('<>',1);

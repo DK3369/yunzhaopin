@@ -4,7 +4,7 @@ class login_controller extends common{
 	function index_action(){
 		$this->get_moblie();
  
-		//微信wap登录
+		// wap
 		if(preg_match("/^[a-zA-Z0-9_-]+$/",$_GET['wxid'])){
 			$wxid = $_GET['wxid'];
 			$this->cookie->setcookie("wxid",$_GET['wxid'],time() + 86400);
@@ -35,7 +35,7 @@ class login_controller extends common{
 		if($this->uid || $this->username){
 			if((int)$_GET['bind']=='1'){
 				$this->cookie->unset_cookie();
-				$data['msg']='重新绑定您的求职账户！';
+				$data['msg']=yun_auto_t('重新绑定您的求职账户！');
 			}elseif($_GET['wxid']){
 				$this->cookie->unset_cookie();
 			}else{
@@ -72,7 +72,7 @@ class login_controller extends common{
 
     function mlogin_action()
     {
-        //普通账户登录提交
+        // 
         $lData['username']      =   $_POST['username'];
         $lData['uid']           =   $this->uid;
         $lData['usertype']      =   $this->usertype;
@@ -113,7 +113,7 @@ class login_controller extends common{
         }
     }
 
-	//登录短信验证码发送
+	// 
     function sendmsg_action()
     {
         $noticeM    =   $this->MODEL('notice');
@@ -130,7 +130,7 @@ class login_controller extends common{
 
             $result =   array(
                 'error' =>  2,
-                'msg'   =>  '请先注册账号',
+                'msg'   =>  yun_auto_t('请先注册账号'),
                 'url'   =>  Url('wap', array('c' => 'register'))
             );
         } else {
@@ -316,7 +316,7 @@ class login_controller extends common{
 			session_start();
 			if($_SESSION['wx']['openid']){
 				    
-	            //微信未绑定账号直接注册账号的
+	            // 
 		        $wdata  =  array(
 		            'openid'   =>  $_SESSION['wx']['openid'],
 		            'unionid'  =>  $_SESSION['wx']['unionid'],

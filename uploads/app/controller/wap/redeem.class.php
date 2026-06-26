@@ -52,18 +52,18 @@ class redeem_controller extends common{
 		
 		$where['gid']		=	(int)$_GET['id'];
 		$where['status']	=	1;
-		//分页链接
+		// 
 		$urlarr['c'] 		= 	$_GET['c']; 
 		$urlarr['a'] 		= 	$_GET['a']; 
 		$urlarr['id'] 		= 	(int)$_GET['id']; 
 		$urlarr['page'] 	= 	"{{page}}";
 		$pageurl			=	Url('wap',$urlarr);
 		
-		//提取分页
+		// 
 		$pageM				=	$this  -> MODEL('page');
 		$pages				=	$pageM -> pageList('change',$where,$pageurl,$_GET['page']);
 		
-		//分页数大于0的情况下 执行列表查询
+		// 0
 		if($pages['total'] > 0){
 			
 			
@@ -146,7 +146,7 @@ class redeem_controller extends common{
 		$integral	=	$row['integral']*(int)$_GET['num'];
 		$this->yunset('integral',$integral);
 		
-		$this->yunset('headertitle','兑换确认 ');
+		$this->yunset('headertitle',yun_auto_t('兑换确认 '));
 		$this->seo('redeem');
 		$this->yuntpl(array('wap/redeemdh'));
 	}

@@ -9,7 +9,7 @@ class announcement_controller extends common{
 			
 			$id				=	(int)$_GET['id'];
 			$announcementM	=	$this->MODEL('announcement');
-            // 更新浏览次数
+            // 
             $announcementM->upViewNum($id);// 先更新被浏览次数，再查公告信息，防止新公告首次被浏览时出现被浏览次数为0
 			$row			=	$announcementM->getInfo(array('id'=>$id));
 			$this->yunset("row",$row);

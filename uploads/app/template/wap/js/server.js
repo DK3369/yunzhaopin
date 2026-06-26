@@ -35,7 +35,7 @@ $("ul#rating_select").on("click", "li", function() {
 
     $(".vip_div").find('ul li .dredge_body_tab_body_right img').attr('src', imgWurl);	//	会员套餐默认都是未选中
 
-    //	增值服务默认第一个展开,其他的未展开
+    // 	,
     /*$(".detail_id").each(function(index,el){
         if(index > 0){
             $(el).css('display', 'none');
@@ -629,4 +629,3 @@ function integralBuy(){
         }
     });
 }
-

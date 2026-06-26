@@ -1,7 +1,7 @@
 <?php
 
 class privacy_controller extends user_controller{
-    //隐私设置列表
+    // 
 	function privacy_action(){
 		
 		$ResumeM	=	$this -> MODEL('resume');
@@ -11,7 +11,7 @@ class privacy_controller extends user_controller{
 		$this->render_json(0,'',$status);
 	}
 
-	//屏蔽企业列表
+	// 
 	function blacklist_action(){ 
 		$blackM						=	$this->MODEL('black');
 		
@@ -41,7 +41,7 @@ class privacy_controller extends user_controller{
 		}
 		
 	}
-    //隐私设置保存
+    // 
     function up_action()
     {
 
@@ -74,7 +74,7 @@ class privacy_controller extends user_controller{
         $this->render_json($data['error'], $data['msg'], $status);
     }
 
-    //删除屏蔽企业
+    // 
 	function del_action(){
         $blackM		=	$this->MODEL('black');
         $id			=	(int)$_POST['id'];
@@ -88,7 +88,7 @@ class privacy_controller extends user_controller{
         }
         $this-> render_json($error,$return['msg'],$return);
     }
-    //清空屏蔽企业
+    // 
 	function delall_action(){
 		$blackM		=	$this->MODEL('black');
 		
@@ -101,7 +101,7 @@ class privacy_controller extends user_controller{
  			}
 		$this-> render_json($error,$return['msg'],$return);
 	}
-    //搜索要屏蔽的企业
+    // 
 	function searchcom_action(){
 		$blackM			=	$this->MODEL('black');
 		$companyM		=	$this->MODEL('company');
@@ -138,7 +138,7 @@ class privacy_controller extends user_controller{
 				
 		  }
 	}
-    //保存要屏蔽的企业
+    // 
 	function save_action(){
 		
 		$blackM		=  $this->MODEL('black');

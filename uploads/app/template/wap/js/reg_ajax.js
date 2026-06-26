@@ -2,7 +2,7 @@ var throttleFlag;
 var _reg = window.REG_I18N || {};
 
 function login(){
-	// 节流处理：在一定时间内，只能触发一次
+	// ：，
 	if (!throttleFlag) {
 		throttleFlag = true;
 		setTimeout(function(){
@@ -70,9 +70,9 @@ function login(){
 				}
 				return false; 
 			}else{
-				// 登录成功，去掉点击事件，防止重复点击
+				// ，，
 				$("#login_bth").attr('onclick', '');
-				// 处理缓存，返回登陆页面后刷新
+				// ，
 	        	window.sessionStorage.setItem("needRefresh", true);
 	            location.href = res.url;
 				return false; 
@@ -114,7 +114,7 @@ function checkRegById(id) {
 }
 
 function checkRegUser(){
-	// 节流处理：在一定时间内，只能触发一次
+	// ：，
 	if (!throttleFlag) {
 		throttleFlag = true;
 		setTimeout(function(){
@@ -244,13 +244,13 @@ function checkRegUser(){
 		showToast(_reg.agreeRegisterProtocol || '');
 		return false;
 	}
-	// 有发送短信验证码不需要触发验证
-	// 1-实名认证，需要发送短信验证码
-	// 2-手机号注册，有极验/顶象验证码
+	// 
+	// 1-，
+	// 2-，
 	var noblur = document.getElementById('noblur');
 	var regway = $("#regway").val();
 	var isRealnameCheck = $("#isRealnameCheck").val();
-	// 1-邮箱/3-用户名注册且实名认证，需要发送短信验证码
+	// 1-/3-，
 	if(((regway == 1 || regway == 3) && isRealnameCheck != 1) || (regway == 2 && !noblur)){
 		var codesear = new RegExp(_reg.codeWebRegister || '');
 		if(codesear.test(code_web)) {
@@ -295,7 +295,7 @@ function checkRegUser(){
 				}
 				showToast(res.msg, res.tm, function () {
 					if (res.url) {
-						// 处理浏览器历史记录，防止可以返回注册页面
+						// ，
 						window.history.replaceState({}, "", res.url);
 						window.location.reload();
 					}  
@@ -303,9 +303,9 @@ function checkRegUser(){
 				checkCode('vcode_img'); 
 				return false;
 			}else if (res.url) {
-				// 注册成功，去掉点击事件，防止重复点击
+				// ，，
 				$("#login_bth").attr('onclick', '');
-	        	// 处理缓存，返回登陆页面后刷新
+	        	// ，
 	        	window.sessionStorage.setItem("needRefresh", true);
 	            window.location.href = res.url;
 				return false; 

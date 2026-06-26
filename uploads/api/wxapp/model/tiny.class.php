@@ -46,7 +46,7 @@ class tiny_controller extends wxapp_controller{
 		if($three_cityid){//类别ID
 			$where['three_cityid']	=	$three_cityid;
 		}
-		// 处理分站查询条件
+		// 
 		if (!empty($_POST['did'])){
 		    
 		    $domain  =  $this->getDomain($_POST['did'], true);
@@ -56,21 +56,21 @@ class tiny_controller extends wxapp_controller{
 		        $data['didcity']    =  $domain['didcity'];
 		        
 		        if (!empty($_POST['provinceid'])){
-		            // 分站下，再次选择城市，查询按选择的来
+		            // ，，
 		            $where['provinceid']  =  $_POST['provinceid'];
 		            $data['didcity']      =  $domain['city_name'][$_POST['provinceid']];
 		        }elseif (!empty($domain['provinceid'])){
 		            $where['provinceid']  =  $domain['provinceid'];
 		        }
 		        if (!empty($_POST['cityid'])){
-		            // 分站下，再次选择城市，查询按选择的来
+		            // ，，
 		            $where['cityid']  =  $_POST['cityid'];
 		            $data['didcity']  =  $domain['city_name'][$_POST['cityid']];
 		        }elseif (!empty($domain['cityid'])){
 		            $where['cityid']  =  $domain['cityid'];
 		        }
 		        if (!empty($_POST['three_cityid'])){
-		            // 分站下，再次选择城市，查询按选择的来
+		            // ，，
 		            $where['three_cityid']  =  $_POST['three_cityid'];
 		            $data['didcity']        =  $domain['city_name'][$_POST['three_cityid']];
 		        }elseif (!empty($domain['three_cityid'])){
@@ -85,8 +85,8 @@ class tiny_controller extends wxapp_controller{
 		        $data['three_cityid']  =  !empty($where['three_cityid']) ? intval($where['three_cityid']) : 0;
 		    }
 		}else{
-		    // 没有已选择的城市，按后台设置的列表页区域默认设置来（后台-页面设置-列表页区域默认设置）
-		    // 设置了一级城市，后面的搜索，不再展示其他一级城市
+		    // ，（--）
+		    // ，，
 		    if (empty($_POST['provinceid']) && empty($_POST['cityid']) && empty($_POST['three_cityid']) || (!empty($_POST['provinceid']) && $_POST['provinceid'] == $this->config['sy_web_city_one'])){
 		        
 		        $list_cityid      = isset($where['cityid']) ? $where['cityid'] : 0;

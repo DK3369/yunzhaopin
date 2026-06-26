@@ -1,4 +1,4 @@
-/*首页*/
+/* section */
 .none {
     display: none
 }
@@ -14,7 +14,7 @@
     background-color: red
 }
 
-/*首页头部*/
+/* section */
 
 .yunTop {
     background-color: #fff;
@@ -865,7 +865,7 @@
     height: 1.6rem;
 }
 
-/*职位列表*/
+/* section */
 .job_header {
     display: flex;
     align-items: center;
@@ -1323,7 +1323,7 @@
     color: #999;
 }
 
-/*职位详情*/
+/* section */
 .jobshwheader {
     width: 100%;
     height: 3.2rem;
@@ -2026,7 +2026,7 @@
     align-items: center;
 }
 
-/*职位弹框样式*/
+/* section */
 .job_tckpd {
     padding: 0.533333rem;
 }
@@ -2130,7 +2130,7 @@
 }
 
 
-/*简历列表*/
+/* section */
 .yun_newedition_resume {
     padding: 0rem .32rem 0rem .32rem;
 }
@@ -2441,7 +2441,7 @@
     margin-left: 0.266666rem;
 }
 
-/*招人才详细页*/
+/* section */
 .Edit_your_resume_header {
     position: fixed;
     top: 0;
@@ -3447,7 +3447,7 @@
     background-size: 100%
 }
 
-/*企业列表*/
+/* section */
 .com_list_pd {
     padding: 0 .32rem .32rem .32rem
 }
@@ -3711,7 +3711,7 @@
     color: #666
 }
 
-/*企业详细页*/
+/* section */
 .companyheader {
     width: 100%;
     position: relative;
@@ -4685,7 +4685,7 @@
     margin-right: 0;
 }
 
-/*登录注册*/
+/* section */
 .login_back {
     width: .266667rem;
     height: 100%;
@@ -5073,7 +5073,7 @@
 }
 
 
-/*快速申请简历*/
+/* section */
 .fast_box_header {
     height: 1.173333rem;
     background-color: #2579fa;
@@ -5447,7 +5447,7 @@
     padding-top: 0.266666rem;
 }
 
-/*视频面试-进入面试间*/
+/* section */
 .com_show_interview_c {
     padding: 0 0 0.266666rem 0;
     background: #fff;
@@ -6213,8 +6213,8 @@
     padding: 0.266666rem 0.8rem
 }
 
-/*搜索页*/
-/*搜索页*/
+/* section */
+/* section */
 .wap_search_header {
     position: relative;
     background: #2778F8;
@@ -6427,7 +6427,7 @@
     bottom: 0;
 }
 
-/*注册框*/
+/* section */
 
 .reg_have_tip {
     padding: 0.533333rem .266667rem .266667rem .266667rem;
@@ -6719,7 +6719,7 @@
     opacity: 0.4
 }
 
-/*公告*/
+/* section */
 .about_content {
     margin: 0.32rem;
     background-color: #fff;
@@ -6771,7 +6771,7 @@
     color: #f30 !important;
 }
 
-/* 首页附近的样式 */
+/* section */
 .map_job_list {
     width: 100%;
     background: #FFFFFF;
@@ -6890,7 +6890,7 @@
     font-size: .32rem;
 }
 
-/* 修改登录的样式 */
+/* section */
 .login_titlebox {
     margin-top: .266667rem;
     margin-bottom: .9rem;
@@ -6933,7 +6933,7 @@
     padding: 0.4rem 0.266666rem 0.266666rem 0.266666rem;
 }
 
-/*列表页上拉加载 start*/
+/* section */
 .lodbox {
     text-align: center;
     color: #999;
@@ -6958,7 +6958,7 @@
     top: 0;
 }
 
-/*列表页上拉加载 end*/
+/* section */
 .qqconnect_box {
     width: 100%;
     padding-top: .266667rem;
@@ -7197,7 +7197,7 @@
     font-weight: bold;
 }
 
-/*微信绑定*/
+/* section */
 .wxbind_cont {
     padding-left: .6rem;
     padding-right: .6rem;
@@ -7702,7 +7702,7 @@
     display: block;
 }
 
-/*招聘会新*/
+/* section */
 .newzph_img {
     width: 100%;
     z-index: 50;
@@ -8132,7 +8132,7 @@
     background-color: #1989fa !important;
 }
 
-/*相关推荐*/
+/* section */
 .relevanRecom {
     margin: 0.32rem;
     background-color: #fff;
@@ -8164,7 +8164,7 @@
 }
 
 
-/*电话弹窗样式*/
+/* section */
 .popupSubject {
     padding: 0.7rem;
     background: #fff;
@@ -8257,7 +8257,7 @@
     cursor: pointer;
 }
 
-/*返回首页按钮*/
+/* section */
 .goBackHome {
     overflow: hidden;
     position: fixed;
@@ -8278,7 +8278,7 @@
     height: 1.2rem;
 }
 
-/*后加职位详细底部*/
+/* section */
 .yun_czfoot {
     height: 1.866667rem;
 }
@@ -8630,7 +8630,7 @@
     background-size: 100%;
 }
 
-/*微信扫码查看联系方式 start*/
+/* section */
 .job_tel_wx_cont {
     width: 260px;
     background: #fff;
@@ -8687,9 +8687,9 @@
     top: 20px;
 }
 
-/*微信扫码查看联系方式 end*/
+/* section */
 
-/*企业探秘*/
+/* section */
 .tm_box {
     padding: 0.53333rem 0.266666rem 0.266666rem 0.266666rem;
 }
@@ -8839,7 +8839,7 @@
     position: relative;
 }
 
-/*沭才网企业详细页*/
+/* section */
 .scw_comshow {
     padding: 1.6rem 0.466665rem 2.53333rem 0.466665rem;
     position: relative;
@@ -9156,7 +9156,7 @@
     max-width: 100%;
 }
 
-/*企业详情页0712改版-*/
+/* section */
 .comnew_joblist {
     padding: 18px 0;
     background: #fff;
@@ -9275,7 +9275,7 @@
     font-size: 0.373333rem;
 }
 
-/*企业详情页0712白版面试评价*/
+/* section */
 .yunevaluate_pf_otherbox {
     width: 100%;
 }
@@ -9656,7 +9656,7 @@
     font-size: 0.32rem
 }
 
-/*企业详情页0712白版面试评价 end*/
+/* section */
 
 .job_yxj {
     width: 100px;
@@ -9671,7 +9671,7 @@
     height: 85px;
 }
 
-/*温馨提示*/
+/* section */
 .newOobshoName {
     overflow: hidden;
     padding: 0 0.37rem;
@@ -9710,7 +9710,7 @@
     color: #fff;
 }
 
-/*高端定制沭才网样式*/
+/* section */
 .scw_fivebox {
     width: 100%;
     height: 2.3rem
@@ -10032,7 +10032,7 @@
 }
 
 
-/* 简历登录弹窗 */
+/* section */
 .task {
     /*width: 100%;height: 100%;position: fixed;background: rgba(0,0,0,0.5);top: 0;z-index: 3000;*/
 }
@@ -10245,7 +10245,7 @@
 }
 
 
-/*弹窗*/
+/* section */
 .newObshowTop {
     overflow: hidden;
     position: relative;
@@ -10621,7 +10621,7 @@
     justify-content: center;
 }
 
-/*新搜索页面 职位|城市 类别页面 CSS   start*/
+/* section */
 .zwfl {
     background: #fff;
 }
@@ -10755,10 +10755,10 @@
     color: #999
 }
 
-/*新搜索页面 职位|城市 类别页面 CSS   end*/
+/* section */
 
 
-/*组件*/
+/* section */
 .scrollDomens {
     overflow: hidden;
     position: relative;
@@ -11013,7 +11013,7 @@
     background: linear-gradient(270deg, #19b7ff, #2778f8, #2778f8);
 }
 
-/*平台核验*/
+/* section */
 .yunnew_hybox {
     background: linear-gradient(-10deg, #f3f7fe, #f3f7fe, #e1f9fc, #9ab1fb);
     padding: 0.21rem 0.53rem 0.21rem 0.8rem;

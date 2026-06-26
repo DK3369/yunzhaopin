@@ -29,16 +29,16 @@ class special_controller extends common{
 		$this->yunset("headertitle","专题详情页");
 
         if ($info['tpl'] == 'gl.htm'){
-            // 该模板需要所有参会企业uid，来查参会企业相关数据
+            // uid，
             $cuid = array();
             $coms = $specialM->getSpecialComList(array('sid'=>(int)$_GET['id'], 'status'=> 1), array('field'=>'`uid`'));
             foreach ($coms['list'] as $v){
                 $cuid[] = $v['uid'];
             }
-            // 该模板需要的名企
+            // 
             $hotcom  =  $specialM->glFamous(array('sid'=>$info['id'], 'orderby'=>'sort', 'limit'=>12));
             $this->yunset('hotcom', $hotcom);
-            // 该模板所需的行业
+            // 
             $hy = $specialM->getSpecialHy($cuid);
             $this->yunset($hy);
             
@@ -61,14 +61,14 @@ class special_controller extends common{
 			$this->layer_msg($return['msg'],$return['errcode'],0);
 		}
 	}
-	// gl模板查询企业列表
+	// gl
 	function getComList_action(){
 	    
 	    $res = $this->MODEL('special')->glComList($_POST['sid'], $_POST['hy'], $_POST['page'], $_POST['numb']);
 	    
 	    echo yun_json_encode($res);
 	}
-	// gl模板查询职位列表
+	// gl
 	function getJobList_action(){
 	    
 	    $res = $this->MODEL('special')->glJobList($_POST);

@@ -1,36 +1,36 @@
-// 获取性别要求
+// 
 function getSex() {
     return {
         'id': [0, 3, 1, 2],
-        'name': ['请选择性别', '不限', '男', '女']
+        'name': [WAP_JS_I18N.s37ef15ec, WAP_JS_I18N.s8441b348, '男', '女']
     };
 }
 
-// 兼职类型
+// 
 function getType() {
     let data = partFormat('part_type');
     data.id.unshift(0);
-    data.name.unshift('请选择兼职类型');
+    data.name.unshift(WAP_JS_I18N.saccf91d4);
     return data;
 }
 
-// 结薪方式
+// 
 function getBillingcycle() {
     let data = partFormat('part_billing_cycle');
     data.id.unshift(0);
-    data.name.unshift('请选择结算周期');
+    data.name.unshift(WAP_JS_I18N.s7abbb483);
     return data;
 }
 
-// 薪资类型
+// 
 function getSalarytype() {
     let data = partFormat('part_salary_type');
     data.id.unshift(0);
-    data.name.unshift('请选择薪资类型');
+    data.name.unshift(WAP_JS_I18N.s28d64085);
     return data;
 }
 
-// 格式化数据
+// 
 function partFormat(key) {
     var data = {
         name: [],
@@ -48,15 +48,15 @@ function partFormat(key) {
     return data
 }
 
-// 获取兼职时效
+// 
 function getTimetype() {
     return {
         id: [1, 2],
-        name: ['短期招聘', '长期招聘']
+        name: [WAP_JS_I18N.sde0076a0, WAP_JS_I18N.sec2d9a4f]
     };
 }
 
-// 兼职时间-早
+// -
 function getMorning(data) {
     if (!data) {
         data = []
@@ -69,7 +69,7 @@ function getMorning(data) {
     return newMorning;
 }
 
-// 兼职时间-中
+// -
 function getNoon(data) {
     if (!data) {
         data = []
@@ -82,7 +82,7 @@ function getNoon(data) {
     return newNoon;
 }
 
-// 兼职时间-晚
+// -
 function getAfternoon(data) {
     if (!data) {
         data = []

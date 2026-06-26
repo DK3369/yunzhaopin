@@ -1,3 +1,4 @@
+{yun:}include file="$wapstyle/publichtm/wap_api_enum.htm"{/yun}
 {yun:}include file="$wapstyle/header.htm"{/yun}
 <style>
     body {
@@ -56,7 +57,7 @@
             </div>
             {yun:}/if{/yun}
 
-            {yun:}if strstr($config.code_web, '前台登录'){/yun}
+            {yun:}if strstr($config.code_web, $wap_code_login){/yun}
                 <div>
                     {yun:}if $config.code_kind>2{/yun}
                     <div class="gtdx-captcha">

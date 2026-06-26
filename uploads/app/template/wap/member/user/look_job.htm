@@ -1,3 +1,4 @@
+{yun:}include file="$wapstyle/publichtm/wap_api_enum.htm"{/yun}
 {yun:}include file="$wapstyle/member/header.htm"{/yun}
 <div class="main_member_cot_box">
 	<div class="wap_member_comp_h1"><span>{yun:}t key='wap_01135'{/yun}</span></div>
@@ -16,7 +17,7 @@
 				<div class="m_user_info_p">{yun:}$one.cityname{/yun}<i class="m_user_info_line">|</i> {yun:}$one.exp_n{/yun}{yun:}t key='home.experience_suffix'{/yun} <i
 					 class="m_user_info_line">|</i> {yun:}$one.edu_n{/yun}{yun:}t key='home.education_suffix'{/yun}
 
-					{yun:}if $one.status == '正在招聘'{/yun}
+					{yun:}if $one.status == $wap_db_recruiting{/yun}
 					<span class="m_user_jobzt">{yun:}$one.status{/yun}</span>
 					{yun:}else{/yun}
 					<span class="m_user_jobjs">{yun:}t key='wap_01136'{/yun}</span>

@@ -4,7 +4,7 @@
  */
 (function ($) {
     $.fn.navbarscroll = function (options) {
-        //各种属性、参数
+        // 、
         var _defaults = {
             className:'cur', //当前选中点击元素的class类名
             clickScrollTime:300, //点击后滑动时间
@@ -16,7 +16,7 @@
         }
         var _opt = $.extend(_defaults, options);
         this.each(function () {
-            //插件实现代码
+            // 
             var _wrapper = $(this);
             var _win = $(window);
             var _win_width = _win.width(),_wrapper_width = _wrapper.width(),_wrapper_off_left = _wrapper.offset().left;
@@ -40,7 +40,7 @@
             _obj_li.click(function(){
                 _init($(this));
             });
-			//解决PC端谷歌浏览器模拟的手机屏幕出现莫名的卡顿现象，滑动时禁止默认事件（2017-01-11）
+			// PC，（2017-01-11）
 			_wrapper[0].addEventListener('touchmove',function (e){e.preventDefault();},false);
             function _init(thiObj){
                 var $this_obj=thiObj;

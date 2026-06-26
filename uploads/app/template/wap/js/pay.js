@@ -1,4 +1,4 @@
-//加减乘除
+// 
 function wapPub(key) {
 	var pub = typeof WAP_PUBLIC_I18N !== 'undefined' ? WAP_PUBLIC_I18N : {};
 	return pub[key] || '';
@@ -72,7 +72,7 @@ $("ul#level_rating").on("tap", "li", function() {
 	var rating = $(this).find("#ratingid").text();
 	$("#rating_id").val(rating);
 	$("#id").val(rating);
-	// 切换套餐时，支付方式又积分模式恢复成付款模式
+	// ，
 	$("#paymentform").show();
 	$("#integral_buy").hide();
 	$("#integral_pay").val('');
@@ -94,7 +94,7 @@ $("ul#pack_type").on("tap", "li", function() {
 	var service = $(this).find("#serviceid").text();
 	$("#service_id").val(service);
 	$("#id").val(service);
-	// 切换套餐时，支付方式又积分模式恢复成付款模式
+	// ，
 	$("#paymentform").show();
 	$("#integral_buy").hide();
 	$("#integral_pay").val('');
@@ -433,7 +433,7 @@ function integral_form() {
 		showToast(data.msg);return false;
 	});
 }
-// 企业getserver.htm内积分兑换开关
+// getserver.htm
 if(document.getElementById('integral_switch')) {
 	document.getElementById('integral_switch').addEventListener('toggle', function(event) {
 		if(event.detail.isActive) {
@@ -464,7 +464,7 @@ if(document.getElementById('integral_switch')) {
 }
 
 
-// 汇款时间
+// 
 var banktimePicker = document.getElementById('banktimePicker');
 if(banktimePicker) {
 	var bank_time = document.getElementById('bank_time');
@@ -481,7 +481,7 @@ if(banktimePicker) {
 	}, false);
 }
 
-// 职位推广：置顶、推荐、紧急招聘
+// ：、、
 function setJobPromote(id , type){
 	
 	var jobid	=	id;

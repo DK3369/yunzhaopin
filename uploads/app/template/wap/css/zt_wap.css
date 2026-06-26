@@ -1,6 +1,6 @@
 /* CSS Document */
 html{font-family:"microsoft yahei","宋体";-webkit-text-size-adjust:100%;font-size:100px;}
-body{margin:0;max-width:750px;min-height:100%;min-width:320px;margin:0 auto;color:#666666;background-color:#f0f2f5;-webkit-overflow-scrolling:touch;font-size:.3rem; /* IOS禁止微信调整字体大小 */-webkit-text-size-adjust: 100% !important;text-size-adjust: 100% !important;-moz-text-size-adjust: 100% !important;}
+body{margin:0;max-width:750px;min-height:100%;min-width:320px;margin:0 auto;color:#666666;background-color:#f0f2f5;-webkit-overflow-scrolling:touch;font-size:.3rem; /* section */-webkit-text-size-adjust: 100% !important;text-size-adjust: 100% !important;-moz-text-size-adjust: 100% !important;}
 *{-webkit-box-sizing:border-box;box-sizing:border-box;}
 h1,h2,h3,h4,h5,form,p,ul,input{margin:0px;padding:0px;}
 input,textarea{font-family:"microsoft yahei","宋体";font-size:.27857142rem;color:#666666;}
@@ -172,7 +172,7 @@ div.flicking_con a.on{background: #ccc;}
 .text img{ width:100%;}
 .search_czbth{border: 1px solid #1f52d2;
     background: #f60;color: #1f52d2; position:absolute;right:0px;top:0px; display:inline-block;width:.9rem; height:.6rem;color:#FFF; border:none;font-size: .24rem; text-align:center; line-height:.6rem;}
-/*导航分类*/
+/* section */
 .wrapper {position:relative;height:0.8rem;width:6.2rem;overflow: hidden;margin:0 auto;}
 .wrapper .scroller {position:absolute}
 .wrapper .scroller li {height:0.8rem;color:#333;float: left;line-height:0.8rem;font-size: .22rem;text-align: center;}

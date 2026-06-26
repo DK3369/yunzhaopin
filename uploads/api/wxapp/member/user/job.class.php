@@ -254,13 +254,13 @@ class job_controller extends user_controller{
 		$AtnM			=	$this -> MODEL('atn');
 		$LookresumeM	=	$this -> MODEL('lookresume');
 		$PartM	=	$this -> MODEL('part');
-		//面试通知
+		// 
 		$invitenum		=	$JobM -> getYqmsNum(array('uid'=>$this->member['uid'],'isdel'=>9));
 		$show['invitenum']	=	$invitenum?$invitenum:0;
-		//申请的职位
+		// 
 		$sqnum			=	$JobM -> getSqJobNum(array('uid'=>$this->member['uid'],'isdel'=>9));
 		$show['sqnum']	=	$sqnum?$sqnum:0; 
-		//收藏的职位
+		// 
 		$collectnum		=	$JobM -> getFavJobNum(array('uid'=>$this->member['uid'],'type'=>1));
 		$show['collectnum']			=	$collectnum?$collectnum:0;
 		$where['uid']				=	$this->member['uid'];
@@ -270,11 +270,11 @@ class job_controller extends user_controller{
 		$atnnum			=	$atncomnum;
 		$show['atnnum']	=	$atnnum?$atnnum:0;
 		
-		//职位浏览记录
+		// 
 		$lookjobnum		=	$JobM -> getLookJobNum(array('uid'=>$this->member['uid'],'status'=>'0'));
 		$show['lookjobnum']	=	$lookjobnum?$lookjobnum:0;
 		
-		//谁看过我的简历
+		// 
 		$looknum		=	$LookresumeM -> getLookNum(array('uid'=>$this->member['uid'],'usertype'=>'2','status'=>'0'));
 		$show['looknum']=	$looknum?$looknum:0;
 		
@@ -283,7 +283,7 @@ class job_controller extends user_controller{
 		$show['wkyqnum']=	$wkyqnum?$wkyqnum:0;
 		$wlooknum		=	$JobM -> getLookJobNum(array('uid'=>$this->member['uid'],'status'=>'0','datetime'=>array('<',time())));
 		$show['wlooknum']	=	$wlooknum?$wlooknum:0;
-		//兼职管理
+		// 
 		$partapplynum		=	$PartM->getPartSqNum(array('uid'=>$this->member['uid']));
 		$partcollectnum		=	$PartM->getPartcollectNum(array('uid'=>$this->member['uid']));
 		$allpartnum			=	$partapplynum + $partcollectnum;

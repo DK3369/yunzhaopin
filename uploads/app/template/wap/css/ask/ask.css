@@ -1,5 +1,5 @@
-/*问答css*/
-/*问答首页*/
+/* section */
+/* section */
 .ask_top_nav {
     width: 100%;
     position: relative;
@@ -383,7 +383,7 @@
     margin-right: .266667rem;
 }
 
-/*搜索*/
+/* section */
 .ask_header_bg {
     width: 100%;
     background: #2778F8;
@@ -937,7 +937,7 @@
     color: #999;
 }
 
-/*话题*/
+/* section */
 .ask_topic {
     width: 100%;
     height: 100%;
@@ -1167,12 +1167,12 @@
     padding: .106667rem .266667rem;
 }
 
-/*一周热点*/
+/* section */
 .ask_hotweek {
     margin-bottom: 1.066667rem;
 }
 
-/*问答内容页*/
+/* section */
 .askct_iss {
     width: 100%;
     background: #fff;
@@ -1574,7 +1574,7 @@
 }
 
 
-/*举报弹出框*/
+/* section */
 .askct_iss_box {
     width: 100%;
     font-size: .32rem;
@@ -1694,8 +1694,8 @@
     border: .026667rem solid #eee;
 }
 
-/*新鲜事*/
-/*问答个人主页*/
+/* section */
+/* section */
 .ask_home_bg {
     width: 100%;
     background: #fff;
@@ -1953,7 +1953,7 @@
     border-radius: .08rem;
 }
 
-/*提问*/
+/* section */
 .question_tit {
     font-size: .426667rem;
     line-height: .666667rem;
@@ -2056,7 +2056,7 @@
     padding-top: .133333rem;
 }
 
-/*回答*/
+/* section */
 .answer_dp {
     width: 100%;
 }
@@ -2120,7 +2120,7 @@
     color: #666;
 }
 
-/*关注达人*/
+/* section */
 .atn_ct {
     width: 100%;
     background: #fff;
@@ -2171,7 +2171,7 @@
     font-size: .32rem;
 }
 
-/*粉丝*/
+/* section */
 .atn_ct_plus {
     position: absolute;
     right: .266667rem;
@@ -2194,7 +2194,7 @@
     font-size: .32rem;
 }
 
-/*我要提问*/
+/* section */
 .tw {
     padding: 0 .266667rem;
     font-size: .373333rem;
@@ -2425,7 +2425,7 @@
     padding: 0;
 }
 
-/*头像管理*/
+/* section */
 .photo {
     width: 100%;
     height: 8rem;
@@ -2461,7 +2461,7 @@
     border-radius: .133333rem;
 }
 
-/*留言列表*/
+/* section */
 .list_word_tit {
     position: relative;
     width: 100%;
@@ -2533,7 +2533,7 @@
     top: 0;
 }
 
-/*修改资料*/
+/* section */
 .friendinfo {
     width: 100%;
     margin-top: .266667rem;
@@ -2591,7 +2591,7 @@
     top: .4rem;
 }
 
-/*弹出框*/
+/* section */
 .friendinfo_list {
     width: 5.866667rem;
     height: 3.2rem;
@@ -2718,7 +2718,7 @@
     text-align: center;
 }
 
-/*个人中心*/
+/* section */
 .friend {
     position: relative;
     width: 100%;

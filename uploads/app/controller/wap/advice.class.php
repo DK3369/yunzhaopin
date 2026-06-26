@@ -20,7 +20,7 @@ class advice_controller extends common{
 			$this->yunset('advice_mobile',$mobile);
 		}
 		$this->seo('advice');
-		$this->yunset('headertitle','意见反馈');
+		$this->yunset('headertitle',yun_auto_t('意见反馈'));
 		$this->yuntpl(array('wap/advice'));
 	}
 

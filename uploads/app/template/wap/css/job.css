@@ -1,7 +1,7 @@
 com_show_interview_c@charset "utf-8";
 /* CSS Document */
 /*text-overflow:ellipsis; overflow:hidden; white-space:nowrap;background:-webkit-gradient(linear,0 0,0 100%,from(#fff),to(#fff))*/
-/*筛选部分*/
+/* section */
 .searchOptions{width:100%; float:left; background:#fff;border-bottom:.026667rem solid #ebebeb; clear:both; position:relative; z-index:100; padding:.266667rem 0;}
 .searchOptions .searchOptions_list li{ display:inline;width:24%; float:left;text-align:center; font-size:.373333rem;}
 .partwork_nav .searchOptions_list li{ width:33%;}
@@ -34,7 +34,7 @@ com_show_interview_c@charset "utf-8";
 .once_search_pd{ position: relative;}
 .once_search_pd_a{ position: absolute;left:18px;top:10px; font-size: 16px; font-weight: bold;}
 .once_search_list_fb_box{width:100%;position:fixed;left:0;bottom:0; z-index:10; background:#fff;; text-align:center; padding:.133333rem 0;box-shadow: 0 0 0.266666rem #ccc;}
-/*20200617新增列表头部*/
+/* section */
 .search_newheader{width:100%;height:1.44rem}
 .search_newheader_fixed{width:100%;height:1.44rem; background:#fff; position:fixed; z-index:1000}
 .search_newheaderbox{ padding:.213333rem .4rem .213333rem 1.2rem;height:1.066667rem; position:relative}
@@ -57,7 +57,7 @@ background-size: 100%;position: absolute;left: .346667rem;top: 50%;margin-top: -
 .jobsearchnav li{ display:inline-block;height:1.066667rem; line-height:.933333rem; margin-left:.266667rem; margin-right:.266667rem;color:#999}
 .jobsearchnav .jobsearchnavcur{font-weight:bold;color:#000; font-size:.4rem; position:relative}
 .jobsearchnav .jobsearchnavcur:after{width:.613333rem;height:.08rem;border-radius:.133333rem; background:#3b7cff;content:''; display:inline-block; position:absolute;left:.106667rem;bottom:0;}
-/*筛选更多 yun5.0 2019-08-13********************************************/
+/* section */
 .conditional_screening_box{width:100%; float:left; background:#fff; position:absolute;left:0;top:0; z-index:100}
 /*.conditional_screening_pv{width:100%;height:9.6rem; position:relative}
 .conditional_screening_all{width:100%;height:8.133333rem; overflow:auto;}
@@ -86,7 +86,7 @@ background-size: 100%;position: absolute;left: .346667rem;top: 50%;margin-top: -
 .conditional_screening_salary_bth input{width:60px;height:32px; line-height:32px;border:none; padding:0; margin:0;
 background: -webkit-linear-gradient(left, #3b7cff , #3b7cff);border:none;margin:0; padding:0;border:none;color:#fff;border-radius:0px;
 }*/
-/*职位列表部分********************************************/
+/* section */
 
 .job_list_content{padding:0px 0px;}
 .job_list{display:block;}
@@ -134,7 +134,7 @@ background: -webkit-linear-gradient(left, #3b7cff , #3b7cff);border:none;margin:
 .job_hr_zk_n{ display:inline-block;width:100%; text-align:center; font-size:16px; position:absolute;left:0px;top:5px;color:#1c99ef}
 .jobtj_list_box{position:relative; background:#fff; padding:10px; margin-bottom:10px;}
 .jobtj_list_box h3{ font-weight:normal; font-size:16px;}
-/*简历列表页*/
+/* section */
 .user_tj_box{ margin-top:10px;}
 .user_tj_box_list{border:1px solid #cfd9e0; background:#fff; position:relative}
 .user_tj_js{ background:#f0f2f1; padding:10px 10px 10px 75px;border-top:2px solid #cfd9e0;border-bottom:1px solid #cfd9e0; font-size:14px; position:relative }
@@ -183,7 +183,7 @@ background: -webkit-linear-gradient(left, #3b7cff , #3b7cff);border:none;margin:
 .user_list_yxjob{ font-weight:bold;color:#C30}
 .yun_resume_yxbox_t{width:80%;height:20px; line-height:20px;text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
 .wap_title{ font-weight:bold; font-size: 0.426666rem;padding:0.266666rem 0;}
-/*简历内容页*/
+/* section */
 .tiny_bg{ width: 100%;height:60px; background-color: #2778f8;;}
 .tiny_bg_t{ margin-top: -50px;}
 .user_contnet{ padding: 0 10px 10px 10px;}
@@ -272,7 +272,7 @@ background: -webkit-linear-gradient(left, #3b7cff , #3b7cff);border:none;margin:
 .resume_user_bq{ display:inline-block; margin-right:10px; background:#ecf5fb;color:#2772a4; padding:2px 8px; font-size:13px; margin-top:5px;}
 .resume_time{color:#999;font-size: 14px;margin: 4px 0 12px 0;}
 .resume_p{color:#666;padding-top: 5px;}
-/*职位内容页*/
+/* section */
 .com_show_t1_box{ padding:0px 10px 0px 10px;border-bottom:1px solid #eee; background:#fff; position:relative}
 .iconfont_tel{width:18px;height:18px; display:block; margin:0 auto; background:url(../images/yun_jobshow_tel.png) no-repeat center center; background-size:100%}
 .com_show_t1{width:100%; position:relative}
@@ -354,7 +354,7 @@ background: -webkit-linear-gradient(left, #3b7cff , #3b7cff);border:none;margin:
 .yun_jobshow_tj_fl{ display:inline-block;border-radius:2px; background:#eef7fc;color:#73777a; font-size:12px; margin-right:10px; line-height:15px; padding:2px 5px;}
 .jobshow_content_lh{ line-height:26px;}
 
-/*20200429企业内容页*/
+/* section */
 .com_show_infobox{ background:#3b7cff}
 .com_show_infobox_bg{width:100%; background:url(../images/combg.png) no-repeat center bottom; background-size:180%;}
 
@@ -419,7 +419,7 @@ border: #d9d9d9 solid;-webkit-transform: rotate(-45deg);border-width: 1px 1px 0 
 .resume_user_ewm{width:80px;height:80px; position:absolute;right:10px;top:10px;}
 
 
-/*微招聘*/
+/* section */
 .once_cont_content{ }
 .once_t_fb {width:100%;display:block; text-align:center; font-size:16px;color:#fff;}
 .once_icon{ position:absolute;right:0px;top:0px; background:#b1bb08;color:#fff; padding:1px 5px;border-radius:0% 0% 0% 30%;}
@@ -486,7 +486,7 @@ color: #FFFFFF;
 .once_selcet select {margin: 0;padding: 0;width: 100%;border: 0;background: transparent;color: #999;-webkit-appearance: none;height: 35px;line-height: 35px;vertical-align: middle;display: inline-block; position:absolute;left:5px;top:0px;}
 .once_selcet:after {position: absolute;top: 50%;right: 10px;margin-top: -6px;width: 6px;height: 6px;border: #ccc solid;border-width: 1px 1px 0 0;content: ' ';-webkit-transform: rotate(135deg);}
 
-/*微简历*/
+/* section */
 .tiny_list{background:#fff;font-size:14px; margin:10px 12px  0  12px; font-size:12px;border-radius:8px;}
 .tiny_list_content{ padding:13px 10px 0 10px ; position:relative}
 .tiny_list_content_time{ position:absolute;right:10px;top:20px;color:#999}
@@ -521,7 +521,7 @@ color: #FFFFFF;
 .yun_info_sex_cur .usericon_sex1{background:url(../images/boy_curicon.png) no-repeat 0 0; background-size:100%}
 .usericon_sex2{ background:url(../images/g_icon.png) no-repeat 0 0; background-size:100%}
 .yun_info_sex_cur .usericon_sex2{ background:url(../images/g_curicon.png) no-repeat 0 0; background-size:100%}
-/*资讯*/
+/* section */
 .news_list_box{border:1px solid #cdd7de; position:relative; margin-top:20px; background:#fff; padding:10px;}
 .news_cont_box{ background:#fff; }
 .news_cont_box_tit{ text-align:center; font-size:24px; font-weight: bold; padding-top:10px;}
@@ -531,7 +531,7 @@ color: #FFFFFF;
 .wap_txt{ line-height:30px;}
 .wap_news_cont img {max-width: 100%;}
 .news_list_box_ly{ padding:0px 8px; display:inline-block}
-/*职位弹出框*/
+/* section */
 .job_pop_function_box{ display:none;}
 .job_pop_function{	background-color: #fff;display: -webkit-box;display: -ms-flexbox;display: -webkit-flex;display: flex;position: absolute;width: 100%;top: 0;left: 0;z-index: 1100;overflow: hidden}
 .job_pop_function_selected{ background:#f4f4f4}
@@ -547,7 +547,7 @@ color: #FFFFFF;
 .selectorOk{overflow: hidden;height: 28px;line-height: 26px;width: 49px;background: -webkit-gradient(linear, left top, left bottom, from(#288ee0), to(#288ee0));color: #FFF;margin-right: 7px;font-size: 14px;text-indent: 0;border: 1px solid #288ee0;border-radius: 3px;font-family:微软雅黑;}
 .selectorClear{overflow: hidden;height: 28px;line-height: 26px;width: 49px;background: -webkit-gradient(linear, left top, left bottom, from(#D15321), to(#D15321));color: #FFF;margin-right: 7px;font-size: 14px;text-indent: 0;border: 1px solid #D15321;border-radius: 3px;font-family:微软雅黑;}
 .selectorclose{overflow: hidden;height: 28px;line-height: 26px;width: 49px;background: -webkit-gradient(linear, left top, left bottom, from(#56c107), to(#56c107));color: #FFF;margin-right: 7px;font-size: 14px;text-indent: 0;border: 1px solid #56c107;border-radius: 3px;font-family:微软雅黑;}
-/*更多弹出框*/
+/* section */
 .job_pop_more{width:100%;background:#fff; position:absolute;left:0px;top:48px; display:none;}
 .com_search_box_cont{ padding:5px;}
 .com_search_box_list{border-bottom:1px solid #cdd7de; padding:5px 0px; position:relative;}
@@ -560,7 +560,7 @@ color: #FFFFFF;
 .selectOption select{float:left;position:absolute;top:0;right:0;z-index:2;padding:0;border:0;-webkit-appearance:none;width:100%;background:transparent;height:33px;font-size:14px;font-family:微软雅黑;}
 .selectOption select option{font-size:12px;}
 .seach_post_sub{overflow: hidden;height: 40px;line-height: 40px;width: 100%;background: -webkit-gradient(linear, left top, left bottom, from(#f60), to(#f60));color: #FFF;font-size: 14px;text-indent: 0;border: 1px solid #f60;font-family:微软雅黑;margin-top:8px; font-size:16px;}
-/*微简历弹出框*/
+/* section */
 .tiny_show_tckbox{width:220px;height:170px;}
 
 .tiny_show_tckbox_cont{width:160px; padding:0px 20px;}
@@ -633,7 +633,7 @@ color: #FFFFFF;
 .det-tab tr td.cut i{ display:block; margin:0 auto}
 .yun_resume_jobtime{ background:#fff7ee; display:inline-block;height:22px; line-height:22px;color:#f00; font-size:12px; padding:0px 8px;;position:absolute;left:110px;top:12px;}
 .two_vita_ewm_box{width:100%; text-align:center; padding-top:10px;}
-/*企业列表页*/
+/* section */
 .com_list_box{ width:100%; overflow:hidden;background:#fff; margin-top:13px; font-size:14px;}
 .com_list_t_box{ padding-left:70px; position:relative}
 .com_list_logo_box{width:50px;height:50px;border:1px solid #f2f2f2; position:absolute;left:10px;top:10px; text-align:center}
@@ -814,7 +814,7 @@ border: 1px solid #1c99ef; background:#fff;-webkit-border-radius: 5px; font-size
 .yun_wap_tj{width:30px;height:30px; background:url(../images/tj.png) no-repeat; background-size:100%; display:inline-block;font-size:0px;position:absolute;right:-2px;top:-2px;}
 .yun_wap_resumetj{width:40px;height:40px; background:url(../images/tj.png) no-repeat; background-size:100%; display:inline-block;font-size:0px;position:absolute;right:-3px;top:-3px;}
 
-/*店铺招聘支付*/
+/* section */
 .once_pay_list{ background:#fff;border-bottom:1px solid #eee; padding:10px 10px 10px 80px; position:relative; text-align:right; font-size: 0.373333rem;}
 .once_pay_list_name{ position:absolute;left:15px;top:10px;}
 .once_pay_list_fs .once_pay_list_name{left:45px;}
@@ -917,7 +917,7 @@ background-color: #f0f8f1;border-radius: 2px; margin-top:5px; margin-right:3px; 
 .yun_newedition_shosakno{width:100%; padding:60px 0  20px 0; text-align:center;color:#999; position:relative}
 .yun_newedition_shosakno:after{width:30px;height:30px; position:absolute;top:10px;left:50%; margin-left:-11px;content:'';background:url(../images/msg_icon.png) no-repeat; background-size:100%; opacity:0.5}
 .job_show_foottip{width:100%; text-align:center; background:#fff;color:#999;padding:10px 0;border-top:1px solid #eeeeee}
-/*简历列表*/
+/* section */
 .yun_newedition_resumelist{ background:#fff; margin-top:10px; }
 .yun_newedition_resumelist a{ display:block; padding:15px 15px 15px 15px;position:relative }
 .yun_newedition_resume_wantjob{ font-size:16px;color:#666; padding-bottom:10px;}
@@ -942,7 +942,7 @@ background-color: #fcf6ed;border-radius: 2px; margin-right:3px;}
 .yun_tjresume{ display:inline-block; background:#e9f4fd;color:#3d92ff;padding:2px 8px;border-radius:2px;font-size:12px; margin-top:5px; margin-right:5px; margin-bottom:5px;}
 .yun_ljl{font-size:12px; padding-top:5px;color:#f60;}
 
-/*简历详细*/
+/* section */
 .yun_newedition_resumeheader{width:100%;height:48px; position:relative}
 .yun_newedition_resumeheader_c{width:100%;height:48px; position:fixed;left:0px;top:0px; background:#3b7cff; z-index:10000}
 .yun_newedition_resumeheader_box{width:100%;height:48px; position:relative}
@@ -1027,7 +1027,7 @@ background-color: #fcf6ed;border-radius: 2px; margin-right:3px;}
 .hr_yx_info_comname{ padding-bottom:5px; font-size:16px}
 .hr_yx_info_n{ display:inline-block; padding:0px 10px; background:#eeba7c;border-radius:20px;color:#b16913; font-size:12px;}
 .hr_yx_info_zc{ position:absolute;right:20px;top:40px;}
-/* 企业详情页部门类别样式 */
+/* section */
 .department_a{background:#ffffff;border:1px solid #ddd;color:#999;cursor:pointer;padding:2px 10px;margin-right:10px;margin-top:10px;border-radius:20px;white-space: normal; word-break: break-all; display:inline-block}
 .department_a:hover,.department_a_cur {border:1px solid #0378d8;color:#0378d8;background:#F4F9FD;} 
 
@@ -1045,7 +1045,7 @@ background-color: #fcf6ed;border-radius: 2px; margin-right:3px;}
 .job_prompt_box_ok_bth{width:125px;height:40px; line-height:40px; text-align:center; background:#ff6a6a;color:#fff;display:inline-block;border-radius:3px;}
 .job_prompt_box_ok_bth:hover{ background:#fb2222;color:#fff; text-decoration:none;}
 
-/*20200424职位详细页*/
+/* section */
 .jobshowbg{width:100%; background:#fff url(../images/combg.png) no-repeat; background-size:100%}
 .jobshowbox_c{ background:#fff;border-radius:5px;  box-shadow: 0 1px 1px rgba(0,0,0,.02), 0 5px 10px -4px rgba(0,0,0,.17);}
 .jobshowbox_cont{ padding:15px;}
@@ -1129,7 +1129,7 @@ background-color: #fcf6ed;border-radius: 2px; margin-right:3px;}
 .job_show_infowelfare_n{ background:#f4fbff;padding:5px 10px; margin-right:5px;border-radius:3px; margin-top:10px;white-space:nowrap;display:inline-block}
 .job_show_infowelfare{ padding-bottom:10px;}
 .job_zant{width:70px;height:70px; background:url(../images/stamp.png) no-repeat; background-size:100%; display:inline-block; position:absolute;right:0px;top:0px;}
-/* 弹出层 */
+/* section */
 .conshow_popup_tc{position: fixed;top: 0;right: 0;bottom: 0;left: 0;background-color: rgb(0, 0, 0,0.4);}
 .conshow_popup_tc_box{position: absolute;top: 50%;left: 50%;background: #fff;border-radius: 5px;width: 260px;margin-left: -130px;margin-top: -62px;}
 .conshow_popup_tc_con{padding: 20px 20px;color: #333;font-size: 14px;text-align: center;}
@@ -1139,7 +1139,7 @@ background-color: #fcf6ed;border-radius: 2px; margin-right:3px;}
 .conshow_popup_tc_a2{color: #3a7dff;}
 .conshow_popup_tc_a1:after{position: absolute;height: 40px;width: 1px;background: #e9e9e9;right: -1px;top: 0;display: block;content: '';clear: both;}
 
-/* 海报	*/
+/* section */
 .zphb_show{padding: 10px 15px 10px 15px;}
 .zphb_show_c{border-radius:3px; background:#fff; position:relative;padding: 10px 90px 10px 15px;background:#fff url(../images/zphb_show_bg.png) no-repeat bottom right;background-size: 40%;}
 .zphb_show_tit{font-weight: bold;font-size: 16px;margin-bottom: 5px;}
@@ -1171,12 +1171,12 @@ relative;text-indent:20px; text-align:center; margin:0 auto}
 .fzwb:after{width:15px;height:15px;background:url(../images/diynews.png) no-repeat; background-size:100%;content:''; position:absolute;left:50%; margin-left:-40px;top:10px; }
 .fzwbbox_bth{ padding-top:10px;}
 .xzw{width:35px;height:35px; background:url(../images/xfb.png) no-repeat; background-size:100%; position:absolute;left:0px;top:0px; display:block;}
-/*列表页上拉加载 start*/
+/* section */
 .lodbox{text-align:center;color:#999;padding:10px 0}
 .lodbox_p{display:inline-block; padding-left:30px; position:relative}
 .lodbox_iocn{background:url(../images/loading.gif) no-repeat; background-size:100%;width:20px;height:20px; position:absolute;left:0px;top:0px;}
-/*列表页上拉加载 end*/
-/*----测评评论样式--*/
+/* section */
+/* section */
 .cp_plcont{padding:0 10px;}
 .cp_pllist{ background:#fff;padding:10px 15px 10px 70px; position:relative; margin-top:15px;}
 .cp_time{ font-size:12px;color:#666}
@@ -1184,7 +1184,7 @@ relative;text-indent:20px; text-align:center; margin:0 auto}
 .cp_qttx{ position:absolute;left:15px;top:10px;}
 .cp_qttx img{border-radius:50%;}
 .cp_pl_name{ font-weight:bold}
-/*微信扫码查看联系方式 start*/
+/* section */
 .job_tel_wx_cont{width:260px; background:#fff;border-radius:6px; position:fixed;left:50%; margin-left:-130px;top:180px;    z-index: 10000000001}
 .job_tel_wx_tit{padding:15px 0 0 20px ; font-size:16px; position:relative}
 .job_tel_wx_p{width:100%; text-align:center; padding-top:20px;color:#666}
@@ -1196,9 +1196,9 @@ relative;text-indent:20px; text-align:center; margin:0 auto}
 
 
 
-/*微信扫码查看联系方式 end*/
+/* section */
 
-/*修改*/
+/* section */
 .jobmapBoxFooter{
 	overflow: hidden;
 }

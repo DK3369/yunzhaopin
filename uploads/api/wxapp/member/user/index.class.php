@@ -40,7 +40,7 @@ class index_controller extends user_controller{
 				$top_day = (int)(($expect['topdate'] - strtotime(date('Y-m-d')))/86400);
 				$resume['top_day']      =   $top_day>0?$top_day:0;
 			}
-            // 根据简历完成情况，提示完善简历
+            // ，
             if ($expect['integrity'] > 0 && $expect['integrity'] < 100){
                 $ur  =  $resumeM->getUserResumeInfo(array('uid' => $this->member['uid'],'eid'=>$expect['id']));
                 if ($ur['expect'] == 0){
@@ -96,7 +96,7 @@ class index_controller extends user_controller{
 
 	 	$comnum		=	$companyM->getCompanyNum(array('uid'=>$this->member['uid']));
 		
-		//对我感兴趣 总数
+		// 
 
 	 	$looknum	=	$this->MODEL('lookresume')->getLookNum(array('uid'=>$this->member['uid'],'status'=> 0, 'usertype' => '2'));
 	 	$data['looknum']	=	$looknum;
@@ -118,7 +118,7 @@ class index_controller extends user_controller{
 		    'top_price'=>  $this->config['integral_resume_top'],
 		    'ask'      =>  isset($this->config['sy_ask_web']) ? $this->config['sy_ask_web'] : 2
 		);
-		// 强制关注公众号
+		// 
 		if(isset($this->config['user_gzgzh']) && $this->config['user_gzgzh'] == 1){
 		    $data['gzhurl'] = Url('wap', array('c'=>'ajax','a'=>'gzhqrcode','token'=>$this->member['gzhtoken']));
 		    $data['config']['user_gzgzh'] = 1;
@@ -141,7 +141,7 @@ class index_controller extends user_controller{
 		
 	    $this -> render_json(0, 'ok', $data);
 	}
-	//签到，TODO:会员中心
+	// ，TODO:
 	function sign_action(){
 		
 		$userinfoM	=	$this -> MODEL('userinfo');

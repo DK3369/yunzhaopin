@@ -10,6 +10,7 @@
 <link type="text/css" href="{yun:}$resume_style{/yun}/css/rusume.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet">
 </head>
 <body>
+{yun:}include file="$wapstyle/publichtm/wap_api_enum.htm"{/yun}
 <div id="dowebok">
 <section class="section">
     <div class="rusume_info_cont">
@@ -40,9 +41,9 @@
       <div class="rusume_info_name_bottom_line"></div>
       <div class="rusume_info_name">{yun:}$Info.username_n{/yun}</div>
       <div class="rusume_info_p">{yun:}$Info.job_sex{/yun},
-	  {yun:}if $Info.age==0{/yun}保密{yun:}else{/yun}{yun:}$Info.age{/yun}{yun:}t key='common_02074'{/yun}{yun:}/if{/yun},
+	  {yun:}if $Info.age==0{/yun}{yun:}t key='wap_user_00333'{/yun}{yun:}else{/yun}{yun:}$Info.age{/yun}{yun:}t key='common_02074'{/yun}{yun:}/if{/yun},
 	  {yun:}$Info.useredu{/yun},
-    {yun:}if $Info.user_exp=='无经验'{/yun}无经验{yun:}else{/yun}
+    {yun:}if $Info.user_exp==$wap_db_no_exp{/yun}{yun:}t key='wap_01623'{/yun}{yun:}else{/yun}
 	  {yun:}$Info.user_exp{/yun}{yun:}t key='wap_com_00305'{/yun}{yun:}/if{/yun}
 	  </div>
 	  <div class="rusume_info_p2">{yun:}$Info.living{/yun}</div>
@@ -63,7 +64,7 @@
     {yun:}if $Info.jobname{/yun}
       <div class="section_yx_by_p">{yun:}t key='wap_00496'{/yun}{yun:}$Info.jobname{/yun}</div>
       {yun:}/if{/yun}
-      <div class="section_yx_by_p">{yun:}t key='wap_user_00016'{/yun}：<span class="section_yx_by_span">{yun:}if $Info.minsalary&&$Info.maxsalary{/yun}￥{yun:}$Info.minsalary{/yun}-{yun:}$Info.maxsalary{/yun}{yun:}else if $Info.minsalary{/yun}￥{yun:}$Info.minsalary{/yun}{yun:}t key='common_01942'{/yun}{yun:}else{/yun}面议{yun:}/if{/yun}</span></div>
+      <div class="section_yx_by_p">{yun:}t key='wap_user_00016'{/yun}：<span class="section_yx_by_span">{yun:}if $Info.minsalary&&$Info.maxsalary{/yun}￥{yun:}$Info.minsalary{/yun}-{yun:}$Info.maxsalary{/yun}{yun:}else if $Info.minsalary{/yun}￥{yun:}$Info.minsalary{/yun}{yun:}t key='common_01942'{/yun}{yun:}else{/yun}{yun:}t key='common_02045'{/yun}{yun:}/if{/yun}</span></div>
 
       {yun:}if $Info.type{/yun}
       <div class="section_yx_by_p">{yun:}t key='resume_00025'{/yun}{yun:}$Info.type{/yun}</div>{yun:}/if{/yun}
@@ -92,7 +93,7 @@
     <div class="slide">
       <div class="section_Additional_con">
         <div class="section_Experience_list">
-          <div class="section_Experience_date"><span class="section_Experience_t">{yun:}$worklist.sdate|date_format:"%Y-%m"{/yun} {yun:}t key='common_02098'{/yun} {yun:}if $worklist.edate{/yun}{yun:}$worklist.edate|date_format:"%Y-%m"{/yun}{yun:}else{/yun}至今{yun:}/if{/yun} </span></div>
+          <div class="section_Experience_date"><span class="section_Experience_t">{yun:}$worklist.sdate|date_format:"%Y-%m"{/yun} {yun:}t key='common_02098'{/yun} {yun:}if $worklist.edate{/yun}{yun:}$worklist.edate|date_format:"%Y-%m"{/yun}{yun:}else{/yun}{yun:}t key='wap_js_00170'{/yun}{yun:}/if{/yun} </span></div>
           <div class="section_Experience_box">
             <div class="section_Experience_name">{yun:}$worklist.name{/yun} </div>
             <div>{yun:}t key='wap_user_00154'{/yun}：{yun:}$worklist.title{/yun}</div>
@@ -117,7 +118,7 @@
     <div class="slide">
       <div class="section_Additional_con">
         <div class="section_Education_list">
-          <div class="section_Education_date"><span class="section_Education_t">{yun:}$edulist.sdate|date_format:"%Y-%m"{/yun} {yun:}t key='common_02098'{/yun} {yun:}if $edulist.edate{/yun}{yun:}$edulist.edate|date_format:"%Y-%m"{/yun}{yun:}else{/yun}至今{yun:}/if{/yun}</span></div>
+          <div class="section_Education_date"><span class="section_Education_t">{yun:}$edulist.sdate|date_format:"%Y-%m"{/yun} {yun:}t key='common_02098'{/yun} {yun:}if $edulist.edate{/yun}{yun:}$edulist.edate|date_format:"%Y-%m"{/yun}{yun:}else{/yun}{yun:}t key='wap_js_00170'{/yun}{yun:}/if{/yun}</span></div>
           <div class="section_Education_box">
             <aside class="section_Education_name"><span class="section_Education_t">{yun:}t key='wap_00468'{/yun}</span><em class="section_Education_n">{yun:}$edulist.name{/yun}</em> </aside>
             <aside><span class="section_Education_t">{yun:}t key='wap_00449'{/yun}</span>{yun:}$edulist.education_n{/yun}</aside>
@@ -144,7 +145,7 @@
     <div class="slide">
       <div class="section_Additional_con">
         <div class="section_Education_list">
-          <div class="section_Education_date"><span class="section_Education_t"> {yun:}$traininglist.sdate|date_format:"%Y-%m"{/yun} {yun:}t key='common_02098'{/yun} {yun:}if $traininglist.edate{/yun}{yun:}$traininglist.edate|date_format:"%Y-%m"{/yun}{yun:}else{/yun}至今{yun:}/if{/yun}</span></div>
+          <div class="section_Education_date"><span class="section_Education_t"> {yun:}$traininglist.sdate|date_format:"%Y-%m"{/yun} {yun:}t key='common_02098'{/yun} {yun:}if $traininglist.edate{/yun}{yun:}$traininglist.edate|date_format:"%Y-%m"{/yun}{yun:}else{/yun}{yun:}t key='wap_js_00170'{/yun}{yun:}/if{/yun}</span></div>
           <div class="section_Education_box">
             <aside class="section_Education_name"><span class="section_Education_t">{yun:}t key='wap_00468'{/yun}</span><em class="section_Education_n bold">{yun:}$traininglist.name{/yun}</em> </aside>
             <aside><span class="section_Education_t">{yun:}t key='member_user_00008'{/yun}</span>{yun:}$traininglist.title{/yun}</aside>
@@ -203,7 +204,7 @@
         <div class="section_Project_list"> <i class="section_Project_yuan"></i> <i class="section_Project_yuan3"></i>
           <div class="section_Project_a1"><em class="section_Project_em section_Project_em_n">{yun:}$projectlist.name{/yun}</em> </div>
           <div class="section_Project_box">
-            <div class="section_Project_a2"><span class="section_Project_s">{yun:}t key='wap_js_00088'{/yun}：</span><em class="section_Project_em">{yun:}$projectlist.sdate|date_format:"%Y-%m"{/yun} {yun:}t key='common_02098'{/yun} {yun:}if $projectlist.edate{/yun}{yun:}$projectlist.edate|date_format:"%Y-%m"{/yun}{yun:}else{/yun}至今{yun:}/if{/yun}</em> </div>
+            <div class="section_Project_a2"><span class="section_Project_s">{yun:}t key='wap_js_00088'{/yun}：</span><em class="section_Project_em">{yun:}$projectlist.sdate|date_format:"%Y-%m"{/yun} {yun:}t key='common_02098'{/yun} {yun:}if $projectlist.edate{/yun}{yun:}$projectlist.edate|date_format:"%Y-%m"{/yun}{yun:}else{/yun}{yun:}t key='wap_js_00170'{/yun}{yun:}/if{/yun}</em> </div>
             <div class="section_Project_a2"><span class="section_Project_s">{yun:}t key='wap_user_00154'{/yun}：</span><em class="section_Project_em">{yun:}$projectlist.title{/yun}</em> </div>
             {yun:}if $projectlist.content{/yun}<div class="section_Project_a2 section_Project_a2_text"><span class="section_Project_s">{yun:}t key='wap_00476'{/yun}</span><em class="section_Project_em">{yun:}$projectlist.content{/yun}</em> </div>{yun:}/if{/yun}
           </div>

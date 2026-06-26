@@ -1,3 +1,4 @@
+{yun:}include file="$wapstyle/publichtm/wap_api_enum.htm"{/yun}
 {yun:}include file="$wapstyle/header_cont.htm"{/yun}
 
 <link rel="stylesheet" href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/ask/ask.css?v={yun:}$config.cachecode{/yun}" type="text/css" />
@@ -23,7 +24,7 @@
 	</van-popup>
 </div>
 
-{yun:}if strpos($config.code_web,"职场提问") !==false{/yun} 
+{yun:}if strpos($config.code_web,$wap_code_ask) !==false{/yun} 
 {yun:}if $config.code_kind > 2{/yun} 
 <div class="gtdx-captcha">
 	<div id="bind-captcha" data-id='subask' data-type='click'></div>
@@ -75,7 +76,7 @@ function checkform(img){
 	var authcode;
 	
 	var verify_token, verify_str;
-	var codesear=new RegExp('职场提问');
+	var codesear=new RegExp(WAP_CODE_WEB.ASK_QUESTION);
 	
 	if(codesear.test(code_web)){
 		if(code_kind==1){

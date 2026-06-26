@@ -13,13 +13,13 @@ class job_controller extends common
 
         $CacheM     =   $this->MODEL('cache');
         $CacheArr   =   $CacheM->GetCache(array('job', 'city', 'hy', 'com', 'uptime'));
-        // 后台-页面设置-列表页区域默认设置。选择了一级城市
+        // --。
         if (!empty($this->config['sy_web_city_one'])) {
 
             $provinceid  =  $this->config['sy_web_city_one'];
             $CacheArr['city_index']  =  array($provinceid);
             $this->yunset('nocityall', 1);
-            // 选择了二级城市
+            // 
             if (!empty($this->config['sy_web_city_two'])) {
                 $cityid  =  $this->config['sy_web_city_two'];
             }
@@ -105,7 +105,7 @@ class job_controller extends common
         $this->yunset('jobChoosed', $jobChoosed);
 
         $this->yunset('backurl', Url('wap'));
-        $this->yunset('headertitle', '职位搜索');
+        $this->yunset('headertitle', yun_auto_t('职位搜索'));
         $this->yunset('topplaceholder', '请输入职位关键字,如：会计...');
 
         $this->yuntpl(array('wap/job')); 
@@ -133,7 +133,7 @@ class job_controller extends common
             $this->ACT_msg_wap(1, '参数错误！', 2, 5);
         }
         
-        // 收藏 申请职位
+        // 
         $typeStr    =   trim($_GET['type']);
 
         if (!empty($typeStr)) {
@@ -160,7 +160,7 @@ class job_controller extends common
         $member     =   $userinfoM->getInfo(array('uid' => $job['uid']), array('field' => '`login_date`'));
         $job['login_date'] = $member['login_date'];
 
-        // 联系方式
+        // 
         $dataArr  =   array('id' => $id, 'uid' => $this->uid, 'usertype' => $this->usertype);
         $link     =   $JobM -> getCompanyJobTel($dataArr);
         $this->yunset('link', $link);
@@ -189,23 +189,23 @@ class job_controller extends common
         $JobM->addJobHits($id);
         $hits   =   $JobM->getInfo(array('id' => $id), array('field' => '`uid`, `jobhits`'));
         $job['jobhits']     =   $hits['jobhits'];
-        // 投递数量
+        // 
         $UJWhere['uid']     =   $this->uid;
         $UJWhere['job_id']  =   $id;
         $UJWhere['isdel']   =   9;
 		$UJWhere['is_browse']   =   array('<>','6');
         $userid_job         =   $JobM->getSqJobNum($UJWhere);
 
-        // 收藏数量
+        // 
         $FJWhere['uid']     =   $this->uid;
         $FJWhere['job_id']  =   $id;
         $FJWhere['type']    =   '1';
         $fav_job            =   $JobM->getFavJobNum($FJWhere);
 
-        // 邀请面试数量
+        // 
         $invite_job         =   $JobM->getYqmsNum(array('jobid' => $id,'uid' => $this->uid,'isdel'=>9));
 
-        // 举报数量
+        // 
         $reportM            =   $this->MODEL('report');
         $report_job         =   $reportM->getNum(array('eid' => $id, 'p_uid' => $this->uid, 'c_uid' => $job['uid']));
 
@@ -214,7 +214,7 @@ class job_controller extends common
         $job['fav_job']     =   $fav_job;
         $job['report_job']  =   $report_job;
 
-        // 解决通过Editor上传的图片路径问题
+        // Editor
         $job['description'] =   str_replace(array("ti<x>tle","“","”"), array("title"," "," "), $job['description']);
         
         preg_match_all('/<img(.*?)src=("|\'|\s)?(.*?)(?="|\'|\s)/', $job['description'], $res);
@@ -228,7 +228,7 @@ class job_controller extends common
             }
         }
 
-        // 回复率
+        // 
         $allnum     =   $JobM->getSqJobNum(array('job_id' => $id,'isdel'=>9));
 
         $replynum   =   $JobM->getSqJobNum(array('job_id' => $id,'isdel'=>9,'is_browse' => array('>', 1)));
@@ -239,11 +239,11 @@ class job_controller extends common
         }
         $job['snum']    =   $allnum;
 
-        // 会员等级
+        // 
         $ratingM    =   $this -> MODEL('rating');
         $comrat     =   $ratingM -> getInfo(array('id' => intval($job['rating'])), array('pic' => '1'));
 
-        // 查询咨询记录记录
+        // 
         $msgM       =   $this->MODEL('msg');
         $msgList    =   $msgM->getList(array('jobid' => $id,'job_uid' => $job['uid'],'status'=>1,'reply' => array('<>', ''),'del_status'=>0, 'orderby' => 'datetime,desc', 'limit' => 5));
         $this->yunset('msgList', $msgList['list']);
@@ -251,7 +251,7 @@ class job_controller extends common
             $backurl    = Url('wap', array('c' => 'job'));
             $this->yunset('backurl', $backurl);
         }
-        // 获取seo使用的数据
+        // seo
         $data['job_name']       =   $job['jobname']; // 职位名称
         $data['company_name']   =   $job['com_name']; // 公司名称
         $data['industry_class'] =   $job['hy_n']; // 所属行业
@@ -265,7 +265,7 @@ class job_controller extends common
         
         $this->yunset('job', $job);
         $this->yunset('comrat', $comrat);
-        $this->yunset('headertitle', '职位详情');
+        $this->yunset('headertitle', yun_auto_t('职位详情'));
         if($this->config['sy_h5_share']==1){
           $this->yunset('shareurl', Url('wap', array('c' => 'job', 'a' => 'share', 'id' => $id )));
         }else{
@@ -285,7 +285,7 @@ class job_controller extends common
         $this->yunset('factlist', $factlist);
         $this->yuntpl(array('wap/job_show'));
     }
-    //获取举报职位选项
+    // 
     function getreport_action(){
         $cacheM  =  $this->MODEL('cache');
         $cache   =  $cacheM -> GetCache(array('com'));
@@ -300,14 +300,14 @@ class job_controller extends common
         echo yun_json_encode($data);
     }
 
-    //兼容以前版本链接
+    // 
 	function view_action(){
 		if($_GET['id']){
 			header('HTTP/1.1 301 Moved Permanently');
 			header('Location: '.Url('wap',array('c'=>'job','a'=>'comapply','id'=>$_GET['id'])));//
 		}
 	}
-    // 收藏 申请职位
+    // 
     private function typeJob($typeStr, $id,$eid='')
     {
         $JobM   =   $this->MODEL('job');
@@ -347,14 +347,14 @@ class job_controller extends common
         
         if ($this->usertype != '1') {
             $data['url']    =   $_SERVER['HTTP_REFERER'];
-            $data['msg']    =   '只有个人会员才可举报！';
+            $data['msg']    =   yun_auto_t('只有个人会员才可举报！');
             echo yun_json_encode($data);
             die();
         }
         if (md5(strtolower($_POST['authcode'])) != $_SESSION['authcode'] || empty($_SESSION['authcode'])) {
             unset($_SESSION['authcode']);
             $data['url'] = $_SERVER['HTTP_REFERER'];
-            $data['msg'] = '验证码错误！';
+            $data['msg'] = yun_auto_t('验证码错误！');
             echo yun_json_encode($data);
             die();
         }
@@ -364,7 +364,7 @@ class job_controller extends common
 
         if (is_array($row)) {
             $data['url']    =   $_SERVER['HTTP_REFERER'];
-            $data['msg']    =   '您已举报过该用户！';
+            $data['msg']    =   yun_auto_t('您已举报过该用户！');
             echo yun_json_encode($data);
             die();
         }
@@ -385,12 +385,12 @@ class job_controller extends common
         
         if ($nid) {
             $data['url']    =   $_SERVER['HTTP_REFERER'];
-            $data['msg']    =   '举报成功！';
+            $data['msg']    =   yun_auto_t('举报成功！');
             echo yun_json_encode($data);
             die();
         } else {
             $data['url']    =   $_SERVER['HTTP_REFERER'];
-            $data['msg']    =   '举报失败！';
+            $data['msg']    =   yun_auto_t('举报失败！');
             echo yun_json_encode($data);
             die();
         }
@@ -419,7 +419,7 @@ class job_controller extends common
         $this->data = $data;
         $this->seo('comapply');
 
-        $this->yunset('headertitle', '快速申请');
+        $this->yunset('headertitle', yun_auto_t('快速申请'));
         $this->yuntpl(array('wap/applyjobuid'));
     }
 
@@ -519,7 +519,7 @@ class job_controller extends common
             $companyM = $this->MODEL('company');
             $com = $companyM->getInfo($comid, array('field' => '`uid`,`name`,`cityid`,`address`,`x`,`y`'));
 
-            $this->yunset(array('title' =>'企业位置', 'headertitle' => '企业位置'));
+            $this->yunset(array('title' =>yun_auto_t('企业位置'), 'headertitle' => yun_auto_t('企业位置')));
             $this->yunset('com', $com);
         } else if ($_GET['id']) {
 
@@ -535,7 +535,7 @@ class job_controller extends common
             }
             $com['name']    =   $jobInfo['name'];
 
-            $this->yunset(array('title' =>'工作地址', 'headertitle' => '工作地址'));
+            $this->yunset(array('title' =>yun_auto_t('工作地址'), 'headertitle' => yun_auto_t('工作地址')));
             $this->yunset('com', $com);
         }
 
@@ -671,7 +671,7 @@ class job_controller extends common
             $where['mun']           =   $mun;
         }
         if ($rec == 1) {
-            //老版的推荐排序为 优先排会员且按rec_time排序，此处暂时参照wap
+            // rec_time，wap
             $where['rec_time']      =   array('>=', time());
         }
 
@@ -706,7 +706,7 @@ class job_controller extends common
             if ($this->config['job_full_text_search'] == 1){
                 $where['description']       =   array('like',$keyword,'OR');
             }
-            // 企业名称及简称搜索start
+            // start
             $companyM       =   $this->MODEL('company');
 
             $comWhere['PHPYUNBTWSTART_B']   = '';
@@ -721,7 +721,7 @@ class job_controller extends common
             if ($cuids) {
                 $where['uid']               =   array('in', pylode(',', $cuids), 'OR');
             }
-            // 企业名称及简称搜索end
+            // end
             if (!empty($kCity)) {
                 $where['provinceid']        =   array('in', pylode(',', $kCity), 'OR');
                 $where['cityid']            =   array('in', pylode(',', $kCity), 'OR');
@@ -756,7 +756,7 @@ class job_controller extends common
             $where['maxsalary']         =   array('<=', $param['maxsalary']);
         }
 
-        // 处理分站查询条件
+        // 
         if ($this->config['sy_web_site'] == 1) {
 
             if ($this->config['province'] > 0) {
@@ -827,7 +827,7 @@ class job_controller extends common
         die;
     }
 
-    //微信扫码查看联系方式
+    // 
     function telQrcode_action(){
         
         $WxM	=	$this -> MODEL('weixin');
@@ -842,7 +842,7 @@ class job_controller extends common
             echo $imgStr;
         }
     }
-    // 获取职位联系方式
+    // 
     function getLink_action()
     {
 
@@ -865,7 +865,7 @@ class job_controller extends common
         echo yun_json_encode($return);die;
 
     }
-    // 查询职位复制文本内容
+    // 
     function getJobWb_action(){
         
         $jobid = intval($_POST['jobid']);

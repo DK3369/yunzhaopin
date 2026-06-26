@@ -84,7 +84,7 @@ class part_controller extends common
         $this->data         =   $data;
 
         $this->seo('part_show');
-        $this->yunset('headertitle', '兼职');
+        $this->yunset('headertitle', yun_auto_t('兼职'));
         $this->yuntpl(array('wap/part_show'));
     }
 

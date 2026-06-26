@@ -25,45 +25,45 @@ function tresume(){
 		skillinfo=$.trim(document.getElementById('skillinfo').value),
 		projectinfo=$.trim(document.getElementById('projectinfo').value);
 	if(name==""){
-		return mui.toast('请填写姓名！');return false;
+		return mui.toast(WAP_JS_I18N.sd71d86f8);return false;
 	}
 	if(sex==''){
-		return mui.toast("请选择性别！");return false;
+		return mui.toast(WAP_JS_I18N.s27d2081e);return false;
 	}
 	if(age==''){
-		return mui.toast("请填写年龄！");return false;
+		return mui.toast(WAP_JS_I18N.se8950cb1);return false;
 	}
 	
 	if(edu==''){
-		return mui.toast("请选择最高学历！");return false;
+		return mui.toast(WAP_JS_I18N.s1125855c);return false;
 	}
 	if(exp==''){
-		return mui.toast("请选择工作经验！");return false;
+		return mui.toast(WAP_JS_I18N.sdd9b65f4);return false;
 	}
 	if(telphone==''){
-		return mui.toast("请填写手机号码！");return false;
+		return mui.toast(WAP_JS_I18N.s2864ebae);return false;
 	}else{
 		if(!isjsMobile(telphone)){
-			return mui.toast("手机号码格式错误！");return false;
+			return mui.toast(WAP_JS_I18N.s7f2c8eb4);return false;
 		}
 	}
 	
 	if(living==''){
-		return mui.toast("请填写现居住地！");return false;
+		return mui.toast(WAP_JS_I18N.sbb04b415);return false;
 	}
 	
 	if(jobname==""){
-		return mui.toast('请填写意向岗位！');return false;
+		return mui.toast(WAP_JS_I18N.s67d1ef91);return false;
 	}
 	if(hy==""){
-		return mui.toast('请选择从事行业！');return false;
+		return mui.toast(WAP_JS_I18N.s75754a1b);return false;
 	}
 	if(minsalary==""){
-		return mui.toast('请填写期望薪资！');return false;
+		return mui.toast(WAP_JS_I18N.s7bceedae);return false;
 	}
 	if(maxsalary){
 		if(parseInt(maxsalary)<=parseInt(minsalary)){
-			return mui.toast('最高薪资必须大于最低薪资！');return false;
+			return mui.toast(WAP_JS_I18N.s97c45b89);return false;
 		}
 	}
 	var cionly ='';
@@ -72,38 +72,38 @@ function tresume(){
 	}
 	if(cionly == '1'){
 		if(provinceid == '') {
-			return mui.toast('请选择期望城市！');return false;
+			return mui.toast(WAP_JS_I18N.s6cf18fb6);return false;
 		}
 	}else{
 		if(cityid==""){
-			return mui.toast('请选择期望城市！');return false;
+			return mui.toast(WAP_JS_I18N.s6cf18fb6);return false;
 		}
 	}
 	
 	
 	if(jobstatus==""){
-		return mui.toast('请选择求职状态！');return false;
+		return mui.toast(WAP_JS_I18N.s2e155c8c);return false;
 	}		
 
 	if(expinfo==""){
-		return mui.toast('请填写工作经历！');return false;
+		return mui.toast(WAP_JS_I18N.s2c549ec0);return false;
 	}
 	if(eduinfo==""){
-		return mui.toast('请填写教育经历！');return false;
+		return mui.toast(WAP_JS_I18N.s13833753);return false;
 	}
-	document.getElementById('resumesubmit').innerText='提交中...';
+	document.getElementById('resumesubmit').innerText=WAP_JS_I18N.sabe2c5d2;
 	document.getElementById('resumesubmit').id='submit';
 	mui.post(wapurl + "/member/index.php?c=savetalentexpect", 
 		{id:id,name:name,hy:hy,jobname:jobname,provinceid:provinceid,cityid:cityid,three_cityid:three_cityid,minsalary:minsalary,maxsalary:maxsalary,jobstatus:jobstatus,sex:sex,age:age,edu:edu,exp:exp,telphone:telphone,living:living,eduinfo:eduinfo,expinfo:expinfo,skillinfo:skillinfo,projectinfo:projectinfo,submit:'submit'}, function(data) {
 			if(data.error=='1'){
-				showToast('操作成功！',2,function(){window.location.href=wapurl+'/member/index.phpindex.php?c=talent';}); 
+				showToast(WAP_JS_I18N.s3b6eb9c6,2,function(){window.location.href=wapurl+'/member/index.phpindex.php?c=talent';}); 
 			}else{
 				return mui.toast(date.msg);
 			}
 		}, 'json');
 }
 $(document).ready(function(){	
-	//职位详情页 申请职位
+	// 
 	$(".lt_reward_sq").click(function(){
 		
 		var jobid=$(this).attr('data-jobid');
@@ -115,7 +115,7 @@ $(document).ready(function(){
 			hideLoading();
 			var data=eval('('+data+')');
 			if(data.error==1){          
-				showToast('推荐成功',2,function(){location.reload(true);});
+				showToast(WAP_JS_I18N.sd8a56db4,2,function(){location.reload(true);});
 				
 			}else{
 				showToast(data.msg, 2);return false;
@@ -132,12 +132,12 @@ function tsendmoblie(){
 	var moblie=$("input[name=linktel]").val();
 	var authcode=$("input[name=authcode]").val();
 	if(moblie==''){
-		showToast('手机号不能为空！',2);return false;
+		showToast(WAP_JS_I18N.s54f98bcb,2);return false;
 	}else if(!isjsMobile(moblie)){
-		showToast('手机号码格式错误！',2);return false;
+		showToast(WAP_JS_I18N.s7f2c8eb4,2);return false;
 	}
 	if(!authcode){
-		showToast('请输入验证码！',2);return false;
+		showToast(WAP_JS_I18N.sa239e34a,2);return false;
 	}
 	showLoading();
 	$.post(wapurl+"/index.php?c=ajax&a=mobliecert", {str:moblie,code:authcode},function(data) {
@@ -157,7 +157,7 @@ function tsendmoblie(){
 function tsend(i){
 	i--;
 	if(i==-1){
-		$("#time").html("重新获取");
+		$("#time").html(WAP_JS_I18N.s029ca60d);
 		$("#send").val(0);
 	}else{
 		$("#send").val(1);
@@ -170,11 +170,11 @@ function telstatus(){
 	var linktel = $('#linktel').val();
 	
 	if(linktel==""){ 
-		showToast('请输入手机号码！',2);return false;
+		showToast(WAP_JS_I18N.se4e2c965,2);return false;
 	}
 	var code=$("#moblie_code").val();
 	if(code==""){ 
-		showToast('请输入短信验证码！',2);return false;
+		showToast(WAP_JS_I18N.se434e644,2);return false;
 	}
 	
 	showLoading();
@@ -184,7 +184,7 @@ function telstatus(){
 		data = eval('('+data+')');
 		if(data.error=='1'){
 			
-			showToast('授权认证成功！',2,function(){window.location.href=wapurl+'/member/index.php?c=talent';}); 
+			showToast(WAP_JS_I18N.s20462283,2,function(){window.location.href=wapurl+'/member/index.php?c=talent';}); 
 			
 		}else{
 			showToast(data.msg,2); 

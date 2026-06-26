@@ -81,23 +81,23 @@ function accDiv(arg1, arg2) {
 function shareEnd(etime){
 
 	etime = parseInt(etime);
-	//当前时间
+	// 
 	var nTime=Date.now();
-	//距离结束时间
+	// 
 	var endTime=Math.round((etime*1000-nTime)/1000);
-	//剩余天数
+	// 
 	var endDay=parseInt(endTime/3600/24);
-	//剩余小时
+	// 
 	var endHour=parseInt(endTime/3600%24);
-	//剩余分钟
+	// 
 	var endMiu=parseInt(endTime/60%60);
-	//剩余秒
+	// 
 	var endSecond=endTime%60;
-	//倒计时显示
+	// 
 
-	$('.help_time').html('活动倒计时：'+endDay+'天'+endHour+'小时'+endMiu+'分'+endSecond+'秒');
+	$('.help_time').html(WAP_JS_I18N.s5f7642f7+endDay+WAP_JS_I18N.sday+endHour+WAP_JS_I18N.s2de0d491+endMiu+WAP_JS_I18N.sminute+endSecond+WAP_JS_I18N.ssecond);
 
 	setTimeout("shareEnd("+etime+")",1000);
-	//倒计时结束 停止并 刷新页面
+	// 
 	//if(timediff==0){return;}
 }

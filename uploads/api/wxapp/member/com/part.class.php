@@ -162,21 +162,21 @@ class part_controller extends com_controller
         }
 
         $xjWhere = $dqWhere = $dsWhere = $zpWhere = $where;
-        // 招聘中
+        // 
         $zpWhere['status']             =   0;
         $zpWhere['state']             =   1;
         $zpWhere['PHPYUNBTWSTART_A']  =   '';
         $zpWhere['edate'][]           =   array('>', time(), '');
         $zpWhere['edate'][]           =   array('=', 0, 'OR');
         $zpWhere['PHPYUNBTWEND_A']    =   '';
-        //待审
+        // 
         $dsWhere['state']             =   array('<>', 1);
-        // 已到期
+        // 
         $dqWhere['PHPYUNBTWSTART_A']  =   '';
         $dqWhere['edate'][]           =   array('<', time(), '');
         $dqWhere['edate'][]           =   array('<>', 0, '');
         $dqWhere['PHPYUNBTWEND_A']    =   '';
-        // 已下架
+        // 
         $xjWhere['status']            =   1;
 
 
@@ -240,7 +240,7 @@ class part_controller extends com_controller
 
         if (!$_POST['name'] || !$_POST['type'] || !$_POST['number'] || !$_POST['address'] || !$_POST['linkman'] || !$_POST['linktel']) {
 
-            $this->render_json(3, '请完善信息');
+            $this->render_json(3, yun_auto_t('请完善信息'));
         }
 
         $msg        =   array();
@@ -251,14 +251,14 @@ class part_controller extends com_controller
             if ($this->comInfo['email_status'] != '1') {
 
                 $isallow_addjob =   '0';
-                $msg[]          =   '请先完成邮箱认证';
+                $msg[]          =   yun_auto_t('请先完成邮箱认证');
             }
         }
         if ($this->config['com_enforce_mobilecert'] == '1') {
             if ($this->comInfo['moblie_status'] != '1') {
 
                 $isallow_addjob =   '0';
-                $msg[]          =   '请先完成手机认证';
+                $msg[]          =   yun_auto_t('请先完成手机认证');
             }
         }
         if ($this->config['com_enforce_licensecert'] == '1') {
@@ -268,13 +268,13 @@ class part_controller extends com_controller
 
             if ($this->comInfo['yyzz_status'] != '1' && (empty($cert) || $cert['status'] == 2)) {
                 $isallow_addjob =   '0';
-                $msg[]          =   '请先完成企业资质认证';
+                $msg[]          =   yun_auto_t('请先完成企业资质认证');
             }
         }
         if ($this->config['com_enforce_setposition'] == '1' && !empty($this->config['map_key'])) {
             if (empty($this->comInfo['x']) || empty($this->comInfo['y'])) {
                 $isallow_addjob =   '0';
-                $msg[]          =   '请先完成企业地图设置';
+                $msg[]          =   yun_auto_t('请先完成企业地图设置');
             }
         }
         if ($this->config['com_gzgzh'] == '1') {
@@ -301,9 +301,9 @@ class part_controller extends com_controller
                 if ($isSubscribe == 0) {
                     $isallow_addjob = '0';
                     if (isset($_POST['source']) && $_POST['source'] == 'wap') {
-                        $msg[] = '微信公众号未关注';
+                        $msg[] = yun_auto_t('微信公众号未关注');
                     } else if ($provider == 'weixin' && empty($uInfo['wxopenid'])) {
-                        $msg[] = '请先完成微信绑定';
+                        $msg[] = yun_auto_t('请先完成微信绑定');
                     }
                 }
             }
@@ -358,7 +358,7 @@ class part_controller extends com_controller
 
         $this->company_statis($this->member['uid']);
 
-        //检查是否达到每日最大操作次数
+        // 
         $result     =   $this->day_check($this->member['uid'], 'refreshjob');
         if ($result['status'] != 1) {
 
@@ -394,7 +394,7 @@ class part_controller extends com_controller
     {
         $applyid    =   $_POST['applyid'];
         if (empty($applyid)) {
-            $this->render_json(2, '没有该申请');
+            $this->render_json(2, yun_auto_t('没有该申请'));
         }
         $partM      =   $this->MODEL('part');
         $nid        =   $partM->upPartSq(array('id' => $applyid, 'comid'=>$this->member['uid']), array('status' => 2));
@@ -403,7 +403,7 @@ class part_controller extends com_controller
             $this->render_json(1, '');
         } else {
 
-            $this->render_json(2, '查看失败');
+            $this->render_json(2, yun_auto_t('查看失败'));
         }
     }
 

@@ -133,15 +133,15 @@ class job_controller extends com_controller
         }
 
         $xjWhere = $dsWhere = $zpWhere = $where;
-        // 招聘中
+        // 
         $zpWhere['state']     =   1;
         $zpWhere['status']    =   array('<>', 1);
-        // 待审
+        // 
         $dsWhere['PHPYUNBTWSTART_C']    =   '';
         $dsWhere['state'][]  =   array('=',  0);
         $dsWhere['state'][]  =   array('=',  3,'or');
         $dsWhere['PHPYUNBTWEND_C']      =   '';
-        // 下架
+        // 
         $xjWhere['status']    =   1;
 
         $jobM           =   $this->MODEL('job');
@@ -163,7 +163,7 @@ class job_controller extends com_controller
         if (!empty($job)) {
 
             if (isset($_POST['provider'])) {
-                // 职位海报模板列表
+                // 
                 if ($this->config['sy_haibao_isopen'] == 1) {
                     $WhbM           =   $this->MODEL('whb');
                     $syJobHb        =   $WhbM->getWhbList(array('type' => 1, 'isopen' => '1'));
@@ -171,10 +171,10 @@ class job_controller extends com_controller
                 }
 			    if ($_POST['provider'] == 'wap'){
 			        if(empty($this->config['sy_h5_share'])){
-			            // 普通分享链接
+			            // 
 			            $data['jobLink']  =  Url('wap', array('c' => 'job', 'a' => 'comapply', 'id' => $_POST['id']));
 			        }else{
-			            // h5分享链接
+			            // h5
 			            $data['jobLink']  =  Url('wap', array('c' => 'job', 'a' => 'share', 'id' => $_POST['id']));
 			        }
 			        $data['shareTitle']  =  $jobsharedata['jobname'];
@@ -342,12 +342,12 @@ class job_controller extends com_controller
                     $row['jobArr']       =  array($row['job1_son']);
                     $row['jobnameArr']   =  array($row['job1_son']=>$row['job_two']);
                 }
-                // 投递要求-经验
+                // -
 			   	if(!empty($row['exp_req'])){
 
 			   	    $row['exp_req_n'] = $CacheArr['userclass_name'][$row['exp_req']];
 		        }
-		        // 投递要求-学历
+		        // -
 		        if(!empty($row['edu_req'])){
 
 		            $row['edu_req_n'] = $CacheArr['userclass_name'][$row['edu_req']];
@@ -391,7 +391,7 @@ class job_controller extends com_controller
 		}
 
         $cityDefStr                 =   $this->comInfo['job_city_one'].$this->comInfo['job_city_two'].$this->comInfo['job_city_three'];
-        // 默认联系方式
+        // 
         if (!empty($this->comInfo['linktel'])) {
 
             $row['link_default']    =   $this->comInfo['linkman'] . ' - ' . $this->comInfo['linktel'] . ' - ' . $cityDefStr . ' - ' . $this->comInfo['address'];
@@ -496,7 +496,7 @@ class job_controller extends com_controller
     }
 
 	 
-    // 发布、修改职位保存
+    // 、
 	function saveJob_action()
 	{
 
@@ -711,10 +711,10 @@ class job_controller extends com_controller
         $this->render_json($data['error'], $data['msg']);
 	}
   
-    //查找相关信息
+    // 
     function jobPromote_action()
     {
-        //1：职位置顶  2：职位推荐  3：紧急招聘
+        // 1：  2：  3：
         $jobM   =   $this->MODEL('job');
     
         $type   =   intval($_POST['serverid']);
@@ -824,7 +824,7 @@ class job_controller extends com_controller
 	    }
 	    
 	    $this->company_statis($this->member['uid']);
-	    //检查是否达到每日最大操作次数
+	    // 
 	    $result  =  $this->day_check($this->member['uid'],'refreshjob');
 	    if($result['status']!=1){
 	        
@@ -954,7 +954,7 @@ class job_controller extends com_controller
 		}
 	}
 	 
-    // 通过职位类别，查询职位描述样本
+    // ，
 	function ajaxjobclass_action(){
 		$categoryM	=	$this->MODEL('category');
 		$rows		=	$categoryM->getJobClass(array('id'=>$_POST['id'],'content'=>array('<>','')));

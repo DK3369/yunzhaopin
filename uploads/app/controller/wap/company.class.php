@@ -14,12 +14,12 @@ class company_controller extends common
         $CacheM     =   $this -> MODEL('cache');
         
         $CacheList  =   $CacheM->GetCache(array('city', 'hy', 'com'));
-        // 后台-页面设置-列表页区域默认设置。选择了一级城市
+        // --。
         if (!empty($this->config['sy_web_city_one'])) {
             $provinceid  =  $this->config['sy_web_city_one'];
             $CacheList['city_index']  =  array($provinceid);
             $this->yunset('nocityall', 1);
-            // 选择了二级城市
+            // 
             if (!empty($this->config['sy_web_city_two'])) {
                 $cityid  =  $this->config['sy_web_city_two'];
             }
@@ -130,7 +130,7 @@ class company_controller extends common
         
         $row['lastupdate']  =   date('Y-m-d', $row['lastupdate']);
 
-        // 解决通过Editor上传的图片路径问题
+        // Editor
         $row['content']     =   str_replace(array('ti<x>tle','“','”','&nbsp;'), array('title','','',' '), $row['content']);
         $row['content']     =   htmlspecialchars_decode($row['content']);
         
@@ -267,7 +267,7 @@ class company_controller extends common
         $this -> yuntpl(array('wap/company/index'));
     }
 
-    // 企业微海报（选择海报）列表
+    // （）
     function whb_action()
     {
 
@@ -296,7 +296,7 @@ class company_controller extends common
         $this->yunset('id', $id);
 
         $this->seo('whb');
-        $this->yunset('headertitle', '企业微海报生成');
+        $this->yunset('headertitle', yun_auto_t('企业微海报生成'));
         $this->yuntpl(array('wap/hb/whb'));
     }
 	/**
@@ -349,7 +349,7 @@ class company_controller extends common
 	    if($mun){//企业规模
 	        $where['mun']			=	$mun;
 	    }
-	    // 处理分站查询条件
+	    // 
 	    if ($this->config['sy_web_site'] == 1){
 	        
 	        if ($this->config['province'] > 0){
@@ -387,7 +387,7 @@ class company_controller extends common
 	    
 	    echo yun_json_encode($list);die;
 	}
-	//微信扫码查看联系方式
+	// 
 	function telQrcode_action(){
 	    
 	    $WxM	=	$this -> MODEL('weixin');

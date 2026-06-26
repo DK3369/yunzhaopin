@@ -10,7 +10,7 @@ function cityCategory(param){
 		twoid = '',
 		threeid = '';
 	var {sy_web_city_one,sy_web_city_two,sy_web_city_three,one_all,two_all,three_all} = param;
-	//城市分类
+	// 
 	if(typeof ci != "undefined" && typeof ct != "undefined" && typeof cn != "undefined") {
 		
 		if(sy_web_city_one){
@@ -37,7 +37,7 @@ function cityCategory(param){
 		if(oneall){
 			cityData.push({
 				value: '',
-				text: '全部',
+				text: WAP_JS_I18N.sa8b0c204,
 				children: null
 			});
 		}
@@ -57,7 +57,7 @@ function cityCategory(param){
 	    		if(twoall){
 	    			city.push({
 						value: '0',
-						text: '全部',
+						text: WAP_JS_I18N.sa8b0c204,
 						children: null
 					});
 	    		}
@@ -74,7 +74,7 @@ function cityCategory(param){
 						if(threeall){
 							threecity.push({
 				              	value: '0',
-								text: '全部',
+								text: WAP_JS_I18N.sa8b0c204,
 								children: null
 							})
 						}
@@ -112,7 +112,7 @@ function cityCategory(param){
 		}
 		return cityData;
 	}else{
-		// 循环处理，防止缓存文件未加载
+		// ，
 		cityLoadNum++
 		if(cityLoadNum < 20){
 			setTimeout(function(){
@@ -122,14 +122,14 @@ function cityCategory(param){
 	}
 }
 function jobCategory(param){
-	//城市分类
+	// 
 	var jobData = [];
 	if(typeof ji != "undefined" && typeof jt != "undefined" && typeof jn != "undefined") {
 
 		if(!param || param.one_all){
 			jobData.push({
 				value: '',
-				text: '全部',
+				text: WAP_JS_I18N.sa8b0c204,
 				children: null
 			});
 		}
@@ -144,7 +144,7 @@ function jobCategory(param){
 				if(!param || param.two_all){
 					job.push({
 						value: '0',
-						text: '全部',
+						text: WAP_JS_I18N.sa8b0c204,
 						children: null
 					});
 				}
@@ -156,7 +156,7 @@ function jobCategory(param){
 						for(var k = 0; k <=jt[jt[ji[i]][j]].length; k++) {            
 				            if(k==0){
 				              cvlaue='0';
-				              jtext='全部';
+				              jtext=WAP_JS_I18N.sa8b0c204;
 				            }else{
 				              t=k-1;
 				              cvlaue=	jt[jt[ji[i]][j]][t];
@@ -186,7 +186,7 @@ function jobCategory(param){
 		}
 		return jobData;
 	}else{
-		// 循环处理，防止缓存文件未加载
+		// ，
 		jobLoadNum++
 		if(jobLoadNum < 20){
 			setTimeout(function(){

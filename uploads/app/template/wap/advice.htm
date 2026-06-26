@@ -1,3 +1,4 @@
+{yun:}include file="$wapstyle/publichtm/wap_api_enum.htm"{/yun}
 {yun:}include file="$wapstyle/header_cont.htm"{/yun}
 <style>body{ background:#fff}</style>
 <div class="">
@@ -20,7 +21,7 @@
 		<span class="advice_list_s">{yun:}t key='wap_00109'{/yun}</span>
 		<input class="advice_list_text" name="moblie" id="moblie" type="text" placeholder="{yun:}t key='wap_js_00119'{/yun}" value="{yun:}$advice_mobile{/yun}">
 	</div>
-	{yun:}if strpos($config.code_web,"意见反馈")!==false{/yun} 
+	{yun:}if strpos($config.code_web,$wap_code_feedback)!==false{/yun} 
 		{yun:}if $config.code_kind>2{/yun}
 		<div class="gtdx-captcha">
 			<div id="bind-captcha" data-id='' data-type=''></div>

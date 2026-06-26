@@ -159,7 +159,7 @@ body {
     border-radius: .213333rem;   margin-bottom: 2.166667rem;
 }
 
-/* 尾部导航条开始 */
+/* section */
 .tail {
     position: fixed;
     left: 50%;
@@ -243,7 +243,7 @@ body {
     height: 1.6rem;
 }
 
-/* 尾部导航条结束 */
+/* section */
 
 .dialog_box_tab {
     padding-left: .4rem;
@@ -470,7 +470,7 @@ body {
 }
 
 .dialog_job_data_bom_callword {
-    /* 文字超过宽度...显示 */
+    /* section */
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -508,7 +508,7 @@ body {
 .yun_footer_nav .yun_footer_nav_cur a{color:#0195ff}
 .yun_footer_nav li .footyhq_tip{width:110px;position:absolute;right:10px;top:-20px;background:red;color:#fff;border-radius:3px;background:#f60;background:-webkit-linear-gradient(left,#fd3848 ,#ff7d4a);padding:0}
 .footyhq_tip:after{width:0;height:0;border:5px solid transparent;border-top-color:#ff7d4a;content:"";position:absolute;right:35%;bottom:-10px}
-/*视频面试弹窗*/
+/* section */
 .wapspms_show{width:100%;height:100%; position:fixed;left:0px;top:0px;bottom:0px;right:0px; z-index:19891013}
 .wapspms_bg{width:100%;height:100%; position:fixed;left:0px;top:0px;bottom:0px;right:0px;background:#000; opacity:0.8; z-index:19891012;color:#fff}
 .wapspms_com{ padding:50px 90px 30px 20px; text-align:right; position:relative;color:#fff; font-size: 14px;}
@@ -521,7 +521,7 @@ body {
 .wapspms_cz_p{ padding-top:5px;}
 .wapspms_cz_icon_js{background:url(../images/teljs.png) no-repeat; background-size:100%; }
 .wapspms_cz_aml{ margin-left:100px;}
-/*foot直播提示弹窗start*/
+/* section */
 .look_show{ position:fixed;left:10px; top:150px; z-index:10000}
 .look_show_icon{width:26px;height:26px; background:url(../images/teljs.png) no-repeat; background-size:100%; position:absolute;left:0px;top:6px;}
 .look_show_c{ position:relative; padding-left:35px; padding-right:35px;}
@@ -534,9 +534,9 @@ body {
 .look_showicon_b{border-radius:0px 20px 20px 0px; background:#fff;border-left:0px;height:38px; padding-left:25px; padding-right:13px;box-shadow: 0 0 10px 0 rgb(56 81 76 / 12%);}
 .look_showicon_b .look_show_icon{width:26px;height:26px; background:url(../images/teljs.png) no-repeat; background-size:100%; position:absolute;left:5px;top:6px;}
 .zxkf{ position:fixed;right:0px;bottom:80px; z-index:1000; background:#09F;color:#fff;width:40px; text-align:center;border-radius:4px;}
-/*foot直播提示弹窗end*/
+/* section */
 
-/*浏览器点击分享*/
+/* section */
 .yun_wap_share_tip_p{color:#fff; font-size:17px; padding-left:20px; padding-top:20px;  }
 .yun_wap_share_tip_icon{width:128px;height:128px; background:url(../images/yun_wap_fxicon.png) no-repeat; display:block; background-size:100%;right:0px;top:0px; }
 .yun_wap_share_tip_i{width:30px;height:30px; display:inline-block; background:url(../images/yun_wap_share_tip_fx.png) no-repeat; background-size:100%; vertical-align:middle; margin:0px 8px}

@@ -1,11 +1,11 @@
-/* 项目初始化css */
+/* section */
 
-/* 把我们所有标签的内外边距清零 */
+/* section */
 * {margin: 0; padding: 0; box-sizing: border-box;}
 html {width: 100%;-webkit-text-size-adjust: none;-moz-text-size-adjust: none;-ms-text-size-adjust: none;-o-text-size-adjust: none;text-size-adjust: none;}
 body {width: 100%;height: 100%;margin: 0;padding: 0; font-size:0.9em;  
  background:#f8f8f8;    font-family: PingFang SC,Hiragino Sans GB,Microsoft YaHei;}
-/* em 和 i 斜体的文字不倾斜 */
+/* section */
 em,i {font-style: normal}
 img { border: 0;  }
 button { cursor: pointer}
@@ -15,7 +15,7 @@ dl,dd,dt,ul,li{ list-style:none;margin:0; padding:0}
 h1,h2,h3{ margin:0; padding:0;}
 textarea,input{font-family: Helvetica,sans-self;}
 
-/*定义任何元素*/
+/* section */
 *, *:after, *:before {-webkit-box-sizing: before-box;-moz-box-sizing: before-box;-ms-box-sizing: before-box;-o-box-sizing: before-box;}
 *:after {clear: both}
 .clearfix {zoom: 1;}
@@ -31,11 +31,11 @@ a{ text-decoration:none;color:#333;}
 .mt10{ margin-top:.266667rem;}
 .mt15{ margin-top:.4rem;}
 body{ background-color: #f4f4f4;}
-/*隐藏*/
+/* section */
 .none{display:none;}
-/*显示*/
+/* section */
 .show{display:block;}
-/*头部*/
+/* section */
 .header{width:100%;height:1.28rem; }
 .header_fixed{width:100%;height:1.28rem; position:fixed;left:0;top:0; z-index:1000}
 .header_bg{width:100%;height:1.28rem;background:#2778F8; position:relative; z-index:10;}
@@ -78,7 +78,7 @@ border: #fff solid;-webkit-transform: rotate(-135deg);border-width: 0.026666rem 
 .searchOptions_icon{width:0.533333rem;height:0.533333rem; background:url(../images/nav_icon_open.png) no-repeat bottom; background-size:40% ; display: inline-block;    vertical-align: text-bottom; }
 .wapspmsnav .jobsearchnavcur{color:#000}
 .wapspmsnav .jobsearchnavcur a{color:#000}
-/*不是rem的头部*/
+/* section */
 .headerpx{width:100%;height:1.173333rem;background:#2778F8; position:relative; font-size: .373333rem; }
 .headerpx_fixed{width:100%;height:1.173333rem; position:fixed;left:0;top:0; z-index:10000000}
 .headerpx_bg{width:100%;height:1.173333rem;background:#2778F8; position:relative; z-index:10;}
@@ -87,7 +87,7 @@ border: #fff solid;-webkit-transform: rotate(-135deg);border-width: 0.026666rem 
 border: #fff solid;-webkit-transform: rotate(-135deg);border-width: .053333rem .053333rem 0 0;color: #828282;display: inline-block; position:absolute;left:0;top:.346667rem}
 .headerpx_h1{width:100%; text-align:center; font-size:.426667rem;color:#fff; height:1.173333rem; line-height:1.173333rem; overflow: hidden;}
 
-/*底部*/
+/* section */
 .wap_footer{width:100%;height:1.813333rem; position:relative}
 .wap_footerfixd{width:100%;height:1.813333rem; position:fixed;left:0px;right:0px;bottom:0px; z-index: 100;}
 .wap_footerbox{width:100%;height:1.813333rem; background:#fff;     box-shadow: 0 0 0.266666rem #ccc;}
@@ -98,7 +98,7 @@ border: #fff solid;-webkit-transform: rotate(-135deg);border-width: .053333rem .
 .wap_footer_fb{width:1.6rem;height:1.6rem; position:absolute;left:50%; margin-left:-0.8rem;top:-0.533333rem; }
 .Unread_message{background-color: red;position: absolute;top: -30%; right: -50%;font-size: .346667rem;font-weight: 500;color: #FFFFFF;padding: 0 .18rem;border-radius: .306667rem;}
 
-/*公共弹出框*/
+/* section */
 
 .conditional_screening_alltit{ font-size:0.426666rem; font-weight: bold; text-align: center; padding-top: 0.4rem;}
 .conditional_screening_all{width:100%;height:9.6rem; overflow: auto;}
@@ -118,7 +118,7 @@ border: #fff solid;-webkit-transform: rotate(-135deg);border-width: .053333rem .
 .conditional_screening_operation_cz{ margin-left: 0.533333rem; margin-right: 0.533333rem; background-color:#e9f1fe;color:#2778f8;height:1.066666rem; line-height: 1.066666rem; text-align: center;border-radius:1.066666rem; display: block; font-size: 0.373333rem;}
 .conditional_screening_operation_ok{ margin-left: 0.533333rem; margin-right: 0.533333rem;background-color:#2778f8;color:#fff;height:1.066666rem; line-height: 1.066666rem; text-align: center;border-radius:1.066666rem; display: block;font-size: 0.373333rem;}
 
-/*暂无信息*/
+/* section */
 .wap_member_no{ text-align: center; padding:4rem 0 1.6rem 0; font-size:0.32rem;color:#999; position: relative;}
 .wap_member_no:after{width:5.333333rem;height:5.333333rem; background:url(../images/yun_wap_no.png) no-repeat center top; background-size: 80%;content:''; position: absolute;left:50%; margin-left:-2.666666rem;top:0rem }
 .wap_member_no_submit{width:4rem;height:1.066666rem; line-height: 1.066666rem; text-align: center; margin: 0.533333rem auto;color:#fff; background-color: #2778F8;border-radius:1.066666rem; display: block; font-size:0.426666rem;}
@@ -128,7 +128,7 @@ border: #fff solid;-webkit-transform: rotate(-135deg);border-width: .053333rem .
 .wap_mb_no_sr{width:4rem;height:1.066666rem; line-height: 1.066666rem; text-align: center; margin: 0.533333rem auto;color:#fff; background-color: #2778F8;border-radius:1.066666rem; display: block; font-size:0.426666rem;}
 .wap_member_no_tip_other{ text-align: center; font-size: 0.32rem;color:#999;}
 .wap_member_bth{width:4rem;height:1.066666rem; line-height: 1.066666rem; text-align: center; margin: 0.533333rem auto;color:#fff; background-color: #2778F8;border-radius:1.066666rem; display: block; font-size:0.426666rem;}
-/*首页头部*/
+/* section */
 .indexheader{display:flex;position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;height:1.173333rem;line-height:1.173333rem;padding-left:.266667rem;padding-right:.266667rem;background-color:#2778f8;z-index:99999999}
 .header-left{position:relative;display:flex;align-items:center;margin-right:.133333rem}
 .header-left-word{display:inline-block;font-size:.4rem;font-weight:500;color:#fff}
@@ -144,8 +144,8 @@ border: #fff solid;-webkit-transform: rotate(-135deg);border-width: .053333rem .
 
 
 
-/*后加的*/
-/*返回首页按钮*/
+/* section */
+/* section */
 .goBackHome{
     overflow: hidden;
     position: fixed;
@@ -174,7 +174,7 @@ border: #fff solid;-webkit-transform: rotate(-135deg);border-width: .053333rem .
 .index_navlist a{ display:block;width:100%;height:100%; font-size:0.32rem;color:#666}
 
 
-/*海报修改*/
+/* section */
 .posterWapAll{
     overflow: hidden; 
     background: rgba(0, 0, 0, 0.8);
@@ -463,7 +463,7 @@ border: #fff solid;-webkit-transform: rotate(-135deg);border-width: .053333rem .
 }
 
 
-/*=============一歪==============*/
+/* section */
 /*.lake-content{
     overflow: hidden;
     position: relative;

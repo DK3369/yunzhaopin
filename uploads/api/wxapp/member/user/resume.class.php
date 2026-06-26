@@ -1,7 +1,7 @@
 <?php
 
 class resume_controller extends user_controller{
-    //添加简历页面，判断是否满足条件并返回基本信息
+    // ，
 	function addresume_action()
 	{
 		$resumeM	=   $this		->	MODEL('resume');
@@ -24,7 +24,7 @@ class resume_controller extends user_controller{
 		}
 		
 	}
-	//简历管理
+	// 
 	function resume_action()
 	{
 		$resumeM	=	$this->MODEL('resume');
@@ -56,7 +56,7 @@ class resume_controller extends user_controller{
 			}
 			$elist[] = $r;
 		}
-        //判断简历最大数量
+        // 
         if (!empty($this->config['user_number'])){
 
             $num     =  $resumeM->getExpectNum(array('uid'=>$this->member['uid']));
@@ -85,7 +85,7 @@ class resume_controller extends user_controller{
 
 		$this->render_json(1,'', $data);
 	}
-    //添加简历前检查
+    // 
 	function isaddresume_action()
 	{
 	    $resumeM	=	$this		->	MODEL('resume');
@@ -146,7 +146,7 @@ class resume_controller extends user_controller{
 
 			$desc['tag']=$tag?$tag:array();
 
-			//系统的标签
+			// 
 			$cacheM		=  $this->MODEL('cache');
 		
 			$cacheList	=  $cacheM -> GetCache('user');
@@ -250,7 +250,7 @@ class resume_controller extends user_controller{
         }
         if ($this->config['resume_create_exp'] == '1' || $this->config['resume_create_edu'] == '1' || $this->config['resume_create_project'] == '1') {
             if (isset($_POST['presave']) && empty($_POST['eid'])){
-                // 第一步预创建简历
+                // 
                 $eData['content']   =   '简历创建未完成，中途退出，信息不完整';     // 简历备注为未完善
                 $eData['state']     =   0;              // 简历状态为未审核
             } else {
@@ -366,7 +366,7 @@ class resume_controller extends user_controller{
 
         $this->render_json($data['error'],$data['msg'],$data);
     }
-	//意向职位保存
+	// 
 	function saveexpect_action()
 	{
 	    $_POST	  =  $this->post_trim($_POST);
@@ -378,7 +378,7 @@ class resume_controller extends user_controller{
 		if($eid){
 
 		    if (strlen($_POST['name']) > $this->config['sy_rname_num'] * 3 && (int)$this->config['sy_rname_num']>0){
-                $this->render_json(2, '求职意向最多'.$this->config['sy_rname_num'].'个字');
+                $this->render_json(2, yun_auto_t('求职意向最多').$this->config['sy_rname_num'].'个字');
             }
 			
 			$expectDate  =  array(
@@ -410,7 +410,7 @@ class resume_controller extends user_controller{
 		}
 		$this->render_json($data['error'],$return['msg']);
 	}
-	//保存简历分表 skill,work,project,edu,training,other，desc分表的保存统一使用saveresumeson
+	// skill,work,project,edu,training,other，descsaveresumeson
 	function saveresumeson_action()
 	{
 		$ResumeM	=	$this->MODEL('resume');
@@ -482,7 +482,7 @@ class resume_controller extends user_controller{
 			}
 			if($table=='resume_skill'){
 
-				//查询修改
+				// 
 				$resume		 =	$ResumeM->getResumeSkill(array('id'=>$id,'eid'=>$_POST['eid']),'pic');
                 if($_POST['wappic']==1){
                     if ($_POST['preview']){
@@ -608,13 +608,13 @@ class resume_controller extends user_controller{
 			}
 
 			if($table=='resume_work'){
-				//计算
+				// 
 				$workList	=	$ResumeM->getResumeWorks(array('eid'=>(int)$_POST['eid'],'uid'=>$this->member['uid']));
 
 				$whour		=	0;
 				$hour		=	array();
 				foreach($workList as $value){
-					//计算每份工作时长(按月)
+					// ()
 					if ($value['edate']){
 
 						$workTime	=	ceil(($value['edate']-$value['sdate'])/(30*86400));
@@ -624,7 +624,7 @@ class resume_controller extends user_controller{
 					$hour[]			=	$workTime;
 					$whour			+=	$workTime;
 				}
-				//更新当前简历时长字段
+				// 
 				$avghour = ceil($whour/count($hour));
 
 				$ResumeM->upInfo(array('id'=>(int)$_POST['eid'],'uid'=>$this->member['uid']),array('eData'=>array('whour'=>$whour,'avghour'=>$avghour)));
@@ -684,7 +684,7 @@ class resume_controller extends user_controller{
         $this->render_json($data['error'], $data['msg']);
 	}
 	/*wxapp简历管理页面删除*/
-	//原本的del_resume既可以删除整个简历也可以删除简历附表，现参照wap分开，删除附表为delResumeFb
+	// del_resume，wap，delResumeFb
 	function del_resume_action()
 	{
 		$ResumeM  =  $this->MODEL('resume');
@@ -696,7 +696,7 @@ class resume_controller extends user_controller{
 		$this->render_json($error,$return['msg']);
 	}
 	
-	// 删除简历附表,小程序内需要修改为此方法
+	// ,
 	function delResumeFb_action()
 	{
 	    $table			=	$_POST['table'];
@@ -750,7 +750,7 @@ class resume_controller extends user_controller{
         $data['error']	=  $return['errcode']==9 ? 1 : 2;
 		$this -> render_json($data['error'],$return['msg'],'');
 	}
-	//检查简历创建基本信息
+	// 
 	function checkMember_action(){
 		$userinfoM	=	$this->MODEL("userinfo");
 		$data	=	array(
@@ -766,7 +766,7 @@ class resume_controller extends user_controller{
 		}
 		
 	}
-	//wap简历置顶
+	// wap
 	function topCheck_action(){
 		$data	=	array(
 			'eid'	=>	$_POST['eid'],
@@ -778,7 +778,7 @@ class resume_controller extends user_controller{
 		
 		$this -> render_json('0',$return['msg']);
 	}
-	//个人评价看看别人怎么写
+	// 
 	function getIntroduceInfo_action(){
 		include PLUS_PATH."introduce.cache.php";
 		
@@ -822,7 +822,7 @@ class resume_controller extends user_controller{
 		$this -> render_json(1,'',$data);
 		
 	} 
-	//简历发布成功
+	// 
 	function rcomplete_action(){
 		$data		=	array(
 			'id'	=>	$_POST['eid'],
@@ -847,7 +847,7 @@ class resume_controller extends user_controller{
 		
 		$this -> render_json(1,'',$list);
 	}
-    //保存个人作品
+    // 
 	function showSave_action(){
 		
 		$ResumeM	=	$this->MODEL('resume');
@@ -873,7 +873,7 @@ class resume_controller extends user_controller{
 
                 }
             }else{
-                $this->render_json(2, '请上传图片');
+                $this->render_json(2, yun_auto_t('请上传图片'));
             }
         }else {
             if ($_FILES['show']['tmp_name']) {
@@ -898,7 +898,7 @@ class resume_controller extends user_controller{
 
                 }
             } else {
-                $this->render_json(2, '请上传图片');
+                $this->render_json(2, yun_auto_t('请上传图片'));
             }
         }
 

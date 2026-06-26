@@ -9,7 +9,7 @@
 
     var Inertia = function (ele, options) {
         var defaults = {
-            // 是否吸附边缘
+            // 
             edge: true
         };
 
@@ -30,7 +30,7 @@
 
         var win = window;
 
-        // 浏览器窗体尺寸
+        // 
         var winWidth = win.innerWidth;
         var winHeight = win.innerHeight;
 
@@ -38,7 +38,7 @@
             return;
         }
 
-        // 设置transform坐标等方法
+        // transform
         var fnTranslate = function (x, y) {
             x = Math.round(1000 * x) / 1000;
             y = Math.round(1000 * y) / 1000;
@@ -49,7 +49,7 @@
 
         var strStoreDistance = '';
 		/*
-        // 居然有android机子不支持localStorage
+        // androidlocalStorage
         if (ele.id && win.localStorage && (strStoreDistance = localStorage['Inertia_' + ele.id])) {
             var arrStoreDistance = strStoreDistance.split(',');
             ele.distanceX = +arrStoreDistance[0];
@@ -57,10 +57,10 @@
             fnTranslate(ele.distanceX, ele.distanceY);
         }
 		*/
-        // 显示拖拽元素
+        // 
         ele.style.visibility = 'visible';
 
-        // 如果元素在屏幕之外，位置使用初始值
+        // ，
         var initBound = ele.getBoundingClientRect();
 
         if (initBound.left < -0.5 * initBound.width ||
@@ -92,13 +92,13 @@
                 data.distanceY = ele.distanceY;
             }
 
-            // 元素的位置数据
+            // 
             data.bound = ele.getBoundingClientRect();
 
             data.timerready = true;
         });
 
-        // easeOutBounce算法
+        // easeOutBounce
         /*
         * t: current time（当前时间）；
          * b: beginning value（初始值）；
@@ -122,7 +122,7 @@
                 return;
             }
 
-            // 当移动开始的时候开始记录时间
+            // 
             if (data.timerready == true) {
                 data.timerstart = +new Date();
                 data.timerready = false;
@@ -138,13 +138,13 @@
             var distanceX = data.nowX - data.posX,
                 distanceY = data.nowY - data.posY;
 
-            // 此时元素的位置
+            // 
             var absLeft = data.bound.left + distanceX,
                 absTop = data.bound.top + distanceY,
                 absRight = absLeft + data.bound.width,
                 absBottom = absTop + data.bound.height;
 
-            // 边缘检测
+            // 
             if (absLeft < 0) {
                 distanceX = distanceX - absLeft;
             }
@@ -158,11 +158,11 @@
                 distanceY = distanceY - (absBottom - winHeight);
             }
 
-            // 元素位置跟随
+            // 
             var x = data.distanceX + distanceX, y = data.distanceY + distanceY;
             fnTranslate(x, y);
 
-            // 缓存移动位置
+            // 
             ele.distanceX = x;
             ele.distanceY = y;
         }, { // fix #3 #5
@@ -176,14 +176,14 @@
             }
             data.touching = false;
 
-            // 计算速度
+            // 
             data.timerend = +new Date();
 
             if (!data.nowX || !data.nowY) {
                 return;
             }
 
-            // 移动的水平和垂直距离
+            // 
             var distanceX = data.nowX - data.posX,
                 distanceY = data.nowY - data.posY;
 
@@ -191,24 +191,24 @@
                 return;
             }
 
-            // 距离和时间
+            // 
             var distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY), time = data.timerend - data.timerstart;
 
-            // 速度，每一个自然刷新此时移动的距离
+            // ，
             var speed = distance / time * 16.666;
 
-            // 经测试，2~60多px不等
-            // 设置衰减速率
-            // 数值越小，衰减越快
+            // ，2~60px
+            // 
+            // ，
             var rate = Math.min(10, speed);
 
-            // 开始惯性缓动
+            // 
             data.inertiaing = true;
 
-            // 反弹的参数
+            // 
             var reverseX = 1, reverseY = 1;
 
-            // 速度计算法
+            // 
             var step = function () {
                 if (data.touching == true) {
                     data.inertiaing = false;
@@ -216,15 +216,15 @@
                 }
                 speed = speed - speed / rate;
 
-                // 根据运动角度，分配给x, y方向
+                // ，x, y
                 var moveX = reverseX * speed * distanceX / distance, moveY = reverseY * speed * distanceY / distance;
 
-                // 此时元素的各个数值
+                // 
                 var bound = ele.getBoundingClientRect();
 
                 if (moveX < 0 && bound.left + moveX < 0) {
                     moveX = 0 - bound.left;
-                    // 碰触边缘方向反转
+                    // 
                     reverseX = reverseX * -1;
                 } else if (moveX > 0 && bound.right + moveX > winWidth) {
                     moveX = winWidth - bound.right;
@@ -240,7 +240,7 @@
                 }
 
                 var x = ele.distanceX + moveX, y = ele.distanceY + moveY;
-                // 位置变化
+                // 
                 fnTranslate(x, y);
 
                 ele.distanceX = x;
@@ -256,7 +256,7 @@
                         }
 						*/
                     } else {
-                        // 边缘吸附
+                        // 
                         edge();
                     }
                 } else {
@@ -265,11 +265,11 @@
             };
 
             var edge = function () {
-                // 时间
+                // 
                 var start = 0, during = 25;
-                // 初始值和变化量
+                // 
                 var init = ele.distanceX, y = ele.distanceY, change = 0;
-                // 判断元素现在在哪个半区
+                // 
                 var bound = ele.getBoundingClientRect();
                 if (bound.left + bound.width / 2 < winWidth / 2) {
                     change = -1 * bound.left;
@@ -278,7 +278,7 @@
                 }
 
                 var run = function () {
-                    // 如果用户触摸元素，停止继续动画
+                    // ，
                     if (data.touching == true) {
                         data.inertiaing = false;
                         return;

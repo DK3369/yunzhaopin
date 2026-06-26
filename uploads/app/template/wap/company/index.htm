@@ -11,6 +11,7 @@
 	<link type="text/css" href="{yun:}$company_style{/yun}/icon/iconfont.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet"/> 
 </head>
 <body>
+{yun:}include file="$wapstyle/publichtm/wap_api_enum.htm"{/yun}
 
 <div id="dowebok">
 	
@@ -98,7 +99,7 @@
 				<div class="company_job">
 				 	<a href="{yun:}url m=wap c=job a=comapply id=$jlist.id{/yun}">
 						<div class="company_job_name">{yun:}$jlist.name{/yun}  {yun:}$jlist.job_city_one{/yun} {yun:}$jlist.job_city_two{/yun} {yun:}$jlist.job_city_three{/yun}</div>
-						<div class="company_job_salary"><span class="company_job_xz">{yun:}t key='member_user_00106'{/yun}：{yun:}if $jlist.job_salary==''||$jlist.job_salary=='不限'||$jlist.job_salary=='面议'{/yun}{yun:}else{/yun}￥{yun:}/if{/yun}{yun:}$jlist.job_salary{/yun}</span>{yun:}t key='home.experience_suffix'{/yun}：{yun:}$jlist.job_exp{/yun} </div>
+						<div class="company_job_salary"><span class="company_job_xz">{yun:}t key='member_user_00106'{/yun}：{yun:}if $jlist.job_salary==''||$jlist.job_salary==$wap_db_unlimited||$jlist.job_salary==$wap_db_negotiable{/yun}{yun:}else{/yun}￥{yun:}/if{/yun}{yun:}$jlist.job_salary{/yun}</span>{yun:}t key='home.experience_suffix'{/yun}：{yun:}$jlist.job_exp{/yun} </div>
 						<i class="company_job_icon iconfont"></i>
 					</a>
 				</div> 

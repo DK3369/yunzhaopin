@@ -10,7 +10,7 @@
                         <div class="card_name_box">
                             <div class="card_name_box_head">
                                 <div class="card_name_box_set">
-                                    <img v-if="item.sex == '男'" src="{yun:}$wap_style{/yun}/images/set_man.png" alt="">
+                                    <img v-if="item.sex == WAP_API_ENUM.SEX_MALE" src="{yun:}$wap_style{/yun}/images/set_man.png" alt="">
                                     <img v-else src="{yun:}$wap_style{/yun}/images/set_woman.png" alt="">
                                 </div>
                                 <img :src="item.photo" alt="">

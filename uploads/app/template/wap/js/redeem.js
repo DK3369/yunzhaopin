@@ -1,4 +1,4 @@
-//积分兑换表单
+// 
 function checkform_redeem_show(){
 
 	var num=$("#num").val();
@@ -10,21 +10,21 @@ function checkform_redeem_show(){
 	var redeemintegral=$("#redeemintegral").val();
 
 	if(!uid){
-		showToast('您还没有登录，请先登录！', 2,function(){
+		showToast(WAP_JS_I18N.s5945fbd1, 2,function(){
 			location.href=wapurl+"/index.php?c=login";
 		});
 		return false;
 	}else if(num==0){
-		showToast('请正确填写兑换数量！');
+		showToast(WAP_JS_I18N.s0c714e0a);
 		return false;
 	}else if(Number(num)>Number(restriction) && restriction!="0"){
-		showToast('超出限购数量,请正确填写！');
+		showToast(WAP_JS_I18N.s0a703283);
 		return false;
 	}else if(Number(num)>Number(stock)){
-		showToast('超出库存数量,请正确填写！');
+		showToast(WAP_JS_I18N.s8c5a39ec);
 		return false;
 	}else if(Number(num)*redeemintegral>memberintegral){
-		showToast('您的'+integral_pricename+'不足！',2,function(){
+		showToast(WAP_JS_I18N.seb3fe0aa+integral_pricename+WAP_JS_I18N.scf4f169c,2,function(){
 			window.location.href=wapurl+'member/index.php?c=pay';
 
 		});
@@ -32,7 +32,7 @@ function checkform_redeem_show(){
 	}	
 	window.location.href=wapurl+"/index.php?c=redeem&a=dh&id="+id+"&num="+num;
 }
-//商品分类、排序
+// 、
 $(document).ready(function(){
 	$('.nav_ft').hover(function(){ 
 		$(this).find('.nav_ft_list').show(); 
@@ -56,17 +56,17 @@ console.info(123);return false;
 	var body='';
 	
 	if(dhbody!=''){
-		body="收货地址："+dhbody;
+		body=WAP_JS_I18N.se512d692+dhbody;
 	}
   
 	var other = $("#other").val();
 	if(other!=''){
-		body = body+" 用户留言："+other;
+		body = body+WAP_JS_I18N.s8e5d7d0d+other;
 	}
 	if(!linkman||!linktel||!dhbody){
-		showToast('请填写收货人信息！');;
+		showToast(WAP_JS_I18N.s44436bee);;
 	}else{
-		showConfirm('请输入账号登录密码', '账号登录密码',function(e){
+		showConfirm(WAP_JS_I18N.se817719c, WAP_JS_I18N.sfe04a72c,function(e){
 			console.info(e);return false;
    			$.post(wapurl+"/index.php?c=redeem&a=savedh",{linkman:linkman,linktel:linktel,id:id,num:num,body:body,password:e.value},function(data){
 					var data=eval('('+data+')');

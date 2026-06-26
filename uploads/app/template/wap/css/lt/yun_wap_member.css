@@ -1,6 +1,6 @@
 .yunset_list_name.yun_wap_addresume_box_group .yun_wap_addresume_box_control .yun_wap_addresume_text@charset "utf-8";
 /* CSS Document */
-/*会员中心*/
+/* section */
   body{ font-family: "Helvetica Neue", Helvetica, Arial, "Microsoft Yahei", "Hiragino Sans GB", "Heiti SC", "WenQuanYi Micro Hei", sans-serif;}
 .none{display:none;}
 .comheader{width: 100%;height: 1.28rem;background: #3366cc;position: relative;z-index: 10;touch-action: none;}
@@ -86,7 +86,7 @@
 .wap_member_mrecord_list:after {content: ' ';position: absolute;top: 50%;margin-top: -0.106667rem;right: .533333rem;width: .213333rem;height: .213333rem;border: #b2b2b2 solid;-webkit-transform: rotate(45deg);border-width: .08rem .08rem 0 0; }
 .wap_member_mrecord_list_no{border:none;}
 .wap_member_mrecord_list em{color:#fff; display:inline-block; background:#f0d36d;border-radius:.533333rem; padding:0 .266667rem; margin-left:.266667rem;}
-/*简历管理*/
+/* section */
 .rsm_list{ background:#fff;border:.026667rem solid #ddd; margin-top:.266667rem;}
 .rsm_top{ position:relative; padding:.213333rem;}
 .rsm_top:after{content: ' ';position: absolute;top: 50%;right: .32rem;width:.213333rem;height:.213333rem;border: #AAAAAA solid;-webkit-transform: rotate(45deg);border-width: .08rem .08rem 0 0;color:#434343; margin-top:-0.16rem;}
@@ -110,7 +110,7 @@
 .rfop { position: absolute;top: 0;left: 0; width: 100%; height: 100%;}
 .rfop select {width: 100%; height: 100%;opacity: 0;}
 .rsm_cj{ display:block;height: 1.12rem;line-height: 1.12rem;text-align: center;color: #FFF;font-size: .426667rem;width: 100%;background:#7ed161;border-radius:.133333rem;}
-/*添加简历*/
+/* section */
 .resume-cont{ display:block}
 .resume-cont_p{ display:block; padding:.266667rem; position:relative;}
 .resume-cont_zk{padding:.266667rem; }
@@ -131,7 +131,7 @@
 .resume_tj{ background:#06F}
 .resume_sc{ background:#090}
 .textAreaMsg{line-height:.48rem;height:5.333333rem;padding:.133333rem 0;border-radius:.053333rem;box-shadow:.053333rem .053333rem .053333rem #fff inset;font-size:.373333rem;width:100%;vertical-align:middle;margin-top:.08rem;margin-bottom:.08rem;-webkit-appearance:none;color:#666}
-/*邀请面试*/
+/* section */
 .main_member_body{ background:#efefef;}
 .wap_member_comp_h1{width:100%; padding:.266667rem 0; background:#f8f8f8;border-bottom:.026667rem solid #dbd4d5; position:relative; display:none;}
 .wap_member_comp_em{ position:absolute;right:.266667rem;top:0; padding:.266667rem 0;} 
@@ -205,7 +205,7 @@
 .input-common{width:100%;border:none; padding:0; margin:0;height:1.066667rem; line-height:1.066667rem; text-indent:.266667rem;}
 .pay_choose_btn_01{width:100%;border-radius:0;height:1.066667rem; margin-top:.266667rem; padding:0; border:none;color:#fff; background:-webkit-gradient(linear,0 0,0 100%,from(#1f7dc8),to(#1f7dc8)); font-size:.373333rem; cursor:pointer;border-radius:0;}
 .wap_member_xgm{width:100%; display:block; line-height:.8rem;}
-/*申请的职位*/
+/* section */
 .com_member_hr{background:#fff;border-radius: .133333rem;margin: .266667rem .266667rem 0 .266667rem;}
 .com_member_hr_name{width:100%; position:relative; padding-top:.266667rem; padding-bottom:.266667rem;border-bottom:.026667rem solid #f2f2f2}
 .wap_member_com_lokr{width:1.866667rem;height:.586667rem; line-height:.586667rem; background:#F90;color:#fff; text-align:center; display:block; position:absolute;right:.266667rem;top:.293333rem;border-radius:.533333rem; font-size:.32rem;}
@@ -224,7 +224,7 @@
 .yun_member_hr_bth_yq{color:#f60}
 .wap_memberjob_fabu{width:100%;height:1.2rem; display:block;}
 .wap_memberjob_fabu a{ display:block; color:#fff; background:#f60; line-height:1.2rem; text-align:center}
-/*账户充值*/
+/* section */
 .wap_member_pay{ padding:.266667rem 0; border-bottom:.026667rem solid #ddd; }
 .wap_member_pay em{ font-size:.8rem;color:#f60;}
 .wap_member_pay_c{ border-bottom:.026667rem solid #ddd; padding:.4rem 0}
@@ -302,7 +302,7 @@
 .job_extension_tck  .job_extension_tck_yse .job_extension_tck_icon{ background:url(../../images/yun_wap_u_yxz.png) no-repeat;background-size:100%;}
 .job_extension_tck_bth{ padding:.266667rem 0; text-align:center}
 .job_extension_tck_sub{width:80%; background:#f60; display:inline-block; padding:.213333rem 0;color:#fff; font-size:.426667rem;}
-/*兼职*/
+/* section */
 .partwork_bth{ width:1.733333rem;height:.666667rem; line-height:.666667rem; text-align:center;display:inline-block;	background:-webkit-linear-gradient(top, #f60, #f60);border-radius:0;color:#fff; border:none; cursor:pointer;}
 .part_hour{ width:100%; float:left; margin-bottom:.266667rem; }
 .part_hour span{ color:#666; float:left; margin-right:.4rem;}
@@ -322,13 +322,13 @@
 .com_info_buc{width:100%; padding:.266667rem 0; text-align:center; font-size:.426667rem; position:relative}
 .com_info_buc_s{ position:relative; background:#fff; padding:0 .533333rem; z-index:5}
 .com_info_buc:after{width:100%;height:.026667rem; background:#ccc; position:absolute;left:0rem;top:.666667rem;content:""; z-index:1}
-/*增加绑定*/
+/* section */
 .pinless{ padding:0 2%; width:96%;}
 .alter_account{ padding:.266667rem 2.133333rem .266667rem 0; position:relative; border-top:.026667rem solid #e5e5e5; border-bottom:.026667rem dashed #e5e5e5;}
 .alter_account span{ width:100%; display:block;}
 .alter_account span b{ color:#cd3200;}
 .alter_account a{ position:absolute; right:0; top:.266667rem; line-height:.933333rem; color:#0a70be;}
-/*日期*/
+/* section */
 .resume_dt{position:relative;width:100%;}
 .date_box{float:left;position:fixed;bottom:1.546667rem;left:0;z-index:99999;width:100%;height:6.4rem;background:#fff;}
 .date_tit{float:left;width:100%;height:1.12rem;background:#f5f9fa;border-top:.026667rem solid #dbd4d5;border-bottom:.026667rem solid #dbd4d5;}
@@ -343,7 +343,7 @@
 .date_ct_ft_cet{float:left;width:100%;height:.8rem;text-align:center;line-height:.8rem;border-top:.026667rem solid #ccc;border-bottom:.026667rem solid #ccc;}
 .date_ct_ft_bot{float:left;width:100%;color:#bcbcbc;height:1.92rem;text-align:center;background-image: -webkit-linear-gradient(top, #fff 50%, #fff 90%); 
 }
-/*快速填写简历*/
+/* section */
 .yun_wap_addresume_box{position: relative;overflow: hidden;background-color: #fff;font-size: .373333rem;}
 .yun_wap_addresume_box_group{position: relative;padding: .266667rem .4rem .266667rem .266667rem;border-bottom: .026667rem solid #e8e8e8;line-height: .8rem; background:#fff}
 .yun_wap_addresume_box_group .yun_wap_addresume_box_label {width: 1.866667rem; position:absolute;left:.266667rem;top:0;line-height: 1.253333rem;color: #999;}
@@ -386,7 +386,7 @@
 .form-show-btn {padding: .266667rem 0;display: inline-block; position:relative;color:#ff0000}
 .jobadd_iconzk{width: .266667rem;height: .266667rem;border: #f00 solid;-webkit-transform: rotate(-45deg);border-width: .053333rem .053333rem 0 0;color: #434343; display:inline-block; position:absolute;right:-0.533333rem;top:.48rem;}
 .jobadd_iconsq{width: .266667rem;height: .266667rem;border: #f00 solid;-webkit-transform: rotate(135deg);border-width: .053333rem .053333rem 0 0;color: #434343; display:inline-block;  position:absolute;right:-0.533333rem;top:.346667rem;}
-/*兑换记录*/
+/* section */
 .integral_list{width:100%;background:#fff;border-top:.026667rem solid #eee;border-bottom:.026667rem solid #eee;margin-top:.266667rem;}
 .integral_list_top{padding:0 .266667rem;height:1.066667rem;line-height:1.066667rem;background:#fff;border-bottom:.026667rem solid #ccc;position:relative;}
 .integral_list_top_nm{font-size:.373333rem;}
@@ -532,7 +532,7 @@
 .rsm_state_czbox li:last-child{border:none}
 .rsm_state_czbox a{ display:inline-block; color:#288ee0}
 .rsm_schedule_set{color:#333; padding-left:.266667rem;}
-/*优质简历弹出框*/
+/* section */
 .job_box_title{font-size:.373333rem;margin-top:.266667rem;float:left;width:100%;text-align:center;}
 .job_box_msg {color: #666; float: left; line-height: .533333rem;margin-left: .266667rem; margin-top: .266667rem; padding: .133333rem; width: 7.2rem;}
 .job_box_inp {color: #666;float: left;line-height: .746667rem;padding-top:.266667rem;width:100%;text-align: center;}
@@ -1092,7 +1092,7 @@ border-color: #f60 transparent transparent transparent;content:''; position:abso
 .value_added_cur .value_added_t_c:after{width:7px;height:7px; background:#fff;content:''; position:absolute;left:3px;top:3px;border-radius:50%;; }
 
 
-/*个人用户中心首页*/
+/* section */
 .yun_usermember_topbg{width:100%;height:140px; background: linear-gradient(90deg, #000051, #af477e); position:relative }
 .yun_usermember_info{height:70px; position:relative}
 .yun_usermember_info_box{width:100%; position:absolute;left:0px;top:-75px;}
@@ -1165,7 +1165,7 @@ border-color: #f60 transparent transparent transparent;content:''; position:abso
 .yun_m_nav_subclass li{ display:inline-block; padding:1px 10px;margin-top:8px; margin-left:5px;border-radius:3px;}
 .yun_m_nav_subclass .yun_m_nav_subclass_cur{ background:#f60;}
 .yun_m_nav_subclass .yun_m_nav_subclass_cur a{color:#fff}
-/*设置*****/
+/* section */
 .yunset{ padding: 0px 15px; background: #fff;}
 .yunset_list{ margin-bottom:0px;}
 .yunset_list_tip{ position:absolute;right:35px;top:15px;color:#cccaca; font-size:12px;}
@@ -1240,7 +1240,7 @@ border-color: #f60 transparent transparent transparent;content:''; position:abso
 .blacklist_tip_qkbox{ padding:10px; text-align:center; background:#fff; display:none;}
 .blacklist_tip_bk{ font-size:14px;color:#f60;}
 
-/*财务*/
+/* section */
 .yun_usermember_financebg{width:100%;height:110px; background: #3b7cff }
 .yun_usermember_financecombg{width:100%;height:120px; background: linear-gradient(90deg, #2778f8, #2778f8); }
 .yun_usermember_financepxbg{width:100%;height:120px; background: linear-gradient(90deg, #2a8f4d, #2a8f4d); }
@@ -1310,14 +1310,14 @@ border-color: #f60 transparent transparent transparent;content:''; position:abso
 .yun_integral_icon_yz{background:url(../../images/jf_sf.png) no-repeat; background-size:100%;}
 .yun_integral_icon_fbjl{background:url(../../images/yun_m_icon1.png) no-repeat; background-size:100%;}
 .yun_integral_icon_sctx{background:url(../../images/rg.png) no-repeat; background-size:100%;}
-/*职位管理*/
+/* section */
 .job_msg_n{ display:inline-block; padding:0px 8px; background:#ff0000;color:#fff;border-radius:20px; position:absolute;right:40px;top:12px;}
 .header_fa_add{height:30px; line-height:30px;position:absolute;right:10px;top:12px;border-radius:3px; display:inline-block  }
 .header_fa_add_p{ padding-left:22px;display:inline-block; color:#fff; position:relative}
 .header_fa_add_p:after{width:16px;height:16px; display:inline-block; background:url(../../images/yun_wap_bj.png) no-repeat; background-size:100%;content:''; position:absolute;left:0px;top:6px;}
 
 
-/*简历部分  resume.htm*/
+/* section */
 
 .yun_usermember_resume{ padding:0px 0px;}
 .yun_usermember_resume_b{margin: 0 15px 40px 15px;position:relative;}
@@ -1427,7 +1427,7 @@ border-color: #f60 transparent transparent transparent;content:''; position:abso
 .yun_addexpect_list li{ display:block; padding:13px 13px 13px 80px;; background:#fff;border-top:1px solid #e6e6e6; position:relative}
 .yun_resume_setup_cj{ display:block; background:#4a7dfa;color:#fff; margin-top:15px; padding:13px 20px 13px 20px;border-radius:5px;text-align:center}
 .yun_usermember_resumebq{ display:inline-block; margin-right:10px; background:#f4fbff;color:#798aac; padding:2px 5px; font-size:12px;}
-/*设置*/
+/* section */
 .yunset li{ display:block; padding:13px 0px 13px 0px; font-size:16px; background:#fff;border-top:1px solid #e6e6e6; position:relative}
 .yunset li:after{content: ' ';position: absolute;top: 50%;margin-top: -4px;right: 10px;width: 8px;height: 8px;border: #b2b2b2 solid;-webkit-transform: rotate(45deg);border-width: 1px 1px 0 0; }
 .yunset li a{ display:block}
@@ -1486,7 +1486,7 @@ border-color: #f60 transparent transparent transparent;content:''; position:abso
 .yunset_addresume_tittip{ font-size:13px;color:#999}
 .yun_info_textarea{ padding-right:10px; padding-top:10px;}
 .yun_info_textarea textarea{border:1px  solid #eee; padding:5px;}
-/*企业首页*/
+/* section */
 .yun_com_member{ width:100%;color:#333; position:relative; overflow:hidden;background: url(../../images/yun_com_bg.png) no-repeat;background-size: 100%;}
 
 .yun_com_member_indexinfo{padding:10px 10px 15px 75px; position:relative;margin-top: 20px;}
@@ -1578,7 +1578,7 @@ border-color: #f60 transparent transparent transparent;content:''; position:abso
 .tj_list_lookbox{ padding-top:8px;}
 .tj_list_look{ display:inline-block; padding:2px 8px; background:#ff5050;color:#fff;border-radius:3px;}
 
-/*会员服务*/
+/* section */
 .yun_m_service{background:#3b7cff; padding:0px 20px 20px 20px;color:#fff}
 .yun_m_service_money{width:100%; text-align:center; font-size:30px; padding:50px  0 0 0; position:relative}
 .yun_m_service_money:after{content: ' ';position: absolute;top:0px;left:50%;width: 40px;height:40px; background:url(../../images/yun_m_qb.png) no-repeat; background-size:100%; display:inline-block; margin-left:-20px;}
@@ -1599,7 +1599,7 @@ border-color: #f60 transparent transparent transparent;content:''; position:abso
 .yun_m_service_nav_icon_sy{background:url(../../images/diy_hb.png) no-repeat;background-size:100%;}
 .yun_m_service_nav_icon_czk{background:url(../../images/diy_czk.png) no-repeat;background-size:100%;}
 .yun_m_service_nav_icon_dd{background:url(../../images/diy_tit4_news.png) no-repeat;background-size:100%;}
-/*积分*/
+/* section */
 .yun_m_reward_list{ padding:0 0px}
 .yun_m_reward_list li{border:1px solid #eee; background:#fff; margin-top:10px;}
 .yun_m_reward_info{ padding:10px 10px 10px 80px; position:relative; font-size:13px;}
@@ -1613,7 +1613,7 @@ border-color: #f60 transparent transparent transparent;content:''; position:abso
 .yun_m_reward_cz_qx{width:80px;height:30px; line-height:30px; position:absolute;right:10px;top:5px; background:#f60;color:#fff;border-radius:3px; display:inline-block; text-align:center}
 .yun_m_reward_info_sp{ text-align:left; padding-top:5px;}
 
-/*充值*/
+/* section */
 .yun_m_pay{ background:#fff;border-top:1px solid #eee; border-bottom:1px solid #eee;position:relative; padding:5px 15px 5px 80px;min-height:30px;}
 .yun_m_payname{ position:absolute;left:10px;top:5px;height:30px; line-height:30px;}
 .yun_m_payselect{ padding-right:20px;}
@@ -1713,10 +1713,10 @@ padding: 0px;
 .bdsharee-buttonn-style0-24 .bds_renrenn {background-position: 0 -208px;}
 .bdsharee-buttonn-style0-24 .bds_weixinn {background-position: 0 -1612px;}
 
-/*发票管理*/
+/* section */
 .invoice_box{ background:#fff; padding:10px; margin-top:10px; line-height:30px;}
 
-/*优惠券*/
+/* section */
 .coupon_list_box{  padding:0px 10px;}
 .coupon_list{ background:#fff; padding:10px 10px 10px 110px;border-radius:5px; position:relative; font-size:12px; margin-top:15px;color:#999}
 .coupon_list_left{width:100px;height:100%; position:absolute;left:0px;top:0px; background:#f00;color:#fff; text-align:center;border-radius:5px 0 0 5px;}
@@ -1749,7 +1749,7 @@ right: 50px;}
 .toolbar_icon_she{background: #ff5591 url(../../images/web_she.png) no-repeat center;width:50px;height:50px;display:inline-block;border-radius:50%;display: block;margin:0 auto}
 .toolbar_icon_jie{background: #fd753e url(../../images/web_jie.png)no-repeat center;width:50px;height:50px;display:inline-block;border-radius:50%;display: block;margin:0 auto}
 
-/*简历置顶*/
+/* section */
 .set_top_day { padding-right:10px; background:#fff}
 .set_top_day li{ display:inline-block;width:20%; float:left}
 .set_top_day_n{ display:block; margin-left:5px; margin-top:10px;border:1px solid #eee; background:#fff; padding:8px 5px 8px 25px;border:1px solid #eee; position:relative}
@@ -1762,11 +1762,7 @@ right: 50px;}
 .set_top_bor{border-top:1px solid #eee}
 
 
-/*
-	简历置顶--新
-	汤童阳
-	2020/7/1
-*/
+/* section */
 .resumeTop{background: #fff;padding: 30px 0 20px 0;}
 .resumeTop_tit{    font-size: 20px;font-weight: bold;text-align: center;color: #333;margin: 0 0 6px 0;}
 .resumeTop_tit_s{padding-left: 5px;color: #fc7e18;}
@@ -1787,7 +1783,7 @@ right: 50px;}
 .resumeTop_zf_box{padding: 20px 15px 20px;}
 .resumeTop_zf_box .resumeTop_zf_btn{color: #fff;background: #fd7e17;border: 0;display: block;line-height: 30px;font-size: 16px;width: 100%;}
 
-/*企业环境*/
+/* section */
 .com_picshow{ width:50%; display:inline-block; float:left}
 .com_picshow_c{border:1px solid #eee; background:#fff; margin-left:10px; margin-top:10px; padding:5px;}
 .com_picshow_pic{width:100%; text-align:center}
@@ -1800,7 +1796,7 @@ right: 50px;}
 .com_picshow_bth { padding:20px;}
 .com_picshow_bth button{width:100%;height:40px;background: -webkit-linear-gradient(left, #4386f4 , #4386f4);color:#fff;border:none;font-size:16px}
 
-/*推广*/
+/* section */
 .spread_tit{ padding:10px; font-size:16px;}
 .spread_box{ background:#fff; padding:10px 0 10px 10px; position:relative }
 .spread_box_time{width:100%; float:left; background:#fff; padding-bottom:10px;}
@@ -1835,7 +1831,7 @@ right: 50px;}
 .yun_wap_pf_list{ padding:10px 120px 10px 10px; background:#fff; margin-top:10px; position:relative; line-height:25px;}
 .yun_member_bth{ padding:8px ; background:#fff}
 
-/*猎头首页*/
+/* section */
 .lt_header_box{width:100%; position:absolute;left:0px;top:0px;  z-index: 101; overflow:hidden}
 .lt_header_nav{width:100%;height:40px; position:relative}
 .lt_header_photo{width:80px;height:80px; margin:0 auto }
@@ -1855,7 +1851,7 @@ right: 50px;}
 @keyframes drift {from {-webkit-transform: rotate(0deg);transform: rotate(0deg);}from {-webkit-transform: rotate(360deg);transform: rotate(360deg);}}
 
 
-/*职位推广*/
+/* section */
 .jobadd_ok{width:100%; text-align:center; padding:105px  0 0 0; position:relative; font-size:16px;color:#35b104}
 .jobadd_ok:after{width:50px;height:50px; background:url(../../images/czcg.png) no-repeat; background-size:100%; display:inline-block;content:''; position:absolute;left:50%;top:40px; margin-left:-25px;}
 .jobadd_ok_settip{width:100%; text-align:center;color:#fb8f17; padding:10px 0; background:#fcfef0;border-top:1px solid #fdf8e5;}
@@ -1936,7 +1932,7 @@ right: 50px;}
 .yunset_list_file input{height:60px; line-height:60px; opacity:0}
 .member_set_meal_showboxtime_js{ font-weight:bold;color:#666}
 
-/* 会员中心，海报生成*/
+/* section */
 .job_show_whb{ background:#fff; padding:10px 10px 10px 40px;color:#fe8800; position:relative; font-size:16px;} 
 .job_show_whb:after{width:22px;height:22px; background:url(../../images/wapwxhb.png) no-repeat; background-size:100%; ddisplay:inline-block; content:''; position:absolute;left:10px;top:10px;}
 .job_show_whb:before{content: ' ';position: absolute;top:15px;right: 15px;width: 8px;height: 8px;border: #fe8800 solid;-webkit-transform: rotate(45deg);border-width: 2px 2px 0 0;color: #434343; }
@@ -1959,7 +1955,7 @@ right: 50px;}
 .distribution_setmeal_bot{ padding:20px 20px;}
 .distribution_setmeal_bth{width:100%;height:36px; background:#f60;color:#fff;border:none;border-radius:3px; cursor:pointer}
 .distribution_setmeal_fpsm{width:180px; position:absolute;left:460px;top:180px; font-size:12px;color:#f00; line-height:23px;}
-/*5.1版个人中心首页*/
+/* section */
 .yun_user_newmember_bg{background: url(../../images/yun_m_bg.png) no-repeat top center;background-size: 100% 100%;}
 .yun_user_newmember_header{ color:#333;}
 .yun_user_newheaderbox{ padding-left:85px; position:relative; padding-bottom:20px;margin-top: 20px;}
@@ -2022,7 +2018,7 @@ right: 50px;}
 .child_fot_c{ padding:20px ; }
 .child_fot_c .child_fot_bth{width:100%;height:40px; line-height: 40px; margin: 0; padding: 0;color:#fff;border:none;border-radius:3px; font-size:16px}
 
-/*账户分离*/
+/* section */
 .transfer_ts{ font-size:12px;  background: #ffffe0;color: #e2731a; padding:5px 10px;}
 .transfer_stepbox{width:100%;height:90px; padding:20px 0px 30px 0px; background:#fff}
 .transfer_stepbox .transfer_stepbox_list{ }
@@ -2057,7 +2053,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .sx_tip_box_p{padding:0px 15px;}
 .sx_tip_cont{ background: #fff;border-radius:5px;color:#fff; padding:10px; position: relative; margin-top:15px;overflow: hidden;}
 
-/* wap用户中心/置顶简历/刷新简历 */
+/* section */
 .sx_tip_lf,.sx_tip_rg{display: block;width: 50%;float: left;}
 .sx_tip_lf_zhid,.sx_tip_lf_shuax{padding-left: 50px;position: relative;line-height: 22px;}
 .sx_tip_lf_zhid i,.sx_tip_lf_shuax i{width: 45px;height: 50px;left: 0;}
@@ -2177,7 +2173,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .rusume_yh_close{ display: block;width: 18px;height: 18px;background: url(../../images/icon_close.png) no-repeat center;position: absolute;left: 10px;top: 8px;z-index: 100;background-size: 100%;}
 
 
-/* look页面 */
+/* section */
 .resume_yc_tips{background: #fff;padding: 8px 0px;}
 .resume_yc_tips_box{margin: 0 10px;padding: 15px 10px;background: #f6fbff;color: #168ffa;}
 .resume_yc_tips_tit{font-weight: bold;font-size: 15px;}
@@ -2210,7 +2206,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .com_member_hrlist_zzjob a{margin-right: 5px;}
 
 
-/*新增消息样式*/
+/* section */
 .systemnews a{ display:inline-block;color:#276bf2;padding:0px 10px;}
 .news_header{ background:#fff;padding:15px 10px;position: relative;}
 .news_header_tit li{ display:inline-block; padding:0px 5px; margin-right:5px; position: relative;font-size:18px;}
@@ -2273,7 +2269,7 @@ input:-webkit-autofill {-webkit-box-shadow: 0 0 0 1000px white inset;}
 .spview_h1_name{padding:3px 7px 3px 22px; background:#ff9c00;color:#fff; display:inline-block;border-radius:5px 0px 5px 0px;background: -webkit-linear-gradient(left, #ff9d00 , #ffcb00);position:relative }
 .spview_h1_name:after{width:15px;height:15px; background:url(../../images/spms.png) no-repeat; background-size:100%; position:absolute;left:3px;top:5px;content:'';}
 .spview_bth{padding:4px 10px;background:#868684;color:#fff;border-radius:2px;}
-/*简历置顶*/
+/* section */
 .resume_top{ background:#f3f5f4; padding:10px 15px;color:#909291}
 .resume_topbox{ background:#fff; padding:10px 15px;}
 .resume_topname{ font-weight:bold;font-size:16px; padding-bottom:5px;}

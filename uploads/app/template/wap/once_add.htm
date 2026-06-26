@@ -62,7 +62,7 @@
                 <input type="text" id="phone" name="phone" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" value="{yun:}$row.phone{/yun}" class="reinputText" placeholder="{yun:}t key='wap_01369'{/yun}">
             </div>
         </li>
-		{yun:}if strpos($config.code_web,"店铺招聘")!==false{/yun}
+		{yun:}if strpos($config.code_web,$wap_code_once)!==false{/yun}
 			{yun:}if $config.code_kind == 1{/yun}
 			<li class="yun_newwap_text"><span class="yun_newwap_text_name">{yun:}t key='wap_01370'{/yun}</span>
 				<div class="yun_newwap_yz">
@@ -173,7 +173,7 @@
         </div>
     </van-popup>
 
-{yun:}if strpos($config.code_web,"店铺招聘")!==false{/yun}
+{yun:}if strpos($config.code_web,$wap_code_once)!==false{/yun}
 	{yun:}if $config.code_kind>2{/yun}
 		<div class="gtdx-captcha">
 			<div id="bind-captcha" data-id='oncesubmit' data-type='click'></div>
@@ -345,7 +345,7 @@
         var code;
 
         var verify_token,verify_str;
-        if(moblie == "" || moblie == "请输入手机号码") {
+        if(moblie == "" || moblie == WAP_API_ENUM.MOBILE_PLACEHOLDER) {
             showToast("{yun:}t key='wap_01389'{/yun}");
             return false;
         } else {
@@ -354,7 +354,7 @@
                 return false;
             }
         }
-        var codesear = new RegExp('店铺招聘');
+        var codesear = new RegExp(WAP_CODE_WEB.ONCE_JOB);
         if(codesear.test(code_web) && exitsid("moblie_code")) {
             if(code_kind == 1) {
                 code = $.trim($("#checkcode").val());

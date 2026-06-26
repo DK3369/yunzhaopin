@@ -16,13 +16,13 @@
 			verify_token,
 			verify_str;
 		if(name == '') {
-			return showToast('请填写姓名！');
+			return showToast(WAP_JS_I18N.sd71d86f8);
 		}
 		if(sex == '') {
-			return showToast('请选择性别！');
+			return showToast(WAP_JS_I18N.s27d2081e);
 		}
 		if(exp == '') {
-			return showToast('请选择工作年限！');
+			return showToast(WAP_JS_I18N.sc6843816);
 		}
 		var cionly ='';
 		if(ct.length<=0 || ct=='new Array()'){
@@ -30,40 +30,40 @@
 		}
 		if(cionly == '1'){
 			if(provinceid == '') {
-				return showToast('请选择工作地区！');
+				return showToast(WAP_JS_I18N.sfb9ab0e0);
 			}
 		}else{
 			if(cityid == '') {
-				return showToast('请选择工作地区！');
+				return showToast(WAP_JS_I18N.sfb9ab0e0);
 			}
 		}
 		
 		if(production == '') {
-			return showToast('请介绍自己！');
+			return showToast(WAP_JS_I18N.sfd2b6431);
 		}
 		if(job == '') {
-			return showToast('请填写工作！');
+			return showToast(WAP_JS_I18N.s6e22a705);
 		}
 		if(mobile == '') {
-			return showToast('请填写联系手机！');
+			return showToast(WAP_JS_I18N.seb3b55e3);
 		}
 		if(isjsMobile(mobile) == false) {
-			return showToast('请注意联系手机格式！');
+			return showToast(WAP_JS_I18N.s3fbe0259);
 		}
 		if(exitsid("moblie_code")){
 			var moblie_code = $("#moblie_code").val();
 			if(moblie_code == ''){
-				return showToast('请填写短信验证码！');			
+				return showToast(WAP_JS_I18N.sd37489f1);			
 			}			
 		}
 		if(password == '') {
-			return showToast('请填写密码！');
+			return showToast(WAP_JS_I18N.s46dd03e4);
 		}
-		if(code_web.indexOf("普工简历") >= 0) {
+		if(code_web.indexOf(WAP_JS_I18N.s3ae6924b) >= 0) {
 			if(code_kind == 1) {
 				var checkcode = $("#checkcode").val();
 				if(checkcode == '') {
-					return showToast('请填写验证码！');
+					return showToast(WAP_JS_I18N.s377e9f00);
 				}
 			} else if(code_kind >2) {
 				$("#bind-captcha").attr('data-id','oncesubmit');

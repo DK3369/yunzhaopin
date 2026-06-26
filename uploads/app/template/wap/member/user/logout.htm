@@ -1,3 +1,4 @@
+{yun:}include file="$wapstyle/publichtm/wap_api_enum.htm"{/yun}
 {yun:}include file="$wapstyle/member/header.htm"{/yun}
 <link rel="stylesheet"
       href="{yun:}$config.sy_weburl{/yun}/app/template/wap/css/yunwap.css?v={yun:}$config.cachecode{/yun}"
@@ -36,7 +37,7 @@
                     <div class="password_textbox">
                         <input class="input_295_34" name="moblie" id="moblie" type="text" placeholder="{yun:}t key='wap_js_00119'{/yun}" :value="telphone">
                     </div>
-                    {yun:}if strstr($config.code_web, '找回密码'){/yun}
+                    {yun:}if strstr($config.code_web, $wap_code_forgetpw){/yun}
                     <div>
                         {yun:}if $config.code_kind>2{/yun}
                         <div class="gtdx-captcha">

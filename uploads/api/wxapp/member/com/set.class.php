@@ -14,7 +14,7 @@ class set_controller extends com_controller
         $data['comname']    =   $this->comInfo['name'];
         $data['statusbody'] =   $comCert['statusbody'];
         
-        // 首先根据企业表的认证状态来判断
+        // 
         if ($this->comInfo['yyzz_status'] == 1){
             $data['status'] = 1;
         }else{
@@ -25,7 +25,7 @@ class set_controller extends com_controller
         $data['com_cert_owner']	    =   $this->config['com_cert_owner'];
         $data['com_cert_wt']	    =   $this->config['com_cert_wt'];
         $data['com_cert_other']	    =   $this->config['com_cert_other'];
-        // 小程序里面因安全域名限制，在开启oss的情况下，委托书/承诺函范本上传时服务器也传了一份，这里直接用服务器上的
+        // ，oss，/，
         $data['exa_cert_wt']        =   $this->config['exa_cert_wt'] ? $this->config['sy_weburl'].$this->config['exa_cert_wt']:'';
         $data['pic_type']           =   $this->config['pic_type'];
         $data['file_maxsize']       =   $this->config['file_maxsize'];
@@ -46,7 +46,7 @@ class set_controller extends com_controller
 
 	}
 
-	//上传企业认证图片处理返回url
+	// url
 	function upCertPic_action(){
 
 		$UploadM		=	$this	->	MODEL('upload');
@@ -56,7 +56,7 @@ class set_controller extends com_controller
 		$error			=	'';
 
 		if(isset($_FILES['file'])){
-				    // pc端上传
+				    // pc
 		    $upArr    	=  array(
 		        'file'  =>  $_FILES['file'],
 		        'dir'   =>  'cert'
@@ -81,7 +81,7 @@ class set_controller extends com_controller
 		$this->render_json($error,$msg,$picurl);
 	}
 
-	//上传企业资质
+	// 
 	function saveCert_action()
 	{
 		
@@ -133,7 +133,7 @@ class set_controller extends com_controller
 
 		$cert       =   $comM -> getCertInfo(array('uid' =>$this->member['uid'], 'type' => '3'));
 		
-		//判断是否上传必要资质
+		// 
         $errcode    =   0;
         $msg        =   '必须上传';
         $douhao     =   false;
@@ -159,7 +159,7 @@ class set_controller extends com_controller
         if($errcode==8){
         	$this->render_json(2,$msg);
 		}
-        //判断是否上传必要资质end
+        // end
 
 		if (!empty($cert) && $cert['ctime']) {
 		     
@@ -190,7 +190,7 @@ class set_controller extends com_controller
 	}
 
 
-	//手机认证,发送短信；
+	// ,；
 	function mobliecert_action()
 	{
 		
@@ -233,7 +233,7 @@ class set_controller extends com_controller
 		
 			$Info              	=  		$UserinfoM->getInfo($where);
 			if($Info){
-				$this	->	render_json(2,'手机号码已存在，请重新填写新号码','');
+				$this	->	render_json(2, yun_auto_t('手机号码已存在，请重新填写新号码'),'');
 			}else{
 				$data     =   array(
 					'uid'         =>	$this ->member['uid'],
@@ -243,24 +243,24 @@ class set_controller extends com_controller
 				$return  =  array();
 				$user    =  $UserinfoM->getInfo(array('uid'=>$uid),array('field'=>'username,moblie,password,salt,usertype'));
 				if (isset($_POST['provider']) && $user['username'] == $user['moblie']){
-				    // 用户名和手机号重复，修改手机号会修改用户名，需要重新生成token;
+				    // ，，token;
 				    $token  =  md5($data['moblie'].$user['password'].$user['salt'].$user['usertype']);
 				    $return['user']  =  array('uid'=>$uid,'usertype'=>$user['usertype'],'token'=>$token);
 				}
 				$result  =   $comM -> upCertInfo(array('uid'=>$this ->member['uid'], 'check2'=>$_POST['code']), array('status'=>'0'), $data);
 				
 				if($result==1){
-				    $this	->	render_json(0,'手机绑定成功',$return);	
+				    $this	->	render_json(0, yun_auto_t('手机绑定成功'),$return);	
 				}if($result==4){
 					
-				   $this	->	render_json(4,'短信验证码已过期，请重新发送！');
+				   $this	->	render_json(4, yun_auto_t('短信验证码已过期，请重新发送！'));
 					
 				}else  if($result==3){
-					$this	->	render_json(3,'短信验证码不正确！');
+					$this	->	render_json(3, yun_auto_t('短信验证码不正确！'));
 				}else if($result==2){
-					$this	->	render_json(2,'请先获取短信验证码！');
+					$this	->	render_json(2, yun_auto_t('请先获取短信验证码！'));
 				}else{
-					$this	->	render_json(2,'手机绑定失败！');
+					$this	->	render_json(2, yun_auto_t('手机绑定失败！'));
 				}
 
 			}
@@ -433,7 +433,7 @@ class set_controller extends com_controller
 	        $this->render_json(0, 'ok');
 	    }
 	}
-	// 查询申请记录
+	// 
 	function getLogout_action()
 	{
 	    $logoutM  =  $this->MODEL('logout');
@@ -447,7 +447,7 @@ class set_controller extends com_controller
 	        $this->render_json(0,'ok');
 	    }
 	}
-	//注销账号申请
+	// 
 	public function logoutApply_action()
 	{
         $_POST  =   $this->post_trim($_POST);
@@ -466,7 +466,7 @@ class set_controller extends com_controller
             $this->render_json($return['errcode'], $return['msg']);
         }
 	}
-    //手机注销账号申请
+    // 
     public function logoutmsg_action()
     {
         $_POST      =  $this->post_trim($_POST);

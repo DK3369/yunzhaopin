@@ -1,3 +1,4 @@
+{yun:}include file="$wapstyle/publichtm/wap_api_enum.htm"{/yun}
 {yun:}include file="$wapstyle/header.htm"{/yun}
 <link href="{yun:}$wap_style{/yun}/js/swiper/swiper.min.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet" />
 <script src="{yun:}$wap_style{/yun}/js/swiper/swiper.min.js?v={yun:}$config.cachecode{/yun}"></script>
@@ -247,7 +248,7 @@
                             <i class="recommend_post_card_bottom_left_word">{yun:}$job_jia.com_name{/yun}</i>
                         </div>
                         <div class="recommend_post_card_bottom_right">
-                            {yun:}if $job_jia.time=='今天' || $job_jia.time=='昨天'||$job_jia.redtime=='1'{/yun}
+                            {yun:}if $job_jia.time==$wap_db_today || $job_jia.time==$wap_db_yesterday||$job_jia.redtime=='1'{/yun}
                             {yun:}$job_jia.time{/yun}
                             {yun:}else{/yun}
                             {yun:}$job_jia.time{/yun}
@@ -538,7 +539,7 @@
                             <span><i>*</i>{{i18n.mobileLabel}}</span>
                             <input type="text" id="rtel" name="rtel" autocomplete="off" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" :placeholder="i18n.mobilePlaceholder">
                         </div>
-                        {yun:}if strpos($config.code_web,"前台登录")!==false{/yun}
+                        {yun:}if strpos($config.code_web,$wap_code_login)!==false{/yun}
                         {yun:}if $config.code_kind==1{/yun}
                         <div class="trainPopFromInt">
                             <span><i>*</i>{{i18n.captchaLabel}}</span>
@@ -633,7 +634,7 @@
         </div>
         <!-- Platform verification -->
     </van-popup>
-    {yun:}if strpos($config.code_web,"前台登录")!==false{/yun}
+    {yun:}if strpos($config.code_web,$wap_code_login)!==false{/yun}
     {yun:}if $config.code_kind>2{/yun}
     <input type='hidden' id="noblur" value="1" />
     <div class="gtdx-captcha">
@@ -1423,7 +1424,7 @@ function rsendmsg(img) {
     var noblur = $("#noblur").val();
     var verify_token;
     var verify_str;
-    var codesear = new RegExp('前台登录');
+    var codesear = new RegExp(WAP_CODE_WEB.FRONT_LOGIN);
     if (codesear.test(code_web)) {
         if (code_kind == 1) {
             code = $.trim($("#checkcode").val());

@@ -13,7 +13,7 @@ $("ul#integral_num").on("click", "li", function () {
         $(this).siblings('li').removeClass("discount_opt_for"); // 删除兄弟li的class属性
     } else {
 
-        showToast('最低充值：'+ min_integral + jifen, 2);
+        showToast(WAP_JS_I18N.s79b262be+ min_integral + jifen, 2);
         return false;
     }
 
@@ -169,36 +169,36 @@ function integral_form() {
 
     if (parseInt(min_integral) > parseInt(integral)) {
 
-        showToast('最低充值：' + min_integral + pricename, 2)
+        showToast(WAP_JS_I18N.s79b262be + min_integral + pricename, 2)
         return false;
     }
 
     if (field.price == 0 || field.price_int == 0){
 
-        showToast('请选择或者填写充值'+pricename);
+        showToast(WAP_JS_I18N.s46204ccf+pricename);
         return false;
     }
 
     var paytype = field.paytype;
 
     if (paytype == "") {
-        showToast('请选择一种支付方式！', 2);
+        showToast(WAP_JS_I18N.s464159cd, 2);
         return false;
     }
 
     if (paytype == 'bank') {
 
         if (field.bank_name == '') {
-            showToast('请填写汇款银行！', 2);
+            showToast(WAP_JS_I18N.sf07c814e, 2);
             return false;
         } else if (field.bank_number == '') {
-            showToast('请填写汇入账号！', 2);
+            showToast(WAP_JS_I18N.sf54d7416, 2);
             return false;
         } else if (field.bank_price == '') {
-            showToast('请填写汇款金额！', 2);
+            showToast(WAP_JS_I18N.s6b46f113, 2);
             return false;
         } else if (field.bank_time == '') {
-            showToast('请填写汇款时间！', 2);
+            showToast(WAP_JS_I18N.s6a0d5b2d, 2);
             return false;
         }
     }

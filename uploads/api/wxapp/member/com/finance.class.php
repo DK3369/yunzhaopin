@@ -41,7 +41,7 @@ class finance_controller extends com_controller
     function fk_action()
     {
 
-    	//新订单页面
+    	// 
     	$error	=	0;
     	$msg	=	'';
     	$id		=	(int)$_POST['id'];
@@ -60,28 +60,28 @@ class finance_controller extends com_controller
 					$msg	=	yun_auto_t('请检查订单状态,本订单无需付款');
 				}else{
 					$ordertype	=	array(
-						'1'	=>	'购买会员',
+						'1'	=>	yun_auto_t('购买会员'),
 						'2'	=>	$this->config['integral_pricename'].'充值',
-						'3'	=>	'银行转帐',
-						'5'	=>	'购买增值包',
+						'3'	=>	yun_auto_t('银行转帐'),
+						'5'	=>	yun_auto_t('购买增值包'),
 
-						'8'	=>	'分享红包推广',
+						'8'	=>	yun_auto_t('分享红包推广'),
 
-						'10'=>	'职位置顶',
-						'11'=>	'职位紧急', 
-	            		'12'=>	'职位推荐',
-	            		'13'=>	'自动刷新', 
-	            		'16'=>	'刷新职位',
-	            		'17'=>	'刷新兼职', 
+						'10'=>	yun_auto_t('职位置顶'),
+						'11'=>	yun_auto_t('职位紧急'), 
+	            		'12'=>	yun_auto_t('职位推荐'),
+	            		'13'=>	yun_auto_t('自动刷新'), 
+	            		'16'=>	yun_auto_t('刷新职位'),
+	            		'17'=>	yun_auto_t('刷新兼职'), 
 
-	            		'19'=>	'下载简历', 
-	            		'20'=>	'上架职位',
-	            		'21'=>	'上架兼职',
+	            		'19'=>	yun_auto_t('下载简历'), 
+	            		'20'=>	yun_auto_t('上架职位'),
+	            		'21'=>	yun_auto_t('上架兼职'),
 
-	            		'23'=>	'面试邀请', 
-	            		'24'=> 	'兼职推荐',
+	            		'23'=>	yun_auto_t('面试邀请'), 
+	            		'24'=> 	yun_auto_t('兼职推荐'),
 
-	            		'28'=>	'购买招聘会报名次数'
+	            		'28'=>	yun_auto_t('购买招聘会报名次数')
 					);
 					$order['type_n']	=	$ordertype[$order['type']];
 					$error	=	1;
@@ -405,13 +405,13 @@ class finance_controller extends com_controller
         $data['integral_question']        =   $this->config['integral_question'];
         $data['integral_answer']        =   $this->config['integral_answer'];
         $data['integral_answerpl']        =   $this->config['integral_answerpl'];
-        // app用分享数据
+        // app
         if (isset($_POST['provider']) && $_POST['provider'] == 'app'){
 
             $data['shareData']  =   array(
                 'url'       =>  Url('wap').'index.php?c=register&uid='.$this->member['uid'],
                 'title'     =>  yun_auto_t('邀请注册'),
-                'summary'   =>  '我在'.$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',
+                'summary'   =>  yun_auto_t('我在').$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',
                 'imageUrl'  =>  checkpic($this->config['sy_wx_sharelogo'])
             );
         }
@@ -488,13 +488,13 @@ class finance_controller extends com_controller
         $data['integral_answerpl']      =   $this->config['integral_answerpl'];
 		$data['integral_bind_wx']      =   $this->config['integral_bind_wx'];
 
-        // app用分享数据
+        // app
         if (isset($_POST['provider']) && $_POST['provider'] == 'app'){
 
             $data['shareData']  =   array(
                 'url'       =>  Url('wap').'index.php?c=register&uid='.$this->member['uid'],
                 'title'     =>  yun_auto_t('邀请注册'),
-                'summary'   =>  '我在'.$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',
+                'summary'   =>  yun_auto_t('我在').$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',
                 'imageUrl'  =>  checkpic($this->config['sy_wx_sharelogo'])
             );
         }

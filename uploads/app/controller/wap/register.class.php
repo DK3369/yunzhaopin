@@ -68,7 +68,7 @@ class register_controller extends common
             $this->cookie->setcookie('regcode', (int)$_GET['uid'], $time);
         }
 
-        //注册提交
+        // 
         if ($_POST) {
             session_start();
 
@@ -86,7 +86,7 @@ class register_controller extends common
             $data['did'] = $this->config['did'];
             $data['port'] = 2;
             $data['qfyuid'] = $_POST['qfyuid'];
-            // 判断注册来源，第三方登录过来的，获取相应参数
+            // ，，
             if (!empty($_COOKIE['reg_bind'])) {
                 
                 if ($_COOKIE['reg_bind'] == 1) {
@@ -137,7 +137,7 @@ class register_controller extends common
         }
 
         $this->seo('register');
-        // 判断注册来源，第三方登录过来的，获取相应参数
+        // ，，
         if (!empty($_GET['bind'])){
             $this->cookie->setcookie("reg_bind", $_GET['bind'], time() + 86400);
         }
@@ -147,16 +147,16 @@ class register_controller extends common
 
                 $this->yunset('usertype', $_GET['usertype']);
                 $this->yunset('backurl', Url('wap', array('c' => 'register')));
-                $this->yunset('headertitle', '创建账户');
+                $this->yunset('headertitle', yun_auto_t('创建账户'));
                 $this->yuntpl(array('wap/reg_create'));
             }else{
 
-                $this->yunset('headertitle', '选择注册身份');
+                $this->yunset('headertitle', yun_auto_t('选择注册身份'));
                 $this->yuntpl(array('wap/reg_new'));
             }
         }else{
 
-            $this->yunset('headertitle', '选择注册类型');
+            $this->yunset('headertitle', yun_auto_t('选择注册类型'));
             $this->yuntpl(array('wap/register'));
         }
     }
@@ -227,14 +227,14 @@ class register_controller extends common
 
     function regok_action()
     {
-        $this->yunset('headertitle', '会员注册');
+        $this->yunset('headertitle', yun_auto_t('会员注册'));
         $this->seo('register');
         $this->yuntpl(array('wap/registerok'));
     }
 
     function ajaxreg_action()
     {
-        //验证用户名、邮箱
+        // 、
         $post = array(
             'username' => $_POST['username'],
             'email' => $_POST['email'],

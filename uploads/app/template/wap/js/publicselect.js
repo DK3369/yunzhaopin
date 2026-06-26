@@ -1,7 +1,7 @@
-//mui插件select、日期，个人标签
+// muiselect、，
 (function($) {
 	$.init();
-	//邀请面试时间
+	// 
 	var intertimePicker = document.getElementById('intertimePicker');
 	if(intertimePicker){
 		var intertime = document.getElementById('intertime');
@@ -17,7 +17,7 @@
 			});	
 		}, false);
 	}
-	//出生日期
+	// 
 	var birthdayUserPicker = document.getElementById('birthdayUserPicker');
 	if(birthdayUserPicker){
 		var birthday = document.getElementById('birthday');
@@ -33,7 +33,7 @@
 			});	
 		}, false);
 	}
-	//开始日期
+	// 
 	var sdatePicker = document.getElementById('sdatePicker');
 	if(sdatePicker){
 		var sdate = document.getElementById('sdate');
@@ -49,7 +49,7 @@
 			});				
 		}, false);
 	}
-	//结束日期
+	// 
 	var edatePicker = document.getElementById('edatePicker');
 	if(edatePicker){
 		var edate = document.getElementById('edate');
@@ -65,7 +65,7 @@
 			});				
 		}, false);
 	}
-	//创建简历最近工作开始时间
+	// 
 	var worksdateComPicker = document.getElementById('worksdateComPicker');
 	if(worksdateComPicker){
 		var worksdate = document.getElementById('worksdate');
@@ -81,7 +81,7 @@
 			});					
 		}, false);
 	}
-	//创建简历最近工作结束时间
+	// 
 	var workedateComPicker = document.getElementById('workedateComPicker');
 	if(workedateComPicker){
 		var workedate = document.getElementById('workedate');
@@ -97,7 +97,7 @@
 			});					
 		}, false);
 	}
-	//创建简历最近教育入学时间
+	// 
 	var edusdateComPicker = document.getElementById('edusdateComPicker');
 	if(edusdateComPicker){
 		var edusdate = document.getElementById('edusdate');
@@ -113,7 +113,7 @@
 			});					
 		}, false);
 	}
-	//创建简历最近教育离校时间
+	// 
 	var eduedateComPicker = document.getElementById('eduedateComPicker');
 	if(eduedateComPicker){
 		var eduedate = document.getElementById('eduedate');
@@ -129,7 +129,7 @@
 			});					
 		}, false);
 	}
-	//创建简历最近项目开始时间
+	// 
 	var prosdateComPicker = document.getElementById('prosdateComPicker');
 	if(prosdateComPicker){
 		var prosdate = document.getElementById('prosdate');
@@ -145,7 +145,7 @@
 			});		
 		}, false);
 	}
-	//创建简历最近项目结束时间	
+	// 	
 	var proedateComPicker = document.getElementById('proedateComPicker');
 	if(proedateComPicker){
 		var proedate = document.getElementById('proedate');
@@ -177,7 +177,7 @@
 		}, false);
 	}
 })(mui)
-//邀请职位选择职位
+// 
 var interjobPickerButton = document.getElementById('interjobPicker');
 if(typeof interjobData != "undefined" && interjobPickerButton){
 	var interjobPicker = new mui.PopPicker();
@@ -201,7 +201,7 @@ if(typeof interjobData != "undefined" && interjobPickerButton){
 		});
 	}, false);
 }
-//邀请模板选择
+// 
 var interYqmbPickerButton = document.getElementById('interYqmbPicker');
 if(typeof yqmbData != "undefined" && interYqmbPickerButton){
 	var interYqmbPicker = new mui.PopPicker();
@@ -221,7 +221,7 @@ if(typeof yqmbData != "undefined" && interYqmbPickerButton){
 			ymctrl.style.display = 'block';
 			document.getElementById('yqmb_switch').classList.remove('mui-active');
 			document.getElementById('save_yqmb').value = 0;
-			ymtext.innerText = '更新面试模板';
+			ymtext.innerText = WAP_JS_I18N.s204ee72a;
 			linkman.value = items[0].link_man;
 			linktel.value = items[0].link_moblie;
 			address.value = items[0].address;
@@ -233,7 +233,7 @@ if(typeof yqmbData != "undefined" && interYqmbPickerButton){
 		});
 	}, false);
 }
-//教育经历里的最高学历
+// 
 var educationUserPickerBtn = document.getElementById('educationUserPicker');
 if(typeof eduData != "undefined" && educationUserPickerBtn){
 	var educationuserPicker = new mui.PopPicker();
@@ -251,7 +251,7 @@ if(typeof eduData != "undefined" && educationUserPickerBtn){
 		});
 	}, false);
 }
-//创建简历，可进行多个学历选择
+// ，
 if(typeof eduData != "undefined"){
 	var educationuserPicker = new mui.PopPicker();
 	educationuserPicker.setData(eduData);
@@ -271,7 +271,7 @@ if(typeof eduData != "undefined"){
 						
 	})
 }
-//熟练程度
+// 
 var ingUserPickerBtn = document.getElementById('ingUserPicker');
 if(typeof ingData != "undefined" && ingUserPickerBtn){
 	var inguserPicker = new mui.PopPicker();
@@ -289,7 +289,7 @@ if(typeof ingData != "undefined" && ingUserPickerBtn){
 		});
 	}, false);
 }
-//自我评价标签
+// 
 var addtagbox = $('.addtagbox')[0];
 if(addtagbox){
 	addtagbox.addEventListener('tap', function(event) {//添加
@@ -297,7 +297,7 @@ if(addtagbox){
 		var error=0;
 		var num=0;
 		if(addfuli.length>=2 && addfuli.length<=8){
-			//判断信息是否已经存在 
+			// 
 			var num = 0; 
 			var tag_value; 
 			$(".yun_my_introduce_bq_cur").each(function(){
@@ -305,7 +305,7 @@ if(addtagbox){
 					 var info =$(this).attr("data-tag"); 
 					 if(addfuli == info){
 						error = 1;
-						return mui.toast('相同福利已存在，请选择或重新填写！');false;
+						return mui.toast(WAP_JS_I18N.se3cef0ed);false;
 					}
 					tag_value+=","+info; 
 					num++; 
@@ -314,7 +314,7 @@ if(addtagbox){
 			if(num>4){
 				document.getElementById('addfuli').value='';
 				error = 1;
-				return mui.toast('最多只能选择五项！');
+				return mui.toast(WAP_JS_I18N.sf154b609);
 			}
 			if(error==0){
 				$('#newtag').append('<span class="yun_my_introduce_bq  yun_my_introduce_bq_cur" data-tag="'+addfuli+'" tag-class="2">'+addfuli+'+</span>'); 
@@ -325,11 +325,11 @@ if(addtagbox){
 			}
 			
 		}else{
-			return mui.toast('请输入2-8个标签字符！');
+			return mui.toast(WAP_JS_I18N.sb486a8af);
 		}
 	}, false);
 }
-//更多设置
+// 
 if(document.getElementById("moreset")){
 	document.getElementById("moreset").addEventListener('tap', function(e) {
 		if(document.getElementById("bg").style.display=='none'){
@@ -369,21 +369,21 @@ if(document.getElementById("showmoreset")){
 		}
 	});
 }
-//简历状态切换
+// 
 if(document.getElementById("privacy")){
 	document.getElementById("privacy").addEventListener('toggle', function(e) {
 		evalue=e.detail.isActive?1:2;
 		$.get(wapurl+"member/index.php?c=up&status="+evalue,function(data){});
-		document.getElementById("showprivacy").innerText=e.detail.isActive?'简历公开':'简历保密';
+		document.getElementById("showprivacy").innerText=e.detail.isActive?WAP_JS_I18N.sa3079e90:WAP_JS_I18N.sd54aadf8;
 	});
 }
-//简历刷新
+// 
 if(document.getElementById("refresh")){
 	document.getElementById("refresh").addEventListener('tap', function(e) {
-		layer_load('执行中，请稍候...');
+		layer_load(WAP_JS_I18N.sf8988e46);
 		$.get(wapurl+"member/index.php?c=resumeset&update="+e.target.dataset.id,function(data){
 			layer.closeAll();
-			showToast(data ? '刷新成功！' : '刷新失败！', 2, function() {
+			showToast(data ? WAP_JS_I18N.s6652cef7 : WAP_JS_I18N.s589dbad7, 2, function() {
                         mui.openWindow({
                             url:wapurl+"member/index.php?c=resume&eid="+e.target.dataset.id,
                         });
@@ -391,10 +391,10 @@ if(document.getElementById("refresh")){
 		});
 	});
 }
-//简历默认
+// 
 if(document.getElementById("resumedefaults")){
 	document.getElementById("resumedefaults").addEventListener('tap', function(e) {
-		layer_load('执行中，请稍候...'); 
+		layer_load(WAP_JS_I18N.sf8988e46); 
 		$.get(wapurl+"member/index.php?c=resumeset&def="+e.target.dataset.id,function(data){
 			layer.closeAll(); 
 			if(data){
@@ -402,13 +402,13 @@ if(document.getElementById("resumedefaults")){
 					url:wapurl+"member/index.php?c=resume&eid="+e.target.dataset.id,
 				});
 			}else{
-				return mui.toast('设置失败！');
+				return mui.toast(WAP_JS_I18N.sa5b6512d);
 			}
 		});
 	});
 }
 
-//切换简历
+// 
 var resumeUserPickerButton = document.getElementById('resumeUserPicker');
 if(typeof resumeData != "undefined" && resumeUserPickerButton){
 	var resumeuserPicker = new mui.PopPicker();

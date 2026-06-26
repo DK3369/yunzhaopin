@@ -16,7 +16,7 @@ class map_controller extends common
             $this->yunset(array('mapx'=>0,'mapy'=>0));
         }
         $this->seo('map');
-        $this->yunset('headertitle', '附近职位');
+        $this->yunset('headertitle', yun_auto_t('附近职位'));
         $this->yuntpl(array('wap/map'));
     }
 
@@ -32,11 +32,11 @@ class map_controller extends common
             $this->yunset(array('mapx' => 0, 'mapy' => 0));
         }
         $this->seo('map');
-        $this->yunset('headertitle', '附近职位');
+        $this->yunset('headertitle', yun_auto_t('附近职位'));
         $this->yuntpl(array('wap/maplist'));
     }
 
-    //职位列表
+    // 
     function joblist_action()
     {
         $this->get_moblie();
@@ -154,7 +154,7 @@ class map_controller extends common
             $numWhere['PHPYUNBTWEND']   =   '';
         }
 
-        // 计算总条数，并计算分页
+        // ，
         $jobNum         =   $jobM->getJobNum($numWhere);
         $data['total']  =   $jobNum;
         $data['list']   =   count($list) > 0 ? $list : array();
@@ -163,11 +163,11 @@ class map_controller extends common
         die();
     }
 
-    //附近公司职位列表
+    // 
     function comlist_action()
     {
-        // where语句中HAVING `distance`<20 20是20km范围内的
-        // SQL 语句 HAVING 一般和 GROUP BY 一起使用
+        // whereHAVING `distance`<20 2020km
+        // SQL  HAVING  GROUP BY
         $select =   "`uid`,`name`,`shortname`,`x`,`y`,6371 * acos(cos(radians(" . $_POST['y'] . ")) * cos(radians(`y`)) * cos(radians(`x`) - radians(" . $_POST['x'] . ")) + sin(radians(" . $_POST['y'] . ")) * sin(radians(`y`))) AS `distance`";
         
         $page   =   $_POST['page'] ? $_POST['page'] : 1;
@@ -258,7 +258,7 @@ class map_controller extends common
                     }
                 }
                 
-                // 去掉没有职位的企业
+                // 
                 foreach ($list as $k => $v) {
                     if (count($list[$k]['joblist']) < 0) {
                         

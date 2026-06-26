@@ -170,7 +170,7 @@ class resume_controller extends com_controller{
 		}
 		echo json_encode($data);die;
 	}
-    //6.1已废弃
+    // 6.1
     function dRemark_action(){
 
         $ResumeM    =   $this->MODEL('downresume');
@@ -187,7 +187,7 @@ class resume_controller extends com_controller{
 
         $this->render_json($data['error'],$return['msg']);
     }
-    // 查询备注
+    // 
     function remark_action()
     {
 
@@ -247,7 +247,7 @@ class resume_controller extends com_controller{
 		}
 		echo json_encode($data);die;
 	}
-	//6.1已废弃
+	// 6.1
     function tRemark_action(){
 
         $ResumeM    =   $this->MODEL('resume');
@@ -439,7 +439,7 @@ class resume_controller extends com_controller{
 		$lookresumeM	=	$this -> MODEL('lookresume');
 		
 		$downresumeM	=	$this -> MODEL('downresume');
-		//应聘简历数	
+		// 	
 		$sqnum			=	$jobM -> getSqJobNum(array('com_id'=>$this->member['uid'],'isdel'=>9,'type'=>array('<>',3)));
 		
 		$list['sqnum']	=	$sqnum;
@@ -448,32 +448,32 @@ class resume_controller extends com_controller{
 		
 		$list['userid_jobnum']	=	$userid_jobnum;
 		
-		//面试邀请数
+		// 
 		$userid_msgnum	=	$jobM -> getYqmsNum(array('fid'=>$this->member['uid'],'isdel'=>9));
 		
 		$list['userid_msgnum']	=	$userid_msgnum;
 		
-		//浏览简历数
+		// 
 		$looknum		=	$lookresumeM -> getLookNum(array('com_id'=>$this->member['uid'],'usertype'=>2,'com_status'=>'0'));
 		
 		$list['looknum']=	$looknum;
 		
-	    //收藏简历数
+	    // 
 		$talentnum		=	$resumeM -> getTalentNum(array('cuid'=>$this->member['uid']));
 		
 		$list['talentnum']		=	$talentnum;
 	    
-	    //下载简历数
+	    // 
 		$downnum		=	$downresumeM -> getDownNum(array('comid'=>$this->member['uid'],'usertype'=>2,'isdel'=>9));
 		
 		$list['downnum']		=	$downnum;
 	    
-	    //关注我的人才数
+	    // 
 		$atnnum			=	$atnM -> getAtnNum(array('sc_uid'=>$this->member['uid']));
 		
 		$list['atnnum']			=	$atnnum;
 	    
-	    //被浏览的职位数
+	    // 
 		$lookjobnum		=	$jobM -> getLookJobNum(array('com_id'=>$this->member['uid'],'com_status'=>'0'), array('usertype' => $this->member['usertype']));
 		
 		$list['lookjobnum']		=	$lookjobnum	;

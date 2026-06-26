@@ -875,7 +875,7 @@
 			timeChange: function(e) {
 				var f = e.getValues();
 				// Must match userPicker.js PRESENT_API_VALUE
-				if (f[0] == (typeof PRESENT_API_VALUE !== 'undefined' ? PRESENT_API_VALUE : '至今')) {
+				if (f[0] == WAP_API_ENUM.PRESENT) {
 					this.timeData[1].values = [];
 				} else {
 					this.timeData[1].values = workMonth;
@@ -883,7 +883,7 @@
 			},
 			timeConfirm: function(e) {
 				this.timeBox = false;
-				if (e[0] == (typeof PRESENT_API_VALUE !== 'undefined' ? PRESENT_API_VALUE : '至今')) {
+				if (e[0] == WAP_API_ENUM.PRESENT) {
 					var date = e[0];
 					this.nowday = 1;
 				} else {

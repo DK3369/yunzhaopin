@@ -29,7 +29,7 @@ $(document).ready(function(){
 	});
 	
 	$(".fairs_disp_position1").click(function(){
-		showModal('该展位已被预定，请重新选择');return false;
+		showModal(WAP_JS_I18N.s99266bf1);return false;
 	}); 
 	
 });
@@ -52,7 +52,7 @@ function clickzph() {
 	
 	if(!jobid){
 		
-		showToast('请选择参展职位', 2);return false;
+		showToast(WAP_JS_I18N.se655c8fd, 2);return false;
 	}else{
 		showLoading();
 		$.post(wapurl + "index.php?c=ajax&a=ajaxzphjob",{zid : zid, id : id,jobid:jobid}, function(data) {
@@ -67,7 +67,7 @@ function clickzph() {
 				})
 			} else{ 
 				if(data.login == 1){
-					pleaselogin('您还未登录企业账号，是否登录？',wapurl+'/index.php?c=login')
+					pleaselogin(WAP_JS_I18N.sfb2248df,wapurl+'/index.php?c=login')
 				}else{
 					showToast(data.msg, 2);return false;
 				}

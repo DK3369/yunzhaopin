@@ -5,16 +5,16 @@ class evaluate_controller extends common{
 		$evaluateM=$this->MODEL('evaluate');
 		
 		$where['keyid']			=	array('<>',0);
-		//分页链接
+		// 
 		$urlarr['c'] 		= 	$_GET['c']; 
 		$urlarr['page'] 	= 	"{{page}}";
 		$pageurl			=	Url('wap',$urlarr);
 		
-		//提取分页
+		// 
 		$pageM			=	$this  -> MODEL('page');
 		$pages			=	$pageM -> pageList('evaluate_group',$where,$pageurl,$_GET['page']);
 		
-		//分页数大于0的情况下 执行列表查询
+		// 0
 		if($pages['total'] > 0){
 			
 			
@@ -40,7 +40,7 @@ class evaluate_controller extends common{
 		if($info['id']==''){
 			$this->ACT_msg_wap(Url("wap",array('c'=>"evaluate")),"没有找到相关测评哦！");
 		}
-		//题目数
+		// 
 		$questions 	= 	$evaluateM->getEvaluateNum(array('gid'=>$id));
 		$this->yunset('questions',$questions);
 		
@@ -131,7 +131,7 @@ class evaluate_controller extends common{
 			$where['id']	=	$id;
 			$where['nuid']	=	$_COOKIE['nuid'];
 		}
-		//测试结果
+		// 
 		$info		=	$evaluateM->getEvaluateLogInfo($where,array('field'=>'`grade`,`examid`,`id`'));
 		$this->yunset('info',$info);
 		
@@ -140,7 +140,7 @@ class evaluate_controller extends common{
 		}
 		$exambase	=	$evaluateM->getInfo(array('id'=>$info['examid']),array('field'=>'`id`,`name`,`toscore`,`fromscore`,`comment`'));
 		$this->yunset('exambase',$exambase); 
-		//留言
+		// 
 		$mwhere['examid']	=	$info['examid'];
 		
 		$urlarr['c'] 		= 	$_GET['c']; 

@@ -21,7 +21,7 @@ $("ul#rating_select").on("click", "li", function() {
 	
 	$(".rating_css_div").find('ul li').removeClass("wap_buy_packageslist_cur");	//	会员套餐默认都是未选中
 	
-	//	增值服务默认第一个展开,其他的未展开								
+	// 	,								
 	$(".detail_id").each(function(index,el){
 		if(index > 0){
 			$(el).hide();
@@ -569,7 +569,7 @@ function checkDays(){
 		$("#single_price").html(0);
 		$("#days").val(0);
 		
-		showToast('请填写推广天数');
+		showToast(WAP_JS_I18N.sf2259d93);
 		return false;
 	}
 }
@@ -651,7 +651,7 @@ function checkIntegralDK(integral, pro){
  	if(server_price == '' || parseFloat(server_price) == 0){
 		
 		$("#integral_dk").val('');
-		showToast('请先选择购买服务！');
+		showToast(WAP_JS_I18N.s26b80a7f);
 		return false;
 	}
 
@@ -855,12 +855,12 @@ function orderBuy(){
 
 		if (paytype == '') {
 
-			showToast('请选择支付方式！');
+			showToast(WAP_JS_I18N.sbe7c667d);
 			return false;
 		}
 		if (server == '') {
 
-			showToast('请选择购买服务！');
+			showToast(WAP_JS_I18N.s62823e9c);
 			return false;
 		}
 

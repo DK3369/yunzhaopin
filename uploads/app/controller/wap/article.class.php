@@ -39,7 +39,7 @@ class article_controller extends common{
 		$this->yunset("Info",$info);
 		$class		=	$articleM->getGroup(array("id"=>$info['nid']));
 		if($info["keyword"]!=""){
-			//分割关键字
+			// 
 			$keyarr 	= 	@explode(",",$info["keyword"]);
 			if(is_array($keyarr) && !empty($keyarr)){
 				$where['PHPYUNBTWSTART_A']	=	'' ;
