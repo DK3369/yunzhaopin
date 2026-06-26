@@ -118,11 +118,23 @@ class Yun_I18n
         return is_array($meta) ? $meta : array();
     }
 
+    function isAutoKey($key)
+    {
+        return is_string($key) && preg_match('/^(common|wap|admin|company|user|ask|member|model)_[0-9]{5}$/', $key);
+    }
+
     function t($key, $params = array(), $default = '')
     {
         $value = $this->getValue($key, $this->messages);
         if ($value === null && $this->currentLang != $this->fallbackLang) {
             $value = $this->getValue($key, $this->fallbackMessages);
+        }
+        if ($value === null && $this->isAutoKey($key)) {
+            if (isset($this->autoMessages[$key])) {
+                $value = $this->autoMessages[$key];
+            } elseif ($this->currentLang != $this->fallbackLang && isset($this->fallbackAutoMessages[$key])) {
+                $value = $this->fallbackAutoMessages[$key];
+            }
         }
         if ($value === null) {
             $value = $default !== '' ? $default : $key;

@@ -12,7 +12,7 @@
                 <img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" style="width: 100%;">
             </a>
             <div class="job_header_center">
-                <input type="text" readonly class="searchnew" value="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}/if{/yun}" placeholder="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}else{/yun}搜索人才{yun:}/if{/yun}">
+                <input type="text" readonly class="searchnew" value="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}/if{/yun}" placeholder="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}else{/yun}{yun:}t key='common_09193'{/yun}{yun:}/if{/yun}">
             </div>
 
             <input type="hidden" id="searchurl" value="{yun:}$searchurl{/yun}" />
@@ -23,10 +23,10 @@
             <div class="job_header_nav_left category">
                 <ul>
                     <li class="{yun:}if !$smarty.get.recg{/yun}active{yun:}/if{/yun}">
-                        <a href="{yun:}searchurl m=wap c=resume recg=0 untype='recg'{/yun}">最新</a>
+                        <a href="{yun:}searchurl m=wap c=resume recg=0 untype='recg'{/yun}">{yun:}t key='wap_00051'{/yun}</a>
                     </li>
                     <li class="{yun:}if $smarty.get.recg{/yun}active{yun:}/if{/yun}">
-                        <a href="{yun:}searchurl m=wap c=resume recg=1 untype='recg'{/yun}">推荐</a>
+                        <a href="{yun:}searchurl m=wap c=resume recg=1 untype='recg'{/yun}">{yun:}t key='common_00825'{/yun}</a>
                     </li>
                 </ul>
             </div>
@@ -43,7 +43,7 @@
                             {yun:}elseif $city_name[$smarty.get.threecityid]{/yun}
                                 {yun:}$city_name[$smarty.get.threecityid]{/yun}
                             {yun:}else{/yun}
-                                区域
+                                {yun:}t key='common_09190'{/yun}
                             {yun:}/if{/yun}
                         {yun:}/if{/yun}
                         <i class="nav_right_open"></i>
@@ -56,11 +56,11 @@
                         {yun:}elseif $smarty.get.jobpost{/yun}
                             {yun:}$job_name[$smarty.get.jobpost]{/yun}
                         {yun:}else{/yun}
-                            意向
+                            {yun:}t key='common_01662'{/yun}
                         {yun:}/if{/yun}
                         <i class="nav_right_open"></i>
                     </li>
-                    <li onclick="resumemoreShow();">筛选
+                    <li onclick="resumemoreShow();">{yun:}t key='wap_00272'{/yun}
                         <i class="nav_right_open"></i>
                     </li>
 
@@ -82,18 +82,18 @@
                     {yun:}include file="$wapstyle/resume_topthree.htm"{/yun}
                     <div class="nologintip">
                         <div class="nologinbox">
-                            <div class="nologintit">成为企业会员，高效挑选人才！</div>
-                            <div class="nologin_p">登录可以查看更多简历信息~</div>
+                            <div class="nologintit">{yun:}t key='common_03505'{/yun}</div>
+                            <div class="nologin_p">{yun:}t key='wap_00422'{/yun}</div>
                             <dl class="nologin_wx">
                                 <dt><img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}" width="130" height="130">
                                 </dt>
-                                <dd>扫一扫，让招聘更轻松</dd>
+                                <dd>{yun:}t key='wap_00356'{/yun}</dd>
                             </dl>
                             <div class="nologin_bth">
-                                <a href="{yun:}url m=wap c=login{/yun}" class="nologin_bth_a">登录</a>
-                                <a href="{yun:}url m=wap c=register{/yun}" class="nologin_bth_a">注册</a>
+                                <a href="{yun:}url m=wap c=login{/yun}" class="nologin_bth_a">{yun:}t key='common_02292'{/yun}</a>
+                                <a href="{yun:}url m=wap c=register{/yun}" class="nologin_bth_a">{yun:}t key='common_00906'{/yun}</a>
                             </div>
-                            <div class="nologin_tel">如有需要任何贴心的服务：{yun:}$config.sy_comwebtel{/yun}</div>
+                            <div class="nologin_tel">{yun:}t key='common_09196'{/yun}{yun:}$config.sy_comwebtel{/yun}</div>
                         </div>
                     </div>
                 {yun:}else{/yun}
@@ -104,17 +104,17 @@
                             {yun:}include file="$wapstyle/resume_topthree.htm"{/yun}
                             <div class="nologintip">
                                 <div class="nologinbox">
-                                    <div class="nologintit">成为企业会员，高效挑选人才！</div>
-                                    <div class="nologin_p">登录可以查看更多简历信息~</div>
+                                    <div class="nologintit">{yun:}t key='common_03505'{/yun}</div>
+                                    <div class="nologin_p">{yun:}t key='wap_00422'{/yun}</div>
                                     <dl class="nologin_wx">
                                         <dt><img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}" width="130" height="130">
                                         </dt>
-                                        <dd>扫一扫，让招聘更轻松</dd>
+                                        <dd>{yun:}t key='wap_00356'{/yun}</dd>
                                     </dl>
                                     <div class="nologin_bth">
-                                        <a href="javascript:void(0);" onclick="logoutAsk('{yun:}url m=wap c=loginout{/yun}')" class="nologin_bth_a">登录企业</a>
+                                        <a href="javascript:void(0);" onclick="logoutAsk('{yun:}url m=wap c=loginout{/yun}')" class="nologin_bth_a">{yun:}t key='wap_00423'{/yun}</a>
                                     </div>
-                                    <div class="nologin_tel">如有需要任何贴心的服务：{yun:}$config.sy_comwebtel{/yun}</div>
+                                    <div class="nologin_tel">{yun:}t key='common_09196'{/yun}{yun:}$config.sy_comwebtel{/yun}</div>
                                 </div>
                             </div>
                         {yun:}/if{/yun}
@@ -124,13 +124,13 @@
                             {yun:}include file="$wapstyle/resume_topthree.htm"{/yun}
                             <div class="nologintip">
                                 <div class="nologinbox">
-                                    <div class="nologintit">身份尚未审核，无法挑选人才！</div>
+                                    <div class="nologintit">{yun:}t key='wap_00424'{/yun}</div>
                                     <dl class="nologin_wx">
                                         <dt><img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}" width="130" height="130"></dt>
-                                        <dd>扫一扫，让招聘更轻松</dd>
+                                        <dd>{yun:}t key='wap_00356'{/yun}</dd>
                                     </dl>
-                                    <div class="nologintit">联系客服，加快审核，高效挑选人才</div>
-                                    <div class="nologin_tel">如有需要任何贴心的服务：{yun:}$config.sy_comwebtel{/yun}</div>
+                                    <div class="nologintit">{yun:}t key='common_03427'{/yun}</div>
+                                    <div class="nologin_tel">{yun:}t key='common_09196'{/yun}{yun:}$config.sy_comwebtel{/yun}</div>
                                 </div>
                             </div>
                         {yun:}else{/yun}
@@ -153,9 +153,9 @@
   var jobChoosed  = parseInt('{yun:}$jobChoosed{/yun}');
 
 	function logoutAsk(url){
-		showConfirm('确认退出登录，前往登录企业吗？',function(){
+		showConfirm("{yun:}t key='wap_00703'{/yun}",function(){
 			window.localStorage.setItem("socketState", "2");
-			showLoading('退出中');
+			showLoading("{yun:}t key='wap_00704'{/yun}");
 			$.get(url, function(){
 				window.location.href = wapurl+'index.php?c=login';
 			})
